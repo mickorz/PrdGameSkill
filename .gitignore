@@ -1,0 +1,5 @@
+# 第三方依赖（本地存放，不入库）
+thirdparties/
+
+# macOS
+.DS_Store

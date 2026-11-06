@@ -19,6 +19,7 @@ PrdGameSkill 是一套面向游戏开发的 PRD（产品需求文档）技能库
    | 类型 | 子文件夹 | 说明 |
    |------|----------|------|
    | 设计方案 | `dev-docs/design/` | 架构设计、技术方案、接口设计 |
+   | 需求文档 | `dev-docs/requirements/` | 产品需求文档、PRD、需求规格 |
    | 会议记录 | `dev-docs/meeting/` | 会议纪要、讨论记录 |
    | 任务待办 | `dev-docs/todos/` | 待办任务池、backlog、后续计划任务 |
    | 问题排查 | `dev-docs/troubleshooting/` | Bug 分析、故障排查、复盘 |

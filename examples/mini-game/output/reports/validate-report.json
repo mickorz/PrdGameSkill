@@ -1,0 +1,20 @@
+{
+  "result": "pass",
+  "game": "E:\\WorkProjects\\PrdGameSkill\\examples\\mini-game",
+  "checked_at": "2026-11-06",
+  "blocking_issues": [],
+  "warnings": [],
+  "coverage": {
+    "requirement_total": 12,
+    "rule_confirm_ratio": 0.25,
+    "source_trace_ratio": 1,
+    "test_coverage_ratio": 0.33,
+    "ui_pages": 1,
+    "ui_related_reqs": 10
+  },
+  "gates": {
+    "ir": true,
+    "html": true,
+    "simulator": true
+  }
+}

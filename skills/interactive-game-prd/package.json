@@ -5,7 +5,11 @@
   "type": "module",
   "description": "Interactive Game PRD 确定性校验与构建工具",
   "scripts": {
-    "test": "node scripts/validate-ir.test.mjs"
+    "test": "node scripts/simulator.test.mjs && node scripts/e2e.mjs",
+    "test:simulator": "node scripts/simulator.test.mjs",
+    "test:html": "node scripts/html-smoke.test.mjs",
+    "test:e2e": "node scripts/e2e.mjs",
+    "validate": "node scripts/validate-output.mjs ../../examples/mini-game"
   },
   "dependencies": {
     "ajv": "^8.17.1",

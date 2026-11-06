@@ -1,5 +1,8 @@
 # 第三方依赖（本地存放，不入库）
 thirdparties/
 
+# 开发期沙盒（不入库）
+dev-examples/
+
 # macOS
 .DS_Store

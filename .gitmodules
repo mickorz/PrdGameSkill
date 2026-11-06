@@ -1,0 +1,18 @@
+[submodule "thirdparties/prd-pilot"]
+	path = thirdparties/prd-pilot
+	url = https://github.com/156181679-dev/prd-pilot.git
+[submodule "thirdparties/prd-html-generator"]
+	path = thirdparties/prd-html-generator
+	url = https://github.com/XiaoYongV5/prd-html-generator.git
+[submodule "thirdparties/prd-writer"]
+	path = thirdparties/prd-writer
+	url = https://github.com/cnhx/prd-writer.git
+[submodule "thirdparties/Arrow"]
+	path = thirdparties/Arrow
+	url = https://github.com/mhgolkar/Arrow.git
+[submodule "thirdparties/GDD-Forge"]
+	path = thirdparties/GDD-Forge
+	url = https://github.com/miventech/GDD-Forge.git
+[submodule "thirdparties/game-doc-forge"]
+	path = thirdparties/game-doc-forge
+	url = https://github.com/MisterVitoPro/gdd.git

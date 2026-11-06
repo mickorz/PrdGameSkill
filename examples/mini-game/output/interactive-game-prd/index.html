@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="zh-CN">
+<!--
+  Interactive Game PRD 渲染模板（P3）
+  由 scripts/build-html.mjs 构建：数据以 APP_DATA 常量内嵌注入（见下方脚本首行）。
+  离线单文件，无外链资源，file:// 可运行。
+  定位与高亮实现改写自 prd-html-generator (Apache-2.0) 的 focusPrdTarget 思路。
+-->
+<head>
+<meta charset="utf-8">
+<title>Interactive Game PRD</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, "Microsoft YaHei", sans-serif; display: flex; height: 100vh; font-size: 14px; }
+  nav { width: 250px; border-right: 1px solid #ddd; overflow: auto; padding: 10px 8px; flex-shrink: 0; }
+  nav h4 { margin: 12px 4px 4px; color: #667; font-size: 12px; }
+  nav .req { display: block; padding: 5px 8px; margin: 2px 0; border-radius: 4px; cursor: pointer; }
+  nav .req:hover { background: #f0f4ff; }
+  nav .req.active { background: #dbe6ff; }
+  .badge { display: inline-block; padding: 0 6px; border-radius: 3px; font-size: 11px; margin-left: 5px; vertical-align: middle; }
+  .st-proposed { background: #fff3cd; color: #856404; }
+  .st-approved { background: #d4edda; color: #155724; }
+  .st-rejected { background: #f8d7da; color: #721c24; }
+  .st-deprecated { background: #e2e3e5; color: #6c757d; }
+  .au-fixed { border: 1px solid #888; color: #555; }
+  .au-delegated { border: 1px dashed #1a73e8; color: #1a73e8; }
+  .au-open { background: #eee; color: #777; }
+  main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  header { padding: 10px 16px; border-bottom: 1px solid #eee; }
+  header h1 { margin: 0; font-size: 18px; }
+  header .meta { color: #889; font-size: 12px; margin-top: 4px; }
+  .tabs { display: flex; gap: 4px; padding: 8px 16px 0; border-bottom: 2px solid #eee; }
+  .tabs button { border: none; background: none; padding: 8px 16px; cursor: pointer; font-size: 14px;
+                 border-bottom: 2px solid transparent; margin-bottom: -2px; }
+  .tabs button.active { border-bottom-color: #1a73e8; color: #1a73e8; font-weight: 600; }
+  #view { flex: 1; overflow: auto; padding: 16px 20px; }
+  .req-card { border: 1px solid #e3e6ea; border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; scroll-margin: 20px; }
+  .req-card:hover { border-color: #9db4e8; }
+  .req-card.highlight { outline: 3px solid #e8a33d; animation: breathe 1.6s ease-in-out 2; }
+  @keyframes breathe { 50% { outline-offset: 5px; } }
+  .req-card h3 { margin: 0 0 6px; font-size: 14px; }
+  .req-card ul { margin: 6px 0 0; padding-left: 18px; color: #445; }
+  .quote { border-left: 3px solid #ccd; margin: 6px 0; padding: 2px 8px; color: #667; font-size: 13px; background: #f8f9fb; }
+  .btn-ui { float: right; font-size: 12px; border: 1px solid #9db4e8; background: #f4f8ff; color: #1a73e8;
+            border-radius: 4px; padding: 2px 8px; cursor: pointer; }
+  .board-area { min-height: 300px; border: 1px dashed #ccd; border-radius: 8px; padding: 16px; margin-top: 10px; }
+  .board { display: grid; grid-template-columns: repeat(4, 84px); gap: 10px; }
+  .card-el { width: 84px; height: 112px; border: 1px solid #bbb; border-radius: 8px; display: flex;
+             align-items: center; justify-content: center; font-size: 30px; cursor: pointer; background: #3a6ea5;
+             color: transparent; user-select: none; transition: background .2s, color .2s; }
+  .card-el.face-up { background: #fff; color: #222; }
+  .card-el.matched { background: #d4edda; color: #155724; }
+  .comp-generic { border: 1px solid #9db4e8; background: #f4f8ff; border-radius: 6px; padding: 8px 14px;
+                  margin: 6px 0; display: inline-block; cursor: pointer; font-size: 13px; }
+  .target-highlight { outline: 3px solid #e8a33d; outline-offset: 2px; animation: breathe 1.6s ease-in-out 2; }
+  table { border-collapse: collapse; width: 100%; margin-top: 8px; }
+  th, td { border: 1px solid #dde; padding: 6px 10px; text-align: left; font-size: 13px; }
+  th { background: #f4f6f9; }
+  aside { width: 330px; border-left: 1px solid #ddd; overflow: auto; padding: 12px 14px; flex-shrink: 0; font-size: 13px; }
+  aside h3 { margin: 0 0 8px; }
+  aside .field { margin-bottom: 6px; }
+  aside .k { color: #889; margin-right: 6px; }
+  #log { margin-top: 12px; border-top: 1px solid #eee; padding-top: 8px; max-height: 180px; overflow: auto;
+         font-size: 12px; color: #556; font-family: Consolas, monospace; }
+  .warn-open { background: #fff3cd; border: 1px solid #ffe08a; border-radius: 4px; padding: 4px 8px; margin: 8px 0; font-size: 12px; }
+</style>
+</head>
+<body>
+<nav id="nav"></nav>
+<main>
+  <header>
+    <h1 id="game-title"></h1>
+    <div class="meta" id="game-meta"></div>
+  </header>
+  <div class="tabs" id="tabs">
+    <button data-tab="prd" class="active">PRD</button>
+    <button data-tab="ui">UI Demo</button>
+    <button data-tab="flow">Flow</button>
+    <button data-tab="tests">Tests</button>
+  </div>
+  <div id="view"></div>
+</main>
+<aside>
+  <h3>需求详情</h3>
+  <div id="detail"><span style="color:#99a">点击左侧或 PRD 条目查看详情</span></div>
+  <div id="log" style="display:none"><b>模拟器判定日志</b><div id="log-body"></div></div>
+</aside>
+
+<script>
+const APP_DATA = {"manifest":{"format":"GAME-SPEC/1","ir_version":"1.0.0","game_name":"记忆翻牌","game_version":"1.0","created_at":"2026-11-06","updated_at":"2026-11-06","source_files":[{"file":"source/original-prd.md","received_at":"2026-11-06"}],"entry_points":["GAME-UI-001"],"stats":{"requirements":8,"ui_pages":1,"test_cases":4}},"game":{"overview":{"name":"记忆翻牌","genre":"益智休闲","summary":"4 对图案的记忆配对小游戏，用于 Interactive Game PRD 管线验证。"},"core-loop":{"loop":["翻牌","判定配对","更新步数","重复直到全部配对"]},"glossary":{"terms":[{"term":"配对","definition":"两张 pair_id 相同的牌同时处于翻开状态且判定成功"}]}},"requirements":[{"id":"GAME-FR-001","type":"game_feature","name":"开局功能","status":"proposed","authority":"fixed","description":"点击开始游戏按钮重置棋盘并随机发牌。","source":{"kind":"original","document":"source/original-prd.md","section":"3.1 开局","page":null,"quote":"点击开始游戏按钮重置棋盘并随机发牌。"},"preconditions":[],"inputs":[],"outputs":["board"],"business_rules":[],"normal_flow":["点击开始 -> 棋盘重置为 8 张背面牌 -> 状态进入 playing"],"exception_flow":[],"state_transitions":["GAME-STATE-001"],"ui_refs":["GAME-COMP-003","GAME-EVENT-002"],"test_refs":["GAME-TC-001"],"dependencies":[],"open_questions":[]},{"id":"GAME-FR-002","type":"game_feature","name":"结果展示功能","status":"proposed","authority":"fixed","description":"胜利后显示总步数与再来一局按钮，点击可重新开局。","source":{"kind":"original","document":"source/original-prd.md","section":"3.2 结果展示","page":null,"quote":"胜利后显示总步数与再来一局按钮，点击可重新开局。"},"preconditions":["游戏胜利（GAME-RULE-004）"],"inputs":["moves"],"outputs":[],"business_rules":[],"normal_flow":["胜利 -> 显示步数与再来一局按钮 -> 点击重开"],"exception_flow":[],"state_transitions":["GAME-STATE-001"],"ui_refs":["GAME-COMP-004","GAME-EVENT-003"],"test_refs":["GAME-TC-003"],"dependencies":["GAME-RULE-004"],"open_questions":[]},{"id":"GAME-RULE-001","type":"game_rule","name":"翻牌规则","status":"proposed","authority":"fixed","description":"点击背面朝上的牌将其翻开。","source":{"kind":"original","document":"source/original-prd.md","section":"2.1 翻牌","page":null,"quote":"点击背面朝上的牌将其翻开。"},"preconditions":[],"inputs":["card_id"],"outputs":["card_face_up"],"business_rules":["仅背面朝上且未配对的牌可翻开"],"normal_flow":["玩家点击牌 -> 牌翻面"],"exception_flow":[],"state_transitions":[],"ui_refs":["GAME-COMP-001","GAME-EVENT-001"],"test_refs":["GAME-TC-001"],"dependencies":[],"open_questions":[]},{"id":"GAME-RULE-002","type":"game_rule","name":"配对判定规则","status":"proposed","authority":"fixed","description":"两张翻开的牌图案相同即配对成功，保持正面不再参与。","source":{"kind":"original","document":"source/original-prd.md","section":"2.2 配对判定","page":null,"quote":"两张翻开的牌图案相同即配对成功，保持正面不再参与。"},"preconditions":["已有两张牌处于翻开状态"],"inputs":["card_id_a","card_id_b"],"outputs":["matched"],"business_rules":["pair_id 相同的两张牌判定为配对成功"],"normal_flow":["翻开第二张 -> 比对 pair_id -> 相同则标记 matched"],"exception_flow":[],"state_transitions":[],"ui_refs":["GAME-COMP-001"],"test_refs":["GAME-TC-001","GAME-TC-003"],"dependencies":["GAME-RULE-001"],"open_questions":[]},{"id":"GAME-RULE-003","type":"game_rule","name":"配对失败盖回规则","status":"approved","authority":"fixed","description":"两张牌图案不同，展示 1000 毫秒后自动盖回背面。","source":{"kind":"human_decision","decision_log_ref":"DECISION-001","decided_by":"user"},"preconditions":["两张翻开的牌 pair_id 不同"],"inputs":[],"outputs":["card_face_up=false"],"business_rules":["盖回延时固定为 1000 毫秒（GAME-CFG-002）"],"normal_flow":["配对失败 -> 展示 1000ms -> 两张牌盖回"],"exception_flow":[],"state_transitions":[],"ui_refs":["GAME-COMP-001"],"test_refs":["GAME-TC-001"],"dependencies":["GAME-RULE-001","GAME-RULE-002","GAME-CFG-002"],"open_questions":[]},{"id":"GAME-RULE-004","type":"game_rule","name":"胜利判定规则","status":"proposed","authority":"fixed","description":"4 对全部配对成功即胜利，展示总步数。","source":{"kind":"original","document":"source/original-prd.md","section":"2.4 胜利判定","page":null,"quote":"4 对全部配对成功即胜利，展示总步数。"},"preconditions":[],"inputs":["matched_pairs"],"outputs":["game_won"],"business_rules":["matched_pairs == 4 时进入胜利状态"],"normal_flow":["每次配对成功后检查 matched_pairs"],"exception_flow":[],"state_transitions":["GAME-STATE-001"],"ui_refs":["GAME-UI-001"],"test_refs":["GAME-TC-003"],"dependencies":["GAME-RULE-002"],"open_questions":[]},{"id":"GAME-RULE-005","type":"game_rule","name":"步数统计规则","status":"proposed","authority":"delegated","description":"每翻开两张牌计 1 步。","source":{"kind":"original","document":"source/original-prd.md","section":"2.5 步数统计","page":null,"quote":"每翻开两张牌计 1 步。"},"preconditions":[],"inputs":["flip_count"],"outputs":["moves"],"business_rules":["moves = floor(flip_count / 2)"],"normal_flow":[],"exception_flow":[],"state_transitions":[],"ui_refs":["GAME-COMP-002"],"test_refs":["GAME-TC-001"],"dependencies":["GAME-RULE-001"],"open_questions":[]},{"id":"GAME-RULE-006","type":"game_rule","name":"重复翻牌禁止规则","status":"proposed","authority":"delegated","description":"已翻开或已配对的牌再次点击无效。","source":{"kind":"derived","basis":"结合 2.1 节翻牌前提与 4.1 节交互说明推导的异常流程规则","related_requirements":["GAME-RULE-001"]},"preconditions":[],"inputs":["card_id"],"outputs":[],"business_rules":["face_up=true 或 matched=true 的牌点击不产生翻牌动作"],"normal_flow":[],"exception_flow":["点击已翻开/已配对的牌 -> 忽略操作"],"state_transitions":[],"ui_refs":["GAME-COMP-001","GAME-EVENT-001"],"test_refs":["GAME-TC-002","GAME-TC-004"],"dependencies":["GAME-RULE-001","GAME-RULE-002"],"open_questions":[]},{"id":"GAME-STATE-001","type":"state","name":"游戏全局状态机","status":"proposed","authority":"fixed","description":"游戏全局状态与流转。","source":{"kind":"derived","basis":"由 2.4 胜利判定与 3.1 开局功能推导的全局状态集合","related_requirements":["GAME-RULE-004","GAME-FR-001"]},"preconditions":[],"inputs":[],"outputs":[],"business_rules":["状态集合 idle | playing | won","idle 经开始游戏进入 playing，全部配对成功进入 won"],"normal_flow":["idle -> playing -> won"],"exception_flow":[],"state_transitions":[],"ui_refs":["GAME-UI-001"],"test_refs":["GAME-TC-003"],"dependencies":[],"open_questions":[]}],"ui":{"pages":[{"id":"GAME-UI-001","name":"游戏棋盘页","resolution":{"width":1280,"height":720},"components":["GAME-COMP-001","GAME-COMP-002","GAME-COMP-003","GAME-COMP-004"],"states":["loading","idle","playing","won"],"interactions":[{"trigger":"GAME-EVENT-002","from_state":"idle","to_state":"playing","target_component":"GAME-COMP-003"},{"trigger":"GAME-EVENT-001","from_state":"playing","to_state":"playing","target_component":"GAME-COMP-001"},{"trigger":"GAME-EVENT-003","from_state":"won","to_state":"idle","target_component":"GAME-COMP-004"}],"requirements":["GAME-FR-001","GAME-FR-002"],"test_refs":["GAME-TC-001"]}],"components":[{"id":"GAME-COMP-001","type":"card","name":"牌格","props":{"pair_id":"int","face_up":"bool","matched":"bool"},"events":["GAME-EVENT-001"],"requirements":["GAME-RULE-001","GAME-RULE-002","GAME-RULE-006"],"visual_hint":"4x2 网格中的单张牌，正面显示图案，背面统一纹理"},{"id":"GAME-COMP-002","type":"counter","name":"步数显示","props":{"moves":"int"},"events":[],"requirements":["GAME-RULE-005"],"visual_hint":"棋盘上方文字计数"},{"id":"GAME-COMP-003","type":"button","name":"开始游戏按钮","props":{"label":"开始游戏"},"events":["GAME-EVENT-002"],"requirements":["GAME-FR-001"],"visual_hint":"居中主按钮，idle 状态显示"},{"id":"GAME-COMP-004","type":"button","name":"再来一局按钮","props":{"label":"再来一局"},"events":["GAME-EVENT-003"],"requirements":["GAME-FR-002"],"visual_hint":"胜利弹层内按钮，won 状态显示"}],"events":[{"id":"GAME-EVENT-001","name":"点击牌","trigger_type":"click","payload":{"card_id":"int"},"requirements":["GAME-RULE-001"]},{"id":"GAME-EVENT-002","name":"点击开始游戏","trigger_type":"click","payload":{},"requirements":["GAME-FR-001"]},{"id":"GAME-EVENT-003","name":"点击再来一局","trigger_type":"click","payload":{},"requirements":["GAME-FR-002"]}],"navigation":{"entries":[{"from":"GAME-UI-001","to":"GAME-UI-001","trigger":"GAME-EVENT-002"}]}},"states":[{"id":"GAME-STATE-001","type":"state","name":"游戏全局状态机","status":"proposed","authority":"fixed","description":"游戏全局状态与流转。","source":{"kind":"derived","basis":"由 2.4 胜利判定与 3.1 开局功能推导的全局状态集合","related_requirements":["GAME-RULE-004","GAME-FR-001"]},"preconditions":[],"inputs":[],"outputs":[],"business_rules":["状态集合 idle | playing | won","idle 经开始游戏进入 playing，全部配对成功进入 won"],"normal_flow":["idle -> playing -> won"],"exception_flow":[],"state_transitions":[],"ui_refs":["GAME-UI-001"],"test_refs":["GAME-TC-003"],"dependencies":[],"open_questions":[]}],"configs":[{"id":"GAME-CFG-001","type":"config","name":"棋盘牌数","status":"approved","authority":"fixed","description":"棋盘共 8 张牌、4 对。","source":{"kind":"original","document":"source/original-prd.md","section":"1. 游戏概述","page":null,"quote":"棋盘 4 列 2 行共 8 张牌，含 4 对图案。"},"value":8,"test_refs":[]},{"id":"GAME-CFG-002","type":"config","name":"配对失败盖回延时","status":"approved","authority":"fixed","description":"配对失败展示时长，毫秒。","source":{"kind":"human_decision","decision_log_ref":"DECISION-001","decided_by":"user"},"value":1000,"test_refs":[]}],"tests":{"cases":[{"id":"GAME-TC-001","name":"正常配对成功","type":"normal","related_requirements":["GAME-RULE-002"],"preconditions":["棋盘已发牌，8 张牌背面朝上"],"steps":["翻开第一张牌","翻开与其 pair_id 相同的第二张牌"],"expected":"两张牌保持正面并标记为已配对，步数加 1","rule_refs":["GAME-RULE-002","GAME-RULE-005"]},{"id":"GAME-TC-002","name":"点击已配对的牌","type":"illegal","related_requirements":["GAME-RULE-006"],"preconditions":["存在已配对成功的牌"],"steps":["点击一张已配对的牌"],"expected":"操作被忽略，牌保持正面，不产生任何状态变化","rule_refs":["GAME-RULE-006"]},{"id":"GAME-TC-003","name":"第四对配对即胜利","type":"boundary","related_requirements":["GAME-RULE-004"],"preconditions":["已配对 3 对"],"steps":["翻开第 4 对的两张牌"],"expected":"进入 won 状态，展示总步数与再来一局按钮","rule_refs":["GAME-RULE-004"]},{"id":"GAME-TC-004","name":"连点同一张牌","type":"abnormal","related_requirements":["GAME-RULE-006"],"preconditions":["有一张牌处于翻开状态"],"steps":["快速连续点击同一张已翻开的牌两次"],"expected":"第二次点击无效，不改变任何牌状态","rule_refs":["GAME-RULE-006"]}],"scenarios":[{"id":"SCEN-001","name":"一局正常配对流程","initial_state":{"state":"playing","board":"8张背面牌"},"actions":[{"player":"user","action":"flip","args":{"card":1}},{"player":"user","action":"flip","args":{"card":2}}],"expected":"若两张牌同对则配对成功，否则 1000ms 后盖回","case_refs":["GAME-TC-001"]},{"id":"SCEN-002","name":"非法操作场景","initial_state":{"state":"playing","board":"1张已配对"},"actions":[{"player":"user","action":"flip","args":{"card":"matched_card"}}],"expected":"操作被忽略","case_refs":["GAME-TC-002"]}]},"reviews":{"openQuestions":[{"id":"OQ-001","question":"配对失败展示期间是否允许翻第三张牌","severity":"medium","status":"open"}],"decisionLog":[{"id":"DECISION-001","requirement_id":"GAME-RULE-003","field":"status","from":"proposed","to":"approved","rationale":"确认配对失败盖回延时固定为 1000 毫秒","decided_by":"user","date":"2026-11-06"}],"completeness":{"checked_at":"2026-11-06","dimensions":{"completeness":"1 项 medium 遗留（OQ-001 配对失败期间翻第三张牌的规则未定义）","consistency":"规则间无矛盾","testability":"全部规则可建立验收条件","implementability":"全部规则可实现","boundary":"胜利边界已覆盖（TC-003），奇数翻开时步数口径未定义","traceability":"original/derived/human_decision 三类来源齐备，全部可回溯","visual_coverage":"1 个 UI 页面覆盖全部功能需求"},"issues":[{"id":"REVIEW-001","type":"missing_requirement","severity":"medium","related_requirements":["GAME-RULE-003","GAME-RULE-001"],"description":"配对失败展示的 1000ms 期间是否允许翻第三张牌，原始 PRD 未定义","evidence":{"source":"source/original-prd.md","section":"2.3 配对失败"},"suggestion":"定义锁定期行为（建议：展示期间锁定棋盘禁止翻牌），需人工确认","resolution":{"status":"open","decision":null}},{"id":"REVIEW-002","type":"missing_requirement","severity":"low","related_requirements":["GAME-RULE-005"],"description":"翻第二张牌但配对失败时步数是否计入，由 moves=floor(flip_count/2) 推导为计入，但原文未明确","evidence":{"source":"source/original-prd.md","section":"2.5 步数统计"},"suggestion":"人工确认步数统计口径","resolution":{"status":"open","decision":null}}]},"consistency":{"checked_at":"2026-11-06","checks":[{"item":"规则间矛盾","result":"pass","detail":"RULE-001~006 与 CFG-001/002 无冲突"},{"item":"状态机非法转换","result":"pass","detail":"STATE-001 仅含 idle->playing->won，decision-log 流转合法"},{"item":"引用完整性","result":"pass","detail":"validate-ir 悬空引用 0"},{"item":"单一事实源","result":"pass","detail":"配对/盖回/步数逻辑仅在 RULE 定义，UI 与 TC 均引用"}],"issues":[]}},"sourceMap":[{"requirement_id":"GAME-RULE-001","anchors":[{"file":"source/original-prd.md","heading":"2.1 翻牌","line_start":9,"line_end":10,"quote_hash":"sha1:b41b84c3f7e97473a8765868b428f708d6df83e9"}]},{"requirement_id":"GAME-RULE-002","anchors":[{"file":"source/original-prd.md","heading":"2.2 配对判定","line_start":11,"line_end":12,"quote_hash":"sha1:941f7ed0196a49ab5e46abe4214a3594f901cd18"}]},{"requirement_id":"GAME-RULE-004","anchors":[{"file":"source/original-prd.md","heading":"2.4 胜利判定","line_start":15,"line_end":16,"quote_hash":"sha1:8e6be0355237814ec28d0fa6fa93c0e72fc231ab"}]},{"requirement_id":"GAME-RULE-005","anchors":[{"file":"source/original-prd.md","heading":"2.5 步数统计","line_start":17,"line_end":18,"quote_hash":"sha1:40b2de8a59c5eb3e813619b8c63694be285bbc7c"}]},{"requirement_id":"GAME-FR-001","anchors":[{"file":"source/original-prd.md","heading":"3.1 开局","line_start":21,"line_end":22,"quote_hash":"sha1:cbdf67700a90dadb78e9fbaa1941cfe3e81bc129"}]},{"requirement_id":"GAME-FR-002","anchors":[{"file":"source/original-prd.md","heading":"3.2 结果展示","line_start":23,"line_end":24,"quote_hash":"sha1:d728a651f532d3ce47a969dd309c83c3e956f975"}]}],"simulator":{"enabled":true,"code":"// 迷你游戏「记忆翻牌」模拟器（P4）\n// 逻辑核心 MiniGameCore：纯逻辑，Node 可测；DOM 适配 MiniGameSimulator：浏览器接入。\n// 实现的规则以 RULE_TABLE 声明，rule_ref 全部指向 GAME-RULE ID。\n(function (root, factory) {\n  if (typeof module !== \"undefined\" && module.exports) module.exports = factory();\n  else root.MiniGameFactory = factory();\n})(typeof self !== \"undefined\" ? self : this, function () {\n  // 规则声明表：与 game-spec/requirements/rules 冻结 IR 对应\n  // status/authority 与 IR 一致；authority=open 的规则会被守卫拒绝执行\n  const RULE_TABLE = {\n    \"GAME-RULE-001\": { name: \"翻牌规则\", authority: \"fixed\", status: \"proposed\" },\n    \"GAME-RULE-002\": { name: \"配对判定规则\", authority: \"fixed\", status: \"proposed\" },\n    \"GAME-RULE-003\": { name: \"配对失败盖回规则\", authority: \"fixed\", status: \"approved\" },\n    \"GAME-RULE-004\": { name: \"胜利判定规则\", authority: \"fixed\", status: \"proposed\" },\n    \"GAME-RULE-005\": { name: \"步数统计规则\", authority: \"delegated\", status: \"proposed\" },\n    \"GAME-RULE-006\": { name: \"重复翻牌禁止规则\", authority: \"delegated\", status: \"proposed\" },\n  };\n\n  function guard(ruleId) {\n    const rule = RULE_TABLE[ruleId];\n    if (!rule) throw { code: \"RULE_NOT_CONFIRMED\", ruleId, message: \"规则未定义，模拟器拒绝判定\" };\n    if (rule.authority === \"open\") throw { code: \"RULE_NOT_CONFIRMED\", ruleId, message: \"规则未确认，禁止作为确定规则执行\" };\n    return rule;\n  }\n\n  // ---------- 逻辑核心（无 DOM） ----------\n  const snapshotOf = (s) => JSON.parse(JSON.stringify(s));\n\n  function createGame(config, logger) {\n    const cfg = Object.assign({ pairCount: 4, flipBackMs: 1000 }, config || {});\n    const log = (ruleId, verdict, detail) => logger && logger.log(ruleId, verdict, detail);\n    let state = null;\n\n    function initial() {\n      const cards = [];\n      for (let p = 1; p <= cfg.pairCount; p++) {\n        cards.push({ id: cards.length, pairId: p, faceUp: false, matched: false });\n        cards.push({ id: cards.length, pairId: p, faceUp: false, matched: false });\n      }\n      return { phase: \"playing\", cards, flipped: [], matchedPairs: 0, moves: 0, won: false };\n    }\n\n    function findCard(id) {\n      return state.cards.find((c) => c.id === id);\n    }\n\n    // 动作：flip(cardId)\n    function dispatch(action, args) {\n      args = args || {};\n      if (action !== \"flip\") {\n        log(\"GAME-RULE-001\", \"rejected\", \"未知动作 \" + action);\n        return { ok: false, reason: \"unknown_action\" };\n      }\n      guard(\"GAME-RULE-001\");\n      const card = findCard(args.cardId);\n      if (!card) return { ok: false, reason: \"no_card\" };\n      // GAME-RULE-006：已翻开或已配对的牌点击无效\n      if (card.faceUp || card.matched) {\n        guard(\"GAME-RULE-006\");\n        log(\"GAME-RULE-006\", \"rejected\", \"card=\" + card.id + \" 已翻开/已配对，操作被忽略\");\n        return { ok: false, reason: \"illegal_reclick\" };\n      }\n      // GAME-RULE-001：翻开\n      card.faceUp = true;\n      state.flipped.push(card);\n      log(\"GAME-RULE-001\", \"applied\", \"card=\" + card.id + \" 翻开\");\n      if (state.flipped.length < 2) return { ok: true, effect: \"flip\" };\n\n      // 第二张：GAME-RULE-005 计步\n      guard(\"GAME-RULE-005\");\n      state.moves += 1;\n      log(\"GAME-RULE-005\", \"applied\", \"moves=\" + state.moves);\n      const [a, b] = state.flipped;\n      // GAME-RULE-002：配对判定\n      guard(\"GAME-RULE-002\");\n      if (a.pairId === b.pairId) {\n        a.matched = b.matched = true;\n        state.matchedPairs += 1;\n        state.flipped = [];\n        log(\"GAME-RULE-002\", \"applied\", \"配对成功 pair=\" + a.pairId + \" \" + state.matchedPairs + \"/\" + cfg.pairCount);\n        // GAME-RULE-004：胜利判定\n        guard(\"GAME-RULE-004\");\n        if (state.matchedPairs === cfg.pairCount) {\n          state.won = true;\n          state.phase = \"won\";\n          log(\"GAME-RULE-004\", \"applied\", \"全部配对完成，进入 won\");\n        }\n        return { ok: true, effect: \"matched\" };\n      }\n      // GAME-RULE-003：配对失败盖回（同步模型：立即盖回并记录延时参数）\n      guard(\"GAME-RULE-003\");\n      a.faceUp = b.faceUp = false;\n      state.flipped = [];\n      log(\"GAME-RULE-003\", \"applied\", \"配对失败，\" + cfg.flipBackMs + \"ms 后盖回（同步模拟）\");\n      return { ok: true, effect: \"flipback\", flipBackMs: cfg.flipBackMs };\n    }\n\n    function getState() { return snapshotOf(state); }\n    function reset(config2) {\n      if (config2) cfg = Object.assign(cfg, config2);\n      state = initial();\n    }\n    reset();\n    return { dispatch, getState, reset, snapshot: () => snapshotOf(state), restore: (s) => { state = snapshotOf(s); } };\n  }\n\n  // ---------- DOM 适配（浏览器） ----------\n  function create(area, onLog) {\n    const logger = { entries: [], log: function (r, v, d) { this.entries.push(\"[\" + r + \"] \" + v + \" \" + (d || \"\")); if (onLog) onLog(\"[\" + r + \"] \" + (d || \"\")); } };\n    const FACES = [\"A\", \"B\", \"C\", \"D\"];\n    let game = null;\n    let lock = false;\n\n    function render() {\n      area.innerHTML = \"\";\n      const st = game.getState();\n      const board = document.createElement(\"div\");\n      board.className = \"board\";\n      st.cards.forEach((c) => {\n        const el = document.createElement(\"div\");\n        el.className = \"card-el\" + (c.matched ? \" matched\" : c.faceUp ? \" face-up\" : \"\");\n        el.dataset.componentId = \"GAME-COMP-001\";\n        el.textContent = c.faceUp || c.matched ? FACES[(c.pairId - 1) % FACES.length] : \"?\";\n        el.addEventListener(\"click\", function () {\n          if (lock) return;\n          const before = game.snapshot();\n          let result;\n          try { result = game.dispatch(\"flip\", { cardId: c.id }); }\n          catch (e) { if (onLog) onLog(\"[\" + (e.code || \"ERROR\") + \"] \" + e.message); return; }\n          if (result.effect === \"flipback\") {\n            lock = true;\n            setTimeout(function () { lock = false; render(); }, result.flipBackMs);\n          }\n          void before;\n          render();\n        });\n        board.appendChild(el);\n      });\n      const moves = document.createElement(\"div\");\n      moves.className = \"moves\";\n      moves.dataset.componentId = \"GAME-COMP-002\";\n      moves.textContent = \"步数：\" + game.getState().moves;\n      area.appendChild(moves);\n      area.appendChild(board);\n      if (game.getState().won) {\n        const win = document.createElement(\"div\");\n        win.className = \"comp-generic\";\n        win.dataset.componentId = \"GAME-COMP-004\";\n        win.textContent = \"胜利！再来一局\";\n        win.addEventListener(\"click\", function () { newGame(); });\n        area.appendChild(win);\n      }\n    }\n\n    function newGame() {\n      game = createGame({ pairCount: 4, flipBackMs: 1000 }, logger);\n      lock = false;\n      render();\n    }\n    newGame();\n    return { getLog: function () { return logger.entries; }, reset: newGame };\n  }\n\n  return { RULE_TABLE: RULE_TABLE, createGame: createGame, create: create };\n});\n"}};
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+// ---------- 数据索引 ----------
+const reqById = new Map();
+for (const r of APP_DATA.requirements) reqById.set(r.id, r);
+for (const c of APP_DATA.configs) reqById.set(c.id, c);
+for (const s of APP_DATA.states) reqById.set(s.id, s);
+const compById = new Map(); for (const c of APP_DATA.ui.components) compById.set(c.id, c);
+const pageById = new Map(); for (const p of APP_DATA.ui.pages) pageById.set(p.id, p);
+const caseById = new Map(); for (const t of APP_DATA.tests.cases) caseById.set(t.id, t);
+
+const GROUPS = [
+  ["功能需求", (r) => r.type === "game_feature"],
+  ["游戏规则", (r) => r.type === "game_rule"],
+  ["状态机", (r) => r.type === "state"],
+  ["数值配置", (r) => r.type === "config"],
+];
+
+// ---------- 徽标 ----------
+function badges(r) {
+  return `<span class="badge st-${r.status}">${r.status}</span><span class="badge au-${r.authority}">${r.authority}</span>`;
+}
+
+// ---------- 左侧导航 ----------
+function renderNav() {
+  const nav = $("#nav");
+  let html = `<h4>游戏概述</h4><a class="req" data-nav="overview">概述与核心循环</a>`;
+  for (const [label, filter] of GROUPS) {
+    const items = [...reqById.values()].filter(filter);
+    html += `<h4>${esc(label)}</h4>`;
+    for (const r of items) {
+      html += `<a class="req" data-req="${r.id}">${esc(r.id)} ${esc(r.name)}${badges(r)}</a>`;
+    }
+  }
+  html += `<h4>UI 页面</h4>`;
+  for (const p of APP_DATA.ui.pages) html += `<a class="req" data-nav="ui:${p.id}">${esc(p.id)} ${esc(p.name)}</a>`;
+  html += `<h4>测试用例</h4><a class="req" data-nav="tests">全部用例（${APP_DATA.tests.cases.length}）</a>`;
+  const oq = APP_DATA.reviews.openQuestions || [];
+  html += `<h4>未决问题</h4><a class="req" data-nav="openq">${oq.length ? `未决问题（${oq.length}）` : "无未决问题"}</a>`;
+  nav.innerHTML = html;
+  nav.addEventListener("click", (e) => {
+    const a = e.target.closest("a");
+    if (!a) return;
+    nav.querySelectorAll("a").forEach((n) => n.classList.remove("active"));
+    a.classList.add("active");
+    if (a.dataset.req) showRequirement(a.dataset.req);
+    else if (a.dataset.nav === "overview") switchTab("prd", () => scrollReq("__overview__"));
+    else if (a.dataset.nav === "tests") switchTab("tests");
+    else if (a.dataset.nav === "openq") switchTab("prd", () => scrollReq("__openq__"));
+    else if (a.dataset.nav && a.dataset.nav.startsWith("ui:")) switchTab("ui");
+  });
+}
+
+// ---------- 详情面板 ----------
+function showDetail(r) {
+  const s = r.source || {};
+  const fields = [
+    ["ID", r.id], ["名称", r.name], ["类型", r.type], ["状态", r.status], ["权限", r.authority],
+    ["来源", `${s.kind || "-"}${s.section ? "（" + esc(s.section) + "）" : ""}${s.decided_by ? " 决策人：" + esc(s.decided_by) : ""}`],
+    ["前置条件", (r.preconditions || []).join("；")],
+    ["关联 UI", (r.ui_refs || []).join("、")],
+    ["关联测试", (r.test_refs || []).join("、")],
+    ["依赖", (r.dependencies || []).join("、")],
+    ["AI 解释", (r.authority === "open" ? "该规则尚待人工确认，AI 不得将其作为确定规则执行。" : "已定义规则，AI 可按 authority 约束使用。")],
+  ];
+  $("#detail").innerHTML = fields.filter(([, v]) => v).map(([k, v]) =>
+    `<div class="field"><span class="k">${k}</span>${esc(v)}</div>`).join("") +
+    (s.quote ? `<div class="quote">${esc(s.quote)}</div>` : "");
+}
+
+function showRequirement(id) {
+  const r = reqById.get(id);
+  if (!r) return;
+  switchTab("prd", () => {
+    scrollReq(id);
+    showDetail(r);
+  });
+}
+
+function scrollReq(id) {
+  const el = document.querySelector(`[data-anchor="${id}"]`);
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.classList.add("highlight");
+    setTimeout(() => el.classList.remove("highlight"), 3200);
+  }
+}
+
+// ---------- 视图切换 ----------
+let currentTab = "prd";
+const raf = window.requestAnimationFrame || ((fn) => setTimeout(fn, 0));
+function switchTab(tab, after) {
+  currentTab = tab;
+  document.querySelectorAll("#tabs button").forEach((b) => b.classList.toggle("active", b.dataset.tab === tab));
+  if (tab === "prd") renderPrd();
+  if (tab === "ui") renderUiDemo();
+  if (tab === "flow") renderFlow();
+  if (tab === "tests") renderTests();
+  if (after) raf(after);
+}
+
+// ---------- PRD 视图 ----------
+function reqCard(r) {
+  const rules = (r.business_rules || []).map((x) => `<li>${esc(x)}</li>`).join("");
+  const flows = (r.normal_flow || []).map((x) => `<li>${esc(x)}</li>`).join("");
+  const s = r.source || {};
+  const quote = s.quote ? `<div class="quote">原文：${esc(s.quote)}</div>` :
+    (s.basis ? `<div class="quote">推导依据：${esc(s.basis)}</div>` : "");
+  const uiBtn = (r.ui_refs || []).length ? `<button class="btn-ui" data-goto-ui="${esc(r.id)}">查看 UI</button>` : "";
+  return `<div class="req-card" data-anchor="${r.id}" data-requirements="${esc(r.id)}">
+    <h3>${esc(r.id)} ${esc(r.name)} ${badges(r)} ${uiBtn}</h3>
+    <div>${esc(r.description || "")}</div>${quote}${rules ? `<ul>${rules}</ul>` : ""}${flows ? `<ul>${flows}</ul>` : ""}
+  </div>`;
+}
+
+function renderPrd() {
+  const g = APP_DATA.game;
+  let html = `<div class="req-card" data-anchor="__overview__"><h3>游戏概述</h3><div>${esc((g.overview && g.overview.summary) || "")}</div></div>`;
+  for (const [label, filter] of GROUPS) {
+    const items = [...reqById.values()].filter(filter);
+    if (!items.length) continue;
+    html += `<h3 style="margin-top:20px">${esc(label)}</h3>`;
+    html += items.map(reqCard).join("");
+  }
+  const oq = APP_DATA.reviews.openQuestions || [];
+  html += `<h3 style="margin-top:20px">未决问题</h3><div class="req-card" data-anchor="__openq__">` +
+    (oq.length ? oq.map((q) => `<div class="warn-open">${esc(q.id || "")} ${esc(q.question || "")}（${esc(q.severity || "")}）</div>`).join("") : "无") + `</div>`;
+  $("#view").innerHTML = html;
+  $("#view").addEventListener("click", (e) => {
+    const goto = e.target.closest("[data-goto-ui]");
+    if (goto) { switchTab("ui", () => focusByRequirement(goto.dataset.gotoUi)); return; }
+    const card = e.target.closest(".req-card[data-anchor]");
+    if (card && card.dataset.anchor.startsWith("GAME-")) showDetail(reqById.get(card.dataset.anchor));
+  });
+}
+
+// ---------- UI Demo 视图 ----------
+function renderUiDemo() {
+  const page = APP_DATA.ui.pages[0];
+  if (!page) { $("#view").innerHTML = "无 UI 页面规格"; return; }
+  let html = `<h3>${esc(page.id)} ${esc(page.name)} <span class="meta">${page.resolution.width}x${page.resolution.height} 状态：${esc(page.states.join(" / "))}</span></h3>`;
+  html += `<div class="board-area" id="ui-area"></div><div id="ui-msg" style="margin-top:8px;color:#1a73e8;font-size:13px"></div>`;
+  $("#view").innerHTML = html;
+  const area = $("#ui-area");
+  if (APP_DATA.simulator.enabled) {
+    // Level 2：模拟器驱动（引擎由 build 时内嵌，此处执行并挂载）
+    try {
+      if (typeof MiniGameFactory === "undefined") new Function(APP_DATA.simulator.code)();
+      /* global MiniGameFactory */
+      const sim = MiniGameFactory.create(area, (msg) => { $("#ui-msg").textContent = msg; appendLog(msg); });
+      window.__sim = sim;
+      $("#log").style.display = "block";
+    } catch (err) {
+      area.innerHTML = `<div class="warn-open">模拟器加载失败：${esc(err.message)}</div>`;
+    }
+  } else {
+    // Level 1：静态原型 + 状态切换假交互
+    area.appendChild(renderStaticPage(page));
+    $("#ui-msg").textContent = "Level 1 静态原型（模拟器未注入，仅演示布局与状态切换）";
+  }
+  // UI -> PRD 反向定位：右键点击组件（左键留给游戏操作，避免冲突）
+  area.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+    const comp = e.target.closest("[data-component-id]");
+    if (!comp) return;
+    const compId = comp.dataset.componentId;
+    const related = new Set();
+    for (const c of APP_DATA.ui.components) if (c.id === compId) (c.requirements || []).forEach((x) => related.add(x));
+    const others = [...reqById.values()].filter((r) => (r.ui_refs || []).includes(compId)).map((r) => r.id);
+    others.forEach((x) => related.add(x));
+    switchTab("prd", () => {
+      for (const rid of related) {
+        const el = document.querySelector(`[data-anchor="${rid}"]`);
+        if (el) { el.scrollIntoView({ behavior: "smooth", block: "center" }); el.classList.add("highlight"); setTimeout(() => el.classList.remove("highlight"), 3200); break; }
+      }
+      const first = [...related][0];
+      if (first && reqById.get(first)) showDetail(reqById.get(first));
+    });
+  });
+}
+
+function renderStaticPage(page) {
+  const frag = document.createDocumentFragment();
+  const board = document.createElement("div");
+  board.className = "board";
+  for (const c of APP_DATA.ui.components) {
+    if (c.type === "card") {
+      for (let i = 0; i < 8; i++) {
+        const el = document.createElement("div");
+        el.className = "card-el";
+        el.dataset.componentId = c.id;
+        el.textContent = "?";
+        board.appendChild(el);
+      }
+    } else {
+      const el = document.createElement("div");
+      el.className = "comp-generic";
+      el.dataset.componentId = c.id;
+      el.textContent = `${c.name}（${c.id}）`;
+      frag.appendChild(el);
+    }
+  }
+  frag.appendChild(board);
+  return frag;
+}
+
+// PRD -> UI 定位：依次尝试关联组件，全部未渲染时诚实提示（不虚假成功）
+function focusByRequirement(reqId) {
+  const r = reqById.get(reqId);
+  const ids = ((r && r.ui_refs) || []).filter((x) => compById.has(x));
+  let el = null;
+  let used = null;
+  for (const cid of ids) {
+    el = document.querySelector(`[data-component-id="${cid}"]`);
+    if (el) { used = cid; break; }
+  }
+  if (!el) {
+    $("#ui-msg").textContent = `定位：${reqId} 关联组件（${ids.join("、") || "无"}）在当前模拟状态未渲染`;
+    return;
+  }
+  el.scrollIntoView({ behavior: "smooth", block: "center" });
+  el.classList.add("target-highlight");
+  setTimeout(() => el.classList.remove("target-highlight"), 3200);
+  $("#ui-msg").textContent = `定位：${reqId} -> ${used}`;
+}
+
+// ---------- Flow 视图 ----------
+function renderFlow() {
+  let html = `<h3>状态机</h3>`;
+  for (const st of APP_DATA.states) {
+    html += `<div class="req-card"><h3>${esc(st.id)} ${esc(st.name)} ${badges(st)}</h3>`;
+    for (const f of st.normal_flow || []) {
+      const parts = f.split("->").map((x) => x.trim()).filter(Boolean);
+      if (parts.length >= 2) html += stateSvg(parts);
+      else html += `<div>${esc(f)}</div>`;
+    }
+    html += `</div>`;
+  }
+  html += `<h3 style="margin-top:16px">核心循环</h3><div class="req-card">`;
+  const loop = (APP_DATA.game.coreLoop && APP_DATA.game.coreLoop.loop) || [];
+  html += loop.map((x) => esc(x)).join(" -> ") + `</div>`;
+  $("#view").innerHTML = html;
+}
+
+function stateSvg(states) {
+  const W = 130, H = 60, pad = 30;
+  const width = pad + states.length * W;
+  let svg = `<svg width="${width}" height="90" style="max-width:100%">`;
+  states.forEach((s, i) => {
+    const x = pad + i * W;
+    svg += `<ellipse cx="${x + 40}" cy="35" rx="52" ry="22" fill="#eef3ff" stroke="#7a97c9"/>
+            <text x="${x + 40}" y="39" text-anchor="middle" font-size="12">${esc(s)}</text>`;
+    if (i < states.length - 1) {
+      svg += `<line x1="${x + 92}" y1="35" x2="${x + W - 6}" y2="35" stroke="#7a97c9" marker-end="url(#arw)"/>`;
+    }
+  });
+  svg += `<defs><marker id="arw" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#7a97c9"/></marker></defs></svg>`;
+  return svg;
+}
+
+// ---------- Tests 视图 ----------
+function renderTests() {
+  const byType = { normal: [], illegal: [], boundary: [], abnormal: [] };
+  for (const t of APP_DATA.tests.cases) (byType[t.type] || (byType[t.type] = [])).push(t);
+  const label = { normal: "正常操作", illegal: "非法操作", boundary: "边界场景", abnormal: "状态异常" };
+  let html = `<h3>测试用例</h3>`;
+  for (const type of Object.keys(label)) {
+    html += `<h4 style="margin:14px 0 4px">${label[type]}（${(byType[type] || []).length}）</h4><table>
+      <tr><th>ID</th><th>名称</th><th>步骤</th><th>预期</th><th>关联需求</th></tr>`;
+    for (const t of byType[type] || []) {
+      html += `<tr><td>${esc(t.id)}</td><td>${esc(t.name)}</td><td>${esc((t.steps || []).join("；"))}</td><td>${esc(t.expected)}</td><td>${esc((t.related_requirements || []).join("、"))}</td></tr>`;
+    }
+    html += `</table>`;
+  }
+  html += `<h3 style="margin-top:18px">预设场景</h3>`;
+  for (const s of APP_DATA.tests.scenarios) {
+    html += `<div class="req-card"><h3>${esc(s.id)} ${esc(s.name)}</h3><div>预期：${esc(s.expected || "")}</div>
+      <div style="color:#889;font-size:12px;margin-top:4px">关联用例：${esc((s.case_refs || []).join("、"))}　执行：<span id="run-${esc(s.id)}">${window.__sim ? "由模拟器回放验证（见 Tests 输出）" : "需模拟器（P4）"}</span></div></div>`;
+  }
+  $("#view").innerHTML = html;
+}
+
+// ---------- 判定日志 ----------
+function appendLog(msg) {
+  const body = $("#log-body");
+  const div = document.createElement("div");
+  div.textContent = msg;
+  body.appendChild(div);
+  body.scrollTop = body.scrollHeight;
+}
+
+// ---------- 初始化 ----------
+document.getElementById("game-title").textContent = (APP_DATA.manifest && APP_DATA.manifest.game_name) || "未命名游戏";
+document.getElementById("game-meta").textContent =
+  `IR v${(APP_DATA.manifest && APP_DATA.manifest.ir_version) || "?"} · 需求 ${APP_DATA.requirements.length + APP_DATA.configs.length + APP_DATA.states.length} 条 · UI 页面 ${APP_DATA.ui.pages.length} · 用例 ${APP_DATA.tests.cases.length} · 生成于构建时`;
+document.getElementById("tabs").addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if (b) switchTab(b.dataset.tab);
+});
+renderNav();
+switchTab("prd");
+if (location.hash.startsWith("#req=")) showRequirement(decodeURIComponent(location.hash.slice(5)));
+</script>
+</body>
+</html>

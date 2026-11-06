@@ -1,163 +1,396 @@
 <!doctype html>
 <html lang="zh-CN">
 <!--
-  最小 HTML 验证 Demo（P1-09）
-  目的：验证 Game Requirement IR 字段能否支撑 HTML PRD 的四个核心能力：
-  需求导航 / 需求详情 / 麻将（翻牌）UI 页面 / PRD 到 UI 的点击定位。
-  数据为手写迷你 IR 内嵌（file:// 离线约束，禁 fetch）。
-  部分定位与高亮实现改写自 prd-html-generator (Apache-2.0) 的 focusPrdTarget 思路。
+  Interactive Game PRD 渲染模板（P3）
+  由 scripts/build-html.mjs 构建：数据以 APP_DATA 常量内嵌注入（见下方脚本首行）。
+  离线单文件，无外链资源，file:// 可运行。
+  定位与高亮实现改写自 prd-html-generator (Apache-2.0) 的 focusPrdTarget 思路。
 -->
 <head>
 <meta charset="utf-8">
-<title>IR 最小验证 Demo</title>
+<title>Interactive Game PRD</title>
 <style>
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: system-ui, sans-serif; display: flex; height: 100vh; }
-  nav { width: 240px; border-right: 1px solid #ddd; overflow: auto; padding: 8px; }
-  nav .req { display: block; padding: 6px 8px; margin: 2px 0; border-radius: 4px; cursor: pointer; font-size: 13px; }
+  body { margin: 0; font-family: system-ui, "Microsoft YaHei", sans-serif; display: flex; height: 100vh; font-size: 14px; }
+  nav { width: 250px; border-right: 1px solid #ddd; overflow: auto; padding: 10px 8px; flex-shrink: 0; }
+  nav h4 { margin: 12px 4px 4px; color: #667; font-size: 12px; }
+  nav .req { display: block; padding: 5px 8px; margin: 2px 0; border-radius: 4px; cursor: pointer; }
   nav .req:hover { background: #f0f4ff; }
   nav .req.active { background: #dbe6ff; }
-  .badge { display: inline-block; padding: 0 6px; border-radius: 3px; font-size: 11px; margin-left: 6px; }
+  .badge { display: inline-block; padding: 0 6px; border-radius: 3px; font-size: 11px; margin-left: 5px; vertical-align: middle; }
   .st-proposed { background: #fff3cd; color: #856404; }
   .st-approved { background: #d4edda; color: #155724; }
+  .st-rejected { background: #f8d7da; color: #721c24; }
+  .st-deprecated { background: #e2e3e5; color: #6c757d; }
   .au-fixed { border: 1px solid #888; color: #555; }
   .au-delegated { border: 1px dashed #1a73e8; color: #1a73e8; }
   .au-open { background: #eee; color: #777; }
-  main { flex: 1; padding: 12px 20px; overflow: auto; }
-  #detail { width: 320px; border-left: 1px solid #ddd; overflow: auto; padding: 12px; font-size: 13px; }
-  #detail h3 { margin-top: 0; }
-  .board { display: grid; grid-template-columns: repeat(4, 90px); gap: 10px; margin-top: 10px; }
-  .card { width: 90px; height: 120px; border: 1px solid #bbb; border-radius: 8px; display: flex;
-          align-items: center; justify-content: center; font-size: 34px; cursor: pointer;
-          background: #3a6ea5; color: transparent; user-select: none; transition: background .2s, color .2s; }
-  .card.face-up { background: #fff; color: #222; }
-  .card.matched { background: #d4edda; color: #155724; cursor: default; }
-  .card.target-highlight { outline: 3px solid #e8a33d; outline-offset: 2px; animation: breathe 1.6s ease-in-out 2; }
-  @keyframes breathe { 50% { outline-offset: 6px; } }
-  .moves { font-size: 14px; color: #555; margin-top: 10px; }
-  #msg { margin-top: 10px; color: #1a73e8; min-height: 20px; font-size: 13px; }
+  main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  header { padding: 10px 16px; border-bottom: 1px solid #eee; }
+  header h1 { margin: 0; font-size: 18px; }
+  header .meta { color: #889; font-size: 12px; margin-top: 4px; }
+  .tabs { display: flex; gap: 4px; padding: 8px 16px 0; border-bottom: 2px solid #eee; }
+  .tabs button { border: none; background: none; padding: 8px 16px; cursor: pointer; font-size: 14px;
+                 border-bottom: 2px solid transparent; margin-bottom: -2px; }
+  .tabs button.active { border-bottom-color: #1a73e8; color: #1a73e8; font-weight: 600; }
+  #view { flex: 1; overflow: auto; padding: 16px 20px; }
+  .req-card { border: 1px solid #e3e6ea; border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; scroll-margin: 20px; }
+  .req-card:hover { border-color: #9db4e8; }
+  .req-card.highlight { outline: 3px solid #e8a33d; animation: breathe 1.6s ease-in-out 2; }
+  @keyframes breathe { 50% { outline-offset: 5px; } }
+  .req-card h3 { margin: 0 0 6px; font-size: 14px; }
+  .req-card ul { margin: 6px 0 0; padding-left: 18px; color: #445; }
+  .quote { border-left: 3px solid #ccd; margin: 6px 0; padding: 2px 8px; color: #667; font-size: 13px; background: #f8f9fb; }
+  .btn-ui { float: right; font-size: 12px; border: 1px solid #9db4e8; background: #f4f8ff; color: #1a73e8;
+            border-radius: 4px; padding: 2px 8px; cursor: pointer; }
+  .board-area { min-height: 300px; border: 1px dashed #ccd; border-radius: 8px; padding: 16px; margin-top: 10px; }
+  .board { display: grid; grid-template-columns: repeat(4, 84px); gap: 10px; }
+  .card-el { width: 84px; height: 112px; border: 1px solid #bbb; border-radius: 8px; display: flex;
+             align-items: center; justify-content: center; font-size: 30px; cursor: pointer; background: #3a6ea5;
+             color: transparent; user-select: none; transition: background .2s, color .2s; }
+  .card-el.face-up { background: #fff; color: #222; }
+  .card-el.matched { background: #d4edda; color: #155724; }
+  .comp-generic { border: 1px solid #9db4e8; background: #f4f8ff; border-radius: 6px; padding: 8px 14px;
+                  margin: 6px 0; display: inline-block; cursor: pointer; font-size: 13px; }
+  .target-highlight { outline: 3px solid #e8a33d; outline-offset: 2px; animation: breathe 1.6s ease-in-out 2; }
+  table { border-collapse: collapse; width: 100%; margin-top: 8px; }
+  th, td { border: 1px solid #dde; padding: 6px 10px; text-align: left; font-size: 13px; }
+  th { background: #f4f6f9; }
+  aside { width: 330px; border-left: 1px solid #ddd; overflow: auto; padding: 12px 14px; flex-shrink: 0; font-size: 13px; }
+  aside h3 { margin: 0 0 8px; }
+  aside .field { margin-bottom: 6px; }
+  aside .k { color: #889; margin-right: 6px; }
+  #log { margin-top: 12px; border-top: 1px solid #eee; padding-top: 8px; max-height: 180px; overflow: auto;
+         font-size: 12px; color: #556; font-family: Consolas, monospace; }
+  .warn-open { background: #fff3cd; border: 1px solid #ffe08a; border-radius: 4px; padding: 4px 8px; margin: 8px 0; font-size: 12px; }
 </style>
 </head>
 <body>
 <nav id="nav"></nav>
 <main>
-  <h2>UI Demo（GAME-UI-001 游戏棋盘页）</h2>
-  <div class="moves" id="moves">步数：0</div>
-  <div class="board" id="board"></div>
-  <div id="msg"></div>
-  <p style="color:#999;font-size:12px">提示：点击左侧任一需求，会定位并高亮对应 UI 组件（PRD 到 UI 定位验证）。</p>
+  <header>
+    <h1 id="game-title"></h1>
+    <div class="meta" id="game-meta"></div>
+  </header>
+  <div class="tabs" id="tabs">
+    <button data-tab="prd" class="active">PRD</button>
+    <button data-tab="ui">UI Demo</button>
+    <button data-tab="flow">Flow</button>
+    <button data-tab="tests">Tests</button>
+  </div>
+  <div id="view"></div>
 </main>
-<aside id="detail"><h3>需求详情</h3><div id="detail-body">点击左侧需求查看详情</div></aside>
+<aside>
+  <h3>需求详情</h3>
+  <div id="detail"><span style="color:#99a">点击左侧或 PRD 条目查看详情</span></div>
+  <div id="log" style="display:none"><b>模拟器判定日志</b><div id="log-body"></div></div>
+</aside>
 
 <script>
-// 内嵌迷你 IR（与 scripts/validate-ir.example/valid 同源，手工摘录）
-const REQUIREMENTS = [
-  { id: "GAME-RULE-001", name: "翻牌规则", status: "proposed", authority: "fixed", comp: "GAME-COMP-001",
-    source: { kind: "original", section: "2.1 翻牌", quote: "点击背面朝上的牌将其翻开。" },
-    rules: ["仅背面朝上且未配对的牌可翻开"] },
-  { id: "GAME-RULE-002", name: "配对判定规则", status: "proposed", authority: "fixed", comp: "GAME-COMP-001",
-    source: { kind: "original", section: "2.2 配对判定", quote: "两张翻开的牌图案相同即配对成功，保持正面不再参与。" },
-    rules: ["pair_id 相同的两张牌判定为配对成功"] },
-  { id: "GAME-RULE-003", name: "配对失败盖回规则", status: "approved", authority: "fixed", comp: "GAME-COMP-001",
-    source: { kind: "human_decision", decision_log_ref: "DECISION-001", decided_by: "user" },
-    rules: ["盖回延时固定为 1000 毫秒（GAME-CFG-002）"] },
-  { id: "GAME-RULE-006", name: "重复翻牌禁止规则", status: "proposed", authority: "delegated", comp: "GAME-COMP-001",
-    source: { kind: "derived", basis: "结合 2.1 与 4.1 推导的异常流程规则", related: "GAME-RULE-001" },
-    rules: ["face_up=true 或 matched=true 的牌点击不产生翻牌动作"] },
-  { id: "GAME-RULE-005", name: "步数统计规则", status: "proposed", authority: "delegated", comp: "GAME-COMP-002",
-    source: { kind: "original", section: "2.5 步数统计", quote: "每翻开两张牌计 1 步。" },
-    rules: ["moves = floor(flip_count / 2)"] },
-  { id: "GAME-FR-001", name: "开局功能", status: "proposed", authority: "fixed", comp: "GAME-COMP-003",
-    source: { kind: "original", section: "3.1 开局", quote: "点击开始游戏按钮重置棋盘并随机发牌。" },
-    rules: ["点击开始后棋盘重置为 8 张背面牌"] },
+const APP_DATA = /*__APP_DATA_JSON__*/null;
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+// ---------- 数据索引 ----------
+const reqById = new Map();
+for (const r of APP_DATA.requirements) reqById.set(r.id, r);
+for (const c of APP_DATA.configs) reqById.set(c.id, c);
+for (const s of APP_DATA.states) reqById.set(s.id, s);
+const compById = new Map(); for (const c of APP_DATA.ui.components) compById.set(c.id, c);
+const pageById = new Map(); for (const p of APP_DATA.ui.pages) pageById.set(p.id, p);
+const caseById = new Map(); for (const t of APP_DATA.tests.cases) caseById.set(t.id, t);
+
+const GROUPS = [
+  ["功能需求", (r) => r.type === "game_feature"],
+  ["游戏规则", (r) => r.type === "game_rule"],
+  ["状态机", (r) => r.type === "state"],
+  ["数值配置", (r) => r.type === "config"],
 ];
 
-// 状态（模拟器思想的最小形态：状态与展示分离，动作产生可追踪日志）
-const state = { flipped: [], matched: 0, moves: 0, lock: false };
-const FACES = ["A", "B", "C", "D"];
-const log = (t) => { document.getElementById("msg").textContent = t; };
+// ---------- 徽标 ----------
+function badges(r) {
+  return `<span class="badge st-${r.status}">${r.status}</span><span class="badge au-${r.authority}">${r.authority}</span>`;
+}
 
-function buildBoard() {
-  const board = document.getElementById("board");
-  board.innerHTML = "";
-  const ids = [...FACES, ...FACES].map((f, i) => ({ face: f, pairId: FACES.indexOf(f) + 1 }));
-  for (let i = ids.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [ids[i], ids[j]] = [ids[j], ids[i]]; }
-  ids.forEach((c, i) => {
-    const el = document.createElement("div");
-    el.className = "card";
-    el.dataset.componentId = "GAME-COMP-001";
-    el.dataset.pairId = c.pairId;
-    el.textContent = c.face;
-    el.addEventListener("click", () => onCard(el));
-    board.appendChild(el);
+// ---------- 左侧导航 ----------
+function renderNav() {
+  const nav = $("#nav");
+  let html = `<h4>游戏概述</h4><a class="req" data-nav="overview">概述与核心循环</a>`;
+  for (const [label, filter] of GROUPS) {
+    const items = [...reqById.values()].filter(filter);
+    html += `<h4>${esc(label)}</h4>`;
+    for (const r of items) {
+      html += `<a class="req" data-req="${r.id}">${esc(r.id)} ${esc(r.name)}${badges(r)}</a>`;
+    }
+  }
+  html += `<h4>UI 页面</h4>`;
+  for (const p of APP_DATA.ui.pages) html += `<a class="req" data-nav="ui:${p.id}">${esc(p.id)} ${esc(p.name)}</a>`;
+  html += `<h4>测试用例</h4><a class="req" data-nav="tests">全部用例（${APP_DATA.tests.cases.length}）</a>`;
+  const oq = APP_DATA.reviews.openQuestions || [];
+  html += `<h4>未决问题</h4><a class="req" data-nav="openq">${oq.length ? `未决问题（${oq.length}）` : "无未决问题"}</a>`;
+  nav.innerHTML = html;
+  nav.addEventListener("click", (e) => {
+    const a = e.target.closest("a");
+    if (!a) return;
+    nav.querySelectorAll("a").forEach((n) => n.classList.remove("active"));
+    a.classList.add("active");
+    if (a.dataset.req) showRequirement(a.dataset.req);
+    else if (a.dataset.nav === "overview") switchTab("prd", () => scrollReq("__overview__"));
+    else if (a.dataset.nav === "tests") switchTab("tests");
+    else if (a.dataset.nav === "openq") switchTab("prd", () => scrollReq("__openq__"));
+    else if (a.dataset.nav && a.dataset.nav.startsWith("ui:")) switchTab("ui");
   });
 }
 
-function onCard(el) {
-  if (state.lock) return log("等待盖回中");
-  if (el.classList.contains("matched") || el.classList.contains("face-up")) {
-    // GAME-RULE-006：非法操作，操作被忽略且可追踪
-    return log("[RULE-006] 已翻开或已配对的牌点击无效（非法操作被拒绝）");
-  }
-  el.classList.add("face-up");
-  state.flipped.push(el);
-  if (state.flipped.length === 2) {
-    state.moves++;
-    document.getElementById("moves").textContent = "步数：" + state.moves;
-    const [a, b] = state.flipped;
-    if (a.dataset.pairId === b.dataset.pairId) {
-      a.classList.add("matched"); b.classList.add("matched");
-      state.matched++; state.flipped = [];
-      log("[RULE-002] 配对成功 " + state.matched + "/4" + (state.matched === 4 ? " -> [RULE-004] 胜利！" : ""));
-    } else {
-      state.lock = true;
-      log("[RULE-003] 配对失败，1000ms 后盖回");
-      setTimeout(() => { a.classList.remove("face-up"); b.classList.remove("face-up"); state.flipped = []; state.lock = false; }, 1000);
-    }
-  } else {
-    log("[RULE-001] 翻开一张牌");
+// ---------- 详情面板 ----------
+function showDetail(r) {
+  const s = r.source || {};
+  const fields = [
+    ["ID", r.id], ["名称", r.name], ["类型", r.type], ["状态", r.status], ["权限", r.authority],
+    ["来源", `${s.kind || "-"}${s.section ? "（" + esc(s.section) + "）" : ""}${s.decided_by ? " 决策人：" + esc(s.decided_by) : ""}`],
+    ["前置条件", (r.preconditions || []).join("；")],
+    ["关联 UI", (r.ui_refs || []).join("、")],
+    ["关联测试", (r.test_refs || []).join("、")],
+    ["依赖", (r.dependencies || []).join("、")],
+    ["AI 解释", (r.authority === "open" ? "该规则尚待人工确认，AI 不得将其作为确定规则执行。" : "已定义规则，AI 可按 authority 约束使用。")],
+  ];
+  $("#detail").innerHTML = fields.filter(([, v]) => v).map(([k, v]) =>
+    `<div class="field"><span class="k">${k}</span>${esc(v)}</div>`).join("") +
+    (s.quote ? `<div class="quote">${esc(s.quote)}</div>` : "");
+}
+
+function showRequirement(id) {
+  const r = reqById.get(id);
+  if (!r) return;
+  switchTab("prd", () => {
+    scrollReq(id);
+    showDetail(r);
+  });
+}
+
+function scrollReq(id) {
+  const el = document.querySelector(`[data-anchor="${id}"]`);
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.classList.add("highlight");
+    setTimeout(() => el.classList.remove("highlight"), 3200);
   }
 }
 
-// PRD -> UI 定位（改写自 prd-html-generator focusPrdTarget：先找目标、清旧高亮、滚动居中、呼吸高亮）
-function focusComponent(componentId, reqId) {
-  const targets = document.querySelectorAll(`[data-component-id="${componentId}"]`);
-  if (!targets.length) return log("未找到组件 " + componentId);
-  document.querySelectorAll(".target-highlight").forEach((n) => n.classList.remove("target-highlight"));
-  const el = targets[0];
+// ---------- 视图切换 ----------
+let currentTab = "prd";
+const raf = window.requestAnimationFrame || ((fn) => setTimeout(fn, 0));
+function switchTab(tab, after) {
+  currentTab = tab;
+  document.querySelectorAll("#tabs button").forEach((b) => b.classList.toggle("active", b.dataset.tab === tab));
+  if (tab === "prd") renderPrd();
+  if (tab === "ui") renderUiDemo();
+  if (tab === "flow") renderFlow();
+  if (tab === "tests") renderTests();
+  if (after) raf(after);
+}
+
+// ---------- PRD 视图 ----------
+function reqCard(r) {
+  const rules = (r.business_rules || []).map((x) => `<li>${esc(x)}</li>`).join("");
+  const flows = (r.normal_flow || []).map((x) => `<li>${esc(x)}</li>`).join("");
+  const s = r.source || {};
+  const quote = s.quote ? `<div class="quote">原文：${esc(s.quote)}</div>` :
+    (s.basis ? `<div class="quote">推导依据：${esc(s.basis)}</div>` : "");
+  const uiBtn = (r.ui_refs || []).length ? `<button class="btn-ui" data-goto-ui="${esc(r.id)}">查看 UI</button>` : "";
+  return `<div class="req-card" data-anchor="${r.id}" data-requirements="${esc(r.id)}">
+    <h3>${esc(r.id)} ${esc(r.name)} ${badges(r)} ${uiBtn}</h3>
+    <div>${esc(r.description || "")}</div>${quote}${rules ? `<ul>${rules}</ul>` : ""}${flows ? `<ul>${flows}</ul>` : ""}
+  </div>`;
+}
+
+function renderPrd() {
+  const g = APP_DATA.game;
+  let html = `<div class="req-card" data-anchor="__overview__"><h3>游戏概述</h3><div>${esc((g.overview && g.overview.summary) || "")}</div></div>`;
+  for (const [label, filter] of GROUPS) {
+    const items = [...reqById.values()].filter(filter);
+    if (!items.length) continue;
+    html += `<h3 style="margin-top:20px">${esc(label)}</h3>`;
+    html += items.map(reqCard).join("");
+  }
+  const oq = APP_DATA.reviews.openQuestions || [];
+  html += `<h3 style="margin-top:20px">未决问题</h3><div class="req-card" data-anchor="__openq__">` +
+    (oq.length ? oq.map((q) => `<div class="warn-open">${esc(q.id || "")} ${esc(q.question || "")}（${esc(q.severity || "")}）</div>`).join("") : "无") + `</div>`;
+  $("#view").innerHTML = html;
+  $("#view").addEventListener("click", (e) => {
+    const goto = e.target.closest("[data-goto-ui]");
+    if (goto) { switchTab("ui", () => focusByRequirement(goto.dataset.gotoUi)); return; }
+    const card = e.target.closest(".req-card[data-anchor]");
+    if (card && card.dataset.anchor.startsWith("GAME-")) showDetail(reqById.get(card.dataset.anchor));
+  });
+}
+
+// ---------- UI Demo 视图 ----------
+function renderUiDemo() {
+  const page = APP_DATA.ui.pages[0];
+  if (!page) { $("#view").innerHTML = "无 UI 页面规格"; return; }
+  let html = `<h3>${esc(page.id)} ${esc(page.name)} <span class="meta">${page.resolution.width}x${page.resolution.height} 状态：${esc(page.states.join(" / "))}</span></h3>`;
+  html += `<div class="board-area" id="ui-area"></div><div id="ui-msg" style="margin-top:8px;color:#1a73e8;font-size:13px"></div>`;
+  $("#view").innerHTML = html;
+  const area = $("#ui-area");
+  if (APP_DATA.simulator.enabled) {
+    // Level 2：模拟器驱动（引擎由 build 时内嵌，此处执行并挂载）
+    try {
+      if (typeof MiniGameFactory === "undefined") new Function(APP_DATA.simulator.code)();
+      /* global MiniGameFactory */
+      const sim = MiniGameFactory.create(area, (msg) => { $("#ui-msg").textContent = msg; appendLog(msg); });
+      window.__sim = sim;
+      $("#log").style.display = "block";
+    } catch (err) {
+      area.innerHTML = `<div class="warn-open">模拟器加载失败：${esc(err.message)}</div>`;
+    }
+  } else {
+    // Level 1：静态原型 + 状态切换假交互
+    area.appendChild(renderStaticPage(page));
+    $("#ui-msg").textContent = "Level 1 静态原型（模拟器未注入，仅演示布局与状态切换）";
+  }
+  // UI -> PRD 反向定位：右键点击组件（左键留给游戏操作，避免冲突）
+  area.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+    const comp = e.target.closest("[data-component-id]");
+    if (!comp) return;
+    const compId = comp.dataset.componentId;
+    const related = new Set();
+    for (const c of APP_DATA.ui.components) if (c.id === compId) (c.requirements || []).forEach((x) => related.add(x));
+    const others = [...reqById.values()].filter((r) => (r.ui_refs || []).includes(compId)).map((r) => r.id);
+    others.forEach((x) => related.add(x));
+    switchTab("prd", () => {
+      for (const rid of related) {
+        const el = document.querySelector(`[data-anchor="${rid}"]`);
+        if (el) { el.scrollIntoView({ behavior: "smooth", block: "center" }); el.classList.add("highlight"); setTimeout(() => el.classList.remove("highlight"), 3200); break; }
+      }
+      const first = [...related][0];
+      if (first && reqById.get(first)) showDetail(reqById.get(first));
+    });
+  });
+}
+
+function renderStaticPage(page) {
+  const frag = document.createDocumentFragment();
+  const board = document.createElement("div");
+  board.className = "board";
+  for (const c of APP_DATA.ui.components) {
+    if (c.type === "card") {
+      for (let i = 0; i < 8; i++) {
+        const el = document.createElement("div");
+        el.className = "card-el";
+        el.dataset.componentId = c.id;
+        el.textContent = "?";
+        board.appendChild(el);
+      }
+    } else {
+      const el = document.createElement("div");
+      el.className = "comp-generic";
+      el.dataset.componentId = c.id;
+      el.textContent = `${c.name}（${c.id}）`;
+      frag.appendChild(el);
+    }
+  }
+  frag.appendChild(board);
+  return frag;
+}
+
+// PRD -> UI 定位：依次尝试关联组件，全部未渲染时诚实提示（不虚假成功）
+function focusByRequirement(reqId) {
+  const r = reqById.get(reqId);
+  const ids = ((r && r.ui_refs) || []).filter((x) => compById.has(x));
+  let el = null;
+  let used = null;
+  for (const cid of ids) {
+    el = document.querySelector(`[data-component-id="${cid}"]`);
+    if (el) { used = cid; break; }
+  }
+  if (!el) {
+    $("#ui-msg").textContent = `定位：${reqId} 关联组件（${ids.join("、") || "无"}）在当前模拟状态未渲染`;
+    return;
+  }
   el.scrollIntoView({ behavior: "smooth", block: "center" });
   el.classList.add("target-highlight");
   setTimeout(() => el.classList.remove("target-highlight"), 3200);
+  $("#ui-msg").textContent = `定位：${reqId} -> ${used}`;
 }
 
-// 导航与详情面板
-function renderNav() {
-  const nav = document.getElementById("nav");
-  for (const r of REQUIREMENTS) {
-    const a = document.createElement("a");
-    a.className = "req";
-    a.textContent = r.id + " " + r.name;
-    const b1 = document.createElement("span");
-    b1.className = "badge st-" + r.status; b1.textContent = r.status;
-    const b2 = document.createElement("span");
-    b2.className = "badge au-" + r.authority; b2.textContent = r.authority;
-    a.appendChild(b1); a.appendChild(b2);
-    a.addEventListener("click", () => {
-      document.querySelectorAll("nav .req").forEach((n) => n.classList.remove("active"));
-      a.classList.add("active");
-      document.getElementById("detail-body").innerHTML =
-        `<p><b>${r.id}</b> ${r.name}</p><p>状态：${r.status} / 权限：${r.authority}</p>` +
-        `<p>来源：${r.source.kind}${r.source.section ? "（" + r.source.section + "）" : ""}</p>` +
-        (r.source.quote ? `<blockquote style="border-left:3px solid #ccc;margin:6px 0;padding-left:8px;color:#666">${r.source.quote}</blockquote>` : "") +
-        `<ul>${r.rules.map((x) => `<li>${x}</li>`).join("")}</ul>`;
-      focusComponent(r.comp, r.id);
-    });
-    nav.appendChild(a);
+// ---------- Flow 视图 ----------
+function renderFlow() {
+  let html = `<h3>状态机</h3>`;
+  for (const st of APP_DATA.states) {
+    html += `<div class="req-card"><h3>${esc(st.id)} ${esc(st.name)} ${badges(st)}</h3>`;
+    for (const f of st.normal_flow || []) {
+      const parts = f.split("->").map((x) => x.trim()).filter(Boolean);
+      if (parts.length >= 2) html += stateSvg(parts);
+      else html += `<div>${esc(f)}</div>`;
+    }
+    html += `</div>`;
   }
+  html += `<h3 style="margin-top:16px">核心循环</h3><div class="req-card">`;
+  const loop = (APP_DATA.game.coreLoop && APP_DATA.game.coreLoop.loop) || [];
+  html += loop.map((x) => esc(x)).join(" -> ") + `</div>`;
+  $("#view").innerHTML = html;
 }
 
-buildBoard();
+function stateSvg(states) {
+  const W = 130, H = 60, pad = 30;
+  const width = pad + states.length * W;
+  let svg = `<svg width="${width}" height="90" style="max-width:100%">`;
+  states.forEach((s, i) => {
+    const x = pad + i * W;
+    svg += `<ellipse cx="${x + 40}" cy="35" rx="52" ry="22" fill="#eef3ff" stroke="#7a97c9"/>
+            <text x="${x + 40}" y="39" text-anchor="middle" font-size="12">${esc(s)}</text>`;
+    if (i < states.length - 1) {
+      svg += `<line x1="${x + 92}" y1="35" x2="${x + W - 6}" y2="35" stroke="#7a97c9" marker-end="url(#arw)"/>`;
+    }
+  });
+  svg += `<defs><marker id="arw" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#7a97c9"/></marker></defs></svg>`;
+  return svg;
+}
+
+// ---------- Tests 视图 ----------
+function renderTests() {
+  const byType = { normal: [], illegal: [], boundary: [], abnormal: [] };
+  for (const t of APP_DATA.tests.cases) (byType[t.type] || (byType[t.type] = [])).push(t);
+  const label = { normal: "正常操作", illegal: "非法操作", boundary: "边界场景", abnormal: "状态异常" };
+  let html = `<h3>测试用例</h3>`;
+  for (const type of Object.keys(label)) {
+    html += `<h4 style="margin:14px 0 4px">${label[type]}（${(byType[type] || []).length}）</h4><table>
+      <tr><th>ID</th><th>名称</th><th>步骤</th><th>预期</th><th>关联需求</th></tr>`;
+    for (const t of byType[type] || []) {
+      html += `<tr><td>${esc(t.id)}</td><td>${esc(t.name)}</td><td>${esc((t.steps || []).join("；"))}</td><td>${esc(t.expected)}</td><td>${esc((t.related_requirements || []).join("、"))}</td></tr>`;
+    }
+    html += `</table>`;
+  }
+  html += `<h3 style="margin-top:18px">预设场景</h3>`;
+  for (const s of APP_DATA.tests.scenarios) {
+    html += `<div class="req-card"><h3>${esc(s.id)} ${esc(s.name)}</h3><div>预期：${esc(s.expected || "")}</div>
+      <div style="color:#889;font-size:12px;margin-top:4px">关联用例：${esc((s.case_refs || []).join("、"))}　执行：<span id="run-${esc(s.id)}">${window.__sim ? "由模拟器回放验证（见 Tests 输出）" : "需模拟器（P4）"}</span></div></div>`;
+  }
+  $("#view").innerHTML = html;
+}
+
+// ---------- 判定日志 ----------
+function appendLog(msg) {
+  const body = $("#log-body");
+  const div = document.createElement("div");
+  div.textContent = msg;
+  body.appendChild(div);
+  body.scrollTop = body.scrollHeight;
+}
+
+// ---------- 初始化 ----------
+document.getElementById("game-title").textContent = (APP_DATA.manifest && APP_DATA.manifest.game_name) || "未命名游戏";
+document.getElementById("game-meta").textContent =
+  `IR v${(APP_DATA.manifest && APP_DATA.manifest.ir_version) || "?"} · 需求 ${APP_DATA.requirements.length + APP_DATA.configs.length + APP_DATA.states.length} 条 · UI 页面 ${APP_DATA.ui.pages.length} · 用例 ${APP_DATA.tests.cases.length} · 生成于构建时`;
+document.getElementById("tabs").addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if (b) switchTab(b.dataset.tab);
+});
 renderNav();
+switchTab("prd");
+if (location.hash.startsWith("#req=")) showRequirement(decodeURIComponent(location.hash.slice(5)));
 </script>
 </body>
 </html>

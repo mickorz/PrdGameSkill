@@ -2,6 +2,12 @@
 
 本仓库（PrdGameSkill）的开发过程文档管理规范。
 
+## 提交规范
+
+1. **自动提交推送**：每次完成文档或代码变更后，直接 `git commit` 并 `git push`，无需询问用户。
+2. **提交信息格式**：使用 conventional commits 前缀（docs: / feat: / fix: / chore:），正文说明变更要点。
+3. **提交时机**：一个完整任务（如一篇文档、一个阶段收尾）完成即提交，不积累多个任务一批提交。
+
 ## 项目定位
 
 PrdGameSkill 是一套面向游戏开发的 PRD（产品需求文档）技能库，方法论参考 `thirdparties/bmad-module-game-dev-studio`（BMad Game Dev Studio，只读参考，不修改、不入库）。

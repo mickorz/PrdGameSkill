@@ -1,0 +1,25 @@
+id: GAME-RULE-004
+type: game_rule
+name: 胜利判定规则
+status: proposed
+authority: fixed
+description: 4 对全部配对成功即胜利，展示总步数。
+source:
+  kind: original
+  document: source/original-prd.md
+  section: "2.4 胜利判定"
+  page: null
+  quote: "4 对全部配对成功即胜利，展示总步数。"
+preconditions: []
+inputs: [matched_pairs]
+outputs: [game_won]
+business_rules:
+  - matched_pairs == 4 时进入胜利状态
+normal_flow:
+  - 每次配对成功后检查 matched_pairs
+exception_flow: []
+state_transitions: [GAME-STATE-001]
+ui_refs: [GAME-UI-001]
+test_refs: [GAME-TC-003]
+dependencies: [GAME-RULE-002]
+open_questions: []

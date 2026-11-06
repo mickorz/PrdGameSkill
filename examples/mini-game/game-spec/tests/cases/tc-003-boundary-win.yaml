@@ -1,0 +1,10 @@
+id: GAME-TC-003
+name: 第四对配对即胜利
+type: boundary
+related_requirements: [GAME-RULE-004]
+preconditions:
+  - 已配对 3 对
+steps:
+  - 翻开第 4 对的两张牌
+expected: 进入 won 状态，展示总步数与再来一局按钮
+rule_refs: [GAME-RULE-004]

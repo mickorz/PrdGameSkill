@@ -1,0 +1,12 @@
+id: GAME-CFG-002
+type: config
+name: 配对失败盖回延时
+status: approved
+authority: fixed
+description: 配对失败展示时长，毫秒。
+source:
+  kind: human_decision
+  decision_log_ref: DECISION-001
+  decided_by: user
+value: 1000
+test_refs: []

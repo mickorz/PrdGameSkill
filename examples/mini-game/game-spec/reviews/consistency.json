@@ -1,0 +1,10 @@
+{
+  "checked_at": "2026-11-06",
+  "checks": [
+    { "item": "规则间矛盾", "result": "pass", "detail": "RULE-001~006 与 CFG-001/002 无冲突" },
+    { "item": "状态机非法转换", "result": "pass", "detail": "STATE-001 仅含 idle->playing->won，decision-log 流转合法" },
+    { "item": "引用完整性", "result": "pass", "detail": "validate-ir 悬空引用 0" },
+    { "item": "单一事实源", "result": "pass", "detail": "配对/盖回/步数逻辑仅在 RULE 定义，UI 与 TC 均引用" }
+  ],
+  "issues": []
+}

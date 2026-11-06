@@ -1,0 +1,16 @@
+id: SCEN-001
+name: 一局正常配对流程
+initial_state:
+  state: playing
+  board: 8张背面牌
+actions:
+  - player: user
+    action: flip
+    args:
+      card: 1
+  - player: user
+    action: flip
+    args:
+      card: 2
+expected: 若两张牌同对则配对成功，否则 1000ms 后盖回
+case_refs: [GAME-TC-001]

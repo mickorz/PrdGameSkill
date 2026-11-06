@@ -1,0 +1,24 @@
+id: GAME-RULE-003
+type: game_rule
+name: 配对失败盖回规则
+status: approved
+authority: fixed
+description: 两张牌图案不同，展示 1000 毫秒后自动盖回背面。
+source:
+  kind: human_decision
+  decision_log_ref: DECISION-001
+  decided_by: user
+preconditions:
+  - 两张翻开的牌 pair_id 不同
+inputs: []
+outputs: [card_face_up=false]
+business_rules:
+  - 盖回延时固定为 1000 毫秒（GAME-CFG-002）
+normal_flow:
+  - 配对失败 -> 展示 1000ms -> 两张牌盖回
+exception_flow: []
+state_transitions: []
+ui_refs: [GAME-COMP-001]
+test_refs: [GAME-TC-001]
+dependencies: [GAME-RULE-001, GAME-RULE-002, GAME-CFG-002]
+open_questions: []

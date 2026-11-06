@@ -1,0 +1,12 @@
+id: SCEN-002
+name: 非法操作场景
+initial_state:
+  state: playing
+  board: 1张已配对
+actions:
+  - player: user
+    action: flip
+    args:
+      card: matched_card
+expected: 操作被忽略
+case_refs: [GAME-TC-002]

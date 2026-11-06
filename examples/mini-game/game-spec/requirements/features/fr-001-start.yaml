@@ -1,0 +1,24 @@
+id: GAME-FR-001
+type: game_feature
+name: 开局功能
+status: proposed
+authority: fixed
+description: 点击开始游戏按钮重置棋盘并随机发牌。
+source:
+  kind: original
+  document: source/original-prd.md
+  section: "3.1 开局"
+  page: null
+  quote: "点击开始游戏按钮重置棋盘并随机发牌。"
+preconditions: []
+inputs: []
+outputs: [board]
+business_rules: []
+normal_flow:
+  - 点击开始 -> 棋盘重置为 8 张背面牌 -> 状态进入 playing
+exception_flow: []
+state_transitions: [GAME-STATE-001]
+ui_refs: [GAME-COMP-003, GAME-EVENT-002]
+test_refs: [GAME-TC-001]
+dependencies: []
+open_questions: []

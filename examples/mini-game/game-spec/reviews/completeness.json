@@ -1,0 +1,34 @@
+{
+  "checked_at": "2026-11-06",
+  "dimensions": {
+    "completeness": "1 项 medium 遗留（OQ-001 配对失败期间翻第三张牌的规则未定义）",
+    "consistency": "规则间无矛盾",
+    "testability": "全部规则可建立验收条件",
+    "implementability": "全部规则可实现",
+    "boundary": "胜利边界已覆盖（TC-003），奇数翻开时步数口径未定义",
+    "traceability": "original/derived/human_decision 三类来源齐备，全部可回溯",
+    "visual_coverage": "1 个 UI 页面覆盖全部功能需求"
+  },
+  "issues": [
+    {
+      "id": "REVIEW-001",
+      "type": "missing_requirement",
+      "severity": "medium",
+      "related_requirements": ["GAME-RULE-003", "GAME-RULE-001"],
+      "description": "配对失败展示的 1000ms 期间是否允许翻第三张牌，原始 PRD 未定义",
+      "evidence": { "source": "source/original-prd.md", "section": "2.3 配对失败" },
+      "suggestion": "定义锁定期行为（建议：展示期间锁定棋盘禁止翻牌），需人工确认",
+      "resolution": { "status": "open", "decision": null }
+    },
+    {
+      "id": "REVIEW-002",
+      "type": "missing_requirement",
+      "severity": "low",
+      "related_requirements": ["GAME-RULE-005"],
+      "description": "翻第二张牌但配对失败时步数是否计入，由 moves=floor(flip_count/2) 推导为计入，但原文未明确",
+      "evidence": { "source": "source/original-prd.md", "section": "2.5 步数统计" },
+      "suggestion": "人工确认步数统计口径",
+      "resolution": { "status": "open", "decision": null }
+    }
+  ]
+}

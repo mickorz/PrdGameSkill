@@ -65,10 +65,17 @@ PrdGameSkill 是一套面向游戏开发的 PRD（产品需求文档）技能库
 
 ## 第三方依赖目录：`thirdparties/`
 
-`thirdparties/` 存放只读的外部参考项目（当前为 `bmad-module-game-dev-studio`），已在 `.gitignore` 中忽略。
+`thirdparties/` 存放只读的外部参考项目。按引入方式分两类管理（配合 Interactive Game PRD 项目）：
+
+| 项目 | 管理方式 | 入库 |
+|---|---|---|
+| `bmad-module-game-dev-studio` | 本地只读目录，重新下载/克隆覆盖更新 | 否（.gitignore 忽略） |
+| `prd-pilot`、`prd-html-generator`、`prd-writer`、`Arrow`、`GDD-Forge`、`game-doc-forge` | Git Submodule，固定 commit，gitlink（mode 160000） | 是 |
+| `REFERENCES.md` | 参考项目清单（地址、License、SHA、研究目的） | 是 |
 
 ### 规则
 
-1. **只读参考**：仅用于查阅方法论、模板和文档结构，不得直接修改其内容。
-2. **不入库**：该目录不进入 git 仓库；需要引用其中内容时，把提炼后的内容写进本仓库自己的文档，而不是提交整个第三方项目。
-3. **升级方式**：需要更新版本时，重新下载/克隆覆盖对应子目录即可。
+1. **只读参考**：仅用于查阅方法论、模板和文档结构，不得直接修改任何第三方项目内容。
+2. **分类管理**：普通本地目录不入库；Submodule 必须固定明确 commit 并随仓库提交（克隆后 `git submodule update --init --recursive` 还原）。需要引用内容时，把提炼后的内容写进本仓库自己的文档，并标注来源。
+3. **升级方式**：本地目录用重新下载/克隆覆盖；Submodule 用 `git submodule update --remote` 并固定新 commit。
+4. **复用前检查**：复用第三方代码前核对其 License 与版权声明，记录在 `REFERENCES.md`。

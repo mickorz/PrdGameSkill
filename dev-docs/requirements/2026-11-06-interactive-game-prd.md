@@ -2,11 +2,13 @@
 
 > 项目：PrdGameSkill  
 > 日期：2026-11-06  
-> 版本：v1.0  
-> 状态：待评审  
+> 版本：v1.1  
+> 状态：已按评审意见修订  
 > 优先级：P0  
 > 试点项目：卡五星麻将  
 > 目标产物：AI-Readable Game Spec + Interactive HTML PRD
+>
+> v1.1 修订记录（2026-11-06 评审）：4.4 节来源溯源改为三类 kind（original / derived / human_decision），解决隐含需求、AI 建议、遗漏识别无原文引用无法登记的问题。
 
 ---
 
@@ -349,6 +351,7 @@ authority: open
 description: ""
 
 source:
+  kind: original
   document: original-prd.md
   section: ""
   page: null
@@ -373,7 +376,16 @@ open_questions: []
 字段要求：
 
 - `id`：全局唯一，不因文档调整而改变。
-- `source`：必须能追溯原始需求。
+- `source.kind`：来源三分类（v1.1 修订）。并非所有需求条目都有直接原文引用：
+
+  | kind | 适用 | 必填字段 |
+  |---|---|---|
+  | original | 从原文直接提取的需求 | document、section、quote（非空） |
+  | derived | 隐含需求、AI 建议、冲突分析、遗漏识别 | basis（推导依据）、related_requirements（关联原始需求 ID） |
+  | human_decision | 人工确认产生或修改的需求 | decision_log_ref、decided_by |
+
+  缺失需求与冲突问题本身走 `reviews/` 问题报告（5.3 节），不登记为需求条目，不伪造来源。
+- `source`：按 kind 满足对应必填字段，保证可追溯。
 - `status`：明确需求确认情况。
 - `authority`：明确 AI 的决策权限。
 - `preconditions`：执行前提。

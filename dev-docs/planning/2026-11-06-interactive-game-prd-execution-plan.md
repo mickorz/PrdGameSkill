@@ -1,10 +1,19 @@
 # Interactive Game PRD 执行计划
 
-> 依据：[需求文档 v1.0](../requirements/2026-11-06-interactive-game-prd.md)  
-> 日期：2026-11-06  
+> 依据：[需求文档 v1.1](../requirements/2026-11-06-interactive-game-prd.md)  
+> 日期：2026-11-06（v1.1 按评审意见修订）  
 > 状态：待执行  
 > 范围：P0 ~ P5 全阶段任务拆解与执行细节  
 > 试点项目：卡五星麻将
+>
+> v1.1 修订记录（依据 2026-11-06 仓库现状检查与评审意见）：
+> 1. P0 前置同步修订 CLAUDE.md 的 Git 管理规范（bmad 不入库 / 六 submodule 入库 / REFERENCES.md 入库），并在 P0-01 验证 submodule 为 160000 gitlink
+> 2. P1 溯源机制改为三类来源（original / derived / human_decision），对应需求文档 v1.1
+> 3. 原始卡五星 PRD 提前至 P0-10 获取并做结构分析，不等 P2
+> 4. P1 新增 P1-09 最小 HTML 验证 Demo，提前验证 IR 字段支撑度
+> 5. P4 明确范围红线，禁止实现通用麻将引擎
+> 6. P5 明确 Skill / Workflow / Scripts 三层职责与确定性检查红线
+> 7. 修正 P3-02 状态徽标与权限徽标的概念混用；各阶段估时重新计算并统一标注为估算值
 
 ## 0. 一句话类比
 
@@ -30,14 +39,16 @@ flowchart LR
     E --> F
 ```
 
-| 阶段 | 目标 | 核心交付物 | 验收要点 | 预估 |
+| 阶段 | 目标 | 核心交付物 | 验收要点 | 预估（估算值，±20%） |
 |---|---|---|---|---|
-| P0 | 六个参考项目引入与能力盘点 | submodule + REFERENCES.md + 调研报告 | 6 个 submodule 可初始化，报告覆盖 6 项目 | 8 人日 |
-| P1 | Game Requirement IR 格式定义 | schemas/ + templates/ + validate-ir | Schema 可校验，重复 ID 与无效引用可发现 | 6 人日 |
-| P2 | 卡五星原始 PRD 结构化 | examples/mahjong/ Golden Sample | 全部需求有来源，核心规则人工确认 | 8 人日 |
+| P0 | 仓库基线修订 + 参考项目引入与能力盘点 + 原始 PRD 就位 | submodule + REFERENCES.md + 调研报告 | 6 个 submodule 为 160000 gitlink，报告覆盖 6 项目 | 9 人日 |
+| P1 | Game Requirement IR 格式定义 + 最小 HTML 验证 | schemas/ + templates/ + validate-ir + 迷你 Demo | Schema 可校验，IR 能支撑 HTML 展示 | 8 人日 |
+| P2 | 卡五星原始 PRD 结构化 | examples/mahjong/ Golden Sample | 全部需求有来源，核心规则人工确认 | 7.5 人日 |
 | P3 | HTML PRD 渲染器 | examples/mahjong/output/interactive-game-prd/ | HTML 离线可开，双向定位可用 | 10 人日 |
-| P4 | 规则模拟器 | simulator 模板 + 接入 HTML | 只按 approved 规则运行，非法操作被拒 | 10 人日 |
+| P4 | 规则模拟器 | simulator 模板 + 接入 HTML | 只按 approved 规则运行，非法操作被拒 | 9.5 人日 |
 | P5 | Skill 闭环 | skills/interactive-game-prd/ 完整技能 | 端到端流程跑通 | 5 人日 |
+
+合计约 49 人日（与子任务估时加总一致），不是小型 Skill 开发任务，排期时按此规模评估。
 
 关键路径：P0 → P1 → P2 →（P3、P4 可并行）→ P5。P3 与 P4 共享同一份 P2 冻结的 Golden Sample，可由两个工作流并行推进。
 
@@ -72,24 +83,25 @@ flowchart LR
 
 | 依赖 | 需求方 | 阻塞阶段 | 当前状态 |
 |---|---|---|---|
-| 原始卡五星麻将 PRD 文件 | 用户提供 | P2 及之后全部 | 未到位，P0 期间向用户索取 |
-| 六个参考仓库可访问 | 网络/GitHub | P0 | 待验证 |
+| 原始卡五星麻将 PRD 文件 | 用户提供 | P0-10 及之后全部（已提前至 P0） | 未到位，立即向用户索取 |
+| 六个参考仓库可访问 | 网络/GitHub | P0 | 公开仓库元数据已确认可查，License 与源码待克隆后逐项核验 |
 | 人工确认规则的产品/策划时间 | 用户 | P2-09 | 需提前排期 |
 
 ## 4. P0：参考项目调研与基准建立
 
-### P0-00 前置：调整 .gitignore（0.5 人日）
+### P0-00 前置：修订 Git 管理规范（.gitignore + CLAUDE.md）（0.5 人日）
 
-**冲突说明**：现有 `.gitignore` 用 `thirdparties/` 忽略整个目录，但 submodule 的 gitlink 必须进 git，否则别人克隆拿不到参考项目。必须在添加 submodule 之前处理。
+**冲突说明**：现有 `.gitignore` 用 `thirdparties/` 忽略整个目录，CLAUDE.md 也规定整个目录不入库；但 submodule 的 gitlink 必须进 git。必须同时修订两个文件，否则规范与实际不一致。
 
-- 输入：现有 `.gitignore`
-- 产出：新的 `.gitignore`
+- 输入：现有 `.gitignore`、CLAUDE.md
+- 产出：修订后的 `.gitignore` 与 CLAUDE.md
 - 步骤：
-  1. 将 `thirdparties/` 改为 `thirdparties/*`。
+  1. `.gitignore` 将 `thirdparties/` 改为 `thirdparties/*`。
   2. 追加白名单（负向规则）：`!thirdparties/REFERENCES.md`、六个 submodule 路径（`!thirdparties/prd-pilot`、`!thirdparties/prd-html-generator`、`!thirdparties/prd-writer`、`!thirdparties/Arrow`、`!thirdparties/GDD-Forge`、`!thirdparties/game-doc-forge`）。
-  3. `bmad-module-game-dev-studio` 保持被忽略（普通目录，非 submodule）。
-  4. 验证：`git check-ignore thirdparties/bmad-module-game-dev-studio` 命中；`git check-ignore thirdparties/REFERENCES.md` 不命中。
-- 验收：`git status` 能看到后续新增的 submodule 路径。
+  3. `bmad-module-game-dev-studio` 保持被忽略（本地只读目录，非 submodule）。
+  4. CLAUDE.md「第三方依赖目录」章节同步改为分类管理：bmad 本地只读不入库；六项目 Submodule 入库（固定 commit）；REFERENCES.md 入库。
+  5. 验证：`git check-ignore thirdparties/bmad-module-game-dev-studio` 命中；`git check-ignore thirdparties/REFERENCES.md` 不命中。
+- 验收：`git status` 能看到后续新增的 submodule 路径；CLAUDE.md 与 .gitignore 口径一致。
 
 ### P0-01 新增六个 Git Submodule（0.5 人日）
 
@@ -100,7 +112,10 @@ flowchart LR
   2. 每条执行后立刻 `git submodule status` 确认。
   3. 单个仓库失败（不存在、私有、网络超时）时：记录到风险表并跳过，不阻塞其余仓库；失败仓库在 P0-09 报告中说明替代研究方式（如仅基于网页文档调研）。
   4. Windows 下克隆 Arrow 若报路径过长，使用 `git -c core.longpaths=true submodule update --init --recursive`。
-- 验收：`git submodule status` 输出 6 行，行首无 `+` 或 `-` 前缀。
+- 验收：
+  - `git submodule status` 输出 6 行，行首无 `+` 或 `-` 前缀。
+  - `git ls-files --stage thirdparties/prd-pilot`（其余 5 个同理）输出 mode 为 `160000`（gitlink），确认是 submodule 而非普通目录。
+  - `.gitmodules` 含全部 6 个条目。
 - 依赖：P0-00
 
 ### P0-02 记录版本、License、Commit SHA（0.5 人日）
@@ -142,9 +157,24 @@ flowchart LR
 - 验收：报告覆盖六个项目；决策表三档结论均有理由；无「全部复用」这类未思考结论。
 - 依赖：P0-03 ~ P0-08
 
+### P0-10 获取原始卡五星 PRD 并做结构分析（0.5 人日）
+
+> 评审修订：原始 PRD 不等到 P2 才获取。P0 拿到真实文档后，参考项目研究的结论才有针对性，P1 的 IR 字段设计也能用真实需求提前验证，避免 P2 才发现 IR 结构不适合。
+
+- 输入：用户提供的原始卡五星 PRD（Markdown 优先；DOCX/PDF 先人工转 Markdown）
+- 产出：`examples/mahjong/source/original-prd.md` + 结构分析笔记 `dev-docs/research/2026-11-XX-mahjong-prd-structure.md`
+- 步骤：
+  1. 向用户索取原始 PRD，接收后原样落位（P2-01 只做正式导入校验，不再承担获取）。
+  2. 只做结构盘点不做解析：章节清单、规则集中分布位置、表格数量、明显缺失的章节（如结算公式是否完整）。
+  3. 结构分析结论供 P0-09 报告与 P1-01 IR 设计引用：哪些参考项目能力与真实文档匹配、IR 需要哪些字段。
+- 验收：文档就位可溯源；结构分析笔记完成；IR 设计输入已具备。
+- 依赖：无（可与 P0-03 ~ P0-08 并行，但必须早于 P1 启动）
+
 ### P0 验收清单
 
-- [ ] 六个 submodule 正常初始化（或失败仓库已记录替代方案）
+- [ ] 六个 submodule 正常初始化且为 160000 gitlink（或失败仓库已记录替代方案）
+- [ ] CLAUDE.md Git 管理规范已同步修订（bmad 不入库、六 submodule 入库、REFERENCES.md 入库）
+- [ ] 原始卡五星 PRD 已就位并完成结构分析
 - [ ] REFERENCES.md 含 License 与 SHA
 - [ ] 研究报告覆盖六个项目
 - [ ] 明确复用、借鉴、不采用内容
@@ -176,9 +206,17 @@ flowchart LR
 - 步骤：
   1. 按需求文档 4.4 字段定义 JSON Schema：required 字段 = id、type、name、status、authority、source。
   2. `status` 枚举 proposed/approved/rejected/deprecated；`authority` 枚举 fixed/delegated/open。
-  3. `source.quote` 为必填且非空——没有原文引用不算有效需求。
+  3. 来源按三类 kind 分别校验必填字段——不是所有需求都有直接原文：
+
+     | kind | 适用 | 必填字段 |
+     |---|---|---|
+     | original | 从原文直接提取 | document、section、quote（非空） |
+     | derived | 隐含需求 / AI 建议 / 冲突分析 / 遗漏识别 | basis（推导依据）、related_requirements |
+     | human_decision | 人工确认产生或修改 | decision_log_ref、decided_by |
+
+     缺失需求（REVIEW 问题）不属于需求条目，走 reviews/ 报告，不伪造 source。
   4. `id` 用 pattern 强制前缀与 type 一致（type=game_rule 必须 GAME-RULE 开头）。
-- 验收：合法样例通过、缺 source 的样例报错、前缀不匹配的样例报错。
+- 验收：三类 source 各一个样例通过；original 缺 quote 报错；derived 缺 basis 报错；前缀不匹配的样例报错。
 
 ### P1-04 UI Spec Schema（1 人日）
 
@@ -225,25 +263,41 @@ flowchart LR
 - 验收：三种样例包运行结果符合预期；`node scripts/validate-ir --help` 可用。
 - 依赖：P1-01 ~ P1-07
 
+### P1-09 最小 HTML 验证 Demo（1 人日）
+
+> 评审修订：IR 定稿前先用真实结构的数据验证字段支撑度，避免 P3 才发现字段不足导致 IR 返工。
+
+- 输入：迷你样例 IR（手工构造：3 条规则 + 1 个麻将 UI 页面 + 2 个组件）+ validate-ir 通过
+- 产出：`skills/interactive-game-prd/assets/html-template/` 雏形（单页 Demo）+ 验证结论 `dev-docs/design/2026-11-XX-ir-html-feasibility.md`
+- 步骤：
+  1. 手写迷你 IR（不含卡五星真实规则，避免与 P2 冲突）。
+  2. 静态渲染四样东西：需求导航、需求详情面板、一个麻将牌桌 UI 页面、一次 PRD 到 UI 的点击定位。
+  3. 逐字段核对：IR 里哪些字段渲染时用不到（候选裁剪）、哪些展示需要但 IR 缺失（候选增补，如组件视觉提示字段）。
+  4. 结论反馈回 P1-01 / P1-03 / P1-04 修订 Schema，再重跑 validate-ir。
+- 验收：Demo 在 file:// 下可交互；字段增删结论有记录并已回灌 Schema。
+- 依赖：P1-03 ~ P1-08
+
 ### P1 验收清单
 
 - [ ] Schema 能验证合法 IR（样例通过）
+- [ ] 三类来源（original / derived / human_decision）各自必填字段校验生效
 - [ ] 重复 ID 能被发现
 - [ ] 无效引用能被发现
-- [ ] 每条需求可追溯原始来源（source-map 可用）
-- [ ] 未确认需求明确标记（status/authority 生效）
+- [ ] 每条需求可追溯（按 kind 校验来源）
+- [ ] 未确认需求明确标记（status / authority 生效）
+- [ ] 最小 HTML Demo 验证 IR 字段支撑度，增删结论已回灌 Schema
 
 ## 6. P2：卡五星麻将需求解析
 
-> 阶段前置条件：用户已提供原始卡五星 PRD（Markdown 优先；DOCX/PDF 需先人工转 Markdown，第一版不做自动转换服务）。
+> 阶段前置条件：原始卡五星 PRD 已在 P0-10 就位并完成结构分析（Markdown 优先；DOCX/PDF 已人工转 Markdown，第一版不做自动转换服务）。
 
 ### P2-01 导入原始 PRD（0.5 人日）
 
 - 产出：`examples/mahjong/source/original-prd.md`
 - 步骤：
-  1. 原始文件放入 `examples/mahjong/source/`，**不做任何改写**。
+  1. 校验 P0-10 已落位的原始文件（hash 与用户提供版本一致），**不做任何改写**。
   2. 记录文件来源、版本、接收日期到 manifest。
-- 验收：文件与用户提供版本一致（可比对 hash）。
+- 验收：文件与用户提供版本一致（可比对 hash）；与 P0-10 结构分析笔记的章节清单一致。
 
 ### P2-02 ~ P2-06 五步抽取（合计 4 人日）
 
@@ -319,7 +373,7 @@ flowchart LR
 
 | 任务 | 内容 | 要点 |
 |---|---|---|
-| P3-02 | 左侧需求导航树 | 按需求文档 6.2 节九个分组；每节点显示需求 ID + 状态徽标（proposed 黄 / approved 绿 / open 灰） |
+| P3-02 | 左侧需求导航树 | 按需求文档 6.2 节九个分组；每节点展示两类徽标，概念不可混用——状态徽标（status）：proposed 黄 / approved 绿 / rejected 红 / deprecated 灰；权限徽标（authority）：fixed 实心 / delegated 虚线边框 / open 问号 |
 | P3-03 | PRD 文档模式 | 按 IR 渲染结构化文档；每条需求块带锚点 ID；支持按状态过滤 |
 | P3-04 | 右侧详情面板 | 显示当前需求 ID、来源（可展开看原文 quote）、业务规则、前置条件、关联 UI/测试、状态、AI 解释 |
 
@@ -370,6 +424,8 @@ flowchart LR
 ## 8. P4：麻将规则模拟器
 
 > 硬约束（需求文档 8.2 节）：只按 P2 冻结且 approved 的规则实现；碰、杠、胡是否适用、优先级、牌型判定、结算方式全部以原始 PRD 确认口径为准；规则缺失时报「规则未定义」而不是编造行为。
+>
+> 范围红线（评审修订）：第一版只做五件事——游戏状态管理、玩家操作事件、规则判定接口、场景回放、规则日志。不做通用麻将引擎；胡牌判定、番型、结算只实现 PRD 确认规则所需的最小判定逻辑，规则未确认的部分留接口位并输出 RULE_NOT_CONFIRMED，严禁参照其他麻将玩法补全。
 
 ### P4-01 模拟器接口设计（1 人日）
 
@@ -430,6 +486,15 @@ flowchart LR
 ### P5-01 ~ P5-06 六个模式集成（合计 3 人日）
 
 - 产出：`skills/interactive-game-prd/SKILL.md` + workflows/ 七个工作流文档
+- 三层职责边界（评审修订，SKILL.md 开篇必须写明）：
+
+  | 层次 | 职责 | 例子 |
+  |---|---|---|
+  | Skill | 理解任务、决策、组织执行 | 判断用户意图是 Create 还是 Update，选择工作流 |
+  | Workflow | 定义执行步骤与人工审批点 | parse-prd 的五步顺序、P2-09 确认点 |
+  | Scripts | 确定性执行、校验、生成 | validate-ir、validate-html、打包 |
+
+  红线：IR 是否合法必须调用 validate-ir 脚本判定，禁止 AI 阅读提示词后自行下结论；需求文档 9.2 节确定性检查一律走 Scripts 层，AI 只负责 9.3 节语义检查。
 - 每个 workflow 文档统一结构：触发方式 / 输入 / 步骤 / 质量门 / 输出 / 禁止事项。对应需求文档 10.2 节约束逐条写入禁止事项：
 
 | 集成任务 | 对应 workflow | 关键约束落点 |
@@ -465,7 +530,7 @@ flowchart LR
 
 | ID | 风险 | 影响 | 应对 |
 |---|---|---|---|
-| R1 | 原始卡五星 PRD 未到位 | P2 起全部阻塞 | P0 期间向用户索取；到位前 P1 可用迷你样例先行开发 Schema |
+| R1 | 原始卡五星 PRD 未到位 | P0-10 起（IR 验证与调研针对性受损） | 立即索取；到位前 P1 用迷你样例先行开发 Schema，PRD 就位后用真实文档复核 |
 | R2 | 参考仓库不存在 / 私有 / 被删 | P0 部分缺失 | 记录并降级为网页资料调研；P0-09 说明 |
 | R3 | License 限制代码复用 | P1/P3 复用受阻 | P0-02 逐项核对，争议 License 只借鉴思想 |
 | R4 | IR Schema 设计返工 | P1 后全线返工 | P1 先做 validate-ir + 迷你样例验证再铺量；P2 抽取过程持续校验 |

@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prdgameskill.local/schemas/requirement.schema.json",
+  "title": "Game Requirement",
+  "type": "object",
+  "required": ["id", "type", "name", "status", "authority", "source"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^GAME-(FR|RULE|STATE|NFR|UI|COMP|EVENT|CFG|TC|TASK)-[0-9]{3,4}$" },
+    "type": {
+      "enum": ["game_feature", "game_rule", "state", "nfr", "ui_page", "ui_component", "ui_event", "config", "test_case", "task"]
+    },
+    "name": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["proposed", "approved", "rejected", "deprecated"] },
+    "authority": { "enum": ["fixed", "delegated", "open"] },
+    "description": { "type": "string" },
+    "source": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": { "enum": ["original", "derived", "human_decision"] },
+        "document": { "type": "string" },
+        "section": { "type": "string" },
+        "page": { "type": ["integer", "null"] },
+        "quote": { "type": "string" },
+        "basis": { "type": "string" },
+        "related_requirements": { "type": "array", "items": { "type": "string", "pattern": "^GAME-" } },
+        "decision_log_ref": { "type": "string", "pattern": "^DECISION-[0-9]{3,4}$" },
+        "decided_by": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "kind": { "const": "original" } }, "required": ["kind"] },
+          "then": {
+            "required": ["document", "section", "quote"],
+            "properties": { "quote": { "type": "string", "minLength": 1 } }
+          }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "derived" } }, "required": ["kind"] },
+          "then": {
+            "required": ["basis", "related_requirements"],
+            "properties": { "related_requirements": { "minItems": 1 } }
+          }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "human_decision" } }, "required": ["kind"] },
+          "then": { "required": ["decision_log_ref", "decided_by"] }
+        }
+      ]
+    },
+    "preconditions": { "type": "array", "items": { "type": "string" } },
+    "inputs": { "type": "array", "items": { "type": "string" } },
+    "outputs": { "type": "array", "items": { "type": "string" } },
+    "business_rules": { "type": "array", "items": { "type": "string" } },
+    "normal_flow": { "type": "array", "items": { "type": "string" } },
+    "exception_flow": { "type": "array", "items": { "type": "string" } },
+    "state_transitions": { "type": "array", "items": { "type": "string", "pattern": "^GAME-STATE-" } },
+    "ui_refs": { "type": "array", "items": { "type": "string", "pattern": "^GAME-(UI|COMP|EVENT)-" } },
+    "test_refs": { "type": "array", "items": { "type": "string", "pattern": "^GAME-TC-" } },
+    "dependencies": { "type": "array", "items": { "type": "string", "pattern": "^GAME-" } },
+    "open_questions": { "type": "array", "items": { "type": "string" } },
+    "value": {}
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "type": { "enum": ["game_feature", "game_rule", "nfr", "state"] } } },
+      "then": { "properties": { "id": { "pattern": "^GAME-(FR|RULE|NFR|STATE)-[0-9]{3,4}$" } } }
+    },
+    {
+      "if": { "properties": { "type": { "enum": ["ui_page", "ui_component", "ui_event"] } } },
+      "then": { "properties": { "id": { "pattern": "^GAME-(UI|COMP|EVENT)-[0-9]{3,4}$" } } }
+    },
+    {
+      "if": { "properties": { "type": { "const": "config" } } },
+      "then": { "properties": { "id": { "pattern": "^GAME-CFG-[0-9]{3,4}$" } } }
+    },
+    {
+      "if": { "properties": { "type": { "const": "test_case" } } },
+      "then": { "properties": { "id": { "pattern": "^GAME-TC-[0-9]{3,4}$" } } }
+    },
+    {
+      "if": { "properties": { "status": { "const": "approved" } } },
+      "then": {
+        "properties": {
+          "source": { "properties": { "kind": { "enum": ["original", "human_decision"] } } }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

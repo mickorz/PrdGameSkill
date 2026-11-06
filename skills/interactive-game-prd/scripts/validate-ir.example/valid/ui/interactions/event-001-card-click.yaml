@@ -1,0 +1,7 @@
+id: GAME-EVENT-001
+name: 点击牌
+trigger_type: click
+payload:
+  card_id: int
+requirements:
+  - GAME-RULE-001

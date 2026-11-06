@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="zh-CN">
+<!--
+  最小 HTML 验证 Demo（P1-09）
+  目的：验证 Game Requirement IR 字段能否支撑 HTML PRD 的四个核心能力：
+  需求导航 / 需求详情 / 麻将（翻牌）UI 页面 / PRD 到 UI 的点击定位。
+  数据为手写迷你 IR 内嵌（file:// 离线约束，禁 fetch）。
+  部分定位与高亮实现改写自 prd-html-generator (Apache-2.0) 的 focusPrdTarget 思路。
+-->
+<head>
+<meta charset="utf-8">
+<title>IR 最小验证 Demo</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, sans-serif; display: flex; height: 100vh; }
+  nav { width: 240px; border-right: 1px solid #ddd; overflow: auto; padding: 8px; }
+  nav .req { display: block; padding: 6px 8px; margin: 2px 0; border-radius: 4px; cursor: pointer; font-size: 13px; }
+  nav .req:hover { background: #f0f4ff; }
+  nav .req.active { background: #dbe6ff; }
+  .badge { display: inline-block; padding: 0 6px; border-radius: 3px; font-size: 11px; margin-left: 6px; }
+  .st-proposed { background: #fff3cd; color: #856404; }
+  .st-approved { background: #d4edda; color: #155724; }
+  .au-fixed { border: 1px solid #888; color: #555; }
+  .au-delegated { border: 1px dashed #1a73e8; color: #1a73e8; }
+  .au-open { background: #eee; color: #777; }
+  main { flex: 1; padding: 12px 20px; overflow: auto; }
+  #detail { width: 320px; border-left: 1px solid #ddd; overflow: auto; padding: 12px; font-size: 13px; }
+  #detail h3 { margin-top: 0; }
+  .board { display: grid; grid-template-columns: repeat(4, 90px); gap: 10px; margin-top: 10px; }
+  .card { width: 90px; height: 120px; border: 1px solid #bbb; border-radius: 8px; display: flex;
+          align-items: center; justify-content: center; font-size: 34px; cursor: pointer;
+          background: #3a6ea5; color: transparent; user-select: none; transition: background .2s, color .2s; }
+  .card.face-up { background: #fff; color: #222; }
+  .card.matched { background: #d4edda; color: #155724; cursor: default; }
+  .card.target-highlight { outline: 3px solid #e8a33d; outline-offset: 2px; animation: breathe 1.6s ease-in-out 2; }
+  @keyframes breathe { 50% { outline-offset: 6px; } }
+  .moves { font-size: 14px; color: #555; margin-top: 10px; }
+  #msg { margin-top: 10px; color: #1a73e8; min-height: 20px; font-size: 13px; }
+</style>
+</head>
+<body>
+<nav id="nav"></nav>
+<main>
+  <h2>UI Demo（GAME-UI-001 游戏棋盘页）</h2>
+  <div class="moves" id="moves">步数：0</div>
+  <div class="board" id="board"></div>
+  <div id="msg"></div>
+  <p style="color:#999;font-size:12px">提示：点击左侧任一需求，会定位并高亮对应 UI 组件（PRD 到 UI 定位验证）。</p>
+</main>
+<aside id="detail"><h3>需求详情</h3><div id="detail-body">点击左侧需求查看详情</div></aside>
+
+<script>
+// 内嵌迷你 IR（与 scripts/validate-ir.example/valid 同源，手工摘录）
+const REQUIREMENTS = [
+  { id: "GAME-RULE-001", name: "翻牌规则", status: "proposed", authority: "fixed", comp: "GAME-COMP-001",
+    source: { kind: "original", section: "2.1 翻牌", quote: "点击背面朝上的牌将其翻开。" },
+    rules: ["仅背面朝上且未配对的牌可翻开"] },
+  { id: "GAME-RULE-002", name: "配对判定规则", status: "proposed", authority: "fixed", comp: "GAME-COMP-001",
+    source: { kind: "original", section: "2.2 配对判定", quote: "两张翻开的牌图案相同即配对成功，保持正面不再参与。" },
+    rules: ["pair_id 相同的两张牌判定为配对成功"] },
+  { id: "GAME-RULE-003", name: "配对失败盖回规则", status: "approved", authority: "fixed", comp: "GAME-COMP-001",
+    source: { kind: "human_decision", decision_log_ref: "DECISION-001", decided_by: "user" },
+    rules: ["盖回延时固定为 1000 毫秒（GAME-CFG-002）"] },
+  { id: "GAME-RULE-006", name: "重复翻牌禁止规则", status: "proposed", authority: "delegated", comp: "GAME-COMP-001",
+    source: { kind: "derived", basis: "结合 2.1 与 4.1 推导的异常流程规则", related: "GAME-RULE-001" },
+    rules: ["face_up=true 或 matched=true 的牌点击不产生翻牌动作"] },
+  { id: "GAME-RULE-005", name: "步数统计规则", status: "proposed", authority: "delegated", comp: "GAME-COMP-002",
+    source: { kind: "original", section: "2.5 步数统计", quote: "每翻开两张牌计 1 步。" },
+    rules: ["moves = floor(flip_count / 2)"] },
+  { id: "GAME-FR-001", name: "开局功能", status: "proposed", authority: "fixed", comp: "GAME-COMP-003",
+    source: { kind: "original", section: "3.1 开局", quote: "点击开始游戏按钮重置棋盘并随机发牌。" },
+    rules: ["点击开始后棋盘重置为 8 张背面牌"] },
+];
+
+// 状态（模拟器思想的最小形态：状态与展示分离，动作产生可追踪日志）
+const state = { flipped: [], matched: 0, moves: 0, lock: false };
+const FACES = ["A", "B", "C", "D"];
+const log = (t) => { document.getElementById("msg").textContent = t; };
+
+function buildBoard() {
+  const board = document.getElementById("board");
+  board.innerHTML = "";
+  const ids = [...FACES, ...FACES].map((f, i) => ({ face: f, pairId: FACES.indexOf(f) + 1 }));
+  for (let i = ids.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [ids[i], ids[j]] = [ids[j], ids[i]]; }
+  ids.forEach((c, i) => {
+    const el = document.createElement("div");
+    el.className = "card";
+    el.dataset.componentId = "GAME-COMP-001";
+    el.dataset.pairId = c.pairId;
+    el.textContent = c.face;
+    el.addEventListener("click", () => onCard(el));
+    board.appendChild(el);
+  });
+}
+
+function onCard(el) {
+  if (state.lock) return log("等待盖回中");
+  if (el.classList.contains("matched") || el.classList.contains("face-up")) {
+    // GAME-RULE-006：非法操作，操作被忽略且可追踪
+    return log("[RULE-006] 已翻开或已配对的牌点击无效（非法操作被拒绝）");
+  }
+  el.classList.add("face-up");
+  state.flipped.push(el);
+  if (state.flipped.length === 2) {
+    state.moves++;
+    document.getElementById("moves").textContent = "步数：" + state.moves;
+    const [a, b] = state.flipped;
+    if (a.dataset.pairId === b.dataset.pairId) {
+      a.classList.add("matched"); b.classList.add("matched");
+      state.matched++; state.flipped = [];
+      log("[RULE-002] 配对成功 " + state.matched + "/4" + (state.matched === 4 ? " -> [RULE-004] 胜利！" : ""));
+    } else {
+      state.lock = true;
+      log("[RULE-003] 配对失败，1000ms 后盖回");
+      setTimeout(() => { a.classList.remove("face-up"); b.classList.remove("face-up"); state.flipped = []; state.lock = false; }, 1000);
+    }
+  } else {
+    log("[RULE-001] 翻开一张牌");
+  }
+}
+
+// PRD -> UI 定位（改写自 prd-html-generator focusPrdTarget：先找目标、清旧高亮、滚动居中、呼吸高亮）
+function focusComponent(componentId, reqId) {
+  const targets = document.querySelectorAll(`[data-component-id="${componentId}"]`);
+  if (!targets.length) return log("未找到组件 " + componentId);
+  document.querySelectorAll(".target-highlight").forEach((n) => n.classList.remove("target-highlight"));
+  const el = targets[0];
+  el.scrollIntoView({ behavior: "smooth", block: "center" });
+  el.classList.add("target-highlight");
+  setTimeout(() => el.classList.remove("target-highlight"), 3200);
+}
+
+// 导航与详情面板
+function renderNav() {
+  const nav = document.getElementById("nav");
+  for (const r of REQUIREMENTS) {
+    const a = document.createElement("a");
+    a.className = "req";
+    a.textContent = r.id + " " + r.name;
+    const b1 = document.createElement("span");
+    b1.className = "badge st-" + r.status; b1.textContent = r.status;
+    const b2 = document.createElement("span");
+    b2.className = "badge au-" + r.authority; b2.textContent = r.authority;
+    a.appendChild(b1); a.appendChild(b2);
+    a.addEventListener("click", () => {
+      document.querySelectorAll("nav .req").forEach((n) => n.classList.remove("active"));
+      a.classList.add("active");
+      document.getElementById("detail-body").innerHTML =
+        `<p><b>${r.id}</b> ${r.name}</p><p>状态：${r.status} / 权限：${r.authority}</p>` +
+        `<p>来源：${r.source.kind}${r.source.section ? "（" + r.source.section + "）" : ""}</p>` +
+        (r.source.quote ? `<blockquote style="border-left:3px solid #ccc;margin:6px 0;padding-left:8px;color:#666">${r.source.quote}</blockquote>` : "") +
+        `<ul>${r.rules.map((x) => `<li>${x}</li>`).join("")}</ul>`;
+      focusComponent(r.comp, r.id);
+    });
+    nav.appendChild(a);
+  }
+}
+
+buildBoard();
+renderNav();
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+id: GAME-EVENT-003
+name: 点击再来一局
+trigger_type: click
+payload: {}
+requirements:
+  - GAME-FR-002

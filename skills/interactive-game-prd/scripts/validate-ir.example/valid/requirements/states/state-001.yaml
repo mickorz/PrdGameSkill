@@ -1,0 +1,24 @@
+id: GAME-STATE-001
+type: state
+name: 游戏全局状态机
+status: proposed
+authority: fixed
+description: 游戏全局状态与流转。
+source:
+  kind: derived
+  basis: 由 2.4 胜利判定与 3.1 开局功能推导的全局状态集合
+  related_requirements: [GAME-RULE-004, GAME-FR-001]
+preconditions: []
+inputs: []
+outputs: []
+business_rules:
+  - 状态集合 idle | playing | won
+  - idle 经开始游戏进入 playing，全部配对成功进入 won
+normal_flow:
+  - idle -> playing -> won
+exception_flow: []
+state_transitions: []
+ui_refs: [GAME-UI-001]
+test_refs: [GAME-TC-003]
+dependencies: []
+open_questions: []

@@ -1,0 +1,74 @@
+[
+  {
+    "requirement_id": "GAME-RULE-001",
+    "anchors": [
+      {
+        "file": "source/original-prd.md",
+        "heading": "2.1 翻牌",
+        "line_start": 9,
+        "line_end": 10,
+        "quote_hash": "sha1:b41b84c3f7e97473a8765868b428f708d6df83e9"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-002",
+    "anchors": [
+      {
+        "file": "source/original-prd.md",
+        "heading": "2.2 配对判定",
+        "line_start": 11,
+        "line_end": 12,
+        "quote_hash": "sha1:941f7ed0196a49ab5e46abe4214a3594f901cd18"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-004",
+    "anchors": [
+      {
+        "file": "source/original-prd.md",
+        "heading": "2.4 胜利判定",
+        "line_start": 15,
+        "line_end": 16,
+        "quote_hash": "sha1:8e6be0355237814ec28d0fa6fa93c0e72fc231ab"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-005",
+    "anchors": [
+      {
+        "file": "source/original-prd.md",
+        "heading": "2.5 步数统计",
+        "line_start": 17,
+        "line_end": 18,
+        "quote_hash": "sha1:40b2de8a59c5eb3e813619b8c63694be285bbc7c"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-FR-001",
+    "anchors": [
+      {
+        "file": "source/original-prd.md",
+        "heading": "3.1 开局",
+        "line_start": 21,
+        "line_end": 22,
+        "quote_hash": "sha1:cbdf67700a90dadb78e9fbaa1941cfe3e81bc129"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-FR-002",
+    "anchors": [
+      {
+        "file": "source/original-prd.md",
+        "heading": "3.2 结果展示",
+        "line_start": 23,
+        "line_end": 24,
+        "quote_hash": "sha1:d728a651f532d3ce47a969dd309c83c3e956f975"
+      }
+    ]
+  }
+]

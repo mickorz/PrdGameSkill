@@ -1,0 +1,10 @@
+id: GAME-TC-004
+name: 连点同一张牌
+type: abnormal
+related_requirements: [GAME-RULE-006]
+preconditions:
+  - 有一张牌处于翻开状态
+steps:
+  - 快速连续点击同一张已翻开的牌两次
+expected: 第二次点击无效，不改变任何牌状态
+rule_refs: [GAME-RULE-006]

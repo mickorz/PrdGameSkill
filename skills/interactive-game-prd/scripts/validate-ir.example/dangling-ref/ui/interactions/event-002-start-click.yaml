@@ -1,0 +1,6 @@
+id: GAME-EVENT-002
+name: 点击开始游戏
+trigger_type: click
+payload: {}
+requirements:
+  - GAME-FR-001

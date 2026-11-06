@@ -1,0 +1,10 @@
+id: GAME-COMP-004
+type: button
+name: 再来一局按钮
+props:
+  label: 再来一局
+events:
+  - GAME-EVENT-003
+requirements:
+  - GAME-FR-002
+visual_hint: 胜利弹层内按钮，won 状态显示

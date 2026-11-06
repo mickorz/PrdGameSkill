@@ -1,0 +1,10 @@
+id: GAME-COMP-003
+type: button
+name: 开始游戏按钮
+props:
+  label: 开始游戏
+events:
+  - GAME-EVENT-002
+requirements:
+  - GAME-FR-001
+visual_hint: 居中主按钮，idle 状态显示

@@ -1,0 +1,12 @@
+[
+  {
+    "id": "DECISION-001",
+    "requirement_id": "GAME-RULE-003",
+    "field": "status",
+    "from": "proposed",
+    "to": "approved",
+    "rationale": "确认配对失败盖回延时固定为 1000 毫秒",
+    "decided_by": "user",
+    "date": "2026-11-06"
+  }
+]

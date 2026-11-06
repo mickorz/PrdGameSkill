@@ -1,0 +1,14 @@
+id: GAME-COMP-001
+type: card
+name: 牌格
+props:
+  pair_id: int
+  face_up: bool
+  matched: bool
+events:
+  - GAME-EVENT-001
+requirements:
+  - GAME-RULE-001
+  - GAME-RULE-002
+  - GAME-RULE-006
+visual_hint: 4x2 网格中的单张牌，正面显示图案，背面统一纹理

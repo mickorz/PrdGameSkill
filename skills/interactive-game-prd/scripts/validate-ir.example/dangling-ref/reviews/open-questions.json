@@ -1,0 +1,8 @@
+[
+  {
+    "id": "OQ-001",
+    "question": "配对失败展示期间是否允许翻第三张牌",
+    "severity": "medium",
+    "status": "open"
+  }
+]

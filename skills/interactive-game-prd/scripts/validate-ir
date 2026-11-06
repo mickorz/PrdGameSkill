@@ -1,0 +1,309 @@
+#!/usr/bin/env node
+// validate-ir: Game Requirement IR 确定性校验工具
+// 用法: node scripts/validate-ir <game-spec 目录> [--json]
+// 检查项: Schema 校验 / ID 重复 / 悬空引用 / approved 无有效来源 /
+//         核心需求缺测试引用(警告) / 状态流转 / source-map 锚点存在性
+import Ajv2020 from "ajv/dist/2020.js";
+import yaml from "js-yaml";
+import fs from "node:fs";
+import path from "node:path";
+import crypto from "node:crypto";
+import { fileURLToPath } from "node:url";
+
+const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
+const SCHEMA_DIR = path.join(SCRIPT_DIR, "..", "schemas");
+
+// ---------- 工具 ----------
+function walkYamlFiles(dir) {
+  const out = [];
+  if (!fs.existsSync(dir)) return out;
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const p = path.join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...walkYamlFiles(p));
+    else if (/\.(ya?ml)$/.test(entry.name)) out.push(p);
+  }
+  return out;
+}
+
+function loadYaml(file) {
+  const text = fs.readFileSync(file, "utf8");
+  return yaml.load(text);
+}
+
+function sha1(text) {
+  return "sha1:" + crypto.createHash("sha1").update(text, "utf8").digest("hex");
+}
+
+// ---------- 结果收集 ----------
+const errors = [];
+const warnings = [];
+function err(code, message, file, id) {
+  errors.push({ code, message, file: file || null, id: id || null });
+}
+function warn(code, message, file, id) {
+  warnings.push({ code, message, file: file || null, id: id || null });
+}
+
+// ---------- Schema 装载 ----------
+const ajv = new Ajv2020({ allErrors: true, strict: false });
+const manifestSchema = JSON.parse(fs.readFileSync(path.join(SCHEMA_DIR, "manifest.schema.json"), "utf8"));
+const reqSchema = JSON.parse(fs.readFileSync(path.join(SCHEMA_DIR, "requirement.schema.json"), "utf8"));
+const uiSchema = JSON.parse(fs.readFileSync(path.join(SCHEMA_DIR, "ui.schema.json"), "utf8"));
+const testSchema = JSON.parse(fs.readFileSync(path.join(SCHEMA_DIR, "test.schema.json"), "utf8"));
+ajv.addSchema(manifestSchema);
+ajv.addSchema(reqSchema);
+ajv.addSchema(uiSchema);
+ajv.addSchema(testSchema);
+const validateManifest = ajv.compile(manifestSchema);
+// 各 $defs 校验器：通过引用编译
+function compileDef(schemaObj, defName) {
+  return ajv.compile({ allOf: [{ $ref: `${schemaObj.$id}#/$defs/${defName}` }] });
+}
+const validateRequirement = ajv.compile(reqSchema);
+const validatePage = compileDef(uiSchema, "page");
+const validateComponent = compileDef(uiSchema, "component");
+const validateEvent = compileDef(uiSchema, "event");
+const validateNavigation = compileDef(uiSchema, "navigation");
+const validateCase = compileDef(testSchema, "case");
+const validateScenario = compileDef(testSchema, "scenario");
+
+function schemaErrors(validator, file, id) {
+  for (const e of validator.errors || []) {
+    err("SCHEMA", `${e.instancePath || "/"} ${e.message}`, file, id);
+  }
+}
+
+// ---------- 主流程 ----------
+export function validateSpec(specDir) {
+  // 1. manifest
+  const manifestFile = path.join(specDir, "manifest.yaml");
+  if (!fs.existsSync(manifestFile)) {
+    err("MISSING_MANIFEST", "缺少 manifest.yaml", manifestFile, null);
+  } else {
+    const manifest = loadYaml(manifestFile);
+    validateManifest(manifest);
+    schemaErrors(validateManifest, manifestFile, "manifest");
+  }
+
+  // 2. 需求条目（requirements/ 与 data/configs/，GAME-CFG 同为需求条目）
+  const reqFiles = [
+    ...walkYamlFiles(path.join(specDir, "requirements")),
+    ...walkYamlFiles(path.join(specDir, "data", "configs")),
+  ];
+  const requirements = new Map(); // id -> {file, data}
+  for (const file of reqFiles) {
+    const data = loadYaml(file);
+    if (!data || typeof data !== "object") {
+      err("SCHEMA", "需求文件不是对象", file, null);
+      continue;
+    }
+    validateRequirement(data);
+    schemaErrors(validateRequirement, file, data.id);
+    if (data.id) {
+      if (requirements.has(data.id)) {
+        err("DUPLICATE_ID", `需求 ID 重复: ${data.id}`, file, data.id);
+      }
+      requirements.set(data.id, { file, data });
+    }
+  }
+
+  // 3. UI 条目
+  const uiIds = new Map(); // id -> {file, kind}
+  const pageDir = path.join(specDir, "ui", "pages");
+  for (const file of walkYamlFiles(pageDir)) {
+    const data = loadYaml(file);
+    validatePage(data);
+    schemaErrors(validatePage, file, data && data.id);
+    if (data && data.id) {
+      if (uiIds.has(data.id)) err("DUPLICATE_ID", `ID 重复: ${data.id}`, file, data.id);
+      uiIds.set(data.id, { file, kind: "page", data });
+    }
+  }
+  const compDir = path.join(specDir, "ui", "components");
+  for (const file of walkYamlFiles(compDir)) {
+    const data = loadYaml(file);
+    validateComponent(data);
+    schemaErrors(validateComponent, file, data && data.id);
+    if (data && data.id) {
+      if (uiIds.has(data.id)) err("DUPLICATE_ID", `ID 重复: ${data.id}`, file, data.id);
+      uiIds.set(data.id, { file, kind: "component", data });
+    }
+  }
+  const eventDir = path.join(specDir, "ui", "interactions");
+  for (const file of walkYamlFiles(eventDir)) {
+    const data = loadYaml(file);
+    validateEvent(data);
+    schemaErrors(validateEvent, file, data && data.id);
+    if (data && data.id) {
+      if (uiIds.has(data.id)) err("DUPLICATE_ID", `ID 重复: ${data.id}`, file, data.id);
+      uiIds.set(data.id, { file, kind: "event", data });
+    }
+  }
+  const navFile = path.join(specDir, "ui", "navigation.yaml");
+  if (fs.existsSync(navFile)) {
+    const data = loadYaml(navFile);
+    validateNavigation(data);
+    schemaErrors(validateNavigation, navFile, "navigation");
+  }
+
+  // 4. 测试条目
+  const testIds = new Set();
+  const caseDir = path.join(specDir, "tests", "cases");
+  for (const file of walkYamlFiles(caseDir)) {
+    const data = loadYaml(file);
+    validateCase(data);
+    schemaErrors(validateCase, file, data && data.id);
+    if (data && data.id) {
+      if (testIds.has(data.id)) err("DUPLICATE_ID", `ID 重复: ${data.id}`, file, data.id);
+      testIds.add(data.id);
+    }
+  }
+  const scenDir = path.join(specDir, "tests", "scenarios");
+  for (const file of walkYamlFiles(scenDir)) {
+    const data = loadYaml(file);
+    validateScenario(data);
+    schemaErrors(validateScenario, file, data && data.id);
+  }
+
+  // 5. 引用完整性（悬空引用）
+  const knownIds = new Set([...requirements.keys(), ...uiIds.keys(), ...testIds]);
+  for (const [id, { file, data }] of requirements) {
+    const refFields = [
+      ["state_transitions", /^GAME-STATE-/],
+      ["ui_refs", /^GAME-(UI|COMP|EVENT)-/],
+      ["test_refs", /^GAME-TC-/],
+      ["dependencies", /^GAME-/],
+    ];
+    for (const [field, pattern] of refFields) {
+      for (const ref of data[field] || []) {
+        if (!pattern.test(ref)) {
+          err("BAD_REF_FORMAT", `${field} 引用格式错误: ${ref}`, file, id);
+        } else if (!knownIds.has(ref)) {
+          err("DANGLING_REF", `${field} 引用不存在: ${ref}`, file, id);
+        }
+      }
+    }
+    if ((data.type === "game_feature" || data.type === "game_rule") &&
+        !(data.test_refs || []).length && data.status === "approved") {
+      warn("NO_TEST_REF", `核心需求缺测试引用`, file, id);
+    }
+  }
+  for (const [id, { file, data }] of uiIds) {
+    for (const field of ["components", "interactions", "requirements", "test_refs", "events"]) {
+      for (const ref of data[field] || []) {
+        if (typeof ref === "string" && /^GAME-/.test(ref) && !knownIds.has(ref)) {
+          err("DANGLING_REF", `${field} 引用不存在: ${ref}`, file, id);
+        }
+      }
+    }
+  }
+
+  // 6. approved 来源有效性
+  for (const [id, { file, data }] of requirements) {
+    if (data.status !== "approved") continue;
+    const src = data.source || {};
+    if (src.kind === "original") {
+      if (!src.quote || !src.quote.trim()) {
+        err("NO_SOURCE", `approved 需求 original 来源缺 quote`, file, id);
+      }
+    } else if (src.kind === "human_decision") {
+      if (!src.decision_log_ref) {
+        err("NO_SOURCE", `approved 需求 human_decision 来源缺 decision_log_ref`, file, id);
+      }
+    } else {
+      err("NO_SOURCE", `approved 需求来源 kind 非法: ${src.kind}`, file, id);
+    }
+  }
+
+  // 7. source-map 锚点存在性
+  const mapFile = path.join(specDir, "source", "source-map.json");
+  if (fs.existsSync(mapFile)) {
+    let map;
+    try {
+      map = JSON.parse(fs.readFileSync(mapFile, "utf8"));
+    } catch (e) {
+      err("SOURCE_MAP", `source-map.json 解析失败: ${e.message}`, mapFile, null);
+      map = [];
+    }
+    for (const entry of map) {
+      if (!requirements.has(entry.requirement_id) && !knownIds.has(entry.requirement_id)) {
+        err("SOURCE_MAP", `source-map 指向未知需求: ${entry.requirement_id}`, mapFile, entry.requirement_id);
+      }
+      for (const anchor of entry.anchors || []) {
+        const target = path.resolve(specDir, anchor.file);
+        if (!fs.existsSync(target)) {
+          err("SOURCE_MAP", `锚点文件不存在: ${anchor.file}`, mapFile, entry.requirement_id);
+          continue;
+        }
+        const lines = fs.readFileSync(target, "utf8").split(/\r?\n/).length;
+        if (anchor.line_start < 1 || anchor.line_end < anchor.line_start || anchor.line_end > lines) {
+          err("SOURCE_MAP", `锚点行区间无效: ${anchor.line_start}-${anchor.line_end} (共 ${lines} 行)`, mapFile, entry.requirement_id);
+        }
+        if (anchor.quote_hash && anchor.quote_hash.startsWith("sha1:")) {
+          const text = fs.readFileSync(target, "utf8").split(/\r?\n/).slice(anchor.line_start - 1, anchor.line_end).join("\n");
+          if (sha1(text) !== anchor.quote_hash) {
+            warn("SOURCE_MAP_STALE", `原文区间内容与 quote_hash 不一致(原文可能已变更)`, mapFile, entry.requirement_id);
+          }
+        }
+      }
+    }
+  } else if (reqFiles.length > 0) {
+    err("SOURCE_MAP", "有需求条目但缺少 source/source-map.json", mapFile, null);
+  }
+
+  // 8. 状态流转合法性（基于 decision-log）
+  const logFile = path.join(specDir, "reviews", "decision-log.json");
+  if (fs.existsSync(logFile)) {
+    const legal = new Set([
+      "proposed->approved", "proposed->rejected", "rejected->proposed",
+      "approved->deprecated", "rejected->deprecated",
+    ]);
+    let log;
+    try {
+      log = JSON.parse(fs.readFileSync(logFile, "utf8"));
+    } catch (e) {
+      err("DECISION_LOG", `decision-log.json 解析失败: ${e.message}`, logFile, null);
+      log = [];
+    }
+    const entries = Array.isArray(log) ? log : log.decisions || [];
+    for (const entry of entries) {
+      if (entry.field === "status" && entry.from && entry.to) {
+        if (!legal.has(`${entry.from}->${entry.to}`)) {
+          err("ILLEGAL_TRANSITION", `非法状态流转 ${entry.from}->${entry.to}`, logFile, entry.requirement_id);
+        }
+      }
+    }
+  }
+
+  return {
+    result: errors.length === 0 ? "pass" : "fail",
+    spec: path.resolve(specDir),
+    errors,
+    warnings,
+  };
+}
+
+// ---------- CLI ----------
+function main() {
+  const args = process.argv.slice(2).filter((a) => !a.startsWith("--"));
+  const asJson = process.argv.includes("--json");
+  if (args.length !== 1) {
+    console.error("用法: node scripts/validate-ir <game-spec 目录> [--json]");
+    process.exit(2);
+  }
+  const report = validateSpec(args[0]);
+  if (asJson) {
+    console.log(JSON.stringify(report, null, 2));
+  } else {
+    console.log(`校验目标: ${report.spec}`);
+    console.log(`结果: ${report.result.toUpperCase()}`);
+    for (const e of report.errors) console.log(`[ERROR] ${e.code} ${e.id || ""} ${e.message} (${e.file || "-"})`);
+    for (const w of report.warnings) console.log(`[WARN ] ${w.code} ${w.id || ""} ${w.message} (${w.file || "-"})`);
+    console.log(`errors=${report.errors.length} warnings=${report.warnings.length}`);
+  }
+  process.exit(report.result === "pass" ? 0 : 1);
+}
+
+if (import.meta.url === `file://${process.argv[1].replace(/\\/g, "/")}` || process.argv[1] === fileURLToPath(import.meta.url)) {
+  main();
+}

@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prdgameskill.local/schemas/ui.schema.json",
+  "title": "UI Spec (page / component / event / navigation)",
+  "$defs": {
+    "page": {
+      "title": "UI Page",
+      "type": "object",
+      "required": ["id", "name", "resolution", "components", "states"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^GAME-UI-[0-9]{3,4}$" },
+        "name": { "type": "string", "minLength": 1 },
+        "resolution": {
+          "type": "object",
+          "required": ["width", "height"],
+          "properties": {
+            "width": { "type": "integer", "minimum": 1 },
+            "height": { "type": "integer", "minimum": 1 }
+          },
+          "additionalProperties": false
+        },
+        "components": { "type": "array", "items": { "type": "string", "pattern": "^GAME-COMP-[0-9]{3,4}$" } },
+        "states": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "interactions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["trigger", "from_state", "to_state"],
+            "properties": {
+              "trigger": { "type": "string", "pattern": "^GAME-EVENT-[0-9]{3,4}$" },
+              "from_state": { "type": "string", "minLength": 1 },
+              "to_state": { "type": "string", "minLength": 1 },
+              "target_component": { "type": "string", "pattern": "^GAME-COMP-[0-9]{3,4}$" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "requirements": { "type": "array", "items": { "type": "string", "pattern": "^GAME-" } },
+        "test_refs": { "type": "array", "items": { "type": "string", "pattern": "^GAME-TC-" } }
+      },
+      "additionalProperties": false
+    },
+    "component": {
+      "title": "UI Component",
+      "type": "object",
+      "required": ["id", "type", "name"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^GAME-COMP-[0-9]{3,4}$" },
+        "type": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "props": { "type": "object" },
+        "events": { "type": "array", "items": { "type": "string", "pattern": "^GAME-EVENT-[0-9]{3,4}$" } },
+        "requirements": { "type": "array", "items": { "type": "string", "pattern": "^GAME-" } },
+        "visual_hint": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "event": {
+      "title": "UI Event",
+      "type": "object",
+      "required": ["id", "name", "trigger_type"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^GAME-EVENT-[0-9]{3,4}$" },
+        "name": { "type": "string", "minLength": 1 },
+        "trigger_type": { "enum": ["click", "hover", "input", "timer", "system"] },
+        "payload": { "type": "object" },
+        "requirements": { "type": "array", "items": { "type": "string", "pattern": "^GAME-" } }
+      },
+      "additionalProperties": false
+    },
+    "navigation": {
+      "title": "Navigation",
+      "type": "object",
+      "required": ["entries"],
+      "properties": {
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["from", "to"],
+            "properties": {
+              "from": { "type": "string", "pattern": "^GAME-UI-[0-9]{3,4}$" },
+              "to": { "type": "string", "pattern": "^GAME-UI-[0-9]{3,4}$" },
+              "trigger": { "type": "string", "pattern": "^GAME-EVENT-[0-9]{3,4}$" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

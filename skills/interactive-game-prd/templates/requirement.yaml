@@ -1,0 +1,32 @@
+# 需求条目模板（每文件一个需求对象）
+# id 前缀必须与 type 匹配（见 references/game-prd-format.md 第 3 节）
+id: GAME-RULE-001
+type: game_rule
+name: ""
+status: proposed          # proposed | approved | rejected | deprecated
+authority: open           # fixed | delegated | open
+description: ""
+
+# 来源三分类，按 kind 填写对应必填字段（见 game-prd-format.md 第 5 节）
+source:
+  kind: original          # original | derived | human_decision
+  document: source/original-prd.md
+  section: ""             # original 必填
+  page: null
+  quote: ""               # original 必填，非空原文引用
+  # basis: ""             # derived 必填：推导依据
+  # related_requirements: []   # derived 必填：关联原始需求 ID
+  # decision_log_ref: ""  # human_decision 必填
+  # decided_by: ""        # human_decision 必填
+
+preconditions: []
+inputs: []
+outputs: []
+business_rules: []
+normal_flow: []
+exception_flow: []
+state_transitions: []     # GAME-STATE-XXX 引用
+ui_refs: []               # GAME-UI/COMP/EVENT 引用
+test_refs: []             # GAME-TC 引用
+dependencies: []          # GAME-* 引用
+open_questions: []

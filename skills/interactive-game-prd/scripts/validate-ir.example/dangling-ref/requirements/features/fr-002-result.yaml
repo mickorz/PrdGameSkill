@@ -1,0 +1,25 @@
+id: GAME-FR-002
+type: game_feature
+name: 结果展示功能
+status: proposed
+authority: fixed
+description: 胜利后显示总步数与再来一局按钮，点击可重新开局。
+source:
+  kind: original
+  document: source/original-prd.md
+  section: "3.2 结果展示"
+  page: null
+  quote: "胜利后显示总步数与再来一局按钮，点击可重新开局。"
+preconditions:
+  - 游戏胜利（GAME-RULE-004）
+inputs: [moves]
+outputs: []
+business_rules: []
+normal_flow:
+  - 胜利 -> 显示步数与再来一局按钮 -> 点击重开
+exception_flow: []
+state_transitions: [GAME-STATE-001]
+ui_refs: [GAME-COMP-004, GAME-EVENT-003]
+test_refs: [GAME-TC-003]
+dependencies: [GAME-RULE-004]
+open_questions: []

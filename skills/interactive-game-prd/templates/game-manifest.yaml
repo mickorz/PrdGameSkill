@@ -1,0 +1,17 @@
+# Game Spec Manifest 模板
+# 复制到 <game>/game-spec/manifest.yaml 并填写
+format: GAME-SPEC/1
+ir_version: 1.0.0
+game_name: ""
+game_version: ""
+created_at: ""            # YYYY-MM-DD
+updated_at: ""            # YYYY-MM-DD
+source_files:
+  - file: source/original-prd.md
+    sha256: ""            # sha256sum source/original-prd.md
+    received_at: ""       # YYYY-MM-DD
+entry_points: []          # 入口页面 GAME-UI-XXX
+stats:
+  requirements: 0
+  ui_pages: 0
+  test_cases: 0

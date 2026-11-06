@@ -1,0 +1,11 @@
+id: GAME-TC-001
+name: 正常配对成功
+type: normal
+related_requirements: [GAME-RULE-002]
+preconditions:
+  - 棋盘已发牌，8 张牌背面朝上
+steps:
+  - 翻开第一张牌
+  - 翻开与其 pair_id 相同的第二张牌
+expected: 两张牌保持正面并标记为已配对，步数加 1
+rule_refs: [GAME-RULE-002, GAME-RULE-005]

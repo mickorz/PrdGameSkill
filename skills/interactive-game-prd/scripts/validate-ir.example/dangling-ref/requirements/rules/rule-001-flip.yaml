@@ -1,0 +1,25 @@
+id: GAME-RULE-001
+type: game_rule
+name: 翻牌规则
+status: proposed
+authority: fixed
+description: 点击背面朝上的牌将其翻开。
+source:
+  kind: original
+  document: source/original-prd.md
+  section: "2.1 翻牌"
+  page: null
+  quote: "点击背面朝上的牌将其翻开。"
+preconditions: []
+inputs: [card_id]
+outputs: [card_face_up]
+business_rules:
+  - 仅背面朝上且未配对的牌可翻开
+normal_flow:
+  - 玩家点击牌 -> 牌翻面
+exception_flow: []
+state_transitions: []
+ui_refs: [GAME-COMP-001, GAME-COMP-999, GAME-EVENT-001]
+test_refs: [GAME-TC-001]
+dependencies: []
+open_questions: []

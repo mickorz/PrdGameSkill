@@ -1,0 +1,23 @@
+id: GAME-RULE-006
+type: game_rule
+name: 重复翻牌禁止规则
+status: proposed
+authority: delegated
+description: 已翻开或已配对的牌再次点击无效。
+source:
+  kind: derived
+  basis: 结合 2.1 节翻牌前提与 4.1 节交互说明推导的异常流程规则
+  related_requirements: [GAME-RULE-001]
+preconditions: []
+inputs: [card_id]
+outputs: []
+business_rules:
+  - face_up=true 或 matched=true 的牌点击不产生翻牌动作
+normal_flow: []
+exception_flow:
+  - 点击已翻开/已配对的牌 -> 忽略操作
+state_transitions: []
+ui_refs: [GAME-COMP-001, GAME-EVENT-001]
+test_refs: [GAME-TC-002, GAME-TC-004]
+dependencies: [GAME-RULE-001, GAME-RULE-002]
+open_questions: []

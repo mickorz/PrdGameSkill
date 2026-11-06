@@ -1,0 +1,14 @@
+{
+  "name": "interactive-game-prd-tools",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Interactive Game PRD 确定性校验与构建工具",
+  "scripts": {
+    "test": "node scripts/validate-ir.test.mjs"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "js-yaml": "^4.1.0"
+  }
+}

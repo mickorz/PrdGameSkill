@@ -1,0 +1,3 @@
+terms:
+  - term: 配对
+    definition: 两张 pair_id 相同的牌同时处于翻开状态且判定成功

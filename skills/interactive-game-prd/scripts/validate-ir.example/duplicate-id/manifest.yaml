@@ -1,0 +1,15 @@
+format: GAME-SPEC/1
+ir_version: 1.0.0
+game_name: 记忆翻牌
+game_version: "1.0"
+created_at: "2026-11-06"
+updated_at: "2026-11-06"
+source_files:
+  - file: source/original-prd.md
+    received_at: "2026-11-06"
+entry_points:
+  - GAME-UI-001
+stats:
+  requirements: 8
+  ui_pages: 1
+  test_cases: 4

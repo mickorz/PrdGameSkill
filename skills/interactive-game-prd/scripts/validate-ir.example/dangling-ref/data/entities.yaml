@@ -1,0 +1,6 @@
+card:
+  fields:
+    id: int
+    pair_id: int
+    face_up: bool
+    matched: bool

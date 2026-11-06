@@ -1,0 +1,9 @@
+id: GAME-COMP-002
+type: counter
+name: 步数显示
+props:
+  moves: int
+events: []
+requirements:
+  - GAME-RULE-005
+visual_hint: 棋盘上方文字计数

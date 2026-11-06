@@ -1,0 +1,10 @@
+id: GAME-TC-002
+name: 点击已配对的牌
+type: illegal
+related_requirements: [GAME-RULE-006]
+preconditions:
+  - 存在已配对成功的牌
+steps:
+  - 点击一张已配对的牌
+expected: 操作被忽略，牌保持正面，不产生任何状态变化
+rule_refs: [GAME-RULE-006]

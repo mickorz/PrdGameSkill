@@ -1,0 +1,14 @@
+[
+  {
+    "requirement_id": "GAME-RULE-001",
+    "anchors": [
+      {
+        "file": "source/original-prd.md",
+        "heading": "第三章 出牌规则",
+        "line_start": 42,
+        "line_end": 47,
+        "quote_hash": "sha1:替换为quote文本的sha1"
+      }
+    ]
+  }
+]

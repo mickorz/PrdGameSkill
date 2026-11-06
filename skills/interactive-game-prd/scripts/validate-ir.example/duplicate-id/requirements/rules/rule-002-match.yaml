@@ -1,0 +1,26 @@
+id: GAME-RULE-001
+type: game_rule
+name: 配对判定规则
+status: proposed
+authority: fixed
+description: 两张翻开的牌图案相同即配对成功，保持正面不再参与。
+source:
+  kind: original
+  document: source/original-prd.md
+  section: "2.2 配对判定"
+  page: null
+  quote: "两张翻开的牌图案相同即配对成功，保持正面不再参与。"
+preconditions:
+  - 已有两张牌处于翻开状态
+inputs: [card_id_a, card_id_b]
+outputs: [matched]
+business_rules:
+  - pair_id 相同的两张牌判定为配对成功
+normal_flow:
+  - 翻开第二张 -> 比对 pair_id -> 相同则标记 matched
+exception_flow: []
+state_transitions: []
+ui_refs: [GAME-COMP-001]
+test_refs: [GAME-TC-001, GAME-TC-003]
+dependencies: [GAME-RULE-001]
+open_questions: []

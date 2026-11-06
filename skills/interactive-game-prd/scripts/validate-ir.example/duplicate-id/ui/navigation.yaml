@@ -1,0 +1,4 @@
+entries:
+  - from: GAME-UI-001
+    to: GAME-UI-001
+    trigger: GAME-EVENT-002

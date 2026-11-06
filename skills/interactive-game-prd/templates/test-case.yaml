@@ -1,0 +1,9 @@
+# 测试用例模板（每文件一个 case 对象）
+id: GAME-TC-001
+name: ""
+type: normal              # normal | illegal | boundary | abnormal
+related_requirements: []  # GAME-* 引用，至少 1 条
+preconditions: []
+steps: []                 # 操作步骤，至少 1 条
+expected: ""              # 预期结果，非空
+rule_refs: []             # 可选，GAME-RULE 引用

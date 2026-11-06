@@ -1,0 +1,16 @@
+# UI 页面模板（每文件一个 page 对象）
+id: GAME-UI-001
+name: ""
+resolution:
+  width: 1280
+  height: 720
+components: []            # GAME-COMP 引用
+states:                   # 页面状态，至少 1 个
+  - normal
+interactions:             # 触发事件与状态切换
+  - trigger: ""           # GAME-EVENT 引用
+    from_state: ""
+    to_state: ""
+    target_component: ""  # 可选，GAME-COMP 引用
+requirements: []          # GAME-* 引用
+test_refs: []             # GAME-TC 引用

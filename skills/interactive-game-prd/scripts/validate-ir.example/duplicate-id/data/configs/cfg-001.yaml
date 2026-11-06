@@ -1,0 +1,14 @@
+id: GAME-CFG-001
+type: config
+name: 棋盘牌数
+status: approved
+authority: fixed
+description: 棋盘共 8 张牌、4 对。
+source:
+  kind: original
+  document: source/original-prd.md
+  section: "1. 游戏概述"
+  page: null
+  quote: "棋盘 4 列 2 行共 8 张牌，含 4 对图案。"
+value: 8
+test_refs: []

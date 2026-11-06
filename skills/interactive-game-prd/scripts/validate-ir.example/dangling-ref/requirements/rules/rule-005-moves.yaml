@@ -1,0 +1,24 @@
+id: GAME-RULE-005
+type: game_rule
+name: 步数统计规则
+status: proposed
+authority: delegated
+description: 每翻开两张牌计 1 步。
+source:
+  kind: original
+  document: source/original-prd.md
+  section: "2.5 步数统计"
+  page: null
+  quote: "每翻开两张牌计 1 步。"
+preconditions: []
+inputs: [flip_count]
+outputs: [moves]
+business_rules:
+  - moves = floor(flip_count / 2)
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: [GAME-COMP-002]
+test_refs: [GAME-TC-001]
+dependencies: [GAME-RULE-001]
+open_questions: []

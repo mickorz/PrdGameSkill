@@ -1,0 +1,33 @@
+id: GAME-UI-001
+name: 游戏棋盘页
+resolution:
+  width: 1280
+  height: 720
+components:
+  - GAME-COMP-001
+  - GAME-COMP-002
+  - GAME-COMP-003
+  - GAME-COMP-004
+states:
+  - loading
+  - idle
+  - playing
+  - won
+interactions:
+  - trigger: GAME-EVENT-002
+    from_state: idle
+    to_state: playing
+    target_component: GAME-COMP-003
+  - trigger: GAME-EVENT-001
+    from_state: playing
+    to_state: playing
+    target_component: GAME-COMP-001
+  - trigger: GAME-EVENT-003
+    from_state: won
+    to_state: idle
+    target_component: GAME-COMP-004
+requirements:
+  - GAME-FR-001
+  - GAME-FR-002
+test_refs:
+  - GAME-TC-001

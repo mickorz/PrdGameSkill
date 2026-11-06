@@ -1,8 +1,23 @@
-# 第三方依赖（本地存放，不入库）
-thirdparties/
+# 第三方依赖
+# bmad-module-game-dev-studio 为本地只读目录，不入库
+thirdparties/*
+# 六个参考项目为 Git Submodule（gitlink 入库），白名单放行
+!thirdparties/prd-pilot
+!thirdparties/prd-html-generator
+!thirdparties/prd-writer
+!thirdparties/Arrow
+!thirdparties/GDD-Forge
+!thirdparties/game-doc-forge
+!thirdparties/REFERENCES.md
 
 # 开发期沙盒（不入库）
 dev-examples/
 
+# Node
+node_modules/
+
 # macOS
 .DS_Store
+
+# pi 本地目录
+.pi/

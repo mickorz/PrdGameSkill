@@ -60,22 +60,40 @@ body { font-family: Inter, "Segoe UI", "Microsoft YaHei", sans-serif; color: var
 .empty { color: var(--muted); font-size: 13px; padding: 8px 0; }
 
 /* 中栏 */
-.detail-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.detail-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
 .q-id-lg { font-family: Consolas, monospace; font-size: 15px; font-weight: 700; color: var(--muted); }
-.q-title { font-size: 20px; margin-bottom: 6px; }
+.req-chip { background: var(--zinc-bg); color: var(--zinc); border-radius: 4px; padding: 2px 8px; font-size: 12px; }
+.q-title { font-size: 20px; line-height: 1.5; margin-bottom: 8px; }
 .meta-line { color: var(--muted); font-size: 13px; margin-bottom: 4px; }
 .block { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
-.block h4 { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
-.q-desc { line-height: 1.7; }
+.step-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+.step-no { background: var(--primary); color: #fafafa; border-radius: 4px; padding: 1px 8px; font-size: 11px; font-weight: 600; }
+.step-extra { margin-left: auto; }
+.link-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 12px; text-decoration: underline; padding: 0; font: inherit; font-size: 12px; }
+.sub-title { font-size: 12px; color: var(--muted); margin: 10px 0 6px; }
+.warn-line { background: var(--amber-bg); color: var(--amber); border-radius: 8px; padding: 8px 10px; font-size: 13px; }
 
-.quote-box { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 8px; }
-.quote-meta { background: var(--zinc-bg); padding: 5px 10px; font-size: 12px; color: var(--muted); font-family: Consolas, monospace; }
+.ir-card { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--primary); border-radius: 8px; padding: 10px 12px; font-size: 13px; margin-bottom: 8px; }
+.ir-card .mono { font-weight: 700; margin-bottom: 2px; }
+.req-desc { color: var(--fg); margin-top: 6px; font-size: 13px; line-height: 1.6; }
+
+.anchor-box { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 8px; }
+.anchor-toggle { display: block; width: 100%; text-align: left; background: var(--zinc-bg); border: none; padding: 6px 10px; font-size: 12px; color: var(--muted); font-family: Consolas, monospace; cursor: pointer; }
+.anchor-caret { display: inline-block; width: 12px; color: var(--primary); font-weight: 700; }
 .quote-text { padding: 10px 12px; font-size: 13px; white-space: pre-wrap; font-family: inherit; line-height: 1.6; max-height: 260px; overflow-y: auto; }
 
-.action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-.action-btn { padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); cursor: pointer; font: inherit; text-align: left; }
-.action-btn:hover { background: #f4f4f5; }
-.action-btn.active { border-color: var(--primary); outline: 2px solid var(--primary); background: var(--primary); color: #fafafa; }
+.action-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.action-row { display: flex; align-items: baseline; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; }
+.action-row:hover { background: #f4f4f5; }
+.action-row.active { border-color: var(--primary); outline: 2px solid var(--primary); }
+.action-row input { accent-color: var(--primary); }
+.action-name { font-weight: 600; }
+.action-desc { color: var(--muted); font-size: 12px; margin-left: auto; }
+
+.disabled-reason { color: var(--amber); font-size: 12px; }
+
+.history-toggle { display: block; width: 100%; text-align: left; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; cursor: pointer; font: inherit; font-size: 13px; }
+.history-list { margin-top: 8px; }
 
 .field { display: block; margin-bottom: 10px; }
 .field span { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }

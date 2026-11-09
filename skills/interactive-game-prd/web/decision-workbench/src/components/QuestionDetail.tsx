@@ -2,13 +2,13 @@
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useWorkbench } from "../stores/workbench";
-import { ACTION_LABELS, type ActionKind } from "../types";
+import { ACTION_LABELS, outcomeLabel, type ActionKind } from "../types";
 
 const ACTIONS: { key: ActionKind; desc: string }[] = [
-  { key: "adopt", desc: "采纳 IR 现行口径与原文依据" },
-  { key: "modify", desc: "人工修改后采纳，需填写最终口径" },
-  { key: "reject", desc: "否决该需求或 AI 推导口径" },
-  { key: "defer", desc: "暂时挂起，后续处理" },
+  { key: "adopt", desc: "认可 IR 现行规则，关联条目转 approved" },
+  { key: "modify", desc: "规则保留，内容以你填写的最终规则为准" },
+  { key: "reject", desc: "关联条目转 rejected，对应推导作废" },
+  { key: "defer", desc: "保留问题，不阻塞其他工作" },
 ];
 
 function statusLabel(s: string): string {
@@ -60,7 +60,7 @@ export function QuestionDetail() {
   const disabledReason = !draft.action
     ? "请选择裁决动作"
     : draft.action === "modify" && !draft.finalText.trim()
-      ? "请填写最终口径"
+      ? "请填写最终规则"
       : !draft.rationale.trim()
         ? "请填写裁决理由"
         : null;
@@ -97,8 +97,8 @@ export function QuestionDetail() {
 
         {rid && (
           <>
-            {/* (1) IR 现行口径 = 「采纳」的对象 */}
-            <div className="sub-title">(1) IR 现行口径（采纳动作的确认对象）</div>
+            {/* (1) IR 现行规则 = 「确认通过」的确认对象 */}
+            <div className="sub-title">(1) IR 现行规则（「确认通过」动作的确认对象）</div>
             {req ? (
               <div className="ir-card">
                 <div className="mono">{req.id}{req.name ? ` · ${req.name}` : ""}</div>
@@ -109,11 +109,11 @@ export function QuestionDetail() {
                 {req.description ? (
                   <div className="req-desc">{req.description}</div>
                 ) : (
-                  <div className="warn-line">该条目 IR 未登记口径描述，建议改用「修改」补齐口径后再采纳</div>
+                  <div className="warn-line">该条目 IR 未登记规则描述，建议改用「修改后通过」补齐内容后再确认</div>
                 )}
               </div>
             ) : (
-              <div className="warn-line">IR 中未找到条目 {rid}，采纳前请先核对</div>
+              <div className="warn-line">IR 中未找到条目 {rid}，确认前请先核对</div>
             )}
 
             {/* (2) 原始 PRD 引用（锚点可折叠） */}
@@ -152,7 +152,7 @@ export function QuestionDetail() {
 
         {draft.action === "modify" && (
           <label className="field">
-            <span>最终口径（人工确认，提交后写入 decision-log，必填）</span>
+            <span>最终规则（人工确认，提交后写入 decision-log，必填）</span>
             <textarea
               rows={3}
               value={draft.finalText}
@@ -197,14 +197,14 @@ export function QuestionDetail() {
         <div className="block">
           <button className="history-toggle" onClick={() => setHistoryOpen(!historyOpen)}>
             <span className="anchor-caret">{historyOpen ? "v" : ">"}</span>
-            裁决历史（{history.length}）· 当前有效：{effective.decision_id} {effective.outcome}
+            裁决历史（{history.length}）· 当前有效：{effective.decision_id} {outcomeLabel(effective.outcome)}
           </button>
           {historyOpen && (
             <div className="history-list">
               {[...history].reverse().map((d) => (
                 <div key={d.decision_id} className={`history-item ${d === effective ? "effective" : ""}`}>
                   <span className="mono">{d.decision_id}</span>
-                  <span className={`tag st-${d.decision_status}`}>{d.outcome}</span>
+                  <span className={`tag st-${d.decision_status}`}>{outcomeLabel(d.outcome)}</span>
                   <span className="history-meta">
                     {d.decided_at}
                     {d === effective ? " · 当前有效" : " · 已被替代"}

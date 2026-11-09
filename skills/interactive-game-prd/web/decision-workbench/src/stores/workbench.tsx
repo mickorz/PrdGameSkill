@@ -36,8 +36,8 @@ interface WorkbenchStore {
 
 const Ctx = createContext<WorkbenchStore | null>(null);
 
-// 采纳动作的默认理由（可编辑，避免为「同意」而打字的摩擦，同时保留非空留痕）
-const ADOPT_DEFAULT_RATIONALE = "采纳当前口径，与原文依据一致";
+// 「确认通过」动作的默认理由（可编辑，避免为「同意」而打字的摩擦，同时保留非空留痕）
+const ADOPT_DEFAULT_RATIONALE = "确认现行规则无误，与原文依据一致";
 
 export function WorkbenchProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<WorkbenchState | null>(null);

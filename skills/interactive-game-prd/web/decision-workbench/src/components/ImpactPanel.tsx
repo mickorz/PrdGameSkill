@@ -1,6 +1,6 @@
 // 右栏：影响分析（关联条目 / 同条目问题 / 条目裁决历史 / 预期流转）
 import { useWorkbench } from "../stores/workbench";
-import { ACTION_TO_OUTCOME, OUTCOME_TO_STATUS } from "../types";
+import { ACTION_TO_OUTCOME, OUTCOME_TO_STATUS, outcomeLabel } from "../types";
 
 export function ImpactPanel() {
   const { state, selected, selectedEvidence, select, draft, effectiveDecisionFor } = useWorkbench();
@@ -68,7 +68,7 @@ export function ImpactPanel() {
           <div key={d.decision_id} className={`history-item ${effective?.decision_id === d.decision_id ? "effective" : ""}`}>
             <span className="mono">{d.decision_id}</span>
             <span className="mono small">{d.question_id}</span>
-            <span className={`tag st-${d.decision_status}`}>{d.outcome}</span>
+            <span className={`tag st-${d.decision_status}`}>{outcomeLabel(d.outcome)}</span>
             {(d.requirement_updates || []).map((u) => (
               <div key={u.requirement_id + u.field} className="mono small">
                 {u.requirement_id}: {u.field} {u.from} → {u.to}

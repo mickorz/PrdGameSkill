@@ -96,10 +96,18 @@ export const OUTCOME_TO_STATUS: Record<Outcome, DecisionStatus> = {
 };
 
 export const ACTION_LABELS: Record<Exclude<ActionKind, null>, string> = {
-  adopt: "采纳当前口径",
-  modify: "修改为其他口径",
-  reject: "否决该需求或推导",
-  defer: "暂时挂起，后续处理",
+  adopt: "确认通过（按现行规则）",
+  modify: "修改后通过（需填写最终规则）",
+  reject: "否决：该规则不成立",
+  defer: "挂起：暂不作结论",
 };
+
+export function outcomeLabel(outcome: string): string {
+  if (outcome === "adopted") return "确认通过";
+  if (outcome === "modified") return "修改后通过";
+  if (outcome === "rejected") return "否决";
+  if (outcome === "deferred") return "挂起";
+  return outcome;
+}
 
 export const SEVERITY_RANK: Record<Severity, number> = { high: 0, medium: 1, low: 2 };

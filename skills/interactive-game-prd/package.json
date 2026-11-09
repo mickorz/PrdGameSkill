@@ -5,11 +5,15 @@
   "type": "module",
   "description": "Interactive Game PRD 确定性校验与构建工具",
   "scripts": {
-    "test": "node scripts/simulator.test.mjs && node scripts/decision.test.mjs && node scripts/e2e.mjs",
+    "test": "node scripts/simulator.test.mjs && node scripts/decision.test.mjs && node scripts/decision-workbench.test.mjs && node scripts/e2e.mjs",
     "test:simulator": "node scripts/simulator.test.mjs",
     "test:html": "node scripts/html-smoke.test.mjs",
     "test:decision": "node scripts/decision.test.mjs",
+    "test:workbench": "node scripts/decision-workbench.test.mjs",
     "test:e2e": "node scripts/e2e.mjs",
+    "workbench": "node scripts/decision-workbench.mjs",
+    "workbench:build": "npm --prefix web/decision-workbench run build",
+    "workbench:dev": "npm --prefix web/decision-workbench run dev",
     "validate": "node scripts/validate-output.mjs ../../examples/mini-game"
   },
   "dependencies": {

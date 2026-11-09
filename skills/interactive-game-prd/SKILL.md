@@ -41,9 +41,10 @@ skills/interactive-game-prd/
 ├── schemas/                        manifest / requirement / ui / test / decision / approval-state 六份 JSON Schema
 ├── templates/                      IR 文件模板
 ├── workflows/                      八个工作流文档
+├── web/decision-workbench/         Decision Workbench 前端（React + Vite + TS，dist 随仓库入库）
 ├── assets/html-template/           HTML PRD 渲染模板
 ├── assets/simulator-template/      模拟器框架契约
-└── scripts/                        validate-ir / apply-decisions / validate-decisions / build-html / validate-html / 测试
+└── scripts/                        validate-ir / apply-decisions / validate-decisions / decision-workbench / build-html / validate-html / 测试
 ```
 
 每个游戏一份 `examples/<game>/`：
@@ -77,6 +78,11 @@ node skills/interactive-game-prd/scripts/simulator.test.mjs
 node skills/interactive-game-prd/scripts/apply-decisions.mjs examples/<game>/game-spec decisions.json --dry-run
 node skills/interactive-game-prd/scripts/apply-decisions.mjs examples/<game>/game-spec decisions.json
 node skills/interactive-game-prd/scripts/validate-decisions.mjs examples/<game>/game-spec
+
+# 裁决工作台页面（P6-B，三栏式；浏览器人工操作，写回 reviews 数据）
+node skills/interactive-game-prd/scripts/decision-workbench.mjs examples/<game>/game-spec --port 8434
+# 前端改动后重新构建（产物 dist 随仓库入库）
+npm --prefix skills/interactive-game-prd/web/decision-workbench run build
 
 # 端到端一致性（Validate 模式）
 node skills/interactive-game-prd/scripts/validate-output.mjs examples/<game>

@@ -1,0 +1,23 @@
+# Traceability Matrix：全链路追溯矩阵（YAML）
+#
+# 链路方向：Source -> GDD -> PRD -> Interaction -> Contract -> Test
+# 支持一对多、多对一关联；gaps 用于登记缺失关联 / 孤立需求 / 待确认依赖。
+
+schema_version: 1
+project_id: "{{PROJECT_ID}}"
+updated_at: ""
+links: []
+# 示例（生成时按事实逐条填写）：
+# links:
+#   - source_id: SRC-001
+#     source_ref: "01-基础规则.md L28-38"
+#     gdd_ids: [GDD-R001]
+#     prd_ids: [PRD-001]
+#     interaction_ids: [INT-001]
+#     contract_ids: [CT-001]
+#     test_ids: []
+#     gaps: []
+summary:
+  total_sources: 0
+  fully_traced: 0
+  with_gaps: 0

@@ -1,0 +1,31 @@
+# Interaction-Contract：业务事件与状态转移契约（YAML）
+#
+# 结构风格参照 game-ui-design-workflow (MIT License)
+# https://github.com/mickorz/game-ui-design-workflow templates/contracts/screen-contract.yaml
+#
+# 约定：
+# - 本契约是平台无关的业务行为定义，不绑定 Unity / Cocos / FairyGUI 等具体实现。
+# - confirmation_status 只允许 draft / pending-human / confirmed-human。
+#   confirmed-human 必须由人工确认后标记，AI 不得自行标记。
+# - 不确定的事件、状态和数据变化留空或标 pending，不得擅自补全。
+
+schema_version: 1
+project_id: "{{PROJECT_ID}}"
+updated_at: ""
+contracts:
+  - contract_id: CT-001
+    related_requirement_ids: []      # PRD-xxx / GDD-Rxxx / INT-xxx
+    trigger: ""                      # 什么触发该行为（如玩家点击「碰」）
+    preconditions: []                # 前置条件（如轮到该玩家出牌）
+    guards: []                       # 阻止执行的守卫（如未过牌优先级不满足）
+    state_transition:
+      from: ""                       # 状态机来源状态
+      to: ""                         # 目标状态
+    data_effects: []                 # 数据影响（如手牌移除一张、副露区+1）
+    ui_effects: []                   # UI 影响（如按钮置灰、弹窗提示）
+    failure_handling: []             # 失败处理（条件不满足时的提示与回滚）
+    timeout_handling: ""             # 超时处理（托管/自动过）
+    mutual_exclusion: []             # 互斥规则（如与「胡」同时出现时的优先级）
+    test_scenarios: []               # 可推导的测试场景
+    source_references: []            # SRC-xxx 事实引用
+    confirmation_status: draft       # draft / pending-human / confirmed-human

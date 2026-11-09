@@ -8,6 +8,7 @@ thirdparties/*
 !thirdparties/Arrow
 !thirdparties/GDD-Forge
 !thirdparties/game-doc-forge
+!thirdparties/game-ui-design-workflow
 !thirdparties/REFERENCES.md
 
 # 开发期沙盒（不入库）

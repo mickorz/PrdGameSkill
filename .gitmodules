@@ -16,3 +16,6 @@
 [submodule "thirdparties/game-doc-forge"]
 	path = thirdparties/game-doc-forge
 	url = https://github.com/MisterVitoPro/gdd.git
+[submodule "thirdparties/game-ui-design-workflow"]
+	path = thirdparties/game-ui-design-workflow
+	url = https://github.com/mickorz/game-ui-design-workflow.git

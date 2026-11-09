@@ -96,10 +96,10 @@ export const OUTCOME_TO_STATUS: Record<Outcome, DecisionStatus> = {
 };
 
 export const ACTION_LABELS: Record<Exclude<ActionKind, null>, string> = {
-  adopt: "确认通过（按现行规则）",
-  modify: "修改后通过（需填写最终规则）",
-  reject: "否决：该规则不成立",
-  defer: "挂起：暂不作结论",
+  adopt: "确认通过（保持不变）",
+  modify: "修改（需填补充新的规则）",
+  reject: "否决（AI 判断不对）",
+  defer: "挂起（有疑问后续再处理）",
 };
 
 export function outcomeLabel(outcome: string): string {

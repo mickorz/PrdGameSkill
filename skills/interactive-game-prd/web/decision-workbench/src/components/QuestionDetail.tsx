@@ -5,8 +5,8 @@ import { useWorkbench } from "../stores/workbench";
 import { ACTION_LABELS, outcomeLabel, type ActionKind } from "../types";
 
 const ACTIONS: { key: ActionKind; desc: string }[] = [
-  { key: "adopt", desc: "认可 IR 现行规则，关联条目转 approved" },
-  { key: "modify", desc: "规则保留，内容以你填写的最终规则为准" },
+  { key: "adopt", desc: "规则保持不变，关联条目转 approved" },
+  { key: "modify", desc: "规则内容以你填写的新规则为准" },
   { key: "reject", desc: "关联条目转 rejected，对应推导作废" },
   { key: "defer", desc: "保留问题，不阻塞其他工作" },
 ];
@@ -60,7 +60,7 @@ export function QuestionDetail() {
   const disabledReason = !draft.action
     ? "请选择裁决动作"
     : draft.action === "modify" && !draft.finalText.trim()
-      ? "请填写最终规则"
+      ? "请填写补充的新规则"
       : !draft.rationale.trim()
         ? "请填写裁决理由"
         : null;
@@ -152,7 +152,7 @@ export function QuestionDetail() {
 
         {draft.action === "modify" && (
           <label className="field">
-            <span>最终规则（人工确认，提交后写入 decision-log，必填）</span>
+            <span>补充新的规则（人工确认，提交后写入 decision-log，必填）</span>
             <textarea
               rows={3}
               value={draft.finalText}

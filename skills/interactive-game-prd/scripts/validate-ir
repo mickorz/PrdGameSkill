@@ -257,6 +257,7 @@ export function validateSpec(specDir) {
     const legal = new Set([
       "proposed->approved", "proposed->rejected", "rejected->proposed",
       "approved->deprecated", "rejected->deprecated",
+      "approved->rejected", "rejected->approved", // 人工重裁决翻案（Decision Workbench，历史在 decision-log 保留）
     ]);
     let log;
     try {
@@ -266,11 +267,21 @@ export function validateSpec(specDir) {
       log = [];
     }
     const entries = Array.isArray(log) ? log : log.decisions || [];
+    // 收集流转：兼容旧字段级格式（entry.field/from/to）与新 Decision Workbench 格式（entry.requirement_updates[]）
+    const transitions = [];
     for (const entry of entries) {
       if (entry.field === "status" && entry.from && entry.to) {
-        if (!legal.has(`${entry.from}->${entry.to}`)) {
-          err("ILLEGAL_TRANSITION", `非法状态流转 ${entry.from}->${entry.to}`, logFile, entry.requirement_id);
+        transitions.push({ from: entry.from, to: entry.to, rid: entry.requirement_id });
+      }
+      for (const u of entry.requirement_updates || []) {
+        if (u.field === "status" && u.from && u.to) {
+          transitions.push({ from: u.from, to: u.to, rid: u.requirement_id });
         }
+      }
+    }
+    for (const t of transitions) {
+      if (!legal.has(`${t.from}->${t.to}`)) {
+        err("ILLEGAL_TRANSITION", `非法状态流转 ${t.from}->${t.to}`, logFile, t.rid);
       }
     }
   }

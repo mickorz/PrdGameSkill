@@ -21,13 +21,14 @@ description: 从原始游戏 PRD 生成结构化 Game Requirement IR、Interacti
 2. 需求文档 9.2 节全部确定性检查一律走 Scripts 层；AI 只负责 9.3 节语义检查（遗漏页面、隐性冲突、体验问题等）。
 3. 任何模式都不得覆盖 `source/original-prd.md`；不得虚构原始 PRD 没有定义的规则。
 
-## 六种模式入口
+## 七种模式入口
 
 | 模式 | 工作流 | 功能 |
 |---|---|---|
 | Create | parse-prd → extract-requirements → generate-ir → review-requirements → generate-html → generate-simulator | 从原始 PRD 创建交互式 Game PRD |
 | Update | extract-requirements（增量） | 根据新需求更新现有规格，必须追加 decision-log |
 | Review | review-requirements | 只产出审查报告，不修改原始需求与 IR |
+| Decision | apply-decisions | 落盘人工裁决（OQ 状态升级 + decision-log 追加 + 进度管理），AI 不允许代人工提交 |
 | Generate | generate-html / generate-simulator | 从 IR 重新生成 HTML 与模拟器，不修改 approved 规则 |
 | Validate | validate-output | IR + HTML + 模拟器一致性，输出机器可读报告 |
 | Export | validate-output（尾段） | 双校验通过后打 ZIP |
@@ -37,12 +38,12 @@ description: 从原始游戏 PRD 生成结构化 Game Requirement IR、Interacti
 ```text
 skills/interactive-game-prd/
 ├── references/game-prd-format.md   IR 格式唯一权威定义
-├── schemas/                        manifest / requirement / ui / test 四份 JSON Schema
+├── schemas/                        manifest / requirement / ui / test / decision / approval-state 六份 JSON Schema
 ├── templates/                      IR 文件模板
-├── workflows/                      七个工作流文档
+├── workflows/                      八个工作流文档
 ├── assets/html-template/           HTML PRD 渲染模板
 ├── assets/simulator-template/      模拟器框架契约
-└── scripts/                        validate-ir / build-html / validate-html / 测试
+└── scripts/                        validate-ir / apply-decisions / validate-decisions / build-html / validate-html / 测试
 ```
 
 每个游戏一份 `examples/<game>/`：
@@ -72,6 +73,11 @@ node skills/interactive-game-prd/scripts/validate-html.mjs examples/<game>/outpu
 # 模拟器场景回放
 node skills/interactive-game-prd/scripts/simulator.test.mjs
 
+# 人工裁决应用与审计（Decision 模式，先 dry-run 预演）
+node skills/interactive-game-prd/scripts/apply-decisions.mjs examples/<game>/game-spec decisions.json --dry-run
+node skills/interactive-game-prd/scripts/apply-decisions.mjs examples/<game>/game-spec decisions.json
+node skills/interactive-game-prd/scripts/validate-decisions.mjs examples/<game>/game-spec
+
 # 端到端一致性（Validate 模式）
 node skills/interactive-game-prd/scripts/validate-output.mjs examples/<game>
 ```
@@ -81,3 +87,4 @@ node skills/interactive-game-prd/scripts/validate-output.mjs examples/<game>
 - 每条需求 `status: proposed|approved|rejected|deprecated`，`authority: fixed|delegated|open`。
 - AI 只能提 proposed；approved 只能由人工确认产生并记录 decision-log。
 - 未确认（open）的规则，模拟器输出 `RULE_NOT_CONFIRMED`，禁止编造判定结果。
+- 裁决数据层（P6-A）：decision.schema.json + approval-state.schema.json；`apply-decisions.mjs` 落盘、`validate-decisions.mjs` 审计三方一致性；decision-log 只追加，重裁决走 supersedes 链。

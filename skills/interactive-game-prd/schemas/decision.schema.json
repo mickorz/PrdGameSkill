@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "decision.schema.json",
+  "title": "Game Decision Workbench 裁决记录",
+  "description": "人工裁决一条未决问题（OQ）后生成的正式记录。提交后写入 reviews/decision-log.json，历史只追加不覆盖。pending 不落盘（无记录即 pending）；draft 只存在于 approval-state.json 的 drafts 区。",
+  "type": "object",
+  "required": ["decision_id", "question_id", "decision_status", "outcome", "rationale", "reviewer", "decided_at"],
+  "additionalProperties": false,
+  "properties": {
+    "decision_id": { "type": "string", "pattern": "^DEC-[0-9]{3,4}$" },
+    "question_id": { "type": "string", "pattern": "^OQ-[0-9]{3,4}$" },
+    "decision_status": {
+      "description": "裁决状态。approved=人工确认通过（含直接采纳），rejected=否决，deferred=挂起，draft=草稿（仅允许出现在 approval-state.json 的 drafts 区，decision-log 中禁止）。",
+      "enum": ["approved", "rejected", "deferred", "draft"]
+    },
+    "outcome": {
+      "description": "裁决结果细节：adopted=采纳 AI 建议口径，modified=人工修改后采纳，rejected=否决，deferred=挂起。",
+      "enum": ["adopted", "modified", "rejected", "deferred"]
+    },
+    "final_decision": {
+      "description": "人工确认的最终口径，结构由问题类型决定（布尔、枚举、公式、数值均可），由 workflow 层定义，Schema 不约束内部字段。",
+      "type": ["object", "null"]
+    },
+    "rationale": { "description": "裁决理由（人工填写或确认）", "type": "string", "minLength": 1 },
+    "reviewer": {
+      "description": "裁决人必须是人，AI 不允许提交正式裁决",
+      "const": "human"
+    },
+    "decided_at": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?(Z|[+-][0-9]{2}:[0-9]{2})$" },
+    "requirement_updates": {
+      "description": "本裁决引发的 IR 条目状态/字段变更（P6-C 起可由工具自动生成，人工可修正）",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["requirement_id", "field", "from", "to"],
+        "additionalProperties": false,
+        "properties": {
+          "requirement_id": { "type": "string", "pattern": "^GAME-(FR|RULE|STATE|NFR|UI|COMP|EVENT|CFG|TC|TASK)-[0-9]{3,4}$" },
+          "field": { "type": "string", "minLength": 1 },
+          "from": { "type": ["string", "null"] },
+          "to": { "type": ["string", "null"] },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "affected": {
+      "description": "影响面登记（P6-C 由影响分析自动补全，人工可先手填）",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "requirements": { "type": "array", "items": { "type": "string" } },
+        "tests": { "type": "array", "items": { "type": "string" } },
+        "ui": { "type": "array", "items": { "type": "string" } },
+        "simulator": { "type": "boolean" }
+      }
+    },
+    "related_question_ids": {
+      "description": "合并裁决的关联/重复问题，一次裁决同批解决",
+      "type": "array",
+      "items": { "type": "string", "pattern": "^OQ-[0-9]{3,4}$" }
+    },
+    "supersedes": {
+      "description": "重新裁决时指向被替代的上一条有效 decision_id；首次裁决为 null 或省略",
+      "type": ["string", "null"],
+      "pattern": "^DEC-[0-9]{3,4}$"
+    },
+    "evidence": {
+      "description": "原始需求依据定位",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source_document": { "type": "string" },
+        "section": { "type": "string" },
+        "quote": { "type": "string" }
+      }
+    }
+  }
+}

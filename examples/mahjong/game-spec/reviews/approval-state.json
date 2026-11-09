@@ -1,0 +1,13 @@
+{
+  "game": "卡五星（好友房）",
+  "updated_at": "2026-11-09T00:00:00+08:00",
+  "progress": {
+    "total": 31,
+    "approved": 0,
+    "rejected": 0,
+    "deferred": 0,
+    "open": 31
+  },
+  "last_position": null,
+  "drafts": {}
+}

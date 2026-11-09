@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "approval-state.schema.json",
+  "title": "Game Decision Workbench 审批状态文件",
+  "description": "reviews/approval-state.json：工作台的进度、上次处理位置与未提交草稿。progress 可由 validate-decisions 重算核对；drafts 中的草稿未提交，不算正式裁决。",
+  "type": "object",
+  "required": ["game", "updated_at", "progress"],
+  "additionalProperties": false,
+  "properties": {
+    "game": { "type": "string", "minLength": 1 },
+    "updated_at": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}" },
+    "progress": {
+      "type": "object",
+      "required": ["total", "approved", "rejected", "deferred", "open"],
+      "additionalProperties": false,
+      "properties": {
+        "total": { "type": "integer", "minimum": 0 },
+        "approved": { "type": "integer", "minimum": 0 },
+        "rejected": { "type": "integer", "minimum": 0 },
+        "deferred": { "type": "integer", "minimum": 0 },
+        "open": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "last_position": {
+      "description": "上次处理到的问题，用于中断恢复",
+      "type": ["object", "null"],
+      "required": ["question_id", "updated_at"],
+      "additionalProperties": false,
+      "properties": {
+        "question_id": { "type": "string", "pattern": "^OQ-[0-9]{3,4}$" },
+        "updated_at": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T" }
+      }
+    },
+    "drafts": {
+      "description": "未提交草稿，键为 OQ ID。草稿不是正式裁决，重启后可恢复继续编辑。",
+      "type": "object",
+      "additionalProperties": { "$ref": "decision.schema.json" }
+    }
+  }
+}

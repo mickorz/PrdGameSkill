@@ -1,0 +1,34 @@
+id: GAME-CFG-022
+type: config
+name: "规则-查叫"
+status: proposed
+authority: fixed
+description: "勾选后荒庄时未听牌玩家向听牌玩家赔付，直接影响算分。"
+source:
+  kind: original
+  document: source/07-配置.md
+  section: "7.7 查叫"
+  page: null
+  quote: "开启后，荒庄时未听牌玩家向听牌玩家赔付"
+value: false
+preconditions: []
+inputs:
+  - "创房面板勾选"
+  - "荒庄时各玩家听牌状态"
+outputs:
+  - "荒庄查叫赔付"
+business_rules:
+  - "布尔勾选，默认不选。"
+  - "勾选 → 荒庄新增赔付分支：底分 × 番型 × 加倍项 + 漂分 + 坎分（未听牌玩家向听牌玩家赔付）。"
+  - "取消 → 荒庄不查叫。"
+  - "与亮倒荒庄赔付可同时赔付【卡五星·十堰卡五星共有】。"
+  - "直接影响算分。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-CFG-005"
+  - "GAME-CFG-015"
+open_questions: []

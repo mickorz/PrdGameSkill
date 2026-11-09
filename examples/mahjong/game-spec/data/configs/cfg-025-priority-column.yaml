@@ -1,0 +1,30 @@
+id: GAME-CFG-025
+type: config
+name: 优先级列（未启用）
+status: proposed
+authority: open
+description: 创房配置表的优先级排序列，三表全空且面板无此列，裁定未启用。
+source:
+  kind: original
+  document: source/07-配置.md
+  section: 十三、UI 排版规则
+  page: null
+  quote: 三张配置表均有「优先级（从小到大显示，用于规则卡片）」列，但全表为空；创房面板实拍中亦无该列 → 该列未启用，规则卡片按创房表条序展示
+value: null
+preconditions: []
+inputs: []
+outputs:
+  - 规则卡片展示顺序（按创房表条序）
+business_rules:
+  - 三张配置表均有「优先级（从小到大显示，用于规则卡片）」列，但全表为空；创房面板实拍中亦无该列。
+  - '裁定该列未启用（§一 #41 / §二 优先级列 / §19.2 收口），规则卡片按创房表条序展示。'
+  - 对结算影响：不影响（仅 UI 排版）。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs:
+  - GAME-COMP-009
+test_refs: []
+dependencies: []
+open_questions:
+  - 原文该列全空、未明示任何优先级数值；如后续启用需产品侧补充定义

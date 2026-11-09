@@ -1,0 +1,35 @@
+id: GAME-RULE-018
+type: game_rule
+name: 胡牌限制层
+status: proposed
+authority: fixed
+description: 番型合法之外有 5 层限制（M5），任一拦截即不可胡。
+source:
+  kind: original
+  document: source/01-基础规则.md
+  section: "七、胡牌限制层（M5）"
+  page: null
+  quote: "番型合法之外，本玩法还有 5 层限制，**任一拦截即不可胡**："
+preconditions:
+  - 玩家尝试胡牌（自摸 / 捉炮 / 抢杠胡）
+inputs:
+  - 胡牌尝试及其上下文（番型倍数、危牌、亮倒、漏胡、操作优先级）
+outputs:
+  - 允许胡或拦截
+business_rules:
+  - 限制层 1 番数门槛：番型 × 加倍项 > 1 才可捉炮；只有 1 倍时只能自摸；自摸不受限。
+  - 限制层 2 危牌：见 §5.3（手中全是危牌时可打出）。
+  - 限制层 3 亮倒限制（可选）：勾选「胡牌必须亮倒」后仅亮倒状态才能胡；例外为勾选「双亮」后 3 人时已有 2 人亮倒 → 第三人免亮可胡（自摸、点炮均可）。
+  - 限制层 4 漏胡：见 §8；摸牌后（含杠后补牌）解除。
+  - 限制层 5 操作优先级：吃胡 / 自摸 / 抢杠胡 > 碰 / 杠。
+  - 判定顺序无关结果：限制层是否决条件（满足任一即不可胡），番型是计分条件（决定胡了算多少倍），二者为 AND 关系；先算番型再过限制层仅为行文顺次，无需技术侧确认。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-012
+  - GAME-RULE-014
+  - GAME-RULE-019
+open_questions: []

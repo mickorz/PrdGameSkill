@@ -1,0 +1,41 @@
+id: GAME-RULE-123
+type: game_rule
+name: 马分（S6）
+status: proposed
+authority: fixed
+description: 买马总得分不受封顶影响，买一中发白记10倍底分、1到9记同数字倍，买5马6马按1、4、7、白各计。
+source:
+  kind: original
+  document: source/06-结算.md
+  section: "七、马分（S6）"
+  page: null
+  quote: "买马的总得分，**不受封顶影响**。"
+preconditions:
+  - "创房勾选购马"
+  - "非荒庄"
+  - "买一或买一送一时剩余牌数量足够"
+inputs:
+  - "买的马牌"
+  - "马数配置（买一/买一送一/买5马/买6马）"
+outputs:
+  - "马分"
+business_rules:
+  - "买马的总得分不受封顶影响。"
+  - "买一：中发白记 10 倍底分；1 到 9 记同数字倍的底分。"
+  - "买一送一：同上，两张分数之和。"
+  - "买6马：出现 1 / 4 / 7 / 白 每张 1 倍底分（命中集即此四种，不含中、发）；中 0 张按 6 马计分。"
+  - "买5马：出现 1 / 4 / 7 / 白 每张 1 分（命中集即此四种，不含中、发）；一张不中或者中 5 张，按 6 马计分。"
+  - "收分对象：自摸收取所有玩家。"
+  - "不买马的情形：不买马配置；荒庄；买一 / 买一送一时剩余牌数量不足。"
+normal_flow: []
+exception_flow:
+  - "荒庄或牌数不足 -> 不买马"
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-RULE-016"
+  - "GAME-RULE-088"
+  - "GAME-RULE-126"
+  - "GAME-RULE-128"
+open_questions: []

@@ -1,0 +1,32 @@
+id: GAME-RULE-036
+type: game_rule
+name: 提牌规则
+status: proposed
+authority: fixed
+description: 单击牌面提起该牌约1/4牌高且每次只能提起1张，点击空白处放下，提起可听牌时弹出听牌提示
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 2.3 提牌
+  page: null
+  quote: 对应牌提起，提起高度约为牌高度的 1/4；每次只能提起 1 张牌
+preconditions:
+  - 玩家处于出牌阶段
+inputs:
+  - 玩家单击牌面或滑动选择
+outputs:
+  - 对应牌提起/放下，可听牌弹出听牌提示页面
+business_rules:
+  - 触发：单击牌面
+  - 放下：点击非牌面空白处可放下；点击该牌牌面不能放下
+  - 滑动选择：可滑动选择多张牌，手牌依次提起、每次只提起1张；手指离开手牌时，最终手指离开的对应牌提起
+  - 联动：提起【打出可听牌】时，弹出听牌提示页面
+normal_flow:
+  - 单击牌面 -> 牌提起约1/4高度 -> 弹出听牌提示（若为可听牌） -> 点击空白处放下
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-FR-002
+open_questions: []

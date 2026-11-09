@@ -1,0 +1,39 @@
+id: GAME-RULE-121
+type: game_rule
+name: 封顶（S4）
+status: proposed
+authority: fixed
+description: 封顶仅截断番型乘加倍项，可选8、16、32、64倍或不封顶，漂马坎杠等加分项不受封顶无上限。
+source:
+  kind: original
+  document: source/06-结算.md
+  section: 五、封顶（S4）
+  page: null
+  quote: '| **封顶口径** | **仅计算「番型 × 加倍项」**，不可超过封顶倍数 |'
+preconditions:
+  - S3 已算出番型 × 加倍项
+  - 创房配置封顶倍数
+inputs:
+  - 番型 × 加倍项值
+  - 封顶倍数配置
+outputs:
+  - 截断后的番型 × 加倍项
+business_rules:
+  - 封顶口径：仅计算「番型 × 加倍项」，不可超过封顶倍数；超过时按封顶倍数计算。
+  - 可选值：8 / 16 / 32 / 64 / 不封顶。
+  - 所有加分项不参与封顶计算，无上限：漂、马、坎、杠。
+  - 上楼为加倍项，不可突破封顶倍数。
+  - 示例：封顶 32 倍，清一色 4 + 手抓一 2 + 碰碰胡 2 = 8 倍牌型分，亮倒 ×2 = 16 倍，上楼 ×4 = 64 倍大于 32，截断为 32 倍；本局漂分 3 倍底分、马分 5 分另行相加不受封顶。
+normal_flow:
+  - 番型 × 加倍项与封顶倍数比较 -> 超出取封顶 -> 加分项不截断直接合计
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs:
+  - GAME-TC-002
+  - GAME-TC-005
+dependencies:
+  - GAME-RULE-116
+  - GAME-RULE-120
+  - GAME-RULE-118
+open_questions: []

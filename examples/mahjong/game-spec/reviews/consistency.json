@@ -1,0 +1,23 @@
+{
+  "checked_at": "2026-11-09",
+  "checks": [
+    { "item": "Schema 合法性", "result": "pass", "detail": "validate-ir errors=0 warnings=0（162 个需求条目 + 44 个 UI 条目 + navigation）" },
+    { "item": "ID 唯一性", "result": "pass", "detail": "RULE 001~130 段无冲突（001~030 / 031~062 / 071~094 / 101~130），FR 001~015、CFG 001~028、UI/COMP/EVENT 各段无重复" },
+    { "item": "引用完整性", "result": "pass", "detail": "悬空引用 0（ui_refs/state_transitions/dependencies/test_refs 全部指向已知 ID）" },
+    { "item": "来源溯源", "result": "pass", "detail": "201 条 source-map 锚点全部命中原文，quote_hash 重算一致；original 来源 quote 全部非空" },
+    { "item": "状态机合法转换", "result": "pass", "detail": "全部条目 status=proposed（初始态），无非法流转；decision-log 为空（待人工确认）" },
+    { "item": "规则间矛盾", "result": "needs_review", "detail": "4 处原文内部矛盾（REVIEW-002~004）已按裁决口径登记待确认，非 IR 引入" },
+    { "item": "单一事实源", "result": "pass", "detail": "同一规则跨文档重叠时以 quote 所在文档为准立条，另侧文档以 business_rules 交叉引用；无重复定义" },
+    { "item": "状态与授权一致性", "result": "pass", "detail": "134 条 proposed / 17 条 authority=open 已在 open-questions.json 汇总 31 项" }
+  ],
+  "issues": [
+    {
+      "id": "REVIEW-002",
+      "type": "ambiguity",
+      "severity": "high",
+      "related_requirements": ["GAME-RULE-108", "GAME-RULE-109"],
+      "description": "杠上花/杠上炮生效条件原文矛盾，IR 采创房表口径（默认 2 倍、勾选后 4 倍）",
+      "resolution": { "status": "open", "decision": null }
+    }
+  ]
+}

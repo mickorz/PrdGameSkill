@@ -1,0 +1,34 @@
+id: GAME-RULE-049
+type: game_rule
+name: 漏胡规则
+status: proposed
+authority: fixed
+description: 可胡不胡即为漏胡，漏胡玩家摸牌前不可胡牌，摸牌后解除（含杠后补牌），并出现1.5秒浮动提示
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 十三、过手规则
+  page: null
+  quote: 漏胡玩家在摸牌前不可胡牌；漏胡状态在摸牌后解除（含杠后补牌）。
+preconditions:
+  - 玩家曾处于可胡状态并选择不胡
+inputs:
+  - 玩家放弃胡牌的选择
+outputs:
+  - 漏胡状态生效；随后摸牌时解除
+business_rules:
+  - 定义：玩家可胡牌时选择不胡牌，即为漏胡（过胡）
+  - 解除时机：漏胡状态在摸牌后解除，含杠后补牌
+  - 漏胡提示：触发漏胡不胡后，出现浮动提示「当前未过手，无法胡牌」，1.5秒后消失
+normal_flow:
+  - 可胡不胡 -> 进入漏胡状态 -> 玩家摸牌（含补牌） -> 漏胡解除
+  - 可胡状态 -> 过 -> 漏胡状态 -> 摸牌 -> 状态解除
+exception_flow:
+  - 漏胡期间再遇可胡牌 -> 不可胡，提示「当前未过手，无法胡牌」1.5秒
+state_transitions: []
+ui_refs: []
+test_refs:
+  - GAME-TC-003
+dependencies:
+  - GAME-RULE-048
+open_questions: []

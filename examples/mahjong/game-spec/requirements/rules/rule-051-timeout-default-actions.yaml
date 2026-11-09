@@ -1,0 +1,33 @@
+id: GAME-RULE-051
+type: game_rule
+name: 超时托管默认动作
+status: proposed
+authority: fixed
+description: 配置开启托管时碰杠超时默认过、有胡牌的多状态超时默认胡、多杠超时默认不杠
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: "九、过"
+  page: null
+  quote: "配置开启托管时，碰 / 杠超时默认【过】；有胡牌的多状态超时默认胡牌"
+preconditions:
+  - "创房配置开启托管"
+  - "玩家在操作窗口内未做出选择（超时）"
+inputs:
+  - "操作超时事件"
+outputs:
+  - "按场景执行默认动作（过/胡/不杠）"
+business_rules:
+  - "碰/杠超时默认【过】（源 §四 超时行同口径）"
+  - "有胡牌的多状态超时默认胡牌"
+  - "胡牌触发（自摸/点炮）超时默认胡（源 §7.3 超时行）"
+  - "多杠状态超时默认不杠（源 §5.5 多杠状态行）"
+normal_flow:
+  - "操作机会出现 -> 超时未响应 -> 执行对应默认动作"
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-RULE-061"
+open_questions: []

@@ -1,0 +1,38 @@
+id: GAME-RULE-101
+type: game_rule
+name: 和牌前置·牌型成立
+status: proposed
+authority: fixed
+description: 胡牌前提是手牌含碰杠牌区加上和入张能构成番型列举的某一结构，判不出任何番型不可胡。
+source:
+  kind: original
+  document: source/05-胡牌类型.md
+  section: 1.1 牌型成立
+  page: null
+  quote: '**判不出任何番型 → 不可胡。**'
+preconditions:
+  - 玩家处于可胡牌判定时机（摸补牌后或他家出牌后）
+inputs:
+  - 手牌与碰杠牌区牌张
+  - 和入张
+outputs:
+  - 牌型判定结果与牌型分（判出番型时）
+business_rules:
+  - 胡牌判定分两层：先判牌型（番型是否成立），再走限制层，两层都通过才可胡。
+  - 结构一：4 副面子（顺子/刻子/杠）+ 1 对将。
+  - 结构二：七对（2N），即 7 个对子。
+  - 结构三：条件型叠加（卡五星/明四归/暗四归），附加在上述结构之上。
+  - 判不出任何番型则不可胡（第一层牌型判定不通过）。
+normal_flow:
+  - 摸补牌或他家出牌 -> 组牌判定 -> 判出番型记牌型分 -> 进入限制层判定
+  - 未定型手牌 -> 判定 -> 牌型成立或不可胡
+exception_flow:
+  - 判不出任何番型 -> 不可胡
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-091
+  - GAME-RULE-077
+  - GAME-RULE-104
+open_questions: []

@@ -1,0 +1,36 @@
+id: GAME-RULE-045
+type: game_rule
+name: 补牌规则
+status: proposed
+authority: fixed
+description: 杠牌之后从牌堆倒序摸1张视为摸牌，剩余牌数额外减1张，本玩法不展示牌墙
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 六、补牌
+  page: null
+  quote: 从牌堆倒序摸一张牌，视为摸牌
+preconditions:
+  - 玩家刚完成杠牌
+inputs:
+  - 杠牌完成事件
+outputs:
+  - 玩家补入1张牌（视为摸牌），牌堆剩余牌数额外减1
+business_rules:
+  - 时机：杠牌之后
+  - 来源：从牌堆倒序摸一张牌，视为摸牌（与正常顺序摸牌的区别在于取牌方向）
+  - 消耗：剩余牌数额外减1张
+  - 位置：手牌最右侧，与一般手牌间隔1/4牌距离，从上往下缓冲落下展示
+  - 牌墙：本玩法不展示牌墙
+normal_flow:
+  - 开杠 -> 杠分结算 -> 从牌堆倒序摸1张 -> 剩余牌数额外减1 -> 进入出牌/操作阶段
+  - 杠成立 -> 补牌 -> 出牌阶段
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-040
+  - GAME-RULE-042
+open_questions:
+  - 剩余牌数额外减1张：被额外减去的牌的去向与可见性原文未说明（本玩法不展示牌墙）

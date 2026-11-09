@@ -1,0 +1,41 @@
+id: GAME-RULE-107
+type: game_rule
+name: 自摸
+status: proposed
+authority: fixed
+description: 摸牌或补牌后手牌符合胡牌规则含杠上开花即可自摸，不受番数门槛与危牌限制，收其他所有玩家分。
+source:
+  kind: original
+  document: source/05-胡牌类型.md
+  section: 四、自摸
+  page: null
+  quote: '| **触发** | 摸牌或补牌后，手牌符合胡牌规则（**包括杠上开花**）|'
+preconditions:
+  - 轮到自己摸牌或杠后补牌
+inputs:
+  - 摸补牌后的手牌
+  - 亮倒状态
+outputs:
+  - 自摸成立与收分
+business_rules:
+  - 触发：摸牌或补牌后，手牌符合胡牌规则（包括杠上开花）。
+  - 番数门槛不受限（1 倍也可自摸）；收分对象为其他所有玩家。
+  - 限制层适用：不受番数门槛与危牌限制约束；受亮倒限制（勾选「胡牌必须亮倒」且自己未亮倒则不可胡，「双亮」例外除外）；漏胡限制在摸牌后即解除，故自摸不受漏胡限制。
+  - 超时：配置开启托管时，超时默认胡。
+  - 有自摸按钮时不可直接出牌。
+  - 展示：摊开摆放在自己手牌右侧，间隔 1/4 牌距离，显示手掌标记。
+  - 封顶显示：如有倍数封顶，则显示【封顶】，且倍数仅显示封顶倍数。
+normal_flow:
+  - 摸牌或补牌 -> 牌型成立 -> 点自摸 -> 摊牌展示并收取其他所有玩家分
+exception_flow:
+  - 勾选胡牌必须亮倒且未亮倒 -> 不可自摸
+state_transitions: []
+ui_refs: []
+test_refs:
+  - GAME-TC-002
+dependencies:
+  - GAME-RULE-102
+  - GAME-RULE-114
+  - GAME-RULE-083
+  - GAME-RULE-061
+open_questions: []

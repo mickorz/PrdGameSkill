@@ -1,0 +1,5 @@
+id: GAME-EVENT-018
+name: 弹出小结算
+trigger_type: timer
+payload: {}
+requirements: [GAME-FR-015]

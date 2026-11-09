@@ -1,0 +1,41 @@
+id: GAME-RULE-113
+type: game_rule
+name: 一炮多响
+status: proposed
+authority: fixed
+description: 打出一张牌导致多个玩家同时胡牌为一炮多响，各家分别和牌分别计分，点炮玩家坐庄并触发下局上楼2倍。
+source:
+  kind: original
+  document: source/05-胡牌类型.md
+  section: 九、一炮多响
+  page: null
+  quote: '| **触发** | 打出一张牌后，导致**多个玩家**胡牌 |'
+preconditions:
+  - 一名玩家打出一张牌
+  - 多个玩家同时满足胡牌条件
+inputs:
+  - 打出的牌
+  - 各胡牌方的番型与限制层状态
+outputs:
+  - 各家分别计分与坐庄归属
+business_rules:
+  - 触发：打出一张牌后，导致多个玩家胡牌。
+  - 结算：各家分别和牌、分别计分；番数门槛各胡牌方各自判大于 1，亮倒与漏胡各自判。
+  - 轮庄：一炮多响时，点炮玩家坐庄。
+  - 上楼联动：触发下一小局的上楼 ×2（同一大局内）。
+  - 大结算统计：点炮 X 次中，一炮多响只算一次（一小局最多一次）。
+  - 飘分配色：正分为黄色，负分为灰色。
+  - 界面（胡牌玩家视角）：一炮多响动画 -> 光柱画面 -> 自己所胡番型 + 飘分。
+  - 界面（放炮玩家与围观视角）：一炮多响动画 -> 光柱画面 -> 所有玩家所胡番型 + 飘分。
+normal_flow:
+  - 出牌 -> 多家同时胡 -> 一炮多响动画 -> 各家分别计分 -> 点炮玩家坐庄
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs:
+  - GAME-TC-008
+dependencies:
+  - GAME-RULE-006
+  - GAME-RULE-129
+  - GAME-RULE-111
+open_questions: []

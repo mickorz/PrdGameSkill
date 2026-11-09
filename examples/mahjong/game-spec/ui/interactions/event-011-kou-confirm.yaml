@@ -1,0 +1,5 @@
+id: GAME-EVENT-011
+name: 扣牌选择完成
+trigger_type: click
+payload: {}
+requirements: [GAME-FR-012]

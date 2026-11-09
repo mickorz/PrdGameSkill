@@ -1,0 +1,8 @@
+id: GAME-COMP-006
+type: ting_prompt
+name: 听牌提示
+props: {}
+events:
+  - GAME-EVENT-012
+requirements: [GAME-FR-013]
+visual_hint: 可听牌上方标签按优、大、多、箭头优先级单显；提起提示牌弹出胡牌信息框（可胡张数与牌面倍数张数、一排最多4个、超3排可滑动、左下角封顶倍数）

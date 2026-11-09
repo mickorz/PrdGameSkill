@@ -1,0 +1,32 @@
+id: GAME-CFG-009
+type: config
+name: 亮倒-部分亮
+status: proposed
+authority: fixed
+description: 亮倒后仅亮出与胡的牌相关的牌、其余扣下，仅影响 UI 展示、不影响算分。
+source:
+  kind: original
+  document: source/07-配置.md
+  section: 7.2.1 部分亮
+  page: null
+  quote: 亮倒后，仅非扣下、与胡的牌相关的牌亮出，其余牌全部扣下
+value: false
+preconditions: []
+inputs:
+  - 创房面板勾选
+outputs:
+  - 亮倒后亮出的牌的范围（仅展示）
+business_rules:
+  - 布尔勾选，默认不选。
+  - 勾选 → 亮倒时只亮听口相关的牌（仅非扣下、与胡的牌相关的牌亮出），其余牌全部扣下且他人不可见。
+  - 取消 → 亮倒后亮出所有手中牌。
+  - 不影响算分：亮倒本身仍 ×2，本项不进入算分公式、不限制胡牌类型或触发条件，仅决定亮倒后哪些牌亮出。
+  - 联动：影响扣牌后的标签展示，部分亮时扣牌按【暗】展示，非部分亮时按【扣】展示。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs:
+  - GAME-COMP-016
+test_refs: []
+dependencies: []
+open_questions: []

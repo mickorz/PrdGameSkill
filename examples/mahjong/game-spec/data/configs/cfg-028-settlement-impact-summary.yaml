@@ -1,0 +1,38 @@
+id: GAME-CFG-028
+type: config
+name: "对结算的影响三级分类汇总"
+status: proposed
+authority: fixed
+description: "全部创房配置项对结算影响的三级分类汇总（直接影响 / 间接影响 / 不影响）。"
+source:
+  kind: original
+  document: source/07-配置.md
+  section: "16.2 逐项归类"
+  page: null
+  quote: "直接影响 封顶、漂分、买马、马数、对亮 *2、高分玩法、数坎、卡五星 *4、碰碰胡 *4、海底捞/炮 *2、杠上花/炮 *4、包牌、上楼、查叫、三元七对 *8"
+value: null
+preconditions: []
+inputs:
+  - "创房配置取值组合"
+outputs:
+  - "各配置项的结算影响等级"
+business_rules:
+  - "直接影响（进入或改变算分公式）：封顶、漂分、买马、马数、对亮 *2、高分玩法、数坎、卡五星 *4、碰碰胡 *4、海底捞/炮 *2、杠上花/炮 *4、包牌、上楼、查叫、三元七对 *8。"
+  - "间接影响（不进入算分公式，但限制胡牌类型或触发条件）：人数、频道、少于12张不亮、胡牌必须亮倒、双亮。"
+  - "不影响（仅 UI 或流程控制）：部分亮（仅 UI 展示，需求 §3.2.10.3 只给展示定义）、局数、模式、定庄、优先级。"
+  - "影响通道：牌型分通道与加倍项通道受封顶截断，加分项通道（漂 / 马 / 坎 / 杠）不受封顶，加分项全部叠加在封顶截断之后。"
+  - "封顶只截断「番型 × 加倍项」；上楼为加倍项、受封顶约束。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-CFG-004"
+  - "GAME-CFG-005"
+  - "GAME-CFG-006"
+  - "GAME-CFG-007"
+  - "GAME-CFG-015"
+  - "GAME-CFG-022"
+  - "GAME-CFG-026"
+open_questions: []

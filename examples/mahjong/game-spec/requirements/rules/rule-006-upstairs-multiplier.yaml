@@ -1,0 +1,35 @@
+id: GAME-RULE-006
+type: game_rule
+name: 上楼加倍
+status: proposed
+authority: fixed
+description: 上一小局荒庄或一炮多响、或开骰同点时本小局倍数翻倍，可叠加至 4 倍。
+source:
+  kind: original
+  document: source/01-基础规则.md
+  section: "3.4 上楼"
+  page: null
+  quote: "| 1 | 同一大局内，**上一小局荒庄或者一炮多响** → 本小局**倍数** ×2 |"
+preconditions:
+  - 创房勾选「上楼」
+inputs:
+  - 上一小局结果（荒庄 / 一炮多响）
+  - 本小局开局骰子点数
+outputs:
+  - 本小局倍数加倍项（×2 / ×4 / 不加倍）
+business_rules:
+  - 触发条件 1：同一大局内上一小局荒庄或者一炮多响 → 本小局倍数 ×2。
+  - 触发条件 2：本小局开局打骰子时两个骰子点数一致 → 本小局倍数 ×2。
+  - 两个条件同时满足则 ×4（翻倍可叠加，最高 4 倍）。
+  - 上楼为加倍项，不可突破封顶倍数。
+  - 「倍数」射程指番型 × 加倍项，不含马 / 漂 / 坎等加分项（加分项本就不参与封顶，§七）。
+  - 抢杠胡不触发上楼：一炮多响定义为打出一张牌致多家胡牌，补杠的牌被抢不构成打出一张牌（§4.5）。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-011
+  - GAME-RULE-018
+open_questions: []

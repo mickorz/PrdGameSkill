@@ -1,0 +1,33 @@
+id: GAME-RULE-005
+type: game_rule
+name: 方位与座位
+status: proposed
+authority: open
+description: 庄为东、其余逆时针依次南西北；玩家逆时针入座且座位固定。
+source:
+  kind: original
+  document: source/01-基础规则.md
+  section: "3.3 方位"
+  page: null
+  quote: "- 确认庄家并开始摸牌时显示方位：**庄为东**，其余玩家按人数逆时针依次显示南、西、北。"
+preconditions:
+  - 庄家已确认
+inputs:
+  - 玩家人数（2 或 3）
+outputs:
+  - 各玩家方位（东 / 南 / 西）
+business_rules:
+  - 确认庄家并开始摸牌时显示方位：庄为东，其余玩家按人数逆时针依次显示南、西、北。
+  - 方位取值范围：3 人为东/南/西；2 人为东/南。
+  - 方位确认后不再变化，直到重新匹配重置为无方位展示。
+  - 房主创建房间后，后续加入玩家按逆时针顺序入座，与房主的逆时针顺序关系保持相同；座位固定。
+  - 座位布局：2 人固定一上一下（下方自己、上方对家）；3 人固定左、下、右（下方自己、左侧上家、右侧下家）。
+  - 座位与方位不随局变动（§10.4）。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies: []
+open_questions:
+  - 引擎座位编号映射（如「0 号座 = 庄家」）需求未登记（§10.3 标注需注意），需补充定义。

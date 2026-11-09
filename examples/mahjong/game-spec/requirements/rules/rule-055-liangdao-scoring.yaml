@@ -1,0 +1,30 @@
+id: GAME-RULE-055
+type: game_rule
+name: 亮倒计分
+status: proposed
+authority: fixed
+description: 亮倒状态输赢均计算亮倒番型分x2且不影响加分项；对亮仅算一次x2，勾选「对亮x2」时算两个共4倍
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: "10.3 亮倒计分"
+  page: null
+  quote: "亮倒状态下，输 / 赢时均计算亮倒，番型分 ×2，不影响加分项。"
+preconditions:
+  - "结算涉及亮倒状态的玩家"
+inputs:
+  - "胡牌结算（输方或赢方含亮倒玩家）"
+outputs:
+  - "番型分按亮倒规则乘倍"
+business_rules:
+  - "亮倒状态下输/赢时均计算亮倒，番型分x2，不影响加分项"
+  - "输赢双方均亮倒（对亮）时仅计算一次亮倒x2"
+  - "创房勾选「对亮 x2」时，胡牌双方均亮倒计算两个亮倒（共4倍）"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-RULE-054"
+open_questions: []

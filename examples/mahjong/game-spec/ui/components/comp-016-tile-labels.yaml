@@ -1,0 +1,7 @@
+id: GAME-COMP-016
+type: tile_labels
+name: 牌标签体系
+props: {}
+events: []
+requirements: [GAME-FR-012]
+visual_hint: 牌左上角标签，危为他人亮倒后可点炮牌、扣为亮倒扣下刻子带遮罩、暗为部分亮未亮牌带黑色蒙版；胡牌后全部手牌复位推倒并去掉所有标签蒙版

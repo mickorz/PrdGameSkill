@@ -1,0 +1,31 @@
+id: GAME-RULE-082
+type: game_rule
+name: "对亮（J02）"
+status: proposed
+authority: fixed
+description: "对亮开关加倍项，勾选后胡牌双方均亮倒时计两个亮倒共4倍。"
+source:
+  kind: original
+  document: "source/04-番型.md"
+  section: "5.2 对亮（J02 · 2 倍）"
+  page: null
+  quote: "| **勾选「对亮 \\*2」** | 胡牌双方均亮倒 → 计算**两个**亮倒的倍数（**共 4 倍**）|"
+preconditions:
+  - "胡牌结算触发且胡牌双方均处于亮倒状态"
+inputs:
+  - "创房「对亮*2」勾选状态"
+  - "胡牌双方亮倒状态"
+outputs:
+  - "加倍倍数（乘算到番型分，参与封顶）"
+business_rules:
+  - "J02 对亮=2倍；创房勾选「对亮*2」后，胡牌双方均亮倒则计两个亮倒的倍数（共4倍）"
+  - "未勾选时双方均亮倒只计算一个亮倒（乘2）；需求原文说明「比未勾选时多一个」"
+  - "倍率关系：未勾选对亮=亮倒乘2（无论几方亮倒只计一次）；勾选对亮=亮倒乘2再乘对亮乘2=乘4（胡牌双方均亮倒时）"
+  - "加倍项参与封顶截断"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies: []
+open_questions: []

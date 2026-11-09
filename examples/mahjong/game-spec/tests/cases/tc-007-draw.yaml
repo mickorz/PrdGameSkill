@@ -1,0 +1,11 @@
+id: GAME-TC-007
+name: 荒庄流局进入荒庄分支
+type: abnormal
+related_requirements: [GAME-RULE-126]
+preconditions:
+  - 牌墙摸完且无人胡牌
+steps:
+  - 最后一张可摸牌被摸走
+  - 无人胡
+expected: 进入荒庄分支 S9：无胡牌分结算，按查叫规则处理（开启时），庄家连庄续局
+rule_refs: [GAME-RULE-126, GAME-RULE-028]

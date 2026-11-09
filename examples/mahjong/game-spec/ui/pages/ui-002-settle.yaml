@@ -1,0 +1,17 @@
+id: GAME-UI-002
+name: 结算界面
+resolution: {width: 1280, height: 720}
+components:
+  - GAME-COMP-008
+states: [loading, normal, error]
+interactions:
+  - trigger: GAME-EVENT-014
+    from_state: normal
+    to_state: normal
+    target_component: GAME-COMP-008
+  - trigger: GAME-EVENT-015
+    from_state: normal
+    to_state: normal
+    target_component: GAME-COMP-008
+requirements: [GAME-FR-015]
+test_refs: []

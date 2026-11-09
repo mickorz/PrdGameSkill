@@ -1,0 +1,43 @@
+id: GAME-RULE-116
+type: game_rule
+name: 结算总公式（S0）
+status: proposed
+authority: open
+description: 小局最终得分等于底分乘番型乘加倍项加马分漂分坎分，有人胡牌走S1至S8及包牌特殊场景，荒庄走S9。
+source:
+  kind: original
+  document: source/06-结算.md
+  section: 一、对局结果与总公式（S0）
+  page: null
+  quote: 小局结束的最终得分 = 底分 × 番型 × 加倍项 + 马分 + 漂分 + 坎分
+preconditions:
+  - 一小局结束（有人胡牌或荒庄）
+inputs:
+  - 对局结果类型
+  - 各分项计算结果
+outputs:
+  - 每个玩家的最终得分
+business_rules:
+  - 主公式：小局结束的最终得分 = 底分 × 番型 × 加倍项 + 马分 + 漂分 + 坎分。
+  - 结果类型：正常胡牌（有玩家胡牌）走 S1~S8（+ S10 包牌 / S11 特殊场景）；荒庄（可摸牌数 = 0 且无人胡牌）走 S9（查叫 / 亮倒荒庄赔付）。
+  - 流水线顺序：S1 牌型分 -> S2 分值 remap（M9）-> S3 加倍项 -> S4 封顶 -> S5 杠分 -> S6 马分 -> S7 漂分 -> S8 坎分 -> S9 荒庄分支 / S10 包牌 / S11 特殊场景。
+  - 底分：需求未单列底分配置项，底分为所有倍数的乘算单位；推导取值底分 = 1（即 N 倍底分实际计分等值于 N 分）。
+normal_flow:
+  - 确认有人胡牌 -> S1 至 S8 依次计算 -> 触发时走 S10 / S11 -> 输出最终得分
+exception_flow:
+  - 可摸牌数为 0 且无人胡牌 -> 走 S9 荒庄分支
+state_transitions: []
+ui_refs: []
+test_refs:
+  - GAME-TC-002
+  - GAME-TC-005
+dependencies:
+  - GAME-RULE-117
+  - GAME-RULE-118
+  - GAME-RULE-119
+  - GAME-RULE-121
+  - GAME-RULE-126
+  - GAME-RULE-128
+  - GAME-RULE-129
+open_questions:
+  - 需求原文（§2.4）主公式含「+ 字分」项，本文档正文公式未纳入字分且本篇未定义字分口径，字分是否参与结算待确认。

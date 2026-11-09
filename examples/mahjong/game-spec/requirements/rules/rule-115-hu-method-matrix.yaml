@@ -1,0 +1,34 @@
+id: GAME-RULE-115
+type: game_rule
+name: 胡法×限制层对照矩阵
+status: proposed
+authority: fixed
+description: 八种胡法对番数门槛、危牌、亮倒、漏胡四层限制的适用差异与倍数速查矩阵。
+source:
+  kind: original
+  document: source/05-胡牌类型.md
+  section: "十二、各胡法 × 限制层对照矩阵"
+  page: null
+  quote: "| **点炮（捉炮胡）** | **> 1 才可** | **受**（出牌方被阻断）| 受 | **受** | 基础 |"
+preconditions: []
+inputs:
+  - "胡法类型"
+outputs:
+  - "该胡法适用的限制层组合与倍数"
+business_rules:
+  - "自摸 / 杠上花 / 海底捞：番数门槛不受限、不受危牌限制、受亮倒限制、漏胡摸牌后即解除。"
+  - "点炮 / 杠上炮 / 抢杠胡 / 海底炮：番数门槛大于 1 才可、受危牌限制、受亮倒限制、受漏胡限制。"
+  - "杠上花 / 杠上炮 / 抢杠胡倍数 ×2（勾选「杠上花/炮*4」后 ×4）；海底捞 / 海底炮 ×2（勾选「海底捞/炮*2」后生效）。"
+  - "一炮多响：各胡牌方各自判番数门槛大于 1，亮倒与漏胡各自判，各家分别计分。"
+  - "判定顺序：番型先算、限制层后过（先算出牌型分才能判定能否捉炮）。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-RULE-104"
+  - "GAME-RULE-102"
+  - "GAME-RULE-106"
+open_questions:
+  - "矩阵中抢杠胡「勾选「杠上花/炮*4」后 ×4」为推导标注（由 §2.3.1.2 与杠上花/炮并列受同一勾选控制得出）。"

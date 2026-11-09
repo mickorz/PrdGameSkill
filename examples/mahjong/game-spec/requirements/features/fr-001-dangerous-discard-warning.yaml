@@ -1,0 +1,33 @@
+id: GAME-FR-001
+type: game_feature
+name: 危牌放炮浮动提示
+status: proposed
+authority: fixed
+description: 打出危牌时出现浮动提示「打出该牌将会放炮！」并阻断出牌
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 2.1 条件与限制
+  page: null
+  quote: 打出危牌时，出现浮动提示「打出该牌将会放炮！」。
+preconditions:
+  - 玩家尝试打出危牌
+inputs:
+  - 对危牌的出牌操作
+outputs:
+  - 浮动提示「打出该牌将会放炮！」，出牌被阻断
+business_rules:
+  - 提示出现并阻断出牌
+  - 亮倒-打牌界面中点击亮起的危牌时同样出现该提示并阻断出牌（源 §10.4 交互表）
+normal_flow: []
+exception_flow:
+  - 尝试打危牌 -> 浮动提示 -> 阻断出牌
+state_transitions: []
+ui_refs:
+  - GAME-COMP-001
+test_refs: []
+dependencies:
+  - GAME-RULE-033
+  - GAME-RULE-056
+  - GAME-FR-007
+open_questions: []

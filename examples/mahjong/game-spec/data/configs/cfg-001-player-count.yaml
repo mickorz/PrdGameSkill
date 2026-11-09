@@ -1,0 +1,39 @@
+id: GAME-CFG-001
+type: config
+name: 人数
+status: proposed
+authority: fixed
+description: 创房选择房间人数（2 人 / 3 人），决定房间规模与座位方位，并联动置灰包牌、双亮及改变起手与余量。
+source:
+  kind: original
+  document: source/07-配置.md
+  section: 3.1 人数
+  page: null
+  quote: 3 人 默认 房间最大人数 3 人。座位固定左、下、右（下方自己，左侧上家，右侧下家）；方位东 / 南 / 西
+value: 3 人
+preconditions: []
+inputs:
+  - 创房面板人数选择
+outputs:
+  - 房间最大人数
+  - 座位布局与方位取值范围
+  - 起手张数与发牌余量
+business_rules:
+  - 可选值：2 / 3（十五、数值范围与边界）。
+  - 2 人：房间最大人数 2 人，座位固定一上一下（下方自己，上方对家），方位仅东 / 南；3 人：座位固定左、下、右，方位东 / 南 / 西。
+  - 对结算的间接影响：限定可开启的规则项，2 人时【卡五星专属】包牌、双亮置灰不可勾选。
+  - 起手合计与发牌后余量随人数变化：3 人起手 40 张、余量 44 张；2 人起手 27 张、余量 57 张（推导值）。
+  - 漂分收分对象数随人数变化：自摸 3 人收 2 家、2 人收 1 家。
+  - 结算界面高度 2 人复用 3 人高度；一炮多响在 2 人局逻辑上不可能发生（仅 1 个对手）。
+  - 联动顺序：人数变更 → 包牌 / 双亮联动置灰 → 起手合计与余量随之变化。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs:
+  - GAME-UI-003
+test_refs: []
+dependencies:
+  - GAME-CFG-013
+  - GAME-CFG-020
+  - GAME-CFG-026
+open_questions: []

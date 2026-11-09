@@ -1,0 +1,34 @@
+id: GAME-RULE-019
+type: game_rule
+name: 过手规则
+status: proposed
+authority: open
+description: 漏胡（过胡）在摸牌前不可胡、摸牌后解除；过碰 / 过杠按同口径推导（C4）。
+source:
+  kind: original
+  document: source/01-基础规则.md
+  section: "八、过手规则（C4）"
+  page: null
+  quote: "| **漏胡（过胡）** | 玩家可胡牌时选择不胡牌即为漏胡。**漏胡玩家在摸牌前不可胡牌**；**漏胡状态在摸牌后解除（含杠后补牌）**。 |"
+preconditions:
+  - 玩家出现可胡 / 可碰 / 可杠机会
+inputs:
+  - 玩家选择（胡 / 碰 / 杠 / 过）
+outputs:
+  - 过手状态（漏胡 / 过碰 / 过杠）及其解除时机
+business_rules:
+  - 漏胡（过胡）：玩家可胡牌时选择不胡牌即为漏胡；漏胡玩家在摸牌前不可胡牌；漏胡状态在摸牌后解除（含杠后补牌）。
+  - 漏胡提示：触发漏胡不胡后，出现浮动提示「当前未过手，无法胡牌」，1.5 秒后消失。
+  - 托管超时默认：配置开启托管时，碰 / 杠超时默认过；有胡牌的多状态，超时默认胡牌。
+  - 过碰（推导口径）：过碰后、轮到自己回合前，其他玩家再打出同张牌时不可再碰；需求仅定义漏胡、未定义过碰，按其同一「过手至摸牌解除」的时机模型推导（与血战 / 贵阳过手碰口径一致）。
+  - 过杠（推导口径）：过杠后、轮到自己回合前不可再杠同张；推导依据同过碰。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-010
+  - GAME-RULE-018
+open_questions:
+  - 过碰 / 过杠为按同厂商同品类通用口径推导（需求原文未明示），需与需求方确认口径。

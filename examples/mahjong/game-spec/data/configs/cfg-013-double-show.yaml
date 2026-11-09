@@ -1,0 +1,37 @@
+id: GAME-CFG-013
+type: config
+name: "亮倒-双亮"
+status: proposed
+authority: fixed
+description: "3 人时已有两家亮倒则第三人免亮也能胡牌，卡五星专属、仅 3 人可勾选、与胡牌必须亮倒互斥。"
+source:
+  kind: original
+  document: source/07-配置.md
+  section: "7.2.5 双亮"
+  page: null
+  quote: "勾选后，3 人时如果已 2 个玩家亮倒，则第三个玩家无需亮倒也能胡牌（自摸、点炮均可）"
+value: false
+preconditions:
+  - "房间人数为 3 人（2 人时置灰不可勾选）"
+inputs:
+  - "创房面板勾选"
+  - "已亮倒玩家数"
+outputs:
+  - "第三人胡牌资格放宽"
+business_rules:
+  - "布尔勾选，默认不选；「胡牌必须亮倒」的进阶规则，卡五星专属、仅 3 人时可勾选。"
+  - "勾选 → 3 人时如果已 2 个玩家亮倒，则第三个玩家无需亮倒也能胡牌（自摸、点炮均可，不限自摸，裁决 R1 细则优于摘要）。"
+  - "取消 → 无此放宽。"
+  - "人数联动：2 人时置灰不可勾选；3 人勾选后改 2 人开局，规则自动失效。"
+  - "与「胡牌必须亮倒」互斥。"
+  - "间接影响算分：放宽胡牌条件。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-CFG-001"
+  - "GAME-CFG-012"
+  - "GAME-CFG-026"
+open_questions: []

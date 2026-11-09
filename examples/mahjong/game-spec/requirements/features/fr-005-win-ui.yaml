@@ -1,0 +1,38 @@
+id: GAME-FR-005
+type: game_feature
+name: 胡牌操作按钮与展示
+status: proposed
+authority: fixed
+description: 自摸/胡按钮显示本次胡牌与倍数及封顶标记，胡牌摊开摆于手牌右侧，点炮显示点牌玩家方位箭头
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 7.3 胡牌界面与展示
+  page: null
+  quote: 手牌右上方显示【自摸】+【过】；【自摸】左侧显示本次胡的牌与本次胡牌的倍数（自摸按自摸显示）
+preconditions:
+  - 玩家触发自摸/点炮/抢杠胡
+inputs:
+  - 胡牌触发事件与结算倍数（含封顶）
+outputs:
+  - 胡牌按钮组、胡牌与倍数展示、胡牌摊开摆放
+business_rules:
+  - 自摸按钮：手牌右上方显示【自摸】+【过】，【自摸】左侧显示本次胡的牌与本次胡牌的倍数（自摸按自摸显示）；如有倍数封顶则显示【封顶】，倍数仅显示封顶倍数
+  - 点炮按钮：手牌右上方显示【胡】+【过】，【胡】上显示本次胡的牌与倍数（非自摸不含自摸）；封顶同上
+  - 摆放（自摸）：摊开摆放在自己手牌右侧，间隔1/4牌距离，显示手掌标记
+  - 摆放（点炮/抢杠胡）：摊开摆放在自己手牌右侧，间隔1/4牌距离；自己角度显示对应点牌玩家的方位箭头（胡对家向上、胡上家向左、胡下家向右）
+  - 超时：配置开启托管时超时默认胡（见 GAME-RULE-051）
+  - 多操作状态：有自摸按钮时不可直接出牌（见 GAME-RULE-050）
+normal_flow:
+  - 胡牌触发 -> 按钮组出现（含胡牌与倍数） -> 玩家点击胡类按钮 -> 胡牌摊开摆放
+exception_flow: []
+state_transitions: []
+ui_refs:
+  - GAME-COMP-014
+  - GAME-COMP-005
+test_refs: []
+dependencies:
+  - GAME-RULE-046
+  - GAME-RULE-050
+  - GAME-RULE-051
+open_questions: []

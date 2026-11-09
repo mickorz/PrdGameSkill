@@ -1,0 +1,34 @@
+id: GAME-RULE-017
+type: game_rule
+name: 数坎
+status: proposed
+authority: fixed
+description: 胡牌后按暗刻、杠子、手中四张的数量加坎分（暗刻 +1、明杠直杠 +1、暗杠 +2、手中四张 +2）。
+source:
+  kind: original
+  document: source/01-基础规则.md
+  section: "6.3 数坎"
+  page: null
+  quote: "**计算范围** = 自己的**手中** + **胡的那张** + **碰杠牌区**。"
+preconditions:
+  - 玩家胡牌（或荒庄查叫时存在听牌）
+inputs:
+  - 手中牌、胡的那张、碰杠牌区
+outputs:
+  - 坎分（倍底分）
+business_rules:
+  - 计算范围 = 自己的手中 + 胡的那张 + 碰杠牌区。
+  - 每个暗刻 +1 倍底分；每个明杠 / 直杠 +1 倍底分；每个暗杠 +2 倍底分；手中 4 张一样的牌 +2 倍底分（必须是顺 + 刻，不与暗刻重复计算）。
+  - 必须是刻子；仅是 3 张相同牌但不成刻的不算。
+  - 胡的那张牌：自摸才参与计算，捉炮不参与。
+  - 收分对象 = 需要付胡牌分的玩家：点炮胡收放炮玩家；自摸胡收其他所有玩家。
+  - 查叫时也计算坎分；查叫时因为没有胡，不计算胡的那张牌。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-007
+  - GAME-RULE-028
+open_questions: []

@@ -1,0 +1,27 @@
+id: GAME-RULE-001
+type: game_rule
+name: 牌张构成
+status: proposed
+authority: fixed
+description: 使用 84 张牌，仅含筒、条、箭牌三类，不含万子、风牌、花牌。
+source:
+  kind: original
+  document: source/01-基础规则.md
+  section: "1.1 牌张构成"
+  page: null
+  quote: "本玩法使用 **84 张**牌，**不含万子、不含风牌、不含花牌**："
+preconditions: []
+inputs: []
+outputs:
+  - 84 张牌池（筒 36 + 条 36 + 中发白 12）
+business_rules:
+  - "牌池总量 84 张（§1.1）：筒 1筒~9筒 每种 4 张共 36 张；条 1条~9条 每种 4 张共 36 张；箭牌中、发、白每种 4 张共 12 张。"
+  - 不含万子、不含风牌、不含花牌。
+  - 本玩法无牌墙，仅展示牌堆剩余张数（§2.2 名词索引）。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies: []
+open_questions: []

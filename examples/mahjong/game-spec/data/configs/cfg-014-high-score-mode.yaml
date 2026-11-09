@@ -1,0 +1,40 @@
+id: GAME-CFG-014
+type: config
+name: 规则-高分玩法
+status: proposed
+authority: fixed
+description: 勾选后 8 个番型换档计分，并与卡五星、碰碰胡、杠开、三元七对选项互斥。
+source:
+  kind: original
+  document: source/07-配置.md
+  section: 7.3 高分玩法
+  page: null
+  quote: 勾选 → 七对 8 / 龙七对 20 / 双龙七对 40 / 三龙七对 80 / 卡五星 8 / 碰碰胡 8 / 杠上开花 8 / 杠开卡五星 20（倍底分）
+value: false
+preconditions: []
+inputs:
+  - 创房面板勾选
+outputs:
+  - 8 个番型的高分档倍数
+business_rules:
+  - 布尔勾选，默认不选；勾选后 8 个番型换档计分。
+  - 勾选 → 七对 8 / 龙七对 20 / 双龙七对 40 / 三龙七对 80 / 卡五星 8 / 碰碰胡 8 / 杠上开花 8 / 杠开卡五星 20（倍底分）。
+  - 取消 → 按基础番型表倍数计。
+  - 三龙七对高分下 80 倍低于基础 128 倍，为七对系列 20→40→80 完整 ×2 链的必然取值，非笔误（按需求明示值 80 落地）。
+  - 互斥：与卡五星、碰碰胡、杠开（杠上花/炮*4）、三元七对番型选项互斥，勾选后这些选项变灰且切换为不勾选。
+  - 海底捞/炮*2 与本开关不互斥：需求互斥说明为列举式，海底不在其列，勾选高分玩法时海底选项仍可勾选。
+  - 高分玩法下「杠开卡五星」按 20 倍合并档计；杠开与其他番型叠加（乘算）。
+  - 直接影响算分。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs:
+  - GAME-COMP-009
+test_refs: []
+dependencies:
+  - GAME-CFG-016
+  - GAME-CFG-017
+  - GAME-CFG-018
+  - GAME-CFG-019
+  - GAME-CFG-023
+open_questions: []

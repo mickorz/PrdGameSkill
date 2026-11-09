@@ -1,0 +1,392 @@
+[
+  {
+    "requirement_id": "GAME-RULE-101",
+    "anchors": [
+      {
+        "file": "source/05-胡牌类型.md",
+        "heading": "1.1 牌型成立",
+        "line_start": 91,
+        "line_end": 101,
+        "quote_line": 101,
+        "quote_hash": "sha1:3a2e7eb753ccee2f7f78b264a545795f651036de"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-102",
+    "anchors": [
+      {
+        "file": "source/05-胡牌类型.md",
+        "heading": "1.2 番数门槛",
+        "line_start": 103,
+        "line_end": 115,
+        "quote_line": 111,
+        "quote_hash": "sha1:e44a94b741f65e54dc21f3f62ba3ba82c5508dbe"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-103",
+    "anchors": [
+      {
+        "file": "source/05-胡牌类型.md",
+        "heading": "1.3 操作优先级",
+        "line_start": 117,
+        "line_end": 123,
+        "quote_line": 123,
+        "quote_hash": "sha1:78de4d16fe335833c8968b8caba538a6f033373c"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-104",
+    "anchors": [
+      {
+        "file": "source/05-胡牌类型.md",
+        "heading": "二、胡牌限制层（M5）",
+        "line_start": 127,
+        "line_end": 138,
+        "quote_line": 129,
+        "quote_hash": "sha1:f22bc5aeec52c14f28686538187007b4a2132594"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-105",
+    "anchors": [
+      {
+        "file": "source/05-胡牌类型.md",
+        "heading": "2.1 限制层之间的互斥与优先",
+        "line_start": 139,
+        "line_end": 147,
+        "quote_line": 143,
+        "quote_hash": "sha1:d314e3dcdc92a61869cb942831df89769deb9608"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-106",
+    "anchors": [
+      {
+        "file": "source/05-胡牌类型.md",
+        "heading": "三、过手胡",
+        "line_start": 149,
+        "line_end": 163,
+        "quote_line": 153,
+        "quote_hash": "sha1:7cbff729d597cc133b3d696ade70e729b53aad69"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-107",
+    "anchors": [
+      {
+        "file": "source/05-胡牌类型.md",
+        "heading": "四、自摸",
+        "line_start": 165,
+        "line_end": 179,
+        "quote_line": 169,
+        "quote_hash": "sha1:20263805efb2bdc60ce0df415658eb138c24582a"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-108",
+    "anchors": [
+      {
+        "file": "source/05-胡牌类型.md",
+        "heading": "5.1 杠上花",
+        "line_start": 183,
+        "line_end": 195,
+        "quote_line": 189,
+        "quote_hash": "sha1:9258385471bd098900a58537b0aa0f58ea70224c"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-109",
+    "anchors": [
+      {
+        "file": "source/05-胡牌类型.md",
+        "heading": "5.2 杠上炮",
+        "line_start": 196,
+        "line_end": 206,
+        "quote_line": 200,
+        "quote_hash": "sha1:e2b61cf6b17d89d91473ccaeacbbe713e5234baf"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-110",
+    "anchors": [
+      {
+        "file": "source/05-胡牌类型.md",
+        "heading": "六、抢杠胡",
+        "line_start": 213,
+        "line_end": 231,
+        "quote_line": 217,
+        "quote_hash": "sha1:87990491605eac2a43fb0ebb31e6d228b8f31726"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-111",
+    "anchors": [
+      {
+        "file": "source/05-胡牌类型.md",
+        "heading": "七、点炮（捉炮胡）",
+        "line_start": 233,
+        "line_end": 245,
+        "quote_line": 237,
+        "quote_hash": "sha1:83ffc46146ea46c7cbc461998e5cc80ace407794"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-112",
+    "anchors": [
+      {
+        "file": "source/05-胡牌类型.md",
+        "heading": "八、海底捞 / 海底炮",
+        "line_start": 247,
+        "line_end": 257,
+        "quote_line": 251,
+        "quote_hash": "sha1:da28d2493169461b5d983da7151a921f685b6b76"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-113",
+    "anchors": [
+      {
+        "file": "source/05-胡牌类型.md",
+        "heading": "九、一炮多响",
+        "line_start": 259,
+        "line_end": 272,
+        "quote_line": 263,
+        "quote_hash": "sha1:65e0fe154a288c9815850059957cf5b610df8c4e"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-114",
+    "anchors": [
+      {
+        "file": "source/05-胡牌类型.md",
+        "heading": "十、亮倒类",
+        "line_start": 274,
+        "line_end": 300,
+        "quote_line": 282,
+        "quote_hash": "sha1:38e8af4e34aa0fa14006d6694aff47a1d5d1e718"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-115",
+    "anchors": [
+      {
+        "file": "source/05-胡牌类型.md",
+        "heading": "十二、各胡法 × 限制层对照矩阵",
+        "line_start": 302,
+        "line_end": 315,
+        "quote_line": 308,
+        "quote_hash": "sha1:32cc5dbcf066c6340f1251da6e6a0d4eb0b3dd2f"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-116",
+    "anchors": [
+      {
+        "file": "source/06-结算.md",
+        "heading": "一、对局结果与总公式（S0）",
+        "line_start": 74,
+        "line_end": 97,
+        "quote_line": 79,
+        "quote_hash": "sha1:52bcc751bf014f4c5b14d9361f7db734802db4a0"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-117",
+    "anchors": [
+      {
+        "file": "source/06-结算.md",
+        "heading": "二、牌型分（S1）",
+        "line_start": 98,
+        "line_end": 132,
+        "quote_line": 100,
+        "quote_hash": "sha1:14c14d41a8807d0c86ee31290d0d384d99887653"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-118",
+    "anchors": [
+      {
+        "file": "source/06-结算.md",
+        "heading": "三、分值 remap（M9）",
+        "line_start": 133,
+        "line_end": 171,
+        "quote_line": 135,
+        "quote_hash": "sha1:bb9f17a09890e1aa1f63951fe77045bd0fbdf89a"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-119",
+    "anchors": [
+      {
+        "file": "source/06-结算.md",
+        "heading": "四、加倍项（S3）",
+        "line_start": 172,
+        "line_end": 225,
+        "quote_line": 175,
+        "quote_hash": "sha1:8924c3584e5c142ae23f6c9bd38471470dca7587"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-120",
+    "anchors": [
+      {
+        "file": "source/06-结算.md",
+        "heading": "4.1 上楼细则",
+        "line_start": 189,
+        "line_end": 201,
+        "quote_line": 193,
+        "quote_hash": "sha1:faf708e666c2f82446857f924d9eb55d1babcbd2"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-121",
+    "anchors": [
+      {
+        "file": "source/06-结算.md",
+        "heading": "五、封顶（S4）",
+        "line_start": 226,
+        "line_end": 259,
+        "quote_line": 230,
+        "quote_hash": "sha1:2bf5bf1b95992316328f842a572070728dad9c7c"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-122",
+    "anchors": [
+      {
+        "file": "source/06-结算.md",
+        "heading": "六、杠分（S5）",
+        "line_start": 260,
+        "line_end": 277,
+        "quote_line": 262,
+        "quote_hash": "sha1:77184cbbe7de52bf1f64b5f569db9a90221566ca"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-123",
+    "anchors": [
+      {
+        "file": "source/06-结算.md",
+        "heading": "七、马分（S6）",
+        "line_start": 278,
+        "line_end": 294,
+        "quote_line": 280,
+        "quote_hash": "sha1:6a6d65fdc1ef1977dea35ec9037b7a71dda5b9f0"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-124",
+    "anchors": [
+      {
+        "file": "source/06-结算.md",
+        "heading": "八、漂分（S7）",
+        "line_start": 295,
+        "line_end": 311,
+        "quote_line": 298,
+        "quote_hash": "sha1:7ac89ee0bc8f0a93715ee64a6f64f2f936e0367e"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-125",
+    "anchors": [
+      {
+        "file": "source/06-结算.md",
+        "heading": "九、坎分（S8）",
+        "line_start": 312,
+        "line_end": 335,
+        "quote_line": 314,
+        "quote_hash": "sha1:3749f0c6d45e282029200f5709cf50a5d3910042"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-126",
+    "anchors": [
+      {
+        "file": "source/06-结算.md",
+        "heading": "12.2 查叫（需勾选）",
+        "line_start": 342,
+        "line_end": 359,
+        "quote_line": 345,
+        "quote_hash": "sha1:2fd1923f5848873d08094a9e93054158a64095e6"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-127",
+    "anchors": [
+      {
+        "file": "source/06-结算.md",
+        "heading": "12.3 亮倒荒庄赔付（首亮赔付）",
+        "line_start": 360,
+        "line_end": 380,
+        "quote_line": 362,
+        "quote_hash": "sha1:5236baeb0436bf78f2057ed0898d767ff4c2b484"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-128",
+    "anchors": [
+      {
+        "file": "source/06-结算.md",
+        "heading": "十三、包牌（S10）",
+        "line_start": 404,
+        "line_end": 425,
+        "quote_line": 410,
+        "quote_hash": "sha1:379ae8818c19d96474f6c4f3a759028c0ad4df4e"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-129",
+    "anchors": [
+      {
+        "file": "source/06-结算.md",
+        "heading": "14.1 一炮多响",
+        "line_start": 428,
+        "line_end": 438,
+        "quote_line": 432,
+        "quote_hash": "sha1:172f78cd80a2e1aea03b2bee77f7ea9bb2132e13"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-130",
+    "anchors": [
+      {
+        "file": "source/06-结算.md",
+        "heading": "十五、结算界面文案规则",
+        "line_start": 449,
+        "line_end": 525,
+        "quote_line": 458,
+        "quote_hash": "sha1:dc015a79a6c5e3311f54a839383677a24f0d2c89"
+      }
+    ]
+  }
+]

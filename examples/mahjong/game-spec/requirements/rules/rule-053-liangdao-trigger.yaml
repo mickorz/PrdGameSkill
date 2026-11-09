@@ -1,0 +1,35 @@
+id: GAME-RULE-053
+type: game_rule
+name: 亮倒权限触发
+status: proposed
+authority: fixed
+description: 打出一张非危牌后可听牌即触发亮倒权限；手牌全是危牌时同样可触发；自摸时每次都展示亮的权限
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 10.1 权限触发
+  page: null
+  quote: 触发亮倒权限，玩家可选择是否亮倒
+preconditions:
+  - 玩家摸牌或补牌后处于出牌决策阶段
+inputs:
+  - 当前手牌听牌状态判定结果
+outputs:
+  - 出现【亮】+【过】按钮（可选择是否亮倒）
+business_rules:
+  - 条件1：打出一张非危牌后可听牌，触发亮倒权限，玩家可选择是否亮倒
+  - 条件2：手牌中全是危牌时，去掉「非危牌」的限制，同样可触发
+  - 条件3：自摸时每次都会展示亮的权限，包括自摸时
+  - 展示：摸牌或补牌后若满足亮倒条件，出现【亮】+【过】按钮；听牌标签正常展示
+normal_flow:
+  - 摸/补牌 -> 听牌判定满足亮倒条件 -> 【亮】+【过】按钮出现 -> 玩家选择
+  - 普通出牌状态 -> 点击【亮】 -> 亮倒状态（见 GAME-RULE-056）
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-033
+  - GAME-RULE-046
+  - GAME-FR-007
+open_questions: []

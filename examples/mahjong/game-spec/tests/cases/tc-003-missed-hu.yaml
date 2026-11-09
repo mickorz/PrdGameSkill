@@ -1,0 +1,12 @@
+id: GAME-TC-003
+name: 漏胡期间过胡后不可再胡
+type: illegal
+related_requirements: [GAME-RULE-049]
+preconditions:
+  - 玩家处于可胡状态，选择过
+steps:
+  - 玩家对可胡牌点击过
+  - 同一圈内再次出现可胡牌型
+  - 玩家尝试点击胡
+expected: 过胡后进入漏胡状态，摸牌前胡按钮不可用（判定拒绝），摸牌后状态解除
+rule_refs: [GAME-RULE-049, GAME-RULE-106]

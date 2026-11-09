@@ -1,0 +1,31 @@
+id: GAME-RULE-085
+type: game_rule
+name: "海底捞与海底炮（J06/J07）"
+status: proposed
+authority: fixed
+description: "摸到最后一张牌后胡牌为海底捞、打牌点炮为海底炮，各2倍，勾选后生效。"
+source:
+  kind: original
+  document: "source/04-番型.md"
+  section: "5.5 海底捞 / 海底炮（J06 / J07 · 各 2 倍）"
+  page: null
+  quote: "| **触发** | 玩家摸到**最后一张牌**后胡牌 | 玩家摸到最后一张牌后，**打出的牌**点炮胡 |"
+preconditions:
+  - "牌墙摸至最后一张牌"
+inputs:
+  - "最后一张牌后的行牌事件（摸牌胡牌/打牌点炮）"
+  - "创房「海底捞/炮*2」勾选状态"
+outputs:
+  - "加倍倍数（乘算到番型分，参与封顶）"
+business_rules:
+  - "J06 海底捞=2倍：玩家摸到最后一张牌后胡牌；J07 海底炮=2倍：玩家摸到最后一张牌后打出的牌点炮胡"
+  - "生效条件：勾选创房「海底捞/炮*2」后才会计算海底，且为2倍（开关型，未勾选不计算）"
+  - "本变体（好友房）有海底捞/海底炮"
+  - "加倍项参与封顶截断"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies: []
+open_questions: []

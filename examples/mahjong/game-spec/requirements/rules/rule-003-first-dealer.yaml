@@ -1,0 +1,32 @@
+id: GAME-RULE-003
+type: game_rule
+name: 首局定庄
+status: proposed
+authority: open
+description: 首局庄家由创房选项决定，支持随机坐庄与房主坐庄，默认房主庄。
+source:
+  kind: original
+  document: source/01-基础规则.md
+  section: "3.1 首局定庄"
+  page: null
+  quote: "| **房主坐庄** | 开局后首局由房主坐庄 |"
+preconditions:
+  - 开局（第一小局）
+inputs:
+  - 创房选项（随机坐庄 / 房主坐庄）
+outputs:
+  - 首局庄家
+business_rules:
+  - 随机坐庄：开局后首局随机决定庄家。
+  - 房主坐庄：开局后首局由房主坐庄。
+  - 默认值为房主庄（创房面板实拍为选中态；创房表正文只记「根据线上定默认值」，采房主庄为默认值）。
+  - 同桌玩家继续游戏时（第二小局起），按 §3.2 轮庄规则决定下一个坐庄玩家（见 GAME-RULE-004）。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-004
+open_questions:
+  - 默认值「房主庄」依据为创房面板实拍，需求正文仅记「根据线上定默认值」，需与线上实际默认值核对。

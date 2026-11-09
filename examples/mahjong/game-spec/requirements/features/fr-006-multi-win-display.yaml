@@ -1,0 +1,32 @@
+id: GAME-FR-006
+type: game_feature
+name: 一炮多响特殊展示
+status: proposed
+authority: fixed
+description: 一炮多响动画与光柱画面后展示番型与飘分，放炮方看所有玩家番型，胡牌方看自己番型
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 7.4 一炮多响的特殊展示
+  page: null
+  quote: 一炮多响动画 → 光柱画面 → 所有玩家所胡番型 + 飘分（正分黄色，负分灰色）
+preconditions:
+  - 一张打出牌导致多个玩家胡牌（一炮多响）
+inputs:
+  - 各家胡牌番型与计分结果
+outputs:
+  - 按视角区分的一炮多响展示序列
+business_rules:
+  - 放炮玩家/围观视角：一炮多响动画 -> 光柱画面 -> 所有玩家所胡番型 + 飘分（正分黄色，负分灰色）
+  - 胡牌玩家视角：一炮多响动画 -> 光柱画面 -> 自己所胡番型 + 飘分
+normal_flow:
+  - 一炮多响成立 -> 动画 -> 光柱画面 -> 番型与飘分展示
+exception_flow: []
+state_transitions: []
+ui_refs:
+  - GAME-COMP-001
+  - GAME-COMP-007
+test_refs: []
+dependencies:
+  - GAME-RULE-047
+open_questions: []

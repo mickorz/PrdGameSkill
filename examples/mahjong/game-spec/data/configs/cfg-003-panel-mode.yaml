@@ -1,0 +1,31 @@
+id: GAME-CFG-003
+type: config
+name: 模式
+status: proposed
+authority: fixed
+description: 创房面板展示模式（正常 / 简洁），仅影响面板展示颗粒度，不影响算分。
+source:
+  kind: original
+  document: source/07-配置.md
+  section: 3.3 模式
+  page: null
+  quote: 正常 / 简洁 正常 面板展示模式
+value: 正常
+preconditions: []
+inputs:
+  - 创房面板模式选择
+outputs:
+  - 创房面板展示颗粒度
+business_rules:
+  - 可选值：正常 / 简洁（面板实拍）。
+  - 模式仅影响创房面板的展示颗粒度，不改变任何规则与算分。
+  - 局数与模式两项在三张创房配置表中均未列出，按创房面板实拍口径取正常。
+  - 对结算影响：不影响（仅 UI 或流程控制）。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs:
+  - GAME-UI-003
+test_refs: []
+dependencies: []
+open_questions: []

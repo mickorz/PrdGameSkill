@@ -1,0 +1,34 @@
+id: GAME-RULE-050
+type: game_rule
+name: 多操作状态按钮优先级
+status: proposed
+authority: fixed
+description: 多状态时按钮从左至右按碰杠亮胡或自摸过顺序显示；可多杠时显示可杠牌选择框；有自摸按钮时不可直接出牌
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 八、碰杠胡的按钮优先级（多操作状态）
+  page: null
+  quote: 从左至右优先级显示顺序为：【碰】→【杠】→【亮】→【胡】/【自摸】→【过】
+preconditions:
+  - 同一时点玩家存在多种可执行操作（碰、杠、亮、胡、自摸）
+inputs:
+  - 多操作状态判定结果
+outputs:
+  - 手牌右上方按钮组按优先级顺序展示
+business_rules:
+  - 可多杠状态：显示「可杠牌选择框 +【杠】+【过】」
+  - 碰、杠、胡、亮多状态：手牌右上方增加按钮，从左至右优先级显示顺序为【碰】->【杠】->【亮】->【胡】/【自摸】->【过】
+  - 有自摸按钮时不可直接出牌（源 §7.3 多操作状态行）
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs:
+  - GAME-TC-001
+dependencies:
+  - GAME-RULE-039
+  - GAME-FR-004
+  - GAME-FR-005
+  - GAME-FR-007
+open_questions: []

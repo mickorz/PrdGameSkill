@@ -1,0 +1,38 @@
+id: GAME-CFG-005
+type: config
+name: 漂分
+status: proposed
+authority: fixed
+description: 创房选择漂分模式（不漂 / 自由漂 / 固定漂 / 首局定漂），漂分为加分项进入最终得分且不受封顶。
+source:
+  kind: original
+  document: source/07-配置.md
+  section: 五、漂分
+  page: null
+  quote: 固定漂（1 / 2 / 5 / 10） 默认（下拉框默认 2） 本大局每小局固定漂【X】；下拉框可选 1 / 2 / 5 / 10
+value: 固定漂 2
+preconditions: []
+inputs:
+  - 创房面板漂分模式选择
+outputs:
+  - 各玩家漂数
+  - 漂分（加分项，进入最终得分）
+business_rules:
+  - 可选值：不漂 / 自由漂 / 固定漂（1、2、5、10）/ 首局定漂（十五、数值范围与边界）。
+  - 不漂：关闭漂功能，无打漂环节、不计漂分。
+  - 自由漂：每小局开局后玩家可在【不漂】【漂1】【漂2】【漂5】【漂10】中选择。
+  - 固定漂：本大局每小局固定漂【X】，下拉框可选 1 / 2 / 5 / 10，下拉框默认 2。
+  - 首局定漂（开局定漂）：仅每个大局的第一小局执行选漂环节，决定本大局每一小局的漂分；后续小局流程同固定漂。
+  - 默认值取需求明文固定漂 2：实拍选中自由漂，需求 §3.1.1.1 明写「默认固定漂 2」，实拍与需求明文不一致一律以需求明文为准。
+  - 漂分是加分项，不受封顶；收分公式 =（己方漂 + 对方漂）× 底分。
+  - 直接影响结算：漂分进入最终得分。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs:
+  - GAME-UI-003
+test_refs: []
+dependencies:
+  - GAME-CFG-027
+  - GAME-CFG-004
+open_questions: []

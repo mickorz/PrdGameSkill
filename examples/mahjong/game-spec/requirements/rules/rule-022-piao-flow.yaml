@@ -1,0 +1,33 @@
+id: GAME-RULE-022
+type: game_rule
+name: 打漂流程
+status: proposed
+authority: fixed
+description: 四种漂模式的流程差异与选漂交互时序（选漂完成后开始打骰子）。
+source:
+  kind: original
+  document: source/02-游戏流程.md
+  section: "三、打漂"
+  page: null
+  quote: "| **自由漂**（每局选漂）| **每个小局**执行选漂环节 |"
+preconditions:
+  - 小局开局
+  - 创房已选漂模式（见 GAME-RULE-015）
+inputs:
+  - 玩家选漂操作
+outputs:
+  - 本小局（或本大局）各玩家漂数
+business_rules:
+  - 不漂：无打漂环节、不计漂分。
+  - 固定漂：开局的同时玩家头像旁直接出现选漂结果，无过程动画，并同时开始打骰子。
+  - 首局定漂：仅每个大局的第一小局执行选漂环节；后续每个小局开局时流程同固定漂。
+  - 自由漂（每局选漂）：每个小局执行选漂环节。
+  - 选漂流程（固定漂以外的模式）：小局开局后每个玩家屏幕出现各漂选项 → 其他玩家头像旁出现【选漂中...】文字 → 玩家点击选项完成选漂、选漂结果其他玩家直接可见 → 最后一个玩家选漂完成的同时选漂结果出现、所有玩家的选漂文字缩小移动到头像旁漂 UI 位置 → 开始打骰子。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-015
+open_questions: []

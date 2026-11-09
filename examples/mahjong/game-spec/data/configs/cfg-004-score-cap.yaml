@@ -1,0 +1,33 @@
+id: GAME-CFG-004
+type: config
+name: 封顶
+status: proposed
+authority: fixed
+description: 创房选择「番型 × 加倍项」的封顶倍数（8 / 16 / 32 / 64 / 不封顶），漂马坎杠加分项不受封顶。
+source:
+  kind: original
+  document: source/07-配置.md
+  section: 四、玩法层（封顶）
+  page: null
+  quote: 8 / 16 / 32 / 64 / 不封顶 8 倍 决定番型 × 加倍项的封顶倍数
+value: 8 倍
+preconditions: []
+inputs:
+  - 创房面板封顶选择
+outputs:
+  - 番型 × 加倍项的倍数上限
+business_rules:
+  - 可选值：8 / 16 / 32 / 64 / 不封顶；选项集不含 128 倍（实拍下拉露出 128 倍，需求选项列未列，按选项列不含 128 倍）。
+  - 封顶只截断「番型 × 加倍项」；漂 / 马 / 坎 / 杠均不受封顶影响，即使选不封顶这些项也照常单独计算。
+  - 上楼是加倍项，受封顶约束，不可突破。
+  - 示例：封顶 32 时 64 倍牌型按 32 计；不封顶时三龙七对 128 倍不再被截断；清一色 + 碰碰胡 + 亮倒 = 12 倍在封顶 8 时截为 8 倍。
+  - 直接影响结算：截断牌型分 × 加倍项的上限。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs:
+  - GAME-UI-003
+test_refs: []
+dependencies:
+  - GAME-CFG-021
+open_questions: []

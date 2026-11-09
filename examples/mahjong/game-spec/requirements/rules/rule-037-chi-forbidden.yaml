@@ -1,0 +1,26 @@
+id: GAME-RULE-037
+type: game_rule
+name: 禁止吃牌
+status: proposed
+authority: fixed
+description: 本玩法不能吃牌，行牌只能碰、杠、胡
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: "三、吃牌"
+  page: null
+  quote: "本玩法不能吃牌。需求明示：「行牌：可以碰、杠、胡，不能吃」。"
+preconditions: []
+inputs:
+  - "他家出牌事件"
+outputs:
+  - "吃牌操作不存在，不提供吃牌入口"
+business_rules:
+  - "本玩法不能吃牌，行牌仅可碰、杠、胡"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies: []
+open_questions: []

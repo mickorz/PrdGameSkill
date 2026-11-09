@@ -1,0 +1,5 @@
+id: GAME-EVENT-007
+name: 开始游戏摇骰发牌
+trigger_type: system
+payload: {}
+requirements: [GAME-FR-009]

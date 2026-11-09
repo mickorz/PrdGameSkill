@@ -1,0 +1,12 @@
+id: GAME-TC-006
+name: 杠上杠连杠倍数递增
+type: boundary
+related_requirements: [GAME-RULE-042]
+preconditions:
+  - 玩家连续发生杠（杠上杠）
+steps:
+  - 第一次杠
+  - 补牌后再次杠
+  - 第三次杠
+expected: 杠分按底分 x 2 的 n-1 次方递增（n 为连杠次数），与胡分隔离单独实时结算
+rule_refs: [GAME-RULE-042, GAME-RULE-041]

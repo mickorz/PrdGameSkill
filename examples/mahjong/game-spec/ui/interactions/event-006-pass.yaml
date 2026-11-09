@@ -1,0 +1,5 @@
+id: GAME-EVENT-006
+name: 点击过
+trigger_type: click
+payload: {}
+requirements: [GAME-FR-010]

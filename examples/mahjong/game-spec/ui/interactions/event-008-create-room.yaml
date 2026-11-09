@@ -1,0 +1,5 @@
+id: GAME-EVENT-008
+name: 创建房间
+trigger_type: click
+payload: {}
+requirements: []

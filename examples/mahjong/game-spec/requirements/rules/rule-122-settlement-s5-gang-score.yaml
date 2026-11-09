@@ -1,0 +1,39 @@
+id: GAME-RULE-122
+type: game_rule
+name: 杠分（S5）
+status: proposed
+authority: fixed
+description: 杠分实时结算小局结束不额外再算，直杠2倍、明杠1倍、暗杠2倍底分，杠上杠按2的n减1次方翻倍，荒庄不退还。
+source:
+  kind: original
+  document: source/06-结算.md
+  section: "六、杠分（S5）"
+  page: null
+  quote: "**杠分实时结算**，小局结束时不额外再算。"
+preconditions:
+  - "玩家完成杠操作（或荒庄）"
+inputs:
+  - "杠的类型（直杠/明杠/暗杠）"
+  - "连续杠次数"
+outputs:
+  - "实时结算的杠分"
+business_rules:
+  - "杠分实时结算，小局结束时不额外再算。"
+  - "直杠 2 倍底分：打出牌的玩家赔付直杠玩家；明杠（补杠）1 倍底分：其他玩家各付补杠玩家；暗杠 2 倍底分：其余玩家各付暗杠玩家。"
+  - "杠上杠：本次杠分 = 基础杠分 × 2^(连续杠次数 - 1)；连杠可跨玩家连续；中断后重新计算。"
+  - "荒庄：杠分不退还；流局未听牌不需要返还杠分。"
+  - "抢杠胡：抢杠胡后明杠玩家视为未杠成功，不收取杠分，杠上杠也会中断。"
+normal_flow:
+  - "杠操作 -> 实时收付杠分 -> 小局结算不再重复计算"
+exception_flow:
+  - "荒庄 -> 已结算杠分不退还"
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-RULE-007"
+  - "GAME-RULE-008"
+  - "GAME-RULE-090"
+  - "GAME-RULE-110"
+  - "GAME-RULE-126"
+open_questions: []

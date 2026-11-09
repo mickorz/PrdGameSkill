@@ -1,0 +1,16 @@
+id: SCEN-002
+name: 漏胡非法操作序列
+initial_state:
+  state: playing
+  stage: 行牌阶段，player_a 处于可胡状态
+actions:
+  - player: player_a
+    action: pass
+    args:
+      chance: hu
+  - player: player_a
+    action: hu
+    args:
+      hu_type: dianpao
+expected: 过胡后进入漏胡状态，第二次胡被拒绝（RULE_NOT_CONFIRMED 或判定拒绝），player_a 摸牌后漏胡解除
+case_refs: [GAME-TC-003]

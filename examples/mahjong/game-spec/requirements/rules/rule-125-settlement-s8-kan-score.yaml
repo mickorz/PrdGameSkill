@@ -1,0 +1,34 @@
+id: GAME-RULE-125
+type: game_rule
+name: 坎分（S8）
+status: proposed
+authority: fixed
+description: 数坎范围为手中加胡的那张加碰杠牌区，暗刻加1、明杠直杠加1、暗杠加2、手中四张加2倍底分，不受封顶。
+source:
+  kind: original
+  document: source/06-结算.md
+  section: "九、坎分（S8）"
+  page: null
+  quote: "**计算范围** = 自己的**手中** + **胡的那张** + **碰杠牌区**。"
+preconditions:
+  - "有玩家胡牌"
+inputs:
+  - "自己手牌、胡的那张、碰杠牌区的牌型组成"
+outputs:
+  - "坎分"
+business_rules:
+  - "计算范围 = 自己的手中 + 胡的那张 + 碰杠牌区。"
+  - "分值：每个暗刻 +1 倍底分；每个明杠 / 直杠 +1 倍底分；每个暗杠 +2 倍底分；手中 4 张一样的牌 +2 倍底分（必须是顺 + 刻，不与暗刻重复计算）。"
+  - "收分对象 = 需付胡牌分的玩家：点炮胡收放炮玩家；自摸胡收其他所有玩家。"
+  - "不受封顶影响。"
+  - "口径：仅是 3 张相同牌但不成刻的不算；胡的那张仅自摸才参与计算，捉炮不参与；查叫时计算坎分但不计算胡的那张牌（荒庄没有胡）。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-RULE-017"
+  - "GAME-RULE-089"
+  - "GAME-RULE-126"
+open_questions: []

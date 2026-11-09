@@ -1,0 +1,7 @@
+id: GAME-COMP-020
+type: player_profile
+name: 局内个人信息
+props: {}
+events: []
+requirements: [GAME-FR-009]
+visual_hint: 点击自己或他人头像后在头像附近弹出个人信息，他人信息可使用互动道具，复用线上

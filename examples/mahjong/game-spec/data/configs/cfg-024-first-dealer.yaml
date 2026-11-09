@@ -1,0 +1,30 @@
+id: GAME-CFG-024
+type: config
+name: "定庄"
+status: proposed
+authority: fixed
+description: "创房选择首局定庄方式（随机庄 / 房主庄），后续局按轮庄规则。"
+source:
+  kind: original
+  document: source/07-配置.md
+  section: "十一、定庄"
+  page: null
+  quote: "房主庄 默认 开局后首局由房主坐庄"
+value: "房主庄"
+preconditions: []
+inputs:
+  - "创房面板定庄选择"
+outputs:
+  - "首局庄家"
+business_rules:
+  - "可选值：随机庄 / 房主庄，默认房主庄。"
+  - "随机庄：开局后首局随机坐庄；房主庄：开局后首局由房主坐庄。"
+  - "不影响结算（仅决定首局庄家）；间接影响：庄家决定首局谁先出牌、方位映射起点。"
+  - "联动：同桌玩家继续游戏时均按轮庄规则决定下一个坐庄玩家（胡牌者坐庄 / 一炮多响点炮者坐庄 / 荒庄则原庄连庄），与首局定庄方式无关。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies: []
+open_questions: []

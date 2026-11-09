@@ -1,0 +1,33 @@
+id: GAME-FR-002
+type: game_feature
+name: 听牌提示页面
+status: proposed
+authority: fixed
+description: 提起打出可听牌时弹出听牌提示页面，亮倒后可听的牌亮起并带听牌提示标签
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 2.3 提牌
+  page: null
+  quote: 提起【打出可听牌】时，弹出听牌提示页面
+preconditions:
+  - 玩家提起一张打出后可听的牌
+inputs:
+  - 提牌操作（提起的牌为打出可听牌）
+outputs:
+  - 弹出听牌提示页面
+business_rules:
+  - 提牌联动：提起【打出可听牌】时弹出听牌提示页面
+  - 亮倒-打牌界面：打出后可听的牌亮起并带听牌提示标签；听牌标签在亮倒权限触发时正常展示（源 §10.1 展示行）
+normal_flow:
+  - 提起可听牌 -> 听牌提示页面弹出
+exception_flow: []
+state_transitions: []
+ui_refs:
+  - GAME-COMP-006
+test_refs: []
+dependencies:
+  - GAME-RULE-036
+  - GAME-RULE-053
+  - GAME-FR-007
+open_questions: []

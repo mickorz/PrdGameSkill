@@ -1,0 +1,31 @@
+id: GAME-RULE-088
+type: game_rule
+name: "买马（A02）"
+status: proposed
+authority: fixed
+description: "按马数规则（买一/买一送一/买5马/买6马）计算的加分项，自摸收取所有玩家。"
+source:
+  kind: original
+  document: "source/04-番型.md"
+  section: "6.2 买马（A02）"
+  page: null
+  quote: "按马数规则单独计算（买一 / 买一送一 / 买 5 马 / 买 6 马），**自摸收取所有玩家**。规则细节见 [基础规则 §6.2](01-基础规则.md)。"
+preconditions:
+  - "胡牌结算触发且创房勾选对应马数玩法"
+inputs:
+  - "马数玩法配置（买一/买一送一/买5马/买6马）"
+  - "开出的马牌"
+outputs:
+  - "加分数值（不受封顶影响）"
+business_rules:
+  - "A02 买马按马数规则单独计算（买一/买一送一/买5马/买6马）"
+  - "自摸收取所有玩家"
+  - "规则细节归集于基础规则文档（本文件仅登记入口，细则未在本章展开）"
+  - "加分项不受封顶影响"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies: []
+open_questions: []

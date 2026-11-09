@@ -1,0 +1,34 @@
+id: GAME-RULE-105
+type: game_rule
+name: 限制层互斥与优先
+status: proposed
+authority: fixed
+description: 胡牌必须亮倒与双亮互斥，亮倒玩家危牌标签去掉，危牌不可明杠补杠但直杠暗杠可以。
+source:
+  kind: original
+  document: source/05-胡牌类型.md
+  section: "2.1 限制层之间的互斥与优先"
+  page: null
+  quote: "| **「胡牌必须亮倒」× 「双亮」** | **两者互斥**（创房勾选层面即互斥）|"
+preconditions:
+  - "创房配置了「胡牌必须亮倒」「双亮」等选项"
+inputs:
+  - "创房勾选组合"
+  - "玩家亮倒状态"
+  - "待杠的牌是否为危牌"
+outputs:
+  - "选项互斥结果与限制层适用范围"
+business_rules:
+  - "「胡牌必须亮倒」与「双亮」互斥，创房勾选层面即互斥。"
+  - "危牌限制与亮倒：玩家亮倒后自己的危牌标签去掉，亮倒玩家不受危牌限制。"
+  - "危牌限制与杠：危牌不可明杠（补杠）；直杠和暗杠可以。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-RULE-012"
+  - "GAME-RULE-014"
+  - "GAME-RULE-009"
+open_questions: []

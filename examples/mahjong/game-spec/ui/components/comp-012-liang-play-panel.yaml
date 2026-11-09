@@ -1,0 +1,8 @@
+id: GAME-COMP-012
+type: liang_play_panel
+name: 亮倒打牌界面
+props: {}
+events:
+  - GAME-EVENT-010
+requirements: [GAME-FR-012]
+visual_hint: 可听牌亮起带听牌标签、其余牌带遮罩，提示文案请选择胡口，右上角取消按钮（等同过）；点危牌弹toast打出该牌将会放炮并阻断出牌

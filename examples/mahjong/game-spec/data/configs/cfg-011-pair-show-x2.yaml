@@ -1,0 +1,32 @@
+id: GAME-CFG-011
+type: config
+name: "亮倒-对亮*2"
+status: proposed
+authority: fixed
+description: "决定胡牌双方均亮倒时亮倒计一次还是两次（×2 或 ×4），直接影响算分。"
+source:
+  kind: original
+  document: source/07-配置.md
+  section: "7.2.3 对亮 *2"
+  page: null
+  quote: "决定胡牌双方均亮倒时的亮倒倍数计几次"
+value: true
+preconditions: []
+inputs:
+  - "创房面板勾选"
+  - "胡牌双方亮倒状态"
+outputs:
+  - "对亮倍数（×2 或 ×4）"
+business_rules:
+  - "布尔勾选，默认勾选，为创房默认态下唯一默认开启的勾选式规则开关。"
+  - "勾选 → 双方均亮倒计两个亮倒 = ×4；取消 → 双方均亮倒只计一个亮倒 = ×2。"
+  - "与亮倒叠加；受封顶约束。"
+  - "直接影响算分（番型 × 加倍项）。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-CFG-004"
+open_questions: []

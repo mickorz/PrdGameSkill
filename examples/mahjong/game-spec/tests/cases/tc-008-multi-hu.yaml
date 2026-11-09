@@ -1,0 +1,11 @@
+id: GAME-TC-008
+name: 一炮多响多家同时胡
+type: abnormal
+related_requirements: [GAME-RULE-113]
+preconditions:
+  - 一炮多响开启，多家同时可胡同一炮牌
+steps:
+  - 放炮玩家打出一张牌
+  - 两家同时点击胡
+expected: 两家胡牌同时成立，放炮者按各家胡牌分别结算赔付
+rule_refs: [GAME-RULE-113, GAME-RULE-047]

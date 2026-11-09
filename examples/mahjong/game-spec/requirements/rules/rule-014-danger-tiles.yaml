@@ -1,0 +1,35 @@
+id: GAME-RULE-014
+type: game_rule
+name: 危牌
+status: proposed
+authority: fixed
+description: 亮倒玩家胡的牌对未亮倒玩家为危牌，不可打出、不可明杠，全危牌时可打出。
+source:
+  kind: original
+  document: source/01-基础规则.md
+  section: "5.3 危牌"
+  page: null
+  quote: "**定义**：同一小局中，**未亮倒玩家手中的牌**，如果是**任一**亮倒玩家**胡的牌**，被标记为【危牌】。"
+preconditions:
+  - 场上存在亮倒玩家（GAME-RULE-012）
+inputs:
+  - 未亮倒玩家手牌
+outputs:
+  - 危牌标记及其限制
+business_rules:
+  - 定义：同一小局中，未亮倒玩家手中的牌如果是任一亮倒玩家胡的牌，被标记为危牌。
+  - 碰杠牌区的牌不算危牌；玩家亮倒后，危牌标签去掉。
+  - 限制 1：危牌不可打出（全危牌例外见限制 3）；未亮倒玩家手中既有危牌也有非危牌时，无法打出危牌（不计算碰杠牌区）。
+  - 限制 2：不可危牌明杠（补杠）；可直杠和暗杠。
+  - 限制 3：手中牌全是危牌时，可打出危牌（仅计算手中牌，含摸 / 补的牌）。
+  - 其他：危牌可以碰。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-007
+  - GAME-RULE-009
+  - GAME-RULE-012
+open_questions: []

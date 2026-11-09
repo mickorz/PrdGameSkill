@@ -1,0 +1,5 @@
+id: GAME-EVENT-014
+name: 继续游戏再来一局
+trigger_type: click
+payload: {}
+requirements: [GAME-FR-015]

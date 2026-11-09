@@ -1,0 +1,36 @@
+id: GAME-RULE-044
+type: game_rule
+name: 杠的其余限制
+status: proposed
+authority: fixed
+description: 牌堆剩0不可杠、亮倒后未扣牌不可杠、未亮倒时危牌不可明杠而直杠暗杠可以、亮倒后仅扣下刻子可杠
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: "5.4 杠牌限制（五条）"
+  page: null
+  quote: "牌堆剩余牌为 0 时，不可杠。"
+preconditions: []
+inputs:
+  - "玩家发起杠请求（任意类型）"
+outputs:
+  - "杠被放行或按限制拦截"
+business_rules:
+  - "剩余牌限制：牌堆剩余牌为0时，不可杠"
+  - "亮倒限制：玩家亮倒后手牌中未扣下的牌不可杠；手中有4张牌扣下3张也不可杠（哪怕摸到维持听牌的牌）；已经碰的牌明杠不受此限制（仍受剩余牌、回手杠、危牌限制）"
+  - "危牌限制：未亮倒时危牌不可明杠（补杠）；直杠和暗杠可以"
+  - "扣牌相关：亮倒后仅扣下的刻子可杠；未扣下的刻子无论别人打出还是自己摸到都不可杠；扣下的刻子若第4张在自己手中且已亮出，仍不可杠（会改牌）"
+normal_flow: []
+exception_flow:
+  - "牌堆剩余牌为0 -> 杠请求被拦截"
+  - "亮倒玩家尝试杠未扣下的牌 -> 拦截"
+  - "未亮倒玩家尝试用危牌补杠 -> 拦截"
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-RULE-040"
+  - "GAME-RULE-043"
+  - "GAME-RULE-054"
+  - "GAME-RULE-057"
+open_questions: []

@@ -1,0 +1,33 @@
+id: GAME-RULE-078
+type: game_rule
+name: "卡五星（F03）"
+status: proposed
+authority: fixed
+description: "听口为4-6卡5形态的听口番型，2倍（创房可调4倍，高分玩法下8倍）。"
+source:
+  kind: original
+  document: "source/04-番型.md"
+  section: "4.1 卡五星（F03 · 2 倍）"
+  page: null
+  quote: "| **听口为 4-6 卡 5** | 胡牌时，和入的牌为**卡张形态**：手中有 4、6 且**二者为孤张**（即和入的 5 用于补成 `456` 顺子，**不是用作将牌**）| 不计卡五星 |"
+preconditions:
+  - "玩家已形成和牌且基础番型成立（平胡/碰碰胡/清一色等）"
+inputs:
+  - "手牌与碰杠牌区共14张牌面"
+  - "和入的那张牌"
+outputs:
+  - "番型判定结果"
+  - "牌型分倍数"
+business_rules:
+  - "F03 卡五星=2倍（创房勾选「卡五星*4」后变4倍；高分玩法下8倍），听口维度"
+  - "判定条件：和入的牌为卡张形态，手中同花色有4和6且二者为孤张，和入的5用于补成456顺子而不是用作将牌；条、筒均可"
+  - "边张、两面、单钓（和入张构成将牌）形态不计卡五星"
+  - "与平胡/碰碰胡/清一色/手抓一及加倍项/加分项均可叠加"
+  - "高分玩法下同时触发杠上开花与卡五星时按合并档「杠开卡五星」（J09）20倍计，不按分量叠乘（8x8=64不等于20）；基础玩法下仍分别乘算"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies: []
+open_questions: []

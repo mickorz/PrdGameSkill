@@ -1,0 +1,34 @@
+id: GAME-RULE-031
+type: game_rule
+name: 摸牌时机与流程
+status: proposed
+authority: fixed
+description: 轮到自己且上一家已出牌、无人碰杠胡时从牌堆摸1张，摸牌与上家出牌同时进行，随后进入出牌阶段
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 一、摸牌
+  page: null
+  quote: 轮到自己，且上一家已出牌、无人碰 / 杠 / 胡
+preconditions:
+  - 轮到该玩家行牌
+  - 上一家已出牌且无人对这张牌碰、杠、胡
+inputs:
+  - 上一家出牌事件
+outputs:
+  - 该玩家手牌数加1，进入出牌阶段
+business_rules:
+  - 摸牌需在上一家打出牌的同时进行：上家打出牌的瞬间下家摸牌
+  - 摸牌来源为牌堆，取1张
+  - 摸到的牌置于手牌最右侧，与一般手牌间隔1/4牌距离
+  - 摸到的牌从手牌最右侧从上往下缓冲落下展示
+normal_flow:
+  - 上一家出牌 -> 下家从牌堆摸1张 -> 摸牌落于手牌最右侧 -> 进入出牌阶段
+  - 等待摸牌 -> 出牌阶段
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-FR-003
+open_questions: []

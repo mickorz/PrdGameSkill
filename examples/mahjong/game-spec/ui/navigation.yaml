@@ -1,0 +1,37 @@
+# 卡五星 UI 规格导航：页面跳转关系
+# 来源：source/08-UI交互.md（对局结束 §13、结算界面 §14、创房面板 §2.3）
+# 说明：from/to 为页面 ID；trigger 为事件 ID；描述性文字保留在注释
+# 备注：原文未描述独立大厅页（GAME-UI-004 为占位条目，待确认状态见 reviews/open-questions.json）
+entries:
+  - from: GAME-UI-004
+    to: GAME-UI-003
+    trigger: GAME-EVENT-008
+    # 大厅点击创建房间打开创房面板
+  - from: GAME-UI-003
+    to: GAME-UI-001
+    trigger: GAME-EVENT-007
+    # 创房完成（含他人加入）进入对局桌面，开始游戏摇骰发牌
+  - from: GAME-UI-004
+    to: GAME-UI-001
+    trigger: GAME-EVENT-016
+    # 大厅加入房间进入对局桌面
+  - from: GAME-UI-001
+    to: GAME-UI-005
+    trigger: GAME-EVENT-017
+    # 有人胡牌或荒庄，播放对局结束或荒庄文字动画进入对局结束过渡
+  - from: GAME-UI-005
+    to: GAME-UI-002
+    trigger: GAME-EVENT-018
+    # 买马 UI 停留1.5秒结束或未触发买马，或荒庄飘字1.3秒结束，弹出小结算
+  - from: GAME-UI-002
+    to: GAME-UI-001
+    trigger: GAME-EVENT-014
+    # 小结算点击返回按钮、关闭按钮或主按钮继续游戏（非最后一小局），回到牌桌
+  - from: GAME-UI-002
+    to: GAME-UI-002
+    trigger: GAME-EVENT-015
+    # 最后一小局小结算点击查看结算，切换到大结算界面（同页面内视图切换）
+  - from: GAME-UI-002
+    to: GAME-UI-004
+    trigger: GAME-EVENT-019
+    # 大结算结束退出房间回到大厅

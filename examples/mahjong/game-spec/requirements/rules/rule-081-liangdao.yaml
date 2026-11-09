@@ -1,0 +1,30 @@
+id: GAME-RULE-081
+type: game_rule
+name: "亮倒（J01）"
+status: proposed
+authority: fixed
+description: "玩家处于亮倒状态时的加倍项，输赢均计算，番型分乘2。"
+source:
+  kind: original
+  document: "source/04-番型.md"
+  section: "5.1 亮倒（J01 · 2 倍）"
+  page: null
+  quote: "| **计算** | **输 / 赢时均计算**，**番型分 ×2** |"
+preconditions:
+  - "胡牌结算触发（赢家胡牌或点炮输分）"
+inputs:
+  - "玩家亮倒状态"
+outputs:
+  - "加倍倍数（乘算到番型分，参与封顶）"
+business_rules:
+  - "J01 亮倒=2倍；玩家处于亮倒状态时输/赢均计算，番型分乘2"
+  - "不影响加分项（漂/马/坎/杠分）"
+  - "输赢双方均亮倒（对亮）时仅计算一次亮倒乘2；是否计两个亮倒由对亮（J02）开关控制"
+  - "加倍项参与封顶截断"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies: []
+open_questions: []

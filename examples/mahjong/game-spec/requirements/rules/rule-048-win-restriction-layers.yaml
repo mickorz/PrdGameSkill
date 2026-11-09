@@ -1,0 +1,37 @@
+id: GAME-RULE-048
+type: game_rule
+name: 胡牌限制层
+status: proposed
+authority: fixed
+description: 番型合法之外还有5层限制任一拦截即不可胡：番数门槛、危牌、亮倒限制、漏胡、操作优先级
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: "7.2 胡牌限制层"
+  page: null
+  quote: "番型合法之外，还有 5 层限制，任一拦截即不可胡"
+preconditions:
+  - "番型判定已通过（番型与限制层为AND关系，判定顺序不影响结果）"
+inputs:
+  - "候选胡牌请求"
+outputs:
+  - "胡牌放行或被对应限制层拦截"
+business_rules:
+  - "限制层1（番数门槛）：番型乘加倍项大于1才可捉炮；只有1倍时只能自摸"
+  - "限制层2（危牌）：见 GAME-RULE-033；手中全是危牌时例外"
+  - "限制层3（亮倒限制，可选）：勾选「胡牌必须亮倒」后仅亮倒状态才能胡；勾选「双亮」后3人时已有2人亮倒，第三人免亮可胡（自摸、点炮均可）"
+  - "限制层4（漏胡）：见 GAME-RULE-049"
+  - "限制层5（操作优先级）：吃胡 / 自摸 / 抢杠胡 > 碰 / 杠，见 GAME-RULE-039"
+  - "限制层（否决条件）与番型（计分条件）为AND关系，判定顺序不影响结果"
+normal_flow: []
+exception_flow:
+  - "任一限制层拦截 -> 不可胡"
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-RULE-033"
+  - "GAME-RULE-039"
+  - "GAME-RULE-049"
+  - "GAME-RULE-053"
+open_questions: []

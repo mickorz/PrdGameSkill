@@ -1,0 +1,34 @@
+id: GAME-RULE-118
+type: game_rule
+name: 高分玩法分值remap（M9）
+status: proposed
+authority: fixed
+description: 勾选高分玩法后8个番型倍数换档计分，6项升档、三龙七对降为80倍、杠开卡五星新增20倍合并档。
+source:
+  kind: original
+  document: source/06-结算.md
+  section: "三、分值 remap（M9）"
+  page: null
+  quote: "创房勾选「**高分玩法**」后，以下 8 个番型的倍数**换档计分**（其中 **6 项升档**、三龙七对为**唯一降档项**、「杠开卡五星」为**新增档**）："
+preconditions:
+  - "创房勾选「高分玩法」"
+inputs:
+  - "成立的番型"
+outputs:
+  - "换档后的番型倍数"
+business_rules:
+  - "换档表：七对 4 改 8、龙七对 8 改 20、双龙七对 32 改 40、三龙七对 128 改 80（唯一降档）、卡五星 2 改 8、碰碰胡 2 改 8、杠上开花 2 改 8、杠开卡五星为新增档 20。"
+  - "互斥：「高分玩法」与番型选项卡五星、碰碰胡、杠开、三元七对互斥，勾选后这些选项变灰且切换为不勾选。"
+  - "三龙七对 80 低于基础 128 非笔误：高分档七对系列 20 到 40 到 80 构成完整 ×2 递进链，80 为三龙档必然取值；按需求明示值 80 计。"
+  - "影响范围：「高分玩法」作用面为牌型分（番型倍数），remap 落在公式「番型」位；换档后参与封顶的仍是「番型 × 加倍项」中的番型部分，封顶口径不变。"
+normal_flow:
+  - "勾选高分玩法 -> 按换档表重算番型倍数 -> 进入 S3"
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-RULE-083"
+  - "GAME-RULE-121"
+  - "GAME-RULE-117"
+open_questions: []

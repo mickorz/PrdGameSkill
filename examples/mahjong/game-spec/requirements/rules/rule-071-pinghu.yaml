@@ -1,0 +1,32 @@
+id: GAME-RULE-071
+type: game_rule
+name: "平胡（F01）"
+status: proposed
+authority: fixed
+description: "4副面子加1对将且含至少1副顺子的基础结构番型，结构维度基准档，1倍。"
+source:
+  kind: original
+  document: "source/04-番型.md"
+  section: "2.1 平胡（F01 · 1 倍）"
+  page: null
+  quote: "| **4 副 + 1 对结构** | 14 张可拆为 4 副面子 + 1 对将 | 改看**七对维度**（按龙数取档：七对 4 / 龙七对 8 / 双龙七对 32 / 三龙七对 128 倍）|"
+preconditions:
+  - "玩家已形成14张和牌牌型"
+inputs:
+  - "手牌与碰杠牌区共14张牌面"
+outputs:
+  - "番型判定结果"
+  - "牌型分倍数"
+business_rules:
+  - "F01 平胡=1倍，结构维度基准档；判定条件为14张可拆为4副面子+1对将，且4副面子中至少1副顺子"
+  - "4副全为刻子/杠（无顺子）时同属结构维度取高，改判碰碰胡（F02，2倍），平胡不另计"
+  - "与清一色（+4倍）、小三元（+4倍）、大三元（+8倍）、卡五星（+2倍）、明四归/暗四归跨维度叠加；与七对类跨结构取分值较高者"
+  - "平胡+手抓一结构上不可达：本玩法不能吃，副露只能是碰/杠，4副面子全在碰杠区时必为全刻形，不可能含顺子"
+  - "平胡不要求门清，有碰/杠可正常计；亮倒为加倍项（J01，2倍），不影响平胡本身判定"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies: []
+open_questions: []

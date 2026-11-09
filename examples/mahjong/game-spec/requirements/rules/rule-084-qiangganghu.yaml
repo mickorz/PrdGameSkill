@@ -1,0 +1,33 @@
+id: GAME-RULE-084
+type: game_rule
+name: "抢杠胡（J05）"
+status: proposed
+authority: fixed
+description: "补杠时其他家胡这张补杠牌的加倍项，2倍，可多人抢，杠分回退。"
+source:
+  kind: original
+  document: "source/04-番型.md"
+  section: "5.4 抢杠胡（J05 · 2 倍）"
+  page: null
+  quote: "| **触发** | 玩家**补杠**时，其他家胡这张补杠的牌 |"
+preconditions:
+  - "某玩家声明补杠"
+inputs:
+  - "补杠的那张牌"
+  - "创房「杠上花/炮*4」勾选状态"
+outputs:
+  - "加倍倍数（乘算到番型分，参与封顶）"
+  - "补杠回退与杠分冲销"
+business_rules:
+  - "J05 抢杠胡=2倍；玩家补杠时其他家胡这张补杠的牌，可多人抢杠胡一家"
+  - "倍数勾选「杠上花/炮*4」后为4倍（需求与杠上花/炮并列）；倍数不跟随杠上杠翻倍，走初始值"
+  - "抢杠胡后明杠玩家视为未杠成功，不收取杠分，杠上杠中断；杠分实时结算下，已实时收取的该杠杠分需回退（由「实时结算」与「视为未杠成功」两句合成推导）"
+  - "属点炮类：按轮庄规则一炮多响时点炮玩家坐庄，故多人抢杠胡时由补杠的那一家坐庄"
+  - "加倍项参与封顶截断"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies: []
+open_questions: []

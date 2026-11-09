@@ -1,0 +1,11 @@
+id: GAME-TC-002
+name: 自摸胡牌按 S0 公式结算
+type: normal
+related_requirements: [GAME-RULE-107]
+preconditions:
+  - 玩家已听牌，摸牌后牌型成立且番数达标
+steps:
+  - 玩家摸牌
+  - 点击自摸胡
+expected: 胡牌成立，按 S0 总公式（牌型分 S1 x 加倍项 S3 封顶 S4 + 杠马漂坎分）结算，三家付分
+rule_refs: [GAME-RULE-107, GAME-RULE-116, GAME-RULE-121]

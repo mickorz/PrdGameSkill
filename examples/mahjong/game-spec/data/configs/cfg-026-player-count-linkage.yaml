@@ -1,0 +1,38 @@
+id: GAME-CFG-026
+type: config
+name: 人数联动默认（包牌/双亮）
+status: proposed
+authority: fixed
+description: 人数切换时包牌 / 双亮的置灰、取消勾选与自动失效联动规则汇总。
+source:
+  kind: original
+  document: source/07-配置.md
+  section: 十四、人数联动默认
+  page: null
+  quote: 若勾选（双亮），2 人少人开局，规则取消
+value: null
+preconditions:
+  - 创房面板切换人数（2 人 / 3 人）
+inputs:
+  - 人数选择
+  - 包牌 / 双亮勾选状态
+outputs:
+  - 包牌 / 双亮的可勾选性与生效状态
+business_rules:
+  - 包牌：3 人默认不选、可勾选；2 人置灰不可选（需求明示「仅 3 人时开启」），切换回 3 人恢复可选，无默认值差异。
+  - 双亮：3 人默认不选、可勾选；2 人置灰不可选（需求明示「2 人时置灰」）。
+  - 双亮事后失效：需求明示「若勾选（双亮），2 人少人开局，规则取消」，即 3 人勾选后改 2 人开局该规则自动失效。
+  - 面板勾选状态与生效状态不一致时，须以人数为准判断生效状态。
+  - 其余配置项默认值与人数无关；随人数变化的是非默认值类规则（座位 / 方位 / 牌河 / 起手 / 余量）。
+  - 面板联动顺序：切换人数 → 2 人置灰并取消勾选 / 3 人恢复可选（默认值均不选）→ 起手合计与发牌后余量随人数变化 → 方位取值范围变化（2 人 = 东/南；3 人 = 东/南/西）。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs:
+  - GAME-COMP-009
+test_refs: []
+dependencies:
+  - GAME-CFG-001
+  - GAME-CFG-013
+  - GAME-CFG-020
+open_questions: []

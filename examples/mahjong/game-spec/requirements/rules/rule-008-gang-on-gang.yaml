@@ -1,0 +1,35 @@
+id: GAME-RULE-008
+type: game_rule
+name: 杠上杠（连杠）
+status: proposed
+authority: fixed
+description: 连续杠时杠分按 2^(连续杠次数−1) 翻倍，可跨玩家，无人续杠则重置。
+source:
+  kind: original
+  document: source/01-基础规则.md
+  section: "4.2 杠上杠（连杠）"
+  page: null
+  quote: "本次杠分 = 基础杠分 × 2^(连续杠次数 − 1)"
+preconditions:
+  - 已发生一次杠（M4）
+inputs:
+  - 连续杠次数 n
+outputs:
+  - 本次杠分（基础杠分 × 2^(n-1) 倍底分）
+business_rules:
+  - 触发：玩家杠牌后摸到的牌继续杠；或补牌后打出的牌被别人杠。
+  - 倍率公式：本次杠分 = 基础杠分 × 2^(连续杠次数 − 1)；连续杠 1 次为 1（基础杠分）、2 次 ×2、3 次 ×4，n 次为 2^(n-1)。
+  - 连杠可跨玩家连续：A 杠 → 打出一张 B 杠（也算连杠）→ B 打出一张 C 杠（仍算连杠）。
+  - 中断：玩家补牌后打出一张无人杠 → 本次连杠结束，倍数清零重新计算。
+  - 需求原文示例 T1~T4：A 补杠收 1 分；A 杠上摸牌继续暗杠收其他玩家 2 × 2 = 4 分；A 再杠上摸牌后打出、B 直杠 B 收 A 2 × (2×2) = 8 分；B 杠上摸牌后打出无人杠则重置，下次从 ×2 重新开始。
+  - 与胡分的关系：杠上杠仅计算杠分，之前的杠分不转移；杠上杠触发杠上花 / 杠上炮 / 抢杠胡时，这些番型的倍数不跟随杠上杠翻倍，走初始值（初始 2，可勾选为 4）。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-007
+  - GAME-RULE-010
+  - GAME-RULE-011
+open_questions: []

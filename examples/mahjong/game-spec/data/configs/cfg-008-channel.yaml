@@ -1,0 +1,32 @@
+id: GAME-CFG-008
+type: config
+name: "频道"
+status: proposed
+authority: fixed
+description: "创房选择频道（全频道 / 半频道），决定四归番型（明四归 / 暗四归）的计算范围。"
+source:
+  kind: original
+  document: source/07-配置.md
+  section: "7.1 频道"
+  page: null
+  quote: "全频道：有符合条件的四张相同牌即计算番型<br>半频道：胡的那张牌必须是四归的第四张才触发四归番型"
+value: "全频道"
+preconditions: []
+inputs:
+  - "创房面板频道选择"
+outputs:
+  - "四归番型能否触发"
+business_rules:
+  - "可选值：全频道 / 半频道。"
+  - "全频道：有符合条件的四张相同牌即计算番型（明四归 2 倍 / 暗四归 4 倍）。"
+  - "半频道：胡的那张牌必须是四归的第四张才触发四归番型，触发条件更严。"
+  - "四归是基础番型，参与封顶；本开关不改变四归倍数，仅改变计算范围。"
+  - "间接影响结算：限制胡牌类型或触发条件（决定四归是否触发）。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-CFG-004"
+open_questions: []

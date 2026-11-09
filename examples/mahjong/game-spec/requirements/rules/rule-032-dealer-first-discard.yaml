@@ -1,0 +1,30 @@
+id: GAME-RULE-032
+type: game_rule
+name: 庄家首巡直接出牌
+status: proposed
+authority: open
+description: 庄家起手14张，首巡不摸牌直接出牌（由起手牌数与庄家先出牌两处明示推导）
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 一、摸牌
+  page: null
+  quote: 庄家起手 14 张，首巡直接出牌（不再摸牌）
+preconditions:
+  - 本局开局，庄家已起手14张
+inputs:
+  - 开局发牌完成
+outputs:
+  - 庄家直接进入出牌阶段，首巡不执行摸牌
+business_rules:
+  - 庄家首巡跳过摸牌，直接出牌
+normal_flow:
+  - 开局发牌 -> 庄家以14张手牌直接出牌 -> 其余玩家正常摸打
+  - 开局 -> 庄家出牌阶段
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies: []
+open_questions:
+  - 首巡不摸牌系推导结论（起手14张=13张+摸牌位1张，且需求规定庄家先出牌），非原文直述，需产品确认

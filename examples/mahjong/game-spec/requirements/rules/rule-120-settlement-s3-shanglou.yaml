@@ -1,0 +1,35 @@
+id: GAME-RULE-120
+type: game_rule
+name: 上楼细则（S3）
+status: proposed
+authority: fixed
+description: 上一小局荒庄或一炮多响、开局骰子同点各触发本局倍数2倍，可叠加最高4倍，属加倍项受封顶约束。
+source:
+  kind: original
+  document: source/06-结算.md
+  section: "4.1 上楼细则"
+  page: null
+  quote: "| ① 同一大局内，**上一小局荒庄或者一炮多响** | 本小局**倍数** **×2** |"
+preconditions:
+  - "创房勾选「上楼」"
+inputs:
+  - "上一小局结果（荒庄或一炮多响）"
+  - "本小局开局骰子点数"
+outputs:
+  - "本小局上楼加倍项（2 或 4 倍）"
+business_rules:
+  - "条件 1：同一大局内，上一小局荒庄或者一炮多响，本小局倍数 ×2。"
+  - "条件 2：本小局开局打骰子时两个骰子点数一致，本小局倍数 ×2。"
+  - "条件 1 与条件 2 同时触发则 ×4；两处翻倍可叠加，最高 4 倍。"
+  - "上楼为加倍项，不可突破封顶倍数。"
+  - "「倍数」的射程指番型 × 加倍项，不含马、漂、坎等加分项（Step 5 裁决：采加倍项表口径，「所有分数*2」与「不可突破封顶」不相容故不采）。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-RULE-006"
+  - "GAME-RULE-086"
+  - "GAME-RULE-121"
+open_questions: []

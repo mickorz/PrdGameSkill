@@ -1,0 +1,35 @@
+id: GAME-RULE-079
+type: game_rule
+name: "明四归（F04）"
+status: proposed
+authority: fixed
+description: "同种牌碰牌区3张加手牌1张（含胡张）的四归番型，2倍，受全/半频道控制。"
+source:
+  kind: original
+  document: "source/04-番型.md"
+  section: "4.2 明四归（F04 · 2 倍）"
+  page: null
+  quote: "| **碰牌区 3 张** | 同一种牌在**碰牌区有 3 张** | 不计明四归 |"
+preconditions:
+  - "玩家已形成14张和牌牌型"
+inputs:
+  - "手牌与碰杠牌区共14张牌面"
+  - "和入的那张牌"
+  - "频道配置（全频道/半频道）"
+outputs:
+  - "番型判定结果"
+  - "牌型分倍数"
+business_rules:
+  - "F04 明四归=2倍，四归子维度；判定条件为同一种牌碰牌区3张+手牌1张（含胡的那张）"
+  - "频道控制：全频道下手牌符合明四归结构即计算；半频道下胡的那张牌必须是四归第四张才计算；明四归受频道控制触发，无倍数调节项"
+  - "杠（明杠/直杠/暗杠）的4张在杠牌区，不构成明四归"
+  - "与清一色互斥：同时触发时仅计算清一色（需求明示）；与七对类互斥"
+  - "四归各只计一次（手中有多种符合条件的牌也不重复）；明四归与暗四归可同时成立并叠加（2+4=6）"
+  - "与平胡/碰碰胡/卡五星/手抓一可叠加"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies: []
+open_questions: []

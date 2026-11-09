@@ -1,0 +1,14 @@
+id: GAME-UI-003
+name: 创房面板
+resolution: {width: 1280, height: 720}
+components:
+  - GAME-COMP-009
+states: [loading, normal, error]
+interactions:
+  - trigger: GAME-EVENT-008
+    from_state: normal
+    to_state: normal
+    target_component: GAME-COMP-009
+requirements: []
+test_refs: []
+# 待确认状态见 reviews/open-questions.json（原文 §2.3 未展开创房面板结构，定义于 07-配置.md）

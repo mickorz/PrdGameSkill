@@ -1,0 +1,9 @@
+id: GAME-COMP-003
+type: hand_cards
+name: 手牌区
+props: {}
+events:
+  - GAME-EVENT-001
+  - GAME-EVENT-002
+requirements: [GAME-FR-010]
+visual_hint: 己方牌从左至右筒条中发白、1~9排列，庄家14张末牌右侧隔开置摸牌位，他人13张立起无翻开；提牌抬起约四分之一牌高

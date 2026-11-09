@@ -1,0 +1,31 @@
+id: GAME-CFG-018
+type: config
+name: "规则-海底捞/炮*2"
+status: proposed
+authority: fixed
+description: "勾选后启用海底捞 / 海底炮（各 ×2），取消则不算海底，与高分玩法不互斥。"
+source:
+  kind: original
+  document: source/07-配置.md
+  section: "7.5 番型倍数调整开关"
+  page: null
+  quote: "海底捞/炮 *2 默认不选 勾选后才会计算海底，且为 2 倍"
+value: false
+preconditions: []
+inputs:
+  - "创房面板勾选"
+outputs:
+  - "海底捞 / 海底炮加倍项是否启用"
+business_rules:
+  - "布尔勾选，默认不选；开关型：勾选后才会计算海底，且为 2 倍。"
+  - "勾选 → 海底捞 / 海底炮启用（各 ×2）；取消 → 不算海底（不触发，而非降倍）。"
+  - "与高分玩法不互斥：需求互斥说明列举式写明「与卡五星、碰碰胡、杠开、三元七对番型选项互斥」，海底不在其列，勾选高分玩法时海底选项仍可勾选。"
+  - "直接影响算分。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-CFG-014"
+open_questions: []

@@ -1,0 +1,40 @@
+id: GAME-RULE-108
+type: game_rule
+name: 杠上花
+status: proposed
+authority: open
+description: 开杠后补到的牌导致胡牌为杠上花，属自摸类加倍项，默认2倍，勾选杠上花炮4后变4倍。
+source:
+  kind: original
+  document: source/05-胡牌类型.md
+  section: "5.1 杠上花"
+  page: null
+  quote: "| **触发** | 开杠后**补到的牌**导致胡牌 |"
+preconditions:
+  - "玩家开杠并完成补牌"
+inputs:
+  - "补到的牌"
+  - "创房勾选「杠上花/炮*4」"
+  - "是否处于杠上杠状态"
+outputs:
+  - "杠上花加倍项（2 或 4 倍）"
+business_rules:
+  - "触发：开杠后补到的牌导致胡牌。"
+  - "倍数：×2 默认生效；勾选「杠上花/炮*4」后变为 ×4。"
+  - "归类：属自摸类（需求原文自摸「包括杠上开花」），不受番数门槛与危牌限制，受亮倒限制。"
+  - "与其他番型叠加（乘算），属加倍项；仅高分玩法下「杠开卡五星」按 20 倍合并档计（不叠乘）。"
+  - "与杠上杠：触发时倍数不跟随杠上杠翻倍，走初始值（初始 2，可勾选为 4）。"
+normal_flow:
+  - "开杠 -> 补牌 -> 胡牌 -> 计杠上花加倍项"
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-RULE-083"
+  - "GAME-RULE-008"
+  - "GAME-RULE-107"
+  - "GAME-RULE-119"
+  - "GAME-RULE-118"
+open_questions:
+  - "需求 §2.3.3.1 加倍项表写「勾选后生效」与创房表「默认生效 2 倍、勾选后变为 4 倍」并存矛盾，本文档裁决采创房表口径，待需求方确认。"

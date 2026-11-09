@@ -1,0 +1,31 @@
+id: GAME-RULE-090
+type: game_rule
+name: "杠分（A07）"
+status: proposed
+authority: fixed
+description: "杠操作实时结算的加分项，计算与收分方向归集于打牌操作文档。"
+source:
+  kind: original
+  document: "source/04-番型.md"
+  section: "6.4 杠分（A07）"
+  page: null
+  quote: "杠分的计算与收分方向见 [打牌操作 §五](03-打牌操作.md)。**杠分实时结算**，小局结束时不额外再算。"
+preconditions:
+  - "玩家完成杠操作（明杠/直杠/暗杠/补杠）"
+inputs:
+  - "杠的类型与杠牌"
+  - "收分方向规则"
+outputs:
+  - "杠分数值（实时结算，不受封顶影响）"
+business_rules:
+  - "A07 杠分的计算与收分方向见打牌操作文档，本文件仅归集入口"
+  - "杠分实时结算，小局结束时不额外再算"
+  - "抢杠胡时明杠玩家视为未杠成功，已实时收取的该杠杠分需回退，杠上杠中断"
+  - "加分项不受封顶影响"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies: []
+open_questions: []

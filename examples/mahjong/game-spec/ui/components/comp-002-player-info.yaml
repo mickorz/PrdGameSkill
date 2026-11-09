@@ -1,0 +1,7 @@
+id: GAME-COMP-002
+type: player_info
+name: 玩家头像信息
+props: {}
+events: []
+requirements: [GAME-FR-009]
+visual_hint: 头像右上角庄标、房主标记、积分（5位数以个计、6位数以万计可负）、昵称常显最多10字符超出显示..、流光/断线00:00计时/托管图标、头像旁漂标记

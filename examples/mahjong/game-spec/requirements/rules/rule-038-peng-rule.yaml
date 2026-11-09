@@ -1,0 +1,38 @@
+id: GAME-RULE-038
+type: game_rule
+name: 碰牌规则
+status: proposed
+authority: fixed
+description: 任意一家打出牌时手上2张及以上相同牌即可碰，不限上家、危牌可碰，碰后取得出牌权须再打1张
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 四、碰
+  page: null
+  quote: 玩家手上有 2 张及以上相同的牌
+preconditions:
+  - 任意一家打出一张牌
+  - 玩家手上有2张及以上相同的牌
+inputs:
+  - 他家出牌事件
+  - 玩家点击【碰】按钮
+outputs:
+  - 3张组成刻子亮于手牌左侧，该玩家取得出牌权
+business_rules:
+  - 时机：任意一家打出一张牌时
+  - 范围：可以碰任何一家的牌，不限上家
+  - 危牌可碰
+  - 碰后3张组成刻子亮于手牌左侧，该玩家取得出牌权，须再打出1张
+normal_flow:
+  - 他家出牌 -> 玩家点击【碰】 -> 刻子亮于手牌左侧 -> 玩家打出1张牌
+  - 他家出牌等待响应 -> 碰成立 -> 该玩家出牌阶段
+exception_flow:
+  - 配置开启托管时碰超时默认【过】（见 GAME-RULE-051）
+state_transitions: []
+ui_refs: []
+test_refs:
+  - GAME-TC-001
+dependencies:
+  - GAME-RULE-039
+  - GAME-FR-004
+open_questions: []

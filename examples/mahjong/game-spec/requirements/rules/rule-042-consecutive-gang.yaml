@@ -1,0 +1,38 @@
+id: GAME-RULE-042
+type: game_rule
+name: 杠上杠连杠倍数
+status: proposed
+authority: fixed
+description: 杠后摸到的牌继续杠或补牌打出的牌被别人杠形成连杠，杠分按基础杠分乘2的连杠次数减1次方，无人杠则清零
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 5.3 杠上杠（连杠）
+  page: null
+  quote: 本次杠分 = 基础杠分 × 2^(连续杠次数 − 1)
+preconditions:
+  - 存在已发生的杠（连杠链起点）
+inputs:
+  - 杠牌后摸到的牌继续杠，或补牌后打出的牌被别人杠
+outputs:
+  - 本次杠分按连杠倍数放大
+business_rules:
+  - 触发：玩家杠牌后摸到的牌继续杠；或补牌后打出的牌被别人杠
+  - 公式：本次杠分 = 基础杠分 × 2^(连续杠次数 − 1)
+  - 跨玩家：连杠可在不同玩家手中连续（A杠 -> 打出一张 B杠 -> B打出一张 C杠，仍算连杠）
+  - 中断：玩家补牌后打出一张无人杠，本次连杠结束，倍数清零重新计算
+  - 与胡分关系：杠上杠仅计算杠分，之前的杠分不转移；触发杠上花/杠上炮/抢杠胡时这些番型倍数不跟随杠上杠翻倍，走初始值（初始2，可勾选为4）
+normal_flow:
+  - A补杠(1倍) -> A杠上摸牌继续暗杠(2倍收4分) -> A再打出一张被B直杠(4倍B收8分) -> B打出无人杠 -> 连杠结束倍数重置
+exception_flow:
+  - 补牌后打出的牌无人杠 -> 连杠结束，倍数清零重新计算
+state_transitions: []
+ui_refs: []
+test_refs:
+  - GAME-TC-006
+dependencies:
+  - GAME-RULE-040
+  - GAME-RULE-041
+  - GAME-RULE-045
+  - GAME-RULE-047
+open_questions: []

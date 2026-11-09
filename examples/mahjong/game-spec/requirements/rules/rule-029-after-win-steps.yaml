@@ -1,0 +1,33 @@
+id: GAME-RULE-029
+type: game_rule
+name: 和牌后步骤（买马）
+status: proposed
+authority: fixed
+description: 和牌之后、结算之前执行附加计分步骤买马，展示「中X马」1.5 秒后进小结算。
+source:
+  kind: original
+  document: source/02-游戏流程.md
+  section: "九、和牌后步骤（M6）"
+  page: null
+  quote: "本玩法在和牌之后、结算之前有一个**附加计分步骤：买马**。"
+preconditions:
+  - 已进入和牌结束流程（GAME-RULE-027）
+inputs:
+  - 本局是否触发买马（勾选自摸买马 / 亮牌自摸买马且满足触发条件）
+outputs:
+  - 买马界面与马分，或直接进入小结算
+business_rules:
+  - 本玩法在和牌之后、结算之前有一个附加计分步骤：买马（M6）。
+  - 本局触发买马（勾选「自摸买马」或「亮牌自摸买马」且满足触发条件）：直接弹出买马界面，界面与牌同时出现，中的马带金色边且亮起，同时出现「中X马」的文字；持续 1.5 秒后界面关闭，直接打开小结算界面。
+  - 本局未触发买马：胡牌动画结束后，直接弹出小结算。
+  - 买马的触发条件、翻牌张数与计分规则见 GAME-RULE-016。
+  - 荒庄不买马。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-016
+  - GAME-RULE-027
+open_questions: []

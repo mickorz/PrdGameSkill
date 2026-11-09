@@ -1,0 +1,35 @@
+id: GAME-RULE-047
+type: game_rule
+name: 特殊胡牌方式
+status: proposed
+authority: fixed
+description: 杠上花/杠上炮/海底捞/海底炮均x2（部分勾选后x4），一炮多响各家分别计分
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 7.1 胡牌方式
+  page: null
+  quote: 打出一张牌导致多个玩家胡牌
+preconditions:
+  - 对应触发场景成立（杠后补牌、摸到最后一张牌等）
+inputs:
+  - 杠后补牌、最后一巡摸打、一张牌触发多家胡
+outputs:
+  - 按对应番型倍数计分
+business_rules:
+  - 杠上花：开杠后补到的牌导致胡牌，倍数x2（勾选后4倍）
+  - 杠上炮：开杠后补牌打出的牌点炮，倍数x2（勾选后4倍）
+  - 海底捞：摸到最后一张牌后胡牌，倍数x2（勾选后生效）
+  - 海底炮：摸到最后一张牌后，打出的牌点炮，倍数x2（勾选后生效）
+  - 一炮多响：打出一张牌导致多个玩家胡牌，各家分别计分
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs:
+  - GAME-TC-008
+dependencies:
+  - GAME-RULE-045
+  - GAME-RULE-046
+  - GAME-FR-006
+open_questions: []

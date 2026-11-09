@@ -1,0 +1,219 @@
+[
+  {
+    "id": "OQ-001",
+    "requirement_id": "GAME-RULE-003",
+    "question": "默认值「房主庄」依据为创房面板实拍，需求正文仅记「根据线上定默认值」，需与线上实际默认值核对。",
+    "severity": "high",
+    "status": "open"
+  },
+  {
+    "id": "OQ-002",
+    "requirement_id": "GAME-RULE-005",
+    "question": "引擎座位编号映射（如「0 号座 = 庄家」）需求未登记（§10.3 标注需注意），需补充定义。",
+    "severity": "high",
+    "status": "open"
+  },
+  {
+    "id": "OQ-003",
+    "requirement_id": "GAME-RULE-009",
+    "question": "需求在 §2.2.2 给【回手杠】标注「（配置）」，但三张创房表均无对应开关项，开关名与默认值需求未给；本套按「可配置的规则层约束」登记、不自行虚构开关，需与需求方确认。",
+    "severity": "high",
+    "status": "open"
+  },
+  {
+    "id": "OQ-004",
+    "requirement_id": "GAME-RULE-011",
+    "question": "「已实时收取的杠分需回退」系推导口径（原文仅写「视为未杠成功，不收取杠分」），回退的数值口径与时机需技术侧确认。",
+    "severity": "high",
+    "status": "open"
+  },
+  {
+    "id": "OQ-005",
+    "requirement_id": "GAME-RULE-012",
+    "question": "创房「亮倒」组中「部分亮」「胡牌必须亮倒」两项在本变体列标记为「—」，其是否开放与默认值未明示，需确认。",
+    "severity": "high",
+    "status": "open"
+  },
+  {
+    "id": "OQ-006",
+    "requirement_id": "GAME-RULE-019",
+    "question": "过碰 / 过杠为按同厂商同品类通用口径推导（需求原文未明示），需与需求方确认口径。",
+    "severity": "high",
+    "status": "open"
+  },
+  {
+    "id": "OQ-007",
+    "requirement_id": "GAME-RULE-032",
+    "question": "首巡不摸牌系推导结论（起手14张=13张+摸牌位1张，且需求规定庄家先出牌），非原文直述，需产品确认",
+    "severity": "high",
+    "status": "open"
+  },
+  {
+    "id": "OQ-008",
+    "requirement_id": "GAME-RULE-043",
+    "question": "原需求 §2.2.2 给【回手杠】标注（配置），但三张创房表均无对应开关项；开关名与默认值需求未给出，本文档按「可配置的规则层约束」登记，不自行虚构开关，「回手杠」为文档自拟定位标识名",
+    "severity": "high",
+    "status": "open"
+  },
+  {
+    "id": "OQ-009",
+    "requirement_id": "GAME-RULE-060",
+    "question": "需求原文仅定义漏胡（摸牌前不可胡、摸牌后解除），未定义过碰与过杠；本条按同厂商同品类通用口径及漏胡同一「过手至摸牌解除」时机模型推导（与血战/贵阳过手碰口径一致），需产品确认",
+    "severity": "high",
+    "status": "open"
+  },
+  {
+    "id": "OQ-010",
+    "requirement_id": "GAME-RULE-094",
+    "question": "需确认本样本变体范围：源文档仅给出本变体与另两变体的差异结论表，未给出另两变体的完整番型配置；需确认本需求样本是否仅覆盖本变体（好友房），另两变体是否在需求交付范围内 / 四归频道（全/半）在本样本中的默认取值与创房开关归属需与配置文档核对确认",
+    "severity": "high",
+    "status": "open"
+  },
+  {
+    "id": "OQ-011",
+    "requirement_id": "GAME-RULE-108",
+    "question": "需求 §2.3.3.1 加倍项表写「勾选后生效」与创房表「默认生效 2 倍、勾选后变为 4 倍」并存矛盾，本文档裁决采创房表口径，待需求方确认。",
+    "severity": "high",
+    "status": "open"
+  },
+  {
+    "id": "OQ-012",
+    "requirement_id": "GAME-RULE-109",
+    "question": "生效条件与杠上花同源：需求「勾选后生效」与创房表「默认生效 2 倍」矛盾，本文档裁决采创房表口径，待需求方确认。",
+    "severity": "high",
+    "status": "open"
+  },
+  {
+    "id": "OQ-013",
+    "requirement_id": "GAME-RULE-116",
+    "question": "需求原文（§2.4）主公式含「+ 字分」项，本文档正文公式未纳入字分且本篇未定义字分口径，字分是否参与结算待确认。",
+    "severity": "high",
+    "status": "open"
+  },
+  {
+    "id": "OQ-014",
+    "requirement_id": "GAME-RULE-119",
+    "question": "需求 §3.1.1.2 留批注「杠开不与其他番型叠加？」未给答复，本文档裁决为乘算叠加（依据：杠上花与杠上炮列于需求「加倍项」表，加倍项定义为在牌型分上乘算），待需求方确认。",
+    "severity": "high",
+    "status": "open"
+  },
+  {
+    "id": "OQ-015",
+    "requirement_id": "GAME-RULE-127",
+    "question": "首亮赔付对象需求三处表述不同（其他玩家与其他亮倒玩家），本文档裁决采「其他所有玩家（含未亮倒者）」，待需求方确认。",
+    "severity": "high",
+    "status": "open"
+  },
+  {
+    "id": "OQ-016",
+    "requirement_id": "GAME-RULE-128",
+    "question": "「第二家亮倒」需求说明列与说明内容列口径不同（分项构成与支付最大牌型分），本文档裁决采说明列细则口径（按其点炮计算，马漂坎也要计算），待需求方确认。",
+    "severity": "high",
+    "status": "open"
+  },
+  {
+    "id": "OQ-017",
+    "requirement_id": "GAME-CFG-025",
+    "question": "原文该列全空、未明示任何优先级数值；如后续启用需产品侧补充定义",
+    "severity": "high",
+    "status": "open"
+  },
+  {
+    "id": "OQ-018",
+    "requirement_id": "GAME-RULE-035",
+    "question": "原始需求 §3.2.10.1 与 §3.6.3.2 对滑动出牌默认值叙述矛盾，本文档裁决以设置表为准，建议产品最终确认",
+    "severity": "medium",
+    "status": "open"
+  },
+  {
+    "id": "OQ-019",
+    "requirement_id": "GAME-RULE-045",
+    "question": "剩余牌数额外减1张：被额外减去的牌的去向与可见性原文未说明（本玩法不展示牌墙）",
+    "severity": "medium",
+    "status": "open"
+  },
+  {
+    "id": "OQ-020",
+    "requirement_id": "GAME-RULE-075",
+    "question": "清一色与暗四归可叠加为「未规定即不互斥」的推导结论（非需求明示），建议向产品复核确认",
+    "severity": "medium",
+    "status": "open"
+  },
+  {
+    "id": "OQ-021",
+    "requirement_id": "GAME-RULE-083",
+    "question": "「杠开是否与其他番型叠加」为文档裁决（需求该处仅留批注未给答案），结论为叠加（乘算），建议向产品复核确认",
+    "severity": "medium",
+    "status": "open"
+  },
+  {
+    "id": "OQ-022",
+    "requirement_id": "GAME-RULE-106",
+    "question": "过碰口径（过碰后轮到自己回合前不可再碰同张）需求未定义，按同一「过手至摸牌解除」时机模型推导，已由 GAME-RULE-060 单独登记跟踪。",
+    "severity": "medium",
+    "status": "open"
+  },
+  {
+    "id": "OQ-023",
+    "requirement_id": "GAME-RULE-110",
+    "question": "杠分冲销为实现层推导（「杠分实时结算」+「视为未杠成功」合成推导为已收杠分回退），原文未明写回退动作。",
+    "severity": "medium",
+    "status": "open"
+  },
+  {
+    "id": "OQ-024",
+    "requirement_id": "GAME-RULE-115",
+    "question": "矩阵中抢杠胡「勾选「杠上花/炮*4」后 ×4」为推导标注（由 §2.3.1.2 与杠上花/炮并列受同一勾选控制得出）。",
+    "severity": "medium",
+    "status": "open"
+  },
+  {
+    "id": "OQ-025",
+    "requirement_id": "GAME-RULE-126",
+    "question": "需求 §2.3.6 为标题带「待补充」的规则页草稿节，其「查叫赔 2 倍分」与 §2.4 查叫主口径（1 倍）冲突且含本变体不存在的选项，该节未定稿不作为口径依据。",
+    "severity": "medium",
+    "status": "open"
+  },
+  {
+    "id": "OQ-026",
+    "requirement_id": "GAME-CFG-010",
+    "question": "孝感 / 十堰变体下该项默认值需求未写（不影响本变体）",
+    "severity": "medium",
+    "status": "open"
+  },
+  {
+    "id": "OQ-027",
+    "requirement_id": "GAME-UI-004",
+    "question": "游戏大厅页原文未定义（占位条目）：大厅布局、房间列表、入口与加入房间交互需人工补充定义",
+    "severity": "high",
+    "status": "open"
+  },
+  {
+    "id": "OQ-028",
+    "requirement_id": "GAME-UI-003",
+    "question": "创房面板 UI 结构原文明确不展开（定义于 07-配置.md 业务语义）：面板布局与交互细节需人工确认是否补充",
+    "severity": "medium",
+    "status": "open"
+  },
+  {
+    "id": "OQ-029",
+    "requirement_id": null,
+    "question": "02-游戏流程.md 章节编号跳跃（一 -> 三，缺二）；07-配置.md 缺九、十：是否刻意省略需确认",
+    "severity": "low",
+    "status": "open"
+  },
+  {
+    "id": "OQ-030",
+    "requirement_id": "GAME-RULE-094",
+    "question": "三变体差异范围：本 IR 仅锁定卡五星（好友房）变体，变体间差异条目是否需要在 IR 中单独立条",
+    "severity": "medium",
+    "status": "open"
+  },
+  {
+    "id": "OQ-031",
+    "requirement_id": null,
+    "question": "跨文档条目重叠（如杠规则同时见于 01-基础规则 §四 与 03-打牌操作 §五）：归属划分以 quote 所在文档为准，是否需合并由人工裁决",
+    "severity": "low",
+    "status": "open"
+  }
+]

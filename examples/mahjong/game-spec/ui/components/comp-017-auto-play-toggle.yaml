@@ -1,0 +1,8 @@
+id: GAME-COMP-017
+type: auto_play_toggle
+name: 自动摸打勾选
+props: {}
+events:
+  - GAME-EVENT-013
+requirements: [GAME-FR-013]
+visual_hint: 听牌按钮展示时右侧显示自动摸打勾选按钮，未选中与选中两态；勾选进入托管且头像不显示托管图标，可再次点击或点取消托管按钮退出

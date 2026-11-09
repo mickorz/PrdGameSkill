@@ -1,0 +1,37 @@
+id: GAME-RULE-124
+type: game_rule
+name: 漂分（S7）
+status: proposed
+authority: fixed
+description: 胡牌玩家向某玩家收取漂分等于双方漂数之和乘底分，逐人计算，不受封顶影响，荒庄查叫时漂也赔。
+source:
+  kind: original
+  document: source/06-结算.md
+  section: "八、漂分（S7）"
+  page: null
+  quote: "胡牌玩家向某玩家收取的漂分 = （胡牌玩家漂数 + 该玩家漂数）× 底分"
+preconditions:
+  - "有玩家胡牌（或荒庄查叫触发赔付）"
+inputs:
+  - "胡牌玩家漂数"
+  - "各对手漂数"
+  - "胡牌方式（自摸或捉炮）"
+outputs:
+  - "漂分（逐玩家）"
+business_rules:
+  - "公式：胡牌玩家向某玩家收取的漂分 =（胡牌玩家漂数 + 该玩家漂数）× 底分。"
+  - "捉炮胡仅收点炮玩家；自摸胡收所有玩家。"
+  - "每个玩家单独计算。"
+  - "不受封顶影响。"
+  - "荒庄查叫时漂也赔。"
+  - "示例：A 漂 0、B 漂 2、C 漂 1 时，B 自摸收 A 2 倍底分、收 C 3 倍底分；A 点炮 B 胡牌，B 仅收 A 2 倍底分。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-RULE-015"
+  - "GAME-RULE-087"
+  - "GAME-RULE-126"
+open_questions: []

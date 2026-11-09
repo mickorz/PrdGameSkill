@@ -1,0 +1,30 @@
+id: GAME-CFG-002
+type: config
+name: "局数"
+status: proposed
+authority: fixed
+description: "创房选择本场对局的小局数（8 / 16 / 24 / 32 局），仅决定场次长度，不影响算分。"
+source:
+  kind: original
+  document: source/07-配置.md
+  section: "3.2 局数"
+  page: null
+  quote: "8 / 16 / 24 / 32 局 8 局 决定本场对局的小局数"
+value: "8 局"
+preconditions: []
+inputs:
+  - "创房面板局数选择"
+outputs:
+  - "本场对局的小局数"
+business_rules:
+  - "可选值：8 / 16 / 24 / 32 局（面板实拍）。"
+  - "切换后无影响、无联动：局数仅决定场次长度，不改变任何算分规则。"
+  - "局数与模式两项在三张创房配置表中均未列出，名称与选项集仅见于创房面板截图，按实拍口径取 8 局。"
+  - "对结算影响：不影响（仅流程控制）。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies: []
+open_questions: []

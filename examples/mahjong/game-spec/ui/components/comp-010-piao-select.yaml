@@ -1,0 +1,8 @@
+id: GAME-COMP-010
+type: piao_select
+name: 选漂弹窗
+props: {}
+events:
+  - GAME-EVENT-009
+requirements: [GAME-FR-011]
+visual_hint: 瞬间出现的漂选项单选（不漂、漂1、漂2、漂5、漂10），选完关窗；主视角下其他未完成玩家头像旁显示选漂中...，结束后漂UI飞行1秒至头像旁

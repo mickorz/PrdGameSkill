@@ -1,0 +1,33 @@
+id: GAME-RULE-074
+type: game_rule
+name: "大三元（F10）"
+status: proposed
+authority: fixed
+description: "中发白三种刻子或杠各一的三元番型，8倍，三元维度内取高覆盖小三元。"
+source:
+  kind: original
+  document: "source/04-番型.md"
+  section: "2.4 大三元（F10 · 8 倍）"
+  page: null
+  quote: "| **中 / 发 / 白三刻** | 手牌 + 碰杠牌区有中 / 发 / 白**三种杠子或刻子各一个** | 两刻 + 一对 → 改判 **小三元（4 倍）**；否则按**结构维度**计 **平胡（1 倍）/ 碰碰胡（2 倍）**，全筒条时另 + **清一色（4 倍）** |"
+preconditions:
+  - "玩家已形成14张和牌牌型"
+inputs:
+  - "手牌与碰杠牌区共14张牌面"
+outputs:
+  - "番型判定结果"
+  - "牌型分倍数"
+business_rules:
+  - "F10 大三元=8倍，三元维度；判定条件为手牌+碰杠牌区有中/发/白三种杠子或刻子各一个"
+  - "只有两刻+一对时改判小三元（F07，4倍）；仅一刻时按结构维度计平胡/碰碰胡"
+  - "同属三元维度取高，大三元覆盖小三元（不同时计）"
+  - "与结构维度叠加：大三元8+平胡1=9倍；大三元8+碰碰胡2=10倍"
+  - "与清一色互斥（三元必含字牌，清一色禁字牌）；与三元七对跨结构取高"
+  - "与卡五星/手抓一/明暗四归可叠加；三刻来自碰或杠均计入"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies: []
+open_questions: []

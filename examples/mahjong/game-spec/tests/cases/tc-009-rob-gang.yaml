@@ -1,0 +1,11 @@
+id: GAME-TC-009
+name: 抢杠胡杠分回退
+type: normal
+related_requirements: [GAME-RULE-011]
+preconditions:
+  - 某玩家补杠（明杠升级），其补杠牌为另一玩家的可胡牌
+steps:
+  - 补杠玩家宣告杠
+  - 另一玩家点击抢杠胡
+expected: 抢杠胡成立，该杠视为未成功，已收取的杠分按口径回退，抢杠胡倍数按 J05 结算
+rule_refs: [GAME-RULE-011, GAME-RULE-112]

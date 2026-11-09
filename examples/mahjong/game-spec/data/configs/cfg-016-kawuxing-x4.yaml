@@ -1,0 +1,31 @@
+id: GAME-CFG-016
+type: config
+name: "规则-卡五星*4"
+status: proposed
+authority: fixed
+description: "勾选后卡五星番型倍数由 2 变 4，与高分玩法互斥。"
+source:
+  kind: original
+  document: source/07-配置.md
+  section: "7.5 番型倍数调整开关"
+  page: null
+  quote: "卡五星 *4 默认不选 卡五星倍数由 2 变 4 勾选 → 卡五星基础番型 4 倍；取消 → 2 倍"
+value: false
+preconditions: []
+inputs:
+  - "创房面板勾选"
+outputs:
+  - "卡五星番型倍数（2 或 4）"
+business_rules:
+  - "布尔勾选，默认不选；本变体卡五星番型基础 2 倍。"
+  - "勾选 → 卡五星基础番型 4 倍；取消 → 2 倍。"
+  - "与高分玩法互斥：高分玩法勾选后本项变灰且切换为不勾选。"
+  - "直接影响算分。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-CFG-014"
+open_questions: []

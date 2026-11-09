@@ -1,0 +1,5 @@
+id: GAME-EVENT-013
+name: 自动摸打勾选切换
+trigger_type: click
+payload: {}
+requirements: [GAME-FR-013]

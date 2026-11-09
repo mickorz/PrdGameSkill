@@ -1,0 +1,8 @@
+id: GAME-COMP-011
+type: kou_pai_select
+name: 扣牌弹窗
+props: {}
+events:
+  - GAME-EVENT-011
+requirements: [GAME-FR-012]
+visual_hint: 手牌上方半透明遮罩，标题请选择扣牌，候选可扣牌单张横排（顺序与手牌一致、右下角选中圆圈绿色对号），下方取消与选择完成按钮

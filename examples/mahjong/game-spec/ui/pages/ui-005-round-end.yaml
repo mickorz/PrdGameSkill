@@ -1,0 +1,10 @@
+id: GAME-UI-005
+name: 对局结束过渡
+resolution: {width: 1280, height: 720}
+components:
+  - GAME-COMP-013
+  - GAME-COMP-016
+states: [normal, error]
+interactions: []
+requirements: [GAME-FR-015]
+test_refs: []

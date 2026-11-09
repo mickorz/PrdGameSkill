@@ -1,0 +1,41 @@
+id: GAME-CFG-020
+type: config
+name: "规则-包牌"
+status: proposed
+authority: fixed
+description: "勾选后点炮亮倒玩家按「相当于自摸」赔付，卡五星专属、仅 3 人时开启。"
+source:
+  kind: original
+  document: source/07-配置.md
+  section: "7.6 包牌"
+  page: null
+  quote: "点炮亮倒玩家需支付相当于亮倒玩家自摸的分数（含番型 × 加倍项、马、漂、坎）；若另一家也亮倒，还需支付给该玩家分数（按其点炮计算，马、漂、坎也计算）"
+value: false
+preconditions:
+  - "房间人数为 3 人（2 人时置灰不可勾选，已勾选改 2 人开局则失效）"
+inputs:
+  - "创房面板勾选"
+  - "点炮与亮倒状态"
+outputs:
+  - "点炮赔付范围（相当于自摸）"
+business_rules:
+  - "布尔勾选，默认不选；卡五星专属，仅 3 人时开启。"
+  - "勾选 → 点炮亮倒玩家需支付相当于亮倒玩家自摸的分数（含番型 × 加倍项、马、漂、坎）。"
+  - "若另一家也亮倒，还需支付给该玩家分数（按其点炮计算，马、漂、坎也计算，裁决 R5 / G7）。"
+  - "取消 → 按普通点炮赔付。"
+  - "人数联动（双重失效路径，非矛盾）：事前，创房面板选 2 人时选项置灰且不勾选；事后，3 人下已勾选、改 2 人开局则「少人开局变为无效」，均指向 2 人下包牌不生效。"
+  - "直接影响算分：改变点炮的赔付范围。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-CFG-001"
+  - "GAME-CFG-004"
+  - "GAME-CFG-005"
+  - "GAME-CFG-006"
+  - "GAME-CFG-007"
+  - "GAME-CFG-015"
+  - "GAME-CFG-026"
+open_questions: []

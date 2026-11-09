@@ -1,0 +1,37 @@
+id: GAME-RULE-056
+type: game_rule
+name: 亮倒界面流程
+status: proposed
+authority: fixed
+description: 点击亮后所有碰杠胡按钮消失进入扣牌判断，无可扣刻子直接进亮倒-打牌界面，有则打开扣牌界面，取消等同过
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 10.4 亮倒的界面流程
+  page: null
+  quote: 所有碰杠胡交互按钮消失（听牌提示箭头不消失）
+preconditions:
+  - 玩家已触发亮倒权限并点击【亮】
+inputs:
+  - 点击【亮】、点击取消、点击各类牌
+outputs:
+  - 进入扣牌界面或「亮倒-打牌」界面，或回退正常出牌界面
+business_rules:
+  - 点击【亮】后所有碰杠胡交互按钮消失（听牌提示箭头不消失），随后进行扣牌判断
+  - 无可扣的刻子 -> 跳过扣牌，进入「亮倒-打牌」界面；有可扣的刻子 -> 打开扣牌界面
+normal_flow:
+  - 点击【亮】 -> 按钮消失 -> 扣牌判断 -> 扣牌界面或「亮倒-打牌」界面
+  - 出牌阶段 -> 亮倒确认 -> 扣牌界面或亮倒打牌界面
+  - 亮倒确认 -> 取消 -> 正常出牌界面
+exception_flow:
+  - 点击取消：等同于【过】，回到正常出牌界面（【扣】标签消失、遮罩消失、正常展示所有听牌提示、可正常提牌出牌）
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-053
+  - GAME-RULE-057
+  - GAME-RULE-052
+  - GAME-FR-007
+  - GAME-FR-008
+open_questions: []

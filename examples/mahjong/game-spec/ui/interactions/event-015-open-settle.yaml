@@ -1,0 +1,5 @@
+id: GAME-EVENT-015
+name: 查看结算进入大结算
+trigger_type: click
+payload: {}
+requirements: [GAME-FR-015]

@@ -1,0 +1,37 @@
+id: GAME-RULE-015
+type: game_rule
+name: 漂
+status: proposed
+authority: fixed
+description: 开局选定漂分，胡牌收漂分 =（己方漂数 + 对方漂数）× 底分，逐人计算。
+source:
+  kind: original
+  document: source/01-基础规则.md
+  section: "6.1 漂"
+  page: null
+  quote: "胡牌玩家向某玩家收取的漂分 = （胡牌玩家漂数 + 该玩家漂数）× 底分"
+preconditions:
+  - 创房选择漂模式（不漂 / 自由漂 / 开局定漂 / 固定漂）
+inputs:
+  - 各玩家漂数
+  - 胡牌方式（自摸 / 捉炮）
+outputs:
+  - 漂分（倍底分，逐人计算）
+business_rules:
+  - 模式不漂：关闭漂功能，无打漂环节、不计漂分。
+  - 模式自由漂：每小局开局后，玩家可在【不漂】【漂1】【漂2】【漂5】【漂10】中选择。
+  - 模式开局定漂（首局定漂）：仅每个大局的第一小局执行选漂环节，决定本大局每一小局的漂分；后续小局流程同固定漂。
+  - 模式固定漂：无选漂环节；本大局每小局固定漂【X】，下拉框可选 1 / 2 / 5 / 10，下拉框默认 2；漂分整体默认档亦为「固定漂 2」（需求 §3.1.1.1 明文）。
+  - 收分公式：胡牌玩家向某玩家收取的漂分 =（胡牌玩家漂数 + 该玩家漂数）× 底分，每个玩家单独计算。
+  - 捉炮胡仅收取点炮玩家；自摸胡收取所有玩家。
+  - 需求原文示例：A 漂 0、B 漂 2、C 漂 1 时，B 自摸收 A (2+0)=2 倍底分、收 C (2+1)=3 倍底分；A 点炮 B 胡牌仅收 A (2+0)=2 倍底分。
+  - 荒庄时漂也赔（查叫赔付含漂分，见结算文档 §九）。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-022
+  - GAME-RULE-028
+open_questions: []

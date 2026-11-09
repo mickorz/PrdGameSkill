@@ -1,0 +1,32 @@
+id: GAME-RULE-039
+type: game_rule
+name: 操作优先级胡类高于碰杠
+status: proposed
+authority: fixed
+description: 同牌多操作时吃胡/自摸/抢杠胡优先级高于碰/杠，胡类优先处理
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 四、碰
+  page: null
+  quote: 吃胡 / 自摸 / 抢杠胡 > 碰 / 杠
+preconditions:
+  - 同一张打出牌触发多个玩家的多种操作（胡与碰/杠并存）
+inputs:
+  - 多家并发操作请求
+outputs:
+  - 胡类操作优先得到处理，碰/杠被拦截
+business_rules:
+  - 操作优先级：吃胡 / 自摸 / 抢杠胡 > 碰 / 杠
+  - 同口径出现于胡牌限制层第5条与碰杠按钮多状态显示（源 §7.2、§八）
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-048
+  - GAME-RULE-050
+  - GAME-FR-004
+  - GAME-FR-005
+open_questions: []

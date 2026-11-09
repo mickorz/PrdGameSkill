@@ -1,0 +1,32 @@
+id: GAME-RULE-002
+type: game_rule
+name: 起手与胡牌张数
+status: proposed
+authority: fixed
+description: 庄家起手 14 张、闲家 13 张，胡牌均为 14 张（含和入张）。
+source:
+  kind: original
+  document: source/01-基础规则.md
+  section: "1.2 起手与胡牌张数"
+  page: null
+  quote: "发牌从**庄家位开始逆时针**顺序进行。庄家最后一张固定置于手牌最右侧，与一般手牌保持距离。"
+preconditions:
+  - GAME-RULE-001 牌池已构建
+inputs:
+  - 玩家角色（庄家 / 闲家）
+outputs:
+  - 庄家手牌 14 张、闲家手牌 13 张
+business_rules:
+  - 庄家起手 14 张，发牌序列 4+4+4+1+1（4 组）。
+  - 闲家起手 13 张，发牌序列 4+4+4+1（4 组）。
+  - 胡牌张数均为 14 张（含和入张）。
+  - 发牌从庄家位开始逆时针顺序进行。
+  - 庄家最后一张固定置于手牌最右侧，与一般手牌保持距离（对应摸牌位置）。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-001
+open_questions: []

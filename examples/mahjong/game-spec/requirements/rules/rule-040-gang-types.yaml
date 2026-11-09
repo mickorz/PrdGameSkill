@@ -1,0 +1,35 @@
+id: GAME-RULE-040
+type: game_rule
+name: 杠类型定义与术语别名
+status: proposed
+authority: fixed
+description: 三种杠：直杠（他人打出加手中3张）、明杠（即补杠加杠，碰后摸到同张）、暗杠（非碰牌后出牌阶段手中4张）
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 5.1 杠的类型（含别名）
+  page: null
+  quote: 玩家碰牌后，除当前回合不可杠，后续摸到相同的牌 → 开杠
+preconditions: []
+inputs:
+  - 他人出牌事件（直杠）或玩家摸/补牌事件（明杠、暗杠）
+outputs:
+  - 对应类型开杠，进入补牌流程
+business_rules:
+  - 直杠（别名大明杠）：别人打出某张牌，玩家手中存在相同的3张开杠，无前置条件
+  - 明杠（别名补杠/加杠）：玩家碰牌后，除当前回合不可杠，后续摸到相同的牌开杠，前置条件为必须先碰过
+  - 暗杠：非碰牌后的出牌阶段，手上有4张相同牌开杠，无前置条件
+  - 术语陷阱：本玩法的「明杠」等于通用麻将的补杠，不是「手中3张+他人打出第4张」的直杠
+normal_flow:
+  - 满足对应类型条件 -> 开杠 -> 杠分结算 -> 补牌（见 GAME-RULE-045）
+  - 碰牌副露状态 -> 摸到第4张 -> 明杠（补杠）成立
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-038
+  - GAME-RULE-041
+  - GAME-RULE-045
+  - GAME-FR-004
+open_questions: []

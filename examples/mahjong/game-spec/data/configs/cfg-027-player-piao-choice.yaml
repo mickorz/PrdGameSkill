@@ -1,0 +1,32 @@
+id: GAME-CFG-027
+type: config
+name: 漂数（玩家局内选择）
+status: proposed
+authority: fixed
+description: 玩家局内自选漂数取值范围（不漂 / 漂1 / 漂2 / 漂5 / 漂10），漂分机制的局内输入。
+source:
+  kind: original
+  document: source/07-配置.md
+  section: 十五、数值范围与边界
+  page: null
+  quote: 漂数（玩家局内选择） 不漂 / 漂 1 / 漂 2 / 漂 5 / 漂 10
+value: null
+preconditions:
+  - 创房漂分选择自由漂或首局定漂（进入选漂环节）
+inputs:
+  - 玩家局内选漂操作
+outputs:
+  - 各玩家漂数
+business_rules:
+  - 可选值：不漂 / 漂 1 / 漂 2 / 漂 5 / 漂 10；属玩家局内选择，非创房默认值，故 value 为 null。
+  - 自由漂模式下每小局开局后玩家在该范围内选择；首局定漂仅大局第一小局选择；固定漂与不漂无逐局选择。
+  - 漂分收分公式 =（胡牌玩家漂数 + 该玩家漂数）× 底分；漂分是加分项，不受封顶。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs:
+  - GAME-COMP-010
+test_refs: []
+dependencies:
+  - GAME-CFG-005
+open_questions: []

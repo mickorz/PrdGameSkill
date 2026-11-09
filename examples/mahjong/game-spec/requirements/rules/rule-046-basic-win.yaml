@@ -1,0 +1,35 @@
+id: GAME-RULE-046
+type: game_rule
+name: 基础胡牌方式
+status: proposed
+authority: fixed
+description: 自摸（摸补到牌成胡）、点炮（他家打出牌成胡且受番数门槛限制）、抢杠胡（他家补杠牌为己胡牌，倍数x2可多人抢杠）
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 7.1 胡牌方式
+  page: null
+  quote: 其他玩家明杠（补杠）的牌恰为自己的胡牌
+preconditions:
+  - 手牌满足胡牌规则且通过胡牌限制层（见 GAME-RULE-048）
+inputs:
+  - 摸牌/补牌事件（自摸）、他家出牌事件（点炮）、他家明杠事件（抢杠胡）
+outputs:
+  - 胡牌成立，进入结算
+business_rules:
+  - 自摸：摸/补到一张牌，手牌符合胡牌规则；界面按钮【自摸】+【过】；倍数基础
+  - 点炮（捉炮胡）：其他玩家打出的牌符合胡牌规则；界面按钮【胡】+【过】；倍数基础，番型乘加倍项不大于1时不可捉炮
+  - 抢杠胡：其他玩家明杠（补杠）的牌恰为自己的胡牌；界面按钮【胡】+【过】；倍数x2（勾选「杠上花/炮*4」后x4，需求 §2.3.1.2 三项并列受同一勾选控制）；可多人抢杠胡一家
+normal_flow:
+  - 触发事件 -> 满足胡牌规则且过限制层 -> 玩家点击胡类按钮 -> 胡牌成立
+  - 他家补杠等待抢杠响应 -> 抢杠胡成立 -> 结算
+exception_flow:
+  - 番型乘加倍项不大于1 -> 不可捉炮，只能自摸
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-045
+  - GAME-RULE-048
+  - GAME-FR-005
+open_questions: []

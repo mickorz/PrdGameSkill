@@ -1,0 +1,7 @@
+id: GAME-COMP-013
+type: maima_panel
+name: 买马弹窗
+props: {}
+events: []
+requirements: [GAME-FR-015]
+visual_hint: UI与牌同时弹出，标题买马加牌列表，中的马金色边亮起，同时显示中X马文字，停留1.5秒后关闭直接打开小结算

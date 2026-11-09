@@ -1,0 +1,39 @@
+id: GAME-RULE-054
+type: game_rule
+name: 亮倒后行为限制
+status: proposed
+authority: fixed
+description: 亮倒后亮出所有手中牌、只能摸打且必须维持听牌不可改牌、胡的牌成为他家危牌、仅扣下刻子可杠
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 10.2 亮倒后的行为限制
+  page: null
+  quote: 只能摸打，且亮倒的牌必须维持听牌
+preconditions:
+  - 玩家已处于亮倒状态
+inputs:
+  - 摸牌/补牌/出牌/杠请求
+outputs:
+  - 按亮倒限制放行或拦截
+business_rules:
+  - 明牌：亮出所有手中牌
+  - 不可换牌：只能摸打，且亮倒的牌必须维持听牌（源 §2.1：亮倒后不可改牌，只能打出维持听牌的牌）
+  - 危牌产生：胡的牌成为其他未亮倒用户的【危牌】；玩家亮倒后自己的危牌标签去掉
+  - 杠的限制：仅可对已扣下的刻子进行直杠/补杠；暗杠仅可摸到第4张暗杠，第4张在手牌中不可暗杠
+normal_flow:
+  - 亮倒 -> 摸牌 -> 打出维持听牌的牌
+  - 普通状态 -> 亮倒状态（单向，局内不可逆）
+exception_flow:
+  - 尝试打出后不维持听牌的牌 -> 拦截
+  - 尝试杠未扣下的牌 -> 拦截（见 GAME-RULE-044）
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-033
+  - GAME-RULE-044
+  - GAME-RULE-053
+  - GAME-RULE-057
+  - GAME-FR-007
+open_questions: []

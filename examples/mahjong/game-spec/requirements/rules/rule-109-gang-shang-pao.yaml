@@ -1,0 +1,38 @@
+id: GAME-RULE-109
+type: game_rule
+name: 杠上炮
+status: proposed
+authority: open
+description: 开杠后补牌并打出一张牌后点炮为杠上炮，属点炮类加倍项，默认2倍，勾选杠上花炮4后变4倍。
+source:
+  kind: original
+  document: source/05-胡牌类型.md
+  section: "5.2 杠上炮"
+  page: null
+  quote: "| **触发** | 开杠后补牌，并**打出一张牌后点炮** |"
+preconditions:
+  - "玩家开杠补牌后打出一张牌"
+inputs:
+  - "打出的牌"
+  - "创房勾选「杠上花/炮*4」"
+  - "是否处于杠上杠状态"
+outputs:
+  - "杠上炮加倍项（2 或 4 倍）"
+business_rules:
+  - "触发：开杠后补牌，并打出一张牌后点炮。"
+  - "倍数：×2 默认生效；勾选「杠上花/炮*4」后变为 ×4。"
+  - "归类：属点炮类（由他人打出补牌后的牌而胡），番数门槛大于 1 才可、受危牌与漏胡限制。"
+  - "与杠上杠：倍数不跟随杠上杠翻倍，走初始值（初始 2，可勾选为 4）。"
+normal_flow:
+  - "开杠补牌 -> 打出一张牌 -> 他家胡牌 -> 计杠上炮加倍项"
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-RULE-083"
+  - "GAME-RULE-008"
+  - "GAME-RULE-111"
+  - "GAME-RULE-119"
+open_questions:
+  - "生效条件与杠上花同源：需求「勾选后生效」与创房表「默认生效 2 倍」矛盾，本文档裁决采创房表口径，待需求方确认。"

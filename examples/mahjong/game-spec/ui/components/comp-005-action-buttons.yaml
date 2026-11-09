@@ -1,0 +1,11 @@
+id: GAME-COMP-005
+type: action_buttons
+name: 操作按钮组
+props: {}
+events:
+  - GAME-EVENT-003
+  - GAME-EVENT-004
+  - GAME-EVENT-005
+  - GAME-EVENT-006
+requirements: [GAME-FR-010]
+visual_hint: 手牌右上方按钮，多状态从左至右优先级为碰、杠、亮、胡或自摸、过；碰+过、碰+杠+过、杠+过、自摸+过、胡+过；有自摸时不可直接出牌

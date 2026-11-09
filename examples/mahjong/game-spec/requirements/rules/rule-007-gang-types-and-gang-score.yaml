@@ -1,0 +1,36 @@
+id: GAME-RULE-007
+type: game_rule
+name: 杠类型与杠分
+status: proposed
+authority: fixed
+description: 直杠 2 倍、明杠（补杠）1 倍、暗杠 2 倍底分，实时结算且荒庄不退还。
+source:
+  kind: original
+  document: source/01-基础规则.md
+  section: "4.1 杠的类型与杠分"
+  page: null
+  quote: "| **直杠** | 别人打出某张牌，玩家手中存在相同的 **3 张** → 开杠 | 打出牌的玩家支付直杠玩家 **2 倍底分** | 否 |"
+preconditions:
+  - 行牌阶段中，满足对应杠型条件
+inputs:
+  - 杠操作类型（直杠 / 明杠 / 暗杠）
+outputs:
+  - 实时结算的杠分（倍底分）
+business_rules:
+  - 直杠（M4 §4.1）：别人打出某张牌、玩家手中存在相同 3 张 → 开杠；打出牌的玩家支付直杠玩家 2 倍底分；不可被抢。
+  - 明杠（补杠，§4.1）：玩家碰牌后（当前回合不可杠）后续摸到相同的牌 → 开杠；其他玩家各支付补杠玩家 1 倍底分；可被抢杠胡（见 GAME-RULE-011）。
+  - 暗杠（§4.1）：非碰牌后的出牌阶段，手上有 4 张相同牌 → 开杠；其余玩家各支付暗杠玩家 2 倍底分；不可被抢；暗杠的牌其余玩家可见（三张反面 + 顶部牌面）。
+  - 杠分实时结算，小局结束时不额外再算。
+  - 流局未听牌不需要返还杠分（直杠 / 明杠 / 暗杠三种均适用）；荒庄后杠分不退还。
+  - 别名口径（§2.1）：本玩法「明杠」= 通用补杠 / 加杠（不是直杠）；「直杠」= 通用大明杠。
+  - 底分为结算的最小乘算单位，杠分表述均为 N 倍底分（§2.2 名词索引）。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-009
+  - GAME-RULE-010
+  - GAME-RULE-011
+open_questions: []

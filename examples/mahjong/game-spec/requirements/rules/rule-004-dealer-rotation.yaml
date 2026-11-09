@@ -1,0 +1,33 @@
+id: GAME-RULE-004
+type: game_rule
+name: 轮庄
+status: proposed
+authority: fixed
+description: 第二小局起按上一局结果定庄：胡者坐庄、一炮多响点炮者坐庄、荒庄连庄。
+source:
+  kind: original
+  document: source/01-基础规则.md
+  section: "3.2 轮庄"
+  page: null
+  quote: "| **荒庄（流局）** | **上一局庄家继续坐庄**（即连庄）|"
+preconditions:
+  - 上一小局已结束（胡牌或荒庄）
+inputs:
+  - 上一局结果（单个玩家胡牌 / 一炮多响 / 荒庄）
+outputs:
+  - 本局庄家
+business_rules:
+  - 上一局单个玩家胡牌 → 本局胡牌玩家坐庄。
+  - 上一局一炮多响 → 本局点炮玩家坐庄。
+  - 上一局荒庄（流局）→ 上一局庄家继续坐庄（连庄，连庄无次数上限，§10.4）。
+  - 多人抢杠胡属点炮类，由补杠的那一家坐庄（§4.5）。
+  - 按逆时针轮庄（庄家以外的方位依次递补），轮庄规则三变体一致（02-游戏流程 §10.3）。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-011
+  - GAME-RULE-030
+open_questions: []

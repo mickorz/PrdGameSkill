@@ -1,0 +1,28 @@
+id: GAME-RULE-094
+type: game_rule
+name: "三变体番型差异"
+status: proposed
+authority: open
+description: "本变体与另两变体的番型与机制差异对照表，本文档按本变体（好友房）取值落地。"
+source:
+  kind: original
+  document: "source/04-番型.md"
+  section: "七、三变体差异"
+  page: null
+  quote: "| **四归（F04 / F05）** | 受**频道**控制（全 / 半） |"
+preconditions: []
+inputs:
+  - "变体标识（创房配置）"
+outputs:
+  - "本变体番型配置基准"
+business_rules:
+  - "本变体差异表：手抓一（F09）2倍；卡五星（F03）2倍（勾选x4）；双龙七对（F13）32倍；三龙七对（F14）128倍（高分玩法下80倍）；四归（F04/F05）受频道控制（全/半）；有海底捞/海底炮（J06/J07）；有上楼（J08）；无数坎扩展（A03）；有漂分/买马/数坎/杠分（A01/A02/A03/A07）"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies: []
+open_questions:
+  - "需确认本样本变体范围：源文档仅给出本变体与另两变体的差异结论表，未给出另两变体的完整番型配置；需确认本需求样本是否仅覆盖本变体（好友房），另两变体是否在需求交付范围内"
+  - "四归频道（全/半）在本样本中的默认取值与创房开关归属需与配置文档核对确认"

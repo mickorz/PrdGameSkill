@@ -1,0 +1,32 @@
+id: GAME-RULE-034
+type: game_rule
+name: 扣牌禁止打出
+status: proposed
+authority: fixed
+description: 扣下的牌带【扣】标签且带遮罩，不可打出
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 2.1 条件与限制
+  page: null
+  quote: 扣下的牌带【扣】标签且带遮罩，不可打出
+preconditions:
+  - 玩家已亮倒且已扣下部分牌
+inputs:
+  - 玩家尝试打出被扣的牌
+outputs:
+  - 出牌被阻断
+business_rules:
+  - 扣下的牌带【扣】标签且带遮罩，任何情况下不可打出
+normal_flow: []
+exception_flow:
+  - 尝试打出扣牌 -> 阻断
+state_transitions: []
+ui_refs: []
+test_refs:
+  - GAME-TC-010
+dependencies:
+  - GAME-RULE-057
+  - GAME-FR-008
+  - GAME-FR-007
+open_questions: []

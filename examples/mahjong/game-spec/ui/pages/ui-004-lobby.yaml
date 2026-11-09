@@ -1,0 +1,9 @@
+id: GAME-UI-004
+name: 游戏大厅
+resolution: {width: 1280, height: 720}
+components: []
+states: [loading, normal, error]
+interactions: []
+requirements: []
+test_refs: []
+# 待确认状态见 reviews/open-questions.json（原文未描述独立游戏大厅页，本条目为占位）

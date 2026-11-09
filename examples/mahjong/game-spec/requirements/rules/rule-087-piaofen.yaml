@@ -1,0 +1,32 @@
+id: GAME-RULE-087
+type: game_rule
+name: "漂分（A01）"
+status: proposed
+authority: fixed
+description: "按胡牌方与对手漂数合计乘底分收取的加分项，不参与封顶。"
+source:
+  kind: original
+  document: "source/04-番型.md"
+  section: "6.1 漂分（A01）"
+  page: null
+  quote: "胡牌玩家向某玩家收取的漂分 = （胡牌玩家漂数 + 该玩家漂数）× 底分"
+preconditions:
+  - "胡牌结算或荒庄查叫结算触发"
+inputs:
+  - "胡牌玩家漂数"
+  - "各对手玩家漂数"
+  - "胡牌方式（捉炮/自摸）"
+outputs:
+  - "加分数值（倍底分，不受封顶影响）"
+business_rules:
+  - "A01 漂分=（胡牌玩家漂数+该玩家漂数）x底分，每个玩家单独计算"
+  - "捉炮胡仅收取点炮玩家；自摸胡收取所有玩家"
+  - "荒庄查叫时漂也赔"
+  - "加分项为额外加分，每一项单独计算，不与番型、加倍项进行乘算，且不受封顶影响（无上限）"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies: []
+open_questions: []

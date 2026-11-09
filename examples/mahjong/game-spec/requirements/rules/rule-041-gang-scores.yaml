@@ -1,0 +1,38 @@
+id: GAME-RULE-041
+type: game_rule
+name: 杠分与结算
+status: proposed
+authority: fixed
+description: 直杠点炮者付2倍底分、明杠他家各付1倍、暗杠他家各付2倍；杠分实时结算，流局与荒庄均不返还
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 5.2 杠分
+  page: null
+  quote: 打出牌的玩家支付直杠玩家 2 倍底分
+preconditions:
+  - 玩家完成开杠
+inputs:
+  - 杠类型（直杠/明杠/暗杠）
+outputs:
+  - 对应玩家间杠分转移
+business_rules:
+  - 直杠：打出牌的玩家支付直杠玩家2倍底分
+  - 明杠：其他玩家各支付补杠玩家1倍底分
+  - 暗杠：其余玩家各支付暗杠玩家2倍底分
+  - 杠分实时结算，小局结束时不额外再算
+  - 流局未听牌，不需要返还杠分
+  - 荒庄后杠分不退还
+normal_flow:
+  - 开杠 -> 按类型即时结算杠分 -> 补牌
+exception_flow:
+  - 流局未听牌 -> 杠分不返还；荒庄 -> 杠分不退还
+state_transitions: []
+ui_refs: []
+test_refs:
+  - GAME-TC-006
+dependencies:
+  - GAME-RULE-040
+  - GAME-RULE-042
+  - GAME-FR-004
+open_questions: []

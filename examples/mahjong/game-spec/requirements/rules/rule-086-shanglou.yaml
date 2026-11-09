@@ -1,0 +1,31 @@
+id: GAME-RULE-086
+type: game_rule
+name: "上楼（J08）"
+status: proposed
+authority: fixed
+description: "上局荒庄或一炮多响、或本局开局双骰同点触发的局面加倍项，最高4倍。"
+source:
+  kind: original
+  document: "source/04-番型.md"
+  section: "5.6 上楼（J08 · 2 倍 / 4 倍）"
+  page: null
+  quote: "| ① 同一大局内，**上一小局荒庄或者一炮多响** | 本小局**倍数** **×2** |"
+preconditions:
+  - "小局结算触发且创房勾选「上楼」"
+inputs:
+  - "上一小局结果（荒庄/一炮多响）"
+  - "本小局开局骰子点数"
+outputs:
+  - "加倍倍数（乘算到番型分，参与封顶）"
+business_rules:
+  - "J08 上楼：同一大局内上一小局荒庄或一炮多响，本小局倍数乘2；本小局开局打骰子时两个骰子点数一致，本小局倍数乘2；两条件同时触发乘4，翻倍可叠加最高4倍"
+  - "需创房勾选「上楼」才生效"
+  - "上楼为加倍项，不可突破封顶倍数"
+  - "「倍数」射程为番型乘加倍项，不含马/漂/坎等加分项（Step 5裁决：采加倍项表口径，【上楼】名词解释的「所有分数*2」与「不可突破封顶倍数」不相容，不采）"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies: []
+open_questions: []

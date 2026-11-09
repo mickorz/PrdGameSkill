@@ -1,0 +1,31 @@
+id: GAME-RULE-103
+type: game_rule
+name: 和牌前置·操作优先级
+status: proposed
+authority: fixed
+description: 吃胡、自摸、抢杠胡优先于碰杠，同一张牌既有胡又有碰时胡优先。
+source:
+  kind: original
+  document: source/05-胡牌类型.md
+  section: "1.3 操作优先级"
+  page: null
+  quote: "高优先级操作优先执行；同一张牌既有胡又有碰时，**胡优先**。"
+preconditions:
+  - "同一张牌或同一操作窗口存在多个可执行操作"
+inputs:
+  - "各玩家的候选操作（胡/自摸/抢杠胡/碰/杠）"
+outputs:
+  - "操作执行顺序"
+business_rules:
+  - "优先级链：吃胡 / 自摸 / 抢杠胡 > 碰 / 杠。"
+  - "同一张牌既有胡又有碰时，胡优先。"
+  - "高优先级操作优先执行，优先级低者让位。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-RULE-050"
+  - "GAME-RULE-104"
+open_questions: []

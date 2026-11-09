@@ -1,0 +1,32 @@
+id: GAME-RULE-089
+type: game_rule
+name: "数坎（A03）"
+status: proposed
+authority: fixed
+description: "按暗刻/明杠/暗杠/手中四张计坎分的加分项，倍底分，不参与封顶。"
+source:
+  kind: original
+  document: "source/04-番型.md"
+  section: "6.3 数坎（A03）"
+  page: null
+  quote: "| 每个**暗刻** | +1 倍底分 |"
+preconditions:
+  - "胡牌结算或查叫结算触发"
+inputs:
+  - "玩家手中、胡的那张、碰杠牌区的牌面"
+  - "胡牌方式（点炮/自摸）"
+outputs:
+  - "坎分数值（倍底分，不受封顶影响）"
+business_rules:
+  - "A03 数坎计分：每个暗刻+1倍底分；每个明杠/直杠+1倍底分；每个暗杠+2倍底分；手中4张一样的牌+2倍底分（必须是顺+刻，不与暗刻重复计算）"
+  - "计算范围=自己的手中+胡的那张+碰杠牌区"
+  - "收分对象：点炮胡收放炮玩家；自摸胡收其他所有玩家"
+  - "口径：仅是3张相同牌但不成刻的不算；胡的那张牌自摸才参与计算，捉炮不参与；查叫时也计算坎分，但因没有胡不计算胡的那张牌，听双碰时会生效"
+  - "加分项不受封顶影响；本变体（好友房）无数坎扩展"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies: []
+open_questions: []

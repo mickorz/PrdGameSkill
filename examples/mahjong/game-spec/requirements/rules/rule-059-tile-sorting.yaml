@@ -1,0 +1,31 @@
+id: GAME-RULE-059
+type: game_rule
+name: 理牌规则
+status: proposed
+authority: fixed
+description: 每个打牌回合结束出牌后重新理牌，将刚摸进且未打出的牌以插入式或平移式插入手牌
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: "十二、理牌"
+  page: null
+  quote: "每个打牌回合结束（出牌后）重新理牌，将刚摸进且未打出的牌插入至手牌中。"
+preconditions:
+  - "本回合玩家已出牌"
+inputs:
+  - "摸进且未打出的牌"
+outputs:
+  - "手牌重新排列，摸进的牌插入手牌"
+business_rules:
+  - "插入式：有牌需要插入原手牌第1张至倒数第2张位置时，打出的牌位置空出后要插入的牌变斜提起，手牌中的牌自动往打出去的空位对齐移动并空出要插入的位置，变斜的牌提起后平移到要插入的位置上方随后变竖落下"
+  - "平移式：打出的牌非最右侧隔开的牌且其他牌无需改变排序时，打出去的牌的空位由右侧的牌往左平移，最右侧隔开的牌以同样速度往左靠，最终排靠在一起"
+  - "插入位置：插入的牌已有多张时随机插入位置；仅有一张时根据牌的排序顺序插入"
+normal_flow:
+  - "出牌 -> 空位出现 -> 摸进的牌按插入式或平移式归位"
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-RULE-031"
+open_questions: []

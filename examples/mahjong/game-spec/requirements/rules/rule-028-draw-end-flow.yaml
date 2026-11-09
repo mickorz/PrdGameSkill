@@ -1,0 +1,37 @@
+id: GAME-RULE-028
+type: game_rule
+name: 荒庄流程
+status: proposed
+authority: fixed
+description: 牌堆摸完仍无人胡牌即荒庄，摊牌后按未听牌情况执行查叫与亮倒荒庄赔付。
+source:
+  kind: original
+  document: source/02-游戏流程.md
+  section: 8.2 荒庄（流局）
+  page: null
+  quote: '**触发**：**玩家可摸牌数 = 0**（牌堆摸完）仍无人胡牌。'
+preconditions:
+  - 牌堆可摸牌数 = 0 且无人胡牌
+inputs:
+  - 各玩家听牌状态
+outputs:
+  - 荒庄摊牌、查叫赔付、亮倒荒庄赔付
+  - 进入小结算
+business_rules:
+  - 触发：玩家可摸牌数 = 0（牌堆摸完）仍无人胡牌。
+  - 流程 1：所有玩家摊牌展示。
+  - 流程 2：展示【荒庄】文字，持续 1.3 秒。
+  - 流程 3：随后判断有无未听牌玩家：无未听牌玩家 → 直接出小结算。
+  - 有未听牌玩家 → 所有未听牌玩家同时飘字【未听牌】；查叫（需勾选）触发时，未听牌文字出现的同时展示查叫的分数；亮倒赔付触发时，在查叫后触发亮倒赔付的玩家展示【亮倒荒庄】文字并赔付、展示加分和扣分；持续 1.3 秒后出小结算界面。
+  - 荒庄结算口径：查叫赔付公式、亮倒荒庄赔付（首个亮倒玩家赔其他所有玩家 1 倍底分，卡五星专属）、杠分不退还、不买马（见 source/01-基础规则.md §4.1 / §6.2 与结算文档 §十二）。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs:
+  - GAME-TC-007
+dependencies:
+  - GAME-RULE-007
+  - GAME-RULE-016
+  - GAME-RULE-017
+open_questions: []

@@ -1,0 +1,34 @@
+id: GAME-CFG-015
+type: config
+name: "规则-数坎"
+status: proposed
+authority: fixed
+description: "开启数坎后按暗刻 / 杠 / 手中四张的数量额外加分，坎分不受封顶。"
+source:
+  kind: original
+  document: source/07-配置.md
+  section: "7.4 数坎"
+  page: null
+  quote: "开启数坎：胡牌后按暗刻 / 明杠 / 直杠 / 暗杠 / 手中四张的数量额外加分"
+value: false
+preconditions: []
+inputs:
+  - "创房面板勾选"
+  - "胡牌牌面（暗刻 / 杠 / 手中四张）"
+outputs:
+  - "坎分（加分项，进入最终得分）"
+business_rules:
+  - "布尔勾选，默认不选。"
+  - "勾选 → 坎分进入最终得分：暗刻 +1、明杠直杠 +1、暗杠 +2、手中四张 +2 倍底分。"
+  - "取消 → 无坎分。"
+  - "坎分是加分项，不受封顶。"
+  - "孝感卡五星中为前置项：未勾选数坎时「杠算两坎 / 碰碰坎 / 一搭二」置灰并取消勾选；本变体无该三开关，仅登记口径。"
+  - "直接影响算分。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-CFG-004"
+open_questions: []

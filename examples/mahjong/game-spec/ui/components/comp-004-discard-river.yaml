@@ -1,0 +1,7 @@
+id: GAME-COMP-004
+type: discard_river
+name: 牌河
+props: {}
+events: []
+requirements: [GAME-FR-009]
+visual_hint: 按出牌顺序从左至右摆放，3人自己每排12~13张左右各7张、2人各13~14张，共3排；最近出牌带菱形光柱漂浮动画1秒；被碰杠胡的牌不展示

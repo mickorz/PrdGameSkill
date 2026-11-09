@@ -1,0 +1,35 @@
+id: GAME-FR-011
+type: game_feature
+name: 打漂选漂交互
+status: proposed
+authority: fixed
+description: 不漂、固定漂、首局定漂、自由漂四种模式的选漂 UI 表现与选漂动画衔接
+source:
+  kind: original
+  document: source/08-UI交互.md
+  section: "八、打漂"
+  page: null
+  quote: "每个玩家屏幕出现各个漂的选项（选漂 UI 瞬间出现）；主视角下其他玩家头像旁出现【选漂中...】文字"
+preconditions:
+  - "创房面板开启打漂相关配置（固定漂/首局定漂/自由漂）"
+inputs:
+  - "玩家点击漂选项（不漂/漂1/漂2/漂5/漂10）"
+outputs:
+  - "选漂 UI、选漂中提示、头像旁漂结果、漂 UI 飞行动画"
+business_rules:
+  - "不漂：无打漂环节、不计漂分"
+  - "固定漂：开局的同时玩家头像旁直接出现选漂结果，无过程动画，并同时开始打骰子"
+  - "首局定漂：仅每个大局的第一小局执行选漂环节，后续小局流程同固定漂"
+  - "自由漂（每局选漂）：每个小局执行选漂环节"
+  - "选漂触发时机为小局开局后，选漂 UI 瞬间出现；主视角下其他玩家头像旁出现【选漂中...】文字直到该玩家完成；选漂后头像旁出现选漂结果且其他玩家直接可见"
+  - "最后一个玩家选漂完成的同时：选漂结果出现，所有玩家选漂文字缩小移动到头像旁漂 UI 位置（漂 UI 飞行1秒），开始打骰子"
+  - "打漂结束后开始打骰子 + 发牌 + 定庄环节"
+normal_flow:
+  - "小局开局 -> 选漂 UI 出现 -> 全部玩家完成选漂 -> 漂 UI 飞行至头像旁 -> 开始打骰子发牌定庄"
+exception_flow: []
+state_transitions: []
+ui_refs: [GAME-UI-001]
+test_refs: []
+dependencies:
+  - "GAME-RULE-015"
+open_questions: []

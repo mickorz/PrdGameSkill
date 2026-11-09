@@ -1,0 +1,41 @@
+id: GAME-RULE-111
+type: game_rule
+name: 点炮（捉炮胡）
+status: proposed
+authority: fixed
+description: 玩家打出的牌恰为他家要胡的牌即点炮，番型乘加倍项大于1才可捉炮，收分仅点炮玩家。
+source:
+  kind: original
+  document: source/05-胡牌类型.md
+  section: "七、点炮（捉炮胡）"
+  page: null
+  quote: "| **触发** | 玩家打出的牌，刚好为其他玩家要胡的牌 |"
+preconditions:
+  - "有玩家打出一张牌"
+  - "他家手牌听这张牌且通过限制层"
+inputs:
+  - "打出的牌"
+  - "番型与加倍项"
+outputs:
+  - "捉炮胡成立与收分"
+business_rules:
+  - "触发：玩家打出的牌，刚好为其他玩家要胡的牌。"
+  - "番数门槛：番型 × 加倍项 > 1 才可捉炮。"
+  - "收分对象：仅点炮玩家（自摸才收所有玩家）。"
+  - "界面：手牌右上方显示【胡】+【过】；【胡】选项上显示本次胡的牌和倍数（非自摸不含自摸）。"
+  - "封顶显示：如有倍数封顶，则显示【封顶】，倍数仅显示封顶倍数。"
+  - "展示：摊开摆放在自己手牌右侧，间隔 1/4 牌距离；自己角度显示对应点牌玩家的方位箭头（胡对家向上 / 胡上家向左 / 胡下家向右）。"
+  - "超时：配置开启托管时，超时默认胡。"
+normal_flow:
+  - "他家出牌 -> 通过番数门槛与限制层 -> 点胡 -> 仅向点炮玩家收分"
+exception_flow:
+  - "番型乘加倍项等于 1 -> 不可捉炮，提示番数不足"
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-RULE-102"
+  - "GAME-RULE-061"
+  - "GAME-RULE-119"
+  - "GAME-RULE-121"
+open_questions: []

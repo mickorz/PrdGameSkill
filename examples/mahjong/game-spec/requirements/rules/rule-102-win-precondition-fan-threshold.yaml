@@ -1,0 +1,39 @@
+id: GAME-RULE-102
+type: game_rule
+name: 和牌前置·番数门槛
+status: proposed
+authority: fixed
+description: 捉炮要求番型乘加倍项大于1，等于1时只能自摸，自摸不受番数门槛限制。
+source:
+  kind: original
+  document: source/05-胡牌类型.md
+  section: "1.2 番数门槛"
+  page: null
+  quote: "> **需求原文**：「只有 1 倍时，只能自摸，＞1 倍时，可自摸可捉炮（番型 × 加倍项）」。"
+preconditions:
+  - "牌型成立（GAME-RULE-101）"
+inputs:
+  - "番型倍数"
+  - "加倍项倍数"
+  - "和牌方式（自摸或捉炮）"
+outputs:
+  - "能否捉炮的判定结果"
+business_rules:
+  - "捉炮（点炮）条件：番型 × 加倍项 > 1 才可捉炮。"
+  - "番型 × 加倍项 = 1 时不可捉炮（需求原文：「只有 1 倍时，无法捉炮胡」）。"
+  - "自摸不受番数门槛限制，1 倍也可自摸。"
+  - "番数不足无法捉炮时，出现浮动提示「番数不足，无法捉炮！」。"
+  - "示例：平胡 1 倍且无任何加倍项与加分项，只能自摸不可捉炮；平胡 1 倍 + 亮倒 ×2 = 2 > 1，可以捉炮。"
+normal_flow:
+  - "计算番型与加倍项 -> 大于 1 -> 可自摸可捉炮"
+exception_flow:
+  - "番型乘加倍项等于 1 -> 只能自摸，捉炮被拦截并提示番数不足"
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-RULE-117"
+  - "GAME-RULE-114"
+  - "GAME-RULE-107"
+  - "GAME-RULE-111"
+open_questions: []

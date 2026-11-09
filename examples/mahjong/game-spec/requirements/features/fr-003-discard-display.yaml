@@ -1,0 +1,40 @@
+id: GAME-FR-003
+type: game_feature
+name: 出牌展示与牌河
+status: proposed
+authority: fixed
+description: 出牌流光与方位闪烁提醒、放大出牌默认开、牌河从左至右摆放、被碰杠胡的牌不在牌河展示
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 2.4 出牌后果
+  page: null
+  quote: 开启「放大出牌」（默认开）时出牌放大展示，并放置于该玩家面前牌堆中，下一个玩家有操作行为后消失
+preconditions:
+  - 任一玩家出牌
+inputs:
+  - 出牌事件
+outputs:
+  - 出牌放大展示、头像流光、方位闪烁、牌河更新、同牌高亮
+business_rules:
+  - 摆放：本家打出牌放置于该玩家面前牌堆中；其他家开启「放大出牌」（默认开）时出牌放大展示后放置，下一个玩家有操作行为后消失；不开启时直接放置
+  - 提示：出牌时玩家头像处增加流光提示，方位处增加闪烁提醒
+  - 他人视角：其他家打出的牌始终是摸到的那张牌
+  - 高亮：新摸到的牌或提起单张牌，若出牌河和碰牌区域存在同样的牌，则高亮显示
+  - 牌河：根据玩家出牌顺序从左至右依次摆放；打出牌若被其他玩家碰、杠、胡，则不在牌堆中展示
+normal_flow:
+  - 出牌 -> 放大展示（他家、默认开） -> 放入牌河 -> 下一个玩家操作后放大消失
+exception_flow:
+  - 打出牌被碰/杠/胡 -> 该牌不在牌河展示
+state_transitions: []
+ui_refs:
+  - GAME-COMP-004
+  - GAME-COMP-003
+  - GAME-COMP-002
+  - GAME-COMP-014
+test_refs: []
+dependencies:
+  - GAME-RULE-031
+  - GAME-RULE-038
+  - GAME-RULE-040
+open_questions: []

@@ -1,0 +1,35 @@
+id: GAME-RULE-052
+type: game_rule
+name: 过的定义与等同操作
+status: proposed
+authority: fixed
+description: 有机会碰杠胡时主动放弃为过，各操作机会均有过按钮，扣牌/亮倒界面的取消等同于过
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 九、过
+  page: null
+  quote: 有机会碰 / 杠 / 胡时主动放弃
+preconditions:
+  - 玩家存在碰/杠/胡等操作机会
+inputs:
+  - 玩家点击【过】或对应界面【取消】
+outputs:
+  - 放弃本次操作机会
+business_rules:
+  - 每次操作机会均显示对应的【过】按钮
+  - 扣牌环节：扣牌界面点【取消】等同于【过】，且桌面交互按钮不会再出现
+  - 亮倒环节：亮倒界面点【取消】等同于【过】，回到正常出牌界面
+  - 超时：配置开启托管时碰杠超时默认过，有胡牌的多状态超时默认胡牌（见 GAME-RULE-051）
+normal_flow:
+  - 操作按钮出现 -> 玩家点击【过】 -> 放弃操作，轮到下家
+  - 操作等待 -> 过 -> 跳过该操作机会
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-051
+  - GAME-RULE-057
+  - GAME-RULE-056
+open_questions: []

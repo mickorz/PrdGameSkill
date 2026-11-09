@@ -1,0 +1,11 @@
+id: GAME-TC-004
+name: 危牌禁止打出
+type: illegal
+related_requirements: [GAME-RULE-033]
+preconditions:
+  - 玩家有已亮倒的对手，其听牌包含某张牌（该牌对该玩家为危牌）
+steps:
+  - 玩家手牌中持有危牌
+  - 尝试打出该危牌
+expected: 危牌不可打出（出牌被拒绝并提示），全危牌例外时除外
+rule_refs: [GAME-RULE-033, GAME-RULE-012]

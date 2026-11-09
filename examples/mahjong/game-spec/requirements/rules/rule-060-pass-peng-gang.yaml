@@ -1,0 +1,33 @@
+id: GAME-RULE-060
+type: game_rule
+name: 过碰过杠
+status: proposed
+authority: open
+description: 过碰/过杠后轮到自己回合前不可再碰/杠同张，按漏胡同一「过手至摸牌解除」口径推导
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 十三、过手规则
+  page: null
+  quote: 过碰后、轮到自己回合前，其他玩家再打出同张牌时不可再碰。
+preconditions:
+  - 玩家曾对某张牌选择过（碰或杠）
+inputs:
+  - 过之后他家再打出同张牌
+outputs:
+  - 该玩家本轮不可再碰/杠同张
+business_rules:
+  - 过碰：过碰后、轮到自己回合前，其他玩家再打出同张牌时不可再碰
+  - 过杠：过杠后、轮到自己回合前不可再杠同张，推导依据同过碰
+normal_flow:
+  - 碰/杠机会 -> 过 -> 锁定至自己回合
+exception_flow:
+  - 过碰/过杠后他家再打出同张牌 -> 该玩家不可再碰/杠（浮动提示口径沿用漏胡，原文未明示）
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-049
+  - GAME-RULE-052
+open_questions:
+  - 需求原文仅定义漏胡（摸牌前不可胡、摸牌后解除），未定义过碰与过杠；本条按同厂商同品类通用口径及漏胡同一「过手至摸牌解除」时机模型推导（与血战/贵阳过手碰口径一致），需产品确认

@@ -1,0 +1,33 @@
+id: GAME-RULE-076
+type: game_rule
+name: "手抓一（F09）"
+status: proposed
+authority: fixed
+description: "其余牌全在碰杠区、手牌只剩一张单吊的手牌形态番型，2倍。"
+source:
+  kind: original
+  document: "source/04-番型.md"
+  section: "2.6 手抓一（F09 · 2 倍）"
+  page: null
+  quote: "| **其余牌全在碰杠区** | 4 副面子**全部**来自碰 / 杠 | 手牌中仍有面子 → **不计手抓一**（按结构档位计：平胡 1 倍 / 碰碰胡 2 倍）|"
+preconditions:
+  - "玩家已形成14张和牌牌型"
+inputs:
+  - "手牌与碰杠牌区共14张牌面"
+outputs:
+  - "番型判定结果"
+  - "牌型分倍数"
+business_rules:
+  - "F09 手抓一=2倍，手牌形态维度；判定条件为4副面子全部来自碰/杠，且手牌只剩一张牌单吊"
+  - "与碰碰胡叠加（需求明示，高分玩法下也叠加）：2+2=4倍"
+  - "与平胡结构上不可达：本玩法不能吃，副露只能是碰/杠，4副面子全在碰杠区时必为碰碰胡"
+  - "与七对类互斥：七对要求14张全在手，与「其余牌全在碰杠区」不可能同时成立"
+  - "与清一色/小三元/大三元/卡五星/明暗四归可叠加"
+  - "手牌中仍有面子或手牌多于一张时不计手抓一，按结构档位计"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies: []
+open_questions: []

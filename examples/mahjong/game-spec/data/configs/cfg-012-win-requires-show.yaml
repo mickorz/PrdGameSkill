@@ -1,0 +1,32 @@
+id: GAME-CFG-012
+type: config
+name: "亮倒-胡牌必须亮倒"
+status: proposed
+authority: fixed
+description: "勾选后仅亮倒状态下才能胡牌，与双亮互斥，间接影响算分。"
+source:
+  kind: original
+  document: source/07-配置.md
+  section: "7.2.4 胡牌必须亮倒"
+  page: null
+  quote: "勾选后，仅亮倒状态下才能胡牌"
+value: false
+preconditions: []
+inputs:
+  - "创房面板勾选"
+outputs:
+  - "胡牌资格限制（须亮倒）"
+business_rules:
+  - "布尔勾选，默认不选。"
+  - "勾选 → 仅亮倒状态下才能胡牌，未亮倒即不可胡，大幅收窄胡牌路径。"
+  - "取消 → 未亮倒也可胡。"
+  - "与「双亮」互斥：勾选后双亮不可勾选。"
+  - "间接影响算分：限制胡牌类型与触发条件。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-CFG-013"
+open_questions: []

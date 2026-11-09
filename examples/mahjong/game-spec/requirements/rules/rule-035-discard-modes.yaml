@@ -1,0 +1,36 @@
+id: GAME-RULE-035
+type: game_rule
+name: 出牌方式与默认值
+status: proposed
+authority: fixed
+description: 三种出牌方式：双击默认开启、单击默认关闭、滑动默认关闭；双击与单击互斥，滑动不互斥
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 2.2 出牌方式
+  page: null
+  quote: 双击出牌与单击出牌互斥；滑动出牌不互斥。
+preconditions:
+  - 玩家处于出牌阶段
+inputs:
+  - 玩家对候选牌的双击/单击/滑动操作
+outputs:
+  - 候选牌被打出或滑动撤回
+business_rules:
+  - 双击出牌（默认开启）：出牌阶段点击已提起的牌可将该牌打出
+  - 单击出牌（默认关闭）：出牌阶段点击不可听牌的牌直接打出，无需提起；开启时轮到自己出牌前有牌提起则自动下落
+  - 滑动出牌（默认关闭）：向上滑动手牌超过提起高度显示透明状态牌随手指移动，手指松开将该牌打出；将牌移回提起高度水平线则透明牌消失、撤回打出
+  - 双击出牌与单击出牌互斥；滑动出牌不互斥
+  - 默认值依据：以需求 §3.6.3.2「游戏内设置」表为准（单击出牌默认关闭、滑动出牌默认关闭）；§3.2.10.1 行文括注「滑动出牌（默认开）」为叙述性括注，不采用
+normal_flow:
+  - 提起牌 -> 双击打出（默认路径）
+exception_flow:
+  - 滑动出牌中手指移回提起高度水平线 -> 透明牌消失、撤回打出
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-036
+  - GAME-FR-002
+open_questions:
+  - 原始需求 §3.2.10.1 与 §3.6.3.2 对滑动出牌默认值叙述矛盾，本文档裁决以设置表为准，建议产品最终确认

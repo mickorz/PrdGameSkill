@@ -1,0 +1,32 @@
+id: GAME-CFG-023
+type: config
+name: "规则-三元七对*8"
+status: proposed
+authority: fixed
+description: "勾选后启用三元七对（8 倍），取消则该番型不参与判定，与高分玩法互斥。"
+source:
+  kind: original
+  document: source/07-配置.md
+  section: "7.5 番型倍数调整开关"
+  page: null
+  quote: "三元七对 *8 默认不选 启用三元七对，倍数为 8"
+value: false
+preconditions: []
+inputs:
+  - "创房面板勾选"
+outputs:
+  - "三元七对番型是否参与判定"
+business_rules:
+  - "布尔勾选，默认不选；开关型（启用 / 不启用），非倍数调整型。"
+  - "勾选 → 启用三元七对，倍数为 8（在七对维度所取档位基础上 ×2）。"
+  - "取消 → 该番型不参与判定（不是降为 4 倍，裁决 R4 / Step 5 已裁）。"
+  - "与高分玩法互斥。"
+  - "直接影响算分。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-CFG-014"
+open_questions: []

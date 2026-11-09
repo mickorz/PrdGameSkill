@@ -1,0 +1,28 @@
+id: SCEN-001
+name: 一局完整行牌流程
+initial_state:
+  state: playing
+  stage: 行牌阶段，庄家已出牌
+actions:
+  - player: player_b
+    action: peng
+    args:
+      tile: 5筒
+  - player: player_b
+    action: discard
+    args:
+      tile: 3条
+  - player: player_c
+    action: gang
+    args:
+      tile: 7万
+      gang_type: an_gang
+  - player: player_c
+    action: draw
+    args: {}
+  - player: player_c
+    action: hu
+    args:
+      hu_type: zimo
+expected: 碰取得出牌权，暗杠后补牌自摸胡，按 S0 公式完成小结算并轮庄续局
+case_refs: [GAME-TC-001, GAME-TC-002]

@@ -1,0 +1,39 @@
+id: GAME-RULE-106
+type: game_rule
+name: 过手胡（漏胡）
+status: proposed
+authority: fixed
+description: 玩家可胡时选择不胡即为漏胡，漏胡玩家摸牌前不可胡牌，摸牌后含杠后补牌解除。
+source:
+  kind: original
+  document: source/05-胡牌类型.md
+  section: 三、过手胡
+  page: null
+  quote: '| **触发** | 玩家 A 可胡牌时**选择不胡牌**，即为**漏胡** |'
+preconditions:
+  - 玩家曾处于可胡状态
+inputs:
+  - 玩家放弃胡牌的选择
+  - 后续摸牌或杠后补牌事件
+outputs:
+  - 漏胡状态的生效与解除
+business_rules:
+  - 触发：玩家可胡牌时选择不胡牌，即为漏胡。
+  - 限制：漏胡玩家在摸牌前不可胡牌。
+  - 解除：漏胡状态在摸牌后解除（含杠后补牌）。
+  - 提示：触发漏胡不胡后，出现浮动提示「当前未过手，无法胡牌」，1.5 秒后消失。
+  - 示例：多面听 7 条与 4 筒的玩家过手后，下一次摸牌前任何人再打出 7 条或 4 筒均不可胡；摸牌后解除。
+normal_flow:
+  - 可胡选择不胡 -> 进入漏胡状态 -> 摸牌或杠后补牌 -> 漏胡解除
+  - 正常可胡 -> 选择过 -> 漏胡状态 -> 摸牌 -> 状态解除
+exception_flow:
+  - 漏胡期间再遇可胡牌 -> 不可胡并提示「当前未过手，无法胡牌」1.5 秒
+state_transitions: []
+ui_refs: []
+test_refs:
+  - GAME-TC-003
+dependencies:
+  - GAME-RULE-049
+  - GAME-RULE-060
+open_questions:
+  - 过碰口径（过碰后轮到自己回合前不可再碰同张）需求未定义，按同一「过手至摸牌解除」时机模型推导，已由 GAME-RULE-060 单独登记跟踪。

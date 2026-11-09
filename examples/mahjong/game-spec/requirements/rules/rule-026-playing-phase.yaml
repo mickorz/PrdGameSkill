@@ -1,0 +1,35 @@
+id: GAME-RULE-026
+type: game_rule
+name: 行牌阶段
+status: proposed
+authority: fixed
+description: 逆时针摸打循环，响应优先级吃胡 / 自摸 / 抢杠胡高于碰 / 杠，本玩法不能吃牌。
+source:
+  kind: original
+  document: source/02-游戏流程.md
+  section: "七、行牌阶段"
+  page: null
+  quote: "**行牌顺序**：**逆时针**。庄家先出牌，之后按逆时针轮转。"
+preconditions:
+  - 发牌理牌完成
+inputs:
+  - 摸 / 打 / 碰 / 杠 / 补 / 胡 / 过 / 亮倒 / 扣牌操作
+outputs:
+  - 出牌权流转、牌堆消耗、终局触发
+business_rules:
+  - 行牌顺序为逆时针，庄家先出牌，之后按逆时针轮转。
+  - 一轮循环：当前玩家出牌 → 其余玩家可选操作（按优先级：吃胡 / 自摸 / 抢杠胡 > 碰 / 杠）→ 有人碰 / 杠则该玩家取得出牌权继续循环；无人操作则下家摸牌 → 出牌继续循环。
+  - 摸牌与出牌的衔接：摸牌需在上一家打出牌的同时进行（肉眼可见上家打出牌的瞬间下家摸牌）。
+  - 可执行的操作：摸、打、碰、杠（直杠 / 明杠 / 暗杠）、补、胡、过、亮倒、扣牌。
+  - 不能吃牌。
+  - 操作的条件、后果与限制详见 source/03-打牌操作.md；亮倒 / 扣牌 / 危牌机制见 source/01-基础规则.md §五。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-STATE-002
+  - GAME-RULE-007
+  - GAME-RULE-018
+open_questions: []

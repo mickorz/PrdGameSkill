@@ -1,0 +1,7 @@
+id: GAME-COMP-019
+type: quick_chat
+name: 快捷聊天
+props: {}
+events: []
+requirements: [GAME-FR-014]
+visual_hint: 分类页签（普通话、表情、历史语音）与预设聊天文本列表，无方言，其余复用杭麻

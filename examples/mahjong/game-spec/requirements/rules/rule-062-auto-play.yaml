@@ -1,0 +1,36 @@
+id: GAME-RULE-062
+type: game_rule
+name: 自动摸打
+status: proposed
+authority: fixed
+description: 听牌后可勾选自动摸打，头像不展示托管图标；摸到危牌退出自动摸打；勾选期间可随时取消
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 十四、托管
+  page: null
+  quote: 自动摸打的头像不展示托管图标；听牌时可点击勾选自动摸打
+preconditions:
+  - 玩家已听牌
+inputs:
+  - 玩家勾选/取消勾选自动摸打，或点击「取消托管」按钮
+outputs:
+  - 自动摸打生效或退出
+business_rules:
+  - 听牌后勾选自动摸打：打牌按摸打逻辑出牌，等待1秒打出摸到的牌
+  - 摸到的牌是危牌时退出自动摸打；退出后如进入托管，按托管逻辑执行
+  - 碰/杠：等待1秒后取消；胡：等待1秒后自动胡牌
+  - 勾选后进入托管期间，可再次点击取消勾选或点击「取消托管」按钮取消
+  - 与托管的区别：自动摸打的头像不展示托管图标
+normal_flow:
+  - 听牌 -> 勾选自动摸打 -> 每巡等待1秒自动打出摸到的牌 -> 摸到危牌 -> 退出自动摸打
+  - 听牌 -> 自动摸打开启 -> 危牌或手动取消 -> 关闭
+exception_flow:
+  - 摸到危牌 -> 退出自动摸打，后续如进入托管按托管逻辑执行
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-033
+  - GAME-RULE-061
+open_questions: []

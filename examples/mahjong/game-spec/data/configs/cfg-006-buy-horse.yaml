@@ -1,0 +1,35 @@
+id: GAME-CFG-006
+type: config
+name: 买马
+status: proposed
+authority: fixed
+description: 创房选择买马方式（不买马 / 自摸买马 / 亮牌自摸买马），决定买马触发条件。
+source:
+  kind: original
+  document: source/07-配置.md
+  section: 6.1 买马
+  page: null
+  quote: 亮牌自摸买马 默认 玩家亮牌自摸胡牌后触发买马
+value: 亮牌自摸买马
+preconditions: []
+inputs:
+  - 创房面板买马选择
+  - 胡牌方式（自摸 / 亮牌自摸）
+outputs:
+  - 马分（加分项，进入最终得分）
+business_rules:
+  - 可选值：不买马 / 自摸买马 / 亮牌自摸买马。
+  - 不买马：关闭买马功能，无买马环节，马分恒为 0。
+  - 自摸买马：玩家自摸胡牌后触发买马，马分进入最终得分。
+  - 亮牌自摸买马：触发条件收窄为「亮牌自摸」胡牌后触发买马。
+  - 联动：买马选「不买马」时，下方马数隐藏不展示；选自摸买马或亮牌自摸买马时马数显示。
+  - 直接影响结算：马分进入最终得分。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs:
+  - GAME-UI-003
+test_refs: []
+dependencies:
+  - GAME-CFG-007
+open_questions: []

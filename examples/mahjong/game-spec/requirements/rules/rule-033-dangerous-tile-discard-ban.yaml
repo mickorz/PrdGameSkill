@@ -1,0 +1,33 @@
+id: GAME-RULE-033
+type: game_rule
+name: 危牌禁打与全危牌例外
+status: proposed
+authority: fixed
+description: 未亮倒玩家手中既有危牌也有非危牌时无法打出危牌；手中全是危牌时任何危牌均可打出
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 2.1 条件与限制
+  page: null
+  quote: 未亮倒玩家手中既有危牌也有非危牌时，无法打出危牌（不计算碰杠牌区）
+preconditions:
+  - 玩家处于出牌阶段且未亮倒
+inputs:
+  - 玩家尝试打出某张手牌
+outputs:
+  - 危牌被打出或被阻断（含浮动提示，见 GAME-FR-001）
+business_rules:
+  - 危牌判定不计算碰杠牌区
+  - 全危牌例外：手中全是危牌时任何危牌均可打出，仅计算手中牌（含摸/补的牌），不计算碰杠牌区
+normal_flow:
+  - 出牌阶段选择非危牌 -> 正常打出
+exception_flow:
+  - 未亮倒且手中危危牌混有时尝试打危牌 -> 无法打出，出现浮动提示「打出该牌将会放炮！」（见 GAME-FR-001）
+state_transitions: []
+ui_refs: []
+test_refs:
+  - GAME-TC-004
+dependencies:
+  - GAME-RULE-054
+  - GAME-FR-001
+open_questions: []

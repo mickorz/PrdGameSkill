@@ -1,0 +1,9 @@
+id: GAME-COMP-008
+type: settle_panel
+name: 结算面板
+props: {}
+events:
+  - GAME-EVENT-014
+  - GAME-EVENT-015
+requirements: [GAME-FR-015]
+visual_hint: 按胜负显示恭喜获胜或遗憾失利与底色，含房号、结束时间、手牌详情区（庄标左上、漂X右上、仅自己结算信息、封顶标识）、主按钮按最后一小局切换查看结算或继续游戏

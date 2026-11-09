@@ -1,0 +1,34 @@
+id: GAME-RULE-010
+type: game_rule
+name: 补牌（杠后摸牌）
+status: proposed
+authority: fixed
+description: 杠后从牌堆倒序摸一张视为摸牌，牌堆剩余张数额外减 1。
+source:
+  kind: original
+  document: source/01-基础规则.md
+  section: "4.4 补牌"
+  page: null
+  quote: "- 杠了之后摸一张牌，**剩余牌数额外减 1 张**。"
+preconditions:
+  - 玩家杠牌成功
+inputs: []
+outputs:
+  - 补牌 1 张（置于手牌最右侧）
+  - 牌堆剩余张数额外减 1
+business_rules:
+  - 杠了之后摸一张牌，剩余牌数额外减 1 张（§4.4）。
+  - 补牌方向：从牌堆倒序摸一张牌，即从牌堆末尾取牌。
+  - 补牌视为摸牌：漏胡等过手状态在补牌后解除（§八）。
+  - 补牌位置：手牌最右侧，与一般手牌间隔 1/4 牌距离。
+  - 本玩法不展示牌墙，仅展示剩余张数。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-007
+  - GAME-RULE-019
+  - GAME-RULE-020
+open_questions: []

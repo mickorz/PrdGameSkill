@@ -1,0 +1,35 @@
+id: GAME-CFG-019
+type: config
+name: "规则-杠上花/炮*4"
+status: proposed
+authority: fixed
+description: "勾选后杠上花 / 杠上炮 / 抢杠胡倍数由常驻 2 倍升为 4 倍，与高分玩法互斥。"
+source:
+  kind: original
+  document: source/07-配置.md
+  section: "7.5 番型倍数调整开关"
+  page: null
+  quote: "并覆盖抢杠胡（需求 §2.3.1.2：三者杠上杠时倍数走初始值 2，可勾选为 4）"
+value: false
+preconditions: []
+inputs:
+  - "创房面板勾选"
+outputs:
+  - "杠上花 / 杠上炮 / 抢杠胡倍数（2 或 4）"
+business_rules:
+  - "布尔勾选，默认不选（原推导已被面板实拍印证）。"
+  - "默认态：杠上花 / 杠上炮 / 抢杠胡均为常驻基值 2 倍，默认生效、不勾选即有值（裁决 9a / G4）。"
+  - "勾选 → 杠上花 / 杠上炮 / 抢杠胡均为 4 倍；取消 → 均为 2 倍。"
+  - "抢杠胡亦随该勾选升为 4 倍（裁决 D-7：需求 §2.3.1.2 三者并列受同一勾选控制）。"
+  - "与杠上杠的关系：触发杠上杠时三者倍数走初始值，不随杠上杠翻倍。"
+  - "与高分玩法互斥（杠开项）。"
+  - "直接影响算分。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-CFG-014"
+  - "GAME-CFG-004"
+open_questions: []

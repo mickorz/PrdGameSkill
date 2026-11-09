@@ -1,0 +1,7 @@
+id: GAME-COMP-018
+type: menu_settings
+name: 菜单与设置
+props: {}
+events: []
+requirements: [GAME-FR-009]
+visual_hint: 左上角菜单含超级防作弊、玩法征集、设置、规则、退出（无托管按钮）；设置含音乐音效震动开关与单击出牌、滑动出牌（默认关闭）、特效、出牌放大，无方言与牌墙选项

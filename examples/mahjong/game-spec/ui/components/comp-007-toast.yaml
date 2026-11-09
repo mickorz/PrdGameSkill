@@ -1,0 +1,7 @@
+id: GAME-COMP-007
+type: toast
+name: 反馈区域
+props: {}
+events: []
+requirements: [GAME-FR-014]
+visual_hint: 反馈区提醒与浮动提示，含庄家出牌提醒、漏胡不胡1.5秒、番数不足、危牌放炮、发言过快1秒等，toast类停留1.5秒

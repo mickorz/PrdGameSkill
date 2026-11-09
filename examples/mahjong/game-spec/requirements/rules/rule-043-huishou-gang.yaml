@@ -1,0 +1,32 @@
+id: GAME-RULE-043
+type: game_rule
+name: 回手杠限制
+status: proposed
+authority: open
+description: 碰过的牌本小局不能再明杠的两条限制；原文标注为配置项但创房表无对应开关
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: "5.4 杠牌限制（五条）"
+  page: null
+  quote: "手上有 3 张一样的牌，别人打出时如果选择碰，则这张牌本小局不能再明杠。"
+preconditions:
+  - "玩家曾对某张牌选择碰"
+inputs:
+  - "后续摸到或他人打出同张第4张牌"
+outputs:
+  - "该牌本小局不可明杠"
+business_rules:
+  - "限制①：手上有3张一样的牌，别人打出时如果选择碰，则这张牌本小局不能再明杠"
+  - "限制②：已经碰过的牌，摸到第四张时必须立刻杠，否则本小局这张牌不能再明杠"
+normal_flow: []
+exception_flow:
+  - "碰过的牌摸到第4张未立刻杠 -> 本小局该牌不能再明杠"
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-RULE-038"
+  - "GAME-RULE-040"
+open_questions:
+  - "原需求 §2.2.2 给【回手杠】标注（配置），但三张创房表均无对应开关项；开关名与默认值需求未给出，本文档按「可配置的规则层约束」登记，不自行虚构开关，「回手杠」为文档自拟定位标识名"

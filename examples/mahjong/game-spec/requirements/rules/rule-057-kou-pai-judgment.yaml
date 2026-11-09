@@ -1,0 +1,36 @@
+id: GAME-RULE-057
+type: game_rule
+name: 扣牌触发与可扣判定
+status: proposed
+authority: fixed
+description: 亮倒同时进行扣牌判断且亮倒后不可再扣；去掉刻子后剩余手牌仍满足打出非危牌可听牌才可扣，刻子全扣四张扣三
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 11.1 触发与判定
+  page: null
+  quote: 亮倒的同时进行扣牌判断。亮倒之后不可再扣牌。
+preconditions:
+  - 玩家触发亮倒
+inputs:
+  - 当前手牌全量牌型
+outputs:
+  - 可扣牌候选集合，及扣牌后的听牌集合
+business_rules:
+  - 触发时机：亮倒的同时进行扣牌判断；亮倒之后不可再扣牌
+  - 可扣判断：将该刻子去掉（四张相同牌则去掉三张），剩余手牌是否仍满足「打出一张非危牌后可听牌」，满足则可扣，不满足则不可扣
+  - 扣下张数：3张相同牌（刻子）全部扣下（3张）；4张相同牌扣下3张
+  - 原文示例：手牌筒12333·78999·中中中摸进5条无危牌，红中/3筒/9筒均可单独扣下，但3筒与9筒同时扣下后不满足条件不可同时扣下
+normal_flow:
+  - 亮倒 -> 遍历手中所有刻子与四张相同牌逐个判断 -> 生成可扣候选 -> 玩家选择
+  - 亮倒确认 -> 扣牌判断 -> 扣牌选择（有候选时）
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs:
+  - GAME-TC-010
+dependencies:
+  - GAME-RULE-053
+  - GAME-RULE-056
+  - GAME-FR-008
+open_questions: []

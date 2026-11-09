@@ -1,0 +1,33 @@
+id: GAME-RULE-058
+type: game_rule
+name: 多组扣牌与扣后听牌
+status: proposed
+authority: fixed
+description: 可同时扣多组刻子但需再次检测剩余手牌仍满足条件；扣牌后按剩余亮出的牌决定听牌
+source:
+  kind: original
+  document: source/03-打牌操作.md
+  section: 11.1 触发与判定
+  page: null
+  quote: 玩家可同时扣下多组刻子，但需再次检测：扣多组后的剩余手牌是否仍满足「打出一张非危牌后可听牌」。
+preconditions:
+  - 扣牌界面存在多个可扣候选
+inputs:
+  - 玩家多选扣牌结果
+outputs:
+  - 最终扣下集合与扣后听牌集合
+business_rules:
+  - 多组同时扣下需再次检测：扣多组后的剩余手牌仍满足「打出一张非危牌后可听牌」
+  - 扣牌与听牌：扣牌后按剩余亮出的牌决定听牌
+  - 原文示例：手牌11 56667听1和6，扣住6后手牌变为11 57，此时仅听6
+normal_flow:
+  - 选择完成 -> 复检剩余牌可听 -> 界面消失，切换到「亮倒-打牌」界面
+exception_flow:
+  - 点击【选择完成】后判断不可听牌 -> 取消所有选中，弹出提示「当前扣牌没有胡口！」
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-057
+  - GAME-FR-008
+open_questions: []

@@ -1,0 +1,33 @@
+id: GAME-RULE-073
+type: game_rule
+name: "小三元（F07）"
+status: proposed
+authority: fixed
+description: "中发白任意两种为刻子或杠、剩余一种作对将的三元番型，4倍。"
+source:
+  kind: original
+  document: "source/04-番型.md"
+  section: "2.3 小三元（F07 · 4 倍）"
+  page: null
+  quote: "| **中 / 发 / 白两刻** | 手牌 + 碰杠牌区有中 / 发 / 白**任意两种**的杠子或刻子 | 改判**平胡（1 倍）** / **碰碰胡（2 倍）** / **清一色（4 倍）** |"
+preconditions:
+  - "玩家已形成14张和牌牌型"
+inputs:
+  - "手牌与碰杠牌区共14张牌面"
+outputs:
+  - "番型判定结果"
+  - "牌型分倍数"
+business_rules:
+  - "F07 小三元=4倍，三元维度；判定条件为手牌+碰杠牌区有中/发/白任意两种的杠子或刻子，剩余1种字牌为对子（作将）"
+  - "第三种字牌为刻子时同属三元维度取高，改判大三元（F10，8倍），小三元不另计；两刻而第三种字牌未成对时不构成小三元"
+  - "与结构维度叠加：小三元4+平胡1=5倍；小三元4+碰碰胡2=6倍"
+  - "与清一色互斥（三元必含中/发/白，清一色禁字牌）"
+  - "与三元七对为两个结构（4副面子与七对）跨结构取高，不会同时触发小三元/大三元"
+  - "与卡五星/手抓一/明暗四归可叠加；碰出的字牌刻子与杠子均按刻子计三元"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies: []
+open_questions: []

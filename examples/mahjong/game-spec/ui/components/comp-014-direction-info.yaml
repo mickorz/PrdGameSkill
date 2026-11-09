@@ -1,0 +1,8 @@
+id: GAME-COMP-014
+type: direction_info
+name: 方位信息区
+props: {}
+events:
+  - GAME-EVENT-007
+requirements: [GAME-FR-009]
+visual_hint: 含骰子（两骰环绕转动、拿牌停转显数字停留1秒）、方位（庄东逆时针南西、轮到出牌闪烁高亮）、倒计时（默认蓝色03至00变黄、自己有操作重置）、骰子上方上楼X2或X4文字

@@ -1,0 +1,10 @@
+id: GAME-TC-010
+name: 扣牌禁止打出
+type: illegal
+related_requirements: [GAME-RULE-034]
+preconditions:
+  - 玩家亮倒时发生扣牌，存在被扣的手牌
+steps:
+  - 玩家尝试打出被扣手牌
+expected: 扣牌不可打出（出牌被拒绝并提示），扣牌仅可在满足条件时打出
+rule_refs: [GAME-RULE-034, GAME-RULE-057]

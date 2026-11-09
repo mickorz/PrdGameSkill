@@ -1,0 +1,37 @@
+id: GAME-RULE-112
+type: game_rule
+name: 海底捞与海底炮
+status: proposed
+authority: fixed
+description: 摸到最后一张牌后胡牌为海底捞自摸类，其后打出点炮为海底炮点炮类，勾选海底捞炮2后生效且为2倍。
+source:
+  kind: original
+  document: source/05-胡牌类型.md
+  section: 八、海底捞 / 海底炮
+  page: null
+  quote: '| **触发** | 玩家摸到**最后一张牌**后胡牌 | 玩家摸到最后一张牌后，**打出的牌**点炮胡 |'
+preconditions:
+  - 创房勾选「海底捞/炮*2」
+  - 牌堆只剩最后一张牌
+inputs:
+  - 最后一张牌的去向（摸入或打出）
+outputs:
+  - 海底捞或海底炮加倍项（2 倍）
+business_rules:
+  - 海底捞：玩家摸到最后一张牌后胡牌，归类自摸类，倍数 ×2。
+  - 海底炮：玩家摸到最后一张牌后，打出的牌点炮胡，归类点炮类，倍数 ×2。
+  - 生效条件：创房勾选「海底捞/炮*2」后才会计算海底，且为 2 倍。
+  - 限制层差异：海底捞不受番数门槛与危牌限制；海底炮番数门槛大于 1 才可、受危牌与漏胡限制。
+normal_flow:
+  - 摸到最后一张牌 -> 胡为海底捞 / 打出后他家胡为海底炮
+exception_flow:
+  - 未勾选「海底捞/炮*2」-> 不计算海底
+state_transitions: []
+ui_refs: []
+test_refs:
+  - GAME-TC-009
+dependencies:
+  - GAME-RULE-085
+  - GAME-RULE-107
+  - GAME-RULE-111
+open_questions: []

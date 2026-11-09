@@ -1,0 +1,36 @@
+id: GAME-CFG-007
+type: config
+name: "马数"
+status: proposed
+authority: fixed
+description: "创房选择马数档位（买一马 / 买一送一 / 买 5 马 / 买 6 马），决定马分算法。"
+source:
+  kind: original
+  document: source/07-配置.md
+  section: "6.2 马数"
+  page: null
+  quote: "买一马 默认 剩余牌中翻 1 张。中发白记 10 倍底分，1~9 记同数字倍底分。数量不足时不买马"
+value: "买一马"
+preconditions:
+  - "创房买马非「不买马」（不买马时马数隐藏不展示）"
+inputs:
+  - "创房面板马数选择"
+  - "剩余牌堆"
+outputs:
+  - "马分（按对应算法计分）"
+business_rules:
+  - "可选值：买一马 / 买一送一 / 买 5 马 / 买 6 马；仅在买马非「不买马」时展示。"
+  - "买一马：剩余牌中翻 1 张，中发白记 10 倍底分，1~9 记同数字倍底分，数量不足时不买马。"
+  - "买一送一：剩余牌中翻 2 张，取两张分数之和，数量不足时不买马。"
+  - "买 5 马：翻 5 张，出现 1 / 4 / 7 / 白 每张计 1 分，一张不中或中 5 张按 6 马计分；数量不足有多少买多少。"
+  - "买 6 马：翻 6 张，出现 1 / 4 / 7 / 白 每张计 1 分，中 0 张按 6 马计分；数量不足有多少买多少。"
+  - "马分是加分项，不受封顶；直接影响结算：决定马分算法。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-CFG-006"
+  - "GAME-CFG-004"
+open_questions: []

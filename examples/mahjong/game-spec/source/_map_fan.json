@@ -1,0 +1,314 @@
+[
+  {
+    "requirement_id": "GAME-RULE-071",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "2.1 平胡（F01 · 1 倍）",
+        "line_start": 180,
+        "line_end": 240,
+        "quote_line": 186,
+        "quote_hash": "sha1:abfe678d8b2bb6bd35ba2cc2584a6deb4889d48c"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-072",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "2.2 碰碰胡（F02 · 2 倍）",
+        "line_start": 241,
+        "line_end": 292,
+        "quote_line": 248,
+        "quote_hash": "sha1:cbccc08bab69df54e16643333bc2e251c580e719"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-073",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "2.3 小三元（F07 · 4 倍）",
+        "line_start": 293,
+        "line_end": 345,
+        "quote_line": 299,
+        "quote_hash": "sha1:cc6227c66f7b02cbe8ad4546faa19e29178a09b1"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-074",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "2.4 大三元（F10 · 8 倍）",
+        "line_start": 346,
+        "line_end": 393,
+        "quote_line": 352,
+        "quote_hash": "sha1:1f788200f1613797a343b7d812ef21a76fcaa418"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-075",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "2.5 清一色（F08 · 4 倍）",
+        "line_start": 394,
+        "line_end": 443,
+        "quote_line": 400,
+        "quote_hash": "sha1:14ef98e86494f334bcb0a82d33fbdf0065309942"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-076",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "2.6 手抓一（F09 · 2 倍）",
+        "line_start": 444,
+        "line_end": 493,
+        "quote_line": 450,
+        "quote_hash": "sha1:d55a74b2c2f0a5dbd36ca0d96ef703b748f8870a"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-077",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "三、七对类（2N）",
+        "line_start": 494,
+        "line_end": 765,
+        "quote_line": 505,
+        "quote_hash": "sha1:714c4b4eef54db21d766244b8571d6f78839b0ed"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-078",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "4.1 卡五星（F03 · 2 倍）",
+        "line_start": 771,
+        "line_end": 813,
+        "quote_line": 777,
+        "quote_hash": "sha1:9de7ac7856869534226c55945b0770f31e090ae5"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-079",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "4.2 明四归（F04 · 2 倍）",
+        "line_start": 814,
+        "line_end": 866,
+        "quote_line": 820,
+        "quote_hash": "sha1:6f5705ae92d9f46492fa507e3c648c8835299ef9"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-080",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "4.3 暗四归（F05 · 4 倍）",
+        "line_start": 867,
+        "line_end": 925,
+        "quote_line": 880,
+        "quote_hash": "sha1:443bab60231283f1e7ce5046c4c6d9435da2488c"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-081",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "5.1 亮倒（J01 · 2 倍）",
+        "line_start": 930,
+        "line_end": 939,
+        "quote_line": 935,
+        "quote_hash": "sha1:d18133c059cf9b7a41ce8f831f049c63d5ebce85"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-082",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "5.2 对亮（J02 · 2 倍）",
+        "line_start": 940,
+        "line_end": 954,
+        "quote_line": 944,
+        "quote_hash": "sha1:c3ec048a25c59467943b07865a3e0d12e7acb669"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-083",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "5.3 杠上花 / 杠上炮（J03 / J04 · 各 2 倍）",
+        "line_start": 955,
+        "line_end": 966,
+        "quote_line": 959,
+        "quote_hash": "sha1:ca65d471837ec21f17b4fae1ef72de949affbfa9"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-084",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "5.4 抢杠胡（J05 · 2 倍）",
+        "line_start": 967,
+        "line_end": 978,
+        "quote_line": 971,
+        "quote_hash": "sha1:7128181ba69def0c8d1572fc5a161f8744ca7aef"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-085",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "5.5 海底捞 / 海底炮（J06 / J07 · 各 2 倍）",
+        "line_start": 979,
+        "line_end": 987,
+        "quote_line": 983,
+        "quote_hash": "sha1:da28d2493169461b5d983da7151a921f685b6b76"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-086",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "5.6 上楼（J08 · 2 倍 / 4 倍）",
+        "line_start": 988,
+        "line_end": 1002,
+        "quote_line": 992,
+        "quote_hash": "sha1:faf708e666c2f82446857f924d9eb55d1babcbd2"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-087",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "6.1 漂分（A01）",
+        "line_start": 1007,
+        "line_end": 1017,
+        "quote_line": 1010,
+        "quote_hash": "sha1:7ac89ee0bc8f0a93715ee64a6f64f2f936e0367e"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-088",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "6.2 买马（A02）",
+        "line_start": 1018,
+        "line_end": 1021,
+        "quote_line": 1020,
+        "quote_hash": "sha1:69a94f63d435f2890c3c7e150faf1a969b632fd4"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-089",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "6.3 数坎（A03）",
+        "line_start": 1022,
+        "line_end": 1042,
+        "quote_line": 1026,
+        "quote_hash": "sha1:be6e67961af1b538dcfbd978de7ad459faceff23"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-090",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "6.4 杠分（A07）",
+        "line_start": 1043,
+        "line_end": 1048,
+        "quote_line": 1045,
+        "quote_hash": "sha1:fbbe2c700938c9c18d63042f459444cc8d1173f0"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-091",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "1.2 判定流水线",
+        "line_start": 38,
+        "line_end": 61,
+        "quote_line": 41,
+        "quote_hash": "sha1:72eeeea05f11172c2dbefff8859a509d613732b4"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-092",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "1.3 全局叠加与互斥原则",
+        "line_start": 62,
+        "line_end": 100,
+        "quote_line": 64,
+        "quote_hash": "sha1:256f5bf270f01560500ff49111cace546d756b82"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-093",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "1.4 番型分值总表",
+        "line_start": 101,
+        "line_end": 174,
+        "quote_line": 103,
+        "quote_hash": "sha1:8beaf2ea69c84ae1bffe20acfeb681efb894b5c3"
+      }
+    ]
+  },
+  {
+    "requirement_id": "GAME-RULE-094",
+    "anchors": [
+      {
+        "file": "source/04-番型.md",
+        "heading": "七、三变体差异",
+        "line_start": 1049,
+        "line_end": 1061,
+        "quote_line": 1057,
+        "quote_hash": "sha1:10fa755a5271edbb2a25d812ca83f7924a3c5a6b"
+      }
+    ]
+  }
+]

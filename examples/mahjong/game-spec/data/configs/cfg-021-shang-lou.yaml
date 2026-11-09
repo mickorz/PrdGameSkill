@@ -1,0 +1,36 @@
+id: GAME-CFG-021
+type: config
+name: "规则-上楼"
+status: proposed
+authority: fixed
+description: "勾选后启用上楼加倍项（×2 / ×4），受封顶约束。"
+source:
+  kind: original
+  document: source/07-配置.md
+  section: "7.5 番型倍数调整开关"
+  page: null
+  quote: "上楼 默认不选 开启上楼：上局荒庄/一炮多响 或 本局同骰子 → ×2；两者同时 → ×4"
+value: false
+preconditions: []
+inputs:
+  - "创房面板勾选"
+  - "上局结果与本局骰子"
+outputs:
+  - "上楼加倍倍数（×2 或 ×4）"
+business_rules:
+  - "布尔勾选，默认不选。"
+  - "勾选 → 上楼生效：上局荒庄 / 一炮多响 或 本局同骰子 → ×2；两者同时 → ×4。"
+  - "取消 → 无上楼。"
+  - "射程裁决（G1）：上楼只作用于「番型 × 加倍项」的倍数，不含马 / 漂 / 坎。"
+  - "上楼是加倍项，受封顶约束，不可突破。"
+  - "2 人局适用：触发条件「上局荒庄」「双骰同点」均可成立，其中「一炮多响」分支在 2 人局不可能发生。"
+  - "直接影响算分。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-CFG-001"
+  - "GAME-CFG-004"
+open_questions: []

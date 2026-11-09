@@ -1,0 +1,32 @@
+id: GAME-RULE-072
+type: game_rule
+name: "碰碰胡（F02）"
+status: proposed
+authority: fixed
+description: "4副刻子/杠加1对将的全刻结构番型，2倍（创房可调4倍，高分玩法下8倍）。"
+source:
+  kind: original
+  document: "source/04-番型.md"
+  section: "2.2 碰碰胡（F02 · 2 倍）"
+  page: null
+  quote: "| **全刻形** | 4 副面子**全为刻子 / 杠，无顺子** | 改判 **平胡（1 倍）** |"
+preconditions:
+  - "玩家已形成14张和牌牌型"
+inputs:
+  - "手牌与碰杠牌区共14张牌面"
+outputs:
+  - "番型判定结果"
+  - "牌型分倍数"
+business_rules:
+  - "F02 碰碰胡=2倍（创房可调4倍；高分玩法下8倍）；判定条件为4副面子全为刻子/杠、无顺子"
+  - "含任一顺子即破坏全刻形，同维度取高改判平胡（F01，1倍），不叠加"
+  - "跨维度叠加：小三元（2+4=6倍）/大三元（2+8=10倍）/清一色（2+4=6倍）/手抓一（需求明示叠加，高分玩法下也叠加，2+2=4倍）/卡五星/明暗四归"
+  - "与七对类跨结构取分值较高者"
+  - "碰出的刻子计入4副；高分玩法下为换档番型（2倍变8倍）"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies: []
+open_questions: []

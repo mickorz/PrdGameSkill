@@ -1,0 +1,29 @@
+format: GAME-SPEC/1
+ir_version: 1.0.0
+game_name: 卡五星（好友房）
+game_version: "1.0"
+created_at: "2026-11-09"
+updated_at: "2026-11-09"
+source_files:
+  - file: source/01-基础规则.md
+    received_at: "2026-11-09"
+  - file: source/02-游戏流程.md
+    received_at: "2026-11-09"
+  - file: source/03-打牌操作.md
+    received_at: "2026-11-09"
+  - file: source/04-番型.md
+    received_at: "2026-11-09"
+  - file: source/05-胡牌类型.md
+    received_at: "2026-11-09"
+  - file: source/06-结算.md
+    received_at: "2026-11-09"
+  - file: source/07-配置.md
+    received_at: "2026-11-09"
+  - file: source/08-UI交互.md
+    received_at: "2026-11-09"
+entry_points:
+  - GAME-UI-001
+stats:
+  requirements: 131
+  ui_pages: 5
+  test_cases: 10

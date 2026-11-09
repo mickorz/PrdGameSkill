@@ -1,0 +1,8 @@
+id: GAME-COMP-009
+type: room_config
+name: 创房配置表单
+props: {}
+events:
+  - GAME-EVENT-008
+requirements: []
+visual_hint: 人数、封顶、漂分、买马、马数、频道、亮倒、规则、定庄等配置项表单；本文档原文未展开面板结构，业务语义与默认值见 source/07-配置.md

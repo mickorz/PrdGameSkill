@@ -1,0 +1,5 @@
+id: GAME-EVENT-017
+name: 对局结束进入过渡
+trigger_type: system
+payload: {}
+requirements: [GAME-FR-015]

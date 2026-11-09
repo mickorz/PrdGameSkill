@@ -1,0 +1,8 @@
+id: GAME-COMP-015
+type: opening_animation
+name: 开局动画
+props: {}
+events:
+  - GAME-EVENT-007
+requirements: [GAME-FR-009]
+visual_hint: 仅每房首局播放，玩家信息按位置由小到大出现、上移离屏、屏外进入，中间显示对局开始后整体快速减淡消失进入摇骰发牌

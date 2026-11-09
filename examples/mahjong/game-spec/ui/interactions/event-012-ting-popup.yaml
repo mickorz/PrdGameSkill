@@ -1,0 +1,5 @@
+id: GAME-EVENT-012
+name: 听牌提示弹窗交互
+trigger_type: click
+payload: {}
+requirements: [GAME-FR-013]

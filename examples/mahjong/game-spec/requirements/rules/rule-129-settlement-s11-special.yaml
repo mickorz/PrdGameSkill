@@ -1,0 +1,39 @@
+id: GAME-RULE-129
+type: game_rule
+name: 特殊场景（S11）
+status: proposed
+authority: fixed
+description: 一炮多响各家分别计分点炮者逐家赔付且亮倒者按包牌口径，对亮未勾选只计一个亮倒，杠上杠仅计本次杠分。
+source:
+  kind: original
+  document: source/06-结算.md
+  section: "14.1 一炮多响"
+  page: null
+  quote: "| **计分** | 各家**分别**和牌、分别计分 |"
+preconditions:
+  - "触发一炮多响 / 双方亮倒 / 杠上杠等特殊场景"
+inputs:
+  - "各胡牌玩家亮倒状态"
+  - "对亮勾选状态"
+  - "杠上杠连杠状态"
+outputs:
+  - "特殊场景下的结算结果与结算标签"
+business_rules:
+  - "一炮多响计分：各家分别和牌、分别计分；轮庄为点炮玩家坐庄；触发下一小局上楼 ×2。"
+  - "一炮多响结算标签：捉炮玩家展示【捉炮胡】；点炮玩家展示【一炮多响】。"
+  - "一炮多响 × 包牌组合：点炮者向每个胡牌玩家分别赔付；其中亮倒的胡牌玩家那一笔按包牌口径计，即相当于自摸的分数（含番型 × 加倍项、马、漂、坎）。"
+  - "一炮多响 × 多家亮倒组合：各亮倒胡牌者各得一份，均按包牌口径；未亮倒的胡牌者按其正常捉炮胡计算。"
+  - "对亮：未勾选「对亮*2」时双方均亮倒只计一个亮倒。"
+  - "杠上杠：仅计算杠分，之前的杠分不转移。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-RULE-113"
+  - "GAME-RULE-082"
+  - "GAME-RULE-008"
+  - "GAME-RULE-122"
+  - "GAME-RULE-128"
+open_questions: []

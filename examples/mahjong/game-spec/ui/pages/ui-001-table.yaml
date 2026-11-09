@@ -1,0 +1,73 @@
+id: GAME-UI-001
+name: 对局桌面
+resolution: {width: 1280, height: 720}
+components:
+  - GAME-COMP-001
+  - GAME-COMP-002
+  - GAME-COMP-003
+  - GAME-COMP-004
+  - GAME-COMP-005
+  - GAME-COMP-006
+  - GAME-COMP-007
+  - GAME-COMP-010
+  - GAME-COMP-011
+  - GAME-COMP-012
+  - GAME-COMP-014
+  - GAME-COMP-015
+  - GAME-COMP-016
+  - GAME-COMP-017
+  - GAME-COMP-018
+  - GAME-COMP-019
+  - GAME-COMP-020
+states: [loading, opening, dealing, piao_picking, playing, liang_showing, round_over, error]
+interactions:
+  - trigger: GAME-EVENT-007
+    from_state: piao_picking
+    to_state: dealing
+    target_component: GAME-COMP-014
+  - trigger: GAME-EVENT-009
+    from_state: piao_picking
+    to_state: piao_picking
+    target_component: GAME-COMP-010
+  - trigger: GAME-EVENT-001
+    from_state: playing
+    to_state: playing
+    target_component: GAME-COMP-003
+  - trigger: GAME-EVENT-002
+    from_state: playing
+    to_state: playing
+    target_component: GAME-COMP-003
+  - trigger: GAME-EVENT-003
+    from_state: playing
+    to_state: playing
+    target_component: GAME-COMP-005
+  - trigger: GAME-EVENT-004
+    from_state: playing
+    to_state: playing
+    target_component: GAME-COMP-005
+  - trigger: GAME-EVENT-005
+    from_state: playing
+    to_state: round_over
+    target_component: GAME-COMP-005
+  - trigger: GAME-EVENT-006
+    from_state: playing
+    to_state: playing
+    target_component: GAME-COMP-005
+  - trigger: GAME-EVENT-010
+    from_state: playing
+    to_state: liang_showing
+    target_component: GAME-COMP-012
+  - trigger: GAME-EVENT-011
+    from_state: liang_showing
+    to_state: playing
+    target_component: GAME-COMP-011
+  - trigger: GAME-EVENT-012
+    from_state: playing
+    to_state: playing
+    target_component: GAME-COMP-006
+  - trigger: GAME-EVENT-013
+    from_state: playing
+    to_state: playing
+    target_component: GAME-COMP-017
+requirements: [GAME-FR-009, GAME-FR-010, GAME-FR-011, GAME-FR-012, GAME-FR-013, GAME-FR-014]
+test_refs: []

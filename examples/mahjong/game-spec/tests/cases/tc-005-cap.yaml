@@ -1,0 +1,10 @@
+id: GAME-TC-005
+name: 封顶截断结算 S4
+type: boundary
+related_requirements: [GAME-RULE-121]
+preconditions:
+  - 创房配置封顶 8 倍
+steps:
+  - 结算时番型 x 加倍项计算超过 8 倍
+expected: 「番型 x 加倍项」截断为封顶倍数 8，杠马漂坎分不受封顶截断
+rule_refs: [GAME-RULE-121, GAME-RULE-116]

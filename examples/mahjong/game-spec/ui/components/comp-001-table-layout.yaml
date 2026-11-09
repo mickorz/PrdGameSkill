@@ -1,0 +1,7 @@
+id: GAME-COMP-001
+type: table_layout
+name: 桌面布局与座位
+props: {}
+events: []
+requirements: [GAME-FR-009]
+visual_hint: 2人一上一下（下方自己、上方对家）、3人左下右（左侧上家、右侧下家），无牌墙，整体布局复用杭麻好友房

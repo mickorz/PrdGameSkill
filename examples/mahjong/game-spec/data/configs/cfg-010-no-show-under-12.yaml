@@ -1,0 +1,35 @@
+id: GAME-CFG-010
+type: config
+name: "亮倒-少于12张不亮"
+status: proposed
+authority: fixed
+description: "牌堆剩余少于 12 张后不再触发亮牌，间接影响算分（少一次亮倒即少一次 ×2）。"
+source:
+  kind: original
+  document: source/07-配置.md
+  section: "7.2.2 少于12张不亮"
+  page: null
+  quote: "玩家摸 / 补牌之后，如果牌堆牌 < 12 张，则不会再触发亮牌（不下放权限）"
+value: false
+preconditions: []
+inputs:
+  - "创房面板勾选"
+  - "摸 / 补牌后的牌堆余量"
+outputs:
+  - "亮倒权限是否继续发放"
+business_rules:
+  - "布尔勾选，默认不选；阈值为牌堆剩余 < 12 张。"
+  - "玩家摸 / 补牌之后判断：牌堆牌 < 12 张则不会再触发亮牌（不下放权限）。"
+  - "勾选 → 牌堆余量小于 12 张后不再发放亮倒权限，残局无法再亮倒；取消 → 全程可亮倒。"
+  - "间接影响算分：少一次亮倒即少一次 ×2。"
+  - "与封顶联动：亮倒是加倍项，受封顶约束。"
+  - "三变体面板均开放该选项，行为定义统一；孝感 / 十堰变体下默认值需求未写（本变体默认不选）。"
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - "GAME-CFG-004"
+open_questions:
+  - "孝感 / 十堰变体下该项默认值需求未写（不影响本变体）"

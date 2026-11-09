@@ -1,0 +1,34 @@
+id: GAME-RULE-024
+type: game_rule
+name: 方位高亮与倒计时
+status: proposed
+authority: fixed
+description: 出牌方位闪烁高亮且不受他人碰杠胡影响；可操作倒计时按操作方视角重置。
+source:
+  kind: original
+  document: source/02-游戏流程.md
+  section: "五、摇骰与方位"
+  page: null
+  quote: "| **方位高亮** | 某个玩家轮到出牌时，其对应方位闪烁高亮；期间即使其他玩家在该玩家出牌后可进行碰 / 杠 / 胡操作，**也不会改变高亮方位**。对局结束则无方位高亮 |"
+preconditions:
+  - 对局处于行牌阶段且方位已确定
+inputs:
+  - 当前出牌权归属
+  - 碰 / 杠 / 胡操作事件
+outputs:
+  - 方位高亮状态、各视角倒计时
+business_rules:
+  - 方位高亮：某个玩家轮到出牌时，其对应方位闪烁高亮；期间即使其他玩家在该玩家出牌后可进行碰 / 杠 / 胡操作，也不会改变高亮方位；对局结束则无方位高亮。
+  - 倒计时显示：显示玩家可操作的倒计时，最多两位数。
+  - 倒计时配色：默认蓝色，倒计时为 03 / 02 / 01 / 00 时为黄色。
+  - 倒计时重置：有碰 / 杠 / 胡等操作时，自己视角的倒计时需重置成可操作的倒计时（例：左边玩家打出三条后自己可执行碰操作，则倒计时重置成初始值）。
+  - 倒计时不变：当别人有碰 / 杠 / 胡等操作时，别人视角的倒计时无变化。
+normal_flow: []
+exception_flow: []
+state_transitions: []
+ui_refs: []
+test_refs: []
+dependencies:
+  - GAME-RULE-005
+  - GAME-RULE-026
+open_questions: []

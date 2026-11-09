@@ -1,0 +1,11 @@
+id: GAME-TC-001
+name: 碰牌成立取得出牌权
+type: normal
+related_requirements: [GAME-RULE-038]
+preconditions:
+  - 行牌阶段，某玩家手牌中持有上家所出牌 2 张及以上
+steps:
+  - 上家打出一张牌
+  - 该玩家点击碰
+expected: 碰成立，副露亮出，该玩家取得出牌权并进入出牌阶段
+rule_refs: [GAME-RULE-038, GAME-RULE-050]

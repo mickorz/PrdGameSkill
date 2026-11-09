@@ -1,0 +1,5 @@
+id: GAME-EVENT-010
+name: 点击亮
+trigger_type: click
+payload: {}
+requirements: [GAME-FR-012]

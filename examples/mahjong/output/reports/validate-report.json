@@ -1,0 +1,20 @@
+{
+  "result": "pass",
+  "game": "E:\\WorkProjects\\PrdGameSkill\\examples\\mahjong",
+  "checked_at": "2026-11-09",
+  "blocking_issues": [],
+  "warnings": [],
+  "coverage": {
+    "requirement_total": 165,
+    "rule_confirm_ratio": 0,
+    "source_trace_ratio": 1,
+    "test_coverage_ratio": 0.12,
+    "ui_pages": 5,
+    "ui_related_reqs": 25
+  },
+  "gates": {
+    "ir": true,
+    "html": true,
+    "simulator": true
+  }
+}

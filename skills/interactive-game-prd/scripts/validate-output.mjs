@@ -87,10 +87,11 @@ function main() {
     warnings.push({ gate: "html", detail: "尚未构建 HTML 产物（运行 generate-html）" });
   }
 
-  // 3. 模拟器测试（迷你样例有专用测试；通用项目按约定提供 scripts）
-  const simTest = path.join(gameDir, "simulator");
-  if (fs.existsSync(simTest) && gameDir.includes("mini-game")) {
-    const sim = run("node", [path.join(SCRIPT_DIR, "simulator.test.mjs")]);
+  // 3. 模拟器测试（按游戏选择对应测试脚本）
+  const simTestPath = path.join(gameDir, "simulator");
+  const simTestScript = path.basename(path.resolve(gameDir)).includes("mini-game") ? "simulator.test.mjs" : "mahjong-simulator.test.mjs";
+  if (fs.existsSync(simTestPath) && fs.existsSync(path.join(SCRIPT_DIR, simTestScript))) {
+    const sim = run("node", [path.join(SCRIPT_DIR, simTestScript)]);
     if (sim.code !== 0) blocking.push({ gate: "simulator", detail: sim.out + sim.err });
   }
 

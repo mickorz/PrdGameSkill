@@ -16,7 +16,7 @@ export function QuestionDetail() {
 
   const history = decisionsCovering(selected.id);
   const needFinalText = draft.action === "modify";
-  const needRationale = draft.action === "reject" || draft.action === "defer" || draft.action === "modify";
+  const needRationale = draft.action !== null; // 正式裁决理由一律必填（Schema 要求非空）
 
   return (
     <section className="col-main">

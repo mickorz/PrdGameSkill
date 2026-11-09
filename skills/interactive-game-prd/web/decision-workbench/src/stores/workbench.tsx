@@ -36,6 +36,9 @@ interface WorkbenchStore {
 
 const Ctx = createContext<WorkbenchStore | null>(null);
 
+// 采纳动作的默认理由（可编辑，避免为「同意」而打字的摩擦，同时保留非空留痕）
+const ADOPT_DEFAULT_RATIONALE = "采纳当前口径，与原文依据一致";
+
 export function WorkbenchProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<WorkbenchState | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -128,7 +131,18 @@ export function WorkbenchProvider({ children }: { children: ReactNode }) {
   }, [selectedId]);
 
   const setDraft = useCallback((patch: Partial<DraftForm>) => {
-    setDraftState((d) => ({ ...d, ...patch }));
+    setDraftState((d) => {
+      const next = { ...d, ...patch };
+      // 切换动作时维护默认理由：采纳预填默认，切走且未被人工改过则清空
+      if (patch.action && patch.action !== d.action) {
+        if (patch.action === "adopt" && (!d.rationale.trim() || d.rationale === ADOPT_DEFAULT_RATIONALE)) {
+          next.rationale = ADOPT_DEFAULT_RATIONALE;
+        } else if (patch.action !== "adopt" && d.rationale === ADOPT_DEFAULT_RATIONALE) {
+          next.rationale = "";
+        }
+      }
+      return next;
+    });
     draftDirty.current = true;
   }, []);
 

@@ -1,6 +1,6 @@
 {
   "game": "卡五星（好友房）",
-  "updated_at": "2026-11-09T06:53:32.371Z",
+  "updated_at": "2026-11-09T08:12:47.547Z",
   "progress": {
     "total": 31,
     "approved": 0,
@@ -11,10 +11,26 @@
   "last_position": null,
   "drafts": {
     "OQ-001": {
-      "outcome": "rejected",
+      "outcome": "adopted",
       "final_decision": null,
-      "rationale": "",
+      "rationale": "确认现行规则无误，与原文依据一致",
       "question_id": "OQ-001",
+      "decision_status": "draft",
+      "reviewer": "human"
+    },
+    "OQ-002": {
+      "outcome": "adopted",
+      "final_decision": null,
+      "rationale": "采纳当前口径，与原文依据一致",
+      "question_id": "OQ-002",
+      "decision_status": "draft",
+      "reviewer": "human"
+    },
+    "OQ-003": {
+      "outcome": "adopted",
+      "final_decision": null,
+      "rationale": "采纳当前口径，与原文依据一致",
+      "question_id": "OQ-003",
       "decision_status": "draft",
       "reviewer": "human"
     }

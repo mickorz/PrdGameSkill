@@ -1,0 +1,10449 @@
+# Traceability Matrix：全链路追溯矩阵（YAML）
+#
+# 链路方向：Source -> GDD -> PRD -> Interaction -> Contract -> Test
+# 归属口径：下游文档中行首带 ID 的条目行 -> 精确条目 ID（GDD-R001 / PRD-001 / INT-001 / CT-001）；
+#   段落正文中的 SRC 引用 -> 所在章节（GDD-sec:章节名 / PRD-sec:章节名 / INT-sec:章节名）。
+# gaps 口径：
+#   pending-confirmation —— 事实类型 UNKNOWN/CONFLICT，待人工确认（全段判定）。
+#   missing-gdd —— 玩法事实段（01~06 与 03 溢出段 SRC-1000+）无 GDD 层承接；玩法事实不允许断链。
+#   07 配置段（SRC-600~699）承接层为 PRD 配置功能（GDD 数值与配置章节为部分承接，不强制）；
+#   08 UI 段（SRC-700~987）承接层为 Interaction。此两段不判 missing-gdd。
+#   missing-prd / missing-interaction / missing-contract 不逐 SRC 机械登记（非每条事实都需四层全引用），
+#   层级覆盖率在文件尾注释统计 + evaluation-report.md 中评估；孤立目标条目登记于文件尾 orphan 注释区，不计入 summary。
+# gaps 只登记不修复（缺失关联不编造内容补链）。
+
+schema_version: 1
+project_id: mahjong
+updated_at: "2026-11-09"
+links:
+- source_id: SRC-001
+  source_ref: 01-基础规则.md §1.1 L28-37
+  gdd_ids:
+  - GDD-R001
+  - GDD-sec:引用事实（SRC 段范围）
+  - GDD-sec:系统清单
+  prd_ids:
+  - PRD-sec:引用事实（SRC 段范围）
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-002
+  source_ref: 01-基础规则.md §1.2 L39-41
+  gdd_ids:
+  - GDD-R002
+  prd_ids:
+  - PRD-018
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-003
+  source_ref: 01-基础规则.md §1.2 L40-41
+  gdd_ids:
+  - GDD-R002
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-004
+  source_ref: 01-基础规则.md §1.2 L43-45
+  gdd_ids:
+  - GDD-R004
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-005
+  source_ref: 01-基础规则.md §2.2 L83 / §4.4 L303
+  gdd_ids:
+  - GDD-R005
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-006
+  source_ref: 01-基础规则.md §2.1 L52-73
+  gdd_ids:
+  - GDD-sec:别名对照表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-007
+  source_ref: 01-基础规则.md §2.1 L54-56
+  gdd_ids:
+  - GDD-R009
+  - GDD-sec:别名对照表
+  prd_ids:
+  - PRD-024
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-008
+  source_ref: 01-基础规则.md §2.1 L57-59 / §4.1
+  gdd_ids:
+  - GDD-R010
+  - GDD-sec:别名对照表
+  prd_ids:
+  - PRD-024
+  interaction_ids: []
+  contract_ids:
+  - CT-018
+  test_ids: []
+  gaps: []
+- source_id: SRC-009
+  source_ref: 01-基础规则.md §2.1 L60-71
+  gdd_ids:
+  - GDD-sec:一句话定位
+  - GDD-sec:别名对照表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-010
+  source_ref: 01-基础规则.md §2.2 L98-101
+  gdd_ids:
+  - GDD-R006
+  - GDD-R007
+  prd_ids:
+  - PRD-023
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-011
+  source_ref: 01-基础规则.md §2.1 L72
+  gdd_ids:
+  - GDD-R021
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-012
+  source_ref: 01-基础规则.md §2.2 L78
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-013
+  source_ref: 01-基础规则.md §2.2 L172
+  gdd_ids:
+  - GDD-sec:优先级总表
+  - GDD-sec:结算顺序（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-014
+  source_ref: 01-基础规则.md §2.2 L170
+  gdd_ids:
+  - GDD-sec:系统清单
+  - GDD-sec:首亮赔付（亮倒荒庄赔付，【卡五星专属】，照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-015
+  source_ref: 01-基础规则.md §2.2 L134
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-016
+  source_ref: 01-基础规则.md §2.2 L182
+  gdd_ids:
+  - GDD-sec:一炮多响（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-052
+  - CT-071
+  test_ids: []
+  gaps: []
+- source_id: SRC-017
+  source_ref: 01-基础规则.md §3.1 L198-204
+  gdd_ids:
+  - GDD-R013
+  - GDD-sec:核心循环
+  prd_ids:
+  - PRD-014
+  interaction_ids: []
+  contract_ids:
+  - CT-005
+  - CT-072
+  test_ids: []
+  gaps: []
+- source_id: SRC-018
+  source_ref: 01-基础规则.md §3.1 L206
+  gdd_ids:
+  - GDD-U03
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-008
+  - PRD-sec:用户与场景
+  interaction_ids: []
+  contract_ids:
+  - CT-072
+  test_ids: []
+  gaps: []
+- source_id: SRC-019
+  source_ref: 01-基础规则.md §3.2 L208-213
+  gdd_ids:
+  - GDD-R014
+  - GDD-sec:核心循环
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-072
+  test_ids: []
+  gaps: []
+- source_id: SRC-020
+  source_ref: 01-基础规则.md §3.3 L216-219
+  gdd_ids:
+  - GDD-R015
+  - GDD-sec:核心循环
+  prd_ids:
+  - PRD-015
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-021
+  source_ref: 01-基础规则.md §3.3 L221-223
+  gdd_ids:
+  - GDD-R016
+  - GDD-sec:核心循环
+  prd_ids:
+  - PRD-011
+  interaction_ids: []
+  contract_ids:
+  - CT-002
+  test_ids: []
+  gaps: []
+- source_id: SRC-022
+  source_ref: 01-基础规则.md §3.4 L227-229
+  gdd_ids:
+  - GDD-R017
+  - GDD-sec:核心循环
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-006
+  test_ids: []
+  gaps: []
+- source_id: SRC-023
+  source_ref: 01-基础规则.md §3.4 L230
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-006
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-024
+  source_ref: 01-基础规则.md §3.4 L233-236
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-006
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-025
+  source_ref: 01-基础规则.md §3.4 L238
+  gdd_ids:
+  - GDD-D08
+  - GDD-R018
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-026
+  source_ref: 01-基础规则.md §4.1 L245-247
+  gdd_ids:
+  - GDD-R008
+  - GDD-sec:杠分（照录）
+  - GDD-sec:杠（三种）与杠分
+  prd_ids:
+  - PRD-024
+  interaction_ids: []
+  contract_ids:
+  - CT-016
+  test_ids: []
+  gaps: []
+- source_id: SRC-027
+  source_ref: 01-基础规则.md §4.1 L245-247
+  gdd_ids:
+  - GDD-sec:杠（三种）与杠分
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-017
+  test_ids: []
+  gaps: []
+- source_id: SRC-028
+  source_ref: 01-基础规则.md §4.1 L245-247
+  gdd_ids:
+  - GDD-sec:杠（三种）与杠分
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-018
+  test_ids: []
+  gaps: []
+- source_id: SRC-029
+  source_ref: 01-基础规则.md §4.1 L249
+  gdd_ids:
+  - GDD-sec:杠（三种）与杠分
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-030
+  source_ref: 01-基础规则.md §4.1 L250-251
+  gdd_ids:
+  - GDD-sec:杠分（照录）
+  - GDD-sec:杠（三种）与杠分
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-031
+  source_ref: 01-基础规则.md §4.2 L257-258
+  gdd_ids:
+  - GDD-sec:杠上杠（连杠）
+  prd_ids:
+  - PRD-025
+  interaction_ids: []
+  contract_ids:
+  - CT-024
+  test_ids: []
+  gaps: []
+- source_id: SRC-032
+  source_ref: 01-基础规则.md §4.2 L260-268
+  gdd_ids:
+  - GDD-sec:杠上杠（连杠）
+  - GDD-sec:杠分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-024
+  test_ids: []
+  gaps: []
+- source_id: SRC-033
+  source_ref: 01-基础规则.md §4.2 L270
+  gdd_ids:
+  - GDD-sec:杠上杠（连杠）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-016
+  - CT-024
+  test_ids: []
+  gaps: []
+- source_id: SRC-034
+  source_ref: 01-基础规则.md §4.2 L272
+  gdd_ids:
+  - GDD-sec:杠上杠（连杠）
+  prd_ids:
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-024
+  test_ids: []
+  gaps: []
+- source_id: SRC-035
+  source_ref: 01-基础规则.md §4.2 L274-282
+  gdd_ids:
+  - GDD-sec:杠上杠（连杠）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-024
+  test_ids: []
+  gaps: []
+- source_id: SRC-036
+  source_ref: 01-基础规则.md §4.2 L285
+  gdd_ids:
+  - GDD-sec:杠上杠（连杠）
+  - GDD-sec:杠分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-024
+  test_ids: []
+  gaps: []
+- source_id: SRC-037
+  source_ref: 01-基础规则.md §4.2 L287
+  gdd_ids:
+  - GDD-sec:杠上杠（连杠）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-024
+  - CT-054
+  - CT-055
+  test_ids: []
+  gaps: []
+- source_id: SRC-038
+  source_ref: 01-基础规则.md §4.3 L293
+  gdd_ids:
+  - GDD-sec:回手杠（两条）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-017
+  test_ids: []
+  gaps: []
+- source_id: SRC-039
+  source_ref: 01-基础规则.md §4.3 L293
+  gdd_ids:
+  - GDD-sec:回手杠（两条）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-017
+  test_ids: []
+  gaps: []
+- source_id: SRC-040
+  source_ref: 01-基础规则.md §4.3 L298
+  gdd_ids:
+  - GDD-U05
+  - GDD-sec:回手杠（两条）
+  prd_ids:
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-041
+  source_ref: 01-基础规则.md §4.3 L294
+  gdd_ids:
+  - GDD-R012
+  - GDD-sec:杠（三种）与杠分
+  prd_ids:
+  - PRD-025
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-010
+  - CT-016
+  - CT-065
+  test_ids: []
+  gaps: []
+- source_id: SRC-042
+  source_ref: 01-基础规则.md §4.3 L295
+  gdd_ids:
+  - GDD-sec:杠（三种）与杠分
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-065
+  test_ids: []
+  gaps: []
+- source_id: SRC-043
+  source_ref: 01-基础规则.md §4.3 L296
+  gdd_ids:
+  - GDD-sec:杠（三种）与杠分
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-017
+  - CT-065
+  test_ids: []
+  gaps: []
+- source_id: SRC-044
+  source_ref: 01-基础规则.md §4.3 L297
+  gdd_ids:
+  - GDD-sec:杠（三种）与杠分
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-017
+  - CT-065
+  test_ids: []
+  gaps: []
+- source_id: SRC-045
+  source_ref: 01-基础规则.md §4.4 L303-305
+  gdd_ids:
+  - GDD-R011
+  - GDD-sec:杠（三种）与杠分
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-054
+  test_ids: []
+  gaps: []
+- source_id: SRC-046
+  source_ref: 01-基础规则.md §4.4 L306
+  gdd_ids:
+  - GDD-R011
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-047
+  source_ref: 01-基础规则.md §4.5 L311-313
+  gdd_ids: []
+  prd_ids:
+  - PRD-026
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-048
+  source_ref: 01-基础规则.md §4.5 L314
+  gdd_ids:
+  - GDD-sec:抢杠胡专项
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-053
+  test_ids: []
+  gaps: []
+- source_id: SRC-049
+  source_ref: 01-基础规则.md §4.5 L316
+  gdd_ids:
+  - GDD-D05
+  - GDD-sec:抢杠胡专项
+  - GDD-sec:杠分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-053
+  test_ids: []
+  gaps: []
+- source_id: SRC-050
+  source_ref: 01-基础规则.md §4.5 L315
+  gdd_ids:
+  - GDD-D04
+  - GDD-sec:抢杠胡专项
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-053
+  test_ids: []
+  gaps: []
+- source_id: SRC-051
+  source_ref: 01-基础规则.md §4.5 L317
+  gdd_ids:
+  - GDD-D07
+  - GDD-sec:抢杠胡专项
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-053
+  test_ids: []
+  gaps: []
+- source_id: SRC-052
+  source_ref: 01-基础规则.md §4.5 L318
+  gdd_ids:
+  - GDD-D06
+  - GDD-sec:抢杠胡专项
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-053
+  test_ids: []
+  gaps: []
+- source_id: SRC-053
+  source_ref: 01-基础规则.md §5.1 L326-330
+  gdd_ids:
+  - GDD-sec:亮倒
+  - GDD-sec:目标用户与卖点
+  - GDD-sec:系统清单
+  prd_ids:
+  - PRD-031
+  interaction_ids: []
+  contract_ids:
+  - CT-058
+  test_ids: []
+  gaps: []
+- source_id: SRC-054
+  source_ref: 01-基础规则.md §5.1 L332-337
+  gdd_ids:
+  - GDD-sec:亮倒
+  prd_ids:
+  - PRD-032
+  interaction_ids: []
+  contract_ids:
+  - CT-058
+  - CT-064
+  test_ids: []
+  gaps: []
+- source_id: SRC-055
+  source_ref: 01-基础规则.md §5.1 L339-341
+  gdd_ids:
+  - GDD-sec:亮倒
+  - GDD-sec:加倍项公式（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-058
+  test_ids: []
+  gaps: []
+- source_id: SRC-056
+  source_ref: 01-基础规则.md §5.1 L342-344
+  gdd_ids:
+  - GDD-sec:亮倒
+  - GDD-sec:加倍项公式（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-058
+  test_ids: []
+  gaps: []
+- source_id: SRC-057
+  source_ref: 01-基础规则.md §5.1 L348
+  gdd_ids:
+  - GDD-sec:亮倒
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-064
+  test_ids: []
+  gaps: []
+- source_id: SRC-058
+  source_ref: 01-基础规则.md §5.1 L349-358
+  gdd_ids:
+  - GDD-U04
+  - GDD-sec:亮倒
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-031
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-058
+  test_ids: []
+  gaps: []
+- source_id: SRC-059
+  source_ref: 01-基础规则.md §5.1 L350
+  gdd_ids:
+  - GDD-sec:亮倒
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-060
+  source_ref: 01-基础规则.md §5.1 L351
+  gdd_ids:
+  - GDD-sec:亮倒
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-058
+  test_ids: []
+  gaps: []
+- source_id: SRC-061
+  source_ref: 01-基础规则.md §5.2 L363
+  gdd_ids:
+  - GDD-sec:扣牌
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-059
+  test_ids: []
+  gaps: []
+- source_id: SRC-062
+  source_ref: 01-基础规则.md §5.2 L365-371
+  gdd_ids:
+  - GDD-sec:扣牌
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-059
+  test_ids: []
+  gaps: []
+- source_id: SRC-063
+  source_ref: 01-基础规则.md §5.2 L373-379
+  gdd_ids:
+  - GDD-sec:扣牌
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-059
+  test_ids: []
+  gaps: []
+- source_id: SRC-064
+  source_ref: 01-基础规则.md §5.2 L381-382
+  gdd_ids:
+  - GDD-sec:扣牌
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-059
+  test_ids: []
+  gaps: []
+- source_id: SRC-065
+  source_ref: 01-基础规则.md §5.2 L384-391
+  gdd_ids:
+  - GDD-sec:扣牌
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-059
+  test_ids: []
+  gaps: []
+- source_id: SRC-066
+  source_ref: 01-基础规则.md §5.2 L393
+  gdd_ids:
+  - GDD-sec:扣牌
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-059
+  test_ids: []
+  gaps: []
+- source_id: SRC-067
+  source_ref: 01-基础规则.md §5.2 L395-397
+  gdd_ids:
+  - GDD-sec:扣牌
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-059
+  test_ids: []
+  gaps: []
+- source_id: SRC-068
+  source_ref: 01-基础规则.md §5.2 L398-399
+  gdd_ids:
+  - GDD-sec:扣牌
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-059
+  test_ids: []
+  gaps: []
+- source_id: SRC-069
+  source_ref: 01-基础规则.md §5.3 L403-407
+  gdd_ids:
+  - GDD-sec:危牌
+  - GDD-sec:目标用户与卖点
+  prd_ids:
+  - PRD-037
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-063
+  - CT-064
+  test_ids: []
+  gaps: []
+- source_id: SRC-070
+  source_ref: 01-基础规则.md §5.3 L411
+  gdd_ids:
+  - GDD-sec:危牌
+  - GDD-sec:摸牌与打牌
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-063
+  test_ids: []
+  gaps: []
+- source_id: SRC-071
+  source_ref: 01-基础规则.md §5.3 L412
+  gdd_ids:
+  - GDD-sec:危牌
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-063
+  test_ids: []
+  gaps: []
+- source_id: SRC-072
+  source_ref: 01-基础规则.md §5.3 L413
+  gdd_ids:
+  - GDD-sec:危牌
+  - GDD-sec:摸牌与打牌
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-063
+  test_ids: []
+  gaps: []
+- source_id: SRC-073
+  source_ref: 01-基础规则.md §5.3 L417
+  gdd_ids:
+  - GDD-sec:危牌
+  - GDD-sec:碰
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-015
+  - CT-063
+  test_ids: []
+  gaps: []
+- source_id: SRC-074
+  source_ref: 01-基础规则.md §6.1 L424-429
+  gdd_ids:
+  - GDD-sec:漂分（照录）
+  prd_ids:
+  - PRD-013
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-075
+  source_ref: 01-基础规则.md §6.1 L426
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-076
+  source_ref: 01-基础规则.md §6.1 L427
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-077
+  source_ref: 01-基础规则.md §6.1 L428
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-078
+  source_ref: 01-基础规则.md §6.1 L431-437
+  gdd_ids:
+  - GDD-sec:漂分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-079
+  source_ref: 01-基础规则.md §6.1 L439-442
+  gdd_ids:
+  - GDD-sec:漂分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-080
+  source_ref: 01-基础规则.md §6.1 L444
+  gdd_ids:
+  - GDD-sec:漂分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-081
+  source_ref: 01-基础规则.md §6.2 L451-455
+  gdd_ids:
+  - GDD-sec:系统清单
+  - GDD-sec:马分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-068
+  test_ids: []
+  gaps: []
+- source_id: SRC-082
+  source_ref: 01-基础规则.md §6.2 L457-462
+  gdd_ids:
+  - GDD-sec:马分（照录）
+  prd_ids:
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-068
+  test_ids: []
+  gaps: []
+- source_id: SRC-083
+  source_ref: 01-基础规则.md §6.2 L463
+  gdd_ids:
+  - GDD-sec:马分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-068
+  test_ids: []
+  gaps: []
+- source_id: SRC-084
+  source_ref: 01-基础规则.md §6.2 L464
+  gdd_ids:
+  - GDD-sec:马分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-068
+  test_ids: []
+  gaps: []
+- source_id: SRC-085
+  source_ref: 01-基础规则.md §6.2 L468
+  gdd_ids:
+  - GDD-sec:马分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-086
+  source_ref: 01-基础规则.md §6.2 L466、L470
+  gdd_ids:
+  - GDD-sec:马分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-068
+  test_ids: []
+  gaps: []
+- source_id: SRC-087
+  source_ref: 01-基础规则.md §6.3 L476
+  gdd_ids:
+  - GDD-sec:坎分（数坎，照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-088
+  source_ref: 01-基础规则.md §6.3 L478-484
+  gdd_ids:
+  - GDD-sec:坎分（数坎，照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-089
+  source_ref: 01-基础规则.md §6.3 L486-490
+  gdd_ids:
+  - GDD-sec:坎分（数坎，照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-090
+  source_ref: 01-基础规则.md §七 L494-504
+  gdd_ids:
+  - GDD-D22
+  - GDD-sec:优先级总表
+  - GDD-sec:结构与判定流水线
+  - GDD-sec:胡牌限制层（五层，任一拦截即不可胡）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-091
+  source_ref: 01-基础规则.md §七 L497
+  gdd_ids:
+  - GDD-sec:胡牌限制层（五层，任一拦截即不可胡）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-051
+  test_ids: []
+  gaps: []
+- source_id: SRC-092
+  source_ref: 01-基础规则.md §七 L501
+  gdd_ids:
+  - GDD-sec:优先级总表
+  - GDD-sec:操作优先级与多状态
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-093
+  source_ref: 01-基础规则.md §八 L510
+  gdd_ids:
+  - GDD-sec:过与漏胡
+  prd_ids:
+  - PRD-029
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-021
+  - CT-051
+  test_ids: []
+  gaps: []
+- source_id: SRC-094
+  source_ref: 01-基础规则.md §八 L511
+  gdd_ids: []
+  prd_ids:
+  - PRD-029
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-021
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-095
+  source_ref: 01-基础规则.md §八 L512
+  gdd_ids:
+  - GDD-sec:摸牌与打牌
+  - GDD-sec:系统清单
+  prd_ids:
+  - PRD-048
+  - PRD-sec:异常场景
+  - PRD-sec:用户与场景
+  interaction_ids: []
+  contract_ids:
+  - CT-022
+  - CT-073
+  test_ids: []
+  gaps: []
+- source_id: SRC-096
+  source_ref: 01-基础规则.md §八 L513-514
+  gdd_ids:
+  - GDD-D13
+  - GDD-U17
+  - GDD-sec:过与漏胡
+  prd_ids:
+  - PRD-029
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-020
+  test_ids: []
+  gaps: []
+- source_id: SRC-097
+  source_ref: 01-基础规则.md §九 L520-540
+  gdd_ids: []
+  prd_ids:
+  - PRD-sec:概述
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-098
+  source_ref: 01-基础规则.md §10.1-10.2 L546-562
+  gdd_ids:
+  - GDD-D02
+  - GDD-R019
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-099
+  source_ref: 01-基础规则.md §10.3-10.4 L564-586
+  gdd_ids:
+  - GDD-U07
+  - GDD-sec:引用事实（SRC 段范围）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-100
+  source_ref: 02-游戏流程.md L1-7
+  gdd_ids:
+  - GDD-sec:引用事实（SRC 段范围）
+  prd_ids:
+  - PRD-sec:引用事实（SRC 段范围）
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-101
+  source_ref: 02-游戏流程.md L25-91
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-102
+  source_ref: 02-游戏流程.md L9-21
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-103
+  source_ref: 02-游戏流程.md L18
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-104
+  source_ref: 02-游戏流程.md L97
+  gdd_ids:
+  - GDD-sec:核心循环
+  - GDD-sec:目标用户与卖点
+  prd_ids:
+  - PRD-sec:用户与场景
+  - PRD-sec:端到端主流程
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-105
+  source_ref: 02-游戏流程.md L98
+  gdd_ids:
+  - GDD-R016
+  - GDD-sec:核心循环
+  prd_ids:
+  - PRD-011
+  - PRD-sec:用户与场景
+  interaction_ids: []
+  contract_ids:
+  - CT-002
+  test_ids: []
+  gaps: []
+- source_id: SRC-106
+  source_ref: 02-游戏流程.md L99
+  gdd_ids: []
+  prd_ids:
+  - PRD-011
+  - PRD-101
+  interaction_ids: []
+  contract_ids:
+  - CT-002
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-107
+  source_ref: 02-游戏流程.md L99
+  gdd_ids: []
+  prd_ids:
+  - PRD-011
+  interaction_ids: []
+  contract_ids:
+  - CT-002
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-108
+  source_ref: 02-游戏流程.md L100（全流程图 L33）
+  gdd_ids: []
+  prd_ids:
+  - PRD-012
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-109
+  source_ref: 02-游戏流程.md L101
+  gdd_ids: []
+  prd_ids:
+  - PRD-012
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-110
+  source_ref: 02-游戏流程.md L107-112
+  gdd_ids:
+  - GDD-sec:核心循环
+  prd_ids:
+  - PRD-013
+  - PRD-sec:用户与场景
+  - PRD-sec:端到端主流程
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-111
+  source_ref: 02-游戏流程.md L109
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-112
+  source_ref: 02-游戏流程.md L110
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-113
+  source_ref: 02-游戏流程.md L111
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-114
+  source_ref: 02-游戏流程.md L112
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-115
+  source_ref: 02-游戏流程.md L114-119
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-116
+  source_ref: 02-游戏流程.md L121
+  gdd_ids:
+  - GDD-sec:核心循环
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-117
+  source_ref: 02-游戏流程.md L116
+  gdd_ids: []
+  prd_ids:
+  - PRD-sec:端到端主流程
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+  - missing-gdd
+- source_id: SRC-118
+  source_ref: 02-游戏流程.md L127-130
+  gdd_ids:
+  - GDD-R013
+  - GDD-sec:核心循环
+  prd_ids:
+  - PRD-014
+  interaction_ids: []
+  contract_ids:
+  - CT-005
+  - CT-072
+  test_ids: []
+  gaps: []
+- source_id: SRC-119
+  source_ref: 02-游戏流程.md L129
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-005
+  - CT-072
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-120
+  source_ref: 02-游戏流程.md L130
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-005
+  - CT-072
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-121
+  source_ref: 02-游戏流程.md L132
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-072
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-122
+  source_ref: 02-游戏流程.md L133-134
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-072
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-123
+  source_ref: 02-游戏流程.md L136
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-072
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-124
+  source_ref: 02-游戏流程.md L136
+  gdd_ids:
+  - GDD-U03
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-008
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-125
+  source_ref: 02-游戏流程.md L144
+  gdd_ids:
+  - GDD-U09
+  prd_ids:
+  - PRD-016
+  interaction_ids: []
+  contract_ids:
+  - CT-006
+  test_ids: []
+  gaps: []
+- source_id: SRC-126
+  source_ref: 02-游戏流程.md L144-146
+  gdd_ids:
+  - GDD-U09
+  prd_ids:
+  - PRD-016
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-127
+  source_ref: 02-游戏流程.md L145
+  gdd_ids: []
+  prd_ids:
+  - PRD-015
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-128
+  source_ref: 02-游戏流程.md L146
+  gdd_ids:
+  - GDD-R015
+  prd_ids:
+  - PRD-015
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-129
+  source_ref: 02-游戏流程.md L147
+  gdd_ids: []
+  prd_ids:
+  - PRD-015
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-130
+  source_ref: 02-游戏流程.md L148
+  gdd_ids:
+  - GDD-U08
+  - GDD-sec:核心循环
+  prd_ids:
+  - PRD-017
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-131
+  source_ref: 02-游戏流程.md L148
+  gdd_ids: []
+  prd_ids:
+  - PRD-017
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-132
+  source_ref: 02-游戏流程.md L148
+  gdd_ids:
+  - GDD-U08
+  prd_ids:
+  - PRD-017
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-133
+  source_ref: 02-游戏流程.md L149
+  gdd_ids: []
+  prd_ids:
+  - PRD-016
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-134
+  source_ref: 02-游戏流程.md L151
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-135
+  source_ref: 02-游戏流程.md L110、L119（对照 L144）
+  gdd_ids:
+  - GDD-U09
+  prd_ids:
+  - PRD-016
+  interaction_ids: []
+  contract_ids:
+  - CT-006
+  test_ids: []
+  gaps: []
+- source_id: SRC-136
+  source_ref: 02-游戏流程.md L161
+  gdd_ids:
+  - GDD-R003
+  - GDD-sec:核心循环
+  - GDD-sec:系统清单
+  prd_ids:
+  - PRD-018
+  - PRD-sec:端到端主流程
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-137
+  source_ref: 02-游戏流程.md L162-164
+  gdd_ids:
+  - GDD-R003
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-138
+  source_ref: 02-游戏流程.md L170
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-139
+  source_ref: 02-游戏流程.md L171
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-140
+  source_ref: 02-游戏流程.md L172
+  gdd_ids:
+  - GDD-D02
+  - GDD-R019
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-007
+  test_ids: []
+  gaps: []
+- source_id: SRC-141
+  source_ref: 02-游戏流程.md L173
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-007
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-142
+  source_ref: 02-游戏流程.md L175-179
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-007
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-143
+  source_ref: 02-游戏流程.md L181
+  gdd_ids:
+  - GDD-R005
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-007
+  test_ids: []
+  gaps: []
+- source_id: SRC-144
+  source_ref: 02-游戏流程.md L185、L190
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-145
+  source_ref: 02-游戏流程.md L186-187
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-146
+  source_ref: 02-游戏流程.md L188
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-147
+  source_ref: 02-游戏流程.md L189
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-148
+  source_ref: 02-游戏流程.md L194
+  gdd_ids: []
+  prd_ids:
+  - PRD-019
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-149
+  source_ref: 02-游戏流程.md L195
+  gdd_ids:
+  - GDD-R025
+  - GDD-sec:核心循环
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-150
+  source_ref: 02-游戏流程.md L196
+  gdd_ids:
+  - GDD-R004
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-151
+  source_ref: 02-游戏流程.md L198-203
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-152
+  source_ref: 02-游戏流程.md L209
+  gdd_ids:
+  - GDD-sec:核心循环
+  prd_ids:
+  - PRD-sec:端到端主流程
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-153
+  source_ref: 02-游戏流程.md L211-219（全流程图 L61-66）
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-154
+  source_ref: 02-游戏流程.md L221
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-155
+  source_ref: 02-游戏流程.md L225
+  gdd_ids:
+  - GDD-sec:系统清单
+  prd_ids:
+  - PRD-sec:用户与场景
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-156
+  source_ref: 02-游戏流程.md L227
+  gdd_ids:
+  - GDD-R006
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-157
+  source_ref: 02-游戏流程.md L227
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-158
+  source_ref: 02-游戏流程.md L73-74（全流程图）
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-159
+  source_ref: 02-游戏流程.md L235
+  gdd_ids:
+  - GDD-sec:核心循环
+  prd_ids:
+  - PRD-sec:端到端主流程
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-160
+  source_ref: 02-游戏流程.md L239
+  gdd_ids: []
+  prd_ids:
+  - PRD-042
+  interaction_ids: []
+  contract_ids:
+  - CT-050
+  - CT-057
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-161
+  source_ref: 02-游戏流程.md L240
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-057
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-162
+  source_ref: 02-游戏流程.md L241
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-057
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-163
+  source_ref: 02-游戏流程.md L242
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-057
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-164
+  source_ref: 02-游戏流程.md L246
+  gdd_ids:
+  - GDD-R020
+  - GDD-sec:荒庄分支（S9，照录）
+  prd_ids:
+  - PRD-045
+  - PRD-sec:异常场景
+  - PRD-sec:端到端主流程
+  interaction_ids: []
+  contract_ids:
+  - CT-009
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-165
+  source_ref: 02-游戏流程.md L250-252
+  gdd_ids:
+  - GDD-sec:荒庄分支（S9，照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-166
+  source_ref: 02-游戏流程.md L256
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-167
+  source_ref: 02-游戏流程.md L257
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-168
+  source_ref: 02-游戏流程.md L259
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-169
+  source_ref: 02-游戏流程.md L265
+  gdd_ids:
+  - GDD-sec:核心循环
+  prd_ids:
+  - PRD-043
+  - PRD-sec:端到端主流程
+  interaction_ids: []
+  contract_ids:
+  - CT-068
+  test_ids: []
+  gaps: []
+- source_id: SRC-170
+  source_ref: 02-游戏流程.md L269
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-068
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-171
+  source_ref: 02-游戏流程.md L270
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-068
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-172
+  source_ref: 02-游戏流程.md L272
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-068
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-173
+  source_ref: 02-游戏流程.md L273（全流程图 L78-83）
+  gdd_ids:
+  - GDD-sec:核心循环
+  - GDD-sec:荒庄分支（S9，照录）
+  - GDD-sec:马分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-068
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-174
+  source_ref: 02-游戏流程.md L279-281
+  gdd_ids:
+  - GDD-sec:核心循环
+  prd_ids:
+  - PRD-sec:用户与场景
+  - PRD-sec:端到端主流程
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-175
+  source_ref: 02-游戏流程.md L285
+  gdd_ids: []
+  prd_ids:
+  - PRD-047
+  - PRD-sec:端到端主流程
+  interaction_ids: []
+  contract_ids:
+  - CT-071
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-176
+  source_ref: 02-游戏流程.md L290
+  gdd_ids:
+  - GDD-sec:大结算统计（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-071
+  test_ids: []
+  gaps: []
+- source_id: SRC-177
+  source_ref: 02-游戏流程.md L291
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-071
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-178
+  source_ref: 02-游戏流程.md L292
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-071
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-179
+  source_ref: 02-游戏流程.md L293
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-071
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-180
+  source_ref: 02-游戏流程.md L295
+  gdd_ids: []
+  prd_ids:
+  - PRD-202
+  interaction_ids: []
+  contract_ids:
+  - CT-071
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-181
+  source_ref: 02-游戏流程.md L301
+  gdd_ids:
+  - GDD-R014
+  - GDD-sec:核心循环
+  prd_ids:
+  - PRD-014
+  - PRD-sec:端到端主流程
+  interaction_ids: []
+  contract_ids:
+  - CT-005
+  - CT-072
+  test_ids: []
+  gaps: []
+- source_id: SRC-182
+  source_ref: 02-游戏流程.md L302
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-005
+  - CT-072
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-183
+  source_ref: 02-游戏流程.md L303
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-005
+  - CT-072
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-184
+  source_ref: 02-游戏流程.md L305
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-185
+  source_ref: 02-游戏流程.md L306
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-186
+  source_ref: 02-游戏流程.md L307
+  gdd_ids:
+  - GDD-sec:核心循环
+  prd_ids:
+  - PRD-sec:端到端主流程
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-187
+  source_ref: 02-游戏流程.md L311
+  gdd_ids: []
+  prd_ids:
+  - PRD-109
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-188
+  source_ref: 02-游戏流程.md L315
+  gdd_ids: []
+  prd_ids:
+  - PRD-110
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-189
+  source_ref: 02-游戏流程.md 全文（L111、L285、L307 引用）
+  gdd_ids:
+  - GDD-R024
+  - GDD-U10
+  - GDD-sec:引用事实（SRC 段范围）
+  prd_ids:
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-200
+  source_ref: 03-打牌操作.md 行1
+  gdd_ids:
+  - GDD-sec:引用事实（SRC 段范围）
+  prd_ids:
+  - PRD-sec:引用事实（SRC 段范围）
+  interaction_ids:
+  - INT-sec:引用事实（SRC 段范围）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-201
+  source_ref: 03-打牌操作.md 行9-24
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-202
+  source_ref: 03-打牌操作.md 行31
+  gdd_ids:
+  - GDD-sec:摸牌与打牌
+  - GDD-sec:系统清单
+  prd_ids:
+  - PRD-020
+  interaction_ids: []
+  contract_ids:
+  - CT-009
+  test_ids: []
+  gaps: []
+- source_id: SRC-203
+  source_ref: 03-打牌操作.md 行32
+  gdd_ids:
+  - GDD-sec:摸牌与打牌
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-009
+  test_ids: []
+  gaps: []
+- source_id: SRC-204
+  source_ref: 03-打牌操作.md 行33-34
+  gdd_ids:
+  - GDD-sec:摸牌与打牌
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-009
+  test_ids: []
+  gaps: []
+- source_id: SRC-205
+  source_ref: 03-打牌操作.md 行35-36
+  gdd_ids:
+  - GDD-sec:摸牌与打牌
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-009
+  test_ids: []
+  gaps: []
+- source_id: SRC-206
+  source_ref: 03-打牌操作.md 行37
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-207
+  source_ref: 03-打牌操作.md 行39
+  gdd_ids:
+  - GDD-D03
+  - GDD-R022
+  - GDD-sec:摸牌与打牌
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-208
+  source_ref: 03-打牌操作.md 行49
+  gdd_ids:
+  - GDD-sec:危牌
+  - GDD-sec:摸牌与打牌
+  prd_ids:
+  - PRD-037
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-012
+  - CT-063
+  test_ids: []
+  gaps: []
+- source_id: SRC-209
+  source_ref: 03-打牌操作.md 行50
+  gdd_ids:
+  - GDD-sec:危牌
+  - GDD-sec:摸牌与打牌
+  prd_ids:
+  - PRD-037
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-012
+  - CT-063
+  test_ids: []
+  gaps: []
+- source_id: SRC-210
+  source_ref: 03-打牌操作.md 行51
+  gdd_ids:
+  - GDD-sec:摸牌与打牌
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-211
+  source_ref: 03-打牌操作.md 行52
+  gdd_ids:
+  - GDD-sec:摸牌与打牌
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-212
+  source_ref: 03-打牌操作.md 行54
+  gdd_ids: []
+  prd_ids:
+  - PRD-037
+  interaction_ids: []
+  contract_ids:
+  - CT-063
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-213
+  source_ref: 03-打牌操作.md 行60
+  gdd_ids: []
+  prd_ids:
+  - PRD-022
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-214
+  source_ref: 03-打牌操作.md 行61
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-215
+  source_ref: 03-打牌操作.md 行62
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-216
+  source_ref: 03-打牌操作.md 行64
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-217
+  source_ref: 03-打牌操作.md 行66
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+  - missing-gdd
+- source_id: SRC-218
+  source_ref: 03-打牌操作.md 行72-73
+  gdd_ids: []
+  prd_ids:
+  - PRD-021
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-219
+  source_ref: 03-打牌操作.md 行74
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-220
+  source_ref: 03-打牌操作.md 行75
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-221
+  source_ref: 03-打牌操作.md 行76
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-222
+  source_ref: 03-打牌操作.md 行82
+  gdd_ids: []
+  prd_ids:
+  - PRD-102
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-223
+  source_ref: 03-打牌操作.md 行83
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-224
+  source_ref: 03-打牌操作.md 行84
+  gdd_ids: []
+  prd_ids:
+  - PRD-102
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-225
+  source_ref: 03-打牌操作.md 行85
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-226
+  source_ref: 03-打牌操作.md 行86
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-227
+  source_ref: 03-打牌操作.md 行92-93
+  gdd_ids:
+  - GDD-sec:摸牌与打牌
+  prd_ids:
+  - PRD-048
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-022
+  - CT-073
+  test_ids: []
+  gaps: []
+- source_id: SRC-228
+  source_ref: 03-打牌操作.md 行97-101
+  gdd_ids:
+  - GDD-R006
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-229
+  source_ref: 03-打牌操作.md 行107
+  gdd_ids:
+  - GDD-R007
+  - GDD-sec:碰
+  prd_ids:
+  - PRD-023
+  interaction_ids: []
+  contract_ids:
+  - CT-015
+  test_ids: []
+  gaps: []
+- source_id: SRC-230
+  source_ref: 03-打牌操作.md 行108
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-015
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-231
+  source_ref: 03-打牌操作.md 行109
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-015
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-232
+  source_ref: 03-打牌操作.md 行110
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-015
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-233
+  source_ref: 03-打牌操作.md 行111
+  gdd_ids:
+  - GDD-sec:碰
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-015
+  test_ids: []
+  gaps: []
+- source_id: SRC-234
+  source_ref: 03-打牌操作.md 行112
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-235
+  source_ref: 03-打牌操作.md 行113
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-236
+  source_ref: 03-打牌操作.md 行114
+  gdd_ids:
+  - GDD-sec:操作优先级与多状态
+  prd_ids:
+  - PRD-030
+  interaction_ids: []
+  contract_ids:
+  - CT-015
+  test_ids: []
+  gaps: []
+- source_id: SRC-237
+  source_ref: 03-打牌操作.md 行115
+  gdd_ids: []
+  prd_ids:
+  - PRD-048
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-073
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-238
+  source_ref: 03-打牌操作.md 行116
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-239
+  source_ref: 03-打牌操作.md 行126
+  gdd_ids:
+  - GDD-R008
+  - GDD-sec:杠（三种）与杠分
+  prd_ids:
+  - PRD-024
+  interaction_ids: []
+  contract_ids:
+  - CT-016
+  test_ids: []
+  gaps: []
+- source_id: SRC-240
+  source_ref: 03-打牌操作.md 行127
+  gdd_ids:
+  - GDD-sec:杠（三种）与杠分
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-017
+  test_ids: []
+  gaps: []
+- source_id: SRC-241
+  source_ref: 03-打牌操作.md 行128
+  gdd_ids:
+  - GDD-sec:杠（三种）与杠分
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-018
+  test_ids: []
+  gaps: []
+- source_id: SRC-242
+  source_ref: 03-打牌操作.md 行130
+  gdd_ids:
+  - GDD-R009
+  - GDD-sec:别名对照表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-243
+  source_ref: 03-打牌操作.md 行136
+  gdd_ids:
+  - GDD-sec:杠（三种）与杠分
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-016
+  test_ids: []
+  gaps: []
+- source_id: SRC-244
+  source_ref: 03-打牌操作.md 行137
+  gdd_ids:
+  - GDD-sec:杠（三种）与杠分
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-017
+  test_ids: []
+  gaps: []
+- source_id: SRC-245
+  source_ref: 03-打牌操作.md 行138
+  gdd_ids:
+  - GDD-sec:杠（三种）与杠分
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-018
+  test_ids: []
+  gaps: []
+- source_id: SRC-246
+  source_ref: 03-打牌操作.md 行140
+  gdd_ids:
+  - GDD-sec:杠（三种）与杠分
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-016
+  test_ids: []
+  gaps: []
+- source_id: SRC-247
+  source_ref: 03-打牌操作.md 行141
+  gdd_ids:
+  - GDD-sec:杠（三种）与杠分
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-248
+  source_ref: 03-打牌操作.md 行142
+  gdd_ids:
+  - GDD-sec:杠（三种）与杠分
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-249
+  source_ref: 03-打牌操作.md 行148
+  gdd_ids:
+  - GDD-sec:杠上杠（连杠）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-016
+  - CT-024
+  test_ids: []
+  gaps: []
+- source_id: SRC-250
+  source_ref: 03-打牌操作.md 行149
+  gdd_ids:
+  - GDD-sec:杠上杠（连杠）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-024
+  test_ids: []
+  gaps: []
+- source_id: SRC-251
+  source_ref: 03-打牌操作.md 行150
+  gdd_ids:
+  - GDD-sec:杠上杠（连杠）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-016
+  - CT-024
+  test_ids: []
+  gaps: []
+- source_id: SRC-252
+  source_ref: 03-打牌操作.md 行151
+  gdd_ids:
+  - GDD-sec:杠上杠（连杠）
+  prd_ids:
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-024
+  test_ids: []
+  gaps: []
+- source_id: SRC-253
+  source_ref: 03-打牌操作.md 行152
+  gdd_ids:
+  - GDD-sec:杠上杠（连杠）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-054
+  - CT-055
+  test_ids: []
+  gaps: []
+- source_id: SRC-254
+  source_ref: 03-打牌操作.md 行154-161
+  gdd_ids:
+  - GDD-sec:杠上杠（连杠）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-018
+  - CT-024
+  test_ids: []
+  gaps: []
+- source_id: SRC-255
+  source_ref: 03-打牌操作.md 行167
+  gdd_ids:
+  - GDD-sec:回手杠（两条）
+  prd_ids:
+  - PRD-025
+  interaction_ids: []
+  contract_ids:
+  - CT-017
+  test_ids: []
+  gaps: []
+- source_id: SRC-256
+  source_ref: 03-打牌操作.md 行167
+  gdd_ids:
+  - GDD-sec:回手杠（两条）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-017
+  test_ids: []
+  gaps: []
+- source_id: SRC-257
+  source_ref: 03-打牌操作.md 行167,172
+  gdd_ids:
+  - GDD-U05
+  - GDD-sec:回手杠（两条）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-258
+  source_ref: 03-打牌操作.md 行168
+  gdd_ids:
+  - GDD-R012
+  prd_ids:
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-010
+  - CT-016
+  - CT-065
+  test_ids: []
+  gaps: []
+- source_id: SRC-259
+  source_ref: 03-打牌操作.md 行169
+  gdd_ids:
+  - GDD-sec:杠（三种）与杠分
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-065
+  test_ids: []
+  gaps: []
+- source_id: SRC-260
+  source_ref: 03-打牌操作.md 行170
+  gdd_ids:
+  - GDD-sec:杠（三种）与杠分
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-065
+  test_ids: []
+  gaps: []
+- source_id: SRC-261
+  source_ref: 03-打牌操作.md 行171
+  gdd_ids:
+  - GDD-sec:杠（三种）与杠分
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-017
+  - CT-065
+  test_ids: []
+  gaps: []
+- source_id: SRC-262
+  source_ref: 03-打牌操作.md 行179
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-263
+  source_ref: 03-打牌操作.md 行180
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-264
+  source_ref: 03-打牌操作.md 行181
+  gdd_ids:
+  - GDD-R010
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-018
+  test_ids: []
+  gaps: []
+- source_id: SRC-265
+  source_ref: 03-打牌操作.md 行183-184
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-266
+  source_ref: 03-打牌操作.md 行185
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-267
+  source_ref: 03-打牌操作.md 行186
+  gdd_ids:
+  - GDD-sec:杠（三种）与杠分
+  prd_ids:
+  - PRD-026
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-017
+  - CT-053
+  test_ids: []
+  gaps: []
+- source_id: SRC-268
+  source_ref: 03-打牌操作.md 行187
+  gdd_ids: []
+  prd_ids:
+  - PRD-025
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-269
+  source_ref: 03-打牌操作.md 行195-196
+  gdd_ids:
+  - GDD-R011
+  - GDD-sec:杠（三种）与杠分
+  prd_ids:
+  - PRD-020
+  interaction_ids: []
+  contract_ids:
+  - CT-010
+  - CT-054
+  test_ids: []
+  gaps: []
+- source_id: SRC-270
+  source_ref: 03-打牌操作.md 行197
+  gdd_ids:
+  - GDD-sec:杠（三种）与杠分
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-010
+  - CT-054
+  test_ids: []
+  gaps: []
+- source_id: SRC-271
+  source_ref: 03-打牌操作.md 行198-199
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-272
+  source_ref: 03-打牌操作.md 行200
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-273
+  source_ref: 03-打牌操作.md 行210
+  gdd_ids:
+  - GDD-sec:胡（8 种和牌方式）
+  prd_ids:
+  - PRD-027
+  interaction_ids: []
+  contract_ids:
+  - CT-050
+  test_ids: []
+  gaps: []
+- source_id: SRC-274
+  source_ref: 03-打牌操作.md 行211
+  gdd_ids:
+  - GDD-sec:胡（8 种和牌方式）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-051
+  test_ids: []
+  gaps: []
+- source_id: SRC-275
+  source_ref: 03-打牌操作.md 行212
+  gdd_ids:
+  - GDD-D23
+  - GDD-sec:胡（8 种和牌方式）
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-053
+  test_ids: []
+  gaps: []
+- source_id: SRC-276
+  source_ref: 03-打牌操作.md 行213
+  gdd_ids:
+  - GDD-sec:胡（8 种和牌方式）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-054
+  test_ids: []
+  gaps: []
+- source_id: SRC-277
+  source_ref: 03-打牌操作.md 行214
+  gdd_ids:
+  - GDD-sec:胡（8 种和牌方式）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-055
+  test_ids: []
+  gaps: []
+- source_id: SRC-278
+  source_ref: 03-打牌操作.md 行215
+  gdd_ids:
+  - GDD-U23
+  - GDD-sec:胡（8 种和牌方式）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-056
+  test_ids: []
+  gaps: []
+- source_id: SRC-279
+  source_ref: 03-打牌操作.md 行216
+  gdd_ids:
+  - GDD-U23
+  - GDD-sec:胡（8 种和牌方式）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-056
+  test_ids: []
+  gaps: []
+- source_id: SRC-280
+  source_ref: 03-打牌操作.md 行217
+  gdd_ids:
+  - GDD-sec:胡（8 种和牌方式）
+  prd_ids:
+  - PRD-030
+  interaction_ids: []
+  contract_ids:
+  - CT-052
+  test_ids: []
+  gaps: []
+- source_id: SRC-281
+  source_ref: 03-打牌操作.md 行219-221
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-282
+  source_ref: 03-打牌操作.md 行225
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-283
+  source_ref: 03-打牌操作.md 行226
+  gdd_ids:
+  - GDD-sec:胡牌限制层（五层，任一拦截即不可胡）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-051
+  test_ids: []
+  gaps: []
+- source_id: SRC-284
+  source_ref: 03-打牌操作.md 行227
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-285
+  source_ref: 03-打牌操作.md 行228
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-286
+  source_ref: 03-打牌操作.md 行229
+  gdd_ids:
+  - GDD-sec:优先级总表
+  - GDD-sec:操作优先级与多状态
+  prd_ids:
+  - PRD-030
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-287
+  source_ref: 03-打牌操作.md 行231
+  gdd_ids:
+  - GDD-D22
+  - GDD-sec:优先级总表
+  - GDD-sec:结构与判定流水线
+  - GDD-sec:胡牌限制层（五层，任一拦截即不可胡）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-288
+  source_ref: 03-打牌操作.md 行237
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-289
+  source_ref: 03-打牌操作.md 行238
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-290
+  source_ref: 03-打牌操作.md 行239
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-291
+  source_ref: 03-打牌操作.md 行240
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-292
+  source_ref: 03-打牌操作.md 行241
+  gdd_ids: []
+  prd_ids:
+  - PRD-048
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-073
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-293
+  source_ref: 03-打牌操作.md 行242
+  gdd_ids:
+  - GDD-sec:胡（8 种和牌方式）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-050
+  test_ids: []
+  gaps: []
+- source_id: SRC-294
+  source_ref: 03-打牌操作.md 行248-249
+  gdd_ids: []
+  prd_ids:
+  - PRD-030
+  interaction_ids: []
+  contract_ids:
+  - CT-058
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-295
+  source_ref: 03-打牌操作.md 行258
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-052
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-296
+  source_ref: 03-打牌操作.md 行259
+  gdd_ids:
+  - GDD-sec:摸牌与打牌
+  - GDD-sec:操作优先级与多状态
+  prd_ids:
+  - PRD-048
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-022
+  - CT-050
+  - CT-051
+  - CT-052
+  - CT-053
+  - CT-058
+  - CT-073
+  test_ids: []
+  gaps: []
+- source_id: SRC-297
+  source_ref: 03-打牌操作.md 行267
+  gdd_ids:
+  - GDD-sec:过与漏胡
+  prd_ids:
+  - PRD-028
+  interaction_ids:
+  - INT-043
+  - INT-sec:引用事实（SRC 段范围）
+  contract_ids:
+  - CT-020
+  test_ids: []
+  gaps: []
+- source_id: SRC-298
+  source_ref: 03-打牌操作.md 行268
+  gdd_ids: []
+  prd_ids:
+  - PRD-028
+  interaction_ids:
+  - INT-043
+  contract_ids:
+  - CT-020
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-299
+  source_ref: 03-打牌操作.md 行269
+  gdd_ids:
+  - GDD-sec:摸牌与打牌
+  - GDD-sec:操作优先级与多状态
+  prd_ids:
+  - PRD-048
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-022
+  - CT-050
+  - CT-051
+  - CT-073
+  test_ids: []
+  gaps: []
+- source_id: SRC-300
+  source_ref: 04-番型.md §1.1 L28-36
+  gdd_ids:
+  - GDD-sec:引用事实（SRC 段范围）
+  - GDD-sec:系统清单
+  - GDD-sec:结构与判定流水线
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-301
+  source_ref: 04-番型.md §1.2 L38-55
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-302
+  source_ref: 04-番型.md §1.2 L57-59
+  gdd_ids:
+  - GDD-sec:结构与判定流水线
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-303
+  source_ref: 04-番型.md §1.3 L63-99
+  gdd_ids:
+  - GDD-D09
+  - GDD-sec:优先级总表
+  - GDD-sec:结构与判定流水线
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-304
+  source_ref: 04-番型.md §1.3 L85
+  gdd_ids:
+  - GDD-D09
+  - GDD-sec:优先级总表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-305
+  source_ref: 04-番型.md §1.3 L83
+  gdd_ids:
+  - GDD-sec:优先级总表
+  - GDD-sec:结构与判定流水线
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-306
+  source_ref: 04-番型.md §1.3 L99-101
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  - GDD-sec:四归补充口径
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-307
+  source_ref: 04-番型.md §1.3 L101
+  gdd_ids:
+  - GDD-sec:优先级总表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-308
+  source_ref: 04-番型.md §1.3 L101
+  gdd_ids:
+  - GDD-sec:优先级总表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-309
+  source_ref: 04-番型.md §1.3 L87、§2.5.3 L420
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-310
+  source_ref: 04-番型.md §1.3 L87、§2.5.3 L418
+  gdd_ids:
+  - GDD-D10
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-311
+  source_ref: 04-番型.md §1.3 L89
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-312
+  source_ref: 04-番型.md §1.3 L91
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-313
+  source_ref: 04-番型.md §1.3 L93、§3.3.3 L625
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-314
+  source_ref: 04-番型.md §1.3 L95、§2.3.3 L315
+  gdd_ids:
+  - GDD-D11
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-315
+  source_ref: 04-番型.md §8.1 L1067-1083
+  gdd_ids:
+  - GDD-sec:结构与判定流水线
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-316
+  source_ref: 04-番型.md §8.2 L1085-1087
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+  - missing-gdd
+- source_id: SRC-317
+  source_ref: 04-番型.md §1.1 L36
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-318
+  source_ref: 04-番型.md §1.4.1 L106、§2.1
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-319
+  source_ref: 04-番型.md §1.4.1 L110、§2.2
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-320
+  source_ref: 04-番型.md §1.4.1 L111、§4.1
+  gdd_ids:
+  - GDD-sec:一句话定位
+  - GDD-sec:十四番型全量表
+  - GDD-sec:目标用户与卖点
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-321
+  source_ref: 04-番型.md §1.4.1 L112、§4.2
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-322
+  source_ref: 04-番型.md §1.4.1 L113、§4.3
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-323
+  source_ref: 04-番型.md §1.4.1 L114、§3.1
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-324
+  source_ref: 04-番型.md §1.4.1 L115、§2.3
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-325
+  source_ref: 04-番型.md §1.4.1 L116、§2.5
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-326
+  source_ref: 04-番型.md §1.4.1 L117、§2.6
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-327
+  source_ref: 04-番型.md §1.4.1 L118、§2.4
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-328
+  source_ref: 04-番型.md §1.4.1 L119、§3.2
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-329
+  source_ref: 04-番型.md §1.4.1 L120、§3.3
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-330
+  source_ref: 04-番型.md §1.4.1 L121、§3.4
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-331
+  source_ref: 04-番型.md §1.4.1 L122、§3.5
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-332
+  source_ref: 04-番型.md §3.1.3 L522、§3.2.5 L600
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-333
+  source_ref: 04-番型.md §3.1.2 L510-514
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-334
+  source_ref: 04-番型.md §3.1.2 L516
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-335
+  source_ref: 04-番型.md §1.4.1 注 L124-127
+  gdd_ids:
+  - GDD-sec:目标用户与卖点
+  - GDD-sec:系统清单
+  - GDD-sec:高分玩法（8 项换档）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-336
+  source_ref: 04-番型.md §3.5.6 L754-763
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-337
+  source_ref: 04-番型.md §1.4.2b L142-150
+  gdd_ids:
+  - GDD-sec:高分玩法（8 项换档）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-054
+  test_ids: []
+  gaps: []
+- source_id: SRC-338
+  source_ref: 04-番型.md §1.4.2 L132、§5.1 L930-938
+  gdd_ids:
+  - GDD-sec:加倍项公式（照录）
+  - GDD-sec:系统清单
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-339
+  source_ref: 04-番型.md §1.4.2 L133、§5.2 L940-950
+  gdd_ids:
+  - GDD-sec:亮倒
+  - GDD-sec:加倍项公式（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-340
+  source_ref: 04-番型.md §1.4.2 L134、§5.3 L955-963
+  gdd_ids:
+  - GDD-sec:加倍项公式（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-054
+  test_ids: []
+  gaps: []
+- source_id: SRC-341
+  source_ref: 04-番型.md §1.4.2 L135、§5.3 L955-963
+  gdd_ids:
+  - GDD-sec:加倍项公式（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-055
+  test_ids: []
+  gaps: []
+- source_id: SRC-342
+  source_ref: 04-番型.md §5.3 L959
+  gdd_ids:
+  - GDD-D17
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-343
+  source_ref: 04-番型.md §5.3 注 L965
+  gdd_ids:
+  - GDD-D16
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-344
+  source_ref: 04-番型.md §1.4.2 L136、§5.4 L967-977
+  gdd_ids:
+  - GDD-sec:加倍项公式（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-345
+  source_ref: 04-番型.md §5.4 L973
+  gdd_ids:
+  - GDD-D05
+  - GDD-sec:抢杠胡专项
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-053
+  test_ids: []
+  gaps: []
+- source_id: SRC-346
+  source_ref: 04-番型.md §5.4 L975
+  gdd_ids:
+  - GDD-D06
+  - GDD-sec:抢杠胡专项
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-053
+  test_ids: []
+  gaps: []
+- source_id: SRC-347
+  source_ref: 04-番型.md §5.4 L977
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-348
+  source_ref: 04-番型.md §1.4.2 L137、§5.5 L979-986
+  gdd_ids:
+  - GDD-sec:加倍项公式（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-056
+  test_ids: []
+  gaps: []
+- source_id: SRC-349
+  source_ref: 04-番型.md §1.4.2 L138、§5.5 L979-986
+  gdd_ids:
+  - GDD-sec:加倍项公式（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-056
+  test_ids: []
+  gaps: []
+- source_id: SRC-350
+  source_ref: 04-番型.md §1.4.2 L139、§5.6 L988-1001
+  gdd_ids:
+  - GDD-R017
+  - GDD-sec:加倍项公式（照录）
+  - GDD-sec:系统清单
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-072
+  test_ids: []
+  gaps: []
+- source_id: SRC-351
+  source_ref: 04-番型.md §5.6 L999
+  gdd_ids:
+  - GDD-D08
+  - GDD-R018
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-352
+  source_ref: 04-番型.md §六 L1005
+  gdd_ids:
+  - GDD-sec:加分项总原则（照录）
+  - GDD-sec:目标用户与卖点
+  - GDD-sec:系统清单
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-353
+  source_ref: 04-番型.md §1.4.3 L156、§6.1 L1007-1016
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-354
+  source_ref: 04-番型.md §1.4.3 L157、§6.2 L1018-1020
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-355
+  source_ref: 04-番型.md §1.4.3 L158、§6.3 L1022-1027
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-356
+  source_ref: 04-番型.md §6.3 L1029-1031
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-357
+  source_ref: 04-番型.md §6.3 L1033-1036
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-358
+  source_ref: 04-番型.md §1.4.3 L159、§6.4 L1043-1045
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-359
+  source_ref: 04-番型.md §4.1.1-4.1.2 L777-786、§4.1.4
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  - GDD-sec:目标用户与卖点
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-360
+  source_ref: 04-番型.md §4.2.1 L822-823
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  - GDD-sec:频道（全频道/半频道）
+  prd_ids:
+  - PRD-005
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-361
+  source_ref: 04-番型.md §4.3.1 L882-883
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  - GDD-sec:频道（全频道/半频道）
+  prd_ids:
+  - PRD-005
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-362
+  source_ref: 04-番型.md §4.2.2 L828-833
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  - GDD-sec:四归补充口径
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-363
+  source_ref: 04-番型.md §4.3.2 L887-893
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  - GDD-sec:四归补充口径
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-364
+  source_ref: 04-番型.md §4.3.1 L871-874
+  gdd_ids:
+  - GDD-sec:四归补充口径
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-365
+  source_ref: 04-番型.md §4.3.1 L874-876
+  gdd_ids:
+  - GDD-U06
+  - GDD-sec:四归补充口径
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-366
+  source_ref: 04-番型.md §4.3.1 L876-880、§1.4.1 L113
+  gdd_ids:
+  - GDD-D26
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-367
+  source_ref: 04-番型.md §2.3.1-2.3.5 L295-345
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-368
+  source_ref: 04-番型.md §2.4.1-2.4.5 L348-392
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-369
+  source_ref: 04-番型.md §2.1.3 L204、§2.6.3 L466
+  gdd_ids:
+  - GDD-D12
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-370
+  source_ref: 04-番型.md §2.6.3 L468
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-371
+  source_ref: 04-番型.md §2.6.1-2.6.5 L446-492
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-372
+  source_ref: 04-番型.md §2.1.2 L192-198
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-373
+  source_ref: 04-番型.md §3.3.3 L629
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-374
+  source_ref: 04-番型.md §3.3.3 L630
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  - GDD-sec:高分玩法（8 项换档）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-375
+  source_ref: 04-番型.md §七 L1049-1063
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-376
+  source_ref: 04-番型.md §3.2.3 L574、§3.4.4 L687
+  gdd_ids:
+  - GDD-sec:十四番型全量表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-377
+  source_ref: 04-番型.md §1.4.4 L171
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-378
+  source_ref: 04-番型.md §1.4.4 L161-169
+  gdd_ids:
+  - GDD-sec:引用事实（SRC 段范围）
+  - GDD-sec:结构与判定流水线
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-400
+  source_ref: 05-胡牌类型.md 判定总览 L11、L13-53
+  gdd_ids:
+  - GDD-sec:引用事实（SRC 段范围）
+  - GDD-sec:胡牌限制层（五层，任一拦截即不可胡）
+  prd_ids:
+  - PRD-sec:引用事实（SRC 段范围）
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-401
+  source_ref: 05-胡牌类型.md 判定总览（流程图）L15-19
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-402
+  source_ref: 05-胡牌类型.md 判定总览 L25-28；步骤表 L60
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-403
+  source_ref: 05-胡牌类型.md 判定总览 L30-32
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-404
+  source_ref: 05-胡牌类型.md 判定总览 L34-36；步骤表 L62
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-405
+  source_ref: 05-胡牌类型.md 判定总览 L38-42；步骤表 L63
+  gdd_ids:
+  - GDD-sec:胡牌限制层（五层，任一拦截即不可胡）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-050
+  - CT-051
+  test_ids: []
+  gaps: []
+- source_id: SRC-406
+  source_ref: 05-胡牌类型.md 判定总览 L44-46；步骤表 L64
+  gdd_ids:
+  - GDD-sec:胡牌限制层（五层，任一拦截即不可胡）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-051
+  test_ids: []
+  gaps: []
+- source_id: SRC-407
+  source_ref: 05-胡牌类型.md 判定总览 L48-49；步骤表 L65
+  gdd_ids:
+  - GDD-sec:胡牌限制层（五层，任一拦截即不可胡）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-051
+  test_ids: []
+  gaps: []
+- source_id: SRC-408
+  source_ref: 05-胡牌类型.md 步骤表 L59
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-409
+  source_ref: 05-胡牌类型.md 步骤表 L61
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-410
+  source_ref: 05-胡牌类型.md 步骤表注 L67；章末注 L315
+  gdd_ids:
+  - GDD-D22
+  - GDD-sec:优先级总表
+  - GDD-sec:结构与判定流水线
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-411
+  source_ref: 05-胡牌类型.md 内容对照表 L73-85
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-412
+  source_ref: 05-胡牌类型.md 一 §1.1 L93
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-413
+  source_ref: 05-胡牌类型.md 一 §1.1 L95-99
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-414
+  source_ref: 05-胡牌类型.md 一 §1.1 L101
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-415
+  source_ref: 05-胡牌类型.md 一 §1.2 L105-109
+  gdd_ids:
+  - GDD-sec:胡牌限制层（五层，任一拦截即不可胡）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-051
+  test_ids: []
+  gaps: []
+- source_id: SRC-416
+  source_ref: 05-胡牌类型.md 一 §1.2 L111
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-051
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-417
+  source_ref: 05-胡牌类型.md 一 §1.2 L112
+  gdd_ids: []
+  prd_ids:
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-051
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-418
+  source_ref: 05-胡牌类型.md 一 §1.2 L114-115
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-051
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-419
+  source_ref: 05-胡牌类型.md 一 §1.3 L119-123
+  gdd_ids:
+  - GDD-sec:优先级总表
+  - GDD-sec:操作优先级与多状态
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-420
+  source_ref: 05-胡牌类型.md 二 L129
+  gdd_ids:
+  - GDD-sec:胡牌限制层（五层，任一拦截即不可胡）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-421
+  source_ref: 05-胡牌类型.md 二 L133
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-422
+  source_ref: 05-胡牌类型.md 二 L134
+  gdd_ids:
+  - GDD-sec:危牌
+  - GDD-sec:胡牌限制层（五层，任一拦截即不可胡）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-051
+  - CT-063
+  - CT-064
+  test_ids: []
+  gaps: []
+- source_id: SRC-423
+  source_ref: 05-胡牌类型.md 二 L135
+  gdd_ids:
+  - GDD-sec:胡牌限制层（五层，任一拦截即不可胡）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-050
+  test_ids: []
+  gaps: []
+- source_id: SRC-424
+  source_ref: 05-胡牌类型.md 二 L136
+  gdd_ids:
+  - GDD-sec:胡牌限制层（五层，任一拦截即不可胡）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-425
+  source_ref: 05-胡牌类型.md 二 L137
+  gdd_ids:
+  - GDD-sec:胡牌限制层（五层，任一拦截即不可胡）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-426
+  source_ref: 05-胡牌类型.md 二 §2.1 L143
+  gdd_ids:
+  - GDD-sec:亮倒
+  - GDD-sec:胡牌限制层（五层，任一拦截即不可胡）
+  prd_ids:
+  - PRD-009
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids:
+  - CT-050
+  test_ids: []
+  gaps: []
+- source_id: SRC-427
+  source_ref: 05-胡牌类型.md 二 §2.1 L144；十 §10.3 L297
+  gdd_ids:
+  - GDD-sec:亮倒
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-058
+  - CT-064
+  test_ids: []
+  gaps: []
+- source_id: SRC-428
+  source_ref: 05-胡牌类型.md 二 §2.1 L145
+  gdd_ids:
+  - GDD-sec:危牌
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-017
+  - CT-063
+  test_ids: []
+  gaps: []
+- source_id: SRC-429
+  source_ref: 05-胡牌类型.md 三 L153
+  gdd_ids:
+  - GDD-sec:胡牌限制层（五层，任一拦截即不可胡）
+  - GDD-sec:过与漏胡
+  prd_ids:
+  - PRD-029
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-021
+  - CT-051
+  test_ids: []
+  gaps: []
+- source_id: SRC-430
+  source_ref: 05-胡牌类型.md 三 L154
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-021
+  - CT-051
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-431
+  source_ref: 05-胡牌类型.md 三 L155
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-021
+  - CT-051
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-432
+  source_ref: 05-胡牌类型.md 三 L156
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-433
+  source_ref: 05-胡牌类型.md 三 L157
+  gdd_ids:
+  - GDD-D13
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-434
+  source_ref: 05-胡牌类型.md 三 L159-161
+  gdd_ids:
+  - GDD-sec:过与漏胡
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-021
+  - CT-051
+  test_ids: []
+  gaps: []
+- source_id: SRC-435
+  source_ref: 05-胡牌类型.md 四 L169
+  gdd_ids:
+  - GDD-sec:胡（8 种和牌方式）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-050
+  test_ids: []
+  gaps: []
+- source_id: SRC-436
+  source_ref: 05-胡牌类型.md 四 L170
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-437
+  source_ref: 05-胡牌类型.md 四 L171
+  gdd_ids:
+  - GDD-sec:胡（8 种和牌方式）
+  - GDD-sec:赔付方向一览（照录，SRC-589）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-438
+  source_ref: 05-胡牌类型.md 四 L172
+  gdd_ids: []
+  prd_ids:
+  - PRD-027
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-439
+  source_ref: 05-胡牌类型.md 四 L173
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-440
+  source_ref: 05-胡牌类型.md 四 L174
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-441
+  source_ref: 05-胡牌类型.md 四 L175
+  gdd_ids:
+  - GDD-sec:胡（8 种和牌方式）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-050
+  test_ids: []
+  gaps: []
+- source_id: SRC-442
+  source_ref: 05-胡牌类型.md 四 L176
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-443
+  source_ref: 05-胡牌类型.md 四 L177
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-444
+  source_ref: 05-胡牌类型.md 五 §5.1 L185
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-445
+  source_ref: 05-胡牌类型.md 五 §5.1 L189
+  gdd_ids:
+  - GDD-sec:胡（8 种和牌方式）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-054
+  test_ids: []
+  gaps: []
+- source_id: SRC-446
+  source_ref: 05-胡牌类型.md 五 §5.1 L190-191
+  gdd_ids:
+  - GDD-sec:加倍项公式（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-054
+  test_ids: []
+  gaps: []
+- source_id: SRC-447
+  source_ref: 05-胡牌类型.md 五 §5.1 L192
+  gdd_ids:
+  - GDD-D17
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-054
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-448
+  source_ref: 05-胡牌类型.md 五 §5.1 L193
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-054
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-449
+  source_ref: 05-胡牌类型.md 五 §5.1 L194
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-054
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-450
+  source_ref: 05-胡牌类型.md 五 §5.2 L200
+  gdd_ids:
+  - GDD-sec:加倍项公式（照录）
+  - GDD-sec:胡（8 种和牌方式）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-055
+  test_ids: []
+  gaps: []
+- source_id: SRC-451
+  source_ref: 05-胡牌类型.md 五 §5.2 L201-202
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-055
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-452
+  source_ref: 05-胡牌类型.md 五 §5.2 L203-204
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-055
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-453
+  source_ref: 05-胡牌类型.md 五 §5.2 L205
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-055
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-454
+  source_ref: 05-胡牌类型.md 五 §5.3 L209
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-455
+  source_ref: 05-胡牌类型.md 六 L217
+  gdd_ids:
+  - GDD-sec:胡（8 种和牌方式）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-053
+  test_ids: []
+  gaps: []
+- source_id: SRC-456
+  source_ref: 05-胡牌类型.md 六 L218
+  gdd_ids:
+  - GDD-sec:抢杠胡专项
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-053
+  test_ids: []
+  gaps: []
+- source_id: SRC-457
+  source_ref: 05-胡牌类型.md 六 L219
+  gdd_ids:
+  - GDD-sec:抢杠胡专项
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-053
+  test_ids: []
+  gaps: []
+- source_id: SRC-458
+  source_ref: 05-胡牌类型.md 六 L220
+  gdd_ids:
+  - GDD-D04
+  - GDD-sec:抢杠胡专项
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-459
+  source_ref: 05-胡牌类型.md 六 L221
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-460
+  source_ref: 05-胡牌类型.md 六 L222
+  gdd_ids:
+  - GDD-sec:抢杠胡专项
+  prd_ids:
+  - PRD-026
+  interaction_ids: []
+  contract_ids:
+  - CT-053
+  test_ids: []
+  gaps: []
+- source_id: SRC-461
+  source_ref: 05-胡牌类型.md 六 L223
+  gdd_ids:
+  - GDD-D05
+  - GDD-sec:抢杠胡专项
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-053
+  test_ids: []
+  gaps: []
+- source_id: SRC-462
+  source_ref: 05-胡牌类型.md 六 L224
+  gdd_ids:
+  - GDD-D06
+  - GDD-sec:抢杠胡专项
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-053
+  test_ids: []
+  gaps: []
+- source_id: SRC-463
+  source_ref: 05-胡牌类型.md 六 L225
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-464
+  source_ref: 05-胡牌类型.md 六 L226
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-465
+  source_ref: 05-胡牌类型.md 六 L227
+  gdd_ids:
+  - GDD-sec:杠（三种）与杠分
+  prd_ids:
+  - PRD-026
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-017
+  - CT-053
+  test_ids: []
+  gaps: []
+- source_id: SRC-466
+  source_ref: 05-胡牌类型.md 六 L228
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-467
+  source_ref: 05-胡牌类型.md 六 L229
+  gdd_ids:
+  - GDD-sec:胡（8 种和牌方式）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-468
+  source_ref: 05-胡牌类型.md 七 L237
+  gdd_ids:
+  - GDD-sec:胡（8 种和牌方式）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-051
+  test_ids: []
+  gaps: []
+- source_id: SRC-469
+  source_ref: 05-胡牌类型.md 七 L238
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-470
+  source_ref: 05-胡牌类型.md 七 L239
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-471
+  source_ref: 05-胡牌类型.md 七 L240
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-472
+  source_ref: 05-胡牌类型.md 七 L241
+  gdd_ids:
+  - GDD-sec:胡（8 种和牌方式）
+  - GDD-sec:赔付方向一览（照录，SRC-589）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-051
+  test_ids: []
+  gaps: []
+- source_id: SRC-473
+  source_ref: 05-胡牌类型.md 七 L242
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-474
+  source_ref: 05-胡牌类型.md 七 L243
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-475
+  source_ref: 05-胡牌类型.md 八 L251
+  gdd_ids:
+  - GDD-sec:胡（8 种和牌方式）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-056
+  test_ids: []
+  gaps: []
+- source_id: SRC-476
+  source_ref: 05-胡牌类型.md 八 L252-254
+  gdd_ids:
+  - GDD-U23
+  - GDD-sec:加倍项公式（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-056
+  test_ids: []
+  gaps: []
+- source_id: SRC-477
+  source_ref: 05-胡牌类型.md 八 L255
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-056
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-478
+  source_ref: 05-胡牌类型.md 九 L263
+  gdd_ids:
+  - GDD-sec:胡（8 种和牌方式）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-052
+  test_ids: []
+  gaps: []
+- source_id: SRC-479
+  source_ref: 05-胡牌类型.md 九 L264
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-052
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-480
+  source_ref: 05-胡牌类型.md 九 L265
+  gdd_ids:
+  - GDD-sec:一炮多响（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-052
+  test_ids: []
+  gaps: []
+- source_id: SRC-481
+  source_ref: 05-胡牌类型.md 九 L266
+  gdd_ids:
+  - GDD-sec:一炮多响（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-052
+  test_ids: []
+  gaps: []
+- source_id: SRC-482
+  source_ref: 05-胡牌类型.md 九 L267
+  gdd_ids:
+  - GDD-sec:一炮多响（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-052
+  - CT-071
+  test_ids: []
+  gaps: []
+- source_id: SRC-483
+  source_ref: 05-胡牌类型.md 九 L268-269
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-484
+  source_ref: 05-胡牌类型.md 九 L270
+  gdd_ids: []
+  prd_ids:
+  - PRD-030
+  interaction_ids: []
+  contract_ids:
+  - CT-052
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-485
+  source_ref: 05-胡牌类型.md 十 L276
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-486
+  source_ref: 05-胡牌类型.md 十 §10.1 L282
+  gdd_ids:
+  - GDD-sec:亮倒
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-487
+  source_ref: 05-胡牌类型.md 十 §10.1 L283
+  gdd_ids:
+  - GDD-sec:亮倒
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-488
+  source_ref: 05-胡牌类型.md 十 §10.2 L289
+  gdd_ids:
+  - GDD-sec:亮倒
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-489
+  source_ref: 05-胡牌类型.md 十 §10.2 L290-292
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-490
+  source_ref: 05-胡牌类型.md 十 §10.3 L296
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-491
+  source_ref: 05-胡牌类型.md 十 §10.3 L298
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-492
+  source_ref: 05-胡牌类型.md 十二 L304-313
+  gdd_ids:
+  - GDD-sec:胡牌限制层（五层，任一拦截即不可胡）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-050
+  - CT-051
+  - CT-054
+  - CT-055
+  - CT-056
+  test_ids: []
+  gaps: []
+- source_id: SRC-493
+  source_ref: 05-胡牌类型.md 十二 L313
+  gdd_ids:
+  - GDD-sec:胡牌限制层（五层，任一拦截即不可胡）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-050
+  - CT-051
+  - CT-052
+  - CT-053
+  - CT-054
+  - CT-055
+  - CT-056
+  test_ids: []
+  gaps: []
+- source_id: SRC-494
+  source_ref: 05-胡牌类型.md 十二 L310
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-495
+  source_ref: 05-胡牌类型.md 内容对照表 L85；正文 L274/L302
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+  - missing-gdd
+- source_id: SRC-496
+  source_ref: 05-胡牌类型.md 四 L174；七 L243
+  gdd_ids:
+  - GDD-U16
+  - GDD-sec:操作优先级与多状态
+  prd_ids:
+  - PRD-048
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-022
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-497
+  source_ref: 05-胡牌类型.md 九 L263
+  gdd_ids:
+  - GDD-U14
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-052
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-498
+  source_ref: 05-胡牌类型.md 六 L219、L229
+  gdd_ids:
+  - GDD-U15
+  - GDD-sec:抢杠胡专项
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-053
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-499
+  source_ref: 05-胡牌类型.md 一 §1.2 L111、L114
+  gdd_ids:
+  - GDD-U13
+  - GDD-sec:引用事实（SRC 段范围）
+  - GDD-sec:胡牌限制层（五层，任一拦截即不可胡）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-051
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-500
+  source_ref: 06-结算.md §一1.1 L76-82
+  gdd_ids:
+  - GDD-sec:主公式（照录）
+  - GDD-sec:引用事实（SRC 段范围）
+  - GDD-sec:系统清单
+  prd_ids:
+  - PRD-sec:引用事实（SRC 段范围）
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-501
+  source_ref: 06-结算.md §一1.2 L84-88
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-502
+  source_ref: 06-结算.md §一1.2 L86, §十二12.1 L338-340
+  gdd_ids:
+  - GDD-R020
+  - GDD-sec:荒庄分支（S9，照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-009
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-503
+  source_ref: 06-结算.md §一1.3 L91-95
+  gdd_ids:
+  - GDD-D01
+  - GDD-U19
+  - GDD-sec:主公式（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-504
+  source_ref: 06-结算.md 内容对照表 L9-29, 结算流水线 L43-72
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-505
+  source_ref: 06-结算.md 叠加番型一览 L31-36
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-506
+  source_ref: 06-结算.md 叠加番型一览 L37-38
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-507
+  source_ref: 06-结算.md 叠加番型一览 L38-39
+  gdd_ids:
+  - GDD-sec:加分项总原则（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-508
+  source_ref: 06-结算.md §二 L98-100
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-509
+  source_ref: 06-结算.md §二 L102
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-510
+  source_ref: 06-结算.md §二 L103-105
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-511
+  source_ref: 06-结算.md §二 L106-107
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-512
+  source_ref: 06-结算.md §二 L108
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-513
+  source_ref: 06-结算.md §二 L109-110
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-514
+  source_ref: 06-结算.md §二 L111
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-515
+  source_ref: 06-结算.md §二 L113
+  gdd_ids:
+  - GDD-sec:优先级总表
+  - GDD-sec:结构与判定流水线
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-516
+  source_ref: 06-结算.md §二 L115-121
+  gdd_ids:
+  - GDD-D11
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-517
+  source_ref: 06-结算.md §二 L123-128
+  gdd_ids:
+  - GDD-sec:结构与判定流水线
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-518
+  source_ref: 06-结算.md §三 L133-145
+  gdd_ids:
+  - GDD-sec:目标用户与卖点
+  - GDD-sec:系统清单
+  - GDD-sec:高分玩法（8 项换档）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-054
+  test_ids: []
+  gaps: []
+- source_id: SRC-519
+  source_ref: 06-结算.md §三3.1 L148-150
+  gdd_ids:
+  - GDD-sec:高分玩法（8 项换档）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-520
+  source_ref: 06-结算.md §三3.2 L152-164
+  gdd_ids:
+  - GDD-U22
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  - GDD-sec:高分玩法（8 项换档）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-521
+  source_ref: 06-结算.md §三3.3 L166-170
+  gdd_ids:
+  - GDD-D15
+  - GDD-sec:高分玩法（8 项换档）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-522
+  source_ref: 06-结算.md §四 L172-174
+  gdd_ids:
+  - GDD-sec:加倍项公式（照录）
+  - GDD-sec:系统清单
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-523
+  source_ref: 06-结算.md §四 L176-187
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-524
+  source_ref: 06-结算.md §四4.1 L189-199
+  gdd_ids:
+  - GDD-R017
+  - GDD-sec:加倍项公式（照录）
+  - GDD-sec:系统清单
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-072
+  test_ids: []
+  gaps: []
+- source_id: SRC-525
+  source_ref: 06-结算.md §四4.1 L200
+  gdd_ids:
+  - GDD-D08
+  - GDD-R018
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-526
+  source_ref: 06-结算.md §四4.2 L202-210
+  gdd_ids:
+  - GDD-D16
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-527
+  source_ref: 06-结算.md §四4.3 L212-214
+  gdd_ids:
+  - GDD-sec:杠上杠（连杠）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-024
+  - CT-054
+  - CT-055
+  test_ids: []
+  gaps: []
+- source_id: SRC-528
+  source_ref: 06-结算.md §四4.4 L216-224
+  gdd_ids:
+  - GDD-sec:加倍项公式（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-529
+  source_ref: 06-结算.md §五 L226-234
+  gdd_ids:
+  - GDD-sec:优先级总表
+  - GDD-sec:封顶（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-530
+  source_ref: 06-结算.md §五5.1 L236-244
+  gdd_ids:
+  - GDD-sec:优先级总表
+  - GDD-sec:封顶（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-531
+  source_ref: 06-结算.md §五5.2 L246-258
+  gdd_ids:
+  - GDD-sec:封顶（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-532
+  source_ref: 06-结算.md §六 L260-262
+  gdd_ids:
+  - GDD-sec:杠（三种）与杠分
+  - GDD-sec:系统清单
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-533
+  source_ref: 06-结算.md §六 L264-268
+  gdd_ids:
+  - GDD-sec:杠分（照录）
+  - GDD-sec:赔付方向一览（照录，SRC-589）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-534
+  source_ref: 06-结算.md §六 L270-271
+  gdd_ids:
+  - GDD-sec:杠上杠（连杠）
+  - GDD-sec:杠分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-024
+  test_ids: []
+  gaps: []
+- source_id: SRC-535
+  source_ref: 06-结算.md §六 L273-274
+  gdd_ids:
+  - GDD-sec:杠分（照录）
+  - GDD-sec:杠（三种）与杠分
+  prd_ids:
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-536
+  source_ref: 06-结算.md §六 L276
+  gdd_ids:
+  - GDD-sec:杠分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-537
+  source_ref: 06-结算.md §七 L278-280
+  gdd_ids:
+  - GDD-sec:系统清单
+  - GDD-sec:马分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-068
+  test_ids: []
+  gaps: []
+- source_id: SRC-538
+  source_ref: 06-结算.md §七 L284
+  gdd_ids:
+  - GDD-sec:马分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-068
+  test_ids: []
+  gaps: []
+- source_id: SRC-539
+  source_ref: 06-结算.md §七 L285
+  gdd_ids:
+  - GDD-sec:马分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-540
+  source_ref: 06-结算.md §七 L286
+  gdd_ids:
+  - GDD-sec:马分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-068
+  test_ids: []
+  gaps: []
+- source_id: SRC-541
+  source_ref: 06-结算.md §七 L287
+  gdd_ids:
+  - GDD-U20
+  - GDD-sec:马分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-068
+  test_ids: []
+  gaps: []
+- source_id: SRC-542
+  source_ref: 06-结算.md §七 L289
+  gdd_ids:
+  - GDD-sec:赔付方向一览（照录，SRC-589）
+  - GDD-sec:马分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-068
+  test_ids: []
+  gaps: []
+- source_id: SRC-543
+  source_ref: 06-结算.md §七 L290-291
+  gdd_ids:
+  - GDD-sec:荒庄分支（S9，照录）
+  - GDD-sec:马分（照录）
+  prd_ids:
+  - PRD-043
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-068
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-544
+  source_ref: 06-结算.md §八 L298
+  gdd_ids:
+  - GDD-sec:漂分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-545
+  source_ref: 06-结算.md §八 L301
+  gdd_ids:
+  - GDD-sec:漂分（照录）
+  - GDD-sec:赔付方向一览（照录，SRC-589）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-546
+  source_ref: 06-结算.md §八 L302-304
+  gdd_ids:
+  - GDD-sec:漂分（照录）
+  prd_ids:
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-547
+  source_ref: 06-结算.md §八 L306-309
+  gdd_ids:
+  - GDD-sec:漂分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-548
+  source_ref: 06-结算.md §九 L315
+  gdd_ids:
+  - GDD-sec:坎分（数坎，照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-549
+  source_ref: 06-结算.md §九 L318-322
+  gdd_ids:
+  - GDD-sec:坎分（数坎，照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-550
+  source_ref: 06-结算.md §九 L323-324
+  gdd_ids:
+  - GDD-sec:坎分（数坎，照录）
+  - GDD-sec:赔付方向一览（照录，SRC-589）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-551
+  source_ref: 06-结算.md §九 L327-331
+  gdd_ids:
+  - GDD-sec:坎分（数坎，照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-552
+  source_ref: 06-结算.md §十二12.2 L342-346
+  gdd_ids:
+  - GDD-sec:查叫（照录）
+  - GDD-sec:系统清单
+  - GDD-sec:赔付方向一览（照录，SRC-589）
+  prd_ids:
+  - PRD-045
+  interaction_ids: []
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-553
+  source_ref: 06-结算.md §十二12.2 L347-348
+  gdd_ids:
+  - GDD-sec:查叫（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-554
+  source_ref: 06-结算.md §十二12.2 L350
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-555
+  source_ref: 06-结算.md §十二12.2 L351-352
+  gdd_ids:
+  - GDD-sec:查叫（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-556
+  source_ref: 06-结算.md §十二12.2 L353-356
+  gdd_ids:
+  - GDD-sec:查叫（照录）
+  - GDD-sec:荒庄分支（S9，照录）
+  prd_ids:
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-557
+  source_ref: 06-结算.md §十二12.3 L360-362
+  gdd_ids:
+  - GDD-sec:首亮赔付（亮倒荒庄赔付，【卡五星专属】，照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-558
+  source_ref: 06-结算.md §十二12.3 L364-372
+  gdd_ids:
+  - GDD-D18
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  - GDD-sec:赔付方向一览（照录，SRC-589）
+  - GDD-sec:首亮赔付（亮倒荒庄赔付，【卡五星专属】，照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-559
+  source_ref: 06-结算.md §十二12.3 L374-377
+  gdd_ids:
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  - GDD-sec:首亮赔付（亮倒荒庄赔付，【卡五星专属】，照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-560
+  source_ref: 06-结算.md §十二12.3 L379-382
+  gdd_ids:
+  - GDD-sec:首亮赔付（亮倒荒庄赔付，【卡五星专属】，照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-561
+  source_ref: 06-结算.md §十二12.3 L384
+  gdd_ids:
+  - GDD-sec:首亮赔付（亮倒荒庄赔付，【卡五星专属】，照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-562
+  source_ref: 06-结算.md §十二12.4 L381-385
+  gdd_ids:
+  - GDD-sec:首亮赔付（亮倒荒庄赔付，【卡五星专属】，照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-563
+  source_ref: 06-结算.md §十二12.5 L387-402
+  gdd_ids:
+  - GDD-sec:荒庄分支（S9，照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-564
+  source_ref: 06-结算.md §十三 L405-406
+  gdd_ids:
+  - GDD-sec:包牌（【卡五星专属】，照录）
+  - GDD-sec:系统清单
+  prd_ids:
+  - PRD-046
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-565
+  source_ref: 06-结算.md §十三 L407-408
+  gdd_ids:
+  - GDD-sec:包牌（【卡五星专属】，照录）
+  - GDD-sec:赔付方向一览（照录，SRC-589）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-566
+  source_ref: 06-结算.md §十三 L409
+  gdd_ids:
+  - GDD-D14
+  - GDD-sec:包牌（【卡五星专属】，照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-567
+  source_ref: 06-结算.md §十三 L410-411
+  gdd_ids:
+  - GDD-D19
+  - GDD-sec:包牌（【卡五星专属】，照录）
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-568
+  source_ref: 06-结算.md §十三13.1 L414-424
+  gdd_ids:
+  - GDD-sec:包牌（【卡五星专属】，照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-569
+  source_ref: 06-结算.md §十四14.1 L428-431
+  gdd_ids:
+  - GDD-sec:一炮多响（照录）
+  - GDD-sec:赔付方向一览（照录，SRC-589）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-052
+  test_ids: []
+  gaps: []
+- source_id: SRC-570
+  source_ref: 06-结算.md §十四14.1 L433-434
+  gdd_ids:
+  - GDD-sec:一炮多响（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-052
+  test_ids: []
+  gaps: []
+- source_id: SRC-571
+  source_ref: 06-结算.md §十四14.1 L435
+  gdd_ids:
+  - GDD-sec:一炮多响（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-572
+  source_ref: 06-结算.md §十四14.1 L436
+  gdd_ids:
+  - GDD-sec:一炮多响（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-573
+  source_ref: 06-结算.md §十四14.2 L439-441
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-574
+  source_ref: 06-结算.md §十四14.3 L443-447
+  gdd_ids:
+  - GDD-sec:杠上杠（连杠）
+  - GDD-sec:杠分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-575
+  source_ref: 06-结算.md §十五15.1 L453-459
+  gdd_ids:
+  - GDD-sec:优先级总表
+  - GDD-sec:结算顺序（照录）
+  prd_ids:
+  - PRD-044
+  interaction_ids: []
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps: []
+- source_id: SRC-576
+  source_ref: 06-结算.md §十五15.2 L461-471
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-577
+  source_ref: 06-结算.md §十五15.3 L473-481
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-578
+  source_ref: 06-结算.md §十五15.4 L483-492
+  gdd_ids:
+  - GDD-sec:包牌（【卡五星专属】，照录）
+  - GDD-sec:漂分（照录）
+  prd_ids:
+  - PRD-046
+  interaction_ids: []
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps: []
+- source_id: SRC-579
+  source_ref: 06-结算.md §十五15.5 L494-496
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-580
+  source_ref: 06-结算.md §十五15.6 L498-500
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-581
+  source_ref: 06-结算.md §十五15.6 L501-504
+  gdd_ids: []
+  prd_ids:
+  - PRD-025
+  interaction_ids: []
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-582
+  source_ref: 06-结算.md §十五15.6 L505-508
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-583
+  source_ref: 06-结算.md §十五15.6 L509-511
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-584
+  source_ref: 06-结算.md §十五15.6 L512-514
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-585
+  source_ref: 06-结算.md §十五15.7 L511-520
+  gdd_ids:
+  - GDD-sec:一炮多响（照录）
+  - GDD-sec:大结算统计（照录）
+  - GDD-sec:系统清单
+  prd_ids:
+  - PRD-047
+  - PRD-sec:端到端主流程
+  interaction_ids: []
+  contract_ids:
+  - CT-071
+  test_ids: []
+  gaps: []
+- source_id: SRC-586
+  source_ref: 06-结算.md §十五15.7 L522
+  gdd_ids:
+  - GDD-sec:大结算统计（照录）
+  - GDD-sec:系统清单
+  prd_ids:
+  - PRD-047
+  - PRD-202
+  interaction_ids: []
+  contract_ids:
+  - CT-071
+  test_ids: []
+  gaps: []
+- source_id: SRC-587
+  source_ref: 06-结算.md §十六 L526-551
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-588
+  source_ref: '06-结算.md §十六 表 #9 L537'
+  gdd_ids: []
+  prd_ids:
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-589
+  source_ref: 06-结算.md §十七17.1 L555-570
+  gdd_ids:
+  - GDD-sec:赔付方向一览（照录，SRC-589）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-590
+  source_ref: 06-结算.md §十七17.2 L572-582
+  gdd_ids:
+  - GDD-U20
+  - GDD-sec:一句话定位
+  - GDD-sec:马分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-591
+  source_ref: 06-结算.md §十七17.3 L584-588
+  gdd_ids:
+  - GDD-sec:主公式（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-592
+  source_ref: 06-结算.md §一1.1 L82
+  gdd_ids:
+  - GDD-U11
+  - GDD-sec:主公式（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-593
+  source_ref: 06-结算.md §一1.1 L82
+  gdd_ids:
+  - GDD-U11
+  - GDD-sec:主公式（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-594
+  source_ref: 06-结算.md §八 L298, §十七17.2 L575
+  gdd_ids:
+  - GDD-U12
+  - GDD-sec:引用事实（SRC 段范围）
+  - GDD-sec:漂分（照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-600
+  source_ref: 07-配置.md §一 L37
+  gdd_ids:
+  - GDD-U01
+  - GDD-sec:创房配置项全表
+  - GDD-sec:引用事实（SRC 段范围）
+  prd_ids:
+  - PRD-001
+  - PRD-sec:引用事实（SRC 段范围）
+  - PRD-sec:用户与场景
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-002
+  - INT-sec:引用事实（SRC 段范围）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-601
+  source_ref: 07-配置.md §一 L38-39、L68
+  gdd_ids:
+  - GDD-U02
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-001
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-002
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-602
+  source_ref: 07-配置.md §一 L40
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  - GDD-sec:封顶（照录）
+  prd_ids:
+  - PRD-002
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-002
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-603
+  source_ref: 07-配置.md §一 L41
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-003
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-003
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-604
+  source_ref: 07-配置.md §一 L42
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-004
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-004
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-605
+  source_ref: 07-配置.md §一 L43
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-004
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-004
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-606
+  source_ref: 07-配置.md §一 L44
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  - GDD-sec:频道（全频道/半频道）
+  prd_ids:
+  - PRD-005
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-002
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-607
+  source_ref: 07-配置.md §一 L45
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-006
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-008
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-608
+  source_ref: 07-配置.md §一 L46
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-006
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-609
+  source_ref: 07-配置.md §一 L47
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-006
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-610
+  source_ref: 07-配置.md §一 L48
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-006
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-611
+  source_ref: 07-配置.md §一 L49
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-006
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-612
+  source_ref: 07-配置.md §一 L66
+  gdd_ids: []
+  prd_ids:
+  - PRD-006
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-613
+  source_ref: 07-配置.md §一 L50
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-007
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-008
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-614
+  source_ref: 07-配置.md §一 L51
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  - GDD-sec:坎分（数坎，照录）
+  prd_ids:
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-615
+  source_ref: 07-配置.md §一 L52
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-616
+  source_ref: 07-配置.md §一 L53
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-617
+  source_ref: 07-配置.md §一 L54
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-618
+  source_ref: 07-配置.md §一 L55
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-619
+  source_ref: 07-配置.md §一 L56
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-620
+  source_ref: 07-配置.md §一 L57
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-621
+  source_ref: 07-配置.md §一 L58
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  - GDD-sec:查叫（照录）
+  prd_ids:
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-622
+  source_ref: 07-配置.md §一 L59
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-623
+  source_ref: 07-配置.md §一 L60
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-008
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-002
+  contract_ids:
+  - CT-005
+  test_ids: []
+  gaps: []
+- source_id: SRC-624
+  source_ref: 07-配置.md §一 L61
+  gdd_ids: []
+  prd_ids:
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-625
+  source_ref: 07-配置.md §一 L62-63
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-626
+  source_ref: 07-配置.md §二 L72-75
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-627
+  source_ref: 07-配置.md §二 L78-88
+  gdd_ids: []
+  prd_ids:
+  - PRD-001
+  - PRD-007
+  interaction_ids:
+  - INT-008
+  - INT-sec:弹窗 / 二次确认
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  contract_ids:
+  - CT-001
+  test_ids: []
+  gaps: []
+- source_id: SRC-628
+  source_ref: 07-配置.md §二 L90
+  gdd_ids:
+  - GDD-U01
+  prd_ids:
+  - PRD-007
+  interaction_ids:
+  - INT-008
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-629
+  source_ref: 07-配置.md §二 L94
+  gdd_ids:
+  - GDD-D24
+  - GDD-sec:创房配置项全表
+  - GDD-sec:漂分（照录）
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  prd_ids:
+  - PRD-003
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-003
+  contract_ids:
+  - CT-004
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-630
+  source_ref: 07-配置.md §二 L95-97
+  gdd_ids:
+  - GDD-D25
+  - GDD-sec:创房配置项全表
+  - GDD-sec:封顶（照录）
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  prd_ids:
+  - PRD-002
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-002
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-631
+  source_ref: 07-配置.md §3.1 L106-107
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-010
+  - PRD-011
+  - PRD-101
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:推导内容（DERIVED）
+  contract_ids:
+  - CT-002
+  test_ids: []
+  gaps: []
+- source_id: SRC-632
+  source_ref: 07-配置.md §3.1 L114-115
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  - GDD-sec:包牌（【卡五星专属】，照录）
+  prd_ids:
+  - PRD-009
+  - PRD-sec:异常场景
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-002
+  - INT-006
+  - INT-007
+  contract_ids:
+  - CT-001
+  test_ids: []
+  gaps: []
+- source_id: SRC-633
+  source_ref: 07-配置.md §3.1 L116
+  gdd_ids:
+  - GDD-D02
+  - GDD-R019
+  prd_ids:
+  - PRD-010
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-634
+  source_ref: 07-配置.md §3.1 L117
+  gdd_ids: []
+  prd_ids:
+  - PRD-010
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-635
+  source_ref: 07-配置.md §3.1 L118-122
+  gdd_ids: []
+  prd_ids:
+  - PRD-010
+  - PRD-101
+  interaction_ids:
+  - INT-sec:推导内容（DERIVED）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-636
+  source_ref: 07-配置.md §3.2 L129-133
+  gdd_ids:
+  - GDD-U02
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-001
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-002
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-637
+  source_ref: 07-配置.md §3.3 L137-141
+  gdd_ids:
+  - GDD-U02
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-001
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-002
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-638
+  source_ref: 07-配置.md §四 L147-149
+  gdd_ids:
+  - GDD-D25
+  - GDD-sec:封顶（照录）
+  prd_ids:
+  - PRD-002
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-002
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-639
+  source_ref: 07-配置.md §四 L151-157
+  gdd_ids: []
+  prd_ids:
+  - PRD-002
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-640
+  source_ref: 07-配置.md §四 L159
+  gdd_ids: []
+  prd_ids:
+  - PRD-002
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-641
+  source_ref: 07-配置.md §四 L160
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-642
+  source_ref: 07-配置.md §五 L166-172
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  - GDD-sec:漂分（照录）
+  prd_ids:
+  - PRD-003
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-003
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-643
+  source_ref: 07-配置.md §五 L174-180
+  gdd_ids: []
+  prd_ids:
+  - PRD-003
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-644
+  source_ref: 07-配置.md §五 L181
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-645
+  source_ref: 07-配置.md §6.1 L191-195
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-004
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-646
+  source_ref: 07-配置.md §6.1 L199-203、L222
+  gdd_ids: []
+  prd_ids:
+  - PRD-004
+  - PRD-009
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-004
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-647
+  source_ref: 07-配置.md §6.2 L207-213
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-004
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-004
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-648
+  source_ref: 07-配置.md §6.2 L220
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-649
+  source_ref: 07-配置.md §7.1 L232-237
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  - GDD-sec:频道（全频道/半频道）
+  prd_ids:
+  - PRD-005
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-002
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-650
+  source_ref: 07-配置.md §7.2.1 L243-248
+  gdd_ids:
+  - GDD-sec:亮倒
+  prd_ids:
+  - PRD-006
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids:
+  - CT-064
+  test_ids: []
+  gaps: []
+- source_id: SRC-651
+  source_ref: 07-配置.md §7.2.2 L252-257
+  gdd_ids:
+  - GDD-sec:亮倒
+  prd_ids:
+  - PRD-031
+  - PRD-sec:异常场景
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids:
+  - CT-058
+  test_ids: []
+  gaps: []
+- source_id: SRC-652
+  source_ref: 07-配置.md §7.2.2 L258
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-653
+  source_ref: 07-配置.md §7.2.3 L262-267
+  gdd_ids: []
+  prd_ids:
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-654
+  source_ref: 07-配置.md §7.2.4 L272-276
+  gdd_ids: []
+  prd_ids:
+  - PRD-009
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-006
+  - INT-sec:状态机
+  contract_ids:
+  - CT-001
+  test_ids: []
+  gaps: []
+- source_id: SRC-655
+  source_ref: 07-配置.md §7.2.5 L280-283
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-006
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-656
+  source_ref: 07-配置.md §7.2.5 L281
+  gdd_ids:
+  - GDD-D20
+  - GDD-sec:亮倒
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-058
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-657
+  source_ref: 07-配置.md §7.3 L288-292
+  gdd_ids: []
+  prd_ids:
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-658
+  source_ref: 07-配置.md §7.3 L293
+  gdd_ids:
+  - GDD-sec:高分玩法（8 项换档）
+  prd_ids:
+  - PRD-009
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-005
+  - INT-sec:状态机
+  contract_ids:
+  - CT-001
+  test_ids: []
+  gaps: []
+- source_id: SRC-659
+  source_ref: 07-配置.md §7.3 L294
+  gdd_ids:
+  - GDD-U22
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-660
+  source_ref: 07-配置.md §7.3 L294
+  gdd_ids:
+  - GDD-D16
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-661
+  source_ref: 07-配置.md §7.4 L298-302
+  gdd_ids:
+  - GDD-sec:坎分（数坎，照录）
+  prd_ids:
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-662
+  source_ref: 07-配置.md §7.4 L302
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-663
+  source_ref: 07-配置.md §7.5 L307-308
+  gdd_ids: []
+  prd_ids:
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-664
+  source_ref: 07-配置.md §7.5 L310-311
+  gdd_ids: []
+  prd_ids:
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-665
+  source_ref: 07-配置.md §7.5 L312
+  gdd_ids:
+  - GDD-D23
+  prd_ids:
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-666
+  source_ref: 07-配置.md §7.5 L312、§二 L90
+  gdd_ids:
+  - GDD-D17
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-667
+  source_ref: 07-配置.md §7.5 L313
+  gdd_ids: []
+  prd_ids:
+  - PRD-007
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-668
+  source_ref: 07-配置.md §7.5 L314
+  gdd_ids: []
+  prd_ids:
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-669
+  source_ref: 07-配置.md §7.6 L318-321
+  gdd_ids:
+  - GDD-D19
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  prd_ids:
+  - PRD-046
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-670
+  source_ref: 07-配置.md §7.7 L326-330
+  gdd_ids: []
+  prd_ids:
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-671
+  source_ref: 07-配置.md §8.1 L337-356
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-672
+  source_ref: 07-配置.md §8.2 L358-370
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-673
+  source_ref: 07-配置.md §8.2 L371
+  gdd_ids:
+  - GDD-D23
+  - GDD-sec:创房配置项全表
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  prd_ids:
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-674
+  source_ref: 07-配置.md §十一 L392-396
+  gdd_ids: []
+  prd_ids:
+  - PRD-008
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-002
+  contract_ids:
+  - CT-005
+  test_ids: []
+  gaps: []
+- source_id: SRC-675
+  source_ref: 07-配置.md §十二 L404-416
+  gdd_ids: []
+  prd_ids:
+  - PRD-sec:概述
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-676
+  source_ref: 07-配置.md §十二 L418-420
+  gdd_ids: []
+  prd_ids:
+  - PRD-sec:概述
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-677
+  source_ref: 07-配置.md §十三 L424-434
+  gdd_ids:
+  - GDD-D24
+  prd_ids:
+  - PRD-004
+  - PRD-009
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-003
+  - INT-004
+  - INT-005
+  - INT-006
+  - INT-sec:差异项标记
+  - INT-sec:推导内容（DERIVED）
+  contract_ids:
+  - CT-001
+  test_ids: []
+  gaps: []
+- source_id: SRC-678
+  source_ref: 07-配置.md §十三 L426
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-679
+  source_ref: 07-配置.md §14.1 L441-444
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-010
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-002
+  - INT-006
+  - INT-007
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-680
+  source_ref: 07-配置.md §14.1 L445
+  gdd_ids:
+  - GDD-D21
+  - GDD-R023
+  prd_ids:
+  - PRD-101
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-052
+  test_ids: []
+  gaps: []
+- source_id: SRC-681
+  source_ref: 07-配置.md §14.1 L446-447
+  gdd_ids: []
+  prd_ids:
+  - PRD-101
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-682
+  source_ref: 07-配置.md §14.2 L452-454
+  gdd_ids:
+  - GDD-sec:亮倒
+  - GDD-sec:创房配置项全表
+  - GDD-sec:包牌（【卡五星专属】，照录）
+  prd_ids:
+  - PRD-009
+  - PRD-101
+  - PRD-sec:异常场景
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-006
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-683
+  source_ref: 07-配置.md §14.3 L459-471
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-010
+  - PRD-sec:配置功能
+  interaction_ids:
+  - INT-002
+  - INT-007
+  - INT-sec:状态机
+  contract_ids:
+  - CT-001
+  test_ids: []
+  gaps: []
+- source_id: SRC-684
+  source_ref: 07-配置.md §十五 L478-488
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-020
+  contract_ids:
+  - CT-003
+  test_ids: []
+  gaps: []
+- source_id: SRC-685
+  source_ref: 07-配置.md §16.1 L496-499
+  gdd_ids:
+  - GDD-sec:创房配置项全表
+  prd_ids:
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-686
+  source_ref: 07-配置.md §16.2 L504
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-687
+  source_ref: 07-配置.md §16.2 L505
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-688
+  source_ref: 07-配置.md §16.2 L506-507
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-689
+  source_ref: 07-配置.md §16.3~16.4 L511-567
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-690
+  source_ref: 07-配置.md §十七 L573-586
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-691
+  source_ref: 07-配置.md §十八 L592-599
+  gdd_ids: []
+  prd_ids:
+  - PRD-009
+  - PRD-sec:异常场景
+  - PRD-sec:配置功能
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-692
+  source_ref: 07-配置.md §19.1 L613
+  gdd_ids:
+  - GDD-D18
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  - GDD-sec:首亮赔付（亮倒荒庄赔付，【卡五星专属】，照录）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-693
+  source_ref: 07-配置.md §19.1 L614
+  gdd_ids:
+  - GDD-U19
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-694
+  source_ref: 07-配置.md §19.1 L629
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-695
+  source_ref: 07-配置.md §19.3.1 R8 L676
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-696
+  source_ref: 07-配置.md §19.2 L638、§19.3.1 R11 L679
+  gdd_ids: []
+  prd_ids:
+  - PRD-106
+  - PRD-203
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-697
+  source_ref: 07-配置.md §19.3 G2/R9 L653
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-698
+  source_ref: 07-配置.md §19.3 G3/R10 L654
+  gdd_ids:
+  - GDD-D26
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-699
+  source_ref: 07-配置.md §19.2 L637
+  gdd_ids:
+  - GDD-sec:引用事实（SRC 段范围）
+  - GDD-sec:规则冲突裁决记录（已裁项）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-700
+  source_ref: 08-UI交互.md 文档头 L1-7
+  gdd_ids:
+  - GDD-sec:引用事实（SRC 段范围）
+  prd_ids:
+  - PRD-sec:引用事实（SRC 段范围）
+  interaction_ids:
+  - INT-sec:引用事实（SRC 段范围）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-701
+  source_ref: 08-UI交互.md 内容对照表 L9-33
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-702
+  source_ref: 08-UI交互.md §1.1 L37-45
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-703
+  source_ref: 08-UI交互.md §1.2 L47-57
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-704
+  source_ref: 08-UI交互.md §1.3 L59-96
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:全局交互原则
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-705
+  source_ref: 08-UI交互.md §2.1 L100-102、§6.1 L268-274
+  gdd_ids: []
+  prd_ids:
+  - PRD-018
+  interaction_ids:
+  - INT-sec:引用事实（SRC 段范围）
+  - INT-sec:弹窗 / 二次确认
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-706
+  source_ref: 08-UI交互.md §2.1 L103
+  gdd_ids: []
+  prd_ids:
+  - PRD-018
+  interaction_ids:
+  - INT-sec:全局交互原则
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-707
+  source_ref: 08-UI交互.md §2.1 L104-110
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:弹窗 / 二次确认
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-708
+  source_ref: 08-UI交互.md §2.1 L107
+  gdd_ids: []
+  prd_ids:
+  - PRD-015
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-709
+  source_ref: 08-UI交互.md §2.1 L112
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:全局交互原则
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-710
+  source_ref: 08-UI交互.md §2.2 L114-117
+  gdd_ids: []
+  prd_ids:
+  - PRD-015
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-711
+  source_ref: 08-UI交互.md §2.2 L114-117
+  gdd_ids: []
+  prd_ids:
+  - PRD-015
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-712
+  source_ref: 08-UI交互.md §2.2 L119、§3.1 L137
+  gdd_ids: []
+  prd_ids:
+  - PRD-011
+  interaction_ids:
+  - INT-001
+  - INT-sec:全局导航表
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  contract_ids:
+  - CT-001
+  - CT-002
+  test_ids: []
+  gaps: []
+- source_id: SRC-713
+  source_ref: 08-UI交互.md §2.3 L123-127
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-001
+  - INT-sec:全局导航表
+  - INT-sec:推导内容（DERIVED）
+  contract_ids:
+  - CT-001
+  test_ids: []
+  gaps: []
+- source_id: SRC-714
+  source_ref: 08-UI交互.md §3.1 L131-133
+  gdd_ids: []
+  prd_ids:
+  - PRD-012
+  interaction_ids:
+  - INT-sec:弹窗 / 二次确认
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-715
+  source_ref: 08-UI交互.md §3.1 L134
+  gdd_ids: []
+  prd_ids:
+  - PRD-012
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-716
+  source_ref: 08-UI交互.md §3.1 L135
+  gdd_ids: []
+  prd_ids:
+  - PRD-012
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-717
+  source_ref: 08-UI交互.md §3.2 L140-142
+  gdd_ids: []
+  prd_ids:
+  - PRD-014
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-005
+  test_ids: []
+  gaps: []
+- source_id: SRC-718
+  source_ref: 08-UI交互.md §3.2 L143
+  gdd_ids: []
+  prd_ids:
+  - PRD-014
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  contract_ids:
+  - CT-005
+  test_ids: []
+  gaps: []
+- source_id: SRC-719
+  source_ref: 08-UI交互.md §3.3 L147-149
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-720
+  source_ref: 08-UI交互.md §3.3.1 L151-158
+  gdd_ids: []
+  prd_ids:
+  - PRD-016
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  contract_ids:
+  - CT-006
+  test_ids: []
+  gaps: []
+- source_id: SRC-721
+  source_ref: 08-UI交互.md §3.3.2 L161
+  gdd_ids: []
+  prd_ids:
+  - PRD-015
+  interaction_ids:
+  - INT-sec:弹窗 / 二次确认
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-722
+  source_ref: 08-UI交互.md §3.3.2 L162
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-723
+  source_ref: 08-UI交互.md §3.3.2 L163
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:全局导航表
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-724
+  source_ref: 08-UI交互.md §3.3.2 L164
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-725
+  source_ref: 08-UI交互.md §3.3.3 L171
+  gdd_ids: []
+  prd_ids:
+  - PRD-017
+  interaction_ids:
+  - INT-sec:全局状态表
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-726
+  source_ref: 08-UI交互.md §3.3.3 L172
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:全局状态表
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-727
+  source_ref: 08-UI交互.md §3.3.3 L173
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:状态机
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-728
+  source_ref: 08-UI交互.md §3.3.3 L174
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-729
+  source_ref: 08-UI交互.md §3.3.4 L180-182
+  gdd_ids: []
+  prd_ids:
+  - PRD-016
+  interaction_ids:
+  - INT-sec:全局状态表
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-006
+  test_ids: []
+  gaps: []
+- source_id: SRC-730
+  source_ref: 08-UI交互.md §3.3.4 L183
+  gdd_ids: []
+  prd_ids:
+  - PRD-016
+  interaction_ids:
+  - INT-sec:全局状态表
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-006
+  test_ids: []
+  gaps: []
+- source_id: SRC-731
+  source_ref: 08-UI交互.md §4.1 L191
+  gdd_ids: []
+  prd_ids:
+  - PRD-103
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-732
+  source_ref: 08-UI交互.md §4.1 L192
+  gdd_ids: []
+  prd_ids:
+  - PRD-103
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-733
+  source_ref: 08-UI交互.md §4.1 L193
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-734
+  source_ref: 08-UI交互.md §4.1 L194
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-735
+  source_ref: 08-UI交互.md §4.1 L195
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-736
+  source_ref: 08-UI交互.md §4.1 L196
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:全局状态表
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-737
+  source_ref: 08-UI交互.md §4.1 L197
+  gdd_ids: []
+  prd_ids:
+  - PRD-104
+  - PRD-sec:异常场景
+  - PRD-sec:用户与场景
+  interaction_ids:
+  - INT-sec:全局交互原则
+  - INT-sec:全局状态表
+  - INT-sec:弹窗 / 二次确认
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  contract_ids:
+  - CT-057
+  - CT-073
+  test_ids: []
+  gaps: []
+- source_id: SRC-738
+  source_ref: 08-UI交互.md §4.1 L198
+  gdd_ids: []
+  prd_ids:
+  - PRD-049
+  interaction_ids:
+  - INT-sec:10.6 托管
+  - INT-sec:全局状态表
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  - INT-sec:状态机（托管）
+  contract_ids:
+  - CT-022
+  test_ids: []
+  gaps: []
+- source_id: SRC-739
+  source_ref: 08-UI交互.md §4.1 L199
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:全局状态表
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-004
+  test_ids: []
+  gaps: []
+- source_id: SRC-740
+  source_ref: 08-UI交互.md §4.2 L205
+  gdd_ids: []
+  prd_ids:
+  - PRD-108
+  interaction_ids:
+  - INT-010
+  - INT-sec:10.4 局内个人信息
+  - INT-sec:全局导航表
+  - INT-sec:状态机
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-741
+  source_ref: 08-UI交互.md §4.2 L206
+  gdd_ids: []
+  prd_ids:
+  - PRD-108
+  interaction_ids:
+  - INT-011
+  - INT-sec:10.4 局内个人信息
+  - INT-sec:全局导航表
+  - INT-sec:状态机
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-742
+  source_ref: 08-UI交互.md §5.1 L217
+  gdd_ids: []
+  prd_ids:
+  - PRD-018
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-007
+  test_ids: []
+  gaps: []
+- source_id: SRC-743
+  source_ref: 08-UI交互.md §5.1 L218
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-007
+  test_ids: []
+  gaps: []
+- source_id: SRC-744
+  source_ref: 08-UI交互.md §5.1 L219-221
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-007
+  test_ids: []
+  gaps: []
+- source_id: SRC-745
+  source_ref: 08-UI交互.md §5.2 L227
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-007
+  test_ids: []
+  gaps: []
+- source_id: SRC-746
+  source_ref: 08-UI交互.md §5.2 L228
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-007
+  test_ids: []
+  gaps: []
+- source_id: SRC-747
+  source_ref: 08-UI交互.md §5.2 L229
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-007
+  test_ids: []
+  gaps: []
+- source_id: SRC-748
+  source_ref: 08-UI交互.md §5.2 L230-231
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-007
+  test_ids: []
+  gaps: []
+- source_id: SRC-749
+  source_ref: 08-UI交互.md §5.2 L232-233
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-007
+  test_ids: []
+  gaps: []
+- source_id: SRC-750
+  source_ref: 08-UI交互.md §5.3 L239
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:全局交互原则
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-008
+  test_ids: []
+  gaps: []
+- source_id: SRC-751
+  source_ref: 08-UI交互.md §5.3 L240
+  gdd_ids: []
+  prd_ids:
+  - PRD-019
+  interaction_ids: []
+  contract_ids:
+  - CT-008
+  test_ids: []
+  gaps: []
+- source_id: SRC-752
+  source_ref: 08-UI交互.md §5.3 L241
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-008
+  test_ids: []
+  gaps: []
+- source_id: SRC-753
+  source_ref: 08-UI交互.md §5.3 L242
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-008
+  test_ids: []
+  gaps: []
+- source_id: SRC-754
+  source_ref: 08-UI交互.md §5.4 L247-251
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  contract_ids:
+  - CT-008
+  test_ids: []
+  gaps: []
+- source_id: SRC-755
+  source_ref: 08-UI交互.md §5.5 L255
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-756
+  source_ref: 08-UI交互.md §5.5 L257
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-757
+  source_ref: 08-UI交互.md §5.5 L258
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-758
+  source_ref: 08-UI交互.md §5.5 L260
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-759
+  source_ref: 08-UI交互.md §6.2 L279
+  gdd_ids: []
+  prd_ids:
+  - PRD-102
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-760
+  source_ref: 08-UI交互.md §6.2 L280
+  gdd_ids: []
+  prd_ids:
+  - PRD-101
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-761
+  source_ref: 08-UI交互.md §6.2 L281
+  gdd_ids: []
+  prd_ids:
+  - PRD-101
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-762
+  source_ref: 08-UI交互.md §6.2 L282
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-015
+  test_ids: []
+  gaps: []
+- source_id: SRC-763
+  source_ref: 08-UI交互.md §6.2 L283
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:全局导航表
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-009
+  - CT-011
+  test_ids: []
+  gaps: []
+- source_id: SRC-764
+  source_ref: 08-UI交互.md §6.2 L284
+  gdd_ids: []
+  prd_ids:
+  - PRD-102
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-765
+  source_ref: 08-UI交互.md §6.2 L288
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:差异项标记
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-766
+  source_ref: 08-UI交互.md §8.1 L297
+  gdd_ids: []
+  prd_ids:
+  - PRD-013
+  interaction_ids:
+  - INT-sec:弹窗 / 二次确认
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-004
+  test_ids: []
+  gaps: []
+- source_id: SRC-767
+  source_ref: 08-UI交互.md §8.1 L298
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  contract_ids:
+  - CT-004
+  test_ids: []
+  gaps: []
+- source_id: SRC-768
+  source_ref: 08-UI交互.md §8.1 L299
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-003
+  test_ids: []
+  gaps: []
+- source_id: SRC-769
+  source_ref: 08-UI交互.md §8.1 L300
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-003
+  test_ids: []
+  gaps: []
+- source_id: SRC-770
+  source_ref: 08-UI交互.md §8.2 L306
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-020
+  - INT-sec:弹窗 / 二次确认
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-003
+  test_ids: []
+  gaps: []
+- source_id: SRC-771
+  source_ref: 08-UI交互.md §8.2 L307
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-020
+  - INT-sec:状态机
+  contract_ids:
+  - CT-003
+  test_ids: []
+  gaps: []
+- source_id: SRC-772
+  source_ref: 08-UI交互.md §8.2 L310
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-020
+  - INT-sec:状态机
+  contract_ids:
+  - CT-003
+  test_ids: []
+  gaps: []
+- source_id: SRC-773
+  source_ref: 08-UI交互.md §9.1 L318
+  gdd_ids: []
+  prd_ids:
+  - PRD-020
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-009
+  test_ids: []
+  gaps: []
+- source_id: SRC-774
+  source_ref: 08-UI交互.md §9.1 L319
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-009
+  test_ids: []
+  gaps: []
+- source_id: SRC-775
+  source_ref: 08-UI交互.md §9.1 L320
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  contract_ids:
+  - CT-009
+  test_ids: []
+  gaps: []
+- source_id: SRC-776
+  source_ref: 08-UI交互.md §9.1 L321-322
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-010
+  test_ids: []
+  gaps: []
+- source_id: SRC-777
+  source_ref: 08-UI交互.md §9.2 L328-329
+  gdd_ids: []
+  prd_ids:
+  - PRD-021
+  interaction_ids:
+  - INT-030
+  - INT-sec:状态机
+  contract_ids:
+  - CT-011
+  test_ids: []
+  gaps: []
+- source_id: SRC-778
+  source_ref: 08-UI交互.md §9.2 L330
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-031
+  - INT-sec:状态机
+  contract_ids:
+  - CT-011
+  test_ids: []
+  gaps: []
+- source_id: SRC-779
+  source_ref: 08-UI交互.md §9.2 L331
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-032
+  contract_ids:
+  - CT-011
+  test_ids: []
+  gaps: []
+- source_id: SRC-780
+  source_ref: 08-UI交互.md §9.2 L332
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:全局导航表
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-011
+  test_ids: []
+  gaps: []
+- source_id: SRC-781
+  source_ref: 08-UI交互.md §9.3 L339
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-012
+  test_ids: []
+  gaps: []
+- source_id: SRC-782
+  source_ref: 08-UI交互.md §9.3 L340
+  gdd_ids: []
+  prd_ids:
+  - PRD-102
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-012
+  test_ids: []
+  gaps: []
+- source_id: SRC-783
+  source_ref: 08-UI交互.md §9.3 L341
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:全局状态表
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  contract_ids:
+  - CT-012
+  test_ids: []
+  gaps: []
+- source_id: SRC-784
+  source_ref: 08-UI交互.md §9.3 L342
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-012
+  test_ids: []
+  gaps: []
+- source_id: SRC-785
+  source_ref: 08-UI交互.md §9.3 L343
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:10.3 游戏内设置
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-012
+  test_ids: []
+  gaps: []
+- source_id: SRC-786
+  source_ref: 08-UI交互.md §9.3 L344
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:10.3 游戏内设置
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-012
+  test_ids: []
+  gaps: []
+- source_id: SRC-787
+  source_ref: 08-UI交互.md §9.3 L345
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-788
+  source_ref: 08-UI交互.md §9.3 L349
+  gdd_ids: []
+  prd_ids:
+  - PRD-022
+  interaction_ids:
+  - INT-033
+  - INT-sec:状态机
+  contract_ids:
+  - CT-012
+  test_ids: []
+  gaps: []
+- source_id: SRC-789
+  source_ref: 08-UI交互.md §9.3 L350
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-034
+  - INT-sec:10.3 游戏内设置
+  contract_ids:
+  - CT-013
+  test_ids: []
+  gaps: []
+- source_id: SRC-790
+  source_ref: 08-UI交互.md §9.3 L351
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-035
+  - INT-sec:10.3 游戏内设置
+  contract_ids:
+  - CT-014
+  test_ids: []
+  gaps: []
+- source_id: SRC-791
+  source_ref: 08-UI交互.md §9.3 L355
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-034
+  - INT-035
+  contract_ids:
+  - CT-011
+  - CT-013
+  - CT-014
+  test_ids: []
+  gaps: []
+- source_id: SRC-792
+  source_ref: 08-UI交互.md §9.3 L359-362
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-022
+  test_ids: []
+  gaps: []
+- source_id: SRC-793
+  source_ref: 08-UI交互.md §9.4 L367
+  gdd_ids: []
+  prd_ids:
+  - PRD-023
+  interaction_ids:
+  - INT-036
+  - INT-sec:状态机
+  contract_ids:
+  - CT-015
+  test_ids: []
+  gaps: []
+- source_id: SRC-794
+  source_ref: 08-UI交互.md §9.4 L368
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-015
+  test_ids: []
+  gaps: []
+- source_id: SRC-795
+  source_ref: 08-UI交互.md §9.4 L369
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-015
+  test_ids: []
+  gaps: []
+- source_id: SRC-796
+  source_ref: 08-UI交互.md §9.4 L370
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-015
+  test_ids: []
+  gaps: []
+- source_id: SRC-797
+  source_ref: 08-UI交互.md §9.4 L371
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-015
+  test_ids: []
+  gaps: []
+- source_id: SRC-798
+  source_ref: 08-UI交互.md §9.4 L372
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:状态机
+  contract_ids:
+  - CT-015
+  test_ids: []
+  gaps: []
+- source_id: SRC-799
+  source_ref: 08-UI交互.md §9.5 L379
+  gdd_ids: []
+  prd_ids:
+  - PRD-024
+  interaction_ids:
+  - INT-037
+  contract_ids:
+  - CT-016
+  test_ids: []
+  gaps: []
+- source_id: SRC-800
+  source_ref: 08-UI交互.md §9.5 L380
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-038
+  contract_ids:
+  - CT-017
+  test_ids: []
+  gaps: []
+- source_id: SRC-801
+  source_ref: 08-UI交互.md §9.5 L381
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-039
+  contract_ids:
+  - CT-018
+  test_ids: []
+  gaps: []
+- source_id: SRC-802
+  source_ref: 08-UI交互.md §9.5 L385
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-016
+  - CT-019
+  test_ids: []
+  gaps: []
+- source_id: SRC-803
+  source_ref: 08-UI交互.md §9.5 L386
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-037
+  - INT-038
+  - INT-039
+  - INT-sec:状态机
+  contract_ids:
+  - CT-016
+  - CT-017
+  - CT-018
+  test_ids: []
+  gaps: []
+- source_id: SRC-804
+  source_ref: 08-UI交互.md §9.5 L387
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-805
+  source_ref: 08-UI交互.md §9.5 L388
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-806
+  source_ref: 08-UI交互.md §9.5 L389
+  gdd_ids: []
+  prd_ids:
+  - PRD-026
+  - PRD-sec:异常场景
+  interaction_ids:
+  - INT-038
+  - INT-sec:状态机
+  contract_ids:
+  - CT-017
+  test_ids: []
+  gaps: []
+- source_id: SRC-807
+  source_ref: 08-UI交互.md §9.6 L399
+  gdd_ids: []
+  prd_ids:
+  - PRD-027
+  interaction_ids:
+  - INT-041
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-808
+  source_ref: 08-UI交互.md §9.6 L400
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-042
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-809
+  source_ref: 08-UI交互.md §9.6 L403
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-041
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-810
+  source_ref: 08-UI交互.md §9.6 L403
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-811
+  source_ref: 08-UI交互.md §9.6 L403
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-812
+  source_ref: 08-UI交互.md §9.6 L404
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-042
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-813
+  source_ref: 08-UI交互.md §9.6 L404
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-042
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-814
+  source_ref: 08-UI交互.md §9.6 L405
+  gdd_ids: []
+  prd_ids:
+  - PRD-030
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-815
+  source_ref: 08-UI交互.md §9.6 L407、§1.3 L75
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-816
+  source_ref: 08-UI交互.md §9.6 L409-412
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-817
+  source_ref: 08-UI交互.md §9.7 L422
+  gdd_ids: []
+  prd_ids:
+  - PRD-025
+  - PRD-048
+  - PRD-sec:异常场景
+  interaction_ids:
+  - INT-040
+  - INT-sec:状态机
+  contract_ids:
+  - CT-019
+  - CT-065
+  test_ids: []
+  gaps: []
+- source_id: SRC-818
+  source_ref: 08-UI交互.md §9.7 L423
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-044
+  - INT-sec:全局交互原则
+  - INT-sec:状态机
+  contract_ids:
+  - CT-015
+  - CT-020
+  test_ids: []
+  gaps: []
+- source_id: SRC-819
+  source_ref: 08-UI交互.md §9.8 L429
+  gdd_ids: []
+  prd_ids:
+  - PRD-042
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-050
+  - CT-057
+  test_ids: []
+  gaps: []
+- source_id: SRC-820
+  source_ref: 08-UI交互.md §9.8 L430
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-057
+  test_ids: []
+  gaps: []
+- source_id: SRC-821
+  source_ref: 08-UI交互.md §9.8 L431
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-057
+  test_ids: []
+  gaps: []
+- source_id: SRC-822
+  source_ref: 08-UI交互.md §9.8 L432
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-057
+  test_ids: []
+  gaps: []
+- source_id: SRC-823
+  source_ref: 08-UI交互.md §9.8 L433
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-057
+  test_ids: []
+  gaps: []
+- source_id: SRC-824
+  source_ref: 08-UI交互.md §9.9 L439
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-057
+  test_ids: []
+  gaps: []
+- source_id: SRC-825
+  source_ref: 08-UI交互.md §9.9 L440
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-057
+  test_ids: []
+  gaps: []
+- source_id: SRC-826
+  source_ref: 08-UI交互.md §9.9 L441
+  gdd_ids: []
+  prd_ids:
+  - PRD-024
+  interaction_ids: []
+  contract_ids:
+  - CT-057
+  test_ids: []
+  gaps: []
+- source_id: SRC-827
+  source_ref: 08-UI交互.md §10.1 L453
+  gdd_ids: []
+  prd_ids:
+  - PRD-031
+  interaction_ids:
+  - INT-050
+  - INT-sec:全局导航表
+  - INT-sec:状态机
+  contract_ids:
+  - CT-058
+  test_ids: []
+  gaps: []
+- source_id: SRC-828
+  source_ref: 08-UI交互.md §10.1 L454
+  gdd_ids: []
+  prd_ids:
+  - PRD-031
+  interaction_ids:
+  - INT-050
+  contract_ids:
+  - CT-058
+  test_ids: []
+  gaps: []
+- source_id: SRC-829
+  source_ref: 08-UI交互.md §10.2 L461
+  gdd_ids: []
+  prd_ids:
+  - PRD-032
+  interaction_ids:
+  - INT-050
+  - INT-sec:全局导航表
+  - INT-sec:弹窗 / 二次确认
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-830
+  source_ref: 08-UI交互.md §10.2 L462
+  gdd_ids: []
+  prd_ids:
+  - PRD-033
+  interaction_ids: []
+  contract_ids:
+  - CT-059
+  test_ids: []
+  gaps: []
+- source_id: SRC-831
+  source_ref: 08-UI交互.md §10.2 L463
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-059
+  test_ids: []
+  gaps: []
+- source_id: SRC-832
+  source_ref: 08-UI交互.md §10.2 L464
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-059
+  test_ids: []
+  gaps: []
+- source_id: SRC-833
+  source_ref: 08-UI交互.md §10.2 L465
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-059
+  test_ids: []
+  gaps: []
+- source_id: SRC-834
+  source_ref: 08-UI交互.md §10.2 L466
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:差异项标记
+  contract_ids:
+  - CT-059
+  test_ids: []
+  gaps: []
+- source_id: SRC-835
+  source_ref: 08-UI交互.md §10.2 L470
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-051
+  - INT-sec:状态机
+  contract_ids:
+  - CT-059
+  test_ids: []
+  gaps: []
+- source_id: SRC-836
+  source_ref: 08-UI交互.md §10.2 L471
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-051
+  - INT-sec:状态机
+  contract_ids:
+  - CT-059
+  test_ids: []
+  gaps: []
+- source_id: SRC-837
+  source_ref: 08-UI交互.md §10.2 L472
+  gdd_ids: []
+  prd_ids:
+  - PRD-035
+  interaction_ids:
+  - INT-053
+  - INT-sec:状态机
+  contract_ids:
+  - CT-061
+  test_ids: []
+  gaps: []
+- source_id: SRC-838
+  source_ref: 08-UI交互.md §10.2 L473-475
+  gdd_ids: []
+  prd_ids:
+  - PRD-034
+  interaction_ids:
+  - INT-052
+  - INT-sec:弹窗 / 二次确认
+  - INT-sec:状态机
+  contract_ids:
+  - CT-060
+  test_ids: []
+  gaps: []
+- source_id: SRC-839
+  source_ref: 08-UI交互.md §10.3 L481
+  gdd_ids: []
+  prd_ids:
+  - PRD-036
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-062
+  test_ids: []
+  gaps: []
+- source_id: SRC-840
+  source_ref: 08-UI交互.md §10.3 L482-485
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-062
+  test_ids: []
+  gaps: []
+- source_id: SRC-841
+  source_ref: 08-UI交互.md §10.3 L486
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-062
+  test_ids: []
+  gaps: []
+- source_id: SRC-842
+  source_ref: 08-UI交互.md §10.3 L487
+  gdd_ids: []
+  prd_ids:
+  - PRD-035
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-062
+  test_ids: []
+  gaps: []
+- source_id: SRC-843
+  source_ref: 08-UI交互.md §10.3 L491
+  gdd_ids: []
+  prd_ids:
+  - PRD-035
+  interaction_ids:
+  - INT-054
+  - INT-sec:状态机
+  contract_ids:
+  - CT-062
+  test_ids: []
+  gaps: []
+- source_id: SRC-844
+  source_ref: 08-UI交互.md §10.3 L492
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-055
+  contract_ids:
+  - CT-062
+  test_ids: []
+  gaps: []
+- source_id: SRC-845
+  source_ref: 08-UI交互.md §10.3 L493
+  gdd_ids: []
+  prd_ids:
+  - PRD-037
+  interaction_ids:
+  - INT-056
+  - INT-sec:弹窗 / 二次确认
+  contract_ids:
+  - CT-012
+  - CT-062
+  - CT-063
+  test_ids: []
+  gaps: []
+- source_id: SRC-846
+  source_ref: 08-UI交互.md §10.3 L494
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:弹窗 / 二次确认
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-062
+  test_ids: []
+  gaps: []
+- source_id: SRC-847
+  source_ref: 08-UI交互.md §10.4 L498
+  gdd_ids: []
+  prd_ids:
+  - PRD-038
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-064
+  test_ids: []
+  gaps: []
+- source_id: SRC-848
+  source_ref: 08-UI交互.md §10.4 L499-500
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-064
+  test_ids: []
+  gaps: []
+- source_id: SRC-849
+  source_ref: 08-UI交互.md §10.5 L505
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-064
+  test_ids: []
+  gaps: []
+- source_id: SRC-850
+  source_ref: 08-UI交互.md §10.5 L506
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-064
+  test_ids: []
+  gaps: []
+- source_id: SRC-851
+  source_ref: 08-UI交互.md §10.5 L507
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-064
+  test_ids: []
+  gaps: []
+- source_id: SRC-852
+  source_ref: 08-UI交互.md §10.6 L513
+  gdd_ids: []
+  prd_ids:
+  - PRD-032
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  contract_ids:
+  - CT-064
+  test_ids: []
+  gaps: []
+- source_id: SRC-853
+  source_ref: 08-UI交互.md §10.6 L514
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-064
+  test_ids: []
+  gaps: []
+- source_id: SRC-854
+  source_ref: 08-UI交互.md §10.6 L515
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-064
+  test_ids: []
+  gaps: []
+- source_id: SRC-855
+  source_ref: 08-UI交互.md §10.7 L521-523
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-064
+  test_ids: []
+  gaps: []
+- source_id: SRC-856
+  source_ref: 08-UI交互.md §10.8 L529
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  contract_ids:
+  - CT-064
+  test_ids: []
+  gaps: []
+- source_id: SRC-857
+  source_ref: 08-UI交互.md §11.1 L537
+  gdd_ids: []
+  prd_ids:
+  - PRD-039
+  - PRD-040
+  interaction_ids:
+  - INT-060
+  - INT-061
+  - INT-sec:全局导航表
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  contract_ids:
+  - CT-066
+  - CT-067
+  test_ids: []
+  gaps: []
+- source_id: SRC-858
+  source_ref: 08-UI交互.md §11.1 L538
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  contract_ids:
+  - CT-023
+  - CT-066
+  test_ids: []
+  gaps: []
+- source_id: SRC-859
+  source_ref: 08-UI交互.md §11.2 L544
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-066
+  test_ids: []
+  gaps: []
+- source_id: SRC-860
+  source_ref: 08-UI交互.md §11.2 L545-546
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-066
+  test_ids: []
+  gaps: []
+- source_id: SRC-861
+  source_ref: 08-UI交互.md §11.2 L550
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-066
+  test_ids: []
+  gaps: []
+- source_id: SRC-862
+  source_ref: 08-UI交互.md §11.2 L551
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-066
+  test_ids: []
+  gaps: []
+- source_id: SRC-863
+  source_ref: 08-UI交互.md §11.2 L552
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-066
+  test_ids: []
+  gaps: []
+- source_id: SRC-864
+  source_ref: 08-UI交互.md §11.2 L552
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-066
+  test_ids: []
+  gaps: []
+- source_id: SRC-865
+  source_ref: 08-UI交互.md §11.2 L553
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-066
+  test_ids: []
+  gaps: []
+- source_id: SRC-866
+  source_ref: 08-UI交互.md §11.2 L557-558
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-066
+  test_ids: []
+  gaps: []
+- source_id: SRC-867
+  source_ref: 08-UI交互.md §11.3 L566
+  gdd_ids: []
+  prd_ids:
+  - PRD-040
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-067
+  test_ids: []
+  gaps: []
+- source_id: SRC-868
+  source_ref: 08-UI交互.md §11.3 L567
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-067
+  test_ids: []
+  gaps: []
+- source_id: SRC-869
+  source_ref: 08-UI交互.md §11.3 L568
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-067
+  test_ids: []
+  gaps: []
+- source_id: SRC-870
+  source_ref: 08-UI交互.md §11.3 L569
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:弹窗 / 二次确认
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-067
+  test_ids: []
+  gaps: []
+- source_id: SRC-871
+  source_ref: 08-UI交互.md §11.3 L570
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-067
+  test_ids: []
+  gaps: []
+- source_id: SRC-872
+  source_ref: 08-UI交互.md §11.3 L571
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-067
+  test_ids: []
+  gaps: []
+- source_id: SRC-873
+  source_ref: 08-UI交互.md §11.3 L572
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-067
+  test_ids: []
+  gaps: []
+- source_id: SRC-874
+  source_ref: 08-UI交互.md §11.4 L578-579
+  gdd_ids: []
+  prd_ids:
+  - PRD-039
+  - PRD-041
+  interaction_ids:
+  - INT-062
+  - INT-sec:10.6 托管
+  - INT-sec:状态机（托管）
+  contract_ids:
+  - CT-023
+  - CT-066
+  - CT-067
+  test_ids: []
+  gaps: []
+- source_id: SRC-875
+  source_ref: 08-UI交互.md §11.5 L585
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-061
+  - INT-sec:状态机
+  contract_ids:
+  - CT-067
+  test_ids: []
+  gaps: []
+- source_id: SRC-876
+  source_ref: 08-UI交互.md §11.5 L586
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-061
+  - INT-sec:状态机
+  contract_ids:
+  - CT-067
+  test_ids: []
+  gaps: []
+- source_id: SRC-877
+  source_ref: 08-UI交互.md §11.5 L587
+  gdd_ids: []
+  prd_ids:
+  - PRD-041
+  interaction_ids:
+  - INT-062
+  - INT-sec:10.6 托管
+  - INT-sec:状态机
+  - INT-sec:状态机（托管）
+  contract_ids:
+  - CT-023
+  test_ids: []
+  gaps: []
+- source_id: SRC-878
+  source_ref: 08-UI交互.md §12.1 L595-608
+  gdd_ids: []
+  prd_ids:
+  - PRD-050
+  interaction_ids: []
+  contract_ids:
+  - CT-021
+  test_ids: []
+  gaps: []
+- source_id: SRC-879
+  source_ref: 08-UI交互.md §13.1 L620
+  gdd_ids: []
+  prd_ids:
+  - PRD-042
+  interaction_ids:
+  - INT-sec:验收清单
+  contract_ids:
+  - CT-057
+  test_ids: []
+  gaps: []
+- source_id: SRC-880
+  source_ref: 08-UI交互.md §13.1 L621
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-057
+  test_ids: []
+  gaps: []
+- source_id: SRC-881
+  source_ref: 08-UI交互.md §13.1 L622
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-057
+  test_ids: []
+  gaps: []
+- source_id: SRC-882
+  source_ref: 08-UI交互.md §13.1 L623
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-057
+  test_ids: []
+  gaps: []
+- source_id: SRC-883
+  source_ref: 08-UI交互.md §13.1 L624
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  - INT-sec:页面 7：买马弹窗（MaiMa）
+  - INT-sec:页面 8：小结算界面
+  contract_ids:
+  - CT-068
+  test_ids: []
+  gaps: []
+- source_id: SRC-884
+  source_ref: 08-UI交互.md §13.2 L630-631
+  gdd_ids: []
+  prd_ids:
+  - PRD-045
+  interaction_ids: []
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-885
+  source_ref: 08-UI交互.md §13.2 L632-633
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  - INT-sec:页面 8：小结算界面
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-886
+  source_ref: 08-UI交互.md §13.2 L633
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-887
+  source_ref: 08-UI交互.md §13.2 L633
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-888
+  source_ref: 08-UI交互.md §13.3 L638
+  gdd_ids: []
+  prd_ids:
+  - PRD-043
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  - INT-sec:页面 7：买马弹窗（MaiMa）
+  contract_ids:
+  - CT-068
+  test_ids: []
+  gaps: []
+- source_id: SRC-889
+  source_ref: 08-UI交互.md §13.3 L639
+  gdd_ids: []
+  prd_ids:
+  - PRD-043
+  interaction_ids:
+  - INT-sec:弹窗 / 二次确认
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-068
+  test_ids: []
+  gaps: []
+- source_id: SRC-890
+  source_ref: 08-UI交互.md §13.3 L640
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-068
+  test_ids: []
+  gaps: []
+- source_id: SRC-891
+  source_ref: 08-UI交互.md §13.3 L641
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  - INT-sec:页面 7：买马弹窗（MaiMa）
+  - INT-sec:页面 8：小结算界面
+  contract_ids:
+  - CT-068
+  test_ids: []
+  gaps: []
+- source_id: SRC-892
+  source_ref: 08-UI交互.md §14.1.1 L653
+  gdd_ids: []
+  prd_ids:
+  - PRD-044
+  interaction_ids:
+  - INT-sec:状态机
+  - INT-sec:页面 8：小结算界面
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps: []
+- source_id: SRC-893
+  source_ref: 08-UI交互.md §14.1.2 L659-660
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps: []
+- source_id: SRC-894
+  source_ref: 08-UI交互.md §14.1.2 L661
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps: []
+- source_id: SRC-895
+  source_ref: 08-UI交互.md §14.1.2 L664-675
+  gdd_ids: []
+  prd_ids:
+  - PRD-201
+  interaction_ids:
+  - INT-sec:弹窗 / 二次确认
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps: []
+- source_id: SRC-896
+  source_ref: 08-UI交互.md §14.1.2 L673-674
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:全局导航表
+  - INT-sec:弹窗 / 二次确认
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  - INT-sec:页面 9：大结算界面
+  contract_ids:
+  - CT-069
+  - CT-071
+  - CT-072
+  test_ids: []
+  gaps: []
+- source_id: SRC-897
+  source_ref: 08-UI交互.md §14.1.3 L683
+  gdd_ids: []
+  prd_ids:
+  - PRD-101
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps: []
+- source_id: SRC-898
+  source_ref: 08-UI交互.md §14.1.3 L684-685
+  gdd_ids: []
+  prd_ids:
+  - PRD-103
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps: []
+- source_id: SRC-899
+  source_ref: 08-UI交互.md §14.1.3 L686、L690
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps: []
+- source_id: SRC-900
+  source_ref: 08-UI交互.md §14.1.3 L687
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps: []
+- source_id: SRC-901
+  source_ref: 08-UI交互.md §14.1.3 L688-691
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps: []
+- source_id: SRC-902
+  source_ref: 08-UI交互.md §19.10 L1002
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps: []
+- source_id: SRC-903
+  source_ref: 08-UI交互.md §14.2 L696-697
+  gdd_ids: []
+  prd_ids:
+  - PRD-047
+  interaction_ids:
+  - INT-sec:弹窗 / 二次确认
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  contract_ids:
+  - CT-069
+  - CT-071
+  test_ids: []
+  gaps: []
+- source_id: SRC-904
+  source_ref: 08-UI交互.md §14.2 L698
+  gdd_ids: []
+  prd_ids:
+  - PRD-047
+  - PRD-202
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-071
+  test_ids: []
+  gaps: []
+- source_id: SRC-905
+  source_ref: 08-UI交互.md §14.3 L704
+  gdd_ids: []
+  prd_ids:
+  - PRD-109
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  - INT-sec:页面 8：小结算界面
+  - INT-sec:页面 9：大结算界面
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps: []
+- source_id: SRC-906
+  source_ref: 08-UI交互.md §15.1 L710-714
+  gdd_ids: []
+  prd_ids:
+  - PRD-107
+  interaction_ids:
+  - INT-sec:10.1 快捷聊天
+  - INT-sec:全局导航表
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-907
+  source_ref: 08-UI交互.md §15.2 L716-722
+  gdd_ids: []
+  prd_ids:
+  - PRD-105
+  interaction_ids:
+  - INT-sec:10.2 菜单
+  - INT-sec:全局导航表
+  - INT-sec:弹窗 / 二次确认
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-908
+  source_ref: 08-UI交互.md §15.3 L727
+  gdd_ids: []
+  prd_ids:
+  - PRD-106
+  interaction_ids:
+  - INT-sec:10.3 游戏内设置
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-909
+  source_ref: 08-UI交互.md §15.3 L728
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:10.3 游戏内设置
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-910
+  source_ref: 08-UI交互.md §15.3 L729
+  gdd_ids: []
+  prd_ids:
+  - PRD-203
+  interaction_ids:
+  - INT-sec:10.3 游戏内设置
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-911
+  source_ref: 08-UI交互.md §15.3 L730
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:10.3 游戏内设置
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-912
+  source_ref: 08-UI交互.md §15.3 L731
+  gdd_ids: []
+  prd_ids:
+  - PRD-022
+  interaction_ids:
+  - INT-034
+  - INT-sec:10.3 游戏内设置
+  contract_ids:
+  - CT-013
+  test_ids: []
+  gaps: []
+- source_id: SRC-913
+  source_ref: 08-UI交互.md §15.3 L732
+  gdd_ids: []
+  prd_ids:
+  - PRD-022
+  interaction_ids:
+  - INT-035
+  - INT-sec:10.3 游戏内设置
+  contract_ids:
+  - CT-014
+  test_ids: []
+  gaps: []
+- source_id: SRC-914
+  source_ref: 08-UI交互.md §15.3 L733
+  gdd_ids: []
+  prd_ids:
+  - PRD-204
+  interaction_ids:
+  - INT-sec:10.3 游戏内设置
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-057
+  test_ids: []
+  gaps: []
+- source_id: SRC-915
+  source_ref: 08-UI交互.md §15.3 L734
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:10.3 游戏内设置
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-916
+  source_ref: 08-UI交互.md §15.3 L735
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:10.3 游戏内设置
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-917
+  source_ref: 08-UI交互.md §15.3 L739
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:10.3 游戏内设置
+  - INT-sec:全局导航表
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-918
+  source_ref: 08-UI交互.md §15.3 L741
+  gdd_ids: []
+  prd_ids:
+  - PRD-022
+  interaction_ids:
+  - INT-033
+  - INT-034
+  - INT-sec:10.3 游戏内设置
+  - INT-sec:差异项标记
+  contract_ids:
+  - CT-012
+  - CT-013
+  test_ids: []
+  gaps: []
+- source_id: SRC-919
+  source_ref: 08-UI交互.md §15.4 L744-748
+  gdd_ids: []
+  prd_ids:
+  - PRD-108
+  interaction_ids:
+  - INT-010
+  - INT-011
+  - INT-sec:10.4 局内个人信息
+  - INT-sec:全局导航表
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-920
+  source_ref: 08-UI交互.md §15.5 L750-752
+  gdd_ids: []
+  prd_ids:
+  - PRD-109
+  interaction_ids:
+  - INT-sec:10.5 对局流水
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-921
+  source_ref: 08-UI交互.md §15.6 L756
+  gdd_ids: []
+  prd_ids:
+  - PRD-049
+  - PRD-sec:异常场景
+  interaction_ids:
+  - INT-030
+  - INT-sec:10.6 托管
+  - INT-sec:全局状态表
+  - INT-sec:弹窗 / 二次确认
+  - INT-sec:状态机
+  - INT-sec:状态机（托管）
+  contract_ids:
+  - CT-011
+  - CT-022
+  - CT-063
+  test_ids: []
+  gaps: []
+- source_id: SRC-922
+  source_ref: 08-UI交互.md §15.6 L757
+  gdd_ids: []
+  prd_ids:
+  - PRD-041
+  interaction_ids:
+  - INT-062
+  - INT-sec:10.6 托管
+  - INT-sec:全局状态表
+  - INT-sec:控件与行为
+  - INT-sec:状态机
+  - INT-sec:状态机（托管）
+  contract_ids:
+  - CT-023
+  test_ids: []
+  gaps: []
+- source_id: SRC-923
+  source_ref: 08-UI交互.md §15.6 L758
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:10.6 托管
+  - INT-sec:状态机（托管）
+  contract_ids:
+  - CT-062
+  test_ids: []
+  gaps: []
+- source_id: SRC-924
+  source_ref: 08-UI交互.md §15.6 L759
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:10.6 托管
+  - INT-sec:状态机（托管）
+  contract_ids:
+  - CT-062
+  test_ids: []
+  gaps: []
+- source_id: SRC-925
+  source_ref: 08-UI交互.md §16.1 L769、L777
+  gdd_ids: []
+  prd_ids:
+  - PRD-204
+  interaction_ids:
+  - INT-sec:弹窗 / 二次确认
+  - INT-sec:控件与行为
+  - INT-sec:状态机（特效生命周期）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-926
+  source_ref: 08-UI交互.md §16.1 L770-771
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:状态机（特效生命周期）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-927
+  source_ref: 08-UI交互.md §16.1 L775
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-928
+  source_ref: 08-UI交互.md §16.1 L776
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-929
+  source_ref: 08-UI交互.md §16.1 L777
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-930
+  source_ref: 08-UI交互.md §16.2 L785
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:状态机（特效生命周期）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-931
+  source_ref: 08-UI交互.md §16.2 L786
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:状态机（特效生命周期）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-932
+  source_ref: 08-UI交互.md §16.2 L787-788
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:状态机（特效生命周期）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-933
+  source_ref: 08-UI交互.md §17 L797-799
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-934
+  source_ref: 08-UI交互.md §17 L800-801
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-935
+  source_ref: 08-UI交互.md §17 L802-803
+  gdd_ids: []
+  prd_ids:
+  - PRD-101
+  interaction_ids:
+  - INT-sec:推导内容（DERIVED）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-936
+  source_ref: 08-UI交互.md §17 L804-806
+  gdd_ids: []
+  prd_ids:
+  - PRD-031
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-058
+  test_ids: []
+  gaps: []
+- source_id: SRC-937
+  source_ref: 08-UI交互.md §17 L807-811
+  gdd_ids: []
+  prd_ids:
+  - PRD-106
+  interaction_ids:
+  - INT-sec:10.3 游戏内设置
+  - INT-sec:控件与行为
+  contract_ids:
+  - CT-057
+  test_ids: []
+  gaps: []
+- source_id: SRC-938
+  source_ref: 08-UI交互.md §18 L818
+  gdd_ids: []
+  prd_ids:
+  - PRD-042
+  - PRD-050
+  interaction_ids:
+  - INT-sec:主流程
+  - INT-sec:弹窗 / 二次确认
+  - INT-sec:状态机（单条 toast 通用生命周期，DERIVED）
+  contract_ids:
+  - CT-050
+  - CT-057
+  - CT-073
+  test_ids: []
+  gaps: []
+- source_id: SRC-939
+  source_ref: '08-UI交互.md §18 #1 L820'
+  gdd_ids: []
+  prd_ids:
+  - PRD-012
+  interaction_ids:
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-940
+  source_ref: '08-UI交互.md §18 #2 L821'
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-941
+  source_ref: '08-UI交互.md §18 #3 L822'
+  gdd_ids: []
+  prd_ids:
+  - PRD-013
+  interaction_ids:
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-942
+  source_ref: '08-UI交互.md §18 #4 L823'
+  gdd_ids: []
+  prd_ids:
+  - PRD-016
+  interaction_ids:
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-943
+  source_ref: '08-UI交互.md §18 #5 L824'
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-944
+  source_ref: '08-UI交互.md §18 #6 L825'
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-945
+  source_ref: '08-UI交互.md §18 #7 L826'
+  gdd_ids: []
+  prd_ids:
+  - PRD-033
+  interaction_ids:
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids:
+  - CT-059
+  test_ids: []
+  gaps: []
+- source_id: SRC-946
+  source_ref: '08-UI交互.md §18 #8 L827'
+  gdd_ids: []
+  prd_ids:
+  - PRD-036
+  interaction_ids:
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids:
+  - CT-062
+  test_ids: []
+  gaps: []
+- source_id: SRC-947
+  source_ref: '08-UI交互.md §18 #9 L828'
+  gdd_ids: []
+  prd_ids:
+  - PRD-034
+  - PRD-sec:异常场景
+  interaction_ids:
+  - INT-sec:弹窗 / 二次确认
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids:
+  - CT-060
+  test_ids: []
+  gaps: []
+- source_id: SRC-948
+  source_ref: '08-UI交互.md §18 #10 L829'
+  gdd_ids: []
+  prd_ids:
+  - PRD-037
+  - PRD-sec:异常场景
+  interaction_ids:
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids:
+  - CT-063
+  test_ids: []
+  gaps: []
+- source_id: SRC-949
+  source_ref: '08-UI交互.md §18 #11 L830'
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-950
+  source_ref: '08-UI交互.md §18 #12 L831'
+  gdd_ids: []
+  prd_ids:
+  - PRD-sec:异常场景
+  interaction_ids:
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids:
+  - CT-051
+  test_ids: []
+  gaps: []
+- source_id: SRC-951
+  source_ref: '08-UI交互.md §18 #13 L832'
+  gdd_ids: []
+  prd_ids:
+  - PRD-107
+  - PRD-sec:异常场景
+  interaction_ids:
+  - INT-sec:10.1 快捷聊天
+  - INT-sec:弹窗 / 二次确认
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-952
+  source_ref: '08-UI交互.md §18 #14 L833'
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-953
+  source_ref: '08-UI交互.md §18 #15 L834'
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-954
+  source_ref: '08-UI交互.md §18 #16 L835'
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-955
+  source_ref: '08-UI交互.md §18 #17 L836'
+  gdd_ids: []
+  prd_ids:
+  - PRD-045
+  interaction_ids:
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-956
+  source_ref: '08-UI交互.md §18 #18 L837'
+  gdd_ids: []
+  prd_ids:
+  - PRD-045
+  interaction_ids:
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids:
+  - CT-070
+  test_ids: []
+  gaps: []
+- source_id: SRC-957
+  source_ref: '08-UI交互.md §18 #19 L838'
+  gdd_ids: []
+  prd_ids:
+  - PRD-043
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids:
+  - CT-068
+  test_ids: []
+  gaps: []
+- source_id: SRC-958
+  source_ref: '08-UI交互.md §18 #20 L839'
+  gdd_ids: []
+  prd_ids:
+  - PRD-044
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps: []
+- source_id: SRC-959
+  source_ref: '08-UI交互.md §18 #21 L840'
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps: []
+- source_id: SRC-960
+  source_ref: '08-UI交互.md §18 #22 L841'
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids:
+  - CT-069
+  - CT-071
+  test_ids: []
+  gaps: []
+- source_id: SRC-961
+  source_ref: '08-UI交互.md §18 #23 L842'
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids:
+  - CT-069
+  - CT-072
+  test_ids: []
+  gaps: []
+- source_id: SRC-962
+  source_ref: '08-UI交互.md §18 #24 L843'
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps: []
+- source_id: SRC-963
+  source_ref: '08-UI交互.md §18 #25 L844'
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps: []
+- source_id: SRC-964
+  source_ref: '08-UI交互.md §18 #26 L845'
+  gdd_ids: []
+  prd_ids:
+  - PRD-025
+  interaction_ids:
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids:
+  - CT-024
+  - CT-069
+  test_ids: []
+  gaps: []
+- source_id: SRC-965
+  source_ref: '08-UI交互.md §18 #27 L846'
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps: []
+- source_id: SRC-966
+  source_ref: '08-UI交互.md §18 #28 L847'
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids:
+  - CT-069
+  test_ids: []
+  gaps: []
+- source_id: SRC-967
+  source_ref: '08-UI交互.md §18 #29 L848'
+  gdd_ids: []
+  prd_ids:
+  - PRD-104
+  - PRD-sec:异常场景
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:控件与行为（29 条逐条）
+  contract_ids:
+  - CT-057
+  - CT-073
+  test_ids: []
+  gaps: []
+- source_id: SRC-968
+  source_ref: 08-UI交互.md §19 L854-1031
+  gdd_ids: []
+  prd_ids:
+  - PRD-sec:概述
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-969
+  source_ref: 08-UI交互.md 附录 A L1033-1035
+  gdd_ids: []
+  prd_ids:
+  - PRD-205
+  interaction_ids:
+  - INT-sec:附录 A：AutoGen 组件对照表（层级 = 实现参考，PRD-205）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-970
+  source_ref: 08-UI交互.md 附录 A.1 L1037-1054
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-971
+  source_ref: 08-UI交互.md 附录 A.4.9 L1202-1205
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:附录 A：AutoGen 组件对照表（层级 = 实现参考，PRD-205）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-972
+  source_ref: 08-UI交互.md 附录 A.4.2 L1143-1153
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:附录 A：AutoGen 组件对照表（层级 = 实现参考，PRD-205）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-973
+  source_ref: 08-UI交互.md 附录 A.4.7 L1187-1196
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:附录 A：AutoGen 组件对照表（层级 = 实现参考，PRD-205）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-974
+  source_ref: 08-UI交互.md 附录 A.4.8 L1198-1200
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:附录 A：AutoGen 组件对照表（层级 = 实现参考，PRD-205）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-975
+  source_ref: 08-UI交互.md 附录 A.4.3 L1155-1162
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:附录 A：AutoGen 组件对照表（层级 = 实现参考，PRD-205）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-976
+  source_ref: 08-UI交互.md 附录 A.4.4 L1164-1170
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:附录 A：AutoGen 组件对照表（层级 = 实现参考，PRD-205）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-977
+  source_ref: 08-UI交互.md 附录 A.4.5 L1172-1177
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:附录 A：AutoGen 组件对照表（层级 = 实现参考，PRD-205）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-978
+  source_ref: 08-UI交互.md 附录 A.4.6 L1179-1185
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:附录 A：AutoGen 组件对照表（层级 = 实现参考，PRD-205）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-979
+  source_ref: 08-UI交互.md 附录 A.4.9 L1206-1209
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:附录 A：AutoGen 组件对照表（层级 = 实现参考，PRD-205）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-980
+  source_ref: 08-UI交互.md 附录 A.4.10 L1211-1226
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:附录 A：AutoGen 组件对照表（层级 = 实现参考，PRD-205）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-981
+  source_ref: 08-UI交互.md 附录 A.3.1 L1098-1114、A.4.11 L1234
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:附录 A：AutoGen 组件对照表（层级 = 实现参考，PRD-205）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-982
+  source_ref: 08-UI交互.md 附录 A.3.2 L1116-1118 vs A.4.11 L1235
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:附录 A：AutoGen 组件对照表（层级 = 实现参考，PRD-205）
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-983
+  source_ref: 08-UI交互.md 附录 A.3.3 L1120-1137 vs A.4.11 L1236
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:附录 A：AutoGen 组件对照表（层级 = 实现参考，PRD-205）
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+- source_id: SRC-984
+  source_ref: 08-UI交互.md 附录 A.2 L1056-1094
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-985
+  source_ref: 08-UI交互.md 附录 A.4 L1139-1141
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-986
+  source_ref: 08-UI交互.md 附录 A.4.10 L1220-1226
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids:
+  - INT-sec:控件与行为
+  - INT-sec:附录 A：AutoGen 组件对照表（层级 = 实现参考，PRD-205）
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-987
+  source_ref: 08-UI交互.md 附录 A 尾注 L1236
+  gdd_ids:
+  - GDD-sec:引用事实（SRC 段范围）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-1000
+  source_ref: 03-打牌操作.md 行270-271
+  gdd_ids: []
+  prd_ids:
+  - PRD-035
+  interaction_ids: []
+  contract_ids:
+  - CT-061
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1001
+  source_ref: 03-打牌操作.md 行281
+  gdd_ids:
+  - GDD-sec:亮倒
+  prd_ids:
+  - PRD-031
+  interaction_ids: []
+  contract_ids:
+  - CT-058
+  test_ids: []
+  gaps: []
+- source_id: SRC-1002
+  source_ref: 03-打牌操作.md 行282
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-058
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1003
+  source_ref: 03-打牌操作.md 行283
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-058
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1004
+  source_ref: 03-打牌操作.md 行285
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1005
+  source_ref: 03-打牌操作.md 行291
+  gdd_ids:
+  - GDD-sec:亮倒
+  prd_ids:
+  - PRD-032
+  interaction_ids: []
+  contract_ids:
+  - CT-058
+  test_ids: []
+  gaps: []
+- source_id: SRC-1006
+  source_ref: 03-打牌操作.md 行292
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-058
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1007
+  source_ref: 03-打牌操作.md 行293
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-058
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1008
+  source_ref: 03-打牌操作.md 行294
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1009
+  source_ref: 03-打牌操作.md 行298
+  gdd_ids:
+  - GDD-sec:亮倒
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-1010
+  source_ref: 03-打牌操作.md 行299-300
+  gdd_ids:
+  - GDD-sec:亮倒
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps: []
+- source_id: SRC-1011
+  source_ref: 03-打牌操作.md 行305-312
+  gdd_ids: []
+  prd_ids:
+  - PRD-032
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1012
+  source_ref: 03-打牌操作.md 行316-320
+  gdd_ids: []
+  prd_ids:
+  - PRD-036
+  interaction_ids: []
+  contract_ids:
+  - CT-062
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1013
+  source_ref: 03-打牌操作.md 行318
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-062
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1014
+  source_ref: 03-打牌操作.md 行328
+  gdd_ids: []
+  prd_ids:
+  - PRD-037
+  interaction_ids: []
+  contract_ids:
+  - CT-062
+  - CT-063
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1015
+  source_ref: 03-打牌操作.md 行319
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-062
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1016
+  source_ref: 03-打牌操作.md 行326-329
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-062
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1017
+  source_ref: 03-打牌操作.md 行335
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1018
+  source_ref: 03-打牌操作.md 行336
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1019
+  source_ref: 03-打牌操作.md 行344
+  gdd_ids:
+  - GDD-sec:扣牌
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-059
+  test_ids: []
+  gaps: []
+- source_id: SRC-1020
+  source_ref: 03-打牌操作.md 行346-353
+  gdd_ids:
+  - GDD-sec:扣牌
+  prd_ids:
+  - PRD-034
+  interaction_ids: []
+  contract_ids:
+  - CT-059
+  test_ids: []
+  gaps: []
+- source_id: SRC-1021
+  source_ref: 03-打牌操作.md 行357-358
+  gdd_ids:
+  - GDD-sec:扣牌
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-059
+  test_ids: []
+  gaps: []
+- source_id: SRC-1022
+  source_ref: 03-打牌操作.md 行360
+  gdd_ids:
+  - GDD-sec:扣牌
+  prd_ids:
+  - PRD-034
+  interaction_ids: []
+  contract_ids:
+  - CT-059
+  - CT-060
+  test_ids: []
+  gaps: []
+- source_id: SRC-1023
+  source_ref: 03-打牌操作.md 行362-364
+  gdd_ids:
+  - GDD-sec:扣牌
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-059
+  - CT-060
+  test_ids: []
+  gaps: []
+- source_id: SRC-1024
+  source_ref: 03-打牌操作.md 行366
+  gdd_ids:
+  - GDD-sec:扣牌
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-059
+  - CT-060
+  test_ids: []
+  gaps: []
+- source_id: SRC-1025
+  source_ref: 03-打牌操作.md 行368
+  gdd_ids:
+  - GDD-sec:扣牌
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-059
+  - CT-060
+  test_ids: []
+  gaps: []
+- source_id: SRC-1026
+  source_ref: 03-打牌操作.md 行374-378
+  gdd_ids: []
+  prd_ids:
+  - PRD-033
+  interaction_ids: []
+  contract_ids:
+  - CT-059
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1027
+  source_ref: 03-打牌操作.md 行384
+  gdd_ids: []
+  prd_ids:
+  - PRD-033
+  interaction_ids: []
+  contract_ids:
+  - CT-059
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1028
+  source_ref: 03-打牌操作.md 行385
+  gdd_ids: []
+  prd_ids:
+  - PRD-035
+  interaction_ids: []
+  contract_ids:
+  - CT-061
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1029
+  source_ref: 03-打牌操作.md 行386
+  gdd_ids: []
+  prd_ids:
+  - PRD-034
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-060
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1030
+  source_ref: 03-打牌操作.md 行392
+  gdd_ids: []
+  prd_ids:
+  - PRD-038
+  interaction_ids: []
+  contract_ids:
+  - CT-064
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1031
+  source_ref: 03-打牌操作.md 行393
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-064
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1032
+  source_ref: 03-打牌操作.md 行394
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-064
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1033
+  source_ref: 03-打牌操作.md 行400
+  gdd_ids: []
+  prd_ids:
+  - PRD-019
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1034
+  source_ref: 03-打牌操作.md 行404
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1035
+  source_ref: 03-打牌操作.md 行405
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1036
+  source_ref: 03-打牌操作.md 行407-412
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1037
+  source_ref: 03-打牌操作.md 行420
+  gdd_ids:
+  - GDD-sec:过与漏胡
+  prd_ids:
+  - PRD-029
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-021
+  test_ids: []
+  gaps: []
+- source_id: SRC-1038
+  source_ref: 03-打牌操作.md 行421
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1039
+  source_ref: 03-打牌操作.md 行422
+  gdd_ids:
+  - GDD-D13
+  - GDD-U17
+  - GDD-sec:过与漏胡
+  prd_ids:
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-020
+  test_ids: []
+  gaps: []
+- source_id: SRC-1040
+  source_ref: 03-打牌操作.md 行423
+  gdd_ids:
+  - GDD-D13
+  - GDD-U17
+  - GDD-sec:过与漏胡
+  prd_ids:
+  - PRD-sec:异常场景
+  interaction_ids: []
+  contract_ids:
+  - CT-020
+  test_ids: []
+  gaps: []
+- source_id: SRC-1041
+  source_ref: 03-打牌操作.md 行431
+  gdd_ids:
+  - GDD-sec:系统清单
+  prd_ids:
+  - PRD-049
+  - PRD-sec:异常场景
+  - PRD-sec:用户与场景
+  interaction_ids: []
+  contract_ids:
+  - CT-022
+  test_ids: []
+  gaps: []
+- source_id: SRC-1042
+  source_ref: 03-打牌操作.md 行431
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-022
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1043
+  source_ref: 03-打牌操作.md 行431
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-022
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1044
+  source_ref: 03-打牌操作.md 行432
+  gdd_ids: []
+  prd_ids:
+  - PRD-041
+  interaction_ids: []
+  contract_ids:
+  - CT-022
+  - CT-023
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1045
+  source_ref: 03-打牌操作.md 行433-434
+  gdd_ids: []
+  prd_ids: []
+  interaction_ids: []
+  contract_ids:
+  - CT-022
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1046
+  source_ref: 03-打牌操作.md 行436
+  gdd_ids: []
+  prd_ids:
+  - PRD-041
+  interaction_ids: []
+  contract_ids:
+  - CT-022
+  - CT-023
+  test_ids: []
+  gaps:
+  - missing-gdd
+- source_id: SRC-1047
+  source_ref: 03-打牌操作.md 行169 与 294
+  gdd_ids:
+  - GDD-U18
+  - GDD-sec:引用事实（SRC 段范围）
+  prd_ids: []
+  interaction_ids: []
+  contract_ids: []
+  test_ids: []
+  gaps:
+  - pending-confirmation
+summary:
+  total_sources: 999
+  fully_traced: 735
+  with_gaps: 264
+
+# 层级覆盖率（有该层引用的 SRC 数 / 总 SRC 数）：
+#   GDD: 443 / 999
+#   PRD: 312 / 999
+#   Interaction: 275 / 999
+#   Contract: 483 / 999
+
+# missing-gdd 玩法段缺口（230 条，仅登记不修复）：
+#   SRC-012, SRC-015, SRC-023, SRC-024, SRC-047, SRC-075, SRC-076, SRC-077, SRC-094, SRC-097, SRC-101, SRC-102, SRC-103, SRC-106, SRC-107, SRC-108, SRC-109, SRC-111, SRC-112, SRC-113, SRC-114, SRC-115, SRC-117, SRC-119, SRC-120, SRC-121, SRC-122, SRC-123, SRC-127, SRC-129, SRC-131, SRC-133, SRC-134, SRC-138, SRC-139, SRC-141, SRC-142, SRC-144, SRC-145, SRC-146, SRC-147, SRC-148, SRC-151, SRC-153, SRC-154, SRC-157, SRC-158, SRC-160, SRC-161, SRC-162, SRC-163, SRC-166, SRC-167, SRC-168, SRC-170, SRC-171, SRC-172, SRC-175, SRC-177, SRC-178, SRC-179, SRC-180, SRC-182, SRC-183, SRC-184, SRC-185, SRC-187, SRC-188, SRC-201, SRC-206, SRC-212, SRC-213, SRC-214, SRC-215, SRC-216, SRC-217, SRC-218, SRC-219, SRC-220, SRC-221, SRC-222, SRC-223, SRC-224, SRC-225, SRC-226, SRC-230, SRC-231, SRC-232, SRC-234, SRC-235, SRC-237, SRC-238, SRC-262, SRC-263, SRC-265, SRC-266, SRC-268, SRC-271, SRC-272, SRC-281, SRC-282, SRC-284, SRC-285, SRC-288, SRC-289, SRC-290, SRC-291, SRC-292, SRC-294, SRC-295, SRC-298, SRC-301, SRC-311, SRC-312, SRC-316, SRC-317, SRC-347, SRC-353, SRC-354, SRC-355, SRC-356, SRC-357, SRC-358, SRC-375, SRC-377, SRC-401, SRC-402, SRC-403, SRC-404, SRC-408, SRC-409, SRC-411, SRC-412, SRC-413, SRC-414, SRC-416, SRC-417, SRC-418, SRC-421, SRC-430, SRC-431, SRC-432, SRC-436, SRC-438, SRC-439, SRC-440, SRC-442, SRC-443, SRC-444, SRC-448, SRC-449, SRC-451, SRC-452, SRC-453, SRC-454, SRC-459, SRC-463, SRC-464, SRC-466, SRC-469, SRC-470, SRC-471, SRC-473, SRC-474, SRC-477, SRC-479, SRC-483, SRC-484, SRC-485, SRC-489, SRC-490, SRC-491, SRC-494, SRC-495, SRC-501, SRC-504, SRC-505, SRC-506, SRC-508, SRC-509, SRC-510, SRC-511, SRC-512, SRC-513, SRC-514, SRC-523, SRC-554, SRC-573, SRC-576, SRC-577, SRC-579, SRC-580, SRC-581, SRC-582, SRC-583, SRC-584, SRC-587, SRC-588, SRC-1000, SRC-1002, SRC-1003, SRC-1004, SRC-1006, SRC-1007, SRC-1008, SRC-1011, SRC-1012, SRC-1013, SRC-1014, SRC-1015, SRC-1016, SRC-1017, SRC-1018, SRC-1026, SRC-1027, SRC-1028, SRC-1029, SRC-1030, SRC-1031, SRC-1032, SRC-1033, SRC-1034, SRC-1035, SRC-1036, SRC-1038, SRC-1042, SRC-1043, SRC-1044, SRC-1045, SRC-1046
+
+# orphan 目标条目（声明的条目 ID 无任何 SRC 引用，仅登记不修复）：
+#   GDD: GDD-U21
+#   PRD: （无）
+#   Interaction: INT-009
+#   Contract: （无）

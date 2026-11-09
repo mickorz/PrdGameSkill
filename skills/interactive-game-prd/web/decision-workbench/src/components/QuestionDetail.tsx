@@ -128,6 +128,27 @@ export function QuestionDetail() {
                 {expandedAnchors.includes(i) && <pre className="quote-text">{a.quote}</pre>}
               </div>
             ))}
+
+            {/* (3) 需求附图（截图依据）：AI 无法读取截图数值，人工对照后以文本补充 */}
+            {(selectedEvidence?.images?.length ?? 0) > 0 && (
+              <>
+                <div className="sub-title">(3) 需求附图（截图依据）</div>
+                <div className="notice-line">截图仅作为人工对照依据：AI 无法读取截图中的数值，确认前请把口径以文本形式补充在裁决理由或新规则中。</div>
+                {selectedEvidence!.images.map((img) =>
+                  img.exists ? (
+                    <div key={img.name} className="img-box">
+                      <img src={img.url} alt={img.name} />
+                      <div className="img-caption mono">{img.name}</div>
+                    </div>
+                  ) : (
+                    <div key={img.name} className="warn-line">
+                      截图缺失：{img.name}。请把该截图放入 examples/mahjong/game-spec/source/images/ 目录（按此文件名），刷新页面后展示。
+                      在截图到位前，请人工对照原始聊天/文档，把数值以文本形式补充后裁决。
+                    </div>
+                  ),
+                )}
+              </>
+            )}
           </>
         )}
       </div>

@@ -143,7 +143,7 @@ function createServer(specDir, port) {
       if (req.method === "GET" && url.pathname === "/api/state") {
         return json(res, 200, buildState());
       }
-      // 证据：问题 -> 关联条目 -> 原文引用
+      // 证据：问题 -> 关联条目 -> 原文引用 + 需求附图
       const evMatch = /^\/api\/evidence\/(OQ-\d+)$/.exec(url.pathname);
       if (req.method === "GET" && evMatch) {
         const { questions } = loadOpenQuestions(specDir);
@@ -152,13 +152,28 @@ function createServer(specDir, port) {
         const rid = q.requirement_id;
         const entry = rid ? irIndex.get(rid) : null;
         const anchors = (rid ? sourceMap.get(rid) : []) || [];
+        const images = (q.images || []).map((name) => {
+          const file = path.join(specDir, "source", "images", path.basename(name));
+          return { name, exists: fs.existsSync(file), url: `/images/${encodeURIComponent(path.basename(name))}` };
+        });
         return json(res, 200, {
           requirement: entry ? {
             id: entry.doc.id, name: entry.doc.name || "", status: entry.doc.status || "proposed",
             authority: entry.doc.authority || "", description: entry.doc.description || "",
           } : rid ? { id: rid, name: "", status: "（IR 中未找到条目）", authority: "", description: "" } : null,
           anchors: anchors.map((a) => readQuote(specDir, a)).filter(Boolean),
+          images,
         });
+      }
+      // 需求附图（仅允许 source/images 下的图片文件）
+      const imgMatch = /^\/images\/([\w.-]+\.(?:png|jpg|jpeg|gif|webp))$/.exec(decodeURIComponent(url.pathname));
+      if (req.method === "GET" && imgMatch) {
+        const file = path.join(specDir, "source", "images", imgMatch[1]);
+        if (!fs.existsSync(file)) return json(res, 404, { error: "image not found" });
+        const type = imgMatch[1].endsWith(".png") ? "image/png" : imgMatch[1].endsWith(".gif") ? "image/gif" : imgMatch[1].endsWith(".webp") ? "image/webp" : "image/jpeg";
+        res.writeHead(200, { "Content-Type": type });
+        res.end(fs.readFileSync(file));
+        return;
       }
       // 草稿自动保存（decision_status 必须为 draft）
       if (req.method === "POST" && url.pathname === "/api/drafts") {

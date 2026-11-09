@@ -12,6 +12,7 @@ export interface OpenQuestion {
   severity: Severity;
   status: OQStatus;
   decision_id?: string;
+  images?: string[]; // 需求附图（截图依据），对应 game-spec/source/images/<name>
 }
 
 export interface RequirementUpdate {
@@ -68,9 +69,16 @@ export interface EvidenceAnchor {
   quote: string;
 }
 
+export interface EvidenceImage {
+  name: string;
+  exists: boolean;
+  url: string;
+}
+
 export interface Evidence {
   requirement: { id: string; name: string; status: string; authority: string; description: string } | null;
   anchors: EvidenceAnchor[];
+  images: EvidenceImage[];
 }
 
 export type ActionKind = "adopt" | "modify" | "reject" | "defer";

@@ -72,6 +72,10 @@ body { font-family: Inter, "Segoe UI", "Microsoft YaHei", sans-serif; color: var
 .link-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 12px; text-decoration: underline; padding: 0; font: inherit; font-size: 12px; }
 .sub-title { font-size: 12px; color: var(--muted); margin: 10px 0 6px; }
 .warn-line { background: var(--amber-bg); color: var(--amber); border-radius: 8px; padding: 8px 10px; font-size: 13px; }
+.notice-line { background: var(--zinc-bg); color: var(--zinc); border-radius: 8px; padding: 8px 10px; font-size: 12px; margin-bottom: 8px; line-height: 1.6; }
+.img-box { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 8px; background: var(--card); }
+.img-box img { display: block; max-width: 100%; max-height: 420px; margin: 0 auto; }
+.img-caption { padding: 5px 10px; font-size: 12px; color: var(--muted); background: var(--zinc-bg); }
 
 .ir-card { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--primary); border-radius: 8px; padding: 10px 12px; font-size: 13px; margin-bottom: 8px; }
 .ir-card .mono { font-weight: 700; margin-bottom: 2px; }

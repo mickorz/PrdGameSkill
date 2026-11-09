@@ -25,7 +25,7 @@ fs.writeFileSync(path.join(specDir, "source", "source-map.json"), JSON.stringify
 ]));
 const NOW = "2026-11-09T12:00:00+08:00";
 fs.writeFileSync(path.join(specDir, "reviews", "open-questions.json"), JSON.stringify([
-  { id: "OQ-001", requirement_id: "GAME-RULE-003", question: "默认庄家口径待确认", severity: "high", status: "open" },
+  { id: "OQ-001", requirement_id: "GAME-RULE-003", question: "默认庄家口径待确认", severity: "high", status: "open", images: ["OQ-001-面板.png"] },
   { id: "OQ-002", requirement_id: null, question: "独立问题", severity: "low", status: "open" },
 ], null, 2));
 fs.writeFileSync(path.join(specDir, "reviews", "decision-log.json"), JSON.stringify({ decisions: [] }, null, 2));
@@ -59,6 +59,10 @@ check("证据返回关联条目", ev.code === 200 && ev.body.requirement?.id ===
 check("证据返回原文引用行", ev.body.anchors[0]?.quote === "line2 房主为庄家" && ev.body.anchors[0].heading === "1.2 庄家");
 const ev404 = await getJson("/api/evidence/OQ-999");
 check("不存在的问题证据返回 404", ev404.code === 404);
+const evImg = await getJson("/api/evidence/OQ-001");
+check("证据返回附图引用与存在性", evImg.body.images?.length === 1 && evImg.body.images[0].name === "OQ-001-面板.png" && evImg.body.images[0].exists === false);
+const img404 = await fetch(`${base}/images/OQ-001-面板.png`);
+check("缺失附图请求返回 404", img404.status === 404);
 
 // ---------- 3. 草稿自动保存 ----------
 const d1 = await getJson("/api/drafts", {

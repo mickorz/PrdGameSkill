@@ -49,7 +49,7 @@ description: >-
 ### Step 0：初始化工作区
 
 ```bash
-python skills/game-spec-generator/scripts/init_project.py <game-id>
+python .claude/skills/game-spec-generator/scripts/init_project.py <game-id>
 # 生成 examples/<game-id>/spec-generation/ 七份脚手架文件
 ```
 
@@ -73,7 +73,7 @@ python skills/game-spec-generator/scripts/init_project.py <game-id>
 按 `evals/evaluation-criteria.md` 检查七项（覆盖/丢失/越权推导/冲突/交互完整性/Contract 完整性/可追溯），产出 `evaluation-report.md`；先运行：
 
 ```bash
-python skills/game-spec-generator/scripts/validate_docs.py examples/<game>/spec-generation
+python .claude/skills/game-spec-generator/scripts/validate_docs.py examples/<game>/spec-generation
 ```
 
 评测对照（如卡五星）：与现有 IR + 31 项 OQ 独立对照，方法见 `evals/mahjong-benchmark.md`。

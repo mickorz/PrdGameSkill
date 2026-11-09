@@ -54,14 +54,14 @@ YAML 优先，字段扁平、枚举明确（priority: must-have、status: planne
 
 | 来源 | 目标 | 处理方式 |
 |---|---|---|
-| `templates/spec-kit/gdd.md` | `skills/game-spec-generator/templates/GDD.template.md` | 复制 + 增加事实溯源（SRC-xxx 引用）与待确认标记要求 |
+| `templates/spec-kit/gdd.md` | `.claude/skills/game-spec-generator/templates/GDD.template.md` | 复制 + 增加事实溯源（SRC-xxx 引用）与待确认标记要求 |
 | `templates/spec-kit/prd.md` | `.../templates/PRD.template.md` | 同上 |
 | `templates/spec-kit/interaction.md` | `.../templates/Interaction.template.md` | 同上 + 强调复用原始 08-UI交互.md |
 | （无对应，新增） | `.../templates/Interaction-Contract.template.yaml` | 按 GSG-V1 14 字段新建，风格参照 screen-contract.yaml |
 | （新增） | `.../templates/Source-Analysis.template.md`、`Traceability-Matrix.template.yaml`、`Evaluation-Report.template.md` | 按 GSG-V1 计划新建 |
-| `scripts/init_project.py` | `skills/game-spec-generator/scripts/init_project.py` | 复制改造：脚手架改为 spec-generation 七文件 |
-| `scripts/validate_project.py` | `skills/game-spec-generator/scripts/validate_docs.py` | **不整体复制**（820 行主要是 PNG/Atlas/切片校验，与文档规格无关）；新写轻量文档校验（状态头/契约必填字段/追溯可解析） |
-| `skills/game-ui-workflow/SKILL.md` 的门禁与固定输出格式 | `skills/game-spec-generator/SKILL.md` | 思想移植，流程改为七步 |
+| `scripts/init_project.py` | `.claude/skills/game-spec-generator/scripts/init_project.py` | 复制改造：脚手架改为 spec-generation 七文件 |
+| `scripts/validate_project.py` | `.claude/skills/game-spec-generator/scripts/validate_docs.py` | **不整体复制**（820 行主要是 PNG/Atlas/切片校验，与文档规格无关）；新写轻量文档校验（状态头/契约必填字段/追溯可解析） |
+| `skills/game-ui-workflow/SKILL.md` 的门禁与固定输出格式 | `.claude/skills/game-spec-generator/SKILL.md` | 思想移植，流程改为七步 |
 | `specs/guofeng-card-rpg/`（完整实例） | evals 评测时的格式对照参考（不复制文件，按需查阅） | 只读 |
 
 ## 三、与 PrdGameSkill interactive-game-prd 的差异（评测对照时的看点）

@@ -19,7 +19,7 @@
 //   analysisModel 分析阶段使用的模型，默认 biangfeng-gateway/deepseek-v4.1-flash-official（传空字符串则用会话默认模型）
 //   reviewModel   报告质检使用的模型，默认同 analysisModel（传空字符串则用会话默认模型）
 //   concurrency   并发上限，默认 16（运行时钳制到 16）
-//   fast          最快档：规则组压到 16 组以内、强制确定性去重、报告分片并行写、默认跳过质检
+//   fast          最快档：规则组压到 16 组以内、报告分片并行写、默认跳过质检（去重与标注仍执行）
 //   excludeKeywords 本期不检查的主题关键词数组，默认 ["金币场"]；命中 module/title/location/ruleRef 即剔除
 //   dashboard     生成 HTML Dashboard，默认 true；传 false 跳过
 //   dashboardScript Dashboard 生成脚本，默认 .claude/skills/game-prd-check/scripts/build-dashboard.mjs
@@ -418,7 +418,7 @@ if (excludedCount > 0) {
   log('按本期检查范围排除 ' + excludedCount + ' 条涉及 ' + excludeKeywords.join('、') + ' 的问题')
 }
 
-if (!fastMode && allIssues.length > 15) {
+if (allIssues.length > 15) {
   const compact = allIssues.map((it, i) => ({
     i: i,
     type: it.type,
@@ -462,7 +462,7 @@ if (!fastMode && allIssues.length > 15) {
   if (marked > 0) log('问题归并完成：' + marked + ' 条重复问题将标注为同根因，建议合并')
 } else if (allIssues.length > 0) {
   allIssues = exactDedup(allIssues)
-  log('使用确定性去重（fast 档或问题较少），跳过合并代理')
+  log('问题较少（≤15 条），使用确定性去重')
 }
 
 const PRIORITY_ORDER = { P0: 0, P1: 1, P2: 2, P3: 3 }

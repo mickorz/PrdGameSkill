@@ -82,6 +82,19 @@
   .cat-nav:hover { background: #f0f4ff; }
   .cat-nav.active { background: #dbe6ff; font-weight: 600; }
   .cat-nav .cnt { color: #889; font-size: 11px; margin-left: 4px; }
+  .spec-toolbar { display: flex; gap: 8px; margin: 8px 0 12px; flex-wrap: wrap; align-items: center; }
+  .spec-toolbar input, .spec-toolbar select { font-size: 13px; padding: 4px 6px; }
+  .group-head { margin: 14px 0 6px; font-size: 13px; color: #456; border-left: 3px solid #c6d4ff; padding-left: 8px; }
+  .cfg-table { border-collapse: collapse; width: 100%; font-size: 12px; }
+  .cfg-table th, .cfg-table td { border: 1px solid #e3e6ea; padding: 5px 8px; text-align: left; }
+  .cfg-table th { background: #f5f7fb; }
+  .cfg-table tr[data-req-row] { cursor: pointer; }
+  .cfg-table tr[data-req-row]:hover { background: #f0f4ff; }
+  .comp-list { margin-top: 6px; }
+  .comp-row { display: block; padding: 4px 8px; margin: 2px 0; border: 1px solid #e3e6ea; border-radius: 4px; font-size: 12px; cursor: pointer; }
+  .comp-row:hover { background: #f0f4ff; }
+  .req-link { color: #1a73e8; cursor: pointer; text-decoration: underline; }
+  .btn-mini { font-size: 12px; padding: 2px 8px; cursor: pointer; }
   .dec-item { display: block; padding: 6px 8px; margin: 2px 0; border-radius: 4px; cursor: pointer; font-size: 12px; }
   .dec-item:hover { background: #f0f4ff; }
   .dec-item.active { background: #dbe6ff; }
@@ -142,7 +155,7 @@ const SPEC_CATEGORIES = [
   { id: "GAME-CFG", label: "数值配置", filter: (r) => r.type === "config" },
   { id: "GAME-UI", label: "UI 页面与组件", isUi: true },
 ];
-const specState = { category: null, selectedId: null }; // 规格工作台状态（null = 概述）
+const specState = { category: null, selectedId: null, filters: { keyword: "", status: "all", authority: "all" } }; // 规格工作台状态（null = 概述；filters 供 FR/RULE 分类）
 const decisionState = { selectedOqId: null, statusFilter: "all", severityFilter: "all", keyword: "" }; // 裁决工作台状态
 function categoryOf(r) { for (const c of SPEC_CATEGORIES) if (c.filter && c.filter(r)) return c.id; return null; }
 
@@ -252,27 +265,124 @@ function reqCard(r) {
   </div>`;
 }
 
-// ---------- 规格工作台（P0：分类渲染；P1 再拆五类独立渲染器） ----------
+// ---------- 规格工作台（P1：五类独立渲染器 + 搜索筛选工具条） ----------
 function renderSpecCategory() {
   const cat = specState.category;
-  let html = "";
-  if (cat === null) {
-    const g = APP_DATA.game;
-    html += `<div class="req-card" data-anchor="__overview__"><h3>游戏概述</h3><div>${esc((g.overview && g.overview.summary) || "")}</div></div>`;
-    const oq = APP_DATA.reviews.openQuestions || [];
-    html += `<h3 style="margin-top:20px">未决问题（${oq.length}）</h3><div class="req-card" data-anchor="__openq__">` +
-      (oq.length ? oq.map((q) => `<div class="warn-open">${esc(q.id || "")} ${esc(q.question || "")}（${esc(q.severity || "")}）</div>`).join("") : "无") + `</div>`;
-  } else if (cat === "GAME-UI") {
-    html += `<h3>UI 页面（${APP_DATA.ui.pages.length}）</h3>`;
-    for (const p of APP_DATA.ui.pages) {
-      const comps = APP_DATA.ui.components.filter((c) => (p.component_refs || []).includes(c.id) || (c.page_id || "") === p.id);
-      html += `<div class="req-card" data-anchor="${esc(p.id)}" data-page="${esc(p.id)}"><h3>${esc(p.id)} ${esc(p.name)} <span class="badge">${p.resolution ? p.resolution.width + "x" + p.resolution.height : ""}</span></h3>
-        <div>${esc(p.description || "")}</div><div style="color:#889;font-size:12px;margin-top:4px">状态：${esc((p.states || []).join(" / "))}　组件 ${comps.length} 个</div></div>`;
+  if (cat === null) { renderCatOverview(); return; }
+  const map = {
+    "GAME-FR": renderCatFr,
+    "GAME-RULE": renderCatRule,
+    "GAME-STATE": renderCatState,
+    "GAME-CFG": renderCatCfg,
+    "GAME-UI": renderCatUi,
+  };
+  (map[cat] || renderCatOverview)();
+}
+
+// 概述视图
+function renderCatOverview() {
+  const g = APP_DATA.game;
+  let html = `<div class="req-card" data-anchor="__overview__"><h3>游戏概述</h3><div>${esc((g.overview && g.overview.summary) || "")}</div></div>`;
+  const oq = APP_DATA.reviews.openQuestions || [];
+  html += `<h3 style="margin-top:20px">未决问题（${oq.length}）</h3><div class="req-card" data-anchor="__openq__">` +
+    (oq.length ? oq.map((q) => `<div class="warn-open">${esc(q.id || "")} ${esc(q.question || "")}（${esc(q.severity || "")}）</div>`).join("") : "无") + `</div>`;
+  $("#view").innerHTML = html;
+}
+
+// 搜索/筛选工具条（FR 与 RULE 分类共用；筛选只重渲染列表区，不动右侧详情）
+function specFilterStatus() {
+  return [...new Set([...reqById.values()].map((r) => r.status).filter(Boolean))];
+}
+function specFilterAuthority() {
+  return [...new Set([...reqById.values()].map((r) => r.authority).filter(Boolean))];
+}
+function applySpecFilters(items) {
+  const kw = specState.filters.keyword.trim().toLowerCase();
+  return items.filter((r) => {
+    if (specState.filters.status !== "all" && r.status !== specState.filters.status) return false;
+    if (specState.filters.authority !== "all" && r.authority !== specState.filters.authority) return false;
+    if (kw && !`${r.id} ${r.name} ${r.description || ""}`.toLowerCase().includes(kw)) return false;
+    return true;
+  });
+}
+function specToolbarHtml(total, shown) {
+  return `<div class="spec-toolbar">
+    <input id="spec-kw" placeholder="搜索 ID、名称、描述" value="${esc(specState.filters.keyword)}" style="flex:1;min-width:140px">
+    <select id="spec-status"><option value="all">状态：全部</option>
+      ${specFilterStatus().map((v) => `<option value="${esc(v)}"${specState.filters.status === v ? " selected" : ""}>${esc(v)}</option>`).join("")}</select>
+    <select id="spec-authority"><option value="all">权限：全部</option>
+      ${specFilterAuthority().map((v) => `<option value="${esc(v)}"${specState.filters.authority === v ? " selected" : ""}>${esc(v)}</option>`).join("")}</select>
+    <span class="meta" id="spec-count">${shown} / ${total}</span>
+  </div><div id="spec-body"></div>`;
+}
+function bindSpecToolbar(renderBody) {
+  $("#spec-kw").addEventListener("input", (e) => { specState.filters.keyword = e.target.value; renderBody(); });
+  $("#spec-status").addEventListener("change", (e) => { specState.filters.status = e.target.value; renderBody(); });
+  $("#spec-authority").addEventListener("change", (e) => { specState.filters.authority = e.target.value; renderBody(); });
+  renderBody();
+}
+
+// GAME-FR：搜索 + 状态/权限筛选 + 需求卡片
+function renderCatFr() {
+  const items = [...reqById.values()].filter((r) => r.type === "game_feature");
+  $("#view").innerHTML = `<h3>功能需求（${items.length}）</h3>` + specToolbarHtml(items.length, 0);
+  bindSpecToolbar(() => {
+    const shown = applySpecFilters(items);
+    $("#spec-count").textContent = `${shown.length} / ${items.length}`;
+    $("#spec-body").innerHTML = shown.map(reqCard).join("") || "<div class='meta'>无匹配项</div>";
+  });
+}
+
+// GAME-RULE：按规则来源章节（source.document）分组 + 搜索/筛选
+function renderCatRule() {
+  const items = [...reqById.values()].filter((r) => r.type === "game_rule");
+  $("#view").innerHTML = `<h3>游戏规则（${items.length}）</h3>` + specToolbarHtml(items.length, 0);
+  bindSpecToolbar(() => {
+    const shown = applySpecFilters(items);
+    $("#spec-count").textContent = `${shown.length} / ${items.length}`;
+    // 按来源文档分组（无 source 的归「未分组」）
+    const groups = new Map();
+    for (const r of shown) {
+      const doc = (r.source && r.source.document) || "未分组";
+      if (!groups.has(doc)) groups.set(doc, []);
+      groups.get(doc).push(r);
     }
-  } else {
-    const c = SPEC_CATEGORIES.find((x) => x.id === cat);
-    const items = [...reqById.values()].filter(c.filter);
-    html += `<h3>${esc(c.label)}（${items.length}）</h3>` + items.map(reqCard).join("");
+    $("#spec-body").innerHTML = shown.length
+      ? [...groups.entries()].map(([doc, rs]) => `<h4 class="group-head">${esc(doc)}（${rs.length}）</h4>` + rs.map(reqCard).join("")).join("")
+      : "<div class='meta'>无匹配项</div>";
+  });
+}
+
+// GAME-STATE：状态机卡片（每台状态机一组）+ 跳转 Flow 状态机图
+function renderCatState() {
+  const items = [...reqById.values()].filter((r) => r.type === "state");
+  $("#view").innerHTML = `<h3>状态机（${items.length}）</h3>` + items.map((r) =>
+    `<div class="req-card" data-anchor="${esc(r.id)}"><h3>${esc(r.id)} ${esc(r.name)} ${badges(r)}</h3>
+      <div>${esc(r.description || "")}</div>
+      <div style="margin-top:6px"><button class="btn-mini" data-goto-flow>查看状态机图（Flow）</button></div></div>`).join("");
+}
+
+// GAME-CFG：配置表格（ID/名称/当前值/状态/权限；约束见详情）
+function renderCatCfg() {
+  const items = [...reqById.values()].filter((r) => r.type === "config");
+  $("#view").innerHTML = `<h3>数值配置（${items.length}）</h3>
+    <table class="cfg-table"><thead><tr><th>ID</th><th>名称</th><th>当前值</th><th>状态</th><th>权限</th></tr></thead>
+    <tbody>${items.map((r) => `<tr data-anchor="${esc(r.id)}" data-req-row="${esc(r.id)}"><td>${esc(r.id)}</td><td>${esc(r.name)}</td><td>${esc(r.value || "-")}</td><td>${esc(r.status || "")}</td><td>${esc(r.authority || "")}</td></tr>`).join("")}</tbody></table>`;
+}
+
+function pageComps(p) {
+  return APP_DATA.ui.components.filter((c) => (p.components || p.component_refs || []).includes(c.id) || (c.page_id || "") === p.id);
+}
+
+// GAME-UI：页面分组 + 页面下组件层级浏览（点击页面/组件行看详情）
+function renderCatUi() {
+  let html = `<h3>UI 页面（${APP_DATA.ui.pages.length}）</h3>`;
+  for (const p of APP_DATA.ui.pages) {
+    const comps = pageComps(p);
+    html += `<div class="req-card" data-anchor="${esc(p.id)}" data-page="${esc(p.id)}"><h3>${esc(p.id)} ${esc(p.name)} <span class="badge">${p.resolution ? p.resolution.width + "x" + p.resolution.height : ""}</span></h3>
+      <div>${esc(p.description || "")}</div>
+      <div style="color:#889;font-size:12px;margin-top:4px">状态：${esc((p.states || []).join(" / "))}</div>
+      <div class="comp-list">${comps.map((c) => `<a class="comp-row" data-comp="${esc(c.id)}">${esc(c.id)} ${esc(c.name)} <span class="meta">${esc(c.type)}</span></a>`).join("") || "<span class='meta'>无组件</span>"}</div></div>`;
   }
   $("#view").innerHTML = html;
 }
@@ -280,7 +390,7 @@ function renderSpecCategory() {
 function showPageDetail(pid) {
   const p = pageById.get(pid);
   if (!p) return;
-  const comps = APP_DATA.ui.components.filter((c) => (p.component_refs || []).includes(c.id) || (c.page_id || "") === p.id);
+  const comps = pageComps(p);
   const fields = [
     ["ID", p.id], ["名称", p.name],
     ["分辨率", p.resolution ? p.resolution.width + " x " + p.resolution.height : ""],
@@ -290,6 +400,21 @@ function showPageDetail(pid) {
   ];
   $("#detail").innerHTML = fields.filter(([, v]) => v).map(([k, v]) =>
     `<div class="field"><span class="k">${k}</span>${esc(v)}</div>`).join("");
+}
+
+// UI 组件详情（GAME-UI 分类点击组件行触发；关联需求可跳规格工作台）
+function showCompDetail(cid) {
+  const c = APP_DATA.ui.components.find((x) => x.id === cid);
+  if (!c) return;
+  const related = (c.requirements || []).filter((rid) => reqById.get(rid));
+  const fields = [
+    ["ID", c.id], ["名称", c.name], ["类型", c.type],
+    ["事件", (c.events || []).join("、")],
+    ["视觉提示", c.visual_hint || ""],
+  ];
+  $("#detail").innerHTML = fields.filter(([, v]) => v).map(([k, v]) =>
+    `<div class="field"><span class="k">${k}</span>${esc(v)}</div>`).join("") +
+    (related.length ? `<div class="field"><span class="k">关联需求</span>${related.map((rid) => `<a class="req-link" data-req-link="${esc(rid)}">${esc(rid)}</a>`).join("、")}</div>` : "");
 }
 
 // ---------- UI Demo 视图 ----------
@@ -668,14 +793,27 @@ document.getElementById("tabs").addEventListener("click", (e) => {
   const b = e.target.closest("button");
   if (b) switchTab(b.dataset.tab);
 });
-// 规格工作台内容区点击委托（一次绑定，避免重复挂监听）：需求卡片详情 / 页面卡片详情 / 跳 UI 定位
+// 规格工作台内容区点击委托（一次绑定，避免重复挂监听）：需求卡片详情 / 配置行 / 页面与组件详情 / 关联需求跳转 / 跳 Flow / 跳 UI 定位
 $("#view").addEventListener("click", (e) => {
   const goto = e.target.closest("[data-goto-ui]");
   if (goto) { switchTab("ui", () => focusByRequirement(goto.dataset.gotoUi)); return; }
+  const flow = e.target.closest("[data-goto-flow]");
+  if (flow) { switchTab("flow"); return; }
+  const link = e.target.closest("[data-req-link]");
+  if (link) { showRequirement(link.dataset.reqLink); return; }
+  const comp = e.target.closest("[data-comp]");
+  if (comp) { showCompDetail(comp.dataset.comp); return; }
   const page = e.target.closest("[data-page]");
   if (page) { showPageDetail(page.dataset.page); return; }
+  const row = e.target.closest("tr[data-req-row]");
+  if (row) { const r = reqById.get(row.dataset.reqRow); if (r) { specState.selectedId = r.id; showDetail(r); } return; }
   const card = e.target.closest(".req-card[data-anchor]");
   if (card && card.dataset.anchor.startsWith("GAME-")) showDetail(reqById.get(card.dataset.anchor));
+});
+// 右侧详情区关联需求链接跳转（组件详情中的关联需求）
+$("#detail").addEventListener("click", (e) => {
+  const link = e.target.closest("[data-req-link]");
+  if (link) showRequirement(link.dataset.reqLink);
 });
 renderNav();
 switchTab("spec");

@@ -7,12 +7,13 @@ description: 对照规则基准检查游戏 PRD 需求文档的完整性、一�
 
 读取 `input/` 下的原始 PRD 需求文档，对照 `references/rules/` 下的检查规范（规则基准，视为正确答案），逐项检查并生成问题报告到 `examples/game-prd-check/report.md`。
 
-## 执行流程（四步）
+## 执行流程（五步）
 
 1. **读取 input**：读取 `input/` 下的需求文档（全文，必要时分段读取）。
 2. **读取 rules**：读取 `references/rules/` 下对应的检查规范。规则较多时按目录分组加载，确保每份规范都被对照过。
 3. **AI 检查**：以 rules 为基准逐项检查需求文档，发现五类问题（见下）。
 4. **输出 report.md**：按 `references/templates/report.template.md` 的四段结构生成报告，写入 `examples/game-prd-check/report.md`。
+5. **生成 Dashboard（可选）**：运行 `node scripts/build-dashboard.mjs`，解析 report.md 生成 `report.json` 与离线单文件 `dashboard/index.html`（设计见 dev-docs/design/PRD-Quality-Dashboard-Design-v1.0.md，数据模型见 dashboard/schema/report.schema.json）。校验失败时先修 report.md，不允许生成统计与明细脱节的 Dashboard。
 
 ## 问题类型（五种，只允许这五种）
 
@@ -53,4 +54,4 @@ description: 对照规则基准检查游戏 PRD 需求文档的完整性、一�
 
 ## 输出位置
 
-`examples/game-prd-check/report.md`（唯一交付物）。
+`examples/game-prd-check/report.md`（唯一交付物）；启用 Dashboard 时追加 `report.json` 与 `dashboard/index.html`（离线可开，支持打印/PDF）。

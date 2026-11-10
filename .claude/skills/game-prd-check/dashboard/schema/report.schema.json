@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "game-prd-check report.json",
+  "description": "PRD 检查报告的标准数据模型，report.md 解析产物，Dashboard 的唯一数据输入",
+  "type": "object",
+  "required": ["schema_version", "report", "statistics", "issues"],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "report": {
+      "type": "object",
+      "required": ["title", "inspection_date"],
+      "properties": {
+        "title": { "type": "string" },
+        "project_name": { "type": "string" },
+        "document_name": { "type": "string" },
+        "inspection_date": { "type": "string" },
+        "source_file": { "type": "string" },
+        "rule_baselines": { "type": "array", "items": { "type": "string" } },
+        "overall_conclusion": {
+          "type": "object",
+          "properties": {
+            "status": { "enum": ["BLOCKED", "ALLOWED", "NA"] },
+            "summary": { "type": "string" },
+            "reasons": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    },
+    "statistics": {
+      "type": "object",
+      "required": ["total", "priority", "types"],
+      "properties": {
+        "total": { "type": "integer" },
+        "priority": {
+          "type": "object",
+          "properties": {
+            "P0": { "type": "integer" },
+            "P1": { "type": "integer" },
+            "P2": { "type": "integer" },
+            "P3": { "type": "integer" }
+          }
+        },
+        "types": { "type": "object", "additionalProperties": { "type": "integer" } }
+      }
+    },
+    "risk_groups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["key", "name", "issue_ids"],
+        "properties": {
+          "key": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "issue_ids": { "type": "array", "items": { "type": "string", "pattern": "^PRD-\\d{3}$" } }
+        }
+      }
+    },
+    "modules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "issue_ids"],
+        "properties": {
+          "name": { "type": "string" },
+          "issue_ids": { "type": "array", "items": { "type": "string", "pattern": "^PRD-\\d{3}$" } }
+        }
+      }
+    },
+    "featured_issues": {
+      "type": "array",
+      "description": "TOP N 问题 ID 引用，不复制正文",
+      "items": { "type": "string", "pattern": "^PRD-\\d{3}$" }
+    },
+    "issues": {
+      "type": "array",
+      "description": "完整问题数据的唯一来源；statistics 默认由 issues 计算",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "priority", "type", "original_text", "problem", "impact", "suggestion", "status"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^PRD-\\d{3}$" },
+          "title": { "type": "string" },
+          "priority": { "enum": ["P0", "P1", "P2", "P3"] },
+          "type": { "type": "string", "description": "中文类型：需求缺失/内容冲突/逻辑错误/定义歧义/描述不完整" },
+          "module": { "type": "array", "items": { "type": "string" }, "description": "允许多模块归属，可为空" },
+          "source_location": { "type": "string" },
+          "original_text": { "type": "string" },
+          "problem": { "type": "string" },
+          "impact": { "type": "string" },
+          "suggestion": { "type": "string" },
+          "status": { "type": "string" }
+        }
+      }
+    },
+    "overall_recommendations": { "type": "array", "items": { "type": "string" } }
+  }
+}

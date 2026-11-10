@@ -81,6 +81,18 @@ OQ 不是一次性分析出来的，而是**两个阶段、五类来源**累计�
 
 OQ 的完整生命周期（与红线闭环）：登记（authority=open）→ 模拟器守卫拒绝执行（RULE_NOT_CONFIRMED）→ Decision Workbench 人工裁决（AI 不允许代人工提交）→ apply-decisions 落盘并追加 decision-log → 重跑构建，规则状态与徽标更新。
 
+**question 文本的产生实现（不是脚本，是 Skill 层 AI 按提示词执行）**：
+
+| 层 | 文件 | 职责 |
+|---|---|---|
+| Skill 层（AI 执行） | `SKILL.md` 红线 | 不得虚构原始 PRD 没有定义的规则；IR 合法性归脚本，语义判断归 AI |
+| Workflow 层（提示词） | `workflows/extract-requirements.md` 第 3 步 | 需求分类三去向：原文直接提取标 original（quote 非空）；隐含推导标 derived（basis + 关联需求）；**找不到依据的登记 open question**，禁止伪造 original 来源 |
+| Workflow 层（提示词） | `workflows/review-requirements.md` 第 2 步 | AI 语义检查五项（遗漏/隐性冲突/异常流程/可测试性/边界）发现的未决问题追加登记 |
+| References 层（规范） | `references/game-prd-format.md` 第 4、5 节 | source 三分类必填字段约束；需求条目的 open_questions 字段同步登记到 reviews/open-questions.json |
+| Scripts 层（校验，不产生） | `validate-ir` | 不生成 OQ；只校验需求条目 source 合法性（original 必有非空 quote、approved 必有有效来源），间接强制歧义内容走 OQ 登记 |
+
+执行过程：AI 逐条读原文给需求定来源 → 遇到歧义/矛盾/未定义/缺依据时，无法归入 original 或 derived → 按 question 文本写法登记 OQ：**描述问题事实（歧义/矛盾/未定义/缺依据）+ AI 无法定案的原因 + 需人工提供什么**。样例（OQ-001）：「默认值房主庄依据为截图中提供（原始依据为创房面板截图）；需求正文仅记根据线上定默认值。AI 无法直接获取截图数值，需人工提供具体文本补充后才能确认。」
+
 ### IR 构成明细（218 条条目）
 
 | 类型 | ID 前缀 | 条数 | 目录 |

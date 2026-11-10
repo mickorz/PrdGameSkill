@@ -11,7 +11,6 @@
 | REF-004 | Arrow | https://github.com/mhgolkar/Arrow.git | `thirdparties/Arrow` | `5c0291c72e0fe1c1ac3024cb68826caa213532ee` | MIT | 可借鉴思想，复用代码需保留版权声明 | 游戏逻辑节点、变量/状态、可玩 HTML 导出 |
 | REF-005 | GDD-Forge | https://github.com/miventech/GDD-Forge.git | `thirdparties/GDD-Forge` | `75f41412d3699fbc3a0e406af277431ba0b0faa1` | 未发现 LICENSE 文件 | **只读研究，禁止复制任何代码** | GDD 数据结构（Manifest/Feature/Segment/Decision） |
 | REF-006 | Game Doc Forge | https://github.com/MisterVitoPro/gdd.git | `thirdparties/game-doc-forge` | `630ae23103cf722be209708c0a1b5f01af25b73c` | MIT | 可借鉴思想，复用代码需保留版权声明 | 游戏设计访谈、决策账本、Open Questions、审查 |
-| REF-007 | Game UI Design Workflow | https://github.com/mickorz/game-ui-design-workflow.git | `thirdparties/game-ui-design-workflow` | `1ec604638dd1a27198576206eb3e47632725a078` | MIT | 可借鉴思想，复用代码需保留版权声明；2026-11-09 已复制/改编 templates 与 init_project.py 至 `.claude/skills/game-spec-generator/`（保留 MIT 标注），调研见 dev-docs/research/2026-11-09-game-ui-design-workflow-research.md | GDD/PRD/Interaction/Contract 四文档模板、Spec-Kit 门禁机制、init/validate 脚本、完整实例；对应 GSG-V1 与 P9 UI 工作流参考 |
 
 ## 说明
 

@@ -18,8 +18,6 @@ description: >-
 | Interaction | `Interaction.md` | 玩家如何操作？（页面、控件、交互、反馈、状态） |
 | Interaction Contract | `Interaction-Contract.yaml` | 系统如何响应？（事件、前置条件、状态转移、数据影响、异常） |
 
-方法论与模板改编自 game-ui-design-workflow（MIT License，https://github.com/mickorz/game-ui-design-workflow），详见 `dev-docs/research/2026-11-09-game-ui-design-workflow-research.md`。
-
 ## 红线（任一违反即产物不合格）
 
 1. **禁止虚构游戏规则**。原文、上游文档没有定义的，标 UNKNOWN / pending-human，不得补全。
@@ -84,9 +82,9 @@ python .claude/skills/game-spec-generator/scripts/validate_docs.py examples/<gam
 game-spec-generator/
 ├── SKILL.md
 ├── references/          # 五份格式规范
-├── templates/           # 七份产物模板（改编自 game-ui-design-workflow，MIT）
+├── templates/           # 七份产物模板
 ├── scripts/
-│   ├── init_project.py  # 脚手架（改编自上游 MIT 脚本）
+│   ├── init_project.py  # 脚手架
 │   └── validate_docs.py # 轻量文档校验（状态头/契约字段/追溯摘要）
 └── evals/               # 评测标准与卡五星基准
 ```

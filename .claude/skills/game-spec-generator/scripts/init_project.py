@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Initialize a spec-generation workspace for a game (GSG-V1).
 
-Adapted from game-ui-design-workflow (MIT License)
-https://github.com/mickorz/game-ui-design-workflow scripts/init_project.py
 Changes: scaffold = examples/<game>/spec-generation/ with the seven GSG artifacts;
 templates read from this skill's templates/ directory.
 """

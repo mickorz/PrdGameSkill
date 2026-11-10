@@ -1,11 +1,5 @@
 # 产品需求文档（PRD）
 
-<!--
-  模板改编自 game-ui-design-workflow (MIT License)
-  https://github.com/mickorz/game-ui-design-workflow templates/spec-kit/prd.md
-  改编说明：增加「事实溯源」要求与 GDD 关联列。
--->
-
 ## 文档状态
 
 - status: draft

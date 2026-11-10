@@ -7,14 +7,14 @@
 
 | 交付物 | 路径 | 说明 |
 |---|---|---|
-| 裁决记录 Schema | `skills/interactive-game-prd/schemas/decision.schema.json` | DEC 记录：decision_id/question_id/decision_status/outcome/final_decision/rationale/reviewer/decided_at/requirement_updates/affected/related_question_ids/supersedes/evidence |
-| 审批状态 Schema | `skills/interactive-game-prd/schemas/approval-state.schema.json` | progress 五计数 + last_position 中断恢复 + drafts 草稿区 |
-| 核心库 | `skills/interactive-game-prd/scripts/decision-lib.mjs` | 单条校验/批量应用/日志审计；只有 reviews 三文件读写边界 |
-| 应用 CLI | `skills/interactive-game-prd/scripts/apply-decisions.mjs` | --dry-run 预演；任何校验失败整体不落盘 |
-| 审计 CLI | `skills/interactive-game-prd/scripts/validate-decisions.mjs` | decision-log/open-questions/approval-state 三方一致性核对，退出码可接入 CI |
-| validate-ir 扩展 | `skills/interactive-game-prd/scripts/validate-ir` | 新格式嵌套 requirement_updates 流转校验；合法集合增加 approved->rejected、rejected->approved（重裁决翻案） |
-| 工作流文档 | `skills/interactive-game-prd/workflows/apply-decisions.md` | Decision 模式：整理→预演→落盘→审计→提交，含红线 |
-| 测试 | `skills/interactive-game-prd/scripts/decision.test.mjs` | 25/25 PASS |
+| 裁决记录 Schema | `.claude/skills/interactive-game-prd/schemas/decision.schema.json` | DEC 记录：decision_id/question_id/decision_status/outcome/final_decision/rationale/reviewer/decided_at/requirement_updates/affected/related_question_ids/supersedes/evidence |
+| 审批状态 Schema | `.claude/skills/interactive-game-prd/schemas/approval-state.schema.json` | progress 五计数 + last_position 中断恢复 + drafts 草稿区 |
+| 核心库 | `.claude/skills/interactive-game-prd/scripts/decision-lib.mjs` | 单条校验/批量应用/日志审计；只有 reviews 三文件读写边界 |
+| 应用 CLI | `.claude/skills/interactive-game-prd/scripts/apply-decisions.mjs` | --dry-run 预演；任何校验失败整体不落盘 |
+| 审计 CLI | `.claude/skills/interactive-game-prd/scripts/validate-decisions.mjs` | decision-log/open-questions/approval-state 三方一致性核对，退出码可接入 CI |
+| validate-ir 扩展 | `.claude/skills/interactive-game-prd/scripts/validate-ir` | 新格式嵌套 requirement_updates 流转校验；合法集合增加 approved->rejected、rejected->approved（重裁决翻案） |
+| 工作流文档 | `.claude/skills/interactive-game-prd/workflows/apply-decisions.md` | Decision 模式：整理→预演→落盘→审计→提交，含红线 |
+| 测试 | `.claude/skills/interactive-game-prd/scripts/decision.test.mjs` | 25/25 PASS |
 | 卡五星状态文件 | `examples/mahjong/game-spec/reviews/approval-state.json` | 初始化 0/31 |
 
 ## 状态机设计要点

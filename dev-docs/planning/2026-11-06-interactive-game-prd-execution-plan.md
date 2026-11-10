@@ -46,7 +46,7 @@ flowchart LR
 | P2 | 卡五星原始 PRD 结构化 | examples/mahjong/ Golden Sample | 全部需求有来源，核心规则人工确认 | 7.5 人日 |
 | P3 | HTML PRD 渲染器 | examples/mahjong/output/interactive-game-prd/ | HTML 离线可开，双向定位可用 | 10 人日 |
 | P4 | 规则模拟器 | simulator 模板 + 接入 HTML | 只按 approved 规则运行，非法操作被拒 | 9.5 人日 |
-| P5 | Skill 闭环 | skills/interactive-game-prd/ 完整技能 | 端到端流程跑通 | 5 人日 |
+| P5 | Skill 闭环 | .claude/skills/interactive-game-prd/ 完整技能 | 端到端流程跑通 | 5 人日 |
 
 合计约 49 人日（与子任务估时加总一致），不是小型 Skill 开发任务，排期时按此规模评估。
 
@@ -184,7 +184,7 @@ flowchart LR
 
 ### P1-01 IR 顶层结构（1 人日）
 
-- 产出：`skills/interactive-game-prd/references/game-prd-format.md`（目录结构规范文档）
+- 产出：`.claude/skills/interactive-game-prd/references/game-prd-format.md`（目录结构规范文档）
 - 步骤：
   1. 按需求文档 4.2 节目录树定稿，逐目录写清「放什么、不放什么」。
   2. 定义 `manifest.yaml` 字段：game_name、version、ir_version、source_files、entry_points、stats。
@@ -202,7 +202,7 @@ flowchart LR
 
 ### P1-03 Requirement Schema（1 人日）
 
-- 产出：`skills/interactive-game-prd/schemas/requirement.schema.json`
+- 产出：`.claude/skills/interactive-game-prd/schemas/requirement.schema.json`
 - 步骤：
   1. 按需求文档 4.4 字段定义 JSON Schema：required 字段 = id、type、name、status、authority、source。
   2. `status` 枚举 proposed/approved/rejected/deprecated；`authority` 枚举 fixed/delegated/open。
@@ -255,7 +255,7 @@ flowchart LR
 
 ### P1-08 IR 确定性校验工具（1 人日）
 
-- 产出：`skills/interactive-game-prd/scripts/validate-ir`（Node.js 脚本）
+- 产出：`.claude/skills/interactive-game-prd/scripts/validate-ir`（Node.js 脚本）
 - 步骤：
   1. 实现检查项：Schema 校验；ID 重复；引用的 ID 不存在（ui_refs/test_refs/dependencies）；approved 需求无 source；核心需求无 test_refs（告警）；状态非法流转；source-map 指向的文件/行不存在。
   2. 输出机器可读 JSON 报告：`{ result: pass|fail, errors: [...], warnings: [...] }`。
@@ -268,7 +268,7 @@ flowchart LR
 > 评审修订：IR 定稿前先用真实结构的数据验证字段支撑度，避免 P3 才发现字段不足导致 IR 返工。
 
 - 输入：迷你样例 IR（手工构造：3 条规则 + 1 个麻将 UI 页面 + 2 个组件）+ validate-ir 通过
-- 产出：`skills/interactive-game-prd/assets/html-template/` 雏形（单页 Demo）+ 验证结论 `dev-docs/design/2026-11-XX-ir-html-feasibility.md`
+- 产出：`.claude/skills/interactive-game-prd/assets/html-template/` 雏形（单页 Demo）+ 验证结论 `dev-docs/design/2026-11-XX-ir-html-feasibility.md`
 - 步骤：
   1. 手写迷你 IR（不含卡五星真实规则，避免与 P2 冲突）。
   2. 静态渲染四样东西：需求导航、需求详情面板、一个麻将牌桌 UI 页面、一次 PRD 到 UI 的点击定位。
@@ -362,7 +362,7 @@ flowchart LR
 
 ### P3-01 HTML 页面结构设计（1 人日）
 
-- 产出：`skills/interactive-game-prd/assets/html-template/` 骨架 + 设计说明（并入 references/interactive-html.md）
+- 产出：`.claude/skills/interactive-game-prd/assets/html-template/` 骨架 + 设计说明（并入 references/interactive-html.md）
 - 步骤：
   1. 三栏布局：左导航 / 中展示区（PRD、UI Demo、Flow、Tests 四模式 Tab）/ 右详情面板。
   2. 数据装载：构建脚本把 game-spec 编译为单个 `data/app-data.json`，`index.html` 内联引入（file:// 离线约束，见 3.3 节）。
@@ -405,7 +405,7 @@ flowchart LR
 
 ### P3-10 离线导出（1 人日）
 
-- 产出：`skills/interactive-game-prd/scripts/validate-html` + 导出打包步骤
+- 产出：`.claude/skills/interactive-game-prd/scripts/validate-html` + 导出打包步骤
 - 步骤：
   1. validate-html 检查项：无未替换模板变量（`{{...}}` 扫描）；资源全部相对路径；data-component-id 与 UI Spec 一致；无指向外网 URL 的资源引用。
   2. 全目录打 ZIP（PowerShell `Compress-Archive` 或 Node 脚本）。
@@ -429,7 +429,7 @@ flowchart LR
 
 ### P4-01 模拟器接口设计（1 人日）
 
-- 产出：`skills/interactive-game-prd/assets/simulator-template/` 接口定义 + `references/simulator-contract.md`
+- 产出：`.claude/skills/interactive-game-prd/assets/simulator-template/` 接口定义 + `references/simulator-contract.md`
 - 步骤：
   1. 定义核心接口：`loadScenario(spec)`、`dispatchAction(playerId, action)`、`getState()`、`getEventLog()`。
   2. 事件日志契约：每次操作产生 `{ seq, timestamp, player, action, rule_ref, verdict, state_before, state_after }`，`rule_ref` 必须指向 GAME-RULE ID——这就是「可追踪」的落点。
@@ -485,7 +485,7 @@ flowchart LR
 
 ### P5-01 ~ P5-06 六个模式集成（合计 3 人日）
 
-- 产出：`skills/interactive-game-prd/SKILL.md` + workflows/ 七个工作流文档
+- 产出：`.claude/skills/interactive-game-prd/SKILL.md` + workflows/ 七个工作流文档
 - 三层职责边界（评审修订，SKILL.md 开篇必须写明）：
 
   | 层次 | 职责 | 例子 |
@@ -516,7 +516,7 @@ flowchart LR
 
 ### P5-08 README 与使用示例（1 人日）
 
-- 产出：`skills/interactive-game-prd/SKILL.md` 使用说明 + `docs/` 新增一篇读者向使用指南（en + zh-CN 同步）。
+- 产出：`.claude/skills/interactive-game-prd/SKILL.md` 使用说明 + `docs/` 新增一篇读者向使用指南（en + zh-CN 同步）。
 - 步骤：写清六种模式的调用方式、目录约定、常见错误；补充卡五星示例入口。
 
 ### P5 验收清单（对应需求文档 16 节最终标准）

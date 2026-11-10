@@ -1,8 +1,5 @@
 # Interaction-Contract 前半（Part 1/2）：卡五星（好友房）业务事件与状态转移契约（YAML）
 #
-# 结构风格参照 game-ui-design-workflow (MIT License)
-# https://github.com/mickorz/game-ui-design-workflow templates/contracts/screen-contract.yaml
-#
 # 覆盖范围：对局前链路（创房配置提交/入座/打漂/定庄/摇骰上楼/发牌/理牌）与行牌核心操作
 # （摸牌/补牌/提牌/出牌三方式/碰/杠三类/多杠选择/过/漏胡/托管/自动摸打/杠上杠倍率），编号 CT-001~CT-024。
 # 胡牌（自摸/点炮）、亮倒/扣牌、听牌提示弹窗、对局结束与结算链路契约由后半文件（CT-050 起）续写，本文件不写。

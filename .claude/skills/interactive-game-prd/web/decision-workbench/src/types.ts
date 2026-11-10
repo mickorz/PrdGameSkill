@@ -1,4 +1,4 @@
-// Game Decision Workbench 数据类型（与 skills/interactive-game-prd/schemas/*.json 对应）
+// Game Decision Workbench 数据类型（与 .claude/skills/interactive-game-prd/schemas/*.json 对应）
 
 export type Severity = "high" | "medium" | "low";
 export type OQStatus = "open" | "approved" | "rejected" | "deferred";

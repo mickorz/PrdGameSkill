@@ -1,11 +1,5 @@
 # 游戏策划方案（GDD）
 
-<!--
-  模板改编自 game-ui-design-workflow (MIT License)
-  https://github.com/mickorz/game-ui-design-workflow templates/spec-kit/gdd.md
-  改编说明：增加「事实溯源」要求——每个章节必须标注来源事实 ID（SRC-xxx）与待确认标记。
--->
-
 ## 文档状态
 
 - status: draft

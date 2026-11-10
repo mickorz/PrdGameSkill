@@ -1,11 +1,5 @@
 # 游戏策划方案（GDD）——卡五星（好友房）
 
-<!--
-  模板改编自 game-ui-design-workflow (MIT License)
-  https://github.com/mickorz/game-ui-design-workflow templates/spec-kit/gdd.md
-  改编说明：增加「事实溯源」要求——每个章节必须标注来源事实 ID（SRC-xxx）与待确认标记。
--->
-
 > 职责边界：本文件只回答「游戏怎么玩」（玩法、规则、数值、结算）。不含产品功能与验收（PRD 层）、不含页面交互细节（Interaction 层）。唯一事实来源为 `source-analysis.md`；原文未定义的内容一律写「待确认」，不编造。
 
 ## 文档状态

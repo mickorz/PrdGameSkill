@@ -1,8 +1,5 @@
 # Interaction-Contract：业务事件与状态转移契约（YAML）
 #
-# 结构风格参照 game-ui-design-workflow (MIT License)
-# https://github.com/mickorz/game-ui-design-workflow templates/contracts/screen-contract.yaml
-#
 # 约定：
 # - 本契约是平台无关的业务行为定义，不绑定 Unity / Cocos / FairyGUI 等具体实现。
 # - confirmation_status 只允许 draft / pending-human / confirmed-human。

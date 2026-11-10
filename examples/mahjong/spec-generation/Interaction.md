@@ -2,7 +2,6 @@
 
 > 本文为 Interaction 文档第 1/2 部分，覆盖页面 1~6。页面 7 起（对局结束/买马/结算/辅助功能/特效等）由第 2 部分续写；跨页链路与验收清单由第 2 部分补齐，本部分不写。
 > 事实来源：`spec-generation/source-analysis.md`（SRC-xxx）；功能需求引用 `spec-generation/PRD.md`（PRD-xxx，不展开）；玩法判定归 GDD，本文不重复。
-> 模板：`.claude/skills/game-spec-generator/references/interaction-format.md`（改编自 game-ui-design-workflow spec-kit，MIT）。
 
 ## 文档状态
 

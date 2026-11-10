@@ -10,7 +10,7 @@
 
 ```bash
 # 1. 安装工具依赖（一次性）
-cd skills/interactive-game-prd && npm install
+cd .claude/skills/interactive-game-prd && npm install
 
 # 2. 校验一份已有的 Game Spec（IR）
 node scripts/validate-ir ../../examples/mini-game/game-spec

@@ -15,7 +15,7 @@
 ```bash
 git clone https://github.com/mickorz/PrdGameSkill.git
 cd PrdGameSkill
-cd skills/interactive-game-prd && npm install
+cd .claude/skills/interactive-game-prd && npm install
 
 # 用仓库自带的迷你样例一键验证全链路
 npm run test:e2e
@@ -26,7 +26,7 @@ npm run test:e2e
 ## 目录结构
 
 ```text
-skills/interactive-game-prd/   核心技能（Schema / 模板 / 工作流 / 脚本 / 资产）
+.claude/skills/interactive-game-prd/   核心技能（Schema / 模板 / 工作流 / 脚本 / 资产）
 examples/                      游戏样例（mini-game 为管线验证样例）
 docs/                          读者向文档（英文 + zh-CN 中文版）
 dev-docs/                      开发过程文档（需求 / 设计 / 计划 / 进度 / 经验，随仓库入库）

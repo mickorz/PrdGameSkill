@@ -236,7 +236,7 @@ P6 COMPLETE       达到发布 Gate，允许进入下一阶段
 ### 推荐目录
 
 ```
-skills/interactive-game-prd/
+.claude/skills/interactive-game-prd/
 ├── decision/
 │   ├── schemas/
 │   │   └── decision.schema.json

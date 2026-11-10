@@ -1086,9 +1086,9 @@ PrdGameSkill
 
 交付物：
 
-`skills/interactive-game-prd/schemas/`
+`.claude/skills/interactive-game-prd/schemas/`
 
-`skills/interactive-game-prd/templates/`
+`.claude/skills/interactive-game-prd/templates/`
 
 验收：
 
@@ -1175,7 +1175,7 @@ PrdGameSkill
 
 交付物：
 
-`skills/interactive-game-prd/assets/simulator-template/`
+`.claude/skills/interactive-game-prd/assets/simulator-template/`
 
 `examples/mahjong/`
 

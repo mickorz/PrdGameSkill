@@ -10,7 +10,7 @@ import yaml from "js-yaml";
 import { applyDecisions, auditDecisionLog, loadOpenQuestions, loadDecisionLog, loadApprovalState, computeProgress } from "./decision-lib.mjs";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
-// React 构建产物（skills/interactive-game-prd/web/decision-workbench/dist），随仓库入库，运行时不要求构建环境
+// React 构建产物（.claude/skills/interactive-game-prd/web/decision-workbench/dist），随仓库入库，运行时不要求构建环境
 const DIST = path.join(scriptDir, "..", "web", "decision-workbench", "dist");
 
 function parseArgs(argv) {
@@ -123,7 +123,7 @@ function createServer(specDir, port) {
         const index = path.join(DIST, "index.html");
         if (!fs.existsSync(index)) {
           res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-          res.end("<h1>Decision Workbench 未构建</h1><p>先执行: npm --prefix skills/interactive-game-prd/web/decision-workbench run build</p>");
+          res.end("<h1>Decision Workbench 未构建</h1><p>先执行: npm --prefix .claude/skills/interactive-game-prd/web/decision-workbench run build</p>");
           return;
         }
         res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });

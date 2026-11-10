@@ -1,6 +1,5 @@
 # GDD 格式规范
 
-> 模板：`templates/GDD.template.md`（改编自 game-ui-design-workflow spec-kit，MIT）
 
 ## 职责
 

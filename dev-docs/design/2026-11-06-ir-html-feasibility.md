@@ -1,7 +1,7 @@
 # IR 与 HTML 展示可行性验证结论（P1-09）
 
 > 日期：2026-11-06  
-> 验证对象：`skills/interactive-game-prd/assets/html-template/index.html`（最小 Demo）  
+> 验证对象：`.claude/skills/interactive-game-prd/assets/html-template/index.html`（最小 Demo）  
 > 数据：手写迷你 IR（与 `scripts/validate-ir.example/valid` 同源：6 条需求 + 1 个麻将式翻牌 UI 页面 + 4 组件 + 3 事件）
 
 ## 1. 验证方式

@@ -6,7 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const require = createRequire(import.meta.url);
-const SIM_PATH = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../examples/mahjong/simulator/simulator.js");
+const SIM_PATH = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../../examples/mahjong/simulator/simulator.js");
 const sim = require(SIM_PATH);
 
 let passed = 0;

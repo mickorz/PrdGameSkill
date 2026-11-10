@@ -11,10 +11,10 @@
 
 | 交付物 | 路径 | 说明 |
 |---|---|---|
-| Vite 工程 | `skills/interactive-game-prd/web/decision-workbench/` | pages/ components/ stores/ services/ 四层目录，与设计文档目录约定一致 |
-| 服务端 | `skills/interactive-game-prd/scripts/decision-workbench.mjs` | 页面静态服务 + 4 个 API；只读写指定 game-spec 内 reviews 与 source |
-| 构建产物 | `skills/interactive-game-prd/web/decision-workbench/dist/` | 随仓库入库，运行时不要求构建环境 |
-| API 测试 | `skills/interactive-game-prd/scripts/decision-workbench.test.mjs` | 19/19 PASS |
+| Vite 工程 | `.claude/skills/interactive-game-prd/web/decision-workbench/` | pages/ components/ stores/ services/ 四层目录，与设计文档目录约定一致 |
+| 服务端 | `.claude/skills/interactive-game-prd/scripts/decision-workbench.mjs` | 页面静态服务 + 4 个 API；只读写指定 game-spec 内 reviews 与 source |
+| 构建产物 | `.claude/skills/interactive-game-prd/web/decision-workbench/dist/` | 随仓库入库，运行时不要求构建环境 |
+| API 测试 | `.claude/skills/interactive-game-prd/scripts/decision-workbench.test.mjs` | 19/19 PASS |
 
 ## 功能与验收对照（设计文档 12 条中与 P6-B 相关项）
 
@@ -45,9 +45,9 @@
 ## 使用方式
 
 ```bash
-node skills/interactive-game-prd/scripts/decision-workbench.mjs examples/mahjong/game-spec --port 8434
+node .claude/skills/interactive-game-prd/scripts/decision-workbench.mjs examples/mahjong/game-spec --port 8434
 # 浏览器打开 http://127.0.0.1:8434/
-# 前端改动后：npm --prefix skills/interactive-game-prd/web/decision-workbench run build
+# 前端改动后：npm --prefix .claude/skills/interactive-game-prd/web/decision-workbench run build
 # 开发模式（热更）：npm run workbench:dev（vite 5173 代理 /api 到 8434）
 ```
 

@@ -6,7 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
-const outDir = process.argv[2] || path.resolve(SCRIPT_DIR, "../../../examples/mini-game/output/interactive-game-prd");
+const outDir = process.argv[2] || path.resolve(SCRIPT_DIR, "../../../../examples/mini-game/output/interactive-game-prd");
 const html = fs.readFileSync(path.join(outDir, "index.html"), "utf8");
 
 let passed = 0;

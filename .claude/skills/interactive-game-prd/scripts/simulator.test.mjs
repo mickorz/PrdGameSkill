@@ -6,7 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 const require = createRequire(import.meta.url);
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
-const { createGame } = require(path.resolve(SCRIPT_DIR, "../../../examples/mini-game/simulator/simulator.js"));
+const { createGame } = require(path.resolve(SCRIPT_DIR, "../../../../examples/mini-game/simulator/simulator.js"));
 
 let passed = 0;
 let failed = 0;

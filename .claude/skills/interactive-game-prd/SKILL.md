@@ -36,7 +36,7 @@ description: 从原始游戏 PRD 生成结构化 Game Requirement IR、Interacti
 ## 目录约定
 
 ```text
-skills/interactive-game-prd/
+.claude/skills/interactive-game-prd/
 ├── references/game-prd-format.md   IR 格式唯一权威定义
 ├── schemas/                        manifest / requirement / ui / test / decision / approval-state 六份 JSON Schema
 ├── templates/                      IR 文件模板
@@ -63,29 +63,29 @@ examples/<game>/
 
 ```bash
 # IR 校验（Create/Update 后必须）
-node skills/interactive-game-prd/scripts/validate-ir examples/<game>/game-spec
+node .claude/skills/interactive-game-prd/scripts/validate-ir examples/<game>/game-spec
 
 # 构建 HTML（先注入模拟器则带第三参数）
-node skills/interactive-game-prd/scripts/build-html.mjs examples/<game>/game-spec examples/<game>/output/interactive-game-prd examples/<game>/simulator
+node .claude/skills/interactive-game-prd/scripts/build-html.mjs examples/<game>/game-spec examples/<game>/output/interactive-game-prd examples/<game>/simulator
 
 # HTML 质量检查（Export 前必须）
-node skills/interactive-game-prd/scripts/validate-html.mjs examples/<game>/output/interactive-game-prd examples/<game>/game-spec
+node .claude/skills/interactive-game-prd/scripts/validate-html.mjs examples/<game>/output/interactive-game-prd examples/<game>/game-spec
 
 # 模拟器场景回放
-node skills/interactive-game-prd/scripts/simulator.test.mjs
+node .claude/skills/interactive-game-prd/scripts/simulator.test.mjs
 
 # 人工裁决应用与审计（Decision 模式，先 dry-run 预演）
-node skills/interactive-game-prd/scripts/apply-decisions.mjs examples/<game>/game-spec decisions.json --dry-run
-node skills/interactive-game-prd/scripts/apply-decisions.mjs examples/<game>/game-spec decisions.json
-node skills/interactive-game-prd/scripts/validate-decisions.mjs examples/<game>/game-spec
+node .claude/skills/interactive-game-prd/scripts/apply-decisions.mjs examples/<game>/game-spec decisions.json --dry-run
+node .claude/skills/interactive-game-prd/scripts/apply-decisions.mjs examples/<game>/game-spec decisions.json
+node .claude/skills/interactive-game-prd/scripts/validate-decisions.mjs examples/<game>/game-spec
 
 # 裁决工作台页面（P6-B，三栏式；浏览器人工操作，写回 reviews 数据）
-node skills/interactive-game-prd/scripts/decision-workbench.mjs examples/<game>/game-spec --port 8434
+node .claude/skills/interactive-game-prd/scripts/decision-workbench.mjs examples/<game>/game-spec --port 8434
 # 前端改动后重新构建（产物 dist 随仓库入库）
-npm --prefix skills/interactive-game-prd/web/decision-workbench run build
+npm --prefix .claude/skills/interactive-game-prd/web/decision-workbench run build
 
 # 端到端一致性（Validate 模式）
-node skills/interactive-game-prd/scripts/validate-output.mjs examples/<game>
+node .claude/skills/interactive-game-prd/scripts/validate-output.mjs examples/<game>
 ```
 
 ## 状态与授权（详见 references/game-prd-format.md 第 6 节）

@@ -1,11 +1,5 @@
 # 产品需求文档（PRD）——卡五星（好友房）
 
-<!--
-  模板改编自 game-ui-design-workflow (MIT License)
-  https://github.com/mickorz/game-ui-design-workflow templates/spec-kit/prd.md
-  改编说明：增加「事实溯源」要求与 GDD 关联列。
--->
-
 > 职责边界：本文件只回答「产品要做什么」（功能、场景、流程、验收）。玩法细节（番型判定、算分公式、倍数口径）一律引用 `GDD.md` 对应规则，不在本文重复展开；页面交互细节与控件级状态机留给 `Interaction.md`，本文只到「对应页面/系统」粒度。唯一事实来源为 `source-analysis.md`；原文未定义的内容一律写「待确认」，不编造。
 
 ## 文档状态

@@ -1,6 +1,5 @@
 # Interaction 格式规范
 
-> 模板：`templates/Interaction.template.md`（改编自 game-ui-design-workflow spec-kit，MIT）
 
 ## 职责
 

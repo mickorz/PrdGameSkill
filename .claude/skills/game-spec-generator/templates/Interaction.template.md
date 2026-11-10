@@ -1,11 +1,5 @@
 # UI 交互逻辑（Interaction）
 
-<!--
-  模板改编自 game-ui-design-workflow (MIT License)
-  https://github.com/mickorz/game-ui-design-workflow templates/spec-kit/interaction.md
-  改编说明：增加「事实溯源」要求；强调充分复用原始 UI 需求文档，不重复发明已有交互。
--->
-
 ## 文档状态
 
 - status: draft

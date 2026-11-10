@@ -93,6 +93,8 @@
   .comp-list { margin-top: 6px; }
   .comp-row { display: block; padding: 4px 8px; margin: 2px 0; border: 1px solid #e3e6ea; border-radius: 4px; font-size: 12px; cursor: pointer; }
   .comp-row:hover { background: #f0f4ff; }
+  .event-row { display: block; padding: 2px 8px 2px 24px; margin: 1px 0; border-radius: 4px; font-size: 11px; color: #456; cursor: pointer; }
+  .event-row:hover { background: #f0f4ff; color: #1a73e8; }
   .req-link { color: #1a73e8; cursor: pointer; text-decoration: underline; }
   .btn-mini { font-size: 12px; padding: 2px 8px; cursor: pointer; }
   .btn-mini.primary { background: #1a73e8; color: #fff; border-color: #1a73e8; }
@@ -163,6 +165,15 @@ for (const s of APP_DATA.states) reqById.set(s.id, s);
 const compById = new Map(); for (const c of APP_DATA.ui.components) compById.set(c.id, c);
 const pageById = new Map(); for (const p of APP_DATA.ui.pages) pageById.set(p.id, p);
 const caseById = new Map(); for (const t of APP_DATA.tests.cases) caseById.set(t.id, t);
+const eventById = new Map(); for (const e of (APP_DATA.ui.events || [])) eventById.set(e.id, e);
+// 反查：某需求被哪些测试用例覆盖（需求 test_refs + 用例 related_requirements 双向合并）
+function testsCovering(rid) {
+  const ids = new Set();
+  const r = reqById.get(rid);
+  if (r) for (const t of r.test_refs || []) ids.add(t);
+  for (const t of APP_DATA.tests.cases) if ((t.related_requirements || []).includes(rid)) ids.add(t.id);
+  return [...ids];
+}
 
 // ---------- 规格分类（P0：导航配置 + 按 APP_DATA 实际 type 字段映射，数量动态统计） ----------
 const SPEC_CATEGORIES = [
@@ -213,6 +224,7 @@ function updateNavActive() {
 function setSpecCategory(cat) {
   specState.category = cat;
   specState.selectedId = null;
+  specState.filters = { keyword: "", status: "all", authority: "all" }; // 切分类重置筛选（避免跨分类残留过滤）
   updateNavActive();
   renderSpecCategory();
 }
@@ -226,6 +238,7 @@ function showDetail(r) {
     ["前置条件", (r.preconditions || []).join("；")],
     ["关联 UI", (r.ui_refs || []).join("、")],
     ["关联测试", (r.test_refs || []).join("、")],
+    ["覆盖测试（反查）", testsCovering(r.id).join("、")],
     ["依赖", (r.dependencies || []).join("、")],
     ["AI 解释", (r.authority === "open" ? "该规则尚待人工确认，AI 不得将其作为确定规则执行。" : "已定义规则，AI 可按 authority 约束使用。")],
   ];
@@ -399,7 +412,8 @@ function renderCatUi() {
     html += `<div class="req-card" data-anchor="${esc(p.id)}" data-page="${esc(p.id)}"><h3>${esc(p.id)} ${esc(p.name)} <span class="badge">${p.resolution ? p.resolution.width + "x" + p.resolution.height : ""}</span></h3>
       <div>${esc(p.description || "")}</div>
       <div style="color:#889;font-size:12px;margin-top:4px">状态：${esc((p.states || []).join(" / "))}</div>
-      <div class="comp-list">${comps.map((c) => `<a class="comp-row" data-comp="${esc(c.id)}">${esc(c.id)} ${esc(c.name)} <span class="badge">${esc(c.type)}</span> <span class="meta">关联需求 ${(c.requirements || []).length} 项</span></a>`).join("") || "<span class='meta'>无组件</span>"}</div></div>`;
+      <div class="comp-list">${comps.map((c) => `<a class="comp-row" data-comp="${esc(c.id)}">${esc(c.id)} ${esc(c.name)} <span class="badge">${esc(c.type)}</span> <span class="meta">关联需求 ${(c.requirements || []).length} 项</span></a>` +
+        ((c.events || []).filter((eid) => eventById.get(eid)).map((eid) => { const ev = eventById.get(eid); return `<a class="event-row" data-event="${esc(eid)}">└ ${esc(eid)} ${esc(ev.name || "")} <span class="meta">${esc(ev.trigger_type || "")}</span></a>`; }).join("") || "")).join("") || "<span class='meta'>无组件</span>"}</div></div>`;
   }
   $("#view").innerHTML = html;
 }
@@ -419,20 +433,24 @@ function showPageDetail(pid) {
     `<div class="field"><span class="k">${k}</span>${esc(v)}</div>`).join("");
 }
 
-// UI 组件详情（GAME-UI 分类点击组件行触发；关联需求可跳规格工作台）
+// UI 组件详情（GAME-UI 分类点击组件行触发；关联需求可跳规格工作台，事件可跳事件详情）
 function showCompDetail(cid) {
   const c = APP_DATA.ui.components.find((x) => x.id === cid);
   if (!c) return;
   const related = (c.requirements || []).filter((rid) => reqById.get(rid));
   const ownerPages = APP_DATA.ui.pages.filter((p) => (p.components || p.component_refs || []).includes(c.id) || (c.page_id || "") === p.id);
+  const coveredTests = [...new Set(related.flatMap((rid) => testsCovering(rid)))];
   const fields = [
     ["ID", c.id], ["名称", c.name], ["类型", c.type],
-    ["事件", (c.events || []).join("、")],
-    ["视觉提示", c.visual_hint || ""],
     ["所属页面", ownerPages.map((p) => `${p.id} ${p.name}`).join("、")],
+    ["覆盖测试", coveredTests.join("、")],
+    ["视觉提示", c.visual_hint || ""],
   ];
   let html = fields.filter(([, v]) => v).map(([k, v]) =>
     `<div class="field"><span class="k">${k}</span>${esc(v)}</div>`).join("");
+  // 事件列表（可点击跳事件详情）
+  const events = (c.events || []).filter((eid) => eventById.get(eid));
+  if (events.length) html += `<div class="field"><span class="k">事件</span>${events.map((eid) => `<a class="req-link" data-event-link="${esc(eid)}">${esc(eid)} ${esc(eventById.get(eid).name || "")}</a>`).join("、")}</div>`;
   // props（结构化属性，空对象不显示）
   const props = Object.entries(c.props || {}).filter(([, v]) => v !== null && v !== undefined && v !== "");
   if (props.length) {
@@ -440,6 +458,26 @@ function showCompDetail(cid) {
       props.map(([k, v]) => `<div class="field" style="padding-left:12px"><span class="k">${esc(k)}</span>${esc(typeof v === "object" ? JSON.stringify(v) : String(v))}</div>`).join("");
   }
   if (related.length) html += `<div class="field"><span class="k">关联需求</span>${related.map((rid) => `<a class="req-link" data-req-link="${esc(rid)}">${esc(rid)}</a>`).join("、")}</div>`;
+  $("#detail").innerHTML = html;
+}
+
+// 事件详情（链路：页面 -> 组件 -> 事件 -> 服务需求 -> 覆盖测试；Interaction Contract 不在 IR 数据内，不展示不推断）
+function showEventDetail(eid) {
+  const ev = eventById.get(eid);
+  if (!ev) return;
+  const triggerComps = APP_DATA.ui.components.filter((c) => (c.events || []).includes(eid));
+  const reqs = (ev.requirements || []).filter((rid) => reqById.get(rid));
+  const coveredTests = [...new Set(reqs.flatMap((rid) => testsCovering(rid)))];
+  const fields = [
+    ["ID", ev.id], ["名称", ev.name], ["触发方式", ev.trigger_type],
+    ["载荷", Object.keys(ev.payload || {}).length ? JSON.stringify(ev.payload) : ""],
+    ["触发组件", triggerComps.map((c) => `${c.id} ${c.name}`).join("、")],
+    ["覆盖测试", coveredTests.join("、")],
+  ];
+  let html = fields.filter(([, v]) => v).map(([k, v]) =>
+    `<div class="field"><span class="k">${k}</span>${esc(v)}</div>`).join("");
+  if (reqs.length) html += `<div class="field"><span class="k">服务需求</span>${reqs.map((rid) => `<a class="req-link" data-req-link="${esc(rid)}">${esc(rid)} ${esc(reqById.get(rid).name || "")}</a>`).join("、")}</div>`;
+  html += `<div class="field"><span class="k">交互契约</span>Interaction Contract（CT 条目）不在 IR 数据内（GSG spec-generation 链路产物），本页不展示、不推断；见 examples/mahjong/spec-generation/Interaction-Contract.yaml</div>`;
   $("#detail").innerHTML = html;
 }
 
@@ -595,7 +633,7 @@ function renderTests() {
     html += `<h4 style="margin:14px 0 4px">${label[type]}（${(byType[type] || []).length}）</h4><table>
       <tr><th>ID</th><th>名称</th><th>步骤</th><th>预期</th><th>关联需求</th></tr>`;
     for (const t of byType[type] || []) {
-      html += `<tr><td>${esc(t.id)}</td><td>${esc(t.name)}</td><td>${esc((t.steps || []).join("；"))}</td><td>${esc(t.expected)}</td><td>${esc((t.related_requirements || []).join("、"))}</td></tr>`;
+      html += `<tr><td>${esc(t.id)}</td><td>${esc(t.name)}</td><td>${esc((t.steps || []).join("；"))}</td><td>${esc(t.expected)}</td><td>${(t.related_requirements || []).map((rid) => reqById.get(rid) ? `<a class="req-link" data-req-link="${esc(rid)}">${esc(rid)}</a>` : esc(rid)).join("、")}</td></tr>`;
     }
     html += `</table>`;
   }
@@ -708,7 +746,8 @@ function renderDecisionList() {
 function renderDecisionWorkbench() {
   const s = decisionStats();
   let html = `<div class="dec-head"><h3>裁决工作台（${s.total} 项未决问题）</h3>
-    <div><button class="btn-dec primary" id="dec-export">导出 decisions.json</button>
+    <div><button class="btn-dec" id="dec-impact-report">生成影响清单</button>
+    <button class="btn-dec primary" id="dec-export">导出 decisions.json</button>
     <span id="dec-export-msg" style="color:#1a73e8;font-size:12px;margin-left:8px"></span></div></div>
     <div class="dec-stats"><b>全部 ${s.total}</b><b>待裁决 ${s.open}</b><b>草稿 ${s.draft}</b><b>已确认 ${s.approved}</b><b>已否决 ${s.rejected}</b><b>已挂起 ${s.deferred}</b></div>
     <div class="dec-filters">
@@ -737,8 +776,104 @@ function renderDecisionWorkbench() {
   $("#df-severity-filter").addEventListener("change", (e) => { decisionState.severityFilter = e.target.value; renderDecisionList(); });
   $("#df-keyword").addEventListener("input", (e) => { decisionState.keyword = e.target.value; renderDecisionList(); });
   $("#dec-export").addEventListener("click", exportDecisions);
+  $("#dec-impact-report").addEventListener("click", renderImpactReport);
   if (decisionState.selectedOqId) selectOq(decisionState.selectedOqId);
 }
+
+// ---------- 裁决影响清单（P2：基于已正式裁决生成人工确认清单，不自动修改任何规格文件） ----------
+function impactReportData() {
+  // 合并 decisionLog 历史与内存正式裁决（同 OQ 内存优先）
+  const byOq = new Map();
+  for (const d of DEC_LOG) byOq.set(d.question_id, d);
+  for (const [oid, mem] of Object.entries(DECISIONS)) {
+    if (mem.status !== "draft" && mem.records.length) byOq.set(oid, mem.records[mem.records.length - 1]);
+  }
+  const items = [];
+  for (const [oid, d] of byOq) {
+    const q = OQ_LIST.find((x) => x.id === oid) || {};
+    const rid = ((d.affected && d.affected.requirements) || [])[0] || q.requirement_id;
+    const rr = reqById.get(rid);
+    const testIds = new Set();
+    const uiIds = new Set();
+    let evIds = [];
+    let transitions = [];
+    let dependencies = [];
+    if (rr) {
+      for (const t of testsCovering(rid)) testIds.add(t);
+      for (const u of rr.ui_refs || []) uiIds.add(u);
+      for (const t of (d.affected && d.affected.tests) || []) testIds.add(t);
+      for (const u of (d.affected && d.affected.ui) || []) uiIds.add(u);
+      evIds = (APP_DATA.ui.events || []).filter((e) => (e.requirements || []).includes(rid)).map((e) => e.id);
+      transitions = (rr.state_transitions || []).map((t) => (typeof t === "string" ? t : `${t.from || ""}->${t.to || ""}`));
+      dependencies = rr.dependencies || [];
+    }
+    items.push({
+      question_id: oid,
+      decision_id: d.decision_id,
+      decision_status: d.decision_status,
+      outcome: d.outcome,
+      final_decision: d.final_decision || null,
+      supersedes: d.supersedes || null,
+      rationale: d.rationale || "",
+      requirement: rr ? { id: rr.id, name: rr.name, status: rr.status, needs_sync: d.decision_status === "approved" && rr.status !== "approved" } : null,
+      review_checks: {
+        tests: [...testIds],
+        ui: [...uiIds],
+        events: evIds,
+        state_transitions: transitions,
+        dependencies,
+        simulator: (d.affected && d.affected.simulator) || false,
+      },
+      human_review: { confirmed: false, note: "" },
+    });
+  }
+  items.sort((a, b) => (a.question_id > b.question_id ? 1 : -1));
+  return {
+    generated_at: new Date().toISOString(),
+    game: (APP_DATA.manifest && APP_DATA.manifest.game_name) || "",
+    summary: {
+      decisions: items.length,
+      needs_sync: items.filter((i) => i.requirement && i.requirement.needs_sync).length,
+      to_review_tests: new Set(items.flatMap((i) => i.review_checks.tests)).size,
+      to_review_ui: new Set(items.flatMap((i) => i.review_checks.ui)).size,
+    },
+    notice: "本清单由已正式裁决（decision-log + 本页内存）自动汇总，仅供人工确认，不自动修改任何规格文件；确认后由人工执行更新流程（GDD/PRD/Interaction/测试）。",
+    items,
+  };
+}
+
+function renderImpactReport() {
+  const rep = impactReportData();
+  let html = `<div class="dec-head"><h3>裁决影响清单（${rep.summary.decisions} 项正式裁决）</h3><div>
+    <button class="btn-dec" id="dec-impact-back">返回裁决工作台</button>
+    <button class="btn-dec primary" id="dec-impact-export">导出 impact-checklist.json</button></div></div>
+    <div class="dec-stats"><b>待同步需求 ${rep.summary.needs_sync}</b><b>需复核测试 ${rep.summary.to_review_tests}</b><b>需复核 UI ${rep.summary.to_review_ui}</b></div>
+    <div class="dec-note">${esc(rep.notice)}</div>`;
+  if (!rep.items.length) {
+    html += `<div class="meta" style="margin:12px 0">尚无正式裁决（内存或 decision-log），完成正式裁决后生成。</div>`;
+  } else {
+    html += `<table class="cfg-table"><thead><tr><th>OQ</th><th>决策</th><th>关联需求</th><th>需求状态同步</th><th>需复核测试</th><th>需复核 UI 与事件</th><th>状态迁移与依赖</th></tr></thead><tbody>` +
+      rep.items.map((i) => `<tr><td>${esc(i.question_id)}</td>` +
+        `<td>${esc(i.decision_id)} ${esc(i.outcome)}${i.supersedes ? "（supersedes " + esc(i.supersedes) + "）" : ""}</td>` +
+        `<td>${i.requirement ? esc(i.requirement.id + " " + i.requirement.name) : "待补充关联"}</td>` +
+        `<td>${i.requirement ? (i.requirement.needs_sync ? `<span class="badge dv-open">待同步（${esc(i.requirement.status)}）</span>` : `<span class="badge dv-approved">${esc(i.requirement.status)}</span>`) : "-"}</td>` +
+        `<td>${esc(i.review_checks.tests.join("、") || "无")}</td>` +
+        `<td>${esc(i.review_checks.ui.join("、") || "无")}${i.review_checks.events.length ? "<br>事件：" + esc(i.review_checks.events.join("、")) : ""}</td>` +
+        `<td>${esc(i.review_checks.state_transitions.join("；") || "无")}${i.review_checks.dependencies.length ? "<br>依赖：" + esc(i.review_checks.dependencies.join("、")) : ""}${i.review_checks.simulator ? "<br><b>模拟器需回归</b>" : ""}</td></tr>`).join("") +
+      `</tbody></table>`;
+  }
+  $("#view").innerHTML = html;
+  $("#dec-impact-back").addEventListener("click", renderDecisionWorkbench);
+  $("#dec-impact-export").addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(impactReportData(), null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "impact-checklist.json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+}
+window.__exportImpactReport = () => JSON.parse(JSON.stringify(impactReportData()));
 
 // 表单态：{ optionIds: [选项 id], inputs: {选项 id: 补充文本}, rationale: 理由 }
 function emptyForm() { return { optionIds: [], inputs: {}, rationale: "" }; }
@@ -1052,6 +1187,8 @@ $("#view").addEventListener("click", (e) => {
   if (link) { showRequirement(link.dataset.reqLink); return; }
   const comp = e.target.closest("[data-comp]");
   if (comp) { showCompDetail(comp.dataset.comp); return; }
+  const event = e.target.closest("[data-event]");
+  if (event) { showEventDetail(event.dataset.event); return; }
   const page = e.target.closest("[data-page]");
   if (page) { showPageDetail(page.dataset.page); return; }
   const row = e.target.closest("tr[data-req-row]");
@@ -1059,10 +1196,12 @@ $("#view").addEventListener("click", (e) => {
   const card = e.target.closest(".req-card[data-anchor]");
   if (card && card.dataset.anchor.startsWith("GAME-")) showDetail(reqById.get(card.dataset.anchor));
 });
-// 右侧详情区关联需求链接跳转（组件详情中的关联需求）
+// 右侧详情区关联需求链接跳转与事件详情跳转（组件详情中的关联需求/事件）
 $("#detail").addEventListener("click", (e) => {
   const link = e.target.closest("[data-req-link]");
-  if (link) showRequirement(link.dataset.reqLink);
+  if (link) { showRequirement(link.dataset.reqLink); return; }
+  const evLink = e.target.closest("[data-event-link]");
+  if (evLink) showEventDetail(evLink.dataset.eventLink);
 });
 renderNav();
 switchTab("spec");

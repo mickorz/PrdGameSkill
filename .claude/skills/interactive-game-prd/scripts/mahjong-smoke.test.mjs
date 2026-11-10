@@ -84,6 +84,44 @@ if (compRow) compRow.click();
 await new Promise((r) => setTimeout(r, 30));
 check("点击组件行右侧详情（含关联需求）", $("#detail").textContent.includes("GAME-"));
 check("组件详情含所属页面与事件字段", $("#detail").textContent.includes("所属页面") && $("#detail").textContent.includes("GAME-UI-"));
+// P3：组件 -> 事件 -> 服务需求 -> 覆盖测试 链路
+check("组件行下事件行渲染（页面-组件-事件层级）", $$("#view .event-row").length >= 5);
+const compRow2 = $$("#view .comp-row").find((r) => r.textContent.includes("GAME-COMP-003"));
+if (compRow2) compRow2.click();
+await new Promise((r) => setTimeout(r, 30));
+const evLink = $("#detail [data-event-link]");
+check("组件详情事件可点击（跳事件详情）", !!evLink);
+if (evLink) evLink.click();
+await new Promise((r) => setTimeout(r, 30));
+check("事件详情链路（触发组件+服务需求+契约提示）", (() => {
+  const d = $("#detail");
+  return d.textContent.includes("触发组件") && d.textContent.includes("GAME-COMP-003") &&
+    d.textContent.includes("服务需求") && d.textContent.includes("GAME-FR-010") &&
+    d.textContent.includes("Interaction Contract");
+})());
+const evReqLink = $("#detail [data-req-link]");
+if (evReqLink) evReqLink.click();
+await new Promise((r) => setTimeout(r, 50));
+check("事件服务需求点击跳规格工作台（自动切分类）", document.querySelector('#tabs button[data-tab="spec"]').className.includes("active") && !!$("#nav .cat-nav[data-cat='GAME-FR'].active") && $("#detail").textContent.includes("GAME-FR-010"));
+// P3：需求详情覆盖测试反查（GAME-RULE-038 被 GAME-TC-001 覆盖）
+const rule38 = (() => {
+  const cat = $$("#nav .cat-nav[data-cat]").find((a) => a.dataset.cat === "GAME-RULE");
+  if (cat) cat.click();
+  return true;
+})();
+await new Promise((r) => setTimeout(r, 50));
+const card38 = $$(".req-card[data-anchor]").find((c) => c.dataset.anchor === "GAME-RULE-038");
+if (card38) card38.click();
+await new Promise((r) => setTimeout(r, 30));
+check("需求详情覆盖测试反查（GAME-TC-001）", rule38 && $("#detail").textContent.includes("覆盖测试") && $("#detail").textContent.includes("GAME-TC-001"));
+// P3：Tests Tab 用例关联需求可点击跳规格工作台
+document.querySelector('#tabs button[data-tab="tests"]').click();
+await new Promise((r) => setTimeout(r, 30));
+const tcReqLink = $$("#view [data-req-link]")[0];
+check("Tests Tab 用例关联需求可点击", !!tcReqLink);
+if (tcReqLink) tcReqLink.click();
+await new Promise((r) => setTimeout(r, 50));
+check("用例关联需求点击跳规格工作台", document.querySelector('#tabs button[data-tab="spec"]').className.includes("active") && $("#detail").textContent.includes("GAME-"));
 check("配置分类渲染（GAME-CFG-001）", (() => {
   const cfg = $$("#nav .cat-nav[data-cat]").find((a) => a.dataset.cat === "GAME-CFG");
   if (!cfg) return false;
@@ -177,6 +215,24 @@ await new Promise((r) => setTimeout(r, 50));
 check("正式裁决内存生效（已确认 1）", $(".dec-stats").textContent.includes("已确认 1") && $$(".dv-approved").length >= 1);
 check("正式裁决后自动定位下一个待裁决", !$("#dec-main h3").textContent.startsWith("OQ-001"));
 check("正式裁决后本地草稿已清理", !((lsDrafts && lsDrafts()["OQ-001"]) || null));
+// P2：裁决影响清单（不自动修改规格文件，人工确认用）
+check("生成影响清单按钮渲染", !!$("#dec-impact-report"));
+$("#dec-impact-report").click();
+await new Promise((r) => setTimeout(r, 30));
+check("影响清单视图渲染（统计+表格+返回）", !!$("#dec-impact-back") && !!$("#dec-impact-export") && !!$(".cfg-table"));
+const impact = window.__exportImpactReport();
+check("影响清单数据格式（needs_sync+复核项+人工确认区+不自动修改声明）", (() => {
+  const it = impact.items.find((x) => x.question_id === "OQ-001");
+  return !!it && it.decision_status === "approved" && it.outcome === "modified" &&
+    it.requirement && it.requirement.id === "GAME-RULE-003" && it.requirement.needs_sync === true &&
+    Array.isArray(it.review_checks.tests) && Array.isArray(it.review_checks.ui) &&
+    it.review_checks.simulator === true &&
+    it.human_review && it.human_review.confirmed === false &&
+    impact.notice.includes("不自动修改");
+})());
+$("#dec-impact-back").click();
+await new Promise((r) => setTimeout(r, 30));
+check("返回裁决工作台", !!$("#dec-list") && $$(".dec-item").length >= 1);
 // 切换问题草稿不丢：OQ-004 填一半 -> 切 OQ-005 -> 回 OQ-004 恢复
 const oq4 = $$(".dec-item").find((x) => x.dataset.oq === "OQ-004");
 if (oq4) oq4.click();

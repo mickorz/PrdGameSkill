@@ -37,18 +37,49 @@ flowchart TD
         C4[用例 10 场景 2]
     end
     C --> S1
-    S1 --> D[审查与人工确认 31 项 OQ]
-    D --> E[固化 IR 并冻结]
-    E --> F[冻结的规格目录 game spec]
-    F --> G[生成规则模拟器 466 行]
-    G --> H[模拟器 UMD 代码 45 条规则]
-    F --> I[build html 构建]
-    H --> I
-    I --> J[html 质量检查]
-    J --> K[无头冒烟测试]
-    K --> L[单文件 index html 约 383 KB]
-    L --> M[一致性汇总报告 validate pass]
+    S1 --> D[需求分类 有原文为 original 推导为 derived]
+    D --> E[语义审查 遗漏 冲突 边界 可测试性]
+    E --> F[登记未决问题 31 项 OQ]
+    subgraph S2 [OQ 产生来源五类]
+        F1[原文歧义或前后矛盾]
+        F2[规则未定义或未登记]
+        F3[推导口径待人工确认]
+        F4[截图或实拍依据缺失]
+        F5[范围与结构待确认]
+    end
+    F --> S2
+    S2 --> G[未决规则保持 authority open]
+    G --> H[固化 IR 并冻结]
+    H --> I[生成规则模拟器 466 行]
+    I --> J[模拟器 UMD 代码 45 条规则]
+    H --> K[build html 构建]
+    J --> K
+    K --> L[html 质量检查]
+    L --> M[无头冒烟测试]
+    M --> N[单文件 index html 约 383 KB]
+    N --> O[一致性汇总报告 validate pass]
 ```
+
+### OQ 是怎么分析出来的
+
+OQ 不是一次性分析出来的，而是**两个阶段、五类来源**累计登记的结果，核心原则是「找不到依据的不编造，登记为待确认」：
+
+| 阶段 | 工作流 | 产生机制 |
+|---|---|---|
+| 抽取时 | extract-requirements 第 3 步需求分类 | 逐条给需求定来源：有原文引用的标 original（kind=original + quote）；推导的标 derived（kind=derived + basis）；**既无原文也无可靠推导依据的，禁止编造，登记 open question**，对应规则 authority=open |
+| 审查时 | review-requirements 语义检查 | validate-ir 确定性检查之后，AI 语义检查五项：遗漏关键页面或规则 / 不同需求间隐性冲突 / 异常流程覆盖 / 可测试性（每条核心规则能否建立验收条件）/ 边界条件；发现的未决问题追加登记 open-questions.json |
+
+五类来源与典型例（31 项，见 `reviews/open-questions.json`）：
+
+| 来源类型 | 典型例 |
+|---|---|
+| 原文歧义或前后矛盾 | OQ-011/012 杠上花「勾选后生效」与创房表「默认生效 2 倍」并存矛盾；OQ-018 滑动出牌默认值两处叙述矛盾 |
+| 规则未定义或未登记 | OQ-002 引擎座位编号映射需求未登记；OQ-013 主公式「字分」无定义；OQ-027 大厅页原始需求缺页 |
+| 推导口径待人工确认 | OQ-007 首巡不摸牌系推导结论；OQ-004 杠分回退为推导口径；OQ-020 清一色与暗四归叠加为推导 |
+| 截图或实拍依据缺失 | OQ-001 房主庄默认值依据为截图，AI 无法读取需人工提供文本 |
+| 范围与结构待确认 | OQ-029 章节编号跳跃是否刻意省略；OQ-030 变体差异是否单独立条 |
+
+OQ 的完整生命周期（与红线闭环）：登记（authority=open）→ 模拟器守卫拒绝执行（RULE_NOT_CONFIRMED）→ Decision Workbench 人工裁决（AI 不允许代人工提交）→ apply-decisions 落盘并追加 decision-log → 重跑构建，规则状态与徽标更新。
 
 ### IR 构成明细（218 条条目）
 

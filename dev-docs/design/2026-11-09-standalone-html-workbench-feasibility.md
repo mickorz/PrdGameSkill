@@ -1,6 +1,8 @@
 # 独立单文件 index.html（需求浏览 + OQ 裁决一体）可行性分析
 
 > 需求：一个独立 index.html，包含所有信息（Interactive HTML PRD 的四 Tab 浏览 + Decision Workbench 的三栏 OQ 裁决），不依赖 React/Vite/npm build 环境也能跑（file:// 双击即可）。
+>
+> **状态：方案 A 已实施（2026-11-10）**：产物新增第五个「裁决」Tab（内存裁决 + 导出 decisions.json + apply-decisions 落盘闭环）；mahjong-smoke 扩至 21 项（裁决 6 项）；全量测试通过；闭环 dry-run 验证通过。见生成链路指南「运行时」与「命令速查」。
 
 ## 现状两条管线
 

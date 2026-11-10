@@ -30,7 +30,7 @@ export function collectSpec(specDir) {
     states: [],
     configs: [],
     tests: { cases: [], scenarios: [] },
-    reviews: { openQuestions: null, decisionLog: null, completeness: null, consistency: null },
+    reviews: { openQuestions: null, decisionLog: null, completeness: null, consistency: null, approvalState: null },
     sourceMap: null,
     simulator: { enabled: false, code: "" },
   };
@@ -48,7 +48,7 @@ export function collectSpec(specDir) {
   if (fs.existsSync(nav)) appData.ui.navigation = readYaml(nav);
   for (const f of walkYamlFiles(path.join(specDir, "tests", "cases"))) appData.tests.cases.push(readYaml(f));
   for (const f of walkYamlFiles(path.join(specDir, "tests", "scenarios"))) appData.tests.scenarios.push(readYaml(f));
-  for (const name of ["open-questions.json", "decision-log.json", "completeness.json", "consistency.json"]) {
+  for (const name of ["open-questions.json", "decision-log.json", "completeness.json", "consistency.json", "approval-state.json"]) {
     const p = path.join(specDir, "reviews", name);
     if (fs.existsSync(p)) appData.reviews[name.replace(".json", "").replace(/-(\w)/g, (_, c) => c.toUpperCase())] = JSON.parse(fs.readFileSync(p, "utf8"));
   }

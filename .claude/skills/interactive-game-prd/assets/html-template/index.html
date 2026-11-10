@@ -63,6 +63,26 @@
   #log { margin-top: 12px; border-top: 1px solid #eee; padding-top: 8px; max-height: 180px; overflow: auto;
          font-size: 12px; color: #556; font-family: Consolas, monospace; }
   .warn-open { background: #fff3cd; border: 1px solid #ffe08a; border-radius: 4px; padding: 4px 8px; margin: 8px 0; font-size: 12px; }
+  .dec-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .btn-dec { border: 1px solid #9db4e8; background: #f4f8ff; color: #1a73e8; border-radius: 4px; padding: 6px 14px; cursor: pointer; font-size: 13px; }
+  .btn-dec.primary { background: #1a73e8; color: #fff; }
+  .dec-note { background: #f8f9fb; border: 1px solid #e3e6ea; border-radius: 6px; padding: 6px 10px; margin: 8px 0; color: #556; font-size: 12px; }
+  .dec-layout { display: flex; gap: 12px; margin-top: 10px; align-items: flex-start; }
+  .dec-list { width: 340px; max-height: 70vh; overflow: auto; border: 1px solid #e3e6ea; border-radius: 8px; padding: 6px; flex-shrink: 0; }
+  .dec-item { display: block; padding: 6px 8px; margin: 2px 0; border-radius: 4px; cursor: pointer; font-size: 12px; }
+  .dec-item:hover { background: #f0f4ff; }
+  .dec-item.active { background: #dbe6ff; }
+  .dec-detail { flex: 1; min-width: 0; }
+  .dec-form label { display: block; margin: 8px 0; font-size: 13px; }
+  .dec-form select, .dec-form textarea { width: 100%; margin-top: 4px; font-size: 13px; padding: 4px 6px; box-sizing: border-box; }
+  .dv-open { background: #fff3cd; color: #856404; }
+  .dv-draft { background: #e2e3e5; color: #495057; }
+  .dv-approved { background: #d4edda; color: #155724; }
+  .dv-rejected { background: #f8d7da; color: #721c24; }
+  .dv-deferred { background: #e2e3e5; color: #6c757d; }
+  .sv-high { background: #f8d7da; color: #721c24; }
+  .sv-medium { background: #fff3cd; color: #856404; }
+  .sv-low { background: #eee; color: #777; }
 </style>
 </head>
 <body>
@@ -77,6 +97,7 @@
     <button data-tab="ui">UI Demo</button>
     <button data-tab="flow">Flow</button>
     <button data-tab="tests">Tests</button>
+    <button data-tab="decision">裁决</button>
   </div>
   <div id="view"></div>
 </main>
@@ -137,7 +158,7 @@ function renderNav() {
     if (a.dataset.req) showRequirement(a.dataset.req);
     else if (a.dataset.nav === "overview") switchTab("prd", () => scrollReq("__overview__"));
     else if (a.dataset.nav === "tests") switchTab("tests");
-    else if (a.dataset.nav === "openq") switchTab("prd", () => scrollReq("__openq__"));
+    else if (a.dataset.nav === "openq") switchTab("decision");
     else if (a.dataset.nav && a.dataset.nav.startsWith("ui:")) switchTab("ui");
   });
 }
@@ -187,6 +208,7 @@ function switchTab(tab, after) {
   if (tab === "ui") renderUiDemo();
   if (tab === "flow") renderFlow();
   if (tab === "tests") renderTests();
+  if (tab === "decision") renderDecision();
   if (after) raf(after);
 }
 
@@ -370,6 +392,135 @@ function renderTests() {
   }
   $("#view").innerHTML = html;
 }
+
+// ---------- 裁决视图（单文件 Decision Workbench，方案 A：内存裁决 + 导出 decisions.json） ----------
+const OQ_LIST = APP_DATA.reviews.openQuestions || [];
+const DEC_LOG = (APP_DATA.reviews.decisionLog && APP_DATA.reviews.decisionLog.decisions) || [];
+const DEC_DRAFTS = (APP_DATA.reviews.approvalState && APP_DATA.reviews.approvalState.drafts) || {};
+const DECISIONS = {}; // OQ id -> 内存裁决记录；decision_status=draft 不进导出
+let decSeq = DEC_LOG.reduce((m, d) => Math.max(m, Number(String(d.decision_id || "DEC-0").replace("DEC-", "")) || 0), 0);
+let selectedOq = null;
+
+function decPrevInLog(oid) {
+  const ds = DEC_LOG.filter((d) => d.question_id === oid);
+  return ds.length ? ds[ds.length - 1] : null;
+}
+
+function decBadge(q) {
+  const st = (DECISIONS[q.id] && DECISIONS[q.id].decision_status) || "open";
+  const label = { open: "待裁决", draft: "草稿", approved: "已确认", rejected: "已否决", deferred: "已挂起" }[st];
+  return `<span class="badge dv-${st}">${label}</span>`;
+}
+
+function sevBadge(q) { return `<span class="badge sv-${q.severity || "low"}">${esc(q.severity || "low")}</span>`; }
+
+function renderDecision() {
+  const decided = Object.values(DECISIONS).filter((d) => d.decision_status !== "draft");
+  const open = OQ_LIST.length - decided.length;
+  let html = `<div class="dec-head"><h3>未决问题裁决（${OQ_LIST.length} 项：已裁决 ${decided.length} / 待裁决 ${open}）</h3>
+    <div><button class="btn-dec primary" id="dec-export">导出 decisions.json（${decided.length} 条正式裁决）</button>
+    <span id="dec-export-msg" style="color:#1a73e8;font-size:12px;margin-left:8px"></span></div></div>
+    <div class="dec-note">裁决在本页内存中完成（刷新丢失，正式裁决请及时导出）。导出后执行：node .claude/skills/interactive-game-prd/scripts/apply-decisions.mjs examples/mahjong/game-spec decisions.json --dry-run 预演，通过后去掉 --dry-run 落盘，再重跑 build-html 刷新本文件。AI 不代人工提交：点「正式裁决」与「导出」即人工确认动作。reviewer 固定为 human。</div>
+    <div class="dec-layout">
+      <div class="dec-list" id="dec-list">${OQ_LIST.map((q) => `<a class="dec-item" data-oq="${esc(q.id)}">${esc(q.id)} ${esc(String(q.question || "").slice(0, 36))}…${sevBadge(q)}${decBadge(q)}</a>`).join("")}</div>
+      <div class="dec-detail" id="dec-detail"><span style="color:#99a">点击左侧未决问题查看详情与裁决</span></div>
+    </div>`;
+  $("#view").innerHTML = html;
+  $("#dec-list").addEventListener("click", (e) => {
+    const a = e.target.closest("[data-oq]");
+    if (a) selectOq(a.dataset.oq);
+  });
+  $("#dec-export").addEventListener("click", exportDecisions);
+  if (selectedOq) selectOq(selectedOq);
+}
+
+function selectOq(oid) {
+  selectedOq = oid;
+  const q = OQ_LIST.find((x) => x.id === oid);
+  if (!q) return;
+  document.querySelectorAll("#dec-list .dec-item").forEach((a) => a.classList.toggle("active", a.dataset.oq === oid));
+  const draft = DECISIONS[oid] || DEC_DRAFTS[oid] || {};
+  const prev = decPrevInLog(oid);
+  const r = reqById.get(q.requirement_id);
+  const impact = r ? `<div class="req-card"><h3>关联需求 ${esc(r.id)} ${esc(r.name)} ${badges(r)}</h3><div>${esc(r.description || "")}</div>
+      <div style="color:#889;font-size:12px;margin-top:4px">关联 UI：${esc((r.ui_refs || []).join("、") || "无")}　关联测试：${esc((r.test_refs || []).join("、") || "无")}</div></div>` : "";
+  const imgNote = (q.images && q.images.length) ? `<div class="warn-open">附图依据：${esc(q.images.join("、"))} —— AI 无法读取截图数值，需人工提供文本补充</div>` : "";
+  const supNote = prev ? `<div class="dec-note">该问题在 decision-log 中已有正式裁决 ${esc(prev.decision_id)}（${esc(prev.decision_status)}），本次裁决将自动写入 supersedes 指向它。</div>` : "";
+  $("#dec-detail").innerHTML = `<h3>${esc(q.id)}（severity：${esc(q.severity || "")}）</h3>
+    <div class="quote">${esc(q.question || "")}</div>
+    <div style="color:#889;font-size:12px">关联需求：${esc(q.requirement_id || "无")}</div>${imgNote}${impact}${supNote}
+    <h4 style="margin:12px 0 4px">裁决</h4>
+    <div class="dec-form">
+      <label>结论 <select id="df-status">
+        <option value="approved"${draft.decision_status === "approved" ? " selected" : ""}>确认通过（approved）</option>
+        <option value="rejected"${draft.decision_status === "rejected" ? " selected" : ""}>否决（rejected）</option>
+        <option value="deferred"${draft.decision_status === "deferred" ? " selected" : ""}>挂起（deferred）</option>
+      </select></label>
+      <label>口径 <select id="df-outcome">
+        <option value="adopted"${draft.outcome === "adopted" ? " selected" : ""}>采纳当前口径（adopted）</option>
+        <option value="modified"${draft.outcome === "modified" ? " selected" : ""}>人工修改后采纳（modified）</option>
+        <option value="rejected"${draft.outcome === "rejected" ? " selected" : ""}>否决口径（rejected）</option>
+        <option value="deferred"${draft.outcome === "deferred" ? " selected" : ""}>挂起待定（deferred）</option>
+      </select></label>
+      <label>理由（正式裁决必填） <textarea id="df-rationale" rows="3">${esc(draft.rationale || "")}</textarea></label>
+      <div><button class="btn-dec" id="dec-draft">暂存草稿</button> <button class="btn-dec primary" id="dec-confirm">正式裁决</button></div>
+      <div id="dec-msg" style="color:#1a73e8;font-size:12px;margin-top:4px"></div>
+    </div>`;
+  $("#dec-draft").addEventListener("click", () => saveDecision(oid, "draft"));
+  $("#dec-confirm").addEventListener("click", () => saveDecision(oid, null));
+}
+
+function syncOutcome(status, chosen) {
+  if (status === "approved") return chosen === "modified" ? "modified" : "adopted";
+  return status;
+}
+
+function saveDecision(oid, forceDraft) {
+  const q = OQ_LIST.find((x) => x.id === oid);
+  const status = forceDraft ? "draft" : $("#df-status").value;
+  const rationale = $("#df-rationale").value.trim();
+  const msg = $("#dec-msg");
+  if (!forceDraft && !rationale) { msg.textContent = "正式裁决必须填写理由"; return; }
+  const prevMem = DECISIONS[oid];
+  const prev = decPrevInLog(oid);
+  const reuseId = prevMem && prevMem.decision_status !== "draft" && status !== "draft";
+  const rec = {
+    decision_id: reuseId ? prevMem.decision_id : "DEC-" + String(++decSeq).padStart(3, "0"),
+    question_id: oid,
+    decision_status: status,
+    outcome: syncOutcome(status, $("#df-outcome").value),
+    final_decision: null,
+    rationale,
+    reviewer: "human",
+    decided_at: new Date().toISOString(),
+    requirement_updates: [],
+    affected: {
+      requirements: [q.requirement_id].filter(Boolean),
+      tests: ((reqById.get(q.requirement_id) || {}).test_refs) || [],
+      ui: ((reqById.get(q.requirement_id) || {}).ui_refs) || [],
+      simulator: /^GAME-RULE/.test(q.requirement_id || ""),
+    },
+  };
+  const sup = (prevMem && prevMem.decision_status !== "draft") ? prevMem.decision_id : (prev ? prev.decision_id : null);
+  if (sup && status !== "draft") rec.supersedes = sup;
+  if (status === "draft") { delete rec.decided_at; }
+  DECISIONS[oid] = rec;
+  renderDecision();
+}
+
+function exportDecisions() {
+  const list = Object.values(DECISIONS).filter((d) => d.decision_status !== "draft");
+  const msg = $("#dec-export-msg");
+  if (!list.length) { msg.textContent = "尚无正式裁决（草稿不导出），先在右侧完成正式裁决"; return; }
+  const blob = new Blob([JSON.stringify(list, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "decisions.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+  msg.textContent = `已导出 ${list.length} 条正式裁决到 decisions.json（浏览器下载目录）`;
+}
+window.__exportDecisionsData = () => JSON.parse(JSON.stringify(Object.values(DECISIONS).filter((d) => d.decision_status !== "draft")));
 
 // ---------- 判定日志 ----------
 function appendLog(msg) {

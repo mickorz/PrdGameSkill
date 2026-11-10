@@ -326,7 +326,7 @@ const APP_DATA = /*__APP_DATA_JSON__*/null;
 
 | 检查 | 命令 | 内容 |
 |---|---|---|
-| mahjong-smoke | `mahjong-smoke.test.mjs <output>` | jsdom 无头冒烟 15 项（通用断言，不依赖游戏专用交互），明细见下表 |
+| mahjong-smoke | `mahjong-smoke.test.mjs <output>` | jsdom 无头冒烟 21 项（通用断言，不依赖游戏专用交互），明细见下表 |
 | mahjong-simulator.test | `mahjong-simulator.test.mjs` | 场景回放 39 项断言（对应 IR 测试用例 TC 与规则 ID），明细见下表 |
 | validate-output | `validate-output.mjs examples/mahjong` | 串联全部校验输出机器可读报告（`output/reports/validate-report.json`）：result=pass、requirement_total=165（含 configs/states）、来源追溯率 100% |
 
@@ -343,19 +343,20 @@ const APP_DATA = /*__APP_DATA_JSON__*/null;
 | 守卫与健壮性 | 总结算抛 RULE_NOT_CONFIRMED（S0 结算总公式未确认，GAME-RULE-116）→ 未知动作被拒绝（unknown_action） | 2 |
 | 快照恢复 | 快照前状态推进正常 → 恢复后状态一致（回合、副露、牌河、手牌全部还原） | 2 |
 
-**mahjong-smoke 15 项检查明细**（jsdom 加载产物 index.html 无头执行，分三类）：
+**mahjong-smoke 21 项检查明细**（jsdom 加载产物 index.html 无头执行，分四类）：
 
 | 类别 | 检查项 |
 |---|---|
-| 静态渲染（7 项） | 标题渲染游戏名（卡五星）<br>需求条目渲染 130+<br>状态徽标渲染（proposed 100+）<br>授权徽标渲染（fixed 50+ 与 open 并存）<br>四个标签页存在（prd / ui / flow / tests）<br>未决问题面板渲染（31 项 OQ）<br>PRD 分组渲染（规则与配置条目） |
+| 静态渲染（7 项） | 标题渲染游戏名（卡五星）<br>需求条目渲染 130+<br>状态徽标渲染（proposed 100+）<br>授权徽标渲染（fixed 50+ 与 open 并存）<br>五个标签页存在（prd / ui / flow / tests / decision）<br>未决问题面板渲染（31 项 OQ）<br>PRD 分组渲染（规则与配置条目） |
 | 离线与健壮性（2 项） | 数据内嵌无外链 fetch<br>页面无致命脚本错误 |
 | UI Demo 与模拟器（6 项） | 切到 UI Demo 标签页（懒渲染生效）<br>UI 页面渲染（5 页 20 组件 + 对局桌面文本）<br>模拟器已注入（MiniGameFactory 全局对象）<br>模拟器操作按钮渲染（碰杠亮胡过 5+）<br>模拟器摸牌交互生效（点击后区域更新）<br>未确认规则触发 RULE_NOT_CONFIRMED 提示（点击总结算触发守卫） |
+| 裁决 Tab（6 项） | 裁决 Tab 渲染 31 项 OQ<br>裁决进度显示（已裁决 0 待裁决 31）<br>审批草稿预填（approval-state 草稿预填表单）<br>OQ 详情与关联需求渲染（影响预览）<br>正式裁决内存生效（进度已裁决 1 + 徽标变化）<br>导出数据为 apply-decisions 输入格式（decision schema 字段全量断言） |
 
 说明：`e2e.mjs`（端到端 7 步）固定跑 mini-game 样例（管线回归锚点）；卡五星的全链验证由上述两项专用测试 + validate-output 覆盖。Export 前要求 validate-output result=pass，产物 ZIP 在 `output/interactive-game-prd.zip`。
 
 ## 运行时：浏览器打开 index.html 会发生什么
 
-单文件离线（file:// 双击可开），左侧导航（131 条需求按组）+ 四个 Tab：
+单文件离线（file:// 双击可开），左侧导航（131 条需求按组）+ 五个 Tab：
 
 | Tab | 内容 |
 |---|---|
@@ -363,12 +364,25 @@ const APP_DATA = /*__APP_DATA_JSON__*/null;
 | UI Demo | 规则模拟器：执行 `new Function(APP_DATA.simulator.code)()` 加载 UMD 代码挂 window.MiniGameFactory，`MiniGameFactory.create(area, logger)` 起 DOM 模拟器；每次操作输出带 GAME-RULE 引用的判定日志；未确认规则（authority=open，如结算总公式）操作弹 `RULE_NOT_CONFIRMED` |
 | Flow | 状态机 SVG（对局状态流转）与主循环 |
 | Tests | 测试用例表（10 个 GAME-TC）+ 预设场景卡片 |
+| 裁决 | 单文件 Decision Workbench（方案 A）：左栏 31 项 OQ 列表（severity 徽标 + 状态徽标，预填 approval-state 草稿）、右栏详情（问题全文 + 关联需求影响预览 + 附图依据提示 + supersedes 链提示）与裁决表单（结论 approved/rejected/deferred + 口径 adopted/modified/rejected/deferred + 理由必填）；裁决在内存完成，点「导出 decisions.json」下载（decision schema 格式：reviewer 固定 human、affected 自动补全引用图），导出后交 apply-decisions 落盘（先 --dry-run 预演），落盘后重跑 build-html 刷新徽标 |
+
+裁决 Tab 落盘闭环（红线保留：AI 不代人工提交，点「正式裁决」与「导出」即人工确认动作）：
+
+```bash
+# 1. 浏览器裁决 Tab 内完成裁决 -> 导出 decisions.json（浏览器下载目录）
+# 2. 预演（不写入）
+node .claude/skills/interactive-game-prd/scripts/apply-decisions.mjs examples/mahjong/game-spec <下载目录>/decisions.json --dry-run
+# 3. 落盘（decision-log 追加 + open-questions 状态更新 + approval-state 刷新）
+node .claude/skills/interactive-game-prd/scripts/apply-decisions.mjs examples/mahjong/game-spec <下载目录>/decisions.json
+# 4. 重跑构建刷新本文件
+node .claude/skills/interactive-game-prd/scripts/build-html.mjs examples/mahjong/game-spec examples/mahjong/output/interactive-game-prd examples/mahjong/simulator
+```
 
 双向定位：PRD 卡片【查看 UI】按钮 → 跳 UI Demo 并高亮组件；UI 组件右键 → 跳回 PRD 并高亮关联需求。
 
 ## 何时重新生成
 
-- 31 项 OQ 裁决后（走 Decision 模式 apply-decisions 落盘 + decision-log 追加，或 Decision Workbench 页面裁决）→ 重跑阶段三构建 + 质量门，HTML 中规则状态与徽标随之更新
+- 31 项 OQ 裁决后：在裁决 Tab 导出 decisions.json -> apply-decisions 落盘（或 React 版 Decision Workbench 页面裁决直接写回）-> 重跑阶段三构建 + 质量门，HTML 中规则状态与徽标随之更新
 - IR 变化（Update 流程）后：重跑构建
 - 只改模拟器：重跑 build-html（第三参数注入）
 - 前端渲染模板改动：重跑 build-html（模板随 skill 版本更新）
@@ -383,7 +397,7 @@ node .claude/skills/interactive-game-prd/scripts/build-html.mjs examples/mahjong
 # 质量检查
 node .claude/skills/interactive-game-prd/scripts/validate-html.mjs examples/mahjong/output/interactive-game-prd examples/mahjong/game-spec
 
-# 卡五星专用冒烟（15 项）
+# 卡五星专用冒烟（21 项，含裁决 Tab 6 项）
 node .claude/skills/interactive-game-prd/scripts/mahjong-smoke.test.mjs
 
 # 卡五星模拟器场景回放（39 项）
@@ -392,7 +406,11 @@ node .claude/skills/interactive-game-prd/scripts/mahjong-simulator.test.mjs
 # 一致性汇总（含 Export 质量门）
 node .claude/skills/interactive-game-prd/scripts/validate-output.mjs examples/mahjong
 
-# 裁决工作台（31 项 OQ 人工裁决，页面操作写回 reviews）
+# 裁决闭环（单文件版主路径：产物裁决 Tab 导出 -> 预演 -> 落盘 -> 重建）
+node .claude/skills/interactive-game-prd/scripts/apply-decisions.mjs examples/mahjong/game-spec decisions.json --dry-run
+node .claude/skills/interactive-game-prd/scripts/apply-decisions.mjs examples/mahjong/game-spec decisions.json
+
+# 裁决工作台（React 版备选：直接写回 reviews，需本地服务）
 node .claude/skills/interactive-game-prd/scripts/decision-workbench.mjs examples/mahjong/game-spec --port 8434
 ```
 
@@ -406,7 +424,7 @@ node .claude/skills/interactive-game-prd/scripts/decision-workbench.mjs examples
 | IR 需求 | 8 条 | 131 条 |
 | 模拟器 | 165 行 / 6 规则 | 466 行 / 45 规则 |
 | index.html | 42 KB | 383 KB |
-| 冒烟测试 | html-smoke（19 项，游戏专用断言） | mahjong-smoke（15 项，通用断言） |
+| 冒烟测试 | html-smoke（19 项，游戏专用断言） | mahjong-smoke（21 项，通用断言含裁决 6 项） |
 | 场景回放 | simulator.test（10 项） | mahjong-simulator.test（39 项） |
 | 端到端 | e2e.mjs（7 步，管线回归锚点） | validate-output（result=pass） |
 | 定位 | 管线验证 Golden Sample（冻结） | 真实业务样例（随裁决演进） |

@@ -62,5 +62,31 @@ if (simArea) {
   check("模拟器区域存在", false);
 }
 
+// ---------- 裁决 Tab（单文件 Decision Workbench，方案 A） ----------
+document.querySelector('#tabs button[data-tab="decision"]').click();
+await new Promise((r) => setTimeout(r, 50));
+check("裁决 Tab 渲染 31 项 OQ", $$(".dec-item").length === 31);
+check("裁决进度显示（已裁决 0 待裁决 31）", /已裁决 0 \/ 待裁决 31|已裁决 0.*待裁决 31/.test($("#view").textContent));
+check("审批草稿预填（OQ-002 采纳口径）", (() => {
+  const a = $$(".dec-item").find((x) => x.dataset.oq === "OQ-002");
+  if (!a) return false;
+  a.click();
+  return true;
+})() && $("#dec-detail").textContent.includes("GAME-RULE-005"));
+$$(".dec-item")[0].click();
+await new Promise((r) => setTimeout(r, 30));
+check("OQ 详情与关联需求渲染（GAME-RULE-003）", $("#dec-detail").textContent.includes("GAME-RULE-003") && $("#df-rationale") !== null);
+$("#df-rationale").value = "人工确认测试裁决口径";
+$("#dec-confirm").click();
+await new Promise((r) => setTimeout(r, 30));
+check("正式裁决内存生效（进度已裁决 1）", /已裁决 1/.test($("#view").textContent) && $$(".dv-approved").length >= 1);
+const exported = window.__exportDecisionsData();
+check("导出数据为 apply-decisions 输入格式", Array.isArray(exported) && exported.length === 1 &&
+  exported[0].question_id === "OQ-001" && exported[0].reviewer === "human" &&
+  exported[0].decision_status === "approved" && exported[0].outcome === "modified" &&
+  /^DEC-\d{3}$/.test(exported[0].decision_id) && typeof exported[0].decided_at === "string" &&
+  exported[0].rationale.length > 0 && Array.isArray(exported[0].requirement_updates) &&
+  exported[0].affected.requirements.includes("GAME-RULE-003"));
+
 console.log("\n结果: " + passed + " passed, " + failed + " failed");
 process.exit(failed ? 1 : 0);

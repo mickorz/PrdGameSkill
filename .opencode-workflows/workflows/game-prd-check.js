@@ -20,6 +20,7 @@
 //   reviewModel   报告质检使用的模型，默认同 analysisModel（传空字符串则用会话默认模型）
 //   concurrency   并发上限，默认 16（运行时钳制到 16）
 //   fast          最快档：规则组压到 16 组以内、强制确定性去重、报告分片并行写、默认跳过质检
+//   excludeKeywords 本期不检查的主题关键词数组，默认 ["金币场"]；命中 module/title/location/ruleRef 即剔除
 //   skipReview    传 true 跳过报告质检阶段，直接出报告（更快，少一轮串行读文件）
 
 export const meta = {
@@ -50,6 +51,8 @@ const fastMode = A.fast === true
 const skipReview = A.skipReview === false ? false : A.skipReview === true || fastMode
 // fast 档把规则组压到并发上限以内，避免排第二波
 const maxRuleGroups = fastMode ? 16 : 24
+// 本期不检查的主题关键词：命中的问题在汇总后剔除，不计入统计
+const excludeKeywords = Array.isArray(A.excludeKeywords) ? A.excludeKeywords : ['金币场']
 
 // 分析阶段（扫描 / 规则检查 / 一致性检查 / 去重）统一用快速模型，报告撰写用会话默认模型
 const analysisModel =
@@ -362,6 +365,23 @@ if (internalResult && Array.isArray(internalResult.issues)) {
 }
 if (droppedGroup > 0) log('有 ' + droppedGroup + ' 个规则组检查失败，报告仅覆盖成功分组')
 
+let excludedCount = 0
+if (excludeKeywords.length > 0) {
+  const kept = []
+  for (const it of allIssues) {
+    const haystack = [it.module, it.title, it.location, it.ruleRef].join(' ')
+    if (excludeKeywords.some((k) => k && haystack.indexOf(k) >= 0)) {
+      excludedCount += 1
+      continue
+    }
+    kept.push(it)
+  }
+  allIssues = kept
+}
+if (excludedCount > 0) {
+  log('按本期检查范围排除 ' + excludedCount + ' 条涉及 ' + excludeKeywords.join('、') + ' 的问题')
+}
+
 if (!fastMode && allIssues.length > 15) {
   const compact = allIssues.map((it, i) => ({
     i: i,
@@ -509,6 +529,11 @@ log(
 
 phase('生成报告')
 
+const scopeLine =
+  excludeKeywords.length > 0
+    ? '检查范围：排除 ' + excludeKeywords.join('、') + '（本期不检查，未计入统计）'
+    : '检查范围：全量'
+
 // 报告输入瘦身：清单表只给精简字段，详情只给 P0/P1 + 3 条典型 P2
 const tableRows = issues.map((it) => ({
   id: it.id,
@@ -554,6 +579,7 @@ if (fastMode) {
           '',
           '报告头部信息（写在文件最开头）：',
           '- 检查对象：' + inputFiles.join('、'),
+          '- ' + scopeLine,
           '- 规则基准：' + rulesDir,
           '- 检查日期：' + checkDate,
           '',
@@ -645,6 +671,7 @@ if (fastMode) {
       '',
       '报告头部信息：',
       '- 检查对象：' + inputFiles.join('、'),
+      '- ' + scopeLine,
       '- 规则基准：' + rulesDir,
       '- 检查日期：' + checkDate,
       '',
@@ -739,6 +766,8 @@ return {
   typeStats: typeStats,
   topicRank: topicRank,
   moduleRank: moduleRank,
+  excludedCount: excludedCount,
+  excludeKeywords: excludeKeywords,
   reviewSkipped: skipReview,
   fastMode: fastMode,
   reviewOk: skipReview ? null : review ? review.ok === true || fixed : false,

@@ -569,6 +569,7 @@ if (fastMode) {
           '3. 不要写第 3、4 段，也不要写结尾总结。',
           '4. 使用 write 工具写入 ' + part1Path + '，UTF-8 中文，不使用 Emoji。',
           '5. 完成后返回写入的条数。',
+          '只操作指定的输出文件，不要执行 git 命令、不要提交或推送、不要改动其他文件。',
         ].join('\n'),
         { label: '写报告-概览与清单', agentType: 'general', timeoutMs: 3600000 }
       ),
@@ -601,6 +602,7 @@ if (fastMode) {
           '4. 只能使用给定数据中的事实，不得编造引文或新增问题；引文必须来自 quote 字段。',
           '5. 使用 write 工具写入 ' + part2Path + '，UTF-8 中文，不使用 Emoji。',
           '6. 完成后返回写入的条数。',
+          '只操作指定的输出文件，不要执行 git 命令、不要提交或推送、不要改动其他文件。',
         ].join('\n'),
         { label: '写报告-详情与建议', agentType: 'general', timeoutMs: 3600000 }
       ),
@@ -628,6 +630,7 @@ if (fastMode) {
       '',
       '只有命令执行失败时，才自行读取两个分片并用 write 合并（两片之间空一行）。',
       '合并后确认目标文件存在，返回合并结果与分片摘要：',
+      '只操作指定的输出文件，不要执行 git 命令、不要提交或推送、不要改动其他文件。',
       JSON.stringify(partResults).slice(0, 600),
     ].join('\n'),
     { label: '合并报告分片', agentType: 'general', timeoutMs: 900000 }
@@ -662,6 +665,7 @@ if (fastMode) {
       '5. 只能使用上面数据中的事实，不得编造原文引文或新增问题；引文必须来自 quote 字段。',
       '6. 使用 write 工具写入 ' + outPath + '，UTF-8 中文，不使用 Emoji。',
       '7. 完成后返回文件路径与写入的问题总条数。',
+      '只操作指定的输出文件，不要执行 git 命令、不要提交或推送、不要改动其他文件。',
     ].join('\n'),
     { label: '撰写报告 ' + outPath, agentType: 'general', timeoutMs: 3600000 }
   )
@@ -713,6 +717,7 @@ if (skipReview) {
         JSON.stringify(tableRows, null, 1),
         '',
         '修改完成后返回修改摘要。',
+        '只操作指定的报告文件，不要执行 git 命令、不要提交或推送、不要改动其他文件。',
       ].join('\n'),
       { label: '修正报告', agentType: 'general', timeoutMs: 1800000 }
     )

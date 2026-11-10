@@ -5,7 +5,7 @@
 - .claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/（总览 + 01~40 号流程规范）
 - .claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md（老 PRD 产品基准）
 
-检查日期：2026-02-14
+检查日期：2026-11-10
 
 说明：以规则基准为正确答案检查需求文档。基准中定义而需求未覆盖的记 MISSING；需求内部两处矛盾的记 CONFLICT；与基准冲突或自身逻辑错误的记 LOGIC；可多种理解的记 AMBIGUOUS；无法实现或验收的记 INCOMPLETE。
 

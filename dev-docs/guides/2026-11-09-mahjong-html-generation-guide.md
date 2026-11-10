@@ -326,7 +326,7 @@ const APP_DATA = /*__APP_DATA_JSON__*/null;
 
 | 检查 | 命令 | 内容 |
 |---|---|---|
-| mahjong-smoke | `mahjong-smoke.test.mjs <output>` | jsdom 无头冒烟 48 项（含工作空间拆分/五类渲染器/裁决选项卡片断言），明细见下表 |
+| mahjong-smoke | `mahjong-smoke.test.mjs <output>` | jsdom 无头冒烟 55 项（含工作空间拆分/五类渲染器/裁决选项卡片/UI 页面切换断言），明细见下表 |
 | mahjong-simulator.test | `mahjong-simulator.test.mjs` | 场景回放 39 项断言（对应 IR 测试用例 TC 与规则 ID），明细见下表 |
 | validate-output | `validate-output.mjs examples/mahjong` | 串联全部校验输出机器可读报告（`output/reports/validate-report.json`）：result=pass、requirement_total=165（含 configs/states）、来源追溯率 100% |
 
@@ -343,14 +343,14 @@ const APP_DATA = /*__APP_DATA_JSON__*/null;
 | 守卫与健壮性 | 总结算抛 RULE_NOT_CONFIRMED（S0 结算总公式未确认，GAME-RULE-116）→ 未知动作被拒绝（unknown_action） | 2 |
 | 快照恢复 | 快照前状态推进正常 → 恢复后状态一致（回合、副露、牌河、手牌全部还原） | 2 |
 
-**mahjong-smoke 48 项检查明细**（jsdom 加载产物 index.html 无头执行，分五类；多选模式仅测试内存注入 decision_options，不改真实 game-spec）：
+**mahjong-smoke 55 项检查明细**（jsdom 加载产物 index.html 无头执行，分六类；多选模式仅测试内存注入 decision_options，不改真实 game-spec）：
 
 | 类别 | 检查项 |
 |---|---|
 | 静态与分类导航（6 项） | 标题渲染游戏名（卡五星）<br>五个工作区 Tab 存在（spec/decision/ui/flow/tests）<br>规格工作台默认概述视图<br>分类导航渲染（概述 + 五类）<br>分类数量动态统计（GAME-RULE 116 / GAME-UI 5）<br>左侧不展开全部需求长列表 |
 | 离线与健壮性（2 项） | 数据内嵌无外链 fetch<br>页面无致命脚本错误 |
 | 规格工作台五类渲染（16 项） | 点击分类渲染该类需求（GAME-RULE 116 条）<br>状态徽标渲染（proposed）<br>授权徽标渲染（fixed/open）<br>规则分组头渲染（按来源文档）<br>点击需求卡片右侧详情渲染<br>功能需求分类渲染（15 条 + 工具条）<br>搜索筛选生效（列表收窄）<br>状态筛选不报错（与搜索叠加）<br>状态机分类渲染（3 台 + 跳 Flow 按钮）<br>UI 分类页面分组与组件行渲染<br>点击组件行右侧详情（含关联需求）<br>配置分类渲染（GAME-CFG-001）<br>点击配置分类渲染配置表格（28 行）<br>点击配置行右侧详情渲染<br>模拟器区域存在<br>切回规格工作台恢复导航 |
-| UI Demo 与模拟器（6 项） | 切到 UI Demo 标签页（懒渲染生效）<br>UI 页面渲染（5 页 20 组件 + 对局桌面文本）<br>模拟器已注入（MiniGameFactory 全局对象）<br>模拟器操作按钮渲染（碰杠亮胡过 5+）<br>模拟器摸牌交互生效（点击后区域更新）<br>未确认规则触发 RULE_NOT_CONFIRMED 提示（点击总结算触发守卫） |
+| UI Demo 与模拟器（12 项） | 切到 UI Demo 标签页（懒渲染生效）<br>UI 页面渲染（5 页 20 组件 + 对局桌面文本）<br>模拟器已注入（MiniGameFactory 全局对象）<br>模拟器操作按钮渲染（碰杠亮胡过 5+）<br>模拟器摸牌交互生效（点击后区域更新）<br>未确认规则触发 RULE_NOT_CONFIRMED 提示（点击总结算触发守卫）<br>模拟器区域存在<br>页面切换器渲染（5 页）<br>当前页组件清单渲染（chips）<br>切换页面渲染对应静态原型（GAME-UI-002）<br>点击组件 chip 定位原型元素<br>切回对局主页面恢复模拟器 |
 | 裁决工作台（18 项） | 独立布局（隐藏规格导航）<br>统计渲染（合并三来源：待裁决 28 草稿 3）<br>筛选器渲染（状态/严重度/关键词）<br>列表 31 项 OQ<br>OQ-002 草稿预填（通用选项采纳预选）与影响预览<br>OQ-001 草稿预填（修改选项预选 + 口径输入区）<br>底部操作栏渲染（上/下/暂存/正式）<br>正式裁决校验（修改方案需填口径）<br>正式裁决校验（必须填写理由）<br>正式裁决内存生效（已确认 1）<br>正式裁决后自动定位下一个待裁决<br>切换问题不丢草稿（自动暂存恢复）<br>OQ 专属候选方案渲染（多选三方案）<br>多选可选多项（两项选中）<br>多选上限约束（第三项被拒绝）<br>多选混合结论被拦截（需同结论）<br>多选正式裁决校验（需填口径的选项拦截）<br>导出数据为 apply-decisions 输入格式（多选同结论合并单记录） |
 
 说明：`e2e.mjs`（端到端 7 步）固定跑 mini-game 样例（管线回归锚点）；卡五星的全链验证由上述两项专用测试 + validate-output 覆盖。Export 前要求 validate-output result=pass，产物 ZIP 在 `output/interactive-game-prd.zip`。
@@ -398,7 +398,7 @@ node .claude/skills/interactive-game-prd/scripts/build-html.mjs examples/mahjong
 # 质量检查
 node .claude/skills/interactive-game-prd/scripts/validate-html.mjs examples/mahjong/output/interactive-game-prd examples/mahjong/game-spec
 
-# 卡五星专用冒烟（48 项，含工作空间拆分/五类渲染器/裁决选项卡片）
+# 卡五星专用冒烟（55 项，含工作空间拆分/五类渲染器/裁决选项卡片/UI 页面切换）
 node .claude/skills/interactive-game-prd/scripts/mahjong-smoke.test.mjs
 
 # 卡五星模拟器场景回放（39 项）

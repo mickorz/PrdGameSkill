@@ -77,10 +77,12 @@ const uiCat = $$("#nav .cat-nav[data-cat]").find((a) => a.dataset.cat === "GAME-
 if (uiCat) uiCat.click();
 await new Promise((r) => setTimeout(r, 50));
 check("UI 分类页面分组与组件行渲染", $$("#view [data-page]").length >= 5 && $$("#view .comp-row").length >= 15);
+check("组件行含类型徽标与关联需求数", $$("#view .comp-row .badge").length >= 15 && $("#view .comp-row").textContent.includes("关联需求"));
 const compRow = $$("#view .comp-row")[0];
 if (compRow) compRow.click();
 await new Promise((r) => setTimeout(r, 30));
 check("点击组件行右侧详情（含关联需求）", $("#detail").textContent.includes("GAME-"));
+check("组件详情含所属页面与事件字段", $("#detail").textContent.includes("所属页面") && $("#detail").textContent.includes("GAME-UI-"));
 check("配置分类渲染（GAME-CFG-001）", (() => {
   const cfg = $$("#nav .cat-nav[data-cat]").find((a) => a.dataset.cat === "GAME-CFG");
   if (!cfg) return false;
@@ -120,6 +122,23 @@ if (simArea) {
 } else {
   check("模拟器区域存在", false);
 }
+
+// ---------- UI Demo 页面切换与组件清单（todo: UI 组件浏览增强） ----------
+check("UI Demo 页面切换器渲染（5 页）", $$("[data-ui-page]").length === 5);
+check("UI Demo 当前页组件清单渲染（chips）", $$("[data-comp-focus]").length >= 3);
+const page2Btn = $$("[data-ui-page]")[1];
+if (page2Btn) page2Btn.click();
+await new Promise((r) => setTimeout(r, 50));
+check("切换页面渲染对应静态原型（GAME-UI-002）", $("#view h3").textContent.includes("GAME-UI-002") && !!$("#ui-area [data-component-id]"));
+const chip = $$("[data-comp-focus]")[0];
+if (chip) chip.click();
+await new Promise((r) => setTimeout(r, 30));
+check("点击组件 chip 定位原型元素", !!document.querySelector("#ui-area .comp-focus-highlight") || $("#ui-msg").textContent.includes("已定位"));
+// 切回第一页恢复模拟器
+const page1Btn = $$("[data-ui-page]")[0];
+if (page1Btn) page1Btn.click();
+await new Promise((r) => setTimeout(r, 50));
+check("切回对局主页面恢复模拟器", $$("#ui-area button").length >= 5);
 
 // ---------- 裁决工作台（P2：候选方案卡片 + 单选/多选 + 草稿自动暂存） ----------
 document.querySelector('#tabs button[data-tab="decision"]').click();

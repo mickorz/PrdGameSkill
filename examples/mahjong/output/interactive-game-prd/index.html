@@ -95,6 +95,13 @@
   .comp-row:hover { background: #f0f4ff; }
   .req-link { color: #1a73e8; cursor: pointer; text-decoration: underline; }
   .btn-mini { font-size: 12px; padding: 2px 8px; cursor: pointer; }
+  .btn-mini.primary { background: #1a73e8; color: #fff; border-color: #1a73e8; }
+  .ui-demo-bar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 8px; }
+  .page-switch { display: flex; gap: 6px; flex-wrap: wrap; }
+  .comp-quick { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+  .comp-chip { padding: 1px 8px; border: 1px solid #d5dbe5; border-radius: 10px; font-size: 11px; cursor: pointer; color: #1a73e8; }
+  .comp-chip:hover { background: #f0f4ff; }
+  .comp-focus-highlight { outline: 2px solid #1a73e8; outline-offset: 2px; }
   .dec-item { display: block; padding: 6px 8px; margin: 2px 0; border-radius: 4px; cursor: pointer; font-size: 12px; }
   .dec-item:hover { background: #f0f4ff; }
   .dec-item.active { background: #dbe6ff; }
@@ -392,7 +399,7 @@ function renderCatUi() {
     html += `<div class="req-card" data-anchor="${esc(p.id)}" data-page="${esc(p.id)}"><h3>${esc(p.id)} ${esc(p.name)} <span class="badge">${p.resolution ? p.resolution.width + "x" + p.resolution.height : ""}</span></h3>
       <div>${esc(p.description || "")}</div>
       <div style="color:#889;font-size:12px;margin-top:4px">状态：${esc((p.states || []).join(" / "))}</div>
-      <div class="comp-list">${comps.map((c) => `<a class="comp-row" data-comp="${esc(c.id)}">${esc(c.id)} ${esc(c.name)} <span class="meta">${esc(c.type)}</span></a>`).join("") || "<span class='meta'>无组件</span>"}</div></div>`;
+      <div class="comp-list">${comps.map((c) => `<a class="comp-row" data-comp="${esc(c.id)}">${esc(c.id)} ${esc(c.name)} <span class="badge">${esc(c.type)}</span> <span class="meta">关联需求 ${(c.requirements || []).length} 项</span></a>`).join("") || "<span class='meta'>无组件</span>"}</div></div>`;
   }
   $("#view").innerHTML = html;
 }
@@ -417,25 +424,44 @@ function showCompDetail(cid) {
   const c = APP_DATA.ui.components.find((x) => x.id === cid);
   if (!c) return;
   const related = (c.requirements || []).filter((rid) => reqById.get(rid));
+  const ownerPages = APP_DATA.ui.pages.filter((p) => (p.components || p.component_refs || []).includes(c.id) || (c.page_id || "") === p.id);
   const fields = [
     ["ID", c.id], ["名称", c.name], ["类型", c.type],
     ["事件", (c.events || []).join("、")],
     ["视觉提示", c.visual_hint || ""],
+    ["所属页面", ownerPages.map((p) => `${p.id} ${p.name}`).join("、")],
   ];
-  $("#detail").innerHTML = fields.filter(([, v]) => v).map(([k, v]) =>
-    `<div class="field"><span class="k">${k}</span>${esc(v)}</div>`).join("") +
-    (related.length ? `<div class="field"><span class="k">关联需求</span>${related.map((rid) => `<a class="req-link" data-req-link="${esc(rid)}">${esc(rid)}</a>`).join("、")}</div>` : "");
+  let html = fields.filter(([, v]) => v).map(([k, v]) =>
+    `<div class="field"><span class="k">${k}</span>${esc(v)}</div>`).join("");
+  // props（结构化属性，空对象不显示）
+  const props = Object.entries(c.props || {}).filter(([, v]) => v !== null && v !== undefined && v !== "");
+  if (props.length) {
+    html += `<div class="field"><span class="k">属性 props</span></div>` +
+      props.map(([k, v]) => `<div class="field" style="padding-left:12px"><span class="k">${esc(k)}</span>${esc(typeof v === "object" ? JSON.stringify(v) : String(v))}</div>`).join("");
+  }
+  if (related.length) html += `<div class="field"><span class="k">关联需求</span>${related.map((rid) => `<a class="req-link" data-req-link="${esc(rid)}">${esc(rid)}</a>`).join("、")}</div>`;
+  $("#detail").innerHTML = html;
 }
 
 // ---------- UI Demo 视图 ----------
+let uiDemoPageId = null; // 当前演示页面（默认第一页）
 function renderUiDemo() {
-  const page = APP_DATA.ui.pages[0];
-  if (!page) { $("#view").innerHTML = "无 UI 页面规格"; return; }
-  let html = `<h3>${esc(page.id)} ${esc(page.name)} <span class="meta">${page.resolution.width}x${page.resolution.height} 状态：${esc(page.states.join(" / "))}</span></h3>`;
+  const pages = APP_DATA.ui.pages;
+  if (!pages.length) { $("#view").innerHTML = "无 UI 页面规格"; return; }
+  if (!uiDemoPageId || !pages.some((p) => p.id === uiDemoPageId)) uiDemoPageId = pages[0].id;
+  const page = pages.find((p) => p.id === uiDemoPageId);
+  const comps = pageComps(page);
+  let html = `<div class="ui-demo-bar"><div class="page-switch">` +
+    pages.map((p) => `<button class="btn-mini${p.id === page.id ? " primary" : ""}" data-ui-page="${esc(p.id)}">${esc(p.id)} ${esc(p.name)}</button>`).join("") +
+    `</div><div class="comp-quick">` +
+    (comps.map((c) => `<a class="comp-chip" data-comp-focus="${esc(c.id)}" title="${esc(c.name)}（${esc(c.type)}）">${esc(c.id)}</a>`).join("") || "<span class='meta'>本页无组件</span>") +
+    `</div></div>`;
+  html += `<h3>${esc(page.id)} ${esc(page.name)} <span class="meta">${page.resolution.width}x${page.resolution.height} 状态：${esc(page.states.join(" / "))}</span></h3>`;
   html += `<div class="board-area" id="ui-area"></div><div id="ui-msg" style="margin-top:8px;color:#1a73e8;font-size:13px"></div>`;
   $("#view").innerHTML = html;
   const area = $("#ui-area");
-  if (APP_DATA.simulator.enabled) {
+  // 第一页（对局主页面）用模拟器，其余页面静态原型
+  if (APP_DATA.simulator.enabled && page === pages[0]) {
     // Level 2：模拟器驱动（引擎由 build 时内嵌，此处执行并挂载）
     try {
       if (typeof MiniGameFactory === "undefined") new Function(APP_DATA.simulator.code)();
@@ -449,9 +475,9 @@ function renderUiDemo() {
   } else {
     // Level 1：静态原型 + 状态切换假交互
     area.appendChild(renderStaticPage(page));
-    $("#ui-msg").textContent = "Level 1 静态原型（模拟器未注入，仅演示布局与状态切换）";
+    $("#ui-msg").textContent = APP_DATA.simulator.enabled ? "静态原型（模拟器仅覆盖对局主页面）" : "Level 1 静态原型（模拟器未注入，仅演示布局与状态切换）";
   }
-  // UI -> PRD 反向定位：右键点击组件（左键留给游戏操作，避免冲突）
+  // UI -> 规格工作台反向定位：右键点击组件（左键留给游戏操作，避免冲突）
   area.addEventListener("contextmenu", (e) => {
     e.preventDefault();
     const comp = e.target.closest("[data-component-id]");
@@ -465,6 +491,19 @@ function renderUiDemo() {
     const first = [...related][0];
     if (first && reqById.get(first)) showRequirement(first);
   });
+  // 页面切换与组件定位
+  document.querySelectorAll("[data-ui-page]").forEach((b) => b.addEventListener("click", () => { uiDemoPageId = b.dataset.uiPage; renderUiDemo(); }));
+  document.querySelectorAll("[data-comp-focus]").forEach((a) => a.addEventListener("click", () => focusComp(a.dataset.compFocus)));
+}
+
+// 组件定位：在当前页面原型中高亮对应组件元素
+function focusComp(cid) {
+  const el = document.querySelector(`#ui-area [data-component-id="${cid}"]`);
+  if (!el) { $("#ui-msg").textContent = `组件 ${cid} 在当前页面原型中无对应元素`; return; }
+  el.scrollIntoView({ behavior: "smooth", block: "center" });
+  el.classList.add("comp-focus-highlight");
+  setTimeout(() => el.classList.remove("comp-focus-highlight"), 3200);
+  $("#ui-msg").textContent = `已定位组件 ${cid}`;
 }
 
 function renderStaticPage(page) {

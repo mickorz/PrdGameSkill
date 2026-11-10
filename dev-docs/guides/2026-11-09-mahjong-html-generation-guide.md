@@ -1,6 +1,6 @@
 # 卡五星 Interactive HTML PRD 生成链路指南
 
-> 整理 `.claude/skills/interactive-game-prd` 如何生成 `examples/mahjong/output/interactive-game-prd/index.html`（383 KB 单文件）的完整流程。
+> 整理 `.claude/skills/interactive-game-prd` 如何生成 `output/interactive-game-prd/index.html`（383 KB 单文件）的完整流程。
 > 样例：卡五星（好友房）——8 份原始需求 source → 131 条 IR 需求 → 383 KB Interactive HTML PRD + 466 行规则模拟器。
 > mini-game（记忆翻牌）是同一管线的迷你验证样例，链路同构，规模对照见文末。
 
@@ -8,17 +8,17 @@
 
 | 缩写 | 全称 | 含义 | 对应产物目录 |
 |---|---|---|---|
-| PRD | Product Requirements Document（产品需求文档） | 两处出现：原始输入（8 份 Markdown）与最终产物（Interactive HTML PRD，交互式单文件） | 输入：`examples/mahjong/game-spec/source/`；产物：`examples/mahjong/output/interactive-game-prd/index.html` |
-| IR | Game Requirement IR（结构化需求中间表示） | 唯一事实源：131 条需求 + UI + 测试 + 审查记录，所有产物从它生成 | `examples/mahjong/game-spec/`（YAML 树） |
-| OQ | Open Question（开放问题） | 需人工裁决的未决问题（31 项，裁决前对应规则保持 `authority=open`，模拟器拒绝执行） | `examples/mahjong/game-spec/reviews/open-questions.json` |
-| GAME-FR | Game Feature Requirement（功能需求条目 ID 前缀） | IR 中的功能需求条目，描述产品要做什么（如 GAME-FR-001） | `examples/mahjong/game-spec/requirements/features/` |
-| GAME-RULE | Game Rule（规则需求条目 ID 前缀） | IR 中的规则条目，描述玩法判定逻辑（如 GAME-RULE-033 危牌禁打） | `examples/mahjong/game-spec/requirements/rules/` |
-| GAME-ST | Game State（状态定义条目 ID 前缀） | IR 中的状态机状态定义条目（如 GAME-ST-001） | `examples/mahjong/game-spec/requirements/states/` |
-| GAME-TC | Game Test Case（测试用例 ID 前缀） | IR 中的测试用例条目，供模拟器场景回放断言（10 个） | `examples/mahjong/game-spec/tests/cases/` |
+| PRD | Product Requirements Document（产品需求文档） | 两处出现：原始输入（8 份 Markdown）与最终产物（Interactive HTML PRD，交互式单文件） | 输入：`game-spec/source/`；产物：`output/interactive-game-prd/index.html` |
+| IR | Game Requirement IR（结构化需求中间表示） | 唯一事实源：131 条需求 + UI + 测试 + 审查记录，所有产物从它生成 | `game-spec/`（YAML 树） |
+| OQ | Open Question（开放问题） | 需人工裁决的未决问题（31 项，裁决前对应规则保持 `authority=open`，模拟器拒绝执行） | `game-spec/reviews/open-questions.json` |
+| GAME-FR | Game Feature Requirement（功能需求条目 ID 前缀） | IR 中的功能需求条目，描述产品要做什么（如 GAME-FR-001） | `game-spec/requirements/features/` |
+| GAME-RULE | Game Rule（规则需求条目 ID 前缀） | IR 中的规则条目，描述玩法判定逻辑（如 GAME-RULE-033 危牌禁打） | `game-spec/requirements/rules/` |
+| GAME-ST | Game State（状态定义条目 ID 前缀） | IR 中的状态机状态定义条目（如 GAME-ST-001） | `game-spec/requirements/states/` |
+| GAME-TC | Game Test Case（测试用例 ID 前缀） | IR 中的测试用例条目，供模拟器场景回放断言（10 个） | `game-spec/tests/cases/` |
 | APP_DATA | 内嵌数据常量 | 构建时注入模板的单体 JSON（全部 IR 数据 + 模拟器源码），file:// 离线运行的基础 | 构建产物内嵌，无独立文件（位于 `output/interactive-game-prd/index.html` 脚本首行） |
-| UMD | Universal Module Definition（通用模块定义） | 一份代码同时兼容 Node `require` 与浏览器全局挂载的封装，模拟器用它实现双环境复用 | `examples/mahjong/simulator/simulator.js`（框架契约在 skill 的 `assets/simulator-template/engine.js`） |
+| UMD | Universal Module Definition（通用模块定义） | 一份代码同时兼容 Node `require` 与浏览器全局挂载的封装，模拟器用它实现双环境复用 | `simulator/simulator.js`（框架契约在 skill 的 `assets/simulator-template/engine.js`） |
 | RULE_NOT_CONFIRMED | 规则未确认守卫错误 | 模拟器查表：规则未声明或 `authority=open` 时拒绝判定并抛出，禁止编造结果 | 运行时错误码，无目录（守卫逻辑在 `simulator/simulator.js` 的 RULE_TABLE） |
-| validate-ir / validate-html / validate-output | 三道校验脚本 | IR 合法性 / HTML 产物质量 / 全链一致性汇总（机器可读报告） | 脚本：`.claude/skills/interactive-game-prd/scripts/`；汇总报告：`examples/mahjong/output/reports/validate-report.json` |
+| validate-ir / validate-html / validate-output | 三道校验脚本 | IR 合法性 / HTML 产物质量 / 全链一致性汇总（机器可读报告） | 脚本：`.claude/skills/interactive-game-prd/scripts/`；汇总报告：`output/reports/validate-report.json` |
 
 ## 一句话原理
 
@@ -60,7 +60,7 @@ flowchart TD
 
 ## 阶段二：generate-simulator（模拟器怎么来的）
 
-`examples/mahjong/simulator/simulator.js`（466 行，UMD 结构）由 AI 按 `assets/simulator-template/engine.js` 框架契约生成（P4 子集：核心行牌与结算规则）：
+`simulator/simulator.js`（466 行，UMD 结构）由 AI 按 `assets/simulator-template/engine.js` 框架契约生成（P4 子集：核心行牌与结算规则）：
 
 1. **UMD 双用途**：Node 环境 `module.exports` 导出（供 `mahjong-simulator.test.mjs` 场景回放），浏览器环境挂到 `window.MiniGameFactory`（供 HTML 内嵌执行）。
 2. **RULE_TABLE 规则声明表**：声明模拟器实现的 45 条规则引用（GAME-RULE-033 危牌禁打 / 038 碰牌 / 039 操作优先级 / 040 杠类型 / 041 杠分结算 等），status/authority 与 IR 一致。

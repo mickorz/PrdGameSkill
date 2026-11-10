@@ -19,6 +19,7 @@
 //   analysisModel 分析阶段使用的模型，默认 biangfeng-gateway/deepseek-v4.1-flash-official（传空字符串则用会话默认模型）
 //   reviewModel   报告质检使用的模型，默认同 analysisModel（传空字符串则用会话默认模型）
 //   concurrency   并发上限，默认 16（运行时钳制到 16）
+//   fast          最快档：规则组压到 16 组以内、强制确定性去重、报告分片并行写、默认跳过质检
 //   skipReview    传 true 跳过报告质检阶段，直接出报告（更快，少一轮串行读文件）
 
 export const meta = {
@@ -43,7 +44,11 @@ const templatePath =
 const outPath = A.outPath || 'examples/game-prd-check-workflow/report.md'
 const checkDate = A.date || '未提供（调用时请传 args.date，格式 YYYY-MM-DD）'
 const maxIssuesPerGroup = A.maxIssuesPerGroup || 10
-const skipReview = A.skipReview === true
+const fastMode = A.fast === true
+// fast 档默认跳过质检，可用 args.skipReview=false 强制保留
+const skipReview = A.skipReview === false ? false : A.skipReview === true || fastMode
+// fast 档把规则组压到并发上限以内，避免排第二波
+const maxRuleGroups = fastMode ? 16 : 24
 
 // 分析阶段（扫描 / 规则检查 / 一致性检查 / 去重）统一用快速模型，报告撰写用会话默认模型
 const analysisModel =
@@ -241,7 +246,7 @@ const scan = await agent(
     '   - 单个规则文件超过 20KB（约 8000 字）时按一级章节拆分：一章一个片段、一个片段一组，files 留空数组，sections 填 { file, fromLine, toLine, title }。片段必须首尾相接覆盖全文（从第 1 行到文件最后一行），不能留空档。用 grep 查章节标题、read 带 offset 确认行号（read 显示的行号即真实行号）。',
     '   - 小文件（≤20KB）按业务流程阶段合并成组（例如 开局与发牌 / 摸打吃碰杠 / 结算与分数 / 配置与做牌 / 重连 / 广播与数据），总览、目录、索引类文件放进第一组。',
     '   - focus 用一句话说明这组规则管什么。',
-    '   - 总组数上限 24 组（大文件章节多时以章节为准，不要为了组数上限合并章节或漏掉内容）。',
+    '   - 总组数上限 ' + maxRuleGroups + ' 组。章节数超过上限时，把相邻章节合并进同一组：同一组的 sections 可包含多个连续片段，fromLine/toLine 必须衔接覆盖全文，不得漏内容；章节数不超过上限时保持一章一组。',
     '3. 如果规则目录结构与本说明不同，按实际结构自适应分组，仍要覆盖全部规则文件。',
   ].join('\n'),
   { label: '扫描输入与规则', schema: SCAN_SCHEMA, ...analysisAgentOptions, timeoutMs: 900000 }
@@ -330,7 +335,7 @@ if (internalResult && Array.isArray(internalResult.issues)) {
 }
 if (droppedGroup > 0) log('有 ' + droppedGroup + ' 个规则组检查失败，报告仅覆盖成功分组')
 
-if (allIssues.length > 15) {
+if (!fastMode && allIssues.length > 15) {
   const compact = allIssues.map((it, i) => ({
     i: i,
     type: it.type,
@@ -372,7 +377,7 @@ if (allIssues.length > 15) {
   }
 } else if (allIssues.length > 0) {
   allIssues = exactDedup(allIssues)
-  log('问题较少（≤15 条），使用确定性去重并跳过合并代理')
+  log('使用确定性去重（fast 档或问题较少），跳过合并代理')
 }
 
 const PRIORITY_ORDER = { P0: 0, P1: 1, P2: 2, P3: 3 }
@@ -429,38 +434,138 @@ const detailIssues = issues
   .filter((it) => it.priority === 'P0' || it.priority === 'P1')
   .concat(issues.filter((it) => it.priority === 'P2').slice(0, 3))
 
-const writeResult = await agent(
-  [
-    '你是 PRD 检查报告撰写员。把下面的检查结果写成正式报告并落盘。',
-    '',
-    '报告模板（先读一遍，严格按它的四段结构）：' + templatePath,
-    '输出路径（唯一交付物）：' + outPath,
-    '',
-    '报告头部信息：',
-    '- 检查对象：' + inputFiles.join('、'),
-    '- 规则基准：' + rulesDir,
-    '- 检查日期：' + checkDate,
-    '',
-    '统计（必须原样使用，不得自行改数）：',
-    JSON.stringify({ 统计: stats, 类型分布: typeStats, 模块分布: moduleRank }, null, 1),
-    '',
-    '问题清单表格数据（全部条目，id 已编号，不要新增、删除或改写 id）：',
-    JSON.stringify(tableRows, null, 1),
-    '',
-    '重点问题详情数据（只展开这些条目）：',
-    JSON.stringify(detailIssues, null, 1),
-    '',
-    '写作要求：',
-    '1. 严格四段结构：1 检查概览（统计表） -> 2 问题清单（表格：ID | 类型 | 优先级 | 问题 | 原文位置 | 建议） -> 3 重点问题详情 -> 4 总体建议。',
-    '2. 第 2 段必须列出全部问题，一条不漏，顺序与表格数据一致；建议列取每条 suggestion 的精简版。',
-    '3. 第 3 段只展开“重点问题详情数据”里的条目；每条按 原文（引用 quote 并标注 location）、问题、影响、建议、处理状态（默认 待确认）书写。',
-    '4. 第 4 段：问题最多的模块取模块分布第一名，影响开发的问题列出 P0/P1 的 ID，是否建议进入下一阶段按“存在 P0 或 P1 数量较多则暂缓，否则建议”给出结论与理由。',
-    '5. 只能使用上面数据中的事实，不得编造原文引文或新增问题；引文必须来自 quote 字段。',
-    '6. 使用 write 工具写入 ' + outPath + '，UTF-8 中文，不使用 Emoji。',
-    '7. 完成后返回文件路径与写入的问题总条数。',
-  ].join('\n'),
-  { label: '撰写报告 ' + outPath, agentType: 'general', timeoutMs: 3600000 }
-)
+// fast 档报告分片并行写 + 命令拼接；默认档单代理整篇写
+let writeResult = null
+
+if (fastMode) {
+  const part1Path = outPath + '.part1.md'
+  const part2Path = outPath + '.part2.md'
+  const keyIssues = issues.filter((it) => it.priority === 'P0' || it.priority === 'P1')
+
+  const partResults = await parallel([
+    () =>
+      agent(
+        [
+          '你是 PRD 检查报告撰写员，只写报告的前半部分（第 1、2 段）。',
+          '',
+          '报告模板（先读一遍，严格按它的结构）：' + templatePath,
+          '本分片输出路径：' + part1Path,
+          '',
+          '报告头部信息（写在文件最开头）：',
+          '- 检查对象：' + inputFiles.join('、'),
+          '- 规则基准：' + rulesDir,
+          '- 检查日期：' + checkDate,
+          '',
+          '统计（必须原样使用，不得自行改数）：',
+          JSON.stringify({ 统计: stats, 类型分布: typeStats, 模块分布: moduleRank }, null, 1),
+          '',
+          '问题清单表格数据（全部条目，id 已编号，不要增删或改写 id）：',
+          JSON.stringify(tableRows, null, 1),
+          '',
+          '写作要求：',
+          '1. 文件依次为：# PRD 检查问题报告、检查对象/规则基准/检查日期、## 1. 检查概览（统计表）、## 2. 问题清单（表格：ID | 类型 | 优先级 | 问题 | 原文位置 | 建议）。',
+          '2. 问题清单必须列出全部条目，一条不漏，顺序与数据一致；建议列取 suggestion 的精简版。',
+          '3. 不要写第 3、4 段，也不要写结尾总结。',
+          '4. 使用 write 工具写入 ' + part1Path + '，UTF-8 中文，不使用 Emoji。',
+          '5. 完成后返回写入的条数。',
+        ].join('\n'),
+        { label: '写报告-概览与清单', agentType: 'general', timeoutMs: 3600000 }
+      ),
+    () =>
+      agent(
+        [
+          '你是 PRD 检查报告撰写员，只写报告的后半部分（第 3、4 段）。',
+          '',
+          '报告模板（先读一遍，严格按它的结构）：' + templatePath,
+          '本分片输出路径：' + part2Path,
+          '',
+          '统计与结论依据：',
+          JSON.stringify(
+            {
+              统计: stats,
+              类型分布: typeStats,
+              模块分布: moduleRank,
+              严重问题: keyIssues.map((it) => ({ id: it.id, priority: it.priority, title: it.title })),
+            },
+            null,
+            1
+          ),
+          '',
+          '重点问题详情数据（只展开这些条目）：',
+          JSON.stringify(detailIssues, null, 1),
+          '',
+          '写作要求：',
+          '1. 文件第一行必须是 ## 3. 重点问题详情，然后按数据逐条展开：原文（引用 quote 并标注 location）、问题、影响、建议、处理状态（默认 待确认）。',
+          '2. 随后写 ## 4. 总体建议：问题最多的模块取模块分布第一名，影响开发的问题列出 P0/P1 的 ID，是否建议进入下一阶段按“存在 P0 或 P1 数量较多则暂缓，否则建议”给出结论与理由。',
+          '3. 不要重复报告标题与头部信息，不要写第 1、2 段。',
+          '4. 只能使用给定数据中的事实，不得编造引文或新增问题；引文必须来自 quote 字段。',
+          '5. 使用 write 工具写入 ' + part2Path + '，UTF-8 中文，不使用 Emoji。',
+          '6. 完成后返回写入的条数。',
+        ].join('\n'),
+        { label: '写报告-详情与建议', agentType: 'general', timeoutMs: 3600000 }
+      ),
+  ])
+
+  writeResult = await agent(
+    [
+      '把两个报告分片按顺序合并成一个文件，并清理临时文件。',
+      '分片 1：' + part1Path,
+      '分片 2：' + part2Path,
+      '目标文件：' + outPath,
+      '',
+      '在项目根目录一次执行下面的 PowerShell 命令：',
+      "Get-Content -LiteralPath '" +
+        part1Path +
+        "','" +
+        part2Path +
+        "' -Encoding UTF8 | Set-Content -LiteralPath '" +
+        outPath +
+        "' -Encoding UTF8; Remove-Item -LiteralPath '" +
+        part1Path +
+        "','" +
+        part2Path +
+        "'",
+      '',
+      '只有命令执行失败时，才自行读取两个分片并用 write 合并（两片之间空一行）。',
+      '合并后确认目标文件存在，返回合并结果与分片摘要：',
+      JSON.stringify(partResults).slice(0, 600),
+    ].join('\n'),
+    { label: '合并报告分片', agentType: 'general', timeoutMs: 900000 }
+  )
+} else {
+  writeResult = await agent(
+    [
+      '你是 PRD 检查报告撰写员。把下面的检查结果写成正式报告并落盘。',
+      '',
+      '报告模板（先读一遍，严格按它的四段结构）：' + templatePath,
+      '输出路径（唯一交付物）：' + outPath,
+      '',
+      '报告头部信息：',
+      '- 检查对象：' + inputFiles.join('、'),
+      '- 规则基准：' + rulesDir,
+      '- 检查日期：' + checkDate,
+      '',
+      '统计（必须原样使用，不得自行改数）：',
+      JSON.stringify({ 统计: stats, 类型分布: typeStats, 模块分布: moduleRank }, null, 1),
+      '',
+      '问题清单表格数据（全部条目，id 已编号，不要新增、删除或改写 id）：',
+      JSON.stringify(tableRows, null, 1),
+      '',
+      '重点问题详情数据（只展开这些条目）：',
+      JSON.stringify(detailIssues, null, 1),
+      '',
+      '写作要求：',
+      '1. 严格四段结构：1 检查概览（统计表） -> 2 问题清单（表格：ID | 类型 | 优先级 | 问题 | 原文位置 | 建议） -> 3 重点问题详情 -> 4 总体建议。',
+      '2. 第 2 段必须列出全部问题，一条不漏，顺序与表格数据一致；建议列取每条 suggestion 的精简版。',
+      '3. 第 3 段只展开“重点问题详情数据”里的条目；每条按 原文（引用 quote 并标注 location）、问题、影响、建议、处理状态（默认 待确认）书写。',
+      '4. 第 4 段：问题最多的模块取模块分布第一名，影响开发的问题列出 P0/P1 的 ID，是否建议进入下一阶段按“存在 P0 或 P1 数量较多则暂缓，否则建议”给出结论与理由。',
+      '5. 只能使用上面数据中的事实，不得编造原文引文或新增问题；引文必须来自 quote 字段。',
+      '6. 使用 write 工具写入 ' + outPath + '，UTF-8 中文，不使用 Emoji。',
+      '7. 完成后返回文件路径与写入的问题总条数。',
+    ].join('\n'),
+    { label: '撰写报告 ' + outPath, agentType: 'general', timeoutMs: 3600000 }
+  )
+}
 
 phase('报告审核')
 
@@ -468,7 +573,7 @@ let review = null
 let fixed = false
 
 if (skipReview) {
-  log('已按 args.skipReview 跳过报告审核')
+  log(fastMode ? 'fast 档默认跳过报告审核（可用 args.skipReview=false 保留）' : '已按 args.skipReview 跳过报告审核')
 } else {
   review = await agent(
     [
@@ -529,6 +634,7 @@ return {
   typeStats: typeStats,
   moduleRank: moduleRank,
   reviewSkipped: skipReview,
+  fastMode: fastMode,
   reviewOk: skipReview ? null : review ? review.ok === true || fixed : false,
   reportWriteSummary: writeResult,
 }

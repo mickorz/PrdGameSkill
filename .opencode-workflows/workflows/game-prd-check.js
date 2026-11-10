@@ -94,9 +94,13 @@ const ISSUE_ITEM_SCHEMA = {
     location: { type: 'string', description: '需求文档原文位置（章节/小节标题），多处用、分隔' },
     quote: { type: 'string', description: '需求文档原文引文，不超过 200 字；MISSING 类写缺失说明' },
     ruleRef: { type: 'string', description: '对应规则文件与规则点（相对路径 + 章节或条目）' },
-    problem: { type: 'string', description: '问题说明，指出违反了哪条规则基准或哪里矛盾' },
+    problem: { type: 'string', description: '问题说明，指出违反了哪条规则基准或哪里矛盾；涉及专有术语时先说清术语含义' },
     impact: { type: 'string', description: '对开发 / 测试 / 验收的具体影响' },
     suggestion: { type: 'string', description: '具体可执行的补充或修正建议' },
+    term_explain: { type: 'string', description: '本条涉及的专有名词解释，格式「术语＝一句话定义」；无专有名词填「无」' },
+    required_format: { type: 'string', description: '修复必须采用的格式：必填列或章节结构；非格式类问题填「无」' },
+    example: { type: 'string', description: '可直接照抄进需求文档的完整示例，正常与异常各一条；非格式类问题填「无」' },
+    acceptance: { type: 'string', description: '补齐后的验收口径：怎样算达标、测试能否直接出用例' },
   },
   required: [
     'type',
@@ -109,6 +113,10 @@ const ISSUE_ITEM_SCHEMA = {
     'problem',
     'impact',
     'suggestion',
+    'term_explain',
+    'required_format',
+    'example',
+    'acceptance',
   ],
 }
 
@@ -210,11 +218,16 @@ function issueRules() {
     '硬性要求：',
     '1. 证据先行：每条问题必须给出需求文档原文位置（章节/小节标题）和原文引文，禁止无依据推测。',
     '2. 以 rules 为准：需求文档与 rules 冲突时，记问题的是需求文档，不要质疑规则本身。',
-    '3. 不臆造：需求文档确实没写才算 MISSING；写了但含糊才是 AMBIGUOUS / INCOMPLETE。',
-    '4. 不重复：同一问题只记一条，多处证据合并写进同一条的 location。',
-    '5. 只报本范围规则能支撑的问题，不要越界检查别的模块。',
-    '6. 按优先级从高到低自检一遍，最多输出 ' + maxIssuesPerGroup + ' 条最有价值的问题。',
-    '7. 只输出结构化结果，不要输出报告正文。',
+    '3. 报前复核：报 MISSING 或 LOGIC 前先回规则基准确认没有相反要求。规则没要求的内容不得当问题（例如规则写明“桌面上没有常驻显示，只记录数据”，就不能报“缺少局内展示”）。',
+    '4. 不臆造：需求文档确实没写才算 MISSING；写了但含糊才是 AMBIGUOUS / INCOMPLETE。',
+    '5. 不重复：同一问题只记一条，多处证据合并写进同一条的 location。',
+    '6. 术语先解释：标题或问题里出现专有名词、缩写或自造词（如 跨层通知、进张、幂等、原版/修改对比版、无表、口径）时，term_explain 写「术语＝一句话定义」，problem 首句用解释后的说法。',
+    '7. 缺失类必须给格式：缺章节、缺表、格式不清时，required_format 写必填列或章节结构；example 给正常与异常各一条可照抄的完整示例（真实内容，禁止 {占位符}，示例数值注明“示例值以产品确认为准”）。',
+    '8. 冲突类必须定位：写明两版分别在哪一节哪张表、逐点列出差异；建议给出“生效声明”写法与版本差异对照表。',
+    '9. 每条都要写 acceptance：补齐后如何判定合格，测试能否直接转成用例。',
+    '10. 只报本范围规则能支撑的问题，不要越界检查别的模块。',
+    '11. 按优先级从高到低自检一遍，最多输出 ' + maxIssuesPerGroup + ' 条最有价值的问题。',
+    '12. 只输出结构化结果，不要输出报告正文。',
   ].join('\n')
 }
 
@@ -244,7 +257,8 @@ function compactKey(s) {
     .toLowerCase()
 }
 
-// 确定性去重：同 type + location + 标题前缀（前 12 字）视为同一条，合并 location 证据
+// 确定性去重：同 type + location + 标题前缀（前 12 字）视为同一条。
+// 重复项不删除，登记到主条目的 _dups，由后续标注为“同根因，建议合并”。
 function exactDedup(list) {
   const seen = {}
   const out = []
@@ -252,6 +266,9 @@ function exactDedup(list) {
     const key = it.type + '|' + compactKey(it.location) + '|' + compactKey(it.title).slice(0, 12)
     if (seen[key]) {
       const kept = seen[key]
+      if (!kept._dups) kept._dups = []
+      kept._dups.push(it)
+      it._dupOf = kept
       if (it.location && String(kept.location || '').indexOf(it.location) < 0) {
         kept.location = (kept.location ? kept.location + '、' : '') + it.location
       }
@@ -403,25 +420,27 @@ if (!fastMode && allIssues.length > 15) {
     { label: '重复问题归并', schema: DEDUP_SCHEMA, ...analysisAgentOptions, timeoutMs: 1800000 }
   )
 
-  const dropped = new Set()
   const groups = (dedup && dedup.duplicateGroups) || []
   for (const g of groups) {
     if (!Array.isArray(g) || g.length < 2) continue
     const idxs = g.filter((n) => Number.isInteger(n) && n >= 0 && n < allIssues.length)
     if (idxs.length < 2) continue
     const keep = allIssues[idxs[0]]
+    if (!keep._dups) keep._dups = []
     for (const idx of idxs.slice(1)) {
-      if (dropped.has(idx) || idx === idxs[0]) continue
-      dropped.add(idx)
-      const loc = allIssues[idx].location
+      if (idx === idxs[0]) continue
+      const dup = allIssues[idx]
+      if (dup._dupOf || dup._dups) continue
+      dup._dupOf = keep
+      keep._dups.push(dup)
+      const loc = dup.location
       if (loc && String(keep.location || '').indexOf(loc) < 0) {
         keep.location = (keep.location ? keep.location + '、' : '') + loc
       }
     }
   }
-  for (let i = allIssues.length - 1; i >= 0; i--) {
-    if (dropped.has(i)) allIssues.splice(i, 1)
-  }
+  const marked = allIssues.filter((it) => it._dupOf).length
+  if (marked > 0) log('问题归并完成：' + marked + ' 条重复问题将标注为同根因，建议合并')
 } else if (allIssues.length > 0) {
   allIssues = exactDedup(allIssues)
   log('使用确定性去重（fast 档或问题较少），跳过合并代理')
@@ -449,8 +468,36 @@ const issues = allIssues.map((it, i) => {
     problem: it.problem,
     impact: it.impact,
     suggestion: it.suggestion,
+    term_explain: it.term_explain || '无',
+    required_format: it.required_format || '无',
+    example: it.example || '无',
+    acceptance: it.acceptance || '',
+    _src: it,
   }
 })
+
+// 同根因重复项不删除，只标注主条目与重复条目，保留证据同时避免清单冗余
+const issueBySrc = new Map()
+for (const it of issues) issueBySrc.set(it._src, it)
+for (const it of issues) {
+  const src = it._src
+  if (src._dups && src._dups.length > 0) {
+    const dupIds = src._dups
+      .map((d) => issueBySrc.get(d))
+      .filter(Boolean)
+      .map((d) => d.id)
+    if (dupIds.length > 0) {
+      it.title = it.title + '（本类主条目，' + dupIds.join('、') + ' 同根因）'
+    }
+  }
+  if (src._dupOf) {
+    const keep = issueBySrc.get(src._dupOf)
+    if (keep) {
+      it.title = it.title + '（与 ' + keep.id + ' 同根因，重复登记，建议合并）'
+      it.suggestion = '与 ' + keep.id + ' 合并处理：' + (it.suggestion || '')
+    }
+  }
+}
 
 const stats = { total: issues.length, P0: 0, P1: 0, P2: 0, P3: 0 }
 const typeStats = { MISSING: 0, CONFLICT: 0, LOGIC: 0, AMBIGUOUS: 0, INCOMPLETE: 0 }
@@ -484,11 +531,13 @@ const topicResult = await agent(
     '',
     '任务：把问题归入可读的业务主题，替代 MISSING、CONFLICT 这类抽象检查类型。',
     '要求：',
-    '1. 主题是“业务对象 + 问题性质”的短语，4~12 字，例如 金币场整体缺失、断线重连缺失、结算流程不完整、三摊承包口径冲突、超时兜底缺失。',
-    '2. 同一缺陷簇必须使用完全相同的主题写法；每个问题只能归入一个主题。',
-    '3. 主题数量控制在 8~25 个，既能区分重点，又不要一条问题一个主题。',
-    '4. issueIndexes 必须覆盖全部下标 0 到 ' + (issues.length - 1) + '，不能遗漏、不能重复。',
-    '5. 只做归类，不要改写问题标题。',
+    '1. 主题是“业务对象 + 问题性质”的短语，4~12 字，例如 金币场规则缺失、断线重连缺失、结算流程不完整、三摊承包口径冲突、超时兜底缺失。',
+    '2. 禁止使用 MISSING、CONFLICT 等英文检查类型，也禁止“文档规范要素缺失”“局内展示细节缺失”这类抽象主题；主题必须让人一眼看出是哪个业务对象出了什么问题。',
+    '3. 同一缺陷簇必须使用完全相同的主题写法；每个问题只能归入一个主题。',
+    '4. 标题含“（与 PRD-xxx 同根因，重复登记）”的问题，必须与被引用的主条目使用同一主题。',
+    '5. 主题数量控制在 8~25 个，既能区分重点，又不要一条问题一个主题。',
+    '6. issueIndexes 必须覆盖全部下标 0 到 ' + (issues.length - 1) + '，不能遗漏、不能重复。',
+    '7. 只做归类，不要改写问题标题。',
   ].join('\n'),
   { label: '主题归类', schema: TOPIC_SCHEMA, ...analysisAgentOptions, timeoutMs: 1800000 }
 )
@@ -558,6 +607,10 @@ const detailIssues = issues
     problem: it.problem,
     impact: it.impact,
     suggestion: it.suggestion,
+    term_explain: it.term_explain,
+    required_format: it.required_format,
+    example: it.example,
+    acceptance: it.acceptance,
   }))
 
 // fast 档报告分片并行写 + 命令拼接；默认档单代理整篇写
@@ -622,12 +675,13 @@ if (fastMode) {
           JSON.stringify(detailIssues, null, 1),
           '',
           '写作要求：',
-          '1. 文件第一行必须是 ## 3. 重点问题详情，然后按数据逐条展开：主题、问题性质（用 type_label 的中文名）、原文（引用 quote 并标注 location）、问题、影响、建议、处理状态（默认 待确认）。',
-          '2. 随后写 ## 4. 总体建议：问题最多的主题取主题分布第一名，影响开发的问题列出 P0/P1 的 ID，是否建议进入下一阶段按“存在 P0 或 P1 数量较多则暂缓，否则建议”给出结论与理由。',
-          '3. 不要重复报告标题与头部信息，不要写第 1、2 段。',
-          '4. 只能使用给定数据中的事实，不得编造引文或新增问题；引文必须来自 quote 字段。',
-          '5. 使用 write 工具写入 ' + part2Path + '，UTF-8 中文，不使用 Emoji。',
-          '6. 完成后返回写入的条数。',
+          '1. 文件第一行必须是 ## 3. 重点问题详情，然后按数据逐条展开，顺序固定：主题、问题性质（type_label）、术语解释（term_explain 不为“无”时保留）、原文（引用 quote 并标注 location）、问题、影响、需要补的内容与必填格式（required_format 不为“无”时保留）、范例（example 不为“无”时原样保留，保证可照抄）、建议、验收口径（acceptance）、处理状态（默认 待确认）。',
+          '2. term_explain、required_format、example、acceptance 为“无”或空时跳过该小节，不要编造；example 中的示例值保留原样。',
+          '3. 随后写 ## 4. 总体建议：问题最多的主题取主题分布第一名，影响开发的问题列出 P0/P1 的 ID，是否建议进入下一阶段按“存在 P0 或 P1 数量较多则暂缓，否则建议”给出结论与理由。',
+          '4. 不要重复报告标题与头部信息，不要写第 1、2 段。',
+          '5. 只能使用给定数据中的事实，不得编造引文或新增问题；引文必须来自 quote 字段。',
+          '6. 使用 write 工具写入 ' + part2Path + '，UTF-8 中文，不使用 Emoji。',
+          '7. 完成后返回写入的条数。',
           '只操作指定的输出文件，不要执行 git 命令、不要提交或推送、不要改动其他文件。',
         ].join('\n'),
         { label: '写报告-详情与建议', agentType: 'general', timeoutMs: 3600000 }
@@ -687,11 +741,12 @@ if (fastMode) {
       '写作要求：',
       '1. 严格四段结构：1 检查概览（统计表） -> 2 问题清单（表格：ID | 主题 | 优先级 | 问题 | 原文位置 | 建议） -> 3 重点问题详情 -> 4 总体建议。',
       '2. 第 2 段必须列出全部问题，一条不漏，顺序与表格数据一致；建议列取每条 suggestion 的精简版。',
-      '3. 第 3 段只展开“重点问题详情数据”里的条目；每条按 主题、问题性质（用 type_label 的中文名）、原文（引用 quote 并标注 location）、问题、影响、建议、处理状态（默认 待确认）书写。',
-      '4. 第 4 段：问题最多的主题取主题分布第一名，影响开发的问题列出 P0/P1 的 ID，是否建议进入下一阶段按“存在 P0 或 P1 数量较多则暂缓，否则建议”给出结论与理由。',
-      '5. 只能使用上面数据中的事实，不得编造原文引文或新增问题；引文必须来自 quote 字段。',
-      '6. 使用 write 工具写入 ' + outPath + '，UTF-8 中文，不使用 Emoji。',
-      '7. 完成后返回文件路径与写入的问题总条数。',
+      '3. 第 3 段只展开“重点问题详情数据”里的条目；每条按固定顺序书写：主题、问题性质（type_label）、术语解释（term_explain 不为“无”时保留）、原文（引用 quote 并标注 location）、问题、影响、需要补的内容与必填格式（required_format 不为“无”时保留）、范例（example 不为“无”时原样保留）、建议、验收口径（acceptance）、处理状态（默认 待确认）。',
+      '4. term_explain、required_format、example、acceptance 为“无”或空时跳过该小节，不要编造。',
+      '5. 第 4 段：问题最多的主题取主题分布第一名，影响开发的问题列出 P0/P1 的 ID，是否建议进入下一阶段按“存在 P0 或 P1 数量较多则暂缓，否则建议”给出结论与理由。',
+      '6. 只能使用上面数据中的事实，不得编造原文引文或新增问题；引文必须来自 quote 字段。',
+      '7. 使用 write 工具写入 ' + outPath + '，UTF-8 中文，不使用 Emoji。',
+      '8. 完成后返回文件路径与写入的问题总条数。',
       '只操作指定的输出文件，不要执行 git 命令、不要提交或推送、不要改动其他文件。',
     ].join('\n'),
     { label: '撰写报告 ' + outPath, agentType: 'general', timeoutMs: 3600000 }
@@ -721,7 +776,7 @@ if (skipReview) {
       '3. 概览统计数字是否与期望总数和优先级分布一致；',
       '4. 问题清单行数是否等于期望总数，ID 是否从 PRD-001 连续编号无跳号；',
       '5. 清单表头是否为 ID | 主题 | 优先级 | 问题 | 原文位置 | 建议；主题列是否为具体业务主题（不得出现 MISSING、CONFLICT、LOGIC、AMBIGUOUS、INCOMPLETE 等英文检查类型），优先级是否只用四级；',
-      '6. 每条清单项是否都有主题、原文位置与建议；重点问题详情是否包含主题与中文问题性质，且有原文引文，条数不少于期望详情条数；',
+      '6. 每条清单项是否都有主题、原文位置与建议；重点问题详情是否包含主题与中文问题性质，且有原文引文，条数不少于期望详情条数；涉及专有术语的是否有术语解释，缺章节/缺表类是否写了必填列与可照抄范例；',
       '7. 是否存在明显编造内容（引文与清单对不上、凭空新增问题）。',
       '',
       '全部通过返回 ok=true、problems 为空数组；有问题则 ok=false 并逐条写清问题与位置。',

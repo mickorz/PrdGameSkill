@@ -26,11 +26,21 @@ window.requestAnimationFrame = window.requestAnimationFrame || ((fn) => setTimeo
 // 等同步脚本执行完成
 await new Promise((r) => setTimeout(r, 100));
 
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => [...document.querySelectorAll(s)];
+
 check("游戏标题渲染", document.getElementById("game-title").textContent === "记忆翻牌");
-check("左侧导航渲染（含规则分组）", document.querySelectorAll("#nav a.req").length >= 8);
-check("PRD 视图默认渲染需求卡片", document.querySelectorAll("#view .req-card").length >= 8);
-check("状态徽标与权限徽标同时展示", document.querySelector("#view .st-proposed") && document.querySelector("#view .au-fixed"));
-check("未决问题区渲染", document.querySelector('[data-anchor="__openq__"]'));
+check("五个工作区 Tab 存在", ["spec", "decision", "ui", "flow", "tests"].every((t) => $(`#tabs button[data-tab="${t}"]`)));
+check("左侧分类导航渲染（概述 + 五类）", $$("#nav .cat-nav[data-cat]").length === 6);
+check("概述视图默认渲染（未决问题区）", !!document.querySelector('[data-anchor="__openq__"]'));
+
+// 规格工作台：分类切换渲染
+const ruleCat = $$("#nav .cat-nav[data-cat]").find((a) => a.dataset.cat === "GAME-RULE");
+if (ruleCat) ruleCat.click();
+await new Promise((r) => setTimeout(r, 50));
+check("点击分类渲染需求卡片（GAME-RULE）", $$("#view .req-card").length >= 2 && $("#view").textContent.includes("GAME-RULE-001"));
+check("状态徽标渲染（proposed）", !!document.querySelector("#view .st-proposed"));
+check("权限徽标渲染（authority）", !!document.querySelector('#view .req-card span[class*="au-"]'));
 
 // Tab 切换：UI Demo
 document.querySelector('#tabs button[data-tab="ui"]').click();
@@ -58,22 +68,34 @@ document.querySelector('#tabs button[data-tab="tests"]').click();
 check("Tests 视图四类用例分组渲染", document.querySelectorAll("#view table").length === 4);
 check("预设场景卡片渲染", document.querySelectorAll("#view .req-card").length >= 2);
 
-// 双向定位：PRD -> UI
-document.querySelector('#tabs button[data-tab="prd"]').click();
-const gotoBtn = document.querySelector("[data-goto-ui]");
-check("PRD 卡片带「查看 UI」定位按钮", !!gotoBtn);
+// 双向定位：规格工作台 -> UI（定位按钮在分类渲染的需求卡片上）
+document.querySelector('#tabs button[data-tab="spec"]').click();
+await new Promise((r) => setTimeout(r, 50));
+let gotoBtn = document.querySelector("[data-goto-ui]");
+if (!gotoBtn) {
+  // 当前分类（GAME-RULE）无带 UI 关联的卡片时依次切其他分类查找
+  for (const cat of ["GAME-FR", "GAME-STATE", "GAME-CFG"]) {
+    const a = $$("#nav .cat-nav[data-cat]").find((x) => x.dataset.cat === cat);
+    if (!a) continue;
+    a.click();
+    await new Promise((r) => setTimeout(r, 50));
+    gotoBtn = document.querySelector("[data-goto-ui]");
+    if (gotoBtn) break;
+  }
+}
+check("需求卡片带「查看 UI」定位按钮", !!gotoBtn);
 if (gotoBtn) {
   gotoBtn.click();
   await new Promise((r) => setTimeout(r, 30));
   check("点击定位后切到 UI Demo 并显示定位信息", document.querySelector('#tabs button[data-tab="ui"]').className.includes("active") && document.getElementById("ui-msg").textContent.includes("定位"));
 }
 
-// UI -> PRD 反向定位（右键）
+// UI -> 规格工作台反向定位（右键）
 document.querySelector('#tabs button[data-tab="ui"]').click();
 const comp = document.querySelector('[data-component-id="GAME-COMP-002"]');
 if (comp) comp.dispatchEvent(new window.MouseEvent("contextmenu", { bubbles: true, cancelable: true }));
 await new Promise((r) => setTimeout(r, 50));
-check("点击 UI 组件切回 PRD 并高亮关联需求", !!document.querySelector("#view .req-card.highlight"));
+check("点击 UI 组件切回规格工作台并高亮关联需求", !!document.querySelector("#view .req-card.highlight"));
 check("详情面板展示关联需求", document.getElementById("detail").textContent.includes("GAME-"));
 
 console.log("\n结果: " + passed + " passed, " + failed + " failed");

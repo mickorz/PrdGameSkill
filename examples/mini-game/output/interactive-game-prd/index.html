@@ -68,11 +68,24 @@
   .btn-dec.primary { background: #1a73e8; color: #fff; }
   .dec-note { background: #f8f9fb; border: 1px solid #e3e6ea; border-radius: 6px; padding: 6px 10px; margin: 8px 0; color: #556; font-size: 12px; }
   .dec-layout { display: flex; gap: 12px; margin-top: 10px; align-items: flex-start; }
-  .dec-list { width: 340px; max-height: 70vh; overflow: auto; border: 1px solid #e3e6ea; border-radius: 8px; padding: 6px; flex-shrink: 0; }
+  .dec-list { width: 300px; max-height: 64vh; overflow: auto; border: 1px solid #e3e6ea; border-radius: 8px; padding: 6px; flex-shrink: 0; }
+  .dec-main { flex: 1; min-width: 0; }
+  .dec-impact { width: 280px; flex-shrink: 0; border: 1px solid #e3e6ea; border-radius: 8px; padding: 10px; font-size: 12px; max-height: 70vh; overflow: auto; }
+  .dec-filters { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; align-items: center; }
+  .dec-filters select, .dec-filters input { font-size: 12px; padding: 3px 6px; }
+  .dec-stats { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; margin-top: 6px; }
+  .dec-stats b { padding: 2px 8px; border-radius: 10px; background: #f0f4ff; }
+  .dec-actions { display: flex; gap: 8px; margin-top: 12px; padding-top: 10px; border-top: 1px solid #e3e6ea; flex-wrap: wrap; }
+  body.ws-decision nav, body.ws-decision aside { display: none; }
+  body.ws-decision main { flex: 1; }
+  .cat-nav { display: block; padding: 5px 8px; margin: 2px 0; border-radius: 4px; cursor: pointer; font-size: 13px; }
+  .cat-nav:hover { background: #f0f4ff; }
+  .cat-nav.active { background: #dbe6ff; font-weight: 600; }
+  .cat-nav .cnt { color: #889; font-size: 11px; margin-left: 4px; }
   .dec-item { display: block; padding: 6px 8px; margin: 2px 0; border-radius: 4px; cursor: pointer; font-size: 12px; }
   .dec-item:hover { background: #f0f4ff; }
   .dec-item.active { background: #dbe6ff; }
-  .dec-detail { flex: 1; min-width: 0; }
+  .dec-main { flex: 1; min-width: 0; }
   .dec-form label { display: block; margin: 8px 0; font-size: 13px; }
   .dec-form select, .dec-form textarea { width: 100%; margin-top: 4px; font-size: 13px; padding: 4px 6px; box-sizing: border-box; }
   .dv-open { background: #fff3cd; color: #856404; }
@@ -93,11 +106,11 @@
     <div class="meta" id="game-meta"></div>
   </header>
   <div class="tabs" id="tabs">
-    <button data-tab="prd" class="active">PRD</button>
+    <button data-tab="spec" class="active">规格工作台</button>
+    <button data-tab="decision">裁决工作台</button>
     <button data-tab="ui">UI Demo</button>
     <button data-tab="flow">Flow</button>
     <button data-tab="tests">Tests</button>
-    <button data-tab="decision">裁决</button>
   </div>
   <div id="view"></div>
 </main>
@@ -121,46 +134,57 @@ const compById = new Map(); for (const c of APP_DATA.ui.components) compById.set
 const pageById = new Map(); for (const p of APP_DATA.ui.pages) pageById.set(p.id, p);
 const caseById = new Map(); for (const t of APP_DATA.tests.cases) caseById.set(t.id, t);
 
-const GROUPS = [
-  ["功能需求", (r) => r.type === "game_feature"],
-  ["游戏规则", (r) => r.type === "game_rule"],
-  ["状态机", (r) => r.type === "state"],
-  ["数值配置", (r) => r.type === "config"],
+// ---------- 规格分类（P0：导航配置 + 按 APP_DATA 实际 type 字段映射，数量动态统计） ----------
+const SPEC_CATEGORIES = [
+  { id: "GAME-FR", label: "功能需求", filter: (r) => r.type === "game_feature" },
+  { id: "GAME-RULE", label: "游戏规则", filter: (r) => r.type === "game_rule" },
+  { id: "GAME-STATE", label: "状态机", filter: (r) => r.type === "state" },
+  { id: "GAME-CFG", label: "数值配置", filter: (r) => r.type === "config" },
+  { id: "GAME-UI", label: "UI 页面与组件", isUi: true },
 ];
+const specState = { category: null, selectedId: null }; // 规格工作台状态（null = 概述）
+const decisionState = { selectedOqId: null, statusFilter: "all", severityFilter: "all", keyword: "" }; // 裁决工作台状态
+function categoryOf(r) { for (const c of SPEC_CATEGORIES) if (c.filter && c.filter(r)) return c.id; return null; }
 
 // ---------- 徽标 ----------
 function badges(r) {
   return `<span class="badge st-${r.status}">${r.status}</span><span class="badge au-${r.authority}">${r.authority}</span>`;
 }
 
-// ---------- 左侧导航 ----------
+// ---------- 左侧分类导航（P0：不展开全部需求，只列分类与数量） ----------
 function renderNav() {
   const nav = $("#nav");
-  let html = `<h4>游戏概述</h4><a class="req" data-nav="overview">概述与核心循环</a>`;
-  for (const [label, filter] of GROUPS) {
-    const items = [...reqById.values()].filter(filter);
-    html += `<h4>${esc(label)}</h4>`;
-    for (const r of items) {
-      html += `<a class="req" data-req="${r.id}">${esc(r.id)} ${esc(r.name)}${badges(r)}</a>`;
-    }
+  let html = `<h4>规格分类</h4><a class="cat-nav" data-cat="__overview__">游戏概述</a>`;
+  for (const c of SPEC_CATEGORIES) {
+    const cnt = c.isUi ? APP_DATA.ui.pages.length : [...reqById.values()].filter(c.filter).length;
+    html += `<a class="cat-nav" data-cat="${c.id}">${esc(c.label)}<span class="cnt">${cnt}</span></a>`;
   }
-  html += `<h4>UI 页面</h4>`;
-  for (const p of APP_DATA.ui.pages) html += `<a class="req" data-nav="ui:${p.id}">${esc(p.id)} ${esc(p.name)}</a>`;
-  html += `<h4>测试用例</h4><a class="req" data-nav="tests">全部用例（${APP_DATA.tests.cases.length}）</a>`;
-  const oq = APP_DATA.reviews.openQuestions || [];
-  html += `<h4>未决问题</h4><a class="req" data-nav="openq">${oq.length ? `未决问题（${oq.length}）` : "无未决问题"}</a>`;
+  html += `<h4>其他</h4><a class="cat-nav" data-nav="ui-demo">UI Demo 演示</a>` +
+    `<a class="cat-nav" data-nav="tests">测试用例（${APP_DATA.tests.cases.length}）</a>` +
+    `<a class="cat-nav" data-nav="openq">未决问题裁决（${(APP_DATA.reviews.openQuestions || []).length}）</a>`;
   nav.innerHTML = html;
   nav.addEventListener("click", (e) => {
     const a = e.target.closest("a");
     if (!a) return;
-    nav.querySelectorAll("a").forEach((n) => n.classList.remove("active"));
-    a.classList.add("active");
-    if (a.dataset.req) showRequirement(a.dataset.req);
-    else if (a.dataset.nav === "overview") switchTab("prd", () => scrollReq("__overview__"));
+    if (a.dataset.cat) { switchTab("spec", () => setSpecCategory(a.dataset.cat === "__overview__" ? null : a.dataset.cat)); return; }
+    if (a.dataset.nav === "ui-demo") switchTab("ui");
     else if (a.dataset.nav === "tests") switchTab("tests");
     else if (a.dataset.nav === "openq") switchTab("decision");
-    else if (a.dataset.nav && a.dataset.nav.startsWith("ui:")) switchTab("ui");
   });
+  updateNavActive();
+}
+function updateNavActive() {
+  const nav = $("#nav");
+  nav.querySelectorAll("a").forEach((a) => a.classList.remove("active"));
+  const cat = specState.category === null ? "__overview__" : specState.category;
+  const el = nav.querySelector(`[data-cat="${cat}"]`);
+  if (el) el.classList.add("active");
+}
+function setSpecCategory(cat) {
+  specState.category = cat;
+  specState.selectedId = null;
+  updateNavActive();
+  renderSpecCategory();
 }
 
 // ---------- 详情面板 ----------
@@ -183,9 +207,10 @@ function showDetail(r) {
 function showRequirement(id) {
   const r = reqById.get(id);
   if (!r) return;
-  switchTab("prd", () => {
-    scrollReq(id);
-    showDetail(r);
+  switchTab("spec", () => {
+    const cat = categoryOf(r);
+    if (cat && specState.category !== cat) setSpecCategory(cat);
+    raf(() => { scrollReq(id); showDetail(r); });
   });
 }
 
@@ -199,16 +224,17 @@ function scrollReq(id) {
 }
 
 // ---------- 视图切换 ----------
-let currentTab = "prd";
+let currentTab = "spec";
 const raf = window.requestAnimationFrame || ((fn) => setTimeout(fn, 0));
 function switchTab(tab, after) {
   currentTab = tab;
+  document.body.classList.toggle("ws-decision", tab === "decision");
   document.querySelectorAll("#tabs button").forEach((b) => b.classList.toggle("active", b.dataset.tab === tab));
-  if (tab === "prd") renderPrd();
+  if (tab === "spec") renderSpecCategory();
   if (tab === "ui") renderUiDemo();
   if (tab === "flow") renderFlow();
   if (tab === "tests") renderTests();
-  if (tab === "decision") renderDecision();
+  if (tab === "decision") renderDecisionWorkbench();
   if (after) raf(after);
 }
 
@@ -226,25 +252,44 @@ function reqCard(r) {
   </div>`;
 }
 
-function renderPrd() {
-  const g = APP_DATA.game;
-  let html = `<div class="req-card" data-anchor="__overview__"><h3>游戏概述</h3><div>${esc((g.overview && g.overview.summary) || "")}</div></div>`;
-  for (const [label, filter] of GROUPS) {
-    const items = [...reqById.values()].filter(filter);
-    if (!items.length) continue;
-    html += `<h3 style="margin-top:20px">${esc(label)}</h3>`;
-    html += items.map(reqCard).join("");
+// ---------- 规格工作台（P0：分类渲染；P1 再拆五类独立渲染器） ----------
+function renderSpecCategory() {
+  const cat = specState.category;
+  let html = "";
+  if (cat === null) {
+    const g = APP_DATA.game;
+    html += `<div class="req-card" data-anchor="__overview__"><h3>游戏概述</h3><div>${esc((g.overview && g.overview.summary) || "")}</div></div>`;
+    const oq = APP_DATA.reviews.openQuestions || [];
+    html += `<h3 style="margin-top:20px">未决问题（${oq.length}）</h3><div class="req-card" data-anchor="__openq__">` +
+      (oq.length ? oq.map((q) => `<div class="warn-open">${esc(q.id || "")} ${esc(q.question || "")}（${esc(q.severity || "")}）</div>`).join("") : "无") + `</div>`;
+  } else if (cat === "GAME-UI") {
+    html += `<h3>UI 页面（${APP_DATA.ui.pages.length}）</h3>`;
+    for (const p of APP_DATA.ui.pages) {
+      const comps = APP_DATA.ui.components.filter((c) => (p.component_refs || []).includes(c.id) || (c.page_id || "") === p.id);
+      html += `<div class="req-card" data-anchor="${esc(p.id)}" data-page="${esc(p.id)}"><h3>${esc(p.id)} ${esc(p.name)} <span class="badge">${p.resolution ? p.resolution.width + "x" + p.resolution.height : ""}</span></h3>
+        <div>${esc(p.description || "")}</div><div style="color:#889;font-size:12px;margin-top:4px">状态：${esc((p.states || []).join(" / "))}　组件 ${comps.length} 个</div></div>`;
+    }
+  } else {
+    const c = SPEC_CATEGORIES.find((x) => x.id === cat);
+    const items = [...reqById.values()].filter(c.filter);
+    html += `<h3>${esc(c.label)}（${items.length}）</h3>` + items.map(reqCard).join("");
   }
-  const oq = APP_DATA.reviews.openQuestions || [];
-  html += `<h3 style="margin-top:20px">未决问题</h3><div class="req-card" data-anchor="__openq__">` +
-    (oq.length ? oq.map((q) => `<div class="warn-open">${esc(q.id || "")} ${esc(q.question || "")}（${esc(q.severity || "")}）</div>`).join("") : "无") + `</div>`;
   $("#view").innerHTML = html;
-  $("#view").addEventListener("click", (e) => {
-    const goto = e.target.closest("[data-goto-ui]");
-    if (goto) { switchTab("ui", () => focusByRequirement(goto.dataset.gotoUi)); return; }
-    const card = e.target.closest(".req-card[data-anchor]");
-    if (card && card.dataset.anchor.startsWith("GAME-")) showDetail(reqById.get(card.dataset.anchor));
-  });
+}
+
+function showPageDetail(pid) {
+  const p = pageById.get(pid);
+  if (!p) return;
+  const comps = APP_DATA.ui.components.filter((c) => (p.component_refs || []).includes(c.id) || (c.page_id || "") === p.id);
+  const fields = [
+    ["ID", p.id], ["名称", p.name],
+    ["分辨率", p.resolution ? p.resolution.width + " x " + p.resolution.height : ""],
+    ["状态", (p.states || []).join(" / ")],
+    ["组件", comps.map((c) => c.id + " " + c.name).join("；")],
+    ["描述", p.description || ""],
+  ];
+  $("#detail").innerHTML = fields.filter(([, v]) => v).map(([k, v]) =>
+    `<div class="field"><span class="k">${k}</span>${esc(v)}</div>`).join("");
 }
 
 // ---------- UI Demo 视图 ----------
@@ -281,14 +326,9 @@ function renderUiDemo() {
     for (const c of APP_DATA.ui.components) if (c.id === compId) (c.requirements || []).forEach((x) => related.add(x));
     const others = [...reqById.values()].filter((r) => (r.ui_refs || []).includes(compId)).map((r) => r.id);
     others.forEach((x) => related.add(x));
-    switchTab("prd", () => {
-      for (const rid of related) {
-        const el = document.querySelector(`[data-anchor="${rid}"]`);
-        if (el) { el.scrollIntoView({ behavior: "smooth", block: "center" }); el.classList.add("highlight"); setTimeout(() => el.classList.remove("highlight"), 3200); break; }
-      }
-      const first = [...related][0];
-      if (first && reqById.get(first)) showDetail(reqById.get(first));
-    });
+    // 复用规格工作台统一入口：自动切到关联需求所在分类并高亮展示详情
+    const first = [...related][0];
+    if (first && reqById.get(first)) showRequirement(first);
   });
 }
 
@@ -393,62 +433,102 @@ function renderTests() {
   $("#view").innerHTML = html;
 }
 
-// ---------- 裁决视图（单文件 Decision Workbench，方案 A：内存裁决 + 导出 decisions.json） ----------
+// ---------- 裁决工作台（P0：独立布局 —— 统计+筛选 / 左列表 / 中详情与表单 / 右影响分析 / 底部操作栏；内存裁决 + 导出 decisions.json） ----------
 const OQ_LIST = APP_DATA.reviews.openQuestions || [];
 const DEC_LOG = (APP_DATA.reviews.decisionLog && APP_DATA.reviews.decisionLog.decisions) || [];
 const DEC_DRAFTS = (APP_DATA.reviews.approvalState && APP_DATA.reviews.approvalState.drafts) || {};
 const DECISIONS = {}; // OQ id -> 内存裁决记录；decision_status=draft 不进导出
 let decSeq = DEC_LOG.reduce((m, d) => Math.max(m, Number(String(d.decision_id || "DEC-0").replace("DEC-", "")) || 0), 0);
-let selectedOq = null;
+
+const OQ_STATUS_LABEL = { open: "待裁决", draft: "草稿", approved: "已确认", rejected: "已否决", deferred: "已挂起" };
+const SEV_RANK = { high: 3, medium: 2, low: 1 };
 
 function decPrevInLog(oid) {
   const ds = DEC_LOG.filter((d) => d.question_id === oid);
   return ds.length ? ds[ds.length - 1] : null;
 }
 
-function decBadge(q) {
-  const st = (DECISIONS[q.id] && DECISIONS[q.id].decision_status) || "open";
-  const label = { open: "待裁决", draft: "草稿", approved: "已确认", rejected: "已否决", deferred: "已挂起" }[st];
-  return `<span class="badge dv-${st}">${label}</span>`;
+// 合并三来源计算状态（避免重复计数）：内存 DECISIONS > 历史 DEC_LOG > APP_DATA 草稿 > open
+function oqStatus(q) {
+  const mem = DECISIONS[q.id];
+  if (mem) return mem.decision_status;
+  const hist = decPrevInLog(q.id);
+  if (hist) return hist.decision_status;
+  return DEC_DRAFTS[q.id] ? "draft" : "open";
 }
 
+function decisionStats() {
+  const s = { total: OQ_LIST.length, open: 0, draft: 0, approved: 0, rejected: 0, deferred: 0 };
+  for (const q of OQ_LIST) s[oqStatus(q)] += 1;
+  return s;
+}
+
+function visibleOqs() {
+  const kw = decisionState.keyword.trim().toLowerCase();
+  const list = OQ_LIST.filter((q) => {
+    if (decisionState.statusFilter !== "all" && oqStatus(q) !== decisionState.statusFilter) return false;
+    if (decisionState.severityFilter !== "all" && (q.severity || "low") !== decisionState.severityFilter) return false;
+    if (kw && !(`${q.id || ""}`.toLowerCase().includes(kw) || `${q.question || ""}`.toLowerCase().includes(kw))) return false;
+    return true;
+  });
+  return list.sort((a, b) => (SEV_RANK[b.severity || "low"] - SEV_RANK[a.severity || "low"]) || (a.id > b.id ? 1 : -1));
+}
+
+function decBadge(q) { return `<span class="badge dv-${oqStatus(q)}">${OQ_STATUS_LABEL[oqStatus(q)]}</span>`; }
 function sevBadge(q) { return `<span class="badge sv-${q.severity || "low"}">${esc(q.severity || "low")}</span>`; }
 
-function renderDecision() {
-  const decided = Object.values(DECISIONS).filter((d) => d.decision_status !== "draft");
-  const open = OQ_LIST.length - decided.length;
-  let html = `<div class="dec-head"><h3>未决问题裁决（${OQ_LIST.length} 项：已裁决 ${decided.length} / 待裁决 ${open}）</h3>
-    <div><button class="btn-dec primary" id="dec-export">导出 decisions.json（${decided.length} 条正式裁决）</button>
+function oqItemHtml(q) {
+  return `<a class="dec-item${decisionState.selectedOqId === q.id ? " active" : ""}" data-oq="${esc(q.id)}">${esc(q.id)} ${esc(String(q.question || "").slice(0, 26))}…${sevBadge(q)}${decBadge(q)}<div style="color:#889;font-size:11px;margin-top:2px">${esc(q.requirement_id || "无关联")}</div></a>`;
+}
+
+function renderDecisionList() {
+  $("#dec-list").innerHTML = visibleOqs().map(oqItemHtml).join("");
+}
+
+function renderDecisionWorkbench() {
+  const s = decisionStats();
+  let html = `<div class="dec-head"><h3>裁决工作台（${s.total} 项未决问题）</h3>
+    <div><button class="btn-dec primary" id="dec-export">导出 decisions.json</button>
     <span id="dec-export-msg" style="color:#1a73e8;font-size:12px;margin-left:8px"></span></div></div>
+    <div class="dec-stats"><b>全部 ${s.total}</b><b>待裁决 ${s.open}</b><b>草稿 ${s.draft}</b><b>已确认 ${s.approved}</b><b>已否决 ${s.rejected}</b><b>已挂起 ${s.deferred}</b></div>
+    <div class="dec-filters">
+      <label>状态 <select id="df-status-filter"><option value="all">全部</option>
+        ${["open", "draft", "approved", "rejected", "deferred"].map((v) => `<option value="${v}"${decisionState.statusFilter === v ? " selected" : ""}>${OQ_STATUS_LABEL[v]}</option>`).join("")}
+      </select></label>
+      <label>严重度 <select id="df-severity-filter"><option value="all">全部</option>
+        ${["high", "medium", "low"].map((v) => `<option value="${v}"${decisionState.severityFilter === v ? " selected" : ""}>${v}</option>`).join("")}
+      </select></label>
+      <input id="df-keyword" placeholder="搜索问题 ID 或描述" value="${esc(decisionState.keyword)}" style="flex:1;min-width:160px">
+    </div>
     <div class="dec-note">裁决在本页内存中完成（刷新丢失，正式裁决请及时导出）。导出后执行：node .claude/skills/interactive-game-prd/scripts/apply-decisions.mjs examples/mahjong/game-spec decisions.json --dry-run 预演，通过后去掉 --dry-run 落盘，再重跑 build-html 刷新本文件。AI 不代人工提交：点「正式裁决」与「导出」即人工确认动作。reviewer 固定为 human。</div>
     <div class="dec-layout">
-      <div class="dec-list" id="dec-list">${OQ_LIST.map((q) => `<a class="dec-item" data-oq="${esc(q.id)}">${esc(q.id)} ${esc(String(q.question || "").slice(0, 36))}…${sevBadge(q)}${decBadge(q)}</a>`).join("")}</div>
-      <div class="dec-detail" id="dec-detail"><span style="color:#99a">点击左侧未决问题查看详情与裁决</span></div>
+      <div class="dec-list" id="dec-list"></div>
+      <div class="dec-main" id="dec-main"><span style="color:#99a">点击左侧未决问题查看详情与裁决</span></div>
+      <div class="dec-impact" id="dec-impact"></div>
     </div>`;
   $("#view").innerHTML = html;
+  renderDecisionList();
   $("#dec-list").addEventListener("click", (e) => {
     const a = e.target.closest("[data-oq]");
     if (a) selectOq(a.dataset.oq);
   });
+  // 筛选只重渲染列表（不动中栏表单，不清空已编辑草稿）
+  $("#df-status-filter").addEventListener("change", (e) => { decisionState.statusFilter = e.target.value; renderDecisionList(); });
+  $("#df-severity-filter").addEventListener("change", (e) => { decisionState.severityFilter = e.target.value; renderDecisionList(); });
+  $("#df-keyword").addEventListener("input", (e) => { decisionState.keyword = e.target.value; renderDecisionList(); });
   $("#dec-export").addEventListener("click", exportDecisions);
-  if (selectedOq) selectOq(selectedOq);
+  if (decisionState.selectedOqId) selectOq(decisionState.selectedOqId);
 }
 
 function selectOq(oid) {
-  selectedOq = oid;
   const q = OQ_LIST.find((x) => x.id === oid);
   if (!q) return;
+  decisionState.selectedOqId = oid;
   document.querySelectorAll("#dec-list .dec-item").forEach((a) => a.classList.toggle("active", a.dataset.oq === oid));
   const draft = DECISIONS[oid] || DEC_DRAFTS[oid] || {};
-  const prev = decPrevInLog(oid);
-  const r = reqById.get(q.requirement_id);
-  const impact = r ? `<div class="req-card"><h3>关联需求 ${esc(r.id)} ${esc(r.name)} ${badges(r)}</h3><div>${esc(r.description || "")}</div>
-      <div style="color:#889;font-size:12px;margin-top:4px">关联 UI：${esc((r.ui_refs || []).join("、") || "无")}　关联测试：${esc((r.test_refs || []).join("、") || "无")}</div></div>` : "";
-  const imgNote = (q.images && q.images.length) ? `<div class="warn-open">附图依据：${esc(q.images.join("、"))} —— AI 无法读取截图数值，需人工提供文本补充</div>` : "";
-  const supNote = prev ? `<div class="dec-note">该问题在 decision-log 中已有正式裁决 ${esc(prev.decision_id)}（${esc(prev.decision_status)}），本次裁决将自动写入 supersedes 指向它。</div>` : "";
-  $("#dec-detail").innerHTML = `<h3>${esc(q.id)}（severity：${esc(q.severity || "")}）</h3>
+  $("#dec-main").innerHTML = `<h3>${esc(q.id)}（severity：${esc(q.severity || "")}）</h3>
     <div class="quote">${esc(q.question || "")}</div>
-    <div style="color:#889;font-size:12px">关联需求：${esc(q.requirement_id || "无")}</div>${imgNote}${impact}${supNote}
+    <div style="color:#889;font-size:12px">关联需求：${esc(q.requirement_id || "待补充关联")}</div>
     <h4 style="margin:12px 0 4px">裁决</h4>
     <div class="dec-form">
       <label>结论 <select id="df-status">
@@ -462,12 +542,60 @@ function selectOq(oid) {
         <option value="rejected"${draft.outcome === "rejected" ? " selected" : ""}>否决口径（rejected）</option>
         <option value="deferred"${draft.outcome === "deferred" ? " selected" : ""}>挂起待定（deferred）</option>
       </select></label>
-      <label>理由（正式裁决必填） <textarea id="df-rationale" rows="3">${esc(draft.rationale || "")}</textarea></label>
-      <div><button class="btn-dec" id="dec-draft">暂存草稿</button> <button class="btn-dec primary" id="dec-confirm">正式裁决</button></div>
-      <div id="dec-msg" style="color:#1a73e8;font-size:12px;margin-top:4px"></div>
+      <label>理由（正式裁决必填；修改口径时需写明最终口径） <textarea id="df-rationale" rows="3">${esc(draft.rationale || "")}</textarea></label>
+      <div id="dec-msg" style="color:#1a73e8;font-size:12px"></div>
+    </div>
+    <div class="dec-actions">
+      <button class="btn-dec" id="dec-prev">上一个</button>
+      <button class="btn-dec" id="dec-next">下一个</button>
+      <button class="btn-dec" id="dec-draft">暂存草稿</button>
+      <button class="btn-dec primary" id="dec-confirm">正式裁决</button>
     </div>`;
+  $("#dec-prev").addEventListener("click", () => stepOq(-1));
+  $("#dec-next").addEventListener("click", () => stepOq(1));
   $("#dec-draft").addEventListener("click", () => saveDecision(oid, "draft"));
   $("#dec-confirm").addEventListener("click", () => saveDecision(oid, null));
+  renderDecisionImpact(q);
+}
+
+// 右栏：影响分析（只基于真实关联数据，无关联显示「待补充关联」）
+function renderDecisionImpact(q) {
+  const r = reqById.get(q.requirement_id);
+  const hist = DEC_LOG.filter((d) => d.question_id === q.id);
+  const prev = hist.length ? hist[hist.length - 1] : null;
+  let html = `<h4 style="margin:0 0 6px">影响分析</h4>`;
+  if (r) {
+    html += `<div class="req-card" style="margin-bottom:8px"><h3 style="font-size:13px">${esc(r.id)} ${esc(r.name)} ${badges(r)}</h3>
+      <div style="font-size:12px">${esc(r.description || "")}</div>
+      <div style="color:#889;font-size:12px;margin-top:4px">关联 UI：${esc((r.ui_refs || []).join("、") || "无")}</div>
+      <div style="color:#889;font-size:12px">关联测试：${esc((r.test_refs || []).join("、") || "无")}</div>
+      <div style="color:#889;font-size:12px">依赖：${esc((r.dependencies || []).join("、") || "无")}</div></div>`;
+  } else {
+    html += `<div class="warn-open">待补充关联：本问题尚未建立 requirement_id 关联（或关联需求不存在），不得从问题描述猜测影响。</div>`;
+  }
+  if (q.images && q.images.length) html += `<div class="warn-open">附图依据：${esc(q.images.join("、"))} —— 需人工提供截图文本补充</div>`;
+  if (prev) {
+    html += `<h4 style="margin:10px 0 4px">历史裁决（${hist.length}）</h4>`;
+    for (const d of hist) html += `<div style="font-size:12px;margin:4px 0;border-bottom:1px dashed #e3e6ea;padding-bottom:4px">${esc(d.decision_id)} ${esc(d.decision_status)} / ${esc(d.outcome)}${d.supersedes ? "（supersedes " + esc(d.supersedes) + "）" : ""}<div style="color:#889">${esc(String(d.rationale || "").slice(0, 60))}</div></div>`;
+    html += `<div class="dec-note">本次裁决将自动写入 supersedes 指向 ${esc(prev.decision_id)}。</div>`;
+  }
+  $("#dec-impact").innerHTML = html;
+}
+
+// 底部操作栏：上一个 / 下一个（在当前筛选结果内移动）
+function stepOq(dir) {
+  const list = visibleOqs();
+  if (!list.length) return;
+  const idx = list.findIndex((q) => q.id === decisionState.selectedOqId);
+  const next = list[Math.min(list.length - 1, Math.max(0, (idx < 0 ? 0 : idx) + dir))];
+  if (next) selectOq(next.id);
+}
+
+// 正式裁决后：更新状态并自动定位下一个待裁决问题
+function afterDecisionSaved(oid) {
+  const next = visibleOqs().find((q) => oqStatus(q) === "open");
+  decisionState.selectedOqId = next ? next.id : oid;
+  renderDecisionWorkbench();
 }
 
 function syncOutcome(status, chosen) {
@@ -505,13 +633,14 @@ function saveDecision(oid, forceDraft) {
   if (sup && status !== "draft") rec.supersedes = sup;
   if (status === "draft") { delete rec.decided_at; }
   DECISIONS[oid] = rec;
-  renderDecision();
+  if (status === "draft") { msg.textContent = "已暂存草稿（仅存本页内存，刷新丢失）"; renderDecisionList(); }
+  else afterDecisionSaved(oid);
 }
 
 function exportDecisions() {
   const list = Object.values(DECISIONS).filter((d) => d.decision_status !== "draft");
   const msg = $("#dec-export-msg");
-  if (!list.length) { msg.textContent = "尚无正式裁决（草稿不导出），先在右侧完成正式裁决"; return; }
+  if (!list.length) { msg.textContent = "尚无正式裁决（草稿不导出），先在中间栏完成正式裁决"; return; }
   const blob = new Blob([JSON.stringify(list, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
@@ -539,8 +668,17 @@ document.getElementById("tabs").addEventListener("click", (e) => {
   const b = e.target.closest("button");
   if (b) switchTab(b.dataset.tab);
 });
+// 规格工作台内容区点击委托（一次绑定，避免重复挂监听）：需求卡片详情 / 页面卡片详情 / 跳 UI 定位
+$("#view").addEventListener("click", (e) => {
+  const goto = e.target.closest("[data-goto-ui]");
+  if (goto) { switchTab("ui", () => focusByRequirement(goto.dataset.gotoUi)); return; }
+  const page = e.target.closest("[data-page]");
+  if (page) { showPageDetail(page.dataset.page); return; }
+  const card = e.target.closest(".req-card[data-anchor]");
+  if (card && card.dataset.anchor.startsWith("GAME-")) showDetail(reqById.get(card.dataset.anchor));
+});
 renderNav();
-switchTab("prd");
+switchTab("spec");
 if (location.hash.startsWith("#req=")) showRequirement(decodeURIComponent(location.hash.slice(5)));
 </script>
 </body>

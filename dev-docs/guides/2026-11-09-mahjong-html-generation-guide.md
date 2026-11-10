@@ -4,6 +4,19 @@
 > 样例：卡五星（好友房）——8 份原始需求 source → 131 条 IR 需求 → 383 KB Interactive HTML PRD + 466 行规则模拟器。
 > mini-game（记忆翻牌）是同一管线的迷你验证样例，链路同构，规模对照见文末。
 
+## 术语表
+
+| 缩写 | 全称 | 含义 |
+|---|---|---|
+| PRD | Product Requirements Document（产品需求文档） | 两处出现：原始输入（`game-spec/source/` 下 8 份 Markdown）与最终产物（Interactive HTML PRD，交互式单文件） |
+| IR | Game Requirement IR（结构化需求中间表示） | 唯一事实源：`game-spec/` 下的 YAML 树（131 条需求 + UI + 测试 + 审查记录），所有产物从它生成 |
+| OQ | Open Question（开放问题） | 需人工裁决的未决问题（31 项，裁决前对应规则保持 `authority=open`，模拟器拒绝执行） |
+| GAME-FR / GAME-RULE / GAME-ST / GAME-TC | IR 条目 ID 前缀 | 功能需求 / 规则需求 / 状态定义 / 测试用例（如 GAME-RULE-033 危牌禁打） |
+| APP_DATA | 内嵌数据常量 | 构建时注入模板的单体 JSON（全部 IR 数据 + 模拟器源码），file:// 离线运行的基础 |
+| UMD | Universal Module Definition（通用模块定义） | 一份代码同时兼容 Node `require` 与浏览器全局挂载的封装，模拟器用它实现双环境复用 |
+| RULE_NOT_CONFIRMED | 规则未确认守卫错误 | 模拟器查表：规则未声明或 `authority=open` 时拒绝判定并抛出，禁止编造结果 |
+| validate-ir / validate-html / validate-output | 三道校验脚本 | IR 合法性 / HTML 产物质量 / 全链一致性汇总（机器可读报告） |
+
 ## 一句话原理
 
 `index.html` = **渲染模板**（`assets/html-template/index.html`，396 行）+ **全部规格数据内嵌**（APP_DATA JSON）+ **模拟器源码字符串注入**——构建时把三者拼成一个离线单文件，浏览器打开即可运行，无任何外链。

@@ -187,6 +187,12 @@ export function parseReport(md) {
         const fm = body.match(new RegExp(`\\*\\*${name}\\*\\*[：:]\\s*([\\s\\S]*?)(?=\\n\\*\\*|\\n- \\*\\*|\\n---|$)`));
         return fm ? fm[1].trim() : '';
       };
+      // 建议字段特殊处理：「建议」之后可能跟随「范例」等附加小节（如 workflow 版 PRD-005 的可照抄范例表），
+      // 需一路取到「处理状态」前，不能在下一个 **小节** 处截断，否则范例内容丢失
+      const fieldSuggestion = () => {
+        const fm = body.match(/\*\*建议\*\*[：:]\s*([\s\S]*?)(?=\n\*\*处理状态\*\*|$)/);
+        return fm ? fm[1].trim() : '';
+      };
       // 优先级 / 类型：skill 版 `- 类型：MISSING`；workflow 版 `- 问题性质：需求缺失`
       const priority = (body.match(/-\s*优先级：\s*(P[0-3])/) || [])[1] || issue.priority;
       const typeRaw = (body.match(/-\s*(?:类型|问题性质)：\s*(\S+)/) || [])[1] || '';
@@ -210,7 +216,7 @@ export function parseReport(md) {
         original_text: originalText,
         problem: field('问题'),
         impact: field('影响'),
-        suggestion: field('建议') || issue.suggestion,
+        suggestion: fieldSuggestion() || field('建议') || issue.suggestion,
         status: (body.match(/\*\*处理状态\*\*[：:]\s*(.+)/) || [])[1]?.trim() || '待确认',
         has_detail: true,
       };

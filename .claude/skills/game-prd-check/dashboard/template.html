@@ -310,7 +310,8 @@
     '内容冲突': '需求文档内部两处描述互相矛盾（CONFLICT）',
     '逻辑错误': '与规则基准冲突或自身逻辑错误（LOGIC）',
     '定义歧义': '描述模糊，可多种理解（AMBIGUOUS）',
-    '描述不完整': '描述不完整，无法实现或验收（INCOMPLETE）'
+    '描述不完整': '描述不完整，无法实现或验收（INCOMPLETE）',
+    '未分类': '源报告该条目仅登记在清单中，无详情块，未提供问题性质'
   };
 
   function esc(s) {
@@ -561,18 +562,24 @@
 
   // ---------- 抽屉 ----------
   var curId = null;
+  // 字段容错：有值渲染原文，空值给灰色占位（清单条目无详情块时不显示空白）
+  function fld(p) {
+    return (p && String(p).trim()) ? '<p>' + esc(p) + '</p>' : '<p style="color:var(--muted)">（源报告清单条目，无详情块，未提供该字段内容）</p>';
+  }
   function openDrawer(id) {
     var it = byId[id]; if (!it) return;
     curId = id;
-    $('d-pri').textContent = it.priority; $('d-pri').style.background = PRI_COLOR[it.priority];
+    $('d-pri').textContent = it.priority; $('d-pri').style.background = PRI_COLOR[it.priority] || '#94A3B8';
     $('d-id').textContent = id + ' · ' + it.type;
     $('d-title').textContent = it.title;
     $('d-body').innerHTML =
-      '<h4>原文位置</h4><p>' + esc(it.source_location) + '</p>' +
-      '<h4>原文引用</h4><blockquote>' + esc(it.original_text) + '</blockquote>' +
-      '<h4>问题分析</h4><p>' + esc(it.problem) + '</p>' +
-      '<h4>影响说明</h4><p>' + esc(it.impact) + '</p>' +
-      '<h4>修改建议</h4><p>' + esc(it.suggestion) + '</p>' +
+      '<h4>原文位置</h4>' + fld(it.source_location) +
+      '<h4>原文引用</h4>' + ((it.original_text && String(it.original_text).trim())
+        ? '<blockquote>' + esc(it.original_text) + '</blockquote>'
+        : '<p style="color:var(--muted)">（源报告清单条目，无详情块，未提供该字段内容）</p>') +
+      '<h4>问题分析</h4>' + fld(it.problem) +
+      '<h4>影响说明</h4>' + fld(it.impact) +
+      '<h4>修改建议</h4>' + fld(it.suggestion) +
       '<div class="status">处理状态：' + esc(it.status) + '（只读，Dashboard 不提供裁决操作）' +
       (it.module && it.module.length ? ' · 模块：' + esc(it.module.join('、')) : '') + '</div>';
     var list = filtered();

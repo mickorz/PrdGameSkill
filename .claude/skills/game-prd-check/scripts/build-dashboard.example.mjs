@@ -148,3 +148,101 @@ assert.ok(data.issues[1].module.includes('结算链路'), '问题应挂模块标
 assert.ok(!fin.issue_ids.includes('PRD-003'), '范围写法 ID 不应混入资损组');
 
 console.log('[成功] build-dashboard.example 全部断言通过（parse/validate/风险组/TOP5/模块/结论）');
+
+// ================= workflow 格式自检 =================
+// 特征：清单第二列=中文主题、详情块「- 主题：」+「- 问题性质：」、「**原文**（位置）：」、基准单行、清单条目多于详情块
+const wfReport = `# PRD 检查问题报告
+
+检查对象：input\\【测试麻将】测试玩法.md
+检查范围：排除 金币场（本期不检查）
+规则基准：.claude/skills/game-prd-check/references/rules
+检查日期：2026-11-10
+
+## 1. 检查概览
+
+| 指标 | 数量 |
+| --- | --- |
+| 发现问题总数 | 3 |
+| 严重问题 P0 | 1 |
+| 高优先级 P1 | 1 |
+| 一般问题 P2 | 1 |
+| 优化建议 P3 | 0 |
+
+### 主题分布
+
+| 主题 | 数量 |
+| --- | --- |
+| 结算链路缺陷 | 2 |
+| 展示细节缺失 | 1 |
+
+## 2. 问题清单
+
+| ID | 主题 | 优先级 | 问题 | 原文位置 | 建议 |
+| --- | --- | --- | --- | --- | --- |
+| PRD-001 | 结算链路缺陷 | P0 | 测试问题一 | 全文 | 补充描述 |
+| PRD-002 | 结算链路缺陷 | P1 | 测试问题二 | 第2章 | 统一口径 |
+| PRD-003 | 展示细节缺失 | P2 | 测试问题三 | 第3章 | 修正展示 |
+
+## 3. 重点问题详情
+
+### PRD-001：测试问题一
+
+- 优先级：P0
+- 主题：结算链路缺陷
+- 问题性质：需求缺失
+
+**原文**（全文（无结算章节））：
+
+> 「结算流程见外部文档」
+
+**问题**：
+
+结算章节缺失。
+
+**影响**：
+
+无法验收。
+
+**建议**：
+
+补充描述。
+
+**处理状态**：待确认
+
+## 4. 总体建议
+
+- **问题最多的主题**：结算链路缺陷，共 2 条
+- **可能影响开发的问题**：PRD-001 阻塞开发；PRD-002 直接导致金额算错，建议先裁决
+- **是否建议进入下一阶段规格生成**：暂缓。先补齐结算章节。
+`;
+
+const wf = parseReport(wfReport);
+const wfErrors = validateReport(wf);
+assert.strictEqual(wfErrors.length, 0, 'workflow 格式校验应零错误，实际：' + wfErrors.join('；'));
+// 清单为全集：3 条全进 issues（仅 1 条有详情）
+assert.strictEqual(wf.issues.length, 3, '清单条目应全部进入 issues');
+assert.strictEqual(wf.issues.filter((i) => i.has_detail).length, 1, '仅 1 条有详情块');
+// 详情块字段：问题性质->类型、原文括号位置、主题挂模块
+assert.strictEqual(wf.issues[0].type, '需求缺失', '问题性质应映射为中文类型');
+assert.strictEqual(wf.issues[0].source_location, '全文（无结算章节）', '原文括号位置应提取');
+assert.ok(wf.issues[0].original_text.includes('外部文档'), '引文应保留');
+// 无详情条目：类型=未分类，建议来自清单
+assert.strictEqual(wf.issues[1].type, '未分类', '无详情条目应为未分类');
+assert.strictEqual(wf.issues[1].suggestion, '统一口径', '清单建议应保留');
+// 主题挂模块 + modules 聚合
+assert.deepStrictEqual(wf.issues[0].module, ['结算链路缺陷'], '清单主题列应挂模块');
+const wfMod = wf.modules.find((m) => m.name === '结算链路缺陷');
+assert.ok(wfMod && wfMod.issue_ids.length === 2, '模块应按主题聚合');
+// 基准单行 + 反斜杠路径
+assert.ok(wf.report.rule_baselines.some((b) => b.includes('references/rules')), '单行基准应提取');
+assert.strictEqual(wf.report.project_name, '测试麻将', '反斜杠路径项目名应正确');
+// 类型总和含未分类 = 总数
+const wfTypeSum = Object.values(wf.statistics.types).reduce((a, b) => a + b, 0);
+assert.strictEqual(wfTypeSum, 3, '类型总和（含未分类）应等于总数');
+// 资损关键词（金额算错）
+const wfFin = wf.risk_groups.find((g) => g.key === 'financial');
+assert.ok(wfFin && wfFin.issue_ids.includes('PRD-002') && !wfFin.issue_ids.includes('PRD-001'), '金额类关键词应提取资损组');
+// TOP5：P0 全部 + 资损补足
+assert.deepStrictEqual(wf.featured_issues, ['PRD-001', 'PRD-002'], 'TOP5 排序错误');
+
+console.log('[成功] workflow 格式断言全部通过（清单全集/详情合并/问题性质/主题模块/单行基准/未分类/资损关键词）');

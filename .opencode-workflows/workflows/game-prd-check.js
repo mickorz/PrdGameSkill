@@ -15,9 +15,10 @@
 //   templatePath  报告模板，默认 .claude/skills/game-prd-check/references/templates/report.template.md
 //   outPath       报告输出路径，默认 examples/game-prd-check-workflow/report.md（与 skill 产物隔离）
 //   date          检查日期（YYYY-MM-DD）；脚本内禁止取当前时间，需由调用方传入
-//   maxIssuesPerGroup 每组最多报告的问题数，默认 20
+//   maxIssuesPerGroup 每组最多报告的问题数，默认 10
 //   analysisModel 分析阶段使用的模型，默认 biangfeng-gateway/deepseek-v4.1-flash-official（传空字符串则用会话默认模型）
-//   concurrency   并发上限，默认 12（运行时钳制到 16）
+//   reviewModel   报告质检使用的模型，默认同 analysisModel（传空字符串则用会话默认模型）
+//   concurrency   并发上限，默认 16（运行时钳制到 16）
 //   skipReview    传 true 跳过报告质检阶段，直接出报告（更快，少一轮串行读文件）
 
 export const meta = {
@@ -41,18 +42,23 @@ const templatePath =
   A.templatePath || '.claude/skills/game-prd-check/references/templates/report.template.md'
 const outPath = A.outPath || 'examples/game-prd-check-workflow/report.md'
 const checkDate = A.date || '未提供（调用时请传 args.date，格式 YYYY-MM-DD）'
-const maxIssuesPerGroup = A.maxIssuesPerGroup || 20
+const maxIssuesPerGroup = A.maxIssuesPerGroup || 10
 const skipReview = A.skipReview === true
 
-// 分析阶段（扫描 / 规则检查 / 一致性检查 / 去重）统一用快速模型，报告撰写与质检仍用会话默认模型
+// 分析阶段（扫描 / 规则检查 / 一致性检查 / 去重）统一用快速模型，报告撰写用会话默认模型
 const analysisModel =
   A.analysisModel === undefined ? 'biangfeng-gateway/deepseek-v4.1-flash-official' : A.analysisModel
 const analysisAgentOptions = analysisModel
   ? { model: analysisModel, timeoutMs: 3600000 }
   : { timeoutMs: 3600000 }
 
-// 规则分组检查与一致性检查并发执行，默认放到 12 路；网关限流时可传 args.concurrency 调小
-setConcurrency(A.concurrency || 12)
+const reviewModel = A.reviewModel === undefined ? analysisModel : A.reviewModel
+const reviewAgentOptions = reviewModel
+  ? { model: reviewModel, timeoutMs: 1800000 }
+  : { timeoutMs: 1800000 }
+
+// 规则分组检查与一致性检查并发执行，默认放到 16 路；网关限流时可传 args.concurrency 调小
+setConcurrency(A.concurrency || 16)
 
 const TYPE_RULE = [
   'MISSING：规则中定义了、但需求文档缺失或未描述',
@@ -203,12 +209,12 @@ function compactKey(s) {
     .toLowerCase()
 }
 
-// 确定性去重：同 type + location + title 视为同一条，合并 location 证据
+// 确定性去重：同 type + location + 标题前缀（前 12 字）视为同一条，合并 location 证据
 function exactDedup(list) {
   const seen = {}
   const out = []
   for (const it of list) {
-    const key = it.type + '|' + compactKey(it.location) + '|' + compactKey(it.title)
+    const key = it.type + '|' + compactKey(it.location) + '|' + compactKey(it.title).slice(0, 12)
     if (seen[key]) {
       const kept = seen[key]
       if (it.location && String(kept.location || '').indexOf(it.location) < 0) {
@@ -230,12 +236,12 @@ const scan = await agent(
     '',
     '任务：只做清单扫描，不读正文做判断。',
     '1. 列出需求文档目录 ' + inputDir + ' 下所有 Markdown 文档，返回相对项目根目录的路径（不含规则目录里的文件）。',
-    '2. 遍历规则基准目录 ' + rulesDir + '，把规则文件按主题分成 5~10 组，每组给出 title、focus、files、sections。',
+    '2. 遍历规则基准目录 ' + rulesDir + '，把规则文件按主题分组，每组给出 title、focus、files、sections。',
     '   - 普通规则文件按主题成组，files 必须是相对项目根目录的完整路径，组内文件要覆盖到每一份规则文档，不能漏。',
-    '   - 单个规则文件超过 20KB（约 8000 字）时不要整组读：按一级/二级标题拆成 2~4 个片段，每个片段单独成一组，files 留空数组，sections 填 { file, fromLine, toLine, title }。用 grep 查标题、read 带 offset 确认行号，行号必须准确（read 显示的行号即真实行号）。',
-    '   - 规则按业务流程分章时，按阶段分组（例如 开局与发牌 / 摸打吃碰杠 / 结算与分数 / 配置与做牌 / 重连 / 广播与数据）。',
-    '   - 总览、目录、索引类文件放进第一组；focus 用一句话说明这组规则管什么。',
-    '   - 总组数控制在 10 组以内，避免超过并发上限排队。',
+    '   - 单个规则文件超过 20KB（约 8000 字）时按一级章节拆分：一章一个片段、一个片段一组，files 留空数组，sections 填 { file, fromLine, toLine, title }。片段必须首尾相接覆盖全文（从第 1 行到文件最后一行），不能留空档。用 grep 查章节标题、read 带 offset 确认行号（read 显示的行号即真实行号）。',
+    '   - 小文件（≤20KB）按业务流程阶段合并成组（例如 开局与发牌 / 摸打吃碰杠 / 结算与分数 / 配置与做牌 / 重连 / 广播与数据），总览、目录、索引类文件放进第一组。',
+    '   - focus 用一句话说明这组规则管什么。',
+    '   - 总组数上限 24 组（大文件章节多时以章节为准，不要为了组数上限合并章节或漏掉内容）。',
     '3. 如果规则目录结构与本说明不同，按实际结构自适应分组，仍要覆盖全部规则文件。',
   ].join('\n'),
   { label: '扫描输入与规则', schema: SCAN_SCHEMA, ...analysisAgentOptions, timeoutMs: 900000 }
@@ -410,7 +416,7 @@ log('汇总完成：共 ' + stats.total + ' 条问题（P0 ' + stats.P0 + ' / P1
 
 phase('生成报告')
 
-// 报告输入瘦身：清单表只给精简字段，详情只给 P0/P1 + 4 条典型 P2
+// 报告输入瘦身：清单表只给精简字段，详情只给 P0/P1 + 3 条典型 P2
 const tableRows = issues.map((it) => ({
   id: it.id,
   type: it.type,
@@ -421,7 +427,7 @@ const tableRows = issues.map((it) => ({
 }))
 const detailIssues = issues
   .filter((it) => it.priority === 'P0' || it.priority === 'P1')
-  .concat(issues.filter((it) => it.priority === 'P2').slice(0, 4))
+  .concat(issues.filter((it) => it.priority === 'P2').slice(0, 3))
 
 const writeResult = await agent(
   [
@@ -471,6 +477,7 @@ if (skipReview) {
       '报告文件：' + outPath,
       '报告模板：' + templatePath,
       '期望问题总数：' + stats.total + '（P0 ' + stats.P0 + ' / P1 ' + stats.P1 + ' / P2 ' + stats.P2 + ' / P3 ' + stats.P3 + '）',
+      '期望重点详情条数：' + detailIssues.length,
       '',
       '逐项检查并输出问题列表：',
       '1. 是否包含四段结构，标题与模板一致；',
@@ -478,12 +485,12 @@ if (skipReview) {
       '3. 概览统计数字是否与期望总数和优先级分布一致；',
       '4. 问题清单行数是否等于期望总数，ID 是否从 PRD-001 连续编号无跳号；',
       '5. 类型是否只用五种、优先级是否只用四级；',
-      '6. 每条清单项是否都有原文位置与建议；重点问题详情是否有原文引文且不少于 3 条；',
+      '6. 每条清单项是否都有原文位置与建议；重点问题详情是否有原文引文，且条数等于期望详情条数；',
       '7. 是否存在明显编造内容（引文与清单对不上、凭空新增问题）。',
       '',
       '全部通过返回 ok=true、problems 为空数组；有问题则 ok=false 并逐条写清问题与位置。',
     ].join('\n'),
-    { label: '审核报告', schema: REVIEW_SCHEMA, timeoutMs: 1800000 }
+    { label: '审核报告', schema: REVIEW_SCHEMA, ...reviewAgentOptions }
   )
 
   if (review && review.ok === false) {

@@ -327,8 +327,21 @@ const APP_DATA = /*__APP_DATA_JSON__*/null;
 | 检查 | 命令 | 内容 |
 |---|---|---|
 | mahjong-smoke | `mahjong-smoke.test.mjs <output>` | jsdom 无头冒烟 15 项（通用断言，不依赖游戏专用交互），明细见下表 |
-| mahjong-simulator.test | `mahjong-simulator.test.mjs` | 场景回放 40 项断言：核心行牌流程（摸/出/碰/杠）与结算规则按 IR 执行、未确认规则被 RULE_NOT_CONFIRMED 拒绝 |
+| mahjong-simulator.test | `mahjong-simulator.test.mjs` | 场景回放 39 项断言（对应 IR 测试用例 TC 与规则 ID），明细见下表 |
 | validate-output | `validate-output.mjs examples/mahjong` | 串联全部校验输出机器可读报告（`output/reports/validate-report.json`）：result=pass、requirement_total=165（含 configs/states）、来源追溯率 100% |
+
+**mahjong-simulator.test 39 项场景回放明细**（Node 直接 require 模拟器 UMD 的纯逻辑核心，按 IR 测试用例分组，每项断言结果状态与 rule_ref 日志双验证）：
+
+| 场景组 | 断言内容 | 项数 |
+|---|---|---|
+| TC-001 碰牌 | 前置出牌成功 → 碰成立取得出牌权 → 碰副露记录且手牌减 2 → rule_ref GAME-RULE-038 applied → 碰不足 2 张被拒绝（rejected） | 5 |
+| TC-003 漏胡 | 可胡不胡进入漏胡 → 漏胡期间不可胡（missed_hu）→ rule_ref GAME-RULE-049 拒绝 → 摸牌解除漏胡 → 解除后按牌型正常判定 → 摸回可胡牌解除 → 解除后自摸碰碰胡成立（GAME-RULE-072，番 2）→ rule_ref 049 解除 → rule_ref 072 applied | 9 |
+| TC-005 封顶 | 碰碰胡 2 × 亮倒 2 × 上楼 2 = 8 未超封顶 → rule_ref GAME-RULE-121/081/086 → 番型 × 加倍项 8 超封顶 6 截断为 6（截断只作用于乘算部分） | 4 |
+| 平胡番型 | 平胡 F01 判定（含顺子 1 倍，GAME-RULE-071）+ rule_ref 日志 | 2 |
+| TC-006 杠系与连杠 | 直杠成立 n=1 → 直杠分 2（P2 付 P1 收）→ 杠后补牌 7万 → 非杠后补牌出牌中断连杠 → 连杠第 1 杠 n=1 分 2 → 中断后重新计数 → rule_ref GAME-RULE-042 → 同玩家连杠前置直杠 n=1 → 杠后补牌暗杠递进 n=2 → 连杠分值 2+8=10（三家收付）→ 连杠 rule_ref 042 | 11 |
+| TC-004 危牌 | 危牌禁止打出（rejected）→ 非危牌正常打出 → 非全危牌混有危牌仍禁打 → 全危牌例外允许打出（applied） | 4 |
+| 守卫与健壮性 | 总结算抛 RULE_NOT_CONFIRMED（S0 结算总公式未确认，GAME-RULE-116）→ 未知动作被拒绝（unknown_action） | 2 |
+| 快照恢复 | 快照前状态推进正常 → 恢复后状态一致（回合、副露、牌河、手牌全部还原） | 2 |
 
 **mahjong-smoke 15 项检查明细**（jsdom 加载产物 index.html 无头执行，分三类）：
 
@@ -373,7 +386,7 @@ node .claude/skills/interactive-game-prd/scripts/validate-html.mjs examples/mahj
 # 卡五星专用冒烟（15 项）
 node .claude/skills/interactive-game-prd/scripts/mahjong-smoke.test.mjs
 
-# 卡五星模拟器场景回放（40 项）
+# 卡五星模拟器场景回放（39 项）
 node .claude/skills/interactive-game-prd/scripts/mahjong-simulator.test.mjs
 
 # 一致性汇总（含 Export 质量门）
@@ -394,7 +407,7 @@ node .claude/skills/interactive-game-prd/scripts/decision-workbench.mjs examples
 | 模拟器 | 165 行 / 6 规则 | 466 行 / 45 规则 |
 | index.html | 42 KB | 383 KB |
 | 冒烟测试 | html-smoke（19 项，游戏专用断言） | mahjong-smoke（15 项，通用断言） |
-| 场景回放 | simulator.test（11 项） | mahjong-simulator.test（40 项） |
+| 场景回放 | simulator.test（10 项） | mahjong-simulator.test（39 项） |
 | 端到端 | e2e.mjs（7 步，管线回归锚点） | validate-output（result=pass） |
 | 定位 | 管线验证 Golden Sample（冻结） | 真实业务样例（随裁决演进） |
 

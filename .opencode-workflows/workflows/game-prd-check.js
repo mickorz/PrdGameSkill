@@ -21,6 +21,8 @@
 //   concurrency   并发上限，默认 16（运行时钳制到 16）
 //   fast          最快档：规则组压到 16 组以内、强制确定性去重、报告分片并行写、默认跳过质检
 //   excludeKeywords 本期不检查的主题关键词数组，默认 ["金币场"]；命中 module/title/location/ruleRef 即剔除
+//   dashboard     生成 HTML Dashboard，默认 true；传 false 跳过
+//   dashboardScript Dashboard 生成脚本，默认 .claude/skills/game-prd-check/scripts/build-dashboard.mjs
 //   skipReview    传 true 跳过报告质检阶段，直接出报告（更快，少一轮串行读文件）
 
 export const meta = {
@@ -35,6 +37,7 @@ export const meta = {
     { title: '主题归类' },
     { title: '生成报告' },
     { title: '报告审核' },
+    { title: '生成Dashboard' },
   ],
 }
 
@@ -53,6 +56,10 @@ const skipReview = A.skipReview === false ? false : A.skipReview === true || fas
 const maxRuleGroups = fastMode ? 16 : 24
 // 本期不检查的主题关键词：命中的问题在汇总后剔除，不计入统计
 const excludeKeywords = Array.isArray(A.excludeKeywords) ? A.excludeKeywords : ['金币场']
+// 报告生成的最后一步：把 report.md 转成离线 HTML Dashboard
+const dashboardEnabled = A.dashboard !== false
+const dashboardScript =
+  A.dashboardScript || '.claude/skills/game-prd-check/scripts/build-dashboard.mjs'
 
 // 分析阶段（扫描 / 规则检查 / 一致性检查 / 去重）统一用快速模型，报告撰写用会话默认模型
 const analysisModel =
@@ -205,6 +212,18 @@ const REVIEW_SCHEMA = {
     problems: { type: 'array', items: { type: 'string' } },
   },
   required: ['ok', 'problems'],
+}
+
+const DASHBOARD_SCHEMA = {
+  type: 'object',
+  properties: {
+    ok: { type: 'boolean' },
+    htmlPath: { type: 'string', description: '生成成功的 HTML 路径，失败留空' },
+    reportJsonPath: { type: 'string', description: '生成的 report.json 路径，失败留空' },
+    errors: { type: 'array', items: { type: 'string' } },
+    commandOutput: { type: 'string', description: '命令输出的最后 20 行' },
+  },
+  required: ['ok'],
 }
 
 function issueRules() {
@@ -809,8 +828,47 @@ if (skipReview) {
 
 await check(() => fileExists(outPath), '报告文件未生成：' + outPath)
 
+phase('生成Dashboard')
+
+let dashboardResult = null
+if (dashboardEnabled) {
+  dashboardResult = await agent(
+    [
+      '你在项目根目录执行 Dashboard 生成命令。只允许执行该命令并读取输出，不要 git 提交、不要修改 report.md 或其他文件。',
+      '',
+      '执行命令（一次执行完）：',
+      'node "' + dashboardScript + '" "' + outPath + '"',
+      '',
+      '结果判定：',
+      '1. 退出码非 0 或输出含 [失败]：ok=false，errors 填错误行（去掉前缀），htmlPath 与 reportJsonPath 留空。',
+      '2. 输出含 [成功]：ok=true，从「dashboard   -> 」行取 HTML 路径填入 htmlPath，从「report.json -> 」行取路径填入 reportJsonPath；路径统一转成相对项目根目录的形式（去掉项目根前缀），不要改写文件名。',
+      '3. commandOutput 放命令输出的最后 20 行。',
+      '4. 不执行 git 命令，不删除历史 Dashboard 产物（同名日期序号由脚本自动递增）。',
+    ].join('\n'),
+    { label: '生成 Dashboard', schema: DASHBOARD_SCHEMA, agentType: 'general', timeoutMs: 900000 }
+  )
+
+  if (!dashboardResult || dashboardResult.ok !== true || !dashboardResult.htmlPath) {
+    const reason =
+      dashboardResult && Array.isArray(dashboardResult.errors) && dashboardResult.errors.length > 0
+        ? dashboardResult.errors.join('；')
+        : '未返回成功的 HTML 路径'
+    throw new Error(
+      'Dashboard 生成失败：' + reason + '。请修复 report.md 后重跑，或传 args.dashboard=false 跳过 Dashboard。'
+    )
+  }
+
+  await check(() => fileExists(dashboardResult.htmlPath), 'Dashboard 文件不存在：' + dashboardResult.htmlPath)
+  log('Dashboard 生成完成：' + dashboardResult.htmlPath)
+} else {
+  log('已按 args.dashboard=false 跳过 Dashboard 生成')
+}
+
 return {
   reportPath: outPath,
+  dashboardPath: dashboardResult ? dashboardResult.htmlPath : null,
+  reportJsonPath: dashboardResult ? dashboardResult.reportJsonPath : null,
+  dashboardSkipped: !dashboardEnabled,
   inputFiles: inputFiles,
   ruleGroups: ruleGroups.map((g) => ({
     title: g.title,

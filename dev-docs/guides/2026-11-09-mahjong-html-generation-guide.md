@@ -172,6 +172,34 @@ flowchart TD
 
 **红线**：审查只读，不修改原始需求与 IR 条目；AI 推测不得当成事实写入报告结论。
 
+### validate-ir 脚本详解
+
+**是什么**：Game Requirement IR 确定性校验脚本，Node.js 可执行文件（320 行，`#!/usr/bin/env node`，无扩展名）。Scripts 层红线：IR 是否合法必须由它判定，禁止 AI 阅读提示词后自行下结论。
+
+**位置与用法**：
+
+```bash
+node .claude/skills/interactive-game-prd/scripts/validate-ir examples/mahjong/game-spec [--json]
+```
+
+**实现**：js-yaml 递归读取 game-spec 全部 YAML → ajv 编译 `schemas/` 四份 JSON Schema（manifest / requirement / ui / test）逐文件校验 → 引用图与溯源链检查（crypto sha1 校验原文锚点）→ 汇总 errors / warnings，--json 输出机器可读报告；errors 非零退出码阻断后续流程。
+
+**检查项（错误码）**：
+
+| 检查项 | 错误码 | 说明 |
+|---|---|---|
+| manifest 存在 | MISSING_MANIFEST | 缺 manifest.yaml |
+| Schema 校验 | SCHEMA | 四份 JSON Schema 逐文件校验（manifest / 需求 / UI / 测试） |
+| ID 唯一 | DUPLICATE_ID | requirements / ui / tests 条目 ID 全局查重 |
+| 引用格式 | BAD_REF_FORMAT | 引用字段（related / ui_refs / test_refs 等）格式非法 |
+| 悬空引用 | DANGLING_REF | 引用的需求 / 组件 / 用例 ID 不存在 |
+| approved 来源 | NO_SOURCE | approved 需求缺 original 来源 quote，或 human_decision 缺 decision_log_ref |
+| 核心需求测试引用 | NO_TEST_REF（警告） | 核心需求缺测试引用 |
+| source-map 锚点 | SOURCE_MAP / SOURCE_MAP_STALE | 溯源指向未知需求 / 锚点文件不存在 / 行区间无效 / quote_hash 与原文 sha1 不一致（检测原文变更） |
+| decision-log 状态流转 | DECISION_LOG / ILLEGAL_TRANSITION | decision-log 解析失败 / 状态流转不在合法集合（合法仅 7 种：proposed 到 approved、proposed 到 rejected、rejected 到 proposed、approved 到 deprecated、rejected 到 deprecated、approved 与 rejected 互转翻案） |
+
+**示例数据**（脚本自带三套测试用例，`scripts/validate-ir.example/`）：`valid`（合法样例，校验应 PASS）/ `duplicate-id`（ID 重复，应报 DUPLICATE_ID）/ `dangling-ref`（悬空引用，应报 DANGLING_REF）。
+
 ## 阶段二：generate-simulator（模拟器怎么来的）
 
 `simulator/simulator.js`（466 行，UMD 结构）由 AI 按 `assets/simulator-template/engine.js` 框架契约生成（P4 子集：核心行牌与结算规则）：

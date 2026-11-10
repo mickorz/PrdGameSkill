@@ -29,8 +29,15 @@
 ```mermaid
 flowchart TD
     A[卡五星原始需求 8 份 source] --> B[解析 PRD 结构]
-    B --> C[抽取需求条目 131 条 IR]
-    C --> D[审查与人工确认 31 项 OQ]
+    B --> C[抽取 IR 条目 218 条]
+    subgraph S1 [IR 构成明细]
+        C1[需求 131 条 功能 15 规则 116]
+        C2[配置 28 条 状态 3 条]
+        C3[页面 5 组件 20 事件 19]
+        C4[用例 10 场景 2]
+    end
+    C --> S1
+    S1 --> D[审查与人工确认 31 项 OQ]
     D --> E[固化 IR 并冻结]
     E --> F[冻结的规格目录 game spec]
     F --> G[生成规则模拟器 466 行]
@@ -43,6 +50,23 @@ flowchart TD
     L --> M[一致性汇总报告 validate pass]
 ```
 
+### IR 构成明细（218 条条目）
+
+| 类型 | ID 前缀 | 条数 | 目录 |
+|---|---|---|---|
+| 功能需求 | GAME-FR | 15 | `requirements/features/` |
+| 规则需求 | GAME-RULE | 116 | `requirements/rules/` |
+| 状态定义 | GAME-ST | 3 | `requirements/states/` |
+| 配置项 | GAME-CFG | 28 | `data/configs/` |
+| UI 页面 | GAME-UI | 5 | `ui/pages/` |
+| UI 组件 | GAME-COMP | 20 | `ui/components/` |
+| 交互事件 | GAME-EVENT | 19 | `ui/interactions/` |
+| 测试用例 | GAME-TC | 10 | `tests/cases/` |
+| 测试场景 | SCEN | 2 | `tests/scenarios/` |
+| 游戏概述与主循环与术语 | game 三件套 | 3 个文件 | `game/`（overview / core-loop / glossary） |
+
+注：manifest 的 `stats.requirements=131` 口径为功能 15 + 规则 116；validate-output 的 `requirement_total=165` 另计入配置与状态等；表内条数按目录内条目 ID 实数统计。
+
 ## 阶段一：Create 流程（一次性，产出冻结 IR 与模拟器）
 
 卡五星于 2026-11-09 走完（P2 阶段抽取 Golden Sample）。按 SKILL.md 的 Create 模式六步：
@@ -50,7 +74,7 @@ flowchart TD
 | 步骤 | 工作流 | 卡五星实际产出 |
 |---|---|---|
 | 1 | parse-prd | 8 份 source（01-基础规则 ~ 08-UI交互，共 5248 行）章节清单与材料盘点；原始文件只读（红线：任何模式不得覆盖 `game-spec/source/`） |
-| 2 | extract-requirements | 131 条 IR 需求（功能/规则/状态，GAME-FR / GAME-RULE / GAME-ST）+ UI 5 个页面 + 测试用例 10 个 + 术语表 |
+| 2 | extract-requirements | IR 条目 218 条（构成见上表：功能 15 / 规则 116 / 状态 3 / 配置 28 / UI 页面 5 / 组件 20 / 事件 19 / 用例 10 / 场景 2）+ 术语表三件套 |
 | 3 | review-requirements | 审查报告 + 31 项开放问题（open-questions.json，全部 open 待人工裁决） |
 | 4 | generate-ir | 固化为 `game-spec/` 目录（YAML 树：manifest / game / requirements / ui / tests / reviews / source），`validate-ir` PASS |
 | 5 | generate-html | 见阶段三（可反复重跑） |

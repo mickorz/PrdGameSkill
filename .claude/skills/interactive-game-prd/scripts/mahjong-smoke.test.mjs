@@ -23,7 +23,8 @@ function check(name, ok) {
   else { failed++; console.log("FAIL: " + name); }
 }
 
-const dom = new JSDOM(html, { runScripts: "dangerously", url: "file://" + path.join(outDir, "index.html").split(path.sep).join("/") });
+// 注：url 用 https（jsdom 对 file:// 视为 opaque origin 禁 localStorage；真实 Chrome file:// 下 localStorage 可用，页面侧已有降级处理）
+const dom = new JSDOM(html, { runScripts: "dangerously", url: "https://localhost/index.html" });
 const { window } = dom;
 const { document } = window;
 window.Element.prototype.scrollIntoView = function () {};
@@ -144,6 +145,8 @@ check("切回对局主页面恢复模拟器", $$("#ui-area button").length >= 5)
 document.querySelector('#tabs button[data-tab="decision"]').click();
 await new Promise((r) => setTimeout(r, 50));
 check("裁决工作台独立布局（隐藏规格导航）", document.body.classList.contains("ws-decision") && /body\.ws-decision nav,\s*body\.ws-decision aside\s*\{\s*display:\s*none/.test(html));
+// 裁决草稿浏览器本地持久化读取（P1：localStorage 键按游戏维度隔离）
+const lsDrafts = () => JSON.parse(window.localStorage.getItem("igp-decision-drafts:卡五星（好友房）") || "{}");
 check("裁决统计渲染（合并三来源：待裁决 28 草稿 3）", (() => {
   const s = $(".dec-stats");
   return s && s.textContent.includes("全部 31") && s.textContent.includes("待裁决 28") && s.textContent.includes("草稿 3") && s.textContent.includes("已确认 0");
@@ -173,6 +176,7 @@ $("#dec-confirm").click();
 await new Promise((r) => setTimeout(r, 50));
 check("正式裁决内存生效（已确认 1）", $(".dec-stats").textContent.includes("已确认 1") && $$(".dv-approved").length >= 1);
 check("正式裁决后自动定位下一个待裁决", !$("#dec-main h3").textContent.startsWith("OQ-001"));
+check("正式裁决后本地草稿已清理", !((lsDrafts && lsDrafts()["OQ-001"]) || null));
 // 切换问题草稿不丢：OQ-004 填一半 -> 切 OQ-005 -> 回 OQ-004 恢复
 const oq4 = $$(".dec-item").find((x) => x.dataset.oq === "OQ-004");
 if (oq4) oq4.click();
@@ -184,6 +188,17 @@ await new Promise((r) => setTimeout(r, 30));
 if (oq4) oq4.click();
 await new Promise((r) => setTimeout(r, 30));
 check("切换问题不丢草稿（自动暂存恢复）", $("#df-rationale").value === "切换暂存的草稿理由");
+// 草稿已自动保存到浏览器本地（localStorage；草稿永不进导出）
+check("草稿已自动保存到浏览器本地（localStorage）", (() => {
+  const all = lsDrafts();
+  return !!all["OQ-004"] && all["OQ-004"].form.rationale === "切换暂存的草稿理由" && !!all["OQ-004"].savedAt;
+})());
+// 模拟刷新（内存 stash 与选中清空），验证从 localStorage 恢复
+window.eval("decisionState.stash = {}; decisionState.selectedOqId = null;");
+const oq4b = $$(".dec-item").find((x) => x.dataset.oq === "OQ-004");
+if (oq4b) oq4b.click();
+await new Promise((r) => setTimeout(r, 30));
+check("刷新后从浏览器本地恢复草稿", $("#df-rationale").value === "切换暂存的草稿理由" && $("#dec-draft-status").textContent.includes("已恢复"));
 // 多选模式（OQ-003 注入 decision_options）
 const oq3 = $$(".dec-item").find((x) => x.dataset.oq === "OQ-003");
 if (oq3) oq3.click();

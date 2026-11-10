@@ -617,6 +617,26 @@ let decSeq = DEC_LOG.reduce((m, d) => Math.max(m, Number(String(d.decision_id ||
 const OQ_STATUS_LABEL = { open: "待裁决", draft: "草稿", approved: "已确认", rejected: "已否决", deferred: "已挂起" };
 const SEV_RANK = { high: 3, medium: 2, low: 1 };
 
+// ---------- 裁决草稿本地持久化（localStorage，仅存表单态；与 decisions.json 正式管线完全隔离，草稿永不进导出） ----------
+const DRAFT_LS_KEY = "igp-decision-drafts:" + ((APP_DATA.manifest && APP_DATA.manifest.game_name) || (APP_DATA.game && (APP_DATA.game.id || APP_DATA.game.name)) || "default");
+function loadLocalDrafts() {
+  try { return JSON.parse(window.localStorage.getItem(DRAFT_LS_KEY) || "{}") || {}; }
+  catch (err) { console.warn("本地草稿读取失败（降级为内存暂存）:", err.message); return {}; }
+}
+function saveLocalDraft(oid, form) {
+  try {
+    const all = loadLocalDrafts();
+    all[oid] = { form: { optionIds: [...form.optionIds], inputs: { ...form.inputs }, rationale: form.rationale }, savedAt: new Date().toISOString() };
+    window.localStorage.setItem(DRAFT_LS_KEY, JSON.stringify(all));
+  } catch (err) { console.warn("本地草稿保存失败（降级为内存暂存）:", err.message); }
+}
+function clearLocalDraft(oid) {
+  try {
+    const all = loadLocalDrafts();
+    if (oid in all) { delete all[oid]; window.localStorage.setItem(DRAFT_LS_KEY, JSON.stringify(all)); }
+  } catch (err) { console.warn("本地草稿清理失败:", err.message); }
+}
+
 // 通用裁决选项（无 decision_options 配置的 OQ 兜底；模板文本不含业务规则，不得视为已确认方案）
 const GENERIC_OPTIONS = [
   { id: "adopt_original", label: "采纳原始需求", description: "按原始需求文档口径执行（AI 提取内容维持现状）", action: "adopted" },
@@ -700,7 +720,7 @@ function renderDecisionWorkbench() {
       </select></label>
       <input id="df-keyword" placeholder="搜索问题 ID、描述或关联需求 ID" value="${esc(decisionState.keyword)}" style="flex:1;min-width:160px">
     </div>
-    <div class="dec-note">裁决在本页内存中完成（刷新丢失，正式裁决请及时导出）。导出后执行：node .claude/skills/interactive-game-prd/scripts/apply-decisions.mjs examples/mahjong/game-spec decisions.json --dry-run 预演，通过后去掉 --dry-run 落盘，再重跑 build-html 刷新本文件。AI 不代人工提交：点「正式裁决」与「导出」即人工确认动作。reviewer 固定为 human。</div>
+    <div class="dec-note">裁决在本页内存中完成；未完成的草稿会自动保存到浏览器本地（localStorage，仅表单态，刷新自动恢复，不进正式导出）。正式裁决导出后执行：node .claude/skills/interactive-game-prd/scripts/apply-decisions.mjs examples/mahjong/game-spec decisions.json --dry-run 预演，通过后去掉 --dry-run 落盘，再重跑 build-html 刷新本文件。AI 不代人工提交：点「正式裁决」与「导出」即人工确认动作。reviewer 固定为 human。</div>
     <div class="dec-layout">
       <div class="dec-list" id="dec-list"></div>
       <div class="dec-main" id="dec-main"><span style="color:#99a">点击左侧未决问题查看详情与裁决</span></div>
@@ -723,9 +743,11 @@ function renderDecisionWorkbench() {
 // 表单态：{ optionIds: [选项 id], inputs: {选项 id: 补充文本}, rationale: 理由 }
 function emptyForm() { return { optionIds: [], inputs: {}, rationale: "" }; }
 
-// 预填：切换暂存 > 内存裁决记录反推 > approval-state 旧草稿
+// 预填：切换暂存 > 浏览器本地草稿（刷新恢复） > 内存裁决记录反推 > approval-state 旧草稿
 function draftToForm(oid) {
   if (decisionState.stash[oid]) return decisionState.stash[oid];
+  const local = loadLocalDrafts()[oid];
+  if (local && local.form) return local.form;
   const mem = DECISIONS[oid];
   if (mem && mem.records.length) return formFromRecords(oid, mem.records);
   const d = DEC_DRAFTS[oid];
@@ -757,7 +779,7 @@ function formFromRecords(oid, records) {
   return form;
 }
 
-// 切换问题前自动暂存表单（草稿不丢；已正式裁决的问题不覆盖）
+// 切换问题前自动暂存表单（内存 + 浏览器本地；已正式裁决的问题不覆盖）
 function autoStashDraft() {
   const oid = decisionState.selectedOqId;
   if (!oid || !$("#dec-main .opt-card")) return;
@@ -766,6 +788,7 @@ function autoStashDraft() {
   const form = collectForm();
   if (!form.optionIds.length && !form.rationale.trim()) return;
   decisionState.stash[oid] = form;
+  saveLocalDraft(oid, form);
 }
 
 function selectOq(oid) {
@@ -776,6 +799,11 @@ function selectOq(oid) {
   document.querySelectorAll("#dec-list .dec-item").forEach((a) => a.classList.toggle("active", a.dataset.oq === oid));
   const form = draftToForm(oid);
   const cfg = decisionOptionsOf(q);
+  // 标记本地草稿恢复来源（仅用于状态提示，不进表单数据）
+  if (!decisionState.stash[oid]) {
+    const local = loadLocalDrafts()[oid];
+    if (local && local.form) { form.__fromLocal = true; form.__savedAt = local.savedAt; }
+  }
   $("#dec-main").innerHTML = `<h3>${esc(q.id)}（severity：${esc(q.severity || "")}）</h3>
     <div class="quote">${esc(q.question || "")}</div>
     <div style="color:#889;font-size:12px">关联需求：${esc(q.requirement_id || "待补充关联")}${cfg.isCustom ? "" : "（该问题未配置专属候选方案，展示通用裁决选项，后续可人工补充）"}</div>
@@ -789,12 +817,15 @@ function selectOq(oid) {
       <button class="btn-dec" id="dec-draft">暂存草稿</button>
       <button class="btn-dec primary" id="dec-confirm">正式裁决</button>
     </div>
-    <div id="dec-msg" style="color:#c00;font-size:12px;margin-top:6px"></div>`;
+    <div id="dec-msg" style="color:#c00;font-size:12px;margin-top:6px"></div>
+    <div id="dec-draft-status" style="color:#889;font-size:11px;margin-top:4px">${form && form.__fromLocal ? "已恢复浏览器本地草稿（保存于 " + esc(form.__savedAt || "") + "）" : ""}</div>`;
   bindOptChange(q);
   $("#dec-prev").addEventListener("click", () => stepOq(-1));
   $("#dec-next").addEventListener("click", () => stepOq(1));
   $("#dec-draft").addEventListener("click", () => saveDecision(oid, "draft"));
   $("#dec-confirm").addEventListener("click", () => saveDecision(oid, null));
+  // 理由输入防抖自动保存本地草稿（选项变化在 bindOptChange 尾部触发）
+  $("#df-rationale").addEventListener("input", () => scheduleDraftSave(oid));
   renderDecisionImpact(q);
 }
 
@@ -812,8 +843,24 @@ function renderDecisionOptions(cfg, form) {
   }).join("")}</div>`;
 }
 
+// 表单变化防抖自动保存草稿（选项变化 + 理由输入；写入内存 stash 与浏览器本地）
+let draftSaveTimer = null;
+function scheduleDraftSave(oid) {
+  clearTimeout(draftSaveTimer);
+  draftSaveTimer = setTimeout(() => {
+    if (decisionState.selectedOqId !== oid) return; // 已切走由 autoStashDraft 处理
+    const form = collectForm();
+    if (!form.optionIds.length && !form.rationale.trim()) return;
+    decisionState.stash[oid] = { optionIds: [...form.optionIds], inputs: { ...form.inputs }, rationale: form.rationale };
+    saveLocalDraft(oid, form);
+    const st = $("#dec-draft-status");
+    if (st) st.textContent = "草稿已自动保存到浏览器本地 " + new Date().toLocaleTimeString();
+  }, 600);
+}
+
 function bindOptChange(q) {
   const cfg = decisionOptionsOf(q);
+  const oid = q.id;
   $("#dec-main").addEventListener("change", (e) => {
     const input = e.target.closest('input[type="radio"],input[type="checkbox"]');
     if (!input) return;
@@ -835,6 +882,7 @@ function bindOptChange(q) {
       else if (!input.checked && wrap) wrap.remove();
     }
     if (msg) msg.textContent = "";
+    scheduleDraftSave(oid); // 选项变化自动保存
   });
 }
 
@@ -950,10 +998,17 @@ function saveDecision(oid, forceDraft) {
     return rec;
   });
   DECISIONS[oid] = { status: forceDraft ? "draft" : (records[0] ? records[0].decision_status : "draft"), records };
-  // 界面辅助态：选项与输入存 stash 供表单恢复（不进导出记录）
+  // 界面辅助态：选项与输入存 stash 供表单恢复（不进导出记录）；草稿同步写浏览器本地，正式裁决后清理本地草稿
   decisionState.stash[oid] = { optionIds: [...form.optionIds], inputs: { ...form.inputs }, rationale: form.rationale };
-  if (forceDraft) { msg.textContent = "已暂存草稿（仅存本页内存，刷新丢失）"; renderDecisionList(); }
-  else afterDecisionSaved(oid);
+  if (forceDraft) {
+    saveLocalDraft(oid, form);
+    msg.textContent = "已暂存草稿（内存 + 浏览器本地，刷新可恢复）";
+    renderDecisionList();
+  } else {
+    clearLocalDraft(oid);
+    delete decisionState.stash[oid];
+    afterDecisionSaved(oid);
+  }
 }
 
 function exportDecisions() {

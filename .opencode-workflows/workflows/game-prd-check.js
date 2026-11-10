@@ -13,11 +13,12 @@
 //   inputFiles    指定需求文档路径数组（给定时跳过 inputDir 扫描结果）
 //   rulesDir      规则基准目录，默认 .claude/skills/game-prd-check/references/rules
 //   templatePath  报告模板，默认 .claude/skills/game-prd-check/references/templates/report.template.md
-//   outPath       报告输出路径，默认 examples/game-prd-check/report.md
+//   outPath       报告输出路径，默认 examples/game-prd-check-workflow/report.md（与 skill 产物隔离）
 //   date          检查日期（YYYY-MM-DD）；脚本内禁止取当前时间，需由调用方传入
 //   maxIssuesPerGroup 每组最多报告的问题数，默认 20
 //   analysisModel 分析阶段使用的模型，默认 biangfeng-gateway/deepseek-v4.1-flash-official（传空字符串则用会话默认模型）
-//   concurrency   并发上限，默认 8（运行时钳制到 16）
+//   concurrency   并发上限，默认 12（运行时钳制到 16）
+//   skipReview    传 true 跳过报告质检阶段，直接出报告（更快，少一轮串行读文件）
 
 export const meta = {
   id: 'game-prd-check',
@@ -38,9 +39,10 @@ const inputDir = A.inputDir || 'input'
 const rulesDir = A.rulesDir || '.claude/skills/game-prd-check/references/rules'
 const templatePath =
   A.templatePath || '.claude/skills/game-prd-check/references/templates/report.template.md'
-const outPath = A.outPath || 'examples/game-prd-check/report.md'
+const outPath = A.outPath || 'examples/game-prd-check-workflow/report.md'
 const checkDate = A.date || '未提供（调用时请传 args.date，格式 YYYY-MM-DD）'
 const maxIssuesPerGroup = A.maxIssuesPerGroup || 20
+const skipReview = A.skipReview === true
 
 // 分析阶段（扫描 / 规则检查 / 一致性检查 / 去重）统一用快速模型，报告撰写与质检仍用会话默认模型
 const analysisModel =
@@ -49,8 +51,8 @@ const analysisAgentOptions = analysisModel
   ? { model: analysisModel, timeoutMs: 3600000 }
   : { timeoutMs: 3600000 }
 
-// 规则分组检查与一致性检查并发执行，默认放到 8 路；网关限流时可传 args.concurrency 调小
-setConcurrency(A.concurrency || 8)
+// 规则分组检查与一致性检查并发执行，默认放到 12 路；网关限流时可传 args.concurrency 调小
+setConcurrency(A.concurrency || 12)
 
 const TYPE_RULE = [
   'MISSING：规则中定义了、但需求文档缺失或未描述',
@@ -116,6 +118,20 @@ const SCAN_SCHEMA = {
           title: { type: 'string' },
           focus: { type: 'string' },
           files: { type: 'array', items: { type: 'string' } },
+          sections: {
+            type: 'array',
+            description: '大文件按章节拆分后的行范围片段',
+            items: {
+              type: 'object',
+              properties: {
+                file: { type: 'string' },
+                fromLine: { type: 'number' },
+                toLine: { type: 'number' },
+                title: { type: 'string' },
+              },
+              required: ['file', 'fromLine', 'toLine'],
+            },
+          },
         },
         required: ['title', 'files'],
       },
@@ -161,6 +177,51 @@ function issueRules() {
   ].join('\n')
 }
 
+function ruleScopeText(group) {
+  const lines = []
+  const files = group.files || []
+  const sections = group.sections || []
+  if (files.length > 0) {
+    lines.push('规则文件（逐个读完）：')
+    for (const f of files) lines.push('- ' + f)
+  }
+  if (sections.length > 0) {
+    lines.push('规则文件片段（用 read 的 offset/limit 精确读取下列行范围，不要整读大文件）：')
+    for (const s of sections) {
+      lines.push(
+        '- ' + s.file + ' 第 ' + s.fromLine + '~' + s.toLine + ' 行' + (s.title ? '（' + s.title + '）' : '')
+      )
+    }
+  }
+  if (lines.length === 0) lines.push('（未提供规则文件，按组名在规则目录中检索相关规则）')
+  return lines.join('\n')
+}
+
+function compactKey(s) {
+  return String(s || '')
+    .replace(/[\s\p{P}\p{S}]/gu, '')
+    .toLowerCase()
+}
+
+// 确定性去重：同 type + location + title 视为同一条，合并 location 证据
+function exactDedup(list) {
+  const seen = {}
+  const out = []
+  for (const it of list) {
+    const key = it.type + '|' + compactKey(it.location) + '|' + compactKey(it.title)
+    if (seen[key]) {
+      const kept = seen[key]
+      if (it.location && String(kept.location || '').indexOf(it.location) < 0) {
+        kept.location = (kept.location ? kept.location + '、' : '') + it.location
+      }
+      continue
+    }
+    seen[key] = it
+    out.push(it)
+  }
+  return out
+}
+
 phase('扫描')
 
 const scan = await agent(
@@ -169,11 +230,12 @@ const scan = await agent(
     '',
     '任务：只做清单扫描，不读正文做判断。',
     '1. 列出需求文档目录 ' + inputDir + ' 下所有 Markdown 文档，返回相对项目根目录的路径（不含规则目录里的文件）。',
-    '2. 遍历规则基准目录 ' + rulesDir + '，把规则文件按主题分成 5~8 组，每组给出 title、focus、files。',
-    '   - files 必须是相对项目根目录的完整路径，组内文件要覆盖到每一份规则文档，不能漏。',
+    '2. 遍历规则基准目录 ' + rulesDir + '，把规则文件按主题分成 5~10 组，每组给出 title、focus、files、sections。',
+    '   - 普通规则文件按主题成组，files 必须是相对项目根目录的完整路径，组内文件要覆盖到每一份规则文档，不能漏。',
+    '   - 单个规则文件超过 20KB（约 8000 字）时不要整组读：按一级/二级标题拆成 2~4 个片段，每个片段单独成一组，files 留空数组，sections 填 { file, fromLine, toLine, title }。用 grep 查标题、read 带 offset 确认行号，行号必须准确（read 显示的行号即真实行号）。',
     '   - 规则按业务流程分章时，按阶段分组（例如 开局与发牌 / 摸打吃碰杠 / 结算与分数 / 配置与做牌 / 重连 / 广播与数据）。',
-    '   - 总览、目录、索引类文件放进第一组；规则目录下独立的大文件规则文档单独成组。',
-    '   - focus 用一句话说明这组规则管什么，便于后续检查员聚焦。',
+    '   - 总览、目录、索引类文件放进第一组；focus 用一句话说明这组规则管什么。',
+    '   - 总组数控制在 10 组以内，避免超过并发上限排队。',
     '3. 如果规则目录结构与本说明不同，按实际结构自适应分组，仍要覆盖全部规则文件。',
   ].join('\n'),
   { label: '扫描输入与规则', schema: SCAN_SCHEMA, ...analysisAgentOptions, timeoutMs: 900000 }
@@ -204,8 +266,7 @@ const groupTasks = parallel(
         '',
         '本次负责的规则范围：' + group.title,
         '范围聚焦：' + (group.focus || '该组全部规则'),
-        '规则文件（逐个读完）：',
-        (group.files || []).map((f) => '- ' + f).join('\n'),
+        ruleScopeText(group),
         '',
         '检查方式：把本组每条规则与需求文档逐条对照，找出需求文档的问题。',
         '注意：规则文件描述的是应有的正确行为，它是基准；只需报告需求文档的缺失、冲突、逻辑错误、模糊与不完整。',
@@ -249,7 +310,7 @@ const internalResult = await internalTask
 
 phase('汇总去重')
 
-const allIssues = []
+let allIssues = []
 let droppedGroup = 0
 for (const r of groupResults || []) {
   if (!r || !Array.isArray(r.issues)) {
@@ -263,7 +324,7 @@ if (internalResult && Array.isArray(internalResult.issues)) {
 }
 if (droppedGroup > 0) log('有 ' + droppedGroup + ' 个规则组检查失败，报告仅覆盖成功分组')
 
-if (allIssues.length > 0) {
+if (allIssues.length > 15) {
   const compact = allIssues.map((it, i) => ({
     i: i,
     type: it.type,
@@ -303,6 +364,9 @@ if (allIssues.length > 0) {
   for (let i = allIssues.length - 1; i >= 0; i--) {
     if (dropped.has(i)) allIssues.splice(i, 1)
   }
+} else if (allIssues.length > 0) {
+  allIssues = exactDedup(allIssues)
+  log('问题较少（≤15 条），使用确定性去重并跳过合并代理')
 }
 
 const PRIORITY_ORDER = { P0: 0, P1: 1, P2: 2, P3: 3 }
@@ -346,6 +410,19 @@ log('汇总完成：共 ' + stats.total + ' 条问题（P0 ' + stats.P0 + ' / P1
 
 phase('生成报告')
 
+// 报告输入瘦身：清单表只给精简字段，详情只给 P0/P1 + 4 条典型 P2
+const tableRows = issues.map((it) => ({
+  id: it.id,
+  type: it.type,
+  priority: it.priority,
+  title: it.title,
+  location: it.location,
+  suggestion: it.suggestion,
+}))
+const detailIssues = issues
+  .filter((it) => it.priority === 'P0' || it.priority === 'P1')
+  .concat(issues.filter((it) => it.priority === 'P2').slice(0, 4))
+
 const writeResult = await agent(
   [
     '你是 PRD 检查报告撰写员。把下面的检查结果写成正式报告并落盘。',
@@ -361,15 +438,18 @@ const writeResult = await agent(
     '统计（必须原样使用，不得自行改数）：',
     JSON.stringify({ 统计: stats, 类型分布: typeStats, 模块分布: moduleRank }, null, 1),
     '',
-    '问题清单（JSON，id 已编号，不要新增、删除或改写 id）：',
-    JSON.stringify(issues, null, 1),
+    '问题清单表格数据（全部条目，id 已编号，不要新增、删除或改写 id）：',
+    JSON.stringify(tableRows, null, 1),
+    '',
+    '重点问题详情数据（只展开这些条目）：',
+    JSON.stringify(detailIssues, null, 1),
     '',
     '写作要求：',
     '1. 严格四段结构：1 检查概览（统计表） -> 2 问题清单（表格：ID | 类型 | 优先级 | 问题 | 原文位置 | 建议） -> 3 重点问题详情 -> 4 总体建议。',
-    '2. 第 2 段必须列出全部问题，一条不漏，顺序与 JSON 一致；建议列取每条 suggestion 的精简版。',
-    '3. 第 3 段：P0、P1 全部展开，再从 P2 中挑 3~5 条典型问题展开；每条按 原文（引用 quote 并标注 location）、问题、影响、建议、处理状态（默认 待确认）书写。',
+    '2. 第 2 段必须列出全部问题，一条不漏，顺序与表格数据一致；建议列取每条 suggestion 的精简版。',
+    '3. 第 3 段只展开“重点问题详情数据”里的条目；每条按 原文（引用 quote 并标注 location）、问题、影响、建议、处理状态（默认 待确认）书写。',
     '4. 第 4 段：问题最多的模块取模块分布第一名，影响开发的问题列出 P0/P1 的 ID，是否建议进入下一阶段按“存在 P0 或 P1 数量较多则暂缓，否则建议”给出结论与理由。',
-    '5. 只能使用上面 JSON 中的事实，不得编造原文引文或新增问题；引文必须来自 quote 字段。',
+    '5. 只能使用上面数据中的事实，不得编造原文引文或新增问题；引文必须来自 quote 字段。',
     '6. 使用 write 工具写入 ' + outPath + '，UTF-8 中文，不使用 Emoji。',
     '7. 完成后返回文件路径与写入的问题总条数。',
   ].join('\n'),
@@ -378,48 +458,54 @@ const writeResult = await agent(
 
 phase('报告审核')
 
-const review = await agent(
-  [
-    '你是报告质检员。审核 PRD 检查报告是否符合模板与硬性要求。',
-    '',
-    '报告文件：' + outPath,
-    '报告模板：' + templatePath,
-    '期望问题总数：' + stats.total + '（P0 ' + stats.P0 + ' / P1 ' + stats.P1 + ' / P2 ' + stats.P2 + ' / P3 ' + stats.P3 + '）',
-    '',
-    '逐项检查并输出问题列表：',
-    '1. 是否包含四段结构，标题与模板一致；',
-    '2. 检查对象、规则基准、检查日期是否已填写（不能留占位符）；',
-    '3. 概览统计数字是否与期望总数和优先级分布一致；',
-    '4. 问题清单行数是否等于期望总数，ID 是否从 PRD-001 连续编号无跳号；',
-    '5. 类型是否只用五种、优先级是否只用四级；',
-    '6. 每条清单项是否都有原文位置与建议；重点问题详情是否有原文引文且不少于 3 条；',
-    '7. 是否存在明显编造内容（引文与清单对不上、凭空新增问题）。',
-    '',
-    '全部通过返回 ok=true、problems 为空数组；有问题则 ok=false 并逐条写清问题与位置。',
-  ].join('\n'),
-  { label: '审核报告', schema: REVIEW_SCHEMA, timeoutMs: 1800000 }
-)
-
+let review = null
 let fixed = false
-if (review && review.ok === false) {
-  const problems = (review.problems || []).join('\n- ')
-  await agent(
+
+if (skipReview) {
+  log('已按 args.skipReview 跳过报告审核')
+} else {
+  review = await agent(
     [
-      '报告未通过质检，请修正。报告文件：' + outPath,
-      '模板：' + templatePath,
+      '你是报告质检员。审核 PRD 检查报告是否符合模板与硬性要求。',
       '',
-      '质检发现的问题：',
-      '- ' + problems,
+      '报告文件：' + outPath,
+      '报告模板：' + templatePath,
+      '期望问题总数：' + stats.total + '（P0 ' + stats.P0 + ' / P1 ' + stats.P1 + ' / P2 ' + stats.P2 + ' / P3 ' + stats.P3 + '）',
       '',
-      '修正要求：只按质检意见修改报告，保持事实与统计不变（总数 ' + stats.total + '，P0 ' + stats.P0 + '，P1 ' + stats.P1 + '，P2 ' + stats.P2 + '，P3 ' + stats.P3 + '），不得新增或删除问题条目。',
-      '问题清单数据以本 JSON 为准：',
-      JSON.stringify(issues, null, 1),
+      '逐项检查并输出问题列表：',
+      '1. 是否包含四段结构，标题与模板一致；',
+      '2. 检查对象、规则基准、检查日期是否已填写（不能留占位符）；',
+      '3. 概览统计数字是否与期望总数和优先级分布一致；',
+      '4. 问题清单行数是否等于期望总数，ID 是否从 PRD-001 连续编号无跳号；',
+      '5. 类型是否只用五种、优先级是否只用四级；',
+      '6. 每条清单项是否都有原文位置与建议；重点问题详情是否有原文引文且不少于 3 条；',
+      '7. 是否存在明显编造内容（引文与清单对不上、凭空新增问题）。',
       '',
-      '修改完成后返回修改摘要。',
+      '全部通过返回 ok=true、problems 为空数组；有问题则 ok=false 并逐条写清问题与位置。',
     ].join('\n'),
-    { label: '修正报告', agentType: 'general', timeoutMs: 1800000 }
+    { label: '审核报告', schema: REVIEW_SCHEMA, timeoutMs: 1800000 }
   )
-  fixed = true
+
+  if (review && review.ok === false) {
+    const problems = (review.problems || []).join('\n- ')
+    await agent(
+      [
+        '报告未通过质检，请修正。报告文件：' + outPath,
+        '模板：' + templatePath,
+        '',
+        '质检发现的问题：',
+        '- ' + problems,
+        '',
+        '修正要求：只按质检意见修改报告，保持事实与统计不变（总数 ' + stats.total + '，P0 ' + stats.P0 + '，P1 ' + stats.P1 + '，P2 ' + stats.P2 + '，P3 ' + stats.P3 + '），不得新增或删除问题条目。',
+        '问题清单数据以本 JSON 为准：',
+        JSON.stringify(tableRows, null, 1),
+        '',
+        '修改完成后返回修改摘要。',
+      ].join('\n'),
+      { label: '修正报告', agentType: 'general', timeoutMs: 1800000 }
+    )
+    fixed = true
+  }
 }
 
 await check(() => fileExists(outPath), '报告文件未生成：' + outPath)
@@ -427,10 +513,15 @@ await check(() => fileExists(outPath), '报告文件未生成：' + outPath)
 return {
   reportPath: outPath,
   inputFiles: inputFiles,
-  ruleGroups: ruleGroups.map((g) => ({ title: g.title, fileCount: (g.files || []).length })),
+  ruleGroups: ruleGroups.map((g) => ({
+    title: g.title,
+    fileCount: (g.files || []).length,
+    sectionCount: (g.sections || []).length,
+  })),
   stats: stats,
   typeStats: typeStats,
   moduleRank: moduleRank,
-  reviewOk: review ? review.ok === true || fixed : false,
+  reviewSkipped: skipReview,
+  reviewOk: skipReview ? null : review ? review.ok === true || fixed : false,
   reportWriteSummary: writeResult,
 }

@@ -30,5 +30,5 @@ node .claude/skills/game-prd-check/scripts/build-dashboard.mjs <report路径>
 ## 4. 收尾
 
 - 用 pi-cite-wslpath 把新 HTML 路径转成可点击链接给用户（直接双击可离线打开）
-- 按仓库规则自动 `git add <产物目录> && git commit && git push`，提交信息用 `chore: 重新生成 Dashboard（{文件名}）`
+- Dashboard 产物目录已 gitignore（本地保留）：workflow 版 `examples/game-prd-check-workflow/dashboard/` 不入库；若 report.json 有变更则提交推送，提交信息用 `chore: 重新生成 Dashboard（{文件名}）`
 - 不删除历史序号产物（-01/-02/... 保留用于版本对比）

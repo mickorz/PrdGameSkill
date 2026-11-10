@@ -11,7 +11,10 @@
 | PRD | Product Requirements Document（产品需求文档） | 两处出现：原始输入（`game-spec/source/` 下 8 份 Markdown）与最终产物（Interactive HTML PRD，交互式单文件） |
 | IR | Game Requirement IR（结构化需求中间表示） | 唯一事实源：`game-spec/` 下的 YAML 树（131 条需求 + UI + 测试 + 审查记录），所有产物从它生成 |
 | OQ | Open Question（开放问题） | 需人工裁决的未决问题（31 项，裁决前对应规则保持 `authority=open`，模拟器拒绝执行） |
-| GAME-FR / GAME-RULE / GAME-ST / GAME-TC | IR 条目 ID 前缀 | 功能需求 / 规则需求 / 状态定义 / 测试用例（如 GAME-RULE-033 危牌禁打） |
+| GAME-FR | Game Feature Requirement（功能需求条目 ID 前缀） | IR 中的功能需求条目，描述产品要做什么（如 GAME-FR-001） |
+| GAME-RULE | Game Rule（规则需求条目 ID 前缀） | IR 中的规则条目，描述玩法判定逻辑（如 GAME-RULE-033 危牌禁打） |
+| GAME-ST | Game State（状态定义条目 ID 前缀） | IR 中的状态机状态定义条目（如 GAME-ST-001） |
+| GAME-TC | Game Test Case（测试用例 ID 前缀） | IR 中的测试用例条目，供模拟器场景回放断言（10 个） |
 | APP_DATA | 内嵌数据常量 | 构建时注入模板的单体 JSON（全部 IR 数据 + 模拟器源码），file:// 离线运行的基础 |
 | UMD | Universal Module Definition（通用模块定义） | 一份代码同时兼容 Node `require` 与浏览器全局挂载的封装，模拟器用它实现双环境复用 |
 | RULE_NOT_CONFIRMED | 规则未确认守卫错误 | 模拟器查表：规则未声明或 `authority=open` 时拒绝判定并抛出，禁止编造结果 |

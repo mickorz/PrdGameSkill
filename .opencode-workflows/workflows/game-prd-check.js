@@ -31,6 +31,7 @@ export const meta = {
     { title: '规则检查' },
     { title: '一致性检查' },
     { title: '汇总去重' },
+    { title: '主题归类' },
     { title: '生成报告' },
     { title: '报告审核' },
   ],
@@ -151,13 +152,39 @@ const SCAN_SCHEMA = {
   required: ['inputFiles', 'ruleGroups'],
 }
 
-const DEDUP_SCHEMA = {
-  type: 'object',
+const DEDUP_SCHEMA = {  type: 'object',
   properties: {
     duplicateGroups: { type: 'array', items: { type: 'array', items: { type: 'number' } } },
     notes: { type: 'string' },
   },
   required: ['duplicateGroups'],
+}
+
+const TOPIC_SCHEMA = {
+  type: 'object',
+  properties: {
+    topics: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          name: { type: 'string', description: '业务主题短语，如 金币场整体缺失' },
+          issueIndexes: { type: 'array', items: { type: 'number' } },
+        },
+        required: ['name', 'issueIndexes'],
+      },
+    },
+  },
+  required: ['topics'],
+}
+
+// 五种检查类型只做内部统计，报告里以中文性质名称呈现
+const TYPE_LABELS = {
+  MISSING: '需求缺失',
+  CONFLICT: '内容冲突',
+  LOGIC: '逻辑错误',
+  AMBIGUOUS: '定义歧义',
+  INCOMPLETE: '描述不完整',
 }
 
 const REVIEW_SCHEMA = {
@@ -419,12 +446,73 @@ const moduleRank = Object.keys(moduleStats)
 
 log('汇总完成：共 ' + stats.total + ' 条问题（P0 ' + stats.P0 + ' / P1 ' + stats.P1 + ' / P2 ' + stats.P2 + ' / P3 ' + stats.P3 + '）')
 
+phase('主题归类')
+
+const issueIndexes = issues.map((it, i) => ({
+  i: i,
+  title: it.title,
+  module: it.module,
+  type: it.type,
+  location: it.location,
+  ruleRef: it.ruleRef,
+}))
+
+const topicResult = await agent(
+  [
+    '你是 PRD 问题清单的主题归类员。下面每条问题都已编号（i 为下标）。',
+    JSON.stringify(issueIndexes, null, 1),
+    '',
+    '任务：把问题归入可读的业务主题，替代 MISSING、CONFLICT 这类抽象检查类型。',
+    '要求：',
+    '1. 主题是“业务对象 + 问题性质”的短语，4~12 字，例如 金币场整体缺失、断线重连缺失、结算流程不完整、三摊承包口径冲突、超时兜底缺失。',
+    '2. 同一缺陷簇必须使用完全相同的主题写法；每个问题只能归入一个主题。',
+    '3. 主题数量控制在 8~25 个，既能区分重点，又不要一条问题一个主题。',
+    '4. issueIndexes 必须覆盖全部下标 0 到 ' + (issues.length - 1) + '，不能遗漏、不能重复。',
+    '5. 只做归类，不要改写问题标题。',
+  ].join('\n'),
+  { label: '主题归类', schema: TOPIC_SCHEMA, ...analysisAgentOptions, timeoutMs: 1800000 }
+)
+
+const topicByIndex = {}
+const topicCounts = {}
+let topicFallback = 0
+for (const t of (topicResult && topicResult.topics) || []) {
+  const name = String((t && t.name) || '').trim()
+  if (!name) continue
+  for (const idx of (t && t.issueIndexes) || []) {
+    if (!Number.isInteger(idx) || idx < 0 || idx >= issues.length) continue
+    if (topicByIndex[idx]) continue
+    topicByIndex[idx] = name
+    topicCounts[name] = (topicCounts[name] || 0) + 1
+  }
+}
+for (let i = 0; i < issues.length; i++) {
+  if (!topicByIndex[i]) {
+    topicFallback += 1
+    const fallback = issues[i].module || '未分类'
+    topicByIndex[i] = fallback
+    topicCounts[fallback] = (topicCounts[fallback] || 0) + 1
+  }
+  issues[i].topic = topicByIndex[i]
+}
+
+const topicRank = Object.keys(topicCounts)
+  .map((name) => ({ name: name, count: topicCounts[name] }))
+  .sort((a, b) => b.count - a.count)
+
+log(
+  '主题归类完成：' +
+    topicRank.length +
+    ' 个主题' +
+    (topicFallback > 0 ? '，' + topicFallback + ' 条问题走模块兜底' : '')
+)
+
 phase('生成报告')
 
 // 报告输入瘦身：清单表只给精简字段，详情只给 P0/P1 + 3 条典型 P2
 const tableRows = issues.map((it) => ({
   id: it.id,
-  type: it.type,
+  topic: it.topic,
   priority: it.priority,
   title: it.title,
   location: it.location,
@@ -433,6 +521,19 @@ const tableRows = issues.map((it) => ({
 const detailIssues = issues
   .filter((it) => it.priority === 'P0' || it.priority === 'P1')
   .concat(issues.filter((it) => it.priority === 'P2').slice(0, 3))
+  .map((it) => ({
+    id: it.id,
+    topic: it.topic,
+    priority: it.priority,
+    type_label: TYPE_LABELS[it.type] || it.type,
+    title: it.title,
+    location: it.location,
+    quote: it.quote,
+    ruleRef: it.ruleRef,
+    problem: it.problem,
+    impact: it.impact,
+    suggestion: it.suggestion,
+  }))
 
 // fast 档报告分片并行写 + 命令拼接；默认档单代理整篇写
 let writeResult = null
@@ -457,13 +558,13 @@ if (fastMode) {
           '- 检查日期：' + checkDate,
           '',
           '统计（必须原样使用，不得自行改数）：',
-          JSON.stringify({ 统计: stats, 类型分布: typeStats, 模块分布: moduleRank }, null, 1),
+          JSON.stringify({ 统计: stats, 主题分布: topicRank }, null, 1),
           '',
           '问题清单表格数据（全部条目，id 已编号，不要增删或改写 id）：',
           JSON.stringify(tableRows, null, 1),
           '',
           '写作要求：',
-          '1. 文件依次为：# PRD 检查问题报告、检查对象/规则基准/检查日期、## 1. 检查概览（统计表）、## 2. 问题清单（表格：ID | 类型 | 优先级 | 问题 | 原文位置 | 建议）。',
+          '1. 文件依次为：# PRD 检查问题报告、检查对象/规则基准/检查日期、## 1. 检查概览（统计表）、## 2. 问题清单（表格：ID | 主题 | 优先级 | 问题 | 原文位置 | 建议）。',
           '2. 问题清单必须列出全部条目，一条不漏，顺序与数据一致；建议列取 suggestion 的精简版。',
           '3. 不要写第 3、4 段，也不要写结尾总结。',
           '4. 使用 write 工具写入 ' + part1Path + '，UTF-8 中文，不使用 Emoji。',
@@ -483,9 +584,8 @@ if (fastMode) {
           JSON.stringify(
             {
               统计: stats,
-              类型分布: typeStats,
-              模块分布: moduleRank,
-              严重问题: keyIssues.map((it) => ({ id: it.id, priority: it.priority, title: it.title })),
+              主题分布: topicRank,
+              严重问题: keyIssues.map((it) => ({ id: it.id, topic: it.topic, priority: it.priority, title: it.title })),
             },
             null,
             1
@@ -495,8 +595,8 @@ if (fastMode) {
           JSON.stringify(detailIssues, null, 1),
           '',
           '写作要求：',
-          '1. 文件第一行必须是 ## 3. 重点问题详情，然后按数据逐条展开：原文（引用 quote 并标注 location）、问题、影响、建议、处理状态（默认 待确认）。',
-          '2. 随后写 ## 4. 总体建议：问题最多的模块取模块分布第一名，影响开发的问题列出 P0/P1 的 ID，是否建议进入下一阶段按“存在 P0 或 P1 数量较多则暂缓，否则建议”给出结论与理由。',
+          '1. 文件第一行必须是 ## 3. 重点问题详情，然后按数据逐条展开：主题、问题性质（用 type_label 的中文名）、原文（引用 quote 并标注 location）、问题、影响、建议、处理状态（默认 待确认）。',
+          '2. 随后写 ## 4. 总体建议：问题最多的主题取主题分布第一名，影响开发的问题列出 P0/P1 的 ID，是否建议进入下一阶段按“存在 P0 或 P1 数量较多则暂缓，否则建议”给出结论与理由。',
           '3. 不要重复报告标题与头部信息，不要写第 1、2 段。',
           '4. 只能使用给定数据中的事实，不得编造引文或新增问题；引文必须来自 quote 字段。',
           '5. 使用 write 工具写入 ' + part2Path + '，UTF-8 中文，不使用 Emoji。',
@@ -546,7 +646,7 @@ if (fastMode) {
       '- 检查日期：' + checkDate,
       '',
       '统计（必须原样使用，不得自行改数）：',
-      JSON.stringify({ 统计: stats, 类型分布: typeStats, 模块分布: moduleRank }, null, 1),
+      JSON.stringify({ 统计: stats, 主题分布: topicRank }, null, 1),
       '',
       '问题清单表格数据（全部条目，id 已编号，不要新增、删除或改写 id）：',
       JSON.stringify(tableRows, null, 1),
@@ -555,10 +655,10 @@ if (fastMode) {
       JSON.stringify(detailIssues, null, 1),
       '',
       '写作要求：',
-      '1. 严格四段结构：1 检查概览（统计表） -> 2 问题清单（表格：ID | 类型 | 优先级 | 问题 | 原文位置 | 建议） -> 3 重点问题详情 -> 4 总体建议。',
+      '1. 严格四段结构：1 检查概览（统计表） -> 2 问题清单（表格：ID | 主题 | 优先级 | 问题 | 原文位置 | 建议） -> 3 重点问题详情 -> 4 总体建议。',
       '2. 第 2 段必须列出全部问题，一条不漏，顺序与表格数据一致；建议列取每条 suggestion 的精简版。',
-      '3. 第 3 段只展开“重点问题详情数据”里的条目；每条按 原文（引用 quote 并标注 location）、问题、影响、建议、处理状态（默认 待确认）书写。',
-      '4. 第 4 段：问题最多的模块取模块分布第一名，影响开发的问题列出 P0/P1 的 ID，是否建议进入下一阶段按“存在 P0 或 P1 数量较多则暂缓，否则建议”给出结论与理由。',
+      '3. 第 3 段只展开“重点问题详情数据”里的条目；每条按 主题、问题性质（用 type_label 的中文名）、原文（引用 quote 并标注 location）、问题、影响、建议、处理状态（默认 待确认）书写。',
+      '4. 第 4 段：问题最多的主题取主题分布第一名，影响开发的问题列出 P0/P1 的 ID，是否建议进入下一阶段按“存在 P0 或 P1 数量较多则暂缓，否则建议”给出结论与理由。',
       '5. 只能使用上面数据中的事实，不得编造原文引文或新增问题；引文必须来自 quote 字段。',
       '6. 使用 write 工具写入 ' + outPath + '，UTF-8 中文，不使用 Emoji。',
       '7. 完成后返回文件路径与写入的问题总条数。',
@@ -589,8 +689,8 @@ if (skipReview) {
       '2. 检查对象、规则基准、检查日期是否已填写（不能留占位符）；',
       '3. 概览统计数字是否与期望总数和优先级分布一致；',
       '4. 问题清单行数是否等于期望总数，ID 是否从 PRD-001 连续编号无跳号；',
-      '5. 类型是否只用五种、优先级是否只用四级；',
-      '6. 每条清单项是否都有原文位置与建议；重点问题详情是否有原文引文，且条数等于期望详情条数；',
+      '5. 清单表头是否为 ID | 主题 | 优先级 | 问题 | 原文位置 | 建议；主题列是否为具体业务主题（不得出现 MISSING、CONFLICT、LOGIC、AMBIGUOUS、INCOMPLETE 等英文检查类型），优先级是否只用四级；',
+      '6. 每条清单项是否都有主题、原文位置与建议；重点问题详情是否包含主题与中文问题性质，且有原文引文，条数不少于期望详情条数；',
       '7. 是否存在明显编造内容（引文与清单对不上、凭空新增问题）。',
       '',
       '全部通过返回 ok=true、problems 为空数组；有问题则 ok=false 并逐条写清问题与位置。',
@@ -632,6 +732,7 @@ return {
   })),
   stats: stats,
   typeStats: typeStats,
+  topicRank: topicRank,
   moduleRank: moduleRank,
   reviewSkipped: skipReview,
   fastMode: fastMode,

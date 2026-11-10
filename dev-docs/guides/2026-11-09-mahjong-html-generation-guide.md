@@ -113,6 +113,65 @@ OQ 的完整生命周期（与红线闭环）：登记（authority=open）→ �
 
 状态红线贯穿全程：每条需求带 `status: proposed|approved|rejected|deprecated` 与 `authority: fixed|delegated|open`；AI 只能提 proposed，approved 只能由人工裁决产生并记录 decision-log；31 项 OQ 未裁决前对应规则保持 open。
 
+### review-requirements 审查与 OQ 产生详图
+
+```mermaid
+flowchart TD
+    A[输入 game spec 全量] --> B[确定性检查 validate ir 先跑]
+    B --> C[AI 语义检查]
+    subgraph S1 [语义检查五项]
+        C1[遗漏关键页面或规则]
+        C2[需求间隐性冲突]
+        C3[异常流程覆盖]
+        C4[可测试性 能否建立验收条件]
+        C5[边界条件与极端情况]
+    end
+    C --> S1
+    S1 --> D[逐条登记问题 编号 严重度 证据 建议]
+    D --> E{存在审批 Gate 阻塞项吗}
+    subgraph S2 [五类阻塞项]
+        E1[核心规则冲突]
+        E2[关键规则 open 未确认]
+        E3[需求无来源]
+        E4[状态转换无法解释]
+        E5[核心流程缺验收条件]
+    end
+    E --> S2
+    S2 --> F[阻塞项标记 待处理]
+    E -->|无阻塞| G[审查通过]
+    F --> H[三份报告落盘 reviews 目录]
+    G --> H
+    subgraph S3 [reviews 三份报告与清单]
+        H1[完整性 completeness json]
+        H2[一致性 consistency json]
+        H3[未决问题 open questions json]
+    end
+    H --> S3
+    S3 --> I[人工确认清单 供 Decision 裁决]
+    I --> J[31 项 OQ 全部 open 待人工裁决]
+```
+
+**执行顺序与要点**：
+
+1. **validate-ir 先跑**（Scripts 层红线：IR 是否合法必须由脚本判定，禁止 AI 自行下结论）；报告附入审查结论。
+2. **AI 语义检查五项**（9.3 节）：遗漏关键页面/规则、不同需求间隐性冲突、异常流程覆盖、可测试性（每条核心规则能否建立验收条件）、边界条件（极端情况覆盖）。
+3. **逐条登记问题**，字段：REVIEW-XXX 编号、severity、related_requirements（关联需求 ID）、evidence（证据）、suggestion（建议）。
+4. **审批 Gate 判定**：五类阻塞项任一存在即阻塞（核心规则冲突 / 关键规则 open / 需求无来源 / 状态转换无法解释 / 核心流程缺验收条件）。
+5. **三份报告落盘** `reviews/`：completeness.json（完整性：8 章原文全覆盖 204 个锚点，1 项 high 遗留大厅页占位）、consistency.json（一致性：4 处原文矛盾已按裁决口径登记）、open-questions.json（未决问题）。
+
+**OQ 条目结构**（open-questions.json 单条字段）：
+
+| 字段 | 含义 | 实际值 |
+|---|---|---|
+| id | OQ 编号 | OQ-001 ~ OQ-031 |
+| requirement_id | 关联的 IR 需求 ID | 如 GAME-RULE-003 |
+| question | 问题描述（歧义/矛盾/未定义/推导待确认的事实） | 31 条 |
+| severity | 严重度 | high 18 / medium 11 / low 2 |
+| status | 裁决状态 | 全部 open（AI 不允许代人工提交裁决） |
+| images | 附图依据（P6 OQ-001 创房面板截图） | 需人工提供文本补充 |
+
+**红线**：审查只读，不修改原始需求与 IR 条目；AI 推测不得当成事实写入报告结论。
+
 ## 阶段二：generate-simulator（模拟器怎么来的）
 
 `simulator/simulator.js`（466 行，UMD 结构）由 AI 按 `assets/simulator-template/engine.js` 框架契约生成（P4 子集：核心行牌与结算规则）：

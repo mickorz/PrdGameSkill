@@ -326,9 +326,17 @@ const APP_DATA = /*__APP_DATA_JSON__*/null;
 
 | 检查 | 命令 | 内容 |
 |---|---|---|
-| mahjong-smoke | `mahjong-smoke.test.mjs <output>` | jsdom 无头冒烟 17 项（通用断言，不依赖游戏专用交互）：标题渲染卡五星、需求卡片 130+ 渲染、状态徽标、Tab 切换、模拟器注入与判定日志、组件覆盖等 |
+| mahjong-smoke | `mahjong-smoke.test.mjs <output>` | jsdom 无头冒烟 15 项（通用断言，不依赖游戏专用交互），明细见下表 |
 | mahjong-simulator.test | `mahjong-simulator.test.mjs` | 场景回放 40 项断言：核心行牌流程（摸/出/碰/杠）与结算规则按 IR 执行、未确认规则被 RULE_NOT_CONFIRMED 拒绝 |
 | validate-output | `validate-output.mjs examples/mahjong` | 串联全部校验输出机器可读报告（`output/reports/validate-report.json`）：result=pass、requirement_total=165（含 configs/states）、来源追溯率 100% |
+
+**mahjong-smoke 15 项检查明细**（jsdom 加载产物 index.html 无头执行，分三类）：
+
+| 类别 | 检查项 |
+|---|---|
+| 静态渲染（7 项） | 标题渲染游戏名（卡五星）<br>需求条目渲染 130+<br>状态徽标渲染（proposed 100+）<br>授权徽标渲染（fixed 50+ 与 open 并存）<br>四个标签页存在（prd / ui / flow / tests）<br>未决问题面板渲染（31 项 OQ）<br>PRD 分组渲染（规则与配置条目） |
+| 离线与健壮性（2 项） | 数据内嵌无外链 fetch<br>页面无致命脚本错误 |
+| UI Demo 与模拟器（6 项） | 切到 UI Demo 标签页（懒渲染生效）<br>UI 页面渲染（5 页 20 组件 + 对局桌面文本）<br>模拟器已注入（MiniGameFactory 全局对象）<br>模拟器操作按钮渲染（碰杠亮胡过 5+）<br>模拟器摸牌交互生效（点击后区域更新）<br>未确认规则触发 RULE_NOT_CONFIRMED 提示（点击总结算触发守卫） |
 
 说明：`e2e.mjs`（端到端 7 步）固定跑 mini-game 样例（管线回归锚点）；卡五星的全链验证由上述两项专用测试 + validate-output 覆盖。Export 前要求 validate-output result=pass，产物 ZIP 在 `output/interactive-game-prd.zip`。
 
@@ -362,7 +370,7 @@ node .claude/skills/interactive-game-prd/scripts/build-html.mjs examples/mahjong
 # 质量检查
 node .claude/skills/interactive-game-prd/scripts/validate-html.mjs examples/mahjong/output/interactive-game-prd examples/mahjong/game-spec
 
-# 卡五星专用冒烟（17 项）
+# 卡五星专用冒烟（15 项）
 node .claude/skills/interactive-game-prd/scripts/mahjong-smoke.test.mjs
 
 # 卡五星模拟器场景回放（40 项）
@@ -385,7 +393,7 @@ node .claude/skills/interactive-game-prd/scripts/decision-workbench.mjs examples
 | IR 需求 | 8 条 | 131 条 |
 | 模拟器 | 165 行 / 6 规则 | 466 行 / 45 规则 |
 | index.html | 42 KB | 383 KB |
-| 冒烟测试 | html-smoke（20 项，游戏专用断言） | mahjong-smoke（17 项，通用断言） |
+| 冒烟测试 | html-smoke（19 项，游戏专用断言） | mahjong-smoke（15 项，通用断言） |
 | 场景回放 | simulator.test（11 项） | mahjong-simulator.test（40 项） |
 | 端到端 | e2e.mjs（7 步，管线回归锚点） | validate-output（result=pass） |
 | 定位 | 管线验证 Golden Sample（冻结） | 真实业务样例（随裁决演进） |

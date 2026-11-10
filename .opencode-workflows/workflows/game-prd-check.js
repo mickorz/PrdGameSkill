@@ -16,6 +16,7 @@
 //   outPath       报告输出路径，默认 examples/game-prd-check/report.md
 //   date          检查日期（YYYY-MM-DD）；脚本内禁止取当前时间，需由调用方传入
 //   maxIssuesPerGroup 每组最多报告的问题数，默认 20
+//   analysisModel 分析阶段使用的模型，默认 biangfeng-gateway/deepseek-v4.1-flash-official（传空字符串则用会话默认模型）
 
 export const meta = {
   id: 'game-prd-check',
@@ -39,6 +40,13 @@ const templatePath =
 const outPath = A.outPath || 'examples/game-prd-check/report.md'
 const checkDate = A.date || '未提供（调用时请传 args.date，格式 YYYY-MM-DD）'
 const maxIssuesPerGroup = A.maxIssuesPerGroup || 20
+
+// 分析阶段（扫描 / 规则检查 / 一致性检查 / 去重）统一用快速模型，报告撰写与质检仍用会话默认模型
+const analysisModel =
+  A.analysisModel === undefined ? 'biangfeng-gateway/deepseek-v4.1-flash-official' : A.analysisModel
+const analysisAgentOptions = analysisModel
+  ? { model: analysisModel, timeoutMs: 3600000 }
+  : { timeoutMs: 3600000 }
 
 const TYPE_RULE = [
   'MISSING：规则中定义了、但需求文档缺失或未描述',
@@ -164,7 +172,7 @@ const scan = await agent(
     '   - focus 用一句话说明这组规则管什么，便于后续检查员聚焦。',
     '3. 如果规则目录结构与本说明不同，按实际结构自适应分组，仍要覆盖全部规则文件。',
   ].join('\n'),
-  { label: '扫描输入与规则', schema: SCAN_SCHEMA, timeoutMs: 900000 }
+  { label: '扫描输入与规则', schema: SCAN_SCHEMA, ...analysisAgentOptions, timeoutMs: 900000 }
 )
 
 if (!scan || !Array.isArray(scan.ruleGroups) || scan.ruleGroups.length === 0) {
@@ -204,7 +212,7 @@ const groupTasks = parallel(
       {
         label: '检查 ' + group.title,
         schema: ISSUES_SCHEMA,
-        timeoutMs: 3600000,
+        ...analysisAgentOptions,
         retries: 1,
       }
     )
@@ -229,7 +237,7 @@ const internalTask = agent(
     '',
     issueRules(),
   ].join('\n'),
-  { label: '全文一致性检查', schema: ISSUES_SCHEMA, timeoutMs: 3600000, retries: 1 }
+  { label: '全文一致性检查', schema: ISSUES_SCHEMA, ...analysisAgentOptions, retries: 1 }
 )
 
 const groupResults = await groupTasks
@@ -269,7 +277,7 @@ if (allIssues.length > 0) {
       '只输出 duplicateGroups，每个子数组是同一条问题的下标，第一个下标为保留项，其余为重复项；',
       '不要把不同缺陷合并，也不要凭猜测合并。没有重复就返回空数组。',
     ].join('\n'),
-    { label: '重复问题归并', schema: DEDUP_SCHEMA, timeoutMs: 1800000 }
+    { label: '重复问题归并', schema: DEDUP_SCHEMA, ...analysisAgentOptions, timeoutMs: 1800000 }
   )
 
   const dropped = new Set()

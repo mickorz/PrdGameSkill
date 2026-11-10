@@ -6,7 +6,15 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const outDir = process.argv[2] || path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../../examples/mahjong/output/interactive-game-prd");
-const html = fs.readFileSync(path.join(outDir, "index.html"), "utf8");
+let html = fs.readFileSync(path.join(outDir, "index.html"), "utf8");
+// P2 多选模式测试：仅测试内存中给 OQ-003 注入 decision_options（不改真实 game-spec 数据）
+const MULTI_INJECT = '"decision_options":{"selection_mode":"multi","min_selections":1,"max_selections":2,"options":[' +
+  '{"id":"keep_cfg","label":"保留配置开关","description":"按需求原文保留可配置开关","action":"adopted"},' +
+  '{"id":"add_cfg","label":"补充开关默认值","description":"人工补充开关名与默认值","action":"adopted","requires_input":true,"input_label":"开关名与默认值"},' +
+  '{"id":"drop_cfg","label":"取消该配置项","description":"删除该规则约束","action":"rejected","requires_input":true,"input_label":"删除原因"}]}';
+if (html.includes('"id":"OQ-003","requirement_id"')) {
+  html = html.replace('"id":"OQ-003","requirement_id"', '"id":"OQ-003",' + MULTI_INJECT + ',"requirement_id"');
+}
 
 let passed = 0;
 let failed = 0;
@@ -113,7 +121,7 @@ if (simArea) {
   check("模拟器区域存在", false);
 }
 
-// ---------- 裁决工作台（P0：独立布局，统计+筛选+三栏+底部操作栏） ----------
+// ---------- 裁决工作台（P2：候选方案卡片 + 单选/多选 + 草稿自动暂存） ----------
 document.querySelector('#tabs button[data-tab="decision"]').click();
 await new Promise((r) => setTimeout(r, 50));
 check("裁决工作台独立布局（隐藏规格导航）", document.body.classList.contains("ws-decision") && /body\.ws-decision nav,\s*body\.ws-decision aside\s*\{\s*display:\s*none/.test(html));
@@ -123,28 +131,84 @@ check("裁决统计渲染（合并三来源：待裁决 28 草稿 3）", (() => 
 })());
 check("裁决筛选器渲染（状态/严重度/关键词）", $("#df-status-filter") && $("#df-severity-filter") && $("#df-keyword"));
 check("裁决 Tab 渲染 31 项 OQ", $$(".dec-item").length === 31);
-check("OQ-002 草稿预填与影响预览（GAME-RULE-005）", (() => {
+check("OQ-002 草稿预填（通用选项采纳预选）与影响预览", (() => {
   const a = $$(".dec-item").find((x) => x.dataset.oq === "OQ-002");
   if (!a) return false;
   a.click();
   return true;
-})() && $("#dec-impact").textContent.includes("GAME-RULE-005"));
+})() && !!$("#dec-main .opt-card.selected") && $("#dec-impact").textContent.includes("GAME-RULE-005"));
 $$(".dec-item")[0].click();
 await new Promise((r) => setTimeout(r, 30));
-check("OQ 详情与关联需求渲染（GAME-RULE-003）", $("#dec-main").textContent.includes("GAME-RULE-003") && $("#df-rationale") !== null);
+check("OQ-001 草稿预填（修改选项预选 + 口径输入区）", !!$("#dec-main .opt-card[data-opt='modify'].selected") && !!$("#dec-main [data-opt-input='modify']"));
 check("底部操作栏渲染（上/下/暂存/正式）", ["dec-prev", "dec-next", "dec-draft", "dec-confirm"].every((id) => $("#" + id)));
+// 未填口径时正式裁决被拦截
+$("#dec-confirm").click();
+await new Promise((r) => setTimeout(r, 30));
+check("正式裁决校验（修改方案需填口径）", $("#dec-msg").textContent.includes("需填写"));
+$("#dec-main [data-opt-input='modify']").value = "最终口径人工确认";
+$("#dec-confirm").click();
+await new Promise((r) => setTimeout(r, 30));
+check("正式裁决校验（必须填写理由）", $("#dec-msg").textContent.includes("理由"));
 $("#df-rationale").value = "人工确认测试裁决口径";
 $("#dec-confirm").click();
 await new Promise((r) => setTimeout(r, 50));
 check("正式裁决内存生效（已确认 1）", $(".dec-stats").textContent.includes("已确认 1") && $$(".dv-approved").length >= 1);
 check("正式裁决后自动定位下一个待裁决", !$("#dec-main h3").textContent.startsWith("OQ-001"));
+// 切换问题草稿不丢：OQ-004 填一半 -> 切 OQ-005 -> 回 OQ-004 恢复
+const oq4 = $$(".dec-item").find((x) => x.dataset.oq === "OQ-004");
+if (oq4) oq4.click();
+await new Promise((r) => setTimeout(r, 30));
+$("#df-rationale").value = "切换暂存的草稿理由";
+const oq5 = $$(".dec-item").find((x) => x.dataset.oq === "OQ-005");
+if (oq5) oq5.click();
+await new Promise((r) => setTimeout(r, 30));
+if (oq4) oq4.click();
+await new Promise((r) => setTimeout(r, 30));
+check("切换问题不丢草稿（自动暂存恢复）", $("#df-rationale").value === "切换暂存的草稿理由");
+// 多选模式（OQ-003 注入 decision_options）
+const oq3 = $$(".dec-item").find((x) => x.dataset.oq === "OQ-003");
+if (oq3) oq3.click();
+await new Promise((r) => setTimeout(r, 30));
+check("OQ 专属候选方案渲染（多选三方案）", $$("#dec-main .opt-card").length === 3 && $("#dec-main").textContent.includes("多选"));
+const cb1 = $("#dec-main .opt-card[data-opt='keep_cfg'] input");
+const cb2 = $("#dec-main .opt-card[data-opt='add_cfg'] input");
+const cb3 = $("#dec-main .opt-card[data-opt='drop_cfg'] input");
+if (cb1) cb1.click();
+if (cb2) cb2.click();
+await new Promise((r) => setTimeout(r, 30));
+check("多选可选多项（两项选中）", $$("#dec-main .opt-card.selected").length === 2 && !!$("#dec-main [data-opt-input='add_cfg']"));
+if (cb3) cb3.click();
+await new Promise((r) => setTimeout(r, 30));
+check("多选上限约束（第三项被拒绝）", !cb3.checked && $("#dec-msg").textContent.includes("最多选择 2 项"));
+// 混合结论拦截（采纳 + 取消 组合不被一问一裁契约接受）
+if (cb1) cb1.click();
+if (cb3) cb3.click();
+await new Promise((r) => setTimeout(r, 30));
+$("#df-rationale").value = "混合结论测试";
+$("#dec-confirm").click();
+await new Promise((r) => setTimeout(r, 30));
+check("多选混合结论被拦截（需同结论）", $("#dec-msg").textContent.includes("同结论"));
+if (cb3) cb3.click();
+if (cb1) cb1.click();
+await new Promise((r) => setTimeout(r, 30));
+$("#df-rationale").value = "多选裁决测试";
+$("#dec-confirm").click();
+await new Promise((r) => setTimeout(r, 30));
+check("多选正式裁决校验（需填口径的选项拦截）", $("#dec-msg").textContent.includes("需填写"));
+$("#dec-main [data-opt-input='add_cfg']").value = "开关名 = hand_return_gang，默认关";
+$("#dec-confirm").click();
+await new Promise((r) => setTimeout(r, 50));
 const exported = window.__exportDecisionsData();
-check("导出数据为 apply-decisions 输入格式", Array.isArray(exported) && exported.length === 1 &&
+check("导出数据为 apply-decisions 输入格式（多选同结论合并单记录）", Array.isArray(exported) && exported.length === 2 &&
   exported[0].question_id === "OQ-001" && exported[0].reviewer === "human" &&
   exported[0].decision_status === "approved" && exported[0].outcome === "modified" &&
+  exported[0].final_decision && exported[0].final_decision.text === "最终口径人工确认" &&
+  !("selected_option_ids" in exported[0]) && !("selection_mode" in exported[0]) &&
   /^DEC-\d{3}$/.test(exported[0].decision_id) && typeof exported[0].decided_at === "string" &&
   exported[0].rationale.length > 0 && Array.isArray(exported[0].requirement_updates) &&
-  exported[0].affected.requirements.includes("GAME-RULE-003"));
+  exported[0].affected.requirements.includes("GAME-RULE-003") &&
+  exported[1].question_id === "OQ-003" && exported[1].outcome === "adopted" &&
+  exported[1].final_decision && exported[1].final_decision.text.includes("保留配置开关") && exported[1].final_decision.text.includes("开关名 = hand_return_gang"));
 // 筛选只重渲染列表，不清空中栏
 $("#df-keyword").value = "OQ-002";
 $("#df-keyword").dispatchEvent(new window.Event("input", { bubbles: true }));

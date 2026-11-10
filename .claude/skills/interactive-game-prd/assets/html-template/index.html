@@ -99,6 +99,16 @@
   .dec-item:hover { background: #f0f4ff; }
   .dec-item.active { background: #dbe6ff; }
   .dec-main { flex: 1; min-width: 0; }
+  .opt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; margin: 8px 0; }
+  .opt-card { display: block; border: 1px solid #d5dbe5; border-radius: 8px; padding: 8px 10px; cursor: pointer; font-size: 12px; }
+  .opt-card:hover { border-color: #8ab4f8; }
+  .opt-card.selected { border-color: #1a73e8; background: #eef4ff; }
+  .opt-card input { margin-right: 6px; vertical-align: middle; }
+  .opt-title { font-weight: 600; font-size: 13px; }
+  .opt-desc { display: block; color: #556; margin-top: 4px; }
+  .opt-src { display: block; color: #889; margin-top: 3px; font-size: 11px; }
+  .opt-input { display: block; margin-top: 6px; }
+  .opt-input textarea { width: 100%; box-sizing: border-box; font-size: 12px; padding: 4px 6px; }
   .dec-form label { display: block; margin: 8px 0; font-size: 13px; }
   .dec-form select, .dec-form textarea { width: 100%; margin-top: 4px; font-size: 13px; padding: 4px 6px; box-sizing: border-box; }
   .dv-open { background: #fff3cd; color: #856404; }
@@ -156,7 +166,7 @@ const SPEC_CATEGORIES = [
   { id: "GAME-UI", label: "UI 页面与组件", isUi: true },
 ];
 const specState = { category: null, selectedId: null, filters: { keyword: "", status: "all", authority: "all" } }; // 规格工作台状态（null = 概述；filters 供 FR/RULE 分类）
-const decisionState = { selectedOqId: null, statusFilter: "all", severityFilter: "all", keyword: "" }; // 裁决工作台状态
+const decisionState = { selectedOqId: null, statusFilter: "all", severityFilter: "all", keyword: "", stash: {} }; // 裁决工作台状态（stash: 切换问题时的表单暂存）
 function categoryOf(r) { for (const c of SPEC_CATEGORIES) if (c.filter && c.filter(r)) return c.id; return null; }
 
 // ---------- 徽标 ----------
@@ -558,15 +568,41 @@ function renderTests() {
   $("#view").innerHTML = html;
 }
 
-// ---------- 裁决工作台（P0：独立布局 —— 统计+筛选 / 左列表 / 中详情与表单 / 右影响分析 / 底部操作栏；内存裁决 + 导出 decisions.json） ----------
+// ---------- 裁决工作台（P2：候选方案卡片 + 单选/多选 + decision_options 数据驱动 + 草稿自动暂存；内存裁决 + 导出 decisions.json） ----------
 const OQ_LIST = APP_DATA.reviews.openQuestions || [];
 const DEC_LOG = (APP_DATA.reviews.decisionLog && APP_DATA.reviews.decisionLog.decisions) || [];
 const DEC_DRAFTS = (APP_DATA.reviews.approvalState && APP_DATA.reviews.approvalState.drafts) || {};
-const DECISIONS = {}; // OQ id -> 内存裁决记录；decision_status=draft 不进导出
+const DECISIONS = {}; // OQ id -> { status: "draft"|"approved"|"rejected"|"deferred", records: [decision record, ...] }
 let decSeq = DEC_LOG.reduce((m, d) => Math.max(m, Number(String(d.decision_id || "DEC-0").replace("DEC-", "")) || 0), 0);
 
 const OQ_STATUS_LABEL = { open: "待裁决", draft: "草稿", approved: "已确认", rejected: "已否决", deferred: "已挂起" };
 const SEV_RANK = { high: 3, medium: 2, low: 1 };
+
+// 通用裁决选项（无 decision_options 配置的 OQ 兜底；模板文本不含业务规则，不得视为已确认方案）
+const GENERIC_OPTIONS = [
+  { id: "adopt_original", label: "采纳原始需求", description: "按原始需求文档口径执行（AI 提取内容维持现状）", action: "adopted" },
+  { id: "modify", label: "修改后采纳", description: "人工提供修改后的口径", action: "modified", requires_input: true, input_label: "最终口径" },
+  { id: "reject", label: "否决", description: "不采纳当前需求口径", action: "rejected", requires_input: true, input_label: "否决理由" },
+  { id: "defer", label: "挂起", description: "等待补充信息后再决定", action: "deferred", requires_input: true, input_label: "挂起原因" },
+];
+const ACTION_STATUS = { adopted: "approved", modified: "approved", rejected: "rejected", deferred: "deferred" };
+const GENERIC_BY_OUTCOME = { adopted: "adopt_original", modified: "modify", rejected: "reject", deferred: "defer" };
+
+// 每 OQ 的候选方案：优先读 OQ 自身 decision_options（单选/多选由该配置决定），否则通用单选兜底
+function decisionOptionsOf(q) {
+  const o = q.decision_options;
+  if (o && Array.isArray(o.options) && o.options.length) {
+    const mode = o.selection_mode === "multi" ? "multi" : "single";
+    return {
+      mode,
+      min: o.min_selections || 1,
+      max: o.max_selections || (mode === "single" ? 1 : o.options.length),
+      options: o.options,
+      isCustom: true,
+    };
+  }
+  return { mode: "single", min: 1, max: 1, options: GENERIC_OPTIONS, isCustom: false };
+}
 
 function decPrevInLog(oid) {
   const ds = DEC_LOG.filter((d) => d.question_id === oid);
@@ -576,7 +612,7 @@ function decPrevInLog(oid) {
 // 合并三来源计算状态（避免重复计数）：内存 DECISIONS > 历史 DEC_LOG > APP_DATA 草稿 > open
 function oqStatus(q) {
   const mem = DECISIONS[q.id];
-  if (mem) return mem.decision_status;
+  if (mem) return mem.status;
   const hist = decPrevInLog(q.id);
   if (hist) return hist.decision_status;
   return DEC_DRAFTS[q.id] ? "draft" : "open";
@@ -593,7 +629,7 @@ function visibleOqs() {
   const list = OQ_LIST.filter((q) => {
     if (decisionState.statusFilter !== "all" && oqStatus(q) !== decisionState.statusFilter) return false;
     if (decisionState.severityFilter !== "all" && (q.severity || "low") !== decisionState.severityFilter) return false;
-    if (kw && !(`${q.id || ""}`.toLowerCase().includes(kw) || `${q.question || ""}`.toLowerCase().includes(kw))) return false;
+    if (kw && !(`${q.id || ""}`.toLowerCase().includes(kw) || `${q.question || ""}`.toLowerCase().includes(kw) || `${q.requirement_id || ""}`.toLowerCase().includes(kw))) return false;
     return true;
   });
   return list.sort((a, b) => (SEV_RANK[b.severity || "low"] - SEV_RANK[a.severity || "low"]) || (a.id > b.id ? 1 : -1));
@@ -623,7 +659,7 @@ function renderDecisionWorkbench() {
       <label>严重度 <select id="df-severity-filter"><option value="all">全部</option>
         ${["high", "medium", "low"].map((v) => `<option value="${v}"${decisionState.severityFilter === v ? " selected" : ""}>${v}</option>`).join("")}
       </select></label>
-      <input id="df-keyword" placeholder="搜索问题 ID 或描述" value="${esc(decisionState.keyword)}" style="flex:1;min-width:160px">
+      <input id="df-keyword" placeholder="搜索问题 ID、描述或关联需求 ID" value="${esc(decisionState.keyword)}" style="flex:1;min-width:160px">
     </div>
     <div class="dec-note">裁决在本页内存中完成（刷新丢失，正式裁决请及时导出）。导出后执行：node .claude/skills/interactive-game-prd/scripts/apply-decisions.mjs examples/mahjong/game-spec decisions.json --dry-run 预演，通过后去掉 --dry-run 落盘，再重跑 build-html 刷新本文件。AI 不代人工提交：点「正式裁决」与「导出」即人工确认动作。reviewer 固定为 human。</div>
     <div class="dec-layout">
@@ -645,42 +681,130 @@ function renderDecisionWorkbench() {
   if (decisionState.selectedOqId) selectOq(decisionState.selectedOqId);
 }
 
+// 表单态：{ optionIds: [选项 id], inputs: {选项 id: 补充文本}, rationale: 理由 }
+function emptyForm() { return { optionIds: [], inputs: {}, rationale: "" }; }
+
+// 预填：切换暂存 > 内存裁决记录反推 > approval-state 旧草稿
+function draftToForm(oid) {
+  if (decisionState.stash[oid]) return decisionState.stash[oid];
+  const mem = DECISIONS[oid];
+  if (mem && mem.records.length) return formFromRecords(oid, mem.records);
+  const d = DEC_DRAFTS[oid];
+  if (d) {
+    const f = emptyForm();
+    const g = GENERIC_BY_OUTCOME[d.outcome];
+    if (g) f.optionIds.push(g);
+    f.rationale = d.rationale || "";
+    return f;
+  }
+  return emptyForm();
+}
+
+// 从内存裁决记录反推表单态（按 outcome 匹配选项 action）
+function formFromRecords(oid, records) {
+  const q = OQ_LIST.find((x) => x.id === oid) || {};
+  const cfg = decisionOptionsOf(q);
+  const form = emptyForm();
+  const used = new Set();
+  for (const rec of records) {
+    const o = cfg.options.find((x) => x.action === rec.outcome && !used.has(x.id));
+    if (o) {
+      used.add(o.id);
+      form.optionIds.push(o.id);
+      if (o.requires_input && rec.final_decision && rec.final_decision.text) form.inputs[o.id] = rec.final_decision.text;
+    }
+    form.rationale = rec.rationale || form.rationale;
+  }
+  return form;
+}
+
+// 切换问题前自动暂存表单（草稿不丢；已正式裁决的问题不覆盖）
+function autoStashDraft() {
+  const oid = decisionState.selectedOqId;
+  if (!oid || !$("#dec-main .opt-card")) return;
+  const mem = DECISIONS[oid];
+  if (mem && mem.status !== "draft") return;
+  const form = collectForm();
+  if (!form.optionIds.length && !form.rationale.trim()) return;
+  decisionState.stash[oid] = form;
+}
+
 function selectOq(oid) {
+  autoStashDraft();
   const q = OQ_LIST.find((x) => x.id === oid);
   if (!q) return;
   decisionState.selectedOqId = oid;
   document.querySelectorAll("#dec-list .dec-item").forEach((a) => a.classList.toggle("active", a.dataset.oq === oid));
-  const draft = DECISIONS[oid] || DEC_DRAFTS[oid] || {};
+  const form = draftToForm(oid);
+  const cfg = decisionOptionsOf(q);
   $("#dec-main").innerHTML = `<h3>${esc(q.id)}（severity：${esc(q.severity || "")}）</h3>
     <div class="quote">${esc(q.question || "")}</div>
-    <div style="color:#889;font-size:12px">关联需求：${esc(q.requirement_id || "待补充关联")}</div>
-    <h4 style="margin:12px 0 4px">裁决</h4>
-    <div class="dec-form">
-      <label>结论 <select id="df-status">
-        <option value="approved"${draft.decision_status === "approved" ? " selected" : ""}>确认通过（approved）</option>
-        <option value="rejected"${draft.decision_status === "rejected" ? " selected" : ""}>否决（rejected）</option>
-        <option value="deferred"${draft.decision_status === "deferred" ? " selected" : ""}>挂起（deferred）</option>
-      </select></label>
-      <label>口径 <select id="df-outcome">
-        <option value="adopted"${draft.outcome === "adopted" ? " selected" : ""}>采纳当前口径（adopted）</option>
-        <option value="modified"${draft.outcome === "modified" ? " selected" : ""}>人工修改后采纳（modified）</option>
-        <option value="rejected"${draft.outcome === "rejected" ? " selected" : ""}>否决口径（rejected）</option>
-        <option value="deferred"${draft.outcome === "deferred" ? " selected" : ""}>挂起待定（deferred）</option>
-      </select></label>
-      <label>理由（正式裁决必填；修改口径时需写明最终口径） <textarea id="df-rationale" rows="3">${esc(draft.rationale || "")}</textarea></label>
-      <div id="dec-msg" style="color:#1a73e8;font-size:12px"></div>
-    </div>
+    <div style="color:#889;font-size:12px">关联需求：${esc(q.requirement_id || "待补充关联")}${cfg.isCustom ? "" : "（该问题未配置专属候选方案，展示通用裁决选项，后续可人工补充）"}</div>
+    <h4 style="margin:12px 0 4px">候选裁决方案（${cfg.mode === "multi" ? `多选：至少 ${cfg.min} 项${cfg.max && cfg.max < cfg.options.length ? "，至多 " + cfg.max + " 项" : ""}` : "单选"}）</h4>
+    ${renderDecisionOptions(cfg, form)}
+    <label style="display:block;margin:10px 0 4px;font-size:13px">裁决理由（正式裁决必填）</label>
+    <textarea id="df-rationale" rows="3" style="width:100%;box-sizing:border-box;font-size:13px" placeholder="说明人工裁决的依据与口径">${esc(form.rationale)}</textarea>
     <div class="dec-actions">
       <button class="btn-dec" id="dec-prev">上一个</button>
       <button class="btn-dec" id="dec-next">下一个</button>
       <button class="btn-dec" id="dec-draft">暂存草稿</button>
       <button class="btn-dec primary" id="dec-confirm">正式裁决</button>
-    </div>`;
+    </div>
+    <div id="dec-msg" style="color:#c00;font-size:12px;margin-top:6px"></div>`;
+  bindOptChange(q);
   $("#dec-prev").addEventListener("click", () => stepOq(-1));
   $("#dec-next").addEventListener("click", () => stepOq(1));
   $("#dec-draft").addEventListener("click", () => saveDecision(oid, "draft"));
   $("#dec-confirm").addEventListener("click", () => saveDecision(oid, null));
   renderDecisionImpact(q);
+}
+
+// 候选方案卡片（单选 radio / 多选 checkbox；requires_input 选项选中后展开补充输入区）
+function renderDecisionOptions(cfg, form) {
+  return `<div class="opt-grid">${cfg.options.map((o) => {
+    const sel = form.optionIds.includes(o.id);
+    return `<label class="opt-card${sel ? " selected" : ""}" data-opt="${esc(o.id)}">
+      <input type="${cfg.mode === "multi" ? "checkbox" : "radio"}" name="dec-opt" value="${esc(o.id)}"${sel ? " checked" : ""}>
+      <span class="opt-title">${esc(o.label || o.id)}</span>
+      <span class="opt-desc">${esc(o.description || "")}</span>
+      ${o.source ? `<span class="opt-src">依据：${esc(o.source)}</span>` : ""}
+      ${sel && o.requires_input ? `<span class="opt-input"><textarea data-opt-input="${esc(o.id)}" rows="2" placeholder="${esc(o.input_label || "补充说明")}">${esc(form.inputs[o.id] || "")}</textarea></span>` : ""}
+    </label>`;
+  }).join("")}</div>`;
+}
+
+function bindOptChange(q) {
+  const cfg = decisionOptionsOf(q);
+  $("#dec-main").addEventListener("change", (e) => {
+    const input = e.target.closest('input[type="radio"],input[type="checkbox"]');
+    if (!input) return;
+    const msg = $("#dec-msg");
+    if (cfg.mode === "multi" && input.checked) {
+      const checked = [...document.querySelectorAll("#dec-main .opt-card input:checked")];
+      if (cfg.max && checked.length > cfg.max) {
+        input.checked = false;
+        if (msg) msg.textContent = `最多选择 ${cfg.max} 项`;
+        return;
+      }
+    }
+    const card = input.closest(".opt-card");
+    card.classList.toggle("selected", input.checked);
+    const o = cfg.options.find((x) => x.id === input.value);
+    if (o && o.requires_input) {
+      const wrap = card.querySelector(".opt-input");
+      if (input.checked && !wrap) card.insertAdjacentHTML("beforeend", `<span class="opt-input"><textarea data-opt-input="${esc(o.id)}" rows="2" placeholder="${esc(o.input_label || "补充说明")}"></textarea></span>`);
+      else if (!input.checked && wrap) wrap.remove();
+    }
+    if (msg) msg.textContent = "";
+  });
+}
+
+function collectForm() {
+  const optionIds = [...document.querySelectorAll("#dec-main .opt-card input:checked")].map((i) => i.value);
+  const inputs = {};
+  for (const t of document.querySelectorAll("#dec-main [data-opt-input]")) inputs[t.dataset.optInput] = t.value;
+  const ta = document.querySelector("#dec-main #df-rationale");
+  return { optionIds, inputs, rationale: ta ? ta.value : "" };
 }
 
 // 右栏：影响分析（只基于真实关联数据，无关联显示「待补充关联」）
@@ -707,7 +831,7 @@ function renderDecisionImpact(q) {
   $("#dec-impact").innerHTML = html;
 }
 
-// 底部操作栏：上一个 / 下一个（在当前筛选结果内移动）
+// 底部操作栏：上一个 / 下一个（在当前筛选结果内移动；切换前自动暂存草稿）
 function stepOq(dir) {
   const list = visibleOqs();
   if (!list.length) return;
@@ -723,47 +847,78 @@ function afterDecisionSaved(oid) {
   renderDecisionWorkbench();
 }
 
-function syncOutcome(status, chosen) {
-  if (status === "approved") return chosen === "modified" ? "modified" : "adopted";
-  return status;
-}
-
 function saveDecision(oid, forceDraft) {
   const q = OQ_LIST.find((x) => x.id === oid);
-  const status = forceDraft ? "draft" : $("#df-status").value;
-  const rationale = $("#df-rationale").value.trim();
+  if (!q) return;
+  const cfg = decisionOptionsOf(q);
+  const form = collectForm();
   const msg = $("#dec-msg");
-  if (!forceDraft && !rationale) { msg.textContent = "正式裁决必须填写理由"; return; }
+  const selOptions = form.optionIds.map((id) => cfg.options.find((x) => x.id === id)).filter(Boolean);
+  if (!forceDraft) {
+    if (form.optionIds.length < cfg.min || (cfg.max && form.optionIds.length > cfg.max)) {
+      msg.textContent = `请选择方案（${cfg.mode === "multi" ? `至少 ${cfg.min} 项${cfg.max && cfg.max < cfg.options.length ? "，至多 " + cfg.max + " 项" : ""}` : "单选一项"}），当前已选 ${form.optionIds.length} 项`;
+      return;
+    }
+    // apply-decisions 契约为一问一裁：多选组合需同结论（同 action），合并为一条记录；混合结论拦截
+    if (selOptions.length > 1 && new Set(selOptions.map((o) => o.action || "adopted")).size > 1) {
+      msg.textContent = "组合裁决需同结论（如均为采纳）；不同结论请分开裁决";
+      return;
+    }
+    for (const o of selOptions) {
+      if (o && o.requires_input && !(form.inputs[o.id] || "").trim()) {
+        msg.textContent = `方案「${o.label || o.id}」需填写${o.input_label || "补充说明"}`;
+        return;
+      }
+    }
+    if (!form.rationale.trim()) { msg.textContent = "正式裁决必须填写理由"; return; }
+  }
   const prevMem = DECISIONS[oid];
-  const prev = decPrevInLog(oid);
-  const reuseId = prevMem && prevMem.decision_status !== "draft" && status !== "draft";
-  const rec = {
-    decision_id: reuseId ? prevMem.decision_id : "DEC-" + String(++decSeq).padStart(3, "0"),
-    question_id: oid,
-    decision_status: status,
-    outcome: syncOutcome(status, $("#df-outcome").value),
-    final_decision: null,
-    rationale,
-    reviewer: "human",
-    decided_at: new Date().toISOString(),
-    requirement_updates: [],
-    affected: {
-      requirements: [q.requirement_id].filter(Boolean),
-      tests: ((reqById.get(q.requirement_id) || {}).test_refs) || [],
-      ui: ((reqById.get(q.requirement_id) || {}).ui_refs) || [],
-      simulator: /^GAME-RULE/.test(q.requirement_id || ""),
-    },
-  };
-  const sup = (prevMem && prevMem.decision_status !== "draft") ? prevMem.decision_id : (prev ? prev.decision_id : null);
-  if (sup && status !== "draft") rec.supersedes = sup;
-  if (status === "draft") { delete rec.decided_at; }
-  DECISIONS[oid] = rec;
-  if (status === "draft") { msg.textContent = "已暂存草稿（仅存本页内存，刷新丢失）"; renderDecisionList(); }
+  const prevRecs = prevMem && prevMem.status !== "draft" ? prevMem.records : [];
+  const hist = decPrevInLog(oid);
+  // 按 action 分组，每组一条记录（单选即一组单项；多选同结论合并）
+  const groups = [];
+  for (const o of selOptions) {
+    const g = groups.find((x) => x.action === (o.action || "adopted"));
+    if (g) g.options.push(o); else groups.push({ action: o.action || "adopted", options: [o] });
+  }
+  const records = groups.map((g, i) => {
+    const reuse = prevRecs[i];
+    // 记录保持 apply-decisions 旧契约格式：final_decision 为 object；
+    // selected_option_ids / selection_mode 仅作界面辅助信息存 stash，不进导出（不得擅改 apply-decisions 契约）
+    const parts = g.options.map((o) => (o.requires_input && (form.inputs[o.id] || "").trim()) ? `${o.label || o.id}：${form.inputs[o.id].trim()}` : (o.label || o.id));
+    const needsFd = g.options.length > 1 || g.options.some((o) => o.requires_input);
+    const fdText = g.options.length === 1 ? (form.inputs[g.options[0].id] || "").trim() : parts.join("；");
+    const rec = {
+      decision_id: reuse ? reuse.decision_id : "DEC-" + String(++decSeq).padStart(3, "0"),
+      question_id: oid,
+      decision_status: ACTION_STATUS[g.action] || "approved",
+      outcome: g.action,
+      final_decision: needsFd ? { text: fdText } : null,
+      rationale: form.rationale.trim(),
+      reviewer: "human",
+      decided_at: new Date().toISOString(),
+      requirement_updates: [],
+      affected: {
+        requirements: [q.requirement_id].filter(Boolean),
+        tests: ((reqById.get(q.requirement_id) || {}).test_refs) || [],
+        ui: ((reqById.get(q.requirement_id) || {}).ui_refs) || [],
+        simulator: /^GAME-RULE/.test(q.requirement_id || ""),
+      },
+    };
+    const sup = reuse ? reuse.decision_id : (hist ? hist.decision_id : null);
+    if (sup && !forceDraft) rec.supersedes = sup;
+    if (forceDraft) delete rec.decided_at;
+    return rec;
+  });
+  DECISIONS[oid] = { status: forceDraft ? "draft" : (records[0] ? records[0].decision_status : "draft"), records };
+  // 界面辅助态：选项与输入存 stash 供表单恢复（不进导出记录）
+  decisionState.stash[oid] = { optionIds: [...form.optionIds], inputs: { ...form.inputs }, rationale: form.rationale };
+  if (forceDraft) { msg.textContent = "已暂存草稿（仅存本页内存，刷新丢失）"; renderDecisionList(); }
   else afterDecisionSaved(oid);
 }
 
 function exportDecisions() {
-  const list = Object.values(DECISIONS).filter((d) => d.decision_status !== "draft");
+  const list = Object.values(DECISIONS).filter((d) => d.status !== "draft").flatMap((d) => d.records);
   const msg = $("#dec-export-msg");
   if (!list.length) { msg.textContent = "尚无正式裁决（草稿不导出），先在中间栏完成正式裁决"; return; }
   const blob = new Blob([JSON.stringify(list, null, 2)], { type: "application/json" });
@@ -774,7 +929,7 @@ function exportDecisions() {
   URL.revokeObjectURL(a.href);
   msg.textContent = `已导出 ${list.length} 条正式裁决到 decisions.json（浏览器下载目录）`;
 }
-window.__exportDecisionsData = () => JSON.parse(JSON.stringify(Object.values(DECISIONS).filter((d) => d.decision_status !== "draft")));
+window.__exportDecisionsData = () => JSON.parse(JSON.stringify(Object.values(DECISIONS).filter((d) => d.status !== "draft").flatMap((d) => d.records)));
 
 // ---------- 判定日志 ----------
 function appendLog(msg) {

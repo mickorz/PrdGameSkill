@@ -371,6 +371,24 @@ export function buildDashboardHtml(data, templateHtml) {
   return templateHtml.replace('__REPORT_JSON__', json);
 }
 
+// 生成带日期序号的 Dashboard 文件名：{项目名}分析-Dashboard-{YYYYMMDD}-{NN}.html
+// 同日前缀已存在时序号递增，避免多次生成互相覆盖；跨日重新从 01 起
+export function nextDashboardName(dir, projectName, now = new Date()) {
+  const safe = String(projectName || 'PRD').replace(/[\\/:*?"<>|]/g, '').trim() || 'PRD';
+  const pad = (n) => String(n).padStart(2, '0');
+  const ymd = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
+  const prefix = `${safe}分析-Dashboard-${ymd}-`;
+  const prefixRe = new RegExp('^' + prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(\\d{2})\\.html$');
+  let seq = 1;
+  if (fs.existsSync(dir)) {
+    for (const f of fs.readdirSync(dir)) {
+      const m = f.match(prefixRe);
+      if (m) seq = Math.max(seq, parseInt(m[1], 10) + 1);
+    }
+  }
+  return `${prefix}${pad(seq)}.html`;
+}
+
 function main() {
   const [reportArg, outDirArg] = process.argv.slice(2);
   const reportPath = path.resolve(reportArg || path.join(SKILL_ROOT, '..', '..', '..', 'examples', 'game-prd-check', 'report.md'));
@@ -391,13 +409,14 @@ function main() {
 
   fs.mkdirSync(path.join(outDir, 'dashboard'), { recursive: true });
   fs.writeFileSync(path.join(outDir, 'report.json'), JSON.stringify(data, null, 2), 'utf8');
-  fs.writeFileSync(path.join(outDir, 'dashboard', 'index.html'), html, 'utf8');
+  const htmlName = nextDashboardName(path.join(outDir, 'dashboard'), data.report.project_name || data.report.document_name);
+  fs.writeFileSync(path.join(outDir, 'dashboard', htmlName), html, 'utf8');
 
   const p = data.statistics.priority;
   const detailCount = data.issues.filter((it) => it.has_detail).length;
   console.log(`[成功] 共 ${data.statistics.total} 条问题（P0×${p.P0} P1×${p.P1} P2×${p.P2} P3×${p.P3}），其中 ${detailCount} 条含详情块`);
   console.log(`  report.json -> ${path.join(outDir, 'report.json')}`);
-  console.log(`  dashboard   -> ${path.join(outDir, 'dashboard', 'index.html')}`);
+  console.log(`  dashboard   -> ${path.join(outDir, 'dashboard', htmlName)}`);
 }
 
 // 直接执行时跑主流程（作为模块被 example 引入时不执行）

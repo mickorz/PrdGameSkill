@@ -246,3 +246,27 @@ assert.ok(wfFin && wfFin.issue_ids.includes('PRD-002') && !wfFin.issue_ids.inclu
 assert.deepStrictEqual(wf.featured_issues, ['PRD-001', 'PRD-002'], 'TOP5 排序错误');
 
 console.log('[成功] workflow 格式断言全部通过（清单全集/详情合并/问题性质/主题模块/单行基准/未分类/资损关键词）');
+
+// ================= 文件名序号自检 =================
+import { nextDashboardName } from './build-dashboard.mjs';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+
+const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'prd-dash-'));
+const fakeNow = new Date(2026, 10, 10, 15, 0); // 2026-11-10 本地时间
+const n1 = nextDashboardName(tmpDir, '杭州麻将', fakeNow);
+assert.strictEqual(n1, '杭州麻将分析-Dashboard-20261110-01.html', '首次生成应为 01');
+fs.writeFileSync(path.join(tmpDir, n1), '');
+const n2 = nextDashboardName(tmpDir, '杭州麻将', fakeNow);
+assert.strictEqual(n2, '杭州麻将分析-Dashboard-20261110-02.html', '同日再次生成应递增为 02');
+fs.writeFileSync(path.join(tmpDir, n2), '');
+const n3 = nextDashboardName(tmpDir, '杭州麻将', new Date(2026, 10, 11, 9, 0));
+assert.strictEqual(n3, '杭州麻将分析-Dashboard-20261111-01.html', '跨日应重新从 01 起');
+const n4 = nextDashboardName(tmpDir, '测试/麻将:二', fakeNow);
+assert.strictEqual(n4, '测试麻将二分析-Dashboard-20261110-01.html', '非法字符应被清理');
+const n5 = nextDashboardName(tmpDir, '', fakeNow);
+assert.ok(n5.startsWith('PRD分析-Dashboard-'), '空项目名应回退为 PRD');
+fs.rmSync(tmpDir, { recursive: true, force: true });
+
+console.log('[成功] 文件名序号断言全部通过（同日递增/跨日重置/非法字符/空项目名回退）');

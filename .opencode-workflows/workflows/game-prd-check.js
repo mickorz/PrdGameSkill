@@ -17,6 +17,7 @@
 //   date          检查日期（YYYY-MM-DD）；脚本内禁止取当前时间，需由调用方传入
 //   maxIssuesPerGroup 每组最多报告的问题数，默认 20
 //   analysisModel 分析阶段使用的模型，默认 biangfeng-gateway/deepseek-v4.1-flash-official（传空字符串则用会话默认模型）
+//   concurrency   并发上限，默认 8（运行时钳制到 16）
 
 export const meta = {
   id: 'game-prd-check',
@@ -47,6 +48,9 @@ const analysisModel =
 const analysisAgentOptions = analysisModel
   ? { model: analysisModel, timeoutMs: 3600000 }
   : { timeoutMs: 3600000 }
+
+// 规则分组检查与一致性检查并发执行，默认放到 8 路；网关限流时可传 args.concurrency 调小
+setConcurrency(A.concurrency || 8)
 
 const TYPE_RULE = [
   'MISSING：规则中定义了、但需求文档缺失或未描述',

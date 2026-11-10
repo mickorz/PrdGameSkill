@@ -154,7 +154,7 @@ export function parseReport(md) {
   const details = [];
   {
     let m;
-    while ((m = detailRe.exec(md)) !== null) details.push({ id: m[1], title: m[2].trim(), start: m.index + m[0].length });
+    while ((m = detailRe.exec(md)) !== null) details.push({ id: m[1], title: m[2].trim(), start: m.index + m[0].length, headStart: m.index });
   }
 
   // --- 组装 issues：清单为全集，详情按 ID 合并 ---
@@ -180,31 +180,58 @@ export function parseReport(md) {
       has_detail: false,
     };
     if (d) {
-      const end = details[details.indexOf(d) + 1]?.start ?? md.indexOf('\n## 4. 总体建议', d.start);
+      // body 边界取下一个详情标题的行首，避免把下一条的标题行包进本条块内容
+      const end = details[details.indexOf(d) + 1]?.headStart ?? md.indexOf('\n## 4. 总体建议', d.start);
       const body = md.slice(d.start, end > 0 ? end : undefined);
 
-      const field = (name) => {
-        const fm = body.match(new RegExp(`\\*\\*${name}\\*\\*[：:]\\s*([\\s\\S]*?)(?=\\n\\*\\*|\\n- \\*\\*|\\n---|$)`));
-        return fm ? fm[1].trim() : '';
+      // --- 通用 **字段** 块切分 ---
+      // 标题行形如：**原文**（位置括注）：、**范例（需求必须按此格式写）**：、**处理状态**：待确认（同行内容）
+      // 未来源报告新增任何 **字段** 块都会被捕获，未知字段按出现顺序并入 suggestion，不再截断丢失
+      // 头部匹配分三种形式（顺序敏感）：B **名称（括注）**： / A **名称**（贪婪括注，支持嵌套括号）： / 基础 **名称**：
+      const matchFieldHeader = (line) => {
+        let m = line.match(/^\*\*([^*\n（]+(?:（[^）]*）)?)\*\*[：:](.*)$/);
+        if (m) return { name: m[1].trim(), paren: '', first: m[2].trim() };
+        m = line.match(/^\*\*([^*\n]+)\*\*（(.+)）[：:](.*)$/);
+        if (m) return { name: m[1].trim(), paren: m[2].trim(), first: m[3].trim() };
+        m = line.match(/^\*\*([^*\n]+)\*\*[：:](.*)$/);
+        if (m) return { name: m[1].trim(), paren: '', first: m[2].trim() };
+        return null;
       };
-      // 建议字段特殊处理：「建议」之后可能跟随「范例」等附加小节（如 workflow 版 PRD-005 的可照抄范例表），
-      // 需一路取到「处理状态」前，不能在下一个 **小节** 处截断，否则范例内容丢失
-      const fieldSuggestion = () => {
-        const fm = body.match(/\*\*建议\*\*[：:]\s*([\s\S]*?)(?=\n\*\*处理状态\*\*|$)/);
-        return fm ? fm[1].trim() : '';
+      const KNOWN_BLOCKS = new Set(['原文', '问题', '影响', '建议', '处理状态']);
+      const blocks = [];
+      let curBlock = null;
+      for (const line of body.split(/\r?\n/)) {
+        const fh = matchFieldHeader(line);
+        if (fh) {
+          curBlock = { name: fh.name, paren: fh.paren, first: fh.first, lines: [] };
+          blocks.push(curBlock);
+        } else if (curBlock) {
+          curBlock.lines.push(line);
+        }
+      }
+      const blockText = (name) => {
+        const b = blocks.find((x) => x.name === name);
+        return b ? [...(b.first ? [b.first] : []), ...b.lines].join('\n').trim() : '';
       };
-      // 优先级 / 类型：skill 版 `- 类型：MISSING`；workflow 版 `- 问题性质：需求缺失`
+      // 原文位置：原文块标题的括注；原文引用：原文块的 > 引用行合并
+      const origBlock = blocks.find((x) => x.name === '原文');
+      const quoteLoc = origBlock?.paren || '';
+      const originalText = origBlock
+        ? origBlock.lines.filter((l) => l.trim().startsWith('>')).map((l) => l.replace(/^>\s?/, '').trim()).join('\n').trim()
+        : '';
+      // 优先级 / 类型：skill 版 "- 类型：MISSING"；workflow 版 "- 问题性质：需求缺失"
       const priority = (body.match(/-\s*优先级：\s*(P[0-3])/) || [])[1] || issue.priority;
       const typeRaw = (body.match(/-\s*(?:类型|问题性质)：\s*(\S+)/) || [])[1] || '';
       // 主题（workflow 版详情块）：挂 module
       const themeRaw = (body.match(/-\s*主题：\s*(.+)$/m) || [])[1]?.trim() || '';
-      // 原文位置：workflow 版 `**原文**（位置）：` 括号内；嵌套括号用行级贪婪匹配
-      const quoteLoc = (body.match(/^\*\*原文\*\*（(.+)）：\s*$/m) || [])[1]?.trim() || '';
-      // 原文引用：**原文**...： 之后的 > 引用行合并
-      const quoteBlock = body.match(/\*\*原文\*\*(?:（.+?）)?[：:]\s*\n([\s\S]*?)(?=\n\*\*问题\*\*)/);
-      const originalText = quoteBlock
-        ? quoteBlock[1].split(/\r?\n/).filter((l) => l.trim().startsWith('>')).map((l) => l.replace(/^>\s?/, '').trim()).join('\n')
-        : field('原文');
+      // suggestion：建议块 + 未知字段块（需要补的内容与必填格式、范例、验收口径等）按原顺序并入
+      let suggestion = blockText('建议');
+      for (const b of blocks) {
+        if (KNOWN_BLOCKS.has(b.name)) continue;
+        const content = [...(b.first ? [b.first] : []), ...b.lines].join('\n').trim();
+        if (!content) continue;
+        suggestion += (suggestion ? '\n\n' : '') + '**' + b.name + '**' + (b.paren ? '（' + b.paren + '）' : '') + '：\n' + content;
+      }
 
       issue = {
         ...issue,
@@ -214,10 +241,10 @@ export function parseReport(md) {
         module: themeRaw && !issue.module.includes(themeRaw) ? [...issue.module, themeRaw] : issue.module,
         source_location: quoteLoc || issue.source_location,
         original_text: originalText,
-        problem: field('问题'),
-        impact: field('影响'),
-        suggestion: fieldSuggestion() || field('建议') || issue.suggestion,
-        status: (body.match(/\*\*处理状态\*\*[：:]\s*(.+)/) || [])[1]?.trim() || '待确认',
+        problem: blockText('问题'),
+        impact: blockText('影响'),
+        suggestion: suggestion || issue.suggestion,
+        status: blockText('处理状态') || '待确认',
         has_detail: true,
       };
     }

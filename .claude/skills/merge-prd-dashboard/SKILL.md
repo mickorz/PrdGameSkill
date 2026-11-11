@@ -1,9 +1,10 @@
 ---
 name: merge-prd-dashboard
 description: >
-  将两份及以上本仓库生成的 PRD 质量分析 Dashboard HTML（含 report-data JSON 的
+  将两份及以上本仓库生成的 PRD 检查/Bug 检查 Dashboard HTML（含 report-data JSON 的
   报告页）合并为单个带 Tab 切换的离线 Dashboard 文件，并完成浏览器渲染验证。
-  当用户要求合并 dashboard、把多份分析报告合成一个页面、合并 PRD 检查报告页时使用。
+  当用户要求合并 dashboard、把多份分析报告合成一个页面、合并 PRD 检查/Bug 检查
+  报告页时使用。
 ---
 
 # Merge PRD Dashboard Skill

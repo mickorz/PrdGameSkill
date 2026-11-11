@@ -2,7 +2,7 @@
 
 把两份及以上同模板生成的 PRD 检查 Dashboard HTML 合并为单文件 Tab 切换版。
 
-## 背景：Dashboard 文件结构
+## 背景：Dashboard 文件结构与适用报告类型
 
 本仓库的 Dashboard 由 `build-dashboard.mjs` / `/gen-dashboard` 生成，统一结构为三段：
 
@@ -12,18 +12,27 @@
 3. 渲染脚本 IIFE（读 report-data，一次性渲染各 section）
 ```
 
-合并思路：骨架保留一份（取最新版），数据全部嵌入（改名为 `report-data-0/1/...`），渲染脚本函数化为 `mount(idx)`，顶部加 Tab 栏切换时全量重建。这套渲染脚本已模板化在 `templates/render-script.js.tmpl`，合并由 `scripts/merge-dashboard.mjs` 一次完成。
+已知同模板的报告类型（均可直接合并，无需改代码）：
+
+| 来源 | dashboard 目录 | 说明 |
+|---|---|---|
+| game-prd-check-workflow | `examples/game-prd-check-workflow/dashboard/` | PRD 功能规则检查（旧版骨架，无维度筛选） |
+| ui-interaction-prd-extract | `examples/ui-interaction-prd-extract/dashboard/` | UI 交互检查（新版骨架，含维度筛选） |
+| bug-check-workflow | `examples/bug-check-workflow/dashboard/` | Bug 检查（与 UI 版骨架完全一致） |
+
+不要求两份 schema 完全一致：新版模板对旧数据字段全部做了兼容（如无 `dimension` 字段时清单维度列显示“功能规则”兜底、`statistics.dimensions` 缺失时维度下拉为空）。新报告类型只要含 `report-data` 标签即可合并；若骨架与已知模板差异大（section id 不一致），先人工确认再合。
+
+合并原理：骨架保留一份（最后一份输入），数据全部嵌入（改名为 `report-data-0/1/...`），渲染脚本函数化为 `mount(idx)`，顶部 Tab 切换时全量重建。渲染脚本模板在 `templates/render-script.js.tmpl`，合并由 `scripts/merge-dashboard.mjs` 一次完成。
 
 ## 执行步骤
 
 ### 1. 输入确认
 
 - 确认输入 ≥ 2 份、都是 Dashboard 模板产物（含 `report-data` JSON）。grep 一下 `id="report-data"` 即可判断。
-- 不要求两份 schema 完全一致：新版模板对旧数据字段全部做了兼容（如无 `dimension` 字段时清单维度列显示"功能规则"兜底、`statistics.dimensions` 缺失时维度下拉为空）。
 
 ### 2. 骨架选择
 
-脚本固定用**最后一份输入**做骨架（约定输入按时间顺序排列，最新版功能最全，如 UI 交互版含维度筛选）。
+脚本固定用**最后一份输入**做骨架（约定输入按时间顺序排列，最新版功能最全，如 UI 交互版/bug 版含维度筛选）。
 
 若拿不准哪份是超集，检查两点后自行排序：
 - 骨架是否含 `f-dimension`（维度筛选下拉）
@@ -33,7 +42,7 @@
 
 - 默认从文件名推断（去掉 `-Dashboard-` 及其后部分）
 - Tab 文字自动附加条数（从 `statistics.total` 读取）
-- 不满意推断结果时传 `--label 1=杭州麻将分析 --label 2=UI交互 PRD 分析` 覆盖
+- **不同来源的 dashboard 文件名可能重名**（如 PRD 版和 bug 版都叫“杭州麻将分析”），默认推断会产生重复 Tab 文字，此时必须用 `--label` 逐份指定
 
 ### 4. 执行合并
 
@@ -42,6 +51,14 @@
 node .claude/skills/merge-prd-dashboard/scripts/merge-dashboard.mjs \
   examples/game-prd-check-workflow/dashboard/杭州麻将分析-Dashboard-20261110-11.html \
   examples/ui-interaction-prd-extract/dashboard/UI交互-PRD分析-Dashboard-20261111-05.html
+
+# 三份不同类型合并（PRD + UI交互 + Bug），指定输出与标签（文件名重名时必须）
+node .claude/skills/merge-prd-dashboard/scripts/merge-dashboard.mjs \
+  examples/game-prd-check-workflow/dashboard/杭州麻将分析-Dashboard-20261110-11.html \
+  examples/ui-interaction-prd-extract/dashboard/UI交互-PRD分析-Dashboard-20261111-05.html \
+  examples/bug-check-workflow/dashboard/杭州麻将分析-Dashboard-20261111-03.html \
+  --out-dir examples/dashboard \
+  --label 1=杭州麻将PRD分析 --label 2=UI交互分析 --label 3=Bug分析
 
 # 指定输出与标签
 node ... merge-dashboard.mjs <file1> <file2> \

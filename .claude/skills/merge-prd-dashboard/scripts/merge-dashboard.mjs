@@ -153,8 +153,7 @@ function resolveOutPath(outArg, outDirArg, firstFile, labels) {
   const ymd = date.getFullYear() +
     String(date.getMonth() + 1).padStart(2, '0') +
     String(date.getDate()).padStart(2, '0');
-  const prefix = '合并-Dashboard-' + safe.slice(0, 2).join('+') +
-    (safe.length > 2 ? '+' + (safe.length - 2) + '份' : '') + '-' + ymd + '-';
+  const prefix = '合并-Dashboard-' + safe.join('+') + '-' + ymd + '-';
   let n = 1;
   while (fs.existsSync(path.join(dir, prefix + String(n).padStart(2, '0') + '.html'))) n++;
   return path.join(dir, prefix + String(n).padStart(2, '0') + '.html');

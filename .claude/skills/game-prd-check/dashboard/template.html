@@ -610,16 +610,16 @@
     $('d-pri').textContent = it.priority; $('d-pri').style.background = PRI_COLOR[it.priority] || '#94A3B8';
     $('d-id').textContent = id + ' · ' + it.type + (it.dimension ? ' · ' + it.dimension : '');
     $('d-title').textContent = it.title;
-    $('d-body').innerHTML =
-      '<h4>原文位置</h4>' + renderRich(it.source_location) +
-      '<h4>原文引用</h4>' + ((it.original_text && String(it.original_text).trim())
-        ? '<blockquote>' + esc(it.original_text) + '</blockquote>'
-        : '<p style="color:var(--muted)">（源报告清单条目，无详情块，未提供该字段内容）</p>') +
-      '<h4>问题分析</h4>' + renderRich(it.problem) +
-      '<h4>影响说明</h4>' + renderRich(it.impact) +
-      '<h4>修改建议</h4>' + renderRich(it.suggestion) +
-      (it.rule_ref ? '<h4>基准依据</h4>' + renderRich(it.rule_ref) : '') +
-      (it.acceptance ? '<h4>验收口径</h4>' + renderRich(it.acceptance) : '') +
+    // 详情体：有内容的节才渲染；无详情块条目问题分析兜底用清单问题列，避免整屏占位文案
+    var bodyHtml = '<h4>原文位置</h4>' + renderRich(it.source_location);
+    if (it.original_text && String(it.original_text).trim()) bodyHtml += '<h4>原文引用</h4><blockquote>' + esc(it.original_text) + '</blockquote>';
+    bodyHtml += '<h4>问题分析</h4>' + renderRich(it.problem || it.title);
+    if (it.impact && String(it.impact).trim()) bodyHtml += '<h4>影响说明</h4>' + renderRich(it.impact);
+    if (it.suggestion && String(it.suggestion).trim()) bodyHtml += '<h4>修改建议</h4>' + renderRich(it.suggestion);
+    if (it.rule_ref) bodyHtml += '<h4>基准依据</h4>' + renderRich(it.rule_ref);
+    if (it.acceptance) bodyHtml += '<h4>验收口径</h4>' + renderRich(it.acceptance);
+    if (!it.has_detail) bodyHtml += '<div class="status">清单级条目：源报告未展开详情块，问题描述摘自清单问题列，原文引用与建议待补</div>';
+    $('d-body').innerHTML = bodyHtml +
       '<div class="status">处理状态：' + esc(it.status) + '（只读，Dashboard 不提供裁决操作）' +
       (it.module && it.module.length ? ' · 模块：' + esc(it.module.join('、')) : '') + '</div>';
     var list = filtered();

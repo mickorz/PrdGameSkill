@@ -91,7 +91,7 @@ export function parseReport(md) {
       rule_baselines: [],
       overall_conclusion: { status: 'NA', summary: '', reasons: [] },
     },
-    statistics: { total: 0, priority: { P0: 0, P1: 0, P2: 0, P3: 0 }, types: {} },
+    statistics: { total: 0, priority: { P0: 0, P1: 0, P2: 0, P3: 0 }, types: {}, dimensions: {} },
     risk_groups: [],
     modules: [],
     featured_issues: [],
@@ -168,7 +168,8 @@ export function parseReport(md) {
   //   Q 版（UI 交互基准）：| Q01 | P0 | MISSING | 模块 | 问题 | 位置 | 基准依据 |（7 列）
   const listRows = {};
   const PRD_ROW_RE = /^\|\s*(PRD-\d{3})\s*\|\s*(\S+)\s*\|\s*(P[0-3])\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*$/gm;
-  const Q_ROW_RE = /^\|\s*(Q\d{2,3})\s*\|\s*(P[0-3])\s*\|\s*(\S+)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*$/gm;
+  // Q 版 8 列：ID | 问题维度 | 优先级 | 类型 | 模块 | 问题 | 原文位置 | 基准依据；问题维度列可选（兼容旧 7 列格式）
+  const Q_ROW_RE = /^\|\s*(Q\d{2,3})\s*\|\s*(?:(UI 交互|功能规则)\s*\|\s*)?(P[0-3])\s*\|\s*(\S+)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*$/gm;
   for (const m of md.matchAll(PRD_ROW_RE)) {
     const second = m[2].trim();
     listRows[m[1]] = {
@@ -184,13 +185,14 @@ export function parseReport(md) {
   for (const m of md.matchAll(Q_ROW_RE)) {
     listRows[m[1]] = {
       id: m[1],
-      second: m[3].trim(),
-      isTypeCol: TYPE_EN_RE.test(m[3].trim()),
-      priority: m[2],
-      title: m[5].trim(),
-      source_location: m[6].trim(),
-      suggestion: m[7].trim(),
-      moduleCol: m[4].trim(),
+      dimension: m[2] || undefined,
+      second: m[4].trim(),
+      isTypeCol: TYPE_EN_RE.test(m[4].trim()),
+      priority: m[3],
+      title: m[6].trim(),
+      source_location: m[7].trim(),
+      suggestion: m[8].trim(),
+      moduleCol: m[5].trim(),
     };
   }
 
@@ -217,6 +219,7 @@ export function parseReport(md) {
   for (const d of details) if (!allIds.includes(d.id)) allIds.push(d.id); // 详情有清单无的兜底
   allIds.sort();
 
+  const reportDim = out.report.rule_baselines.some((b) => /ui_interaction/i.test(b)) ? 'UI 交互' : '功能规则';
   for (const id of allIds) {
     const row = listRows[id];
     const d = details.find((x) => x.id === id);
@@ -229,6 +232,7 @@ export function parseReport(md) {
       priority: row?.priority || '',
       type: row?.isTypeCol ? TYPE_ZH[row.second] : '',
       module: initModules,
+      dimension: row?.dimension || reportDim,
       source_location: row?.source_location || '',
       original_text: '',
       problem: '',
@@ -412,6 +416,9 @@ export function parseReport(md) {
     it.type = t;
     out.statistics.types[t] = (out.statistics.types[t] || 0) + 1;
   }
+  for (const it of out.issues) {
+    out.statistics.dimensions[it.dimension] = (out.statistics.dimensions[it.dimension] || 0) + 1;
+  }
 
   // --- 交叉校验数据（不进入 JSON，仅校验用） ---
   out._checks = { overview, typeDist };
@@ -435,6 +442,8 @@ export function validateReport(data) {
   // 4. 类型总和（含未分类）
   const tSum = Object.values(data.statistics.types).reduce((a, b) => a + b, 0);
   if (tSum !== data.statistics.total) errors.push(`类型统计总和 ${tSum} != 总数 ${data.statistics.total}`);
+  const dSum = Object.values(data.statistics.dimensions || {}).reduce((a, b) => a + b, 0);
+  if (dSum && dSum !== data.statistics.total) errors.push(`维度统计总和 ${dSum} != 总数 ${data.statistics.total}`);
   // skill 版类型分布行交叉校验（workflow 版无此行，跳过）
   for (const [en, n] of Object.entries(data._checks.typeDist)) {
     const zh = TYPE_ZH[en];

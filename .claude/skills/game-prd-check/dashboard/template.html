@@ -258,6 +258,7 @@
         <option value="P2">P2</option><option value="P3">P3</option>
       </select>
       <select id="f-type"><option value="">全部类型</option></select>
+      <select id="f-dimension"><option value="">全部维度</option></select>
       <select id="f-module"><option value="">全部模块</option></select>
       <input id="f-q" type="search" placeholder="搜索 ID / 问题 / 位置">
       <button class="btn" id="btn-clear">清除筛选</button>
@@ -266,7 +267,7 @@
     </div>
     <div style="overflow-x:auto">
       <table class="issues">
-        <thead><tr><th>ID</th><th>问题标题</th><th>优先级</th><th>类型</th><th>原文位置</th></tr></thead>
+        <thead><tr><th>ID</th><th>问题标题</th><th>优先级</th><th>类型</th><th>维度</th><th>原文位置</th></tr></thead>
         <tbody id="issue-tbody"></tbody>
       </table>
       <div class="empty" id="issue-empty" style="display:none">没有符合筛选条件的问题</div>
@@ -481,10 +482,13 @@
   })();
 
   // ---------- 07 清单 + 筛选 ----------
-  var filter = { priority: '', type: '', module: '', q: '' };
-  // 类型/模块下拉选项
+  var filter = { priority: '', type: '', dimension: '', module: '', q: '' };
+  // 类型/模块/维度下拉选项
   typeKeys.forEach(function (t) {
     var o = document.createElement('option'); o.value = t; o.textContent = t; $('f-type').appendChild(o);
+  });
+  Object.keys(DATA.statistics.dimensions || {}).forEach(function (d) {
+    var o = document.createElement('option'); o.value = d; o.textContent = d + '（' + DATA.statistics.dimensions[d] + '）'; $('f-dimension').appendChild(o);
   });
   (DATA.modules || []).forEach(function (m) {
     var o = document.createElement('option'); o.value = m.name; o.textContent = m.name + '（' + m.issue_ids.length + '）'; $('f-module').appendChild(o);
@@ -496,6 +500,7 @@
     return DATA.issues.filter(function (it) {
       if (priList && priList.indexOf(it.priority) < 0) return false;
       if (filter.type && it.type !== filter.type) return false;
+      if (filter.dimension && (it.dimension || '') !== filter.dimension) return false;
       if (filter.module && (it.module || []).indexOf(filter.module) < 0) return false;
       if (q && (it.id + ' ' + it.title + ' ' + it.source_location).toLowerCase().indexOf(q) < 0) return false;
       return true;
@@ -507,6 +512,7 @@
     $('issue-tbody').innerHTML = list.map(function (it) {
       return '<tr data-open="' + it.id + '"><td class="id">' + it.id + '</td><td class="title">' + esc(it.title) + '</td>' +
         '<td>' + priTag(it.priority) + '</td><td><span class="type-tag">' + esc(it.type) + '</span></td>' +
+        '<td><span class="type-tag">' + esc(it.dimension || '功能规则') + '</span></td>' +
         '<td class="loc">' + esc(it.source_location) + '</td></tr>';
     }).join('');
     $('issue-empty').style.display = list.length ? 'none' : 'block';
@@ -534,11 +540,12 @@
 
   $('f-priority').addEventListener('change', function () { filter.priority = this.value; renderList(); });
   $('f-type').addEventListener('change', function () { filter.type = this.value; renderList(); });
+  $('f-dimension').addEventListener('change', function () { filter.dimension = this.value; renderList(); });
   $('f-module').addEventListener('change', function () { filter.module = this.value; renderList(); });
   $('f-q').addEventListener('input', function () { filter.q = this.value; renderList(); });
   $('btn-clear').addEventListener('click', function () {
-    filter = { priority: '', type: '', module: '', q: '' };
-    $('f-priority').value = ''; $('f-type').value = ''; $('f-module').value = ''; $('f-q').value = '';
+    filter = { priority: '', type: '', dimension: '', module: '', q: '' };
+    $('f-priority').value = ''; $('f-type').value = ''; $('f-dimension').value = ''; $('f-module').value = ''; $('f-q').value = '';
     renderList();
   });
 
@@ -601,7 +608,7 @@
     var it = byId[id]; if (!it) return;
     curId = id;
     $('d-pri').textContent = it.priority; $('d-pri').style.background = PRI_COLOR[it.priority] || '#94A3B8';
-    $('d-id').textContent = id + ' · ' + it.type;
+    $('d-id').textContent = id + ' · ' + it.type + (it.dimension ? ' · ' + it.dimension : '');
     $('d-title').textContent = it.title;
     $('d-body').innerHTML =
       '<h4>原文位置</h4>' + renderRich(it.source_location) +

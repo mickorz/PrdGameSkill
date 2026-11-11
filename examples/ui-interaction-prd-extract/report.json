@@ -27,6 +27,9 @@
       "描述不完整": 12,
       "定义歧义": 2,
       "逻辑错误": 1
+    },
+    "dimensions": {
+      "UI 交互": 36
     }
   },
   "risk_groups": [
@@ -201,6 +204,7 @@
       "module": [
         "断线重连"
       ],
+      "dimension": "UI 交互",
       "source_location": "玩家头像信息-玩家状态",
       "original_text": "位置\"三、对局流程 → 局中信息 → 玩家头像信息 → 玩家状态\"。引文：\"离线状态：头像处覆盖断线图标，且显示断线计时，格式为分秒'00:00'，每次断线重新计时。备注：在当前动画播放过程中有玩家离线切后台等，不会因此中断原本的动画流程\"。全文检索\"重连/恢复\"无任何场景恢复描述。",
       "problem": "需求只定义了断线图标与计时，未定义断线玩家重连后如何恢复牌局：恢复哪些内容、按什么顺序、恢复期间动画是否静默、他人手牌是否翻开、倒计时以什么为基准、权限按钮如何还原、最后出牌放大是否补显。",
@@ -217,6 +221,7 @@
       "module": [
         "吃碰杠胡-杠"
       ],
+      "dimension": "UI 交互",
       "source_location": "吃碰杠胡操作-杠牌",
       "original_text": "位置\"三、对局流程 → 局内流程 → 吃碰杠胡操作 → 杠牌\"。引文（全文）：\"杠牌-复用现有血战杠的特效，主要区别删除刮风下雨，无论什么杠，统一使用杠字即可\"。",
       "problem": "未定义：他人弃牌可直杠时是否显示【杠】+【过】按钮组及位置；本人出牌阶段加杠、暗杠的触发方式（点击手牌第 4 张弹选项？按钮？）；多种杠组合并存时的选择交互；杠按钮与过按钮的互斥/收起规则。\"复用血战杠的特效\"仅指动画特效，不构成按钮交互规格。",
@@ -233,6 +238,7 @@
       "module": [
         "行牌操作-出牌"
       ],
+      "dimension": "UI 交互",
       "source_location": "行牌操作-出牌 / 修改对比版-出牌",
       "original_text": "位置一\"局内流程 → 行牌操作 → 出牌（前表）\"。引文：\"单击出牌：出牌阶段点击打出不可听牌的牌，则直接将其打出，无需提起。单机出牌开启时，若轮到自己出牌前有牌提起，则自动下落。\"位置二\"行牌操作｜修改对比版 → 出牌\"。引文：\"本方案默认双击出牌。滑动出牌默认开。单击出牌归设置模块，本方案不包含该模式。\"",
       "problem": "前文将单击出牌作为本期可选出牌方式给出完整交互定义（含自动下落细节），后文明确\"本方案不包含该模式\"，范围互相矛盾；另\"单击仅限不可听牌\"的限制依附于被排除的模式，本期双击/滑动模式下可听牌能否滑动直接打出也未说明（基准 01#13 要求打听牌强制先提牌查看听牌信息）。",
@@ -249,6 +255,7 @@
       "module": [
         "吃碰杠胡"
       ],
+      "dimension": "UI 交互",
       "source_location": "吃碰杠胡操作-多操作状态",
       "original_text": "位置\"三、对局流程 → 局内流程 → 吃碰杠胡操作 → 多操作状态-复用功夫川麻\"。引文：仅有标题\"多操作状态-复用功夫川麻\"，其后直接进入\"对局内通用提示\"，无正文。",
       "problem": "同一弃牌多人可响应（庄闲放铳下多人可胡、胡与碰并存）是本期规则明确支持的裁决场景，但各端按钮如何同时展示、裁决后未获权玩家的按钮如何收起、操作区互斥规则全部缺失，仅以外部项目名\"功夫川麻\"代替。",
@@ -265,6 +272,7 @@
       "module": [
         "结算流程"
       ],
+      "dimension": "UI 交互",
       "source_location": "本期开发范围",
       "original_text": "位置\"本期开发范围\"。引文：\"每小局保留小结算，未满8局则继续下一小局，满8局结束本场。\"\"本期只做游戏内核心流程。原文中的创房面板、其他玩法选项、大结算和非核心桌面功能，如在核心段落中被引用，仅作原文上下文。\"",
       "problem": "固定 8 局是本期规则，第 8 局小结算后玩家看到什么（大结算不做）未定义：直接解散回大厅？停留小结算？还是简化总分页？第 8 局小结算的\"继续游戏\"按钮行为也随之下落空。",
@@ -281,6 +289,7 @@
       "module": [
         "方位信息-倒计时"
       ],
+      "dimension": "UI 交互",
       "source_location": "方位信息-倒计时",
       "original_text": "",
       "problem": "",
@@ -297,6 +306,7 @@
       "module": [
         "手牌信息-听牌标签"
       ],
+      "dimension": "UI 交互",
       "source_location": "听牌标签显示规则-多/大",
       "original_text": "",
       "problem": "",
@@ -313,6 +323,7 @@
       "module": [
         "玩家头像-庄标"
       ],
+      "dimension": "UI 交互",
       "source_location": "玩家头像信息 / 定庄",
       "original_text": "",
       "problem": "",
@@ -329,6 +340,7 @@
       "module": [
         "小结算界面"
       ],
+      "dimension": "UI 交互",
       "source_location": "小结算界面-赢家结算",
       "original_text": "",
       "problem": "",
@@ -345,6 +357,7 @@
       "module": [
         "桌面布局-准备"
       ],
+      "dimension": "UI 交互",
       "source_location": "对局前-准备信息",
       "original_text": "",
       "problem": "",
@@ -361,6 +374,7 @@
       "module": [
         "手牌信息"
       ],
+      "dimension": "UI 交互",
       "source_location": "手牌信息 / 吃碰杠胡",
       "original_text": "位置\"吃碰杠胡操作 → 碰牌-复用\"。引文：\"手牌中可碰牌高亮其他暗置，如果有胡则不需要暗置\"；\"吃碰杠胡操作 → 杠牌\"仅有特效一句话；手牌信息章节无财神角标描述（仅小结算提到\"手牌里的财神也有需要染色\"）。",
       "problem": "a) 权限为杠（含直杠/加杠/暗杠候选）时手牌哪些牌置灰/高亮未描述；b) 置灰何时清除（出牌后、点过、他人权限到达）未描述；c) 局内手牌财神无角标/染色定义，玩家无法识别手中哪张是白板财神；d) 胡权限与碰/杠权限并存时的置灰豁免仅一句\"如果有胡则不需要暗置\"，与基准的清灰口径需确认一致。",
@@ -377,6 +391,7 @@
       "module": [
         "手牌信息-听牌"
       ],
+      "dimension": "UI 交互",
       "source_location": "手牌信息-听牌标签 / 提牌",
       "original_text": "位置\"手牌信息 → 听牌标签显示规则\"与\"行牌操作｜修改对比版 → 提牌\"。引文：\"提起候选牌时，面板显示该牌打出后可胡的牌面及各自剩余张数。改提另一张候选牌时更新面板。取消提牌、改选非候选牌或实际出牌后收起面板。\"",
       "problem": "a) 无查听按钮，已听牌玩家无法主动查看全局听牌；b) 弹窗缺倍数列、排序规则、剩余 0 张置灰、总张数与封顶文案（本期无封顶时的文案）；c) 弹窗/箭头的关闭与保留时机只写了三条（取消提牌/改选/出牌），摸牌、获得胡权限、自己胡、流局、点桌面空白均未定义；d) 听牌箭头出牌后是否保留未定义。",
@@ -393,6 +408,7 @@
       "module": [
         "吃碰杠胡-胡"
       ],
+      "dimension": "UI 交互",
       "source_location": "胡牌-交互说明",
       "original_text": "",
       "problem": "",
@@ -409,6 +425,7 @@
       "module": [
         "吃碰杠胡"
       ],
+      "dimension": "UI 交互",
       "source_location": "吃碰杠胡操作（全文）",
       "original_text": "",
       "problem": "",
@@ -425,6 +442,7 @@
       "module": [
         "吃碰杠胡-吃"
       ],
+      "dimension": "UI 交互",
       "source_location": "玩法规则-吃",
       "original_text": "",
       "problem": "",
@@ -441,6 +459,7 @@
       "module": [
         "吃碰杠胡-杠"
       ],
+      "dimension": "UI 交互",
       "source_location": "杠牌（仅特效一句话）",
       "original_text": "",
       "problem": "",
@@ -457,6 +476,7 @@
       "module": [
         "结算流程"
       ],
+      "dimension": "UI 交互",
       "source_location": "结算流程-流程明细",
       "original_text": "",
       "problem": "",
@@ -473,6 +493,7 @@
       "module": [
         "结算流程"
       ],
+      "dimension": "UI 交互",
       "source_location": "结算流程-流程明细",
       "original_text": "",
       "problem": "",
@@ -489,6 +510,7 @@
       "module": [
         "小结算界面"
       ],
+      "dimension": "UI 交互",
       "source_location": "小结算界面",
       "original_text": "",
       "problem": "",
@@ -505,6 +527,7 @@
       "module": [
         "小结算界面"
       ],
+      "dimension": "UI 交互",
       "source_location": "小结算界面（全文）",
       "original_text": "位置\"结算界面 → 小结算界面（好友房）\"。引文：触发逻辑仅\"播完胡牌结算流程，进入结算界面\"；UI 交互说明仅列玩家信息、手牌摆布、输赢显示、分数结算、承包标识、赢家结算、麻将牌标识、财神牌八项，无任何按钮。",
       "problem": "未定义：小结算上的按钮集合（继续/关闭）；单人点击即关还是全员确认才开下一局；点击后到下一局摇骰的过渡；与 Q05 的第 8 局终点衔接。",
@@ -521,6 +544,7 @@
       "module": [
         "玩法信息"
       ],
+      "dimension": "UI 交互",
       "source_location": "局中信息（仅\"刷新牌墙\"字样）",
       "original_text": "",
       "problem": "",
@@ -537,6 +561,7 @@
       "module": [
         "玩法信息-财神"
       ],
+      "dimension": "UI 交互",
       "source_location": "玩法信息-财神 / 定财神",
       "original_text": "",
       "problem": "",
@@ -553,6 +578,7 @@
       "module": [
         "手牌信息-听牌"
       ],
+      "dimension": "UI 交互",
       "source_location": "手牌信息-听牌标签",
       "original_text": "",
       "problem": "",
@@ -569,6 +595,7 @@
       "module": [
         "吃碰杠胡-吃"
       ],
+      "dimension": "UI 交互",
       "source_location": "吃碰杠胡操作-吃牌",
       "original_text": "",
       "problem": "",
@@ -585,6 +612,7 @@
       "module": [
         "吃碰杠胡"
       ],
+      "dimension": "UI 交互",
       "source_location": "吃碰杠胡操作-各按钮",
       "original_text": "",
       "problem": "",
@@ -601,6 +629,7 @@
       "module": [
         "吃碰杠胡/听牌"
       ],
+      "dimension": "UI 交互",
       "source_location": "吃碰杠胡操作",
       "original_text": "",
       "problem": "",
@@ -617,6 +646,7 @@
       "module": [
         "全局"
       ],
+      "dimension": "UI 交互",
       "source_location": "全文",
       "original_text": "",
       "problem": "",
@@ -633,6 +663,7 @@
       "module": [
         "发牌"
       ],
+      "dimension": "UI 交互",
       "source_location": "发牌-切入行牌",
       "original_text": "",
       "problem": "",
@@ -649,6 +680,7 @@
       "module": [
         "方位信息-倒计时"
       ],
+      "dimension": "UI 交互",
       "source_location": "方位信息-倒计时",
       "original_text": "",
       "problem": "",
@@ -665,6 +697,7 @@
       "module": [
         "行牌操作-摸牌"
       ],
+      "dimension": "UI 交互",
       "source_location": "行牌操作-摸牌",
       "original_text": "",
       "problem": "",
@@ -681,6 +714,7 @@
       "module": [
         "玩家状态"
       ],
+      "dimension": "UI 交互",
       "source_location": "玩家头像信息-玩家状态",
       "original_text": "",
       "problem": "",
@@ -697,6 +731,7 @@
       "module": [
         "玩家状态"
       ],
+      "dimension": "UI 交互",
       "source_location": "玩家头像信息-玩家状态",
       "original_text": "",
       "problem": "",
@@ -713,6 +748,7 @@
       "module": [
         "玩家头像信息"
       ],
+      "dimension": "UI 交互",
       "source_location": "玩家头像信息-玩家昵称",
       "original_text": "",
       "problem": "",
@@ -729,6 +765,7 @@
       "module": [
         "全局"
       ],
+      "dimension": "UI 交互",
       "source_location": "行牌操作-出牌等",
       "original_text": "",
       "problem": "",
@@ -745,6 +782,7 @@
       "module": [
         "结算流程"
       ],
+      "dimension": "UI 交互",
       "source_location": "结算流程-流程明细",
       "original_text": "",
       "problem": "",
@@ -761,6 +799,7 @@
       "module": [
         "全局"
       ],
+      "dimension": "UI 交互",
       "source_location": "对局开始-触发逻辑",
       "original_text": "",
       "problem": "",

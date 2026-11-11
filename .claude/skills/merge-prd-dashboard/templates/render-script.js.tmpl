@@ -1,0 +1,385 @@
+<script>
+(function () {
+  'use strict';
+  var REPORTS = __REPORTS_JSON__;
+  var DATA = null;
+  var byId = {};
+  var typeKeys = [];
+  var filter = { priority: '', type: '', dimension: '', module: '', q: '' };
+  var curTab = -1;
+
+  var PRI_COLOR = { P0: '#DC5148', P1: '#E8A044', P2: '#4389D5', P3: '#94A3B8' };
+  var PRI_ORDER = { P0: 0, P1: 1, P2: 2, P3: 3 };
+  var TYPE_COLOR = ['#3478DB', '#9A6FE0', '#DC5148', '#E8A044', '#94A3B8', '#4EC3B0'];
+  var TYPE_DESC = {
+    '需求缺失': '基准规则已定义，但需求文档缺失或未描述（MISSING）',
+    '内容冲突': '需求文档内部两处描述互相矛盾（CONFLICT）',
+    '逻辑错误': '与规则基准冲突或自身逻辑错误（LOGIC）',
+    '定义歧义': '描述模糊，可多种理解（AMBIGUOUS）',
+    '描述不完整': '描述不完整，无法实现或验收（INCOMPLETE）',
+    '未分类': '源报告该条目仅登记在清单中，无详情块，未提供问题性质'
+  };
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function stripMd(s) { return String(s || '').replace(/\*\*/g, ''); }
+  function priTag(p) { return '<span class="pri-tag" style="background:' + PRI_COLOR[p] + '">' + p + '</span>'; }
+  function $(id) { return document.getElementById(id); }
+
+  // 渲染当前报告（每次切换 Tab 全量重建）
+  function mount(tabIdx) {
+    curTab = tabIdx;
+    DATA = JSON.parse(document.getElementById(REPORTS[tabIdx].jsonId).textContent);
+    byId = {};
+    DATA.issues.forEach(function (it) { byId[it.id] = it; });
+    typeKeys = Object.keys(DATA.statistics.types);
+    filter = { priority: '', type: '', dimension: '', module: '', q: '' };
+    closeDrawer();
+
+    // 重置筛选控件（下拉只保留第一个"全部"选项）
+    ['f-type', 'f-dimension', 'f-module'].forEach(function (id) {
+      var sel = $(id);
+      while (sel.options.length > 1) sel.remove(1);
+      sel.value = '';
+    });
+    $('f-priority').value = '';
+    $('f-q').value = '';
+
+    // ---------- 01 头部 ----------
+    (function () {
+      var c = DATA.report.overall_conclusion || {};
+      var badge = c.status === 'BLOCKED'
+        ? '<span class="badge blocked">存在阻塞问题</span>'
+        : c.status === 'ALLOWED'
+          ? '<span class="badge allowed">可进入下一阶段</span>'
+          : '<span class="badge na">检查完成</span>';
+      var baselines = (DATA.report.rule_baselines || []).map(stripMd).join('；');
+      $('sec-header').innerHTML =
+        '<div><h1>' + esc(DATA.report.title || 'PRD 质量分析报告') + '</h1>' +
+        '<div class="project">' + esc(DATA.report.project_name ? DATA.report.project_name + ' · ' + DATA.report.document_name : DATA.report.document_name) + '</div>' +
+        '<div class="meta">' +
+          '<span>检查对象：' + esc(DATA.report.source_file) + '</span>' +
+          '<span>检查日期：' + esc(DATA.report.inspection_date) + '</span>' +
+          (baselines ? '<span>检查基准：' + esc(baselines) + '</span>' : '') +
+        '</div></div><div>' + badge + '</div>';
+    })();
+
+    // ---------- 02 KPI ----------
+    (function () {
+      var p = DATA.statistics.priority;
+      var total = DATA.statistics.total;
+      var p23 = (p.P2 || 0) + (p.P3 || 0);
+      var cards = [
+        { num: total, label: '问题总数', cls: '', filter: {} },
+        { num: p.P0 || 0, label: 'P0 严重问题', cls: 'c-p0', filter: { priority: 'P0' } },
+        { num: p.P1 || 0, label: 'P1 高优先级', cls: 'c-p1', filter: { priority: 'P1' } },
+        { num: p23, label: 'P2 一般 + P3 建议', cls: 'c-p23', filter: { p23: true } }
+      ];
+      $('sec-kpis').innerHTML = cards.map(function (c) {
+        return '<div class="kpi" data-filter=\'' + esc(JSON.stringify(c.filter)) + '\' role="button" tabindex="0">' +
+          '<div class="num ' + c.cls + '">' + c.num + '</div><div class="label">' + esc(c.label) + '</div></div>';
+      }).join('');
+      Array.prototype.forEach.call(document.querySelectorAll('.kpi'), function (el) {
+        var go = function () {
+          var f = JSON.parse(el.getAttribute('data-filter'));
+          if (f.p23) { setFilter({ priority: ['P2', 'P3'] }); } else { setFilter(f); }
+          scrollTo(0, $('sec-list').offsetTop - 12);
+        };
+        el.addEventListener('click', go);
+        el.addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); });
+      });
+    })();
+
+    // ---------- 03 结论 ----------
+    (function () {
+      var c = DATA.report.overall_conclusion || {};
+      if (!c.summary) { $('sec-conclusion').style.display = 'none'; return; }
+      var reasons = (c.reasons || []).map(function (r) { return '<li>' + esc(stripMd(r)) + '</li>'; }).join('');
+      $('sec-conclusion').innerHTML =
+        '<div class="section-title">检查结论</div>' +
+        '<div class="verdict ' + (c.status === 'BLOCKED' ? 'blocked' : c.status === 'ALLOWED' ? 'allowed' : '') + '">' +
+          esc(stripMd(c.summary)) + '</div>' +
+        (reasons ? '<ul class="reasons">' + reasons + '</ul>' : '');
+    })();
+
+    // ---------- 04 风险 ----------
+    (function () {
+      var groups = DATA.risk_groups || [];
+      if (!groups.length) { $('sec-risks').style.display = 'none'; return; }
+      $('sec-risks').innerHTML = '<div class="section-title">重点风险分析</div><div class="risk-cols">' +
+        groups.map(function (g) {
+          var items = g.issue_ids.map(function (id) {
+            var it = byId[id]; if (!it) return '';
+            return '<div class="risk-item" data-open="' + id + '">' + priTag(it.priority) +
+              '<div class="body"><div class="name">' + esc(it.title) + '<span class="id">' + id + '</span></div>' +
+              '<div class="desc">' + esc(stripMd(it.impact)) + '</div></div></div>';
+          }).join('');
+          return '<div class="risk-group"><h3>' + esc(g.name) + '<span class="id" style="color:var(--muted);font-weight:400;margin-left:8px">' +
+            g.issue_ids.length + ' 项</span></h3>' + items + '</div>';
+        }).join('') + '</div>';
+    })();
+
+    // ---------- 05 图表 ----------
+    (function () {
+      var st = DATA.statistics, total = st.total;
+      var priRows = ['P0', 'P1', 'P2', 'P3'].filter(function (p) { return st.priority[p]; }).map(function (p) {
+        var n = st.priority[p];
+        return '<div class="bar-row" data-pri="' + p + '" title="点击按 ' + p + ' 筛选">' +
+          '<span class="bl" style="color:' + PRI_COLOR[p] + '">' + p + '</span>' +
+          '<span class="track"><span class="fill" style="width:' + (total ? (n / total * 100) : 0) + '%;background:' + PRI_COLOR[p] + '"></span></span>' +
+          '<span class="val">' + n + ' · ' + (total ? (n / total * 100).toFixed(2) : 0) + '%</span></div>';
+      }).join('');
+
+      var R = 62, C = 2 * Math.PI * R, used = 0;
+      var segs = typeKeys.map(function (t, i) {
+        var n = st.types[t], len = total ? (n / total * C) : 0;
+        var s = '<circle r="' + R + '" cx="80" cy="80" fill="none" stroke="' + TYPE_COLOR[i % TYPE_COLOR.length] +
+          '" stroke-width="22" stroke-dasharray="' + Math.max(len - 2, 0) + ' ' + (C - Math.max(len - 2, 0)) +
+          '" stroke-dashoffset="' + (-used) + '"></circle>';
+        used += len;
+        return s;
+      }).join('');
+      var legend = typeKeys.map(function (t, i) {
+        var n = st.types[t];
+        return '<div class="legend-item" data-type="' + esc(t) + '" title="' + esc(TYPE_DESC[t] || t) + '" style="cursor:help">' +
+          '<span class="dot" style="background:' + TYPE_COLOR[i % TYPE_COLOR.length] + '"></span>' +
+          '<span class="t">' + esc(t) + '</span><span class="v">' + n + ' · ' + (total ? (n / total * 100).toFixed(1) : 0) + '%</span></div>';
+      }).join('');
+
+      var mods = (DATA.modules || []).slice().sort(function (a, b) { return b.issue_ids.length - a.issue_ids.length; });
+      var maxMod = mods.length ? mods[0].issue_ids.length : 1;
+      var modRows = mods.map(function (m) {
+        return '<div class="bar-row" data-mod="' + esc(m.name) + '" title="重点模块集合（非全量互斥分类），点击筛选">' +
+          '<span class="bl" style="width:auto;min-width:34px">' + esc(m.name) + '</span>' +
+          '<span class="track"><span class="fill" style="width:' + (m.issue_ids.length / maxMod * 100) + '%;background:var(--primary)"></span></span>' +
+          '<span class="val">' + m.issue_ids.length + ' 条</span></div>';
+      }).join('') || '<div class="empty">无模块数据</div>';
+
+      $('sec-charts').innerHTML =
+        '<div class="chart"><h3>优先级分布</h3>' + priRows + '</div>' +
+        '<div class="chart"><h3>问题类型分布</h3><div class="donut-wrap">' +
+          '<div class="donut"><svg viewBox="0 0 160 160">' + segs + '</svg>' +
+          '<div class="center"><b>' + total + '</b><span>问题总数</span></div></div>' +
+          '<div class="legend">' + legend + '</div></div></div>' +
+        '<div class="chart"><h3>重点业务模块分布</h3>' + modRows +
+          '<div style="font-size:11px;color:var(--muted);margin-top:8px">注：来自报告总结的重点模块集合，非全部问题的互斥分类</div></div>';
+    })();
+
+    // ---------- 06 TOP5 ----------
+    (function () {
+      var feat = DATA.featured_issues || [];
+      if (!feat.length) { $('sec-top').style.display = 'none'; return; }
+      var finIds = ((DATA.risk_groups || []).find(function (g) { return g.key === 'financial'; }) || {}).issue_ids || [];
+      $('sec-top').innerHTML = '<div class="section-title">重点问题 TOP ' + feat.length +
+        '<span class="sub">排序依据：开发阻塞、资损风险、优先级</span></div><div class="top-list">' +
+        feat.map(function (id, i) {
+          var it = byId[id]; if (!it) return '';
+          return '<div class="rank" data-open="' + id + '">' +
+            '<span class="no">' + (i + 1) + '</span>' +
+            priTag(it.priority) +
+            '<span class="title"><span class="id">' + id + '</span>' + esc(it.title) + '</span>' +
+            '<span class="tag">' + esc(it.type) +
+            (finIds.indexOf(id) >= 0 ? '<span class="rf">资损风险</span>' : '') + '</span></div>';
+        }).join('') + '</div>';
+    })();
+
+    // ---------- 08 综合分析 ----------
+    (function () {
+      var recs = DATA.overall_recommendations || [];
+      if (!recs.length) { $('sec-analysis').style.display = 'none'; return; }
+      $('sec-analysis').innerHTML = '<div class="section-title">综合分析与建议<span class="sub">保留报告原始结论</span></div><ul>' +
+        recs.map(function (r) { return '<li>' + esc(stripMd(r)) + '</li>'; }).join('') + '</ul>';
+    })();
+
+    // ---------- 07 清单下拉选项 ----------
+    typeKeys.forEach(function (t) {
+      var o = document.createElement('option'); o.value = t; o.textContent = t; $('f-type').appendChild(o);
+    });
+    Object.keys(DATA.statistics.dimensions || {}).forEach(function (d) {
+      var o = document.createElement('option'); o.value = d; o.textContent = d + '（' + DATA.statistics.dimensions[d] + '）'; $('f-dimension').appendChild(o);
+    });
+    (DATA.modules || []).forEach(function (m) {
+      var o = document.createElement('option'); o.value = m.name; o.textContent = m.name + '（' + m.issue_ids.length + '）'; $('f-module').appendChild(o);
+    });
+
+    renderList();
+  }
+
+  // ---------- 清单筛选 ----------
+  function filtered() {
+    var q = filter.q.trim().toLowerCase();
+    var priList = Array.isArray(filter.priority) ? filter.priority : (filter.priority ? [filter.priority] : null);
+    return DATA.issues.filter(function (it) {
+      if (priList && priList.indexOf(it.priority) < 0) return false;
+      if (filter.type && it.type !== filter.type) return false;
+      if (filter.dimension && (it.dimension || '') !== filter.dimension) return false;
+      if (filter.module && (it.module || []).indexOf(filter.module) < 0) return false;
+      if (q && (it.id + ' ' + it.title + ' ' + it.source_location).toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    }).sort(function (a, b) { return PRI_ORDER[a.priority] - PRI_ORDER[b.priority] || a.id.localeCompare(b.id); });
+  }
+
+  function renderList() {
+    var list = filtered();
+    $('issue-tbody').innerHTML = list.map(function (it) {
+      return '<tr data-open="' + it.id + '"><td class="id">' + it.id + '</td><td class="title">' + esc(it.title) + '</td>' +
+        '<td>' + priTag(it.priority) + '</td><td><span class="type-tag">' + esc(it.type) + '</span></td>' +
+        '<td><span class="type-tag">' + esc(it.dimension || '功能规则') + '</span></td>' +
+        '<td class="loc">' + esc(it.source_location) + '</td></tr>';
+    }).join('');
+    $('issue-empty').style.display = list.length ? 'none' : 'block';
+    $('f-count').textContent = '当前显示 ' + list.length + ' / ' + DATA.statistics.total + ' 条';
+    document.querySelectorAll('.bar-row[data-pri], .legend-item[data-type], .bar-row[data-mod]').forEach(function (el) {
+      var active = false;
+      if (el.dataset.pri) active = (Array.isArray(filter.priority) ? filter.priority.join() : filter.priority) === el.dataset.pri
+        || (Array.isArray(filter.priority) && filter.priority.length === 1 && filter.priority[0] === el.dataset.pri);
+      if (el.dataset.type) active = filter.type === el.dataset.type;
+      if (el.dataset.mod) active = filter.module === el.dataset.mod;
+      el.classList.toggle('active', active);
+    });
+  }
+
+  function setFilter(f) {
+    filter.priority = f.priority !== undefined ? f.priority : '';
+    filter.type = f.type !== undefined ? f.type : '';
+    filter.module = f.module !== undefined ? f.module : '';
+    $('f-priority').value = Array.isArray(filter.priority) ? '' : filter.priority;
+    $('f-type').value = filter.type;
+    $('f-module').value = filter.module;
+    renderList();
+  }
+
+  // 筛选控件（静态元素，绑一次）
+  $('f-priority').addEventListener('change', function () { filter.priority = this.value; renderList(); });
+  $('f-type').addEventListener('change', function () { filter.type = this.value; renderList(); });
+  $('f-dimension').addEventListener('change', function () { filter.dimension = this.value; renderList(); });
+  $('f-module').addEventListener('change', function () { filter.module = this.value; renderList(); });
+  $('f-q').addEventListener('input', function () { filter.q = this.value; renderList(); });
+  $('btn-clear').addEventListener('click', function () {
+    filter = { priority: '', type: '', dimension: '', module: '', q: '' };
+    $('f-priority').value = ''; $('f-type').value = ''; $('f-dimension').value = ''; $('f-module').value = ''; $('f-q').value = '';
+    renderList();
+  });
+
+  // Tab 切换 + 图表点击筛选 + 打开抽屉（document 级委托，绑一次）
+  document.addEventListener('click', function (e) {
+    var tabEl = e.target.closest ? e.target.closest('.tab') : null;
+    if (tabEl) {
+      var idx = parseInt(tabEl.getAttribute('data-tab'), 10);
+      if (idx !== curTab) {
+        Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (t) { t.classList.toggle('active', t === tabEl); });
+        scrollTo(0, 0);
+        mount(idx);
+      }
+      return;
+    }
+    var priEl = e.target.closest ? e.target.closest('.bar-row[data-pri]') : null;
+    if (priEl) {
+      filter.priority = (filter.priority === priEl.dataset.pri) ? '' : priEl.dataset.pri;
+      $('f-priority').value = Array.isArray(filter.priority) ? '' : filter.priority;
+      renderList(); return;
+    }
+    var typeEl = e.target.closest ? e.target.closest('.legend-item[data-type]') : null;
+    if (typeEl) {
+      filter.type = (filter.type === typeEl.dataset.type) ? '' : typeEl.dataset.type;
+      $('f-type').value = filter.type; renderList(); return;
+    }
+    var modEl = e.target.closest ? e.target.closest('.bar-row[data-mod]') : null;
+    if (modEl) {
+      filter.module = (filter.module === modEl.dataset.mod) ? '' : modEl.dataset.mod;
+      $('f-module').value = filter.module; renderList(); return;
+    }
+    var openEl = e.target.closest ? e.target.closest('[data-open]') : null;
+    if (openEl) openDrawer(openEl.getAttribute('data-open'));
+  });
+
+  // ---------- 抽屉 ----------
+  var curId = null;
+  function inlineMd(s) {
+    return esc(s).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  }
+  function renderRich(text) {
+    if (!text || !String(text).trim()) return '<p style="color:var(--muted)">（源报告清单条目，无详情块，未提供该字段内容）</p>';
+    var html = [], tbl = [];
+    function flush() {
+      if (!tbl.length) return;
+      var rows = tbl.filter(function (l) { return !/^\|[\s:|-]+\|?$/.test(l.trim()); });
+      var trs = rows.map(function (row, ri) {
+        var cells = row.replace(/^\|/, '').replace(/\|$/, '').split('|').map(function (c) { return c.trim(); });
+        var tag = ri === 0 ? 'th' : 'td';
+        return '<tr>' + cells.map(function (c) { return '<' + tag + '>' + inlineMd(c) + '</' + tag + '>'; }).join('') + '</tr>';
+      }).join('');
+      html.push('<table class="mini-table">' + trs + '</table>');
+      tbl = [];
+    }
+    String(text).split('\n').forEach(function (l) {
+      var t = l.trim();
+      if (t.startsWith('|')) { tbl.push(l); return; }
+      flush();
+      var h = t.match(/^\*\*([^*]+)\*\*([：:])?\s*$/);
+      if (h) { html.push('<h5>' + esc(h[1]) + (h[2] || '') + '</h5>'); return; }
+      if (t) html.push('<p>' + inlineMd(l) + '</p>');
+    });
+    flush();
+    return html.length ? html.join('') : '<p style="color:var(--muted)">（源报告清单条目，无详情块，未提供该字段内容）</p>';
+  }
+  function openDrawer(id) {
+    var it = byId[id]; if (!it) return;
+    curId = id;
+    $('d-pri').textContent = it.priority; $('d-pri').style.background = PRI_COLOR[it.priority] || '#94A3B8';
+    $('d-id').textContent = id + ' · ' + it.type + (it.dimension ? ' · ' + it.dimension : '');
+    $('d-title').textContent = it.title;
+    var bodyHtml = '<h4>原文位置</h4>' + renderRich(it.source_location);
+    if (it.original_text && String(it.original_text).trim()) bodyHtml += '<h4>原文引用</h4><blockquote>' + esc(it.original_text) + '</blockquote>';
+    bodyHtml += '<h4>问题分析</h4>' + renderRich(it.problem || it.title);
+    if (it.impact && String(it.impact).trim()) bodyHtml += '<h4>影响说明</h4>' + renderRich(it.impact);
+    if (it.suggestion && String(it.suggestion).trim()) bodyHtml += '<h4>修改建议</h4>' + renderRich(it.suggestion);
+    if (it.rule_ref) bodyHtml += '<h4>基准依据</h4>' + renderRich(it.rule_ref);
+    if (it.acceptance) bodyHtml += '<h4>验收口径</h4>' + renderRich(it.acceptance);
+    if (!it.has_detail) bodyHtml += '<div class="status">清单级条目：源报告未展开详情块，问题描述摘自清单问题列，原文引用与建议待补</div>';
+    $('d-body').innerHTML = bodyHtml +
+      '<div class="status">处理状态：' + esc(it.status) + '（只读，Dashboard 不提供裁决操作）' +
+      (it.module && it.module.length ? ' · 模块：' + esc(it.module.join('、')) : '') + '</div>';
+    var list = filtered();
+    var idx = list.findIndex(function (x) { return x.id === id; });
+    $('d-pos').textContent = idx >= 0 ? (idx + 1) + ' / ' + list.length : '';
+    $('d-prev').disabled = idx <= 0;
+    $('d-next').disabled = idx >= 0 && idx >= list.length - 1;
+    $('drawer').classList.add('show'); $('drawer').setAttribute('aria-hidden', 'false');
+    $('mask').classList.add('show');
+    $('d-body').scrollTop = 0;
+  }
+  function closeDrawer() {
+    $('drawer').classList.remove('show'); $('drawer').setAttribute('aria-hidden', 'true');
+    $('mask').classList.remove('show'); curId = null;
+  }
+  $('d-close').addEventListener('click', closeDrawer);
+  $('mask').addEventListener('click', closeDrawer);
+  $('d-prev').addEventListener('click', function () {
+    var list = filtered(), i = list.findIndex(function (x) { return x.id === curId; });
+    if (i > 0) openDrawer(list[i - 1].id);
+  });
+  $('d-next').addEventListener('click', function () {
+    var list = filtered(), i = list.findIndex(function (x) { return x.id === curId; });
+    if (i >= 0 && i < list.length - 1) openDrawer(list[i + 1].id);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeDrawer();
+    if (!curId) return;
+    if (e.key === 'ArrowLeft') $('d-prev').click();
+    if (e.key === 'ArrowRight') $('d-next').click();
+  });
+
+  // ---------- 浮动操作 ----------
+  $('btn-top').addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  $('btn-print').addEventListener('click', function () { window.print(); });
+
+  mount(0);
+})();
+
+</script>
+</body>
+</html>

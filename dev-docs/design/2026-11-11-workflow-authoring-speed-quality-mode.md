@@ -253,10 +253,29 @@ const skipReview = fast && A.skipReview !== false
 - 原始检查 skill（流程与报告结构基准）：`.claude/skills/game-prd-check/SKILL.md`
 ````
 
+## 四点三、生成前问询（2026-11-11 追加需求）
+
+用户补充：skill 在生成 workflow js 之前，必须先用问询方式向用户确认三件事，一次问完：
+
+1. **用途与档位**：速度优先（迭代出稿）/ 质量优先（正式交付）/ 双档开关（args.fast / args.quality）。
+2. **模型**：先探测环境可用模型，再把候选列出来让用户自己选。探测按可靠度排序：
+   - 既有 workflow 脚本与 dev-docs 里实际用过的 model（如 `biangfeng-gateway/deepseek-v4.1-flash-official`）——用过即证明可用，最可靠；
+   - 模型列表 CLI（如 `opencode models`）或 provider/model-tiers 配置；
+   - 都拿不到时直接问用户要模型名。
+
+   分析类（扫描 / 对照 / 枚举 / 归类）与写作类（长输出报告 / 终稿）分两问让用户各选一个；写作类缺省用会话默认模型。
+3. **并发数量**：默认 16（运行时钳制上限）；网关限流环境建议 8；允许自定义正整数。
+
+问询产出直接落成脚本头部：model 常量、args 默认值、`setConcurrency(并发)`，并在头注释里记录用户选择。
+
+### 落点
+
+问询章节放 SKILL.md 最前面（「不变量」之前）——它是流程入口，先问后写；档位与模型分层的执行细节仍在 performance.md 手册。
+
 ## 五、落地步骤
 
 1. 新建 `.agents/skills/workflow-authoring/references/performance.md`（4.2 节草案全文）。
-2. 编辑 `.agents/skills/workflow-authoring/SKILL.md`：插入「速度与质量两种模式」章节（4.1 节）+ 参考列表补一行。
+2. 编辑 `.agents/skills/workflow-authoring/SKILL.md`：开头插入「生成前问询（必做）」章节（4.3 节）+「速度与质量两种模式」章节（4.1 节）+ 参考列表补一行。
 3. 手册内代码片段为片段式（非完整脚本），不跑 wf-syntax-check；但片段语法需人工核对一遍（已按不变量写：无 import/无 Date.now/parallel 传 thunk）。
 4. 按 CLAUDE.md 规范 commit + push（docs: workflow-authoring 新增速度与质量双模式手册）。
 

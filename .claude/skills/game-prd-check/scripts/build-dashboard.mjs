@@ -3,10 +3,13 @@
 // 作用：解析 game-prd-check 生成的 report.md -> report.json（含校验）-> 注入模板生成离线单文件 dashboard HTML
 // 用法：node build-dashboard.mjs [report.md路径] [输出目录]
 //       默认：<skill根>/../../../../examples/game-prd-check/report.md 与同名输出目录
-// 格式：自适应两种报告格式——
+// 格式：自适应三种报告格式——
 //   skill 版：清单第二列为类型英文枚举（MISSING 等），详情块 `- 类型：`，45 条全有详情
 //   workflow 版：清单第二列为中文主题，详情块 `- 主题：` + `- 问题性质：`（中文类型），
 //               详情块可能少于清单条目（清单为全集，详情按 ID 合并，缺详情条目 type=未分类）
+//   UI 交互基准版（ui-interaction-prd-extract）：ID 为 Q01 形式，清单 7 列（ID|优先级|类型|模块|问题|原文位置|基准依据），
+//               详情块 `### Q01【P0 / MISSING】标题`，字段为 `- **字段名**：` 形式；
+//               概览统计为优先级×类型矩阵表，交叉校验按矩阵合计
 // 说明：设计文档原建议 python 实现，因本仓库运行环境无 python3，统一使用 node（零依赖）。
 
 import fs from 'node:fs';
@@ -29,25 +32,30 @@ const TYPE_EN_RE = /^(MISSING|CONFLICT|LOGIC|AMBIGUOUS|INCOMPLETE)$/;
 
 // ---------- 工具函数 ----------
 
-// 展开文本中出现的 PRD ID 引用：
-// 支持 PRD-001、PRD-001/002/003、PRD-001~004 三种写法
-function extractIds(text) {
-  const ids = new Set();
-  for (const m of text.matchAll(/PRD-(\d{3})~(\d{3})/g)) {
-    const lo = parseInt(m[1], 10);
-    const hi = parseInt(m[2], 10);
-    if (lo <= hi && hi - lo < 100) {
-      for (let i = lo; i <= hi; i++) ids.add(`PRD-${String(i).padStart(3, '0')}`);
+// 展开文本中出现的问题 ID 引用：
+// 支持 PRD-001、PRD-001/002/003、PRD-001~004 三种写法；Q 版报告同格式（Q01、Q01/02、Q01~04）
+function makeIdExtractRe(prefix) {
+  return (text) => {
+    const ids = new Set();
+    for (const m of text.matchAll(new RegExp(`${prefix}-(\\d{2,3})~(\\d{2,3})`, 'g'))) {
+      const lo = parseInt(m[1], 10);
+      const hi = parseInt(m[2], 10);
+      const width = m[1].length;
+      if (lo <= hi && hi - lo < 100) {
+        for (let i = lo; i <= hi; i++) ids.add(`${prefix}-${String(i).padStart(width, '0')}`);
+      }
     }
-  }
-  for (const m of text.matchAll(/PRD-(\d{3})(?:\/(\d{3}))*/g)) {
-    ids.add(`PRD-${m[1]}`);
-    for (const seg of m[0].split('/').slice(1)) {
-      ids.add(`PRD-${seg}`);
+    for (const m of text.matchAll(new RegExp(`${prefix}-(\\d{2,3})(?:/(\\d{2,3}))*`, 'g'))) {
+      ids.add(`${prefix}-${m[1]}`);
+      for (const seg of m[0].split('/').slice(1)) {
+        ids.add(`${prefix}-${seg}`);
+      }
     }
-  }
-  return [...ids];
+    return [...ids];
+  };
 }
+const extractIds = makeIdExtractRe('PRD'); // 兼容 skill/workflow 版（PRD-001）
+const extractQIds = makeIdExtractRe('Q'); // UI 交互基准版（Q01）
 
 function splitSentences(text) {
   return text
@@ -121,22 +129,47 @@ export function parseReport(md) {
   }
   if (checkScope) out.report.rule_baselines.push(`检查范围：${checkScope}`);
 
+  // 类型分布（交叉校验用）：skill 版由「类型分布：」行解析；Q 版由概览矩阵表合计行填充
+  let typeDist = {};
   // --- 概览表（用于交叉校验） ---
   const overview = {};
   for (const m of md.matchAll(/\|\s*(发现问题总数|严重问题 P0|高优先级 P1|一般问题 P2|优化建议 P3)\s*\|\s*(\d+)\s*\|/g)) {
     overview[m[1]] = parseInt(m[2], 10);
   }
+  // Q 版概览：优先级×类型矩阵表，末行「合计」提供类型总数，末列「小计」提供优先级总数
+  const matrixRowRe = /^\|\s*(P[0-3])（[^）]*）\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*\*\*(\d+)\*\*\s*\|\s*$/gm;
+  const matrixTotalRe = /^\|\s*\*\*合计\*\*\s*\|\s*\*\*(\d+)\*\*\s*\|\s*\*\*(\d+)\*\*\s*\|\s*\*\*(\d+)\*\*\s*\|\s*\*\*(\d+)\*\*\s*\|\s*\*\*(\d+)\*\*\s*\|\s*\*\*(\d+)\*\*\s*\|\s*$/gm;
+  const matrixPrioNames = { P0: '严重问题 P0', P1: '高优先级 P1', P2: '一般问题 P2', P3: '优化建议 P3' };
+  const matrixTypeNames = ['MISSING', 'CONFLICT', 'LOGIC', 'AMBIGUOUS', 'INCOMPLETE'];
+  let matrixTotal = null;
+  for (const m of md.matchAll(matrixTotalRe)) {
+    matrixTotal = { types: matrixTypeNames.map((_, i) => parseInt(m[i + 1], 10)), total: parseInt(m[6], 10) };
+  }
+  if (matrixTotal) {
+    overview['发现问题总数'] = matrixTotal.total;
+    for (const m of md.matchAll(matrixRowRe)) {
+      const p = m[1];
+      overview[matrixPrioNames[p]] = parseInt(m[7], 10);
+    }
+    for (let i = 0; i < matrixTypeNames.length; i++) {
+      if (matrixTotal.types[i]) typeDist[matrixTypeNames[i]] = matrixTotal.types[i];
+    }
+  }
   // 类型分布行（skill 版专有，用于交叉校验）：类型分布：MISSING 18、CONFLICT 8、...
+  // Q 版已在上方矩阵分支填充 typeDist，这里仅补充 skill 版解析
   const typeDistLine = md.match(/类型分布：(.+)。/)?.[1] || '';
-  const typeDist = {};
   for (const m of typeDistLine.matchAll(/(MISSING|CONFLICT|LOGIC|AMBIGUOUS|INCOMPLETE)\s*(\d+)/g)) {
     typeDist[m[1]] = parseInt(m[2], 10);
   }
 
   // --- 问题清单表（全集索引）---
-  // 第二列自适应：英文类型枚举（skill 版）或中文主题（workflow 版）
+  // 自适应两种列布局：
+  //   PRD 版：| PRD-001 | 类型或主题 | P0 | 问题 | 位置 | 建议 |（6 列，第二列自适应类型/主题）
+  //   Q 版（UI 交互基准）：| Q01 | P0 | MISSING | 模块 | 问题 | 位置 | 基准依据 |（7 列）
   const listRows = {};
-  for (const m of md.matchAll(/^\|\s*(PRD-\d{3})\s*\|\s*(\S+)\s*\|\s*(P[0-3])\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*$/gm)) {
+  const PRD_ROW_RE = /^\|\s*(PRD-\d{3})\s*\|\s*(\S+)\s*\|\s*(P[0-3])\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*$/gm;
+  const Q_ROW_RE = /^\|\s*(Q\d{2,3})\s*\|\s*(P[0-3])\s*\|\s*(\S+)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*$/gm;
+  for (const m of md.matchAll(PRD_ROW_RE)) {
     const second = m[2].trim();
     listRows[m[1]] = {
       id: m[1],
@@ -148,13 +181,35 @@ export function parseReport(md) {
       suggestion: m[6].trim(),
     };
   }
+  for (const m of md.matchAll(Q_ROW_RE)) {
+    listRows[m[1]] = {
+      id: m[1],
+      second: m[3].trim(),
+      isTypeCol: TYPE_EN_RE.test(m[3].trim()),
+      priority: m[2],
+      title: m[5].trim(),
+      source_location: m[6].trim(),
+      suggestion: m[7].trim(),
+      moduleCol: m[4].trim(),
+    };
+  }
 
-  // --- 详情块：### PRD-001：标题 ...（可能少于清单条目） ---
-  const detailRe = /^### (PRD-\d{3})：(.+)$/gm;
+  // --- 详情块：### PRD-001：标题 或 ### Q01【P0 / MISSING】标题（可能少于清单条目） ---
+  const detailRe = /^### (PRD-\d{3}|Q\d{2,3})(?:：(.*))?|【?(?=[\s\S])$/gm;
   const details = [];
   {
+    // PRD 版：### PRD-001：标题；Q 版：### Q01【P0 / MISSING】标题
+    const re = /^### (PRD-\d{3}|Q\d{2,3})[：:\s]*(.*)$/gm;
     let m;
-    while ((m = detailRe.exec(md)) !== null) details.push({ id: m[1], title: m[2].trim(), start: m.index + m[0].length, headStart: m.index });
+    while ((m = re.exec(md)) !== null) {
+      details.push({
+        id: m[1],
+        title: m[2].replace(/^【[^】]*】\s*/, '').trim(),
+        headRaw: m[2].trim(),
+        start: m.index + m[0].length,
+        headStart: m.index,
+      });
+    }
   }
 
   // --- 组装 issues：清单为全集，详情按 ID 合并 ---
@@ -165,12 +220,15 @@ export function parseReport(md) {
   for (const id of allIds) {
     const row = listRows[id];
     const d = details.find((x) => x.id === id);
+    // module 初始值：PRD workflow 版第二列挂 module；Q 版第 4 列 moduleCol 单独挂
+    const initModules = row && !row.isTypeCol && row.second && !row.moduleCol ? [row.second] : [];
+    if (row?.moduleCol && !initModules.includes(row.moduleCol)) initModules.push(row.moduleCol);
     let issue = {
       id,
       title: row?.title || d?.title || '',
       priority: row?.priority || '',
       type: row?.isTypeCol ? TYPE_ZH[row.second] : '',
-      module: row && !row.isTypeCol ? [row.second] : [],
+      module: initModules,
       source_location: row?.source_location || '',
       original_text: '',
       problem: '',
@@ -188,16 +246,18 @@ export function parseReport(md) {
       // 标题行形如：**原文**（位置括注）：、**范例（需求必须按此格式写）**：、**处理状态**：待确认（同行内容）
       // 未来源报告新增任何 **字段** 块都会被捕获，未知字段按出现顺序并入 suggestion，不再截断丢失
       // 头部匹配分三种形式（顺序敏感）：B **名称（括注）**： / A **名称**（贪婪括注，支持嵌套括号）： / 基础 **名称**：
+      // Q 版（UI 交互基准）字段为 `- **字段名**：内容` 列表形式，允许行首 `- ` 前缀
       const matchFieldHeader = (line) => {
-        let m = line.match(/^\*\*([^*\n（]+(?:（[^）]*）)?)\*\*[：:](.*)$/);
+        const l = line.replace(/^\s*-\s+/, '');
+        let m = l.match(/^\*\*([^*\n（]+(?:（[^）]*）)?)\*\*[：:](.*)$/);
         if (m) return { name: m[1].trim(), paren: '', first: m[2].trim() };
-        m = line.match(/^\*\*([^*\n]+)\*\*（(.+)）[：:](.*)$/);
+        m = l.match(/^\*\*([^*\n]+)\*\*（(.+)）[：:](.*)$/);
         if (m) return { name: m[1].trim(), paren: m[2].trim(), first: m[3].trim() };
-        m = line.match(/^\*\*([^*\n]+)\*\*[：:](.*)$/);
+        m = l.match(/^\*\*([^*\n]+)\*\*[：:](.*)$/);
         if (m) return { name: m[1].trim(), paren: '', first: m[2].trim() };
         return null;
       };
-      const KNOWN_BLOCKS = new Set(['原文', '问题', '影响', '建议', '处理状态']);
+      const KNOWN_BLOCKS = new Set(['原文', '问题', '影响', '建议', '处理状态', '问题性质', '基准依据', '验收口径']);
       const blocks = [];
       let curBlock = null;
       for (const line of body.split(/\r?\n/)) {
@@ -213,15 +273,23 @@ export function parseReport(md) {
         const b = blocks.find((x) => x.name === name);
         return b ? [...(b.first ? [b.first] : []), ...b.lines].join('\n').trim() : '';
       };
-      // 原文位置：原文块标题的括注；原文引用：原文块的 > 引用行合并
+      // 原文位置：原文块标题的括注；原文引用：原文块的 > 引用行合并；
+      // Q 版原文块无 > 引用行，位置写在正文内（位置"…"）——整块内容并入 original_text
       const origBlock = blocks.find((x) => x.name === '原文');
       const quoteLoc = origBlock?.paren || '';
-      const originalText = origBlock
-        ? origBlock.lines.filter((l) => l.trim().startsWith('>')).map((l) => l.replace(/^>\s?/, '').trim()).join('\n').trim()
-        : '';
-      // 优先级 / 类型：skill 版 "- 类型：MISSING"；workflow 版 "- 问题性质：需求缺失"
-      const priority = (body.match(/-\s*优先级：\s*(P[0-3])/) || [])[1] || issue.priority;
-      const typeRaw = (body.match(/-\s*(?:类型|问题性质)：\s*(\S+)/) || [])[1] || '';
+      const origQuoteLines = origBlock
+        ? origBlock.lines.filter((l) => l.trim().startsWith('>')).map((l) => l.replace(/^>\s?/, '').trim())
+        : [];
+      const originalText = origQuoteLines.length
+        ? origQuoteLines.join('\n').trim()
+        : origBlock
+          ? [...(origBlock.first ? [origBlock.first] : []), ...origBlock.lines].join('\n').trim()
+          : '';
+      // 优先级 / 类型：skill 版 "- 类型：MISSING"；workflow 版 "- 问题性质：需求缺失"；
+      // Q 版：标题行 ### Q01【P0 / MISSING】内嵌优先级与类型，详情块字段只有 **问题性质**（中文）
+      const headMeta = d.title.match(/^(?:【([^】]*)】)?/) && (d.headRaw || '').match(/【(P[0-3])\s*\/\s*([A-Z]+)】/);
+      const priority = (body.match(/-\s*优先级：\s*(P[0-3])/) || [])[1] || (headMeta ? headMeta[1] : '') || issue.priority;
+      const typeRaw = (body.match(/-\s*(?:类型|问题性质)：\s*(\S+)/) || [])[1] || (headMeta ? headMeta[2] : '') || '';
       // 主题（workflow 版详情块）：挂 module
       const themeRaw = (body.match(/-\s*主题：\s*(.+)$/m) || [])[1]?.trim() || '';
       // suggestion：建议块 + 未知字段块（需要补的内容与必填格式、范例、验收口径等）按原顺序并入

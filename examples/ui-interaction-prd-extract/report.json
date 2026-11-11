@@ -1,0 +1,879 @@
+{
+  "schema_version": 1,
+  "report": {
+    "title": "PRD 质量分析报告",
+    "project_name": "",
+    "document_name": "",
+    "inspection_date": "",
+    "source_file": "",
+    "rule_baselines": [],
+    "overall_conclusion": {
+      "status": "NA",
+      "summary": "",
+      "reasons": []
+    }
+  },
+  "statistics": {
+    "total": 41,
+    "priority": {
+      "P0": 2,
+      "P1": 3,
+      "P2": 19,
+      "P3": 17
+    },
+    "types": {
+      "需求缺失": 16,
+      "内容冲突": 6,
+      "描述不完整": 12,
+      "定义歧义": 6,
+      "逻辑错误": 1
+    }
+  },
+  "risk_groups": [
+    {
+      "key": "blocker",
+      "name": "开发阻塞风险",
+      "description": "关键流程/规则缺失或矛盾，直接阻塞开发或验收",
+      "issue_ids": [
+        "Q01",
+        "Q02"
+      ]
+    }
+  ],
+  "modules": [
+    {
+      "name": "断线重连",
+      "issue_ids": [
+        "Q01"
+      ]
+    },
+    {
+      "name": "吃碰杠胡-杠",
+      "issue_ids": [
+        "Q02",
+        "Q18"
+      ]
+    },
+    {
+      "name": "行牌操作-出牌",
+      "issue_ids": [
+        "Q03"
+      ]
+    },
+    {
+      "name": "吃碰杠胡",
+      "issue_ids": [
+        "Q04",
+        "Q16",
+        "Q28"
+      ]
+    },
+    {
+      "name": "结算流程",
+      "issue_ids": [
+        "Q05",
+        "Q19",
+        "Q20",
+        "Q40"
+      ]
+    },
+    {
+      "name": "方位信息-倒计时",
+      "issue_ids": [
+        "Q06",
+        "Q32"
+      ]
+    },
+    {
+      "name": "手牌信息-听牌标签",
+      "issue_ids": [
+        "Q07"
+      ]
+    },
+    {
+      "name": "玩家头像-庄标",
+      "issue_ids": [
+        "Q08"
+      ]
+    },
+    {
+      "name": "小结算界面",
+      "issue_ids": [
+        "Q09",
+        "Q21",
+        "Q22"
+      ]
+    },
+    {
+      "name": "行牌操作-补牌",
+      "issue_ids": [
+        "Q10"
+      ]
+    },
+    {
+      "name": "全局",
+      "issue_ids": [
+        "Q11",
+        "Q30",
+        "Q37",
+        "Q41"
+      ]
+    },
+    {
+      "name": "桌面布局-准备",
+      "issue_ids": [
+        "Q12"
+      ]
+    },
+    {
+      "name": "手牌信息",
+      "issue_ids": [
+        "Q13"
+      ]
+    },
+    {
+      "name": "手牌信息-听牌",
+      "issue_ids": [
+        "Q14",
+        "Q26"
+      ]
+    },
+    {
+      "name": "吃碰杠胡-胡",
+      "issue_ids": [
+        "Q15"
+      ]
+    },
+    {
+      "name": "吃碰杠胡-吃",
+      "issue_ids": [
+        "Q17",
+        "Q27"
+      ]
+    },
+    {
+      "name": "通用提示",
+      "issue_ids": [
+        "Q23"
+      ]
+    },
+    {
+      "name": "玩法信息",
+      "issue_ids": [
+        "Q24"
+      ]
+    },
+    {
+      "name": "玩法信息-财神",
+      "issue_ids": [
+        "Q25"
+      ]
+    },
+    {
+      "name": "吃碰杠胡/听牌",
+      "issue_ids": [
+        "Q29"
+      ]
+    },
+    {
+      "name": "发牌",
+      "issue_ids": [
+        "Q31"
+      ]
+    },
+    {
+      "name": "行牌操作-摸牌",
+      "issue_ids": [
+        "Q33"
+      ]
+    },
+    {
+      "name": "玩家状态",
+      "issue_ids": [
+        "Q34",
+        "Q35"
+      ]
+    },
+    {
+      "name": "玩家头像信息",
+      "issue_ids": [
+        "Q36"
+      ]
+    },
+    {
+      "name": "名词/小结算",
+      "issue_ids": [
+        "Q38"
+      ]
+    },
+    {
+      "name": "菜单",
+      "issue_ids": [
+        "Q39"
+      ]
+    }
+  ],
+  "featured_issues": [
+    "Q01",
+    "Q02"
+  ],
+  "issues": [
+    {
+      "id": "Q01",
+      "title": "断线重连与场景恢复机制整体缺失",
+      "priority": "P0",
+      "type": "需求缺失",
+      "module": [
+        "断线重连"
+      ],
+      "source_location": "玩家头像信息-玩家状态",
+      "original_text": "位置\"三、对局流程 → 局中信息 → 玩家头像信息 → 玩家状态\"。引文：\"离线状态：头像处覆盖断线图标，且显示断线计时，格式为分秒'00:00'，每次断线重新计时。备注：在当前动画播放过程中有玩家离线切后台等，不会因此中断原本的动画流程\"。全文检索\"重连/恢复\"无任何场景恢复描述。",
+      "problem": "需求只定义了断线图标与计时，未定义断线玩家重连后如何恢复牌局：恢复哪些内容、按什么顺序、恢复期间动画是否静默、他人手牌是否翻开、倒计时以什么为基准、权限按钮如何还原、最后出牌放大是否补显。",
+      "impact": "好友房 8 局对局时长内断线必然发生；无恢复规格则该场景无法开发与验收，服务端 end_wait 应答缺失还会导致整桌卡死。",
+      "suggestion": "新增\"断线重连与场景恢复\"章节：恢复入口与状态分发、恢复顺序、静默模式（不播开局/摸牌/胡牌动画）、他人手牌背面、权限/倒计时/方位灯/出牌放大补刷、end_wait 自动应答；可直接以基准 04#1~#16 为对照逐条声明采纳或改版。",
+      "status": "待确认",
+      "has_detail": true
+    },
+    {
+      "id": "Q02",
+      "title": "杠操作按钮组与加杠/暗杠触发交互完全未定义",
+      "priority": "P0",
+      "type": "需求缺失",
+      "module": [
+        "吃碰杠胡-杠"
+      ],
+      "source_location": "吃碰杠胡操作-杠牌",
+      "original_text": "位置\"三、对局流程 → 局内流程 → 吃碰杠胡操作 → 杠牌\"。引文（全文）：\"杠牌-复用现有血战杠的特效，主要区别删除刮风下雨，无论什么杠，统一使用杠字即可\"。",
+      "problem": "未定义：他人弃牌可直杠时是否显示【杠】+【过】按钮组及位置；本人出牌阶段加杠、暗杠的触发方式（点击手牌第 4 张弹选项？按钮？）；多种杠组合并存时的选择交互；杠按钮与过按钮的互斥/收起规则。\"复用血战杠的特效\"仅指动画特效，不构成按钮交互规格。",
+      "impact": "杠是本期启用的高频核心操作（含吃碰当前回合可杠），无入口定义无法开发与验收；暗杠 3 背 1 正的展示虽有玩法描述，但玩家如何发起暗杠无解。",
+      "suggestion": "补充杠操作小节：直杠按钮组（样式/位置/与碰胡并存时的排布）、加杠与暗杠的出牌阶段触发交互、多杠组合选择列表、选择态取消=过的行为。",
+      "status": "待确认",
+      "has_detail": true
+    },
+    {
+      "id": "Q03",
+      "title": "单击出牌前后矛盾",
+      "priority": "P1",
+      "type": "内容冲突",
+      "module": [
+        "行牌操作-出牌"
+      ],
+      "source_location": "行牌操作-出牌 / 修改对比版-出牌",
+      "original_text": "位置一\"局内流程 → 行牌操作 → 出牌（前表）\"。引文：\"单击出牌：出牌阶段点击打出不可听牌的牌，则直接将其打出，无需提起。单机出牌开启时，若轮到自己出牌前有牌提起，则自动下落。\"位置二\"行牌操作｜修改对比版 → 出牌\"。引文：\"本方案默认双击出牌。滑动出牌默认开。单击出牌归设置模块，本方案不包含该模式。\"",
+      "problem": "前文将单击出牌作为本期可选出牌方式给出完整交互定义（含自动下落细节），后文明确\"本方案不包含该模式\"，范围互相矛盾；另\"单击仅限不可听牌\"的限制依附于被排除的模式，本期双击/滑动模式下可听牌能否滑动直接打出也未说明（基准 01#13 要求打听牌强制先提牌查看听牌信息）。",
+      "impact": "开发无法确定单击出牌是否在交付范围；可听牌的滑动出牌限制缺失可能导致绕过听牌提示交互。",
+      "suggestion": "删除或标注前文单击出牌段落为\"原方案对照\"；补充说明本期双击/滑动模式下可听牌是否允许滑动直接打出（基准要求禁止单击直接打出、须先提牌）。",
+      "status": "待确认",
+      "has_detail": true
+    },
+    {
+      "id": "Q04",
+      "title": "\"多操作状态\"章节空引用",
+      "priority": "P1",
+      "type": "描述不完整",
+      "module": [
+        "吃碰杠胡"
+      ],
+      "source_location": "吃碰杠胡操作-多操作状态",
+      "original_text": "位置\"三、对局流程 → 局内流程 → 吃碰杠胡操作 → 多操作状态-复用功夫川麻\"。引文：仅有标题\"多操作状态-复用功夫川麻\"，其后直接进入\"对局内通用提示\"，无正文。",
+      "problem": "同一弃牌多人可响应（庄闲放铳下多人可胡、胡与碰并存）是本期规则明确支持的裁决场景，但各端按钮如何同时展示、裁决后未获权玩家的按钮如何收起、操作区互斥规则全部缺失，仅以外部项目名\"功夫川麻\"代替。",
+      "impact": "多人响应是常见分支，按钮残留/误操作风险高，无法验收。",
+      "suggestion": "补写多操作状态：各端按钮同时展示规则、他人权限到达时本家操作区立即收起、裁决完成后按钮区与方位高亮的联动切换。",
+      "status": "待确认",
+      "has_detail": true
+    },
+    {
+      "id": "Q05",
+      "title": "满 8 局\"结束本场\"的表现未定义",
+      "priority": "P1",
+      "type": "描述不完整",
+      "module": [
+        "结算流程"
+      ],
+      "source_location": "本期开发范围",
+      "original_text": "位置\"本期开发范围\"。引文：\"每小局保留小结算，未满8局则继续下一小局，满8局结束本场。\"\"本期只做游戏内核心流程。原文中的创房面板、其他玩法选项、大结算和非核心桌面功能，如在核心段落中被引用，仅作原文上下文。\"",
+      "problem": "固定 8 局是本期规则，第 8 局小结算后玩家看到什么（大结算不做）未定义：直接解散回大厅？停留小结算？还是简化总分页？第 8 局小结算的\"继续游戏\"按钮行为也随之下落空。",
+      "impact": "8 局打完是必现场景，终点表现缺失导致整场流程无法走通验收。",
+      "suggestion": "明示第 8 局结束本场的表现（即使简化，也应定义：显示汇总分或直接回房间/解散），并定义最后一局小结算按钮文案与行为。",
+      "status": "待确认\n\n---",
+      "has_detail": true
+    },
+    {
+      "id": "Q06",
+      "title": "倒计时末 3 秒颜色与基准冲突（需求黄/基准红）",
+      "priority": "P2",
+      "type": "内容冲突",
+      "module": [
+        "方位信息-倒计时"
+      ],
+      "source_location": "方位信息-倒计时",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "07#2；01#20",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q07",
+      "title": "同牌点多张的标签标记位置与基准冲突（最右 vs 第一张）",
+      "priority": "P2",
+      "type": "内容冲突",
+      "module": [
+        "手牌信息-听牌标签"
+      ],
+      "source_location": "听牌标签显示规则-多/大",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "02#6",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q08",
+      "title": "平庄庄标样式两处矛盾（【庄】vs【庄×1】）",
+      "priority": "P2",
+      "type": "内容冲突",
+      "module": [
+        "玩家头像-庄标"
+      ],
+      "source_location": "玩家头像信息 / 定庄",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "07#9",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q09",
+      "title": "番型是否展示倍数自相矛盾（删除线 vs 示例含倍数）",
+      "priority": "P2",
+      "type": "内容冲突",
+      "module": [
+        "小结算界面"
+      ],
+      "source_location": "小结算界面-赢家结算",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "03#12",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q10",
+      "title": "杠后补牌取牌方向三处描述不一致且\"按配置\"未定义",
+      "priority": "P2",
+      "type": "内容冲突",
+      "module": [
+        "行牌操作-补牌"
+      ],
+      "source_location": "名词-杠 / 杠-逻辑 / 行牌-补牌",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "08#8,9",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q11",
+      "title": "章节编号与模块引用悬空（4.5/4.6/8.1/云检测）",
+      "priority": "P2",
+      "type": "定义歧义",
+      "module": [
+        "全局"
+      ],
+      "source_location": "方位信息、行牌操作、桌面布局、对局开始",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "06#一（对照）",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q12",
+      "title": "准备状态切换交互缺失，\"默认准备\"与未准备态矛盾",
+      "priority": "P2",
+      "type": "定义歧义",
+      "module": [
+        "桌面布局-准备"
+      ],
+      "source_location": "对局前-准备信息",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "06#一（头像层准备标识）",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q13",
+      "title": "手牌标注体系不完整（典型 P2 之一）",
+      "priority": "P2",
+      "type": "描述不完整",
+      "module": [
+        "手牌信息"
+      ],
+      "source_location": "手牌信息 / 吃碰杠胡",
+      "original_text": "位置\"吃碰杠胡操作 → 碰牌-复用\"。引文：\"手牌中可碰牌高亮其他暗置，如果有胡则不需要暗置\"；\"吃碰杠胡操作 → 杠牌\"仅有特效一句话；手牌信息章节无财神角标描述（仅小结算提到\"手牌里的财神也有需要染色\"）。",
+      "problem": "a) 权限为杠（含直杠/加杠/暗杠候选）时手牌哪些牌置灰/高亮未描述；b) 置灰何时清除（出牌后、点过、他人权限到达）未描述；c) 局内手牌财神无角标/染色定义，玩家无法识别手中哪张是白板财神；d) 胡权限与碰/杠权限并存时的置灰豁免仅一句\"如果有胡则不需要暗置\"，与基准的清灰口径需确认一致。",
+      "impact": "手牌状态表达不一致会导致误出牌与验收争议；财神不可见直接影响白板财神玩法的可玩性。",
+      "suggestion": "补齐杠权限置灰规则、置灰清除三时机、局内手牌财神角标（样式/位置），并声明与基准四色优先级（黄>灰>财神红>正常）是否一致。",
+      "status": "待确认",
+      "has_detail": true
+    },
+    {
+      "id": "Q14",
+      "title": "听牌提示体系不完整（典型 P2 之二）",
+      "priority": "P2",
+      "type": "描述不完整",
+      "module": [
+        "手牌信息-听牌"
+      ],
+      "source_location": "手牌信息-听牌标签 / 提牌",
+      "original_text": "位置\"手牌信息 → 听牌标签显示规则\"与\"行牌操作｜修改对比版 → 提牌\"。引文：\"提起候选牌时，面板显示该牌打出后可胡的牌面及各自剩余张数。改提另一张候选牌时更新面板。取消提牌、改选非候选牌或实际出牌后收起面板。\"",
+      "problem": "a) 无查听按钮，已听牌玩家无法主动查看全局听牌；b) 弹窗缺倍数列、排序规则、剩余 0 张置灰、总张数与封顶文案（本期无封顶时的文案）；c) 弹窗/箭头的关闭与保留时机只写了三条（取消提牌/改选/出牌），摸牌、获得胡权限、自己胡、流局、点桌面空白均未定义；d) 听牌箭头出牌后是否保留未定义。",
+      "impact": "听牌提示是牌手核心决策辅助，入口与生命周期残缺会直接造成交互回退或状态残留。",
+      "suggestion": "按基准 02#8~#11 补齐：查听按钮显隐时机、弹窗信息结构（含无封顶文案）、关闭时机清单、箭头出牌后保留与胡后清除。",
+      "status": "待确认",
+      "has_detail": true
+    },
+    {
+      "id": "Q15",
+      "title": "有胡权限期间点击手牌的拦截与\"点过才能出牌\"轻提示缺失",
+      "priority": "P2",
+      "type": "需求缺失",
+      "module": [
+        "吃碰杠胡-胡"
+      ],
+      "source_location": "胡牌-交互说明",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "01#7；06#二",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q16",
+      "title": "操作按钮组的显示/收起时机未定义",
+      "priority": "P2",
+      "type": "描述不完整",
+      "module": [
+        "吃碰杠胡"
+      ],
+      "source_location": "吃碰杠胡操作（全文）",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "01#4,25",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q17",
+      "title": "吃多组合选择交互未定义",
+      "priority": "P2",
+      "type": "描述不完整",
+      "module": [
+        "吃碰杠胡-吃"
+      ],
+      "source_location": "玩法规则-吃",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "01#9",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q18",
+      "title": "多种杠组合的选择列表交互未定义",
+      "priority": "P2",
+      "type": "需求缺失",
+      "module": [
+        "吃碰杠胡-杠"
+      ],
+      "source_location": "杠牌（仅特效一句话）",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "01#9",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q19",
+      "title": "局终演出链顺序与桌面摊牌表现未定义（仅\"参考功夫川麻\"）",
+      "priority": "P2",
+      "type": "描述不完整",
+      "module": [
+        "结算流程"
+      ],
+      "source_location": "结算流程-流程明细",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "03#1,4",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q20",
+      "title": "流局结算表现未定义（荒牌页、摊牌、输赢文案）",
+      "priority": "P2",
+      "type": "描述不完整",
+      "module": [
+        "结算流程"
+      ],
+      "source_location": "结算流程-流程明细",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "03#2",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q21",
+      "title": "小结算流水明细（文字结算）内容与格式未定义",
+      "priority": "P2",
+      "type": "描述不完整",
+      "module": [
+        "小结算界面"
+      ],
+      "source_location": "小结算界面",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "03#10,12",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q22",
+      "title": "小结算继续/关闭交互与下一局衔接未定义（典型 P2 之三）",
+      "priority": "P2",
+      "type": "需求缺失",
+      "module": [
+        "小结算界面"
+      ],
+      "source_location": "小结算界面（全文）",
+      "original_text": "位置\"结算界面 → 小结算界面（好友房）\"。引文：触发逻辑仅\"播完胡牌结算流程，进入结算界面\"；UI 交互说明仅列玩家信息、手牌摆布、输赢显示、分数结算、承包标识、赢家结算、麻将牌标识、财神牌八项，无任何按钮。",
+      "problem": "未定义：小结算上的按钮集合（继续/关闭）；单人点击即关还是全员确认才开下一局；点击后到下一局摇骰的过渡；与 Q05 的第 8 局终点衔接。",
+      "impact": "局与局之间无法推进，好友房多人场景下\"谁点了才算数\"无标准会产生流程挂起或抢开。",
+      "suggestion": "定义按钮组与多端确认规则（建议沿用基准：继续=关小结算并进入下一局准备，全员确认或房主开局的口径需明确），并与 Q05 一并给出第 8 局分支。",
+      "status": "待确认\n\n---",
+      "has_detail": true
+    },
+    {
+      "id": "Q23",
+      "title": "三摊计数边界表述歧义，影响\"三摊落地\"动画触发时机",
+      "priority": "P2",
+      "type": "定义歧义",
+      "module": [
+        "通用提示"
+      ],
+      "source_location": "名词-承包 / 对局内通用提示",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "06#二（提示层对照）",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q24",
+      "title": "牌墙视觉布局与更新规则未定义",
+      "priority": "P2",
+      "type": "描述不完整",
+      "module": [
+        "玩法信息"
+      ],
+      "source_location": "局中信息（仅\"刷新牌墙\"字样）",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "07#7,8；08#8,9",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q25",
+      "title": "财神指示牌 UI 为新增功能，建议补\"与现网实现差异说明\"",
+      "priority": "P3",
+      "type": "需求缺失",
+      "module": [
+        "玩法信息-财神"
+      ],
+      "source_location": "玩法信息-财神 / 定财神",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "07#12,13",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q26",
+      "title": "听牌标签\"爆/飘\"与\"胡牌牌+tips\"为现网不存在的新增",
+      "priority": "P3",
+      "type": "需求缺失",
+      "module": [
+        "手牌信息-听牌"
+      ],
+      "source_location": "手牌信息-听牌标签",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "02#14",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q27",
+      "title": "吃操作按钮 UI 为现网新增（42319 无吃入口），建议补差异说明",
+      "priority": "P3",
+      "type": "需求缺失",
+      "module": [
+        "吃碰杠胡-吃"
+      ],
+      "source_location": "吃碰杠胡操作-吃牌",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "01#5",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q28",
+      "title": "两种\"过\"按钮的语义（是否上报服务端）未区分",
+      "priority": "P3",
+      "type": "需求缺失",
+      "module": [
+        "吃碰杠胡"
+      ],
+      "source_location": "吃碰杠胡操作-各按钮",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "01#6",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q29",
+      "title": "权限按钮防连点与弹窗防抖规则未定义",
+      "priority": "P3",
+      "type": "需求缺失",
+      "module": [
+        "吃碰杠胡/听牌"
+      ],
+      "source_location": "吃碰杠胡操作",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "01#11；06#三",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q30",
+      "title": "道具类功能范围未明示（记牌器/预约洗牌/道具引导/小结算外围按钮）",
+      "priority": "P3",
+      "type": "需求缺失",
+      "module": [
+        "全局"
+      ],
+      "source_location": "全文",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "02#12；03#13；05#17；08#12",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q31",
+      "title": "首出庄/闲提示条的表现形式模糊",
+      "priority": "P3",
+      "type": "定义歧义",
+      "module": [
+        "发牌"
+      ],
+      "source_location": "发牌-切入行牌",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "01#22；07#10",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q32",
+      "title": "倒计时音效未定义",
+      "priority": "P3",
+      "type": "需求缺失",
+      "module": [
+        "方位信息-倒计时"
+      ],
+      "source_location": "方位信息-倒计时",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "01#20；07#2",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q33",
+      "title": "摸牌凑牌动画（凑成顺/刻/杠）未定义",
+      "priority": "P3",
+      "type": "需求缺失",
+      "module": [
+        "行牌操作-摸牌"
+      ],
+      "source_location": "行牌操作-摸牌",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "08#10",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q34",
+      "title": "离线解散预警（好友房离线超时处理）未定义",
+      "priority": "P3",
+      "type": "需求缺失",
+      "module": [
+        "玩家状态"
+      ],
+      "source_location": "玩家头像信息-玩家状态",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "05#14",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q35",
+      "title": "断线计时 1 小时封顶停表规则缺失",
+      "priority": "P3",
+      "type": "描述不完整",
+      "module": [
+        "玩家状态"
+      ],
+      "source_location": "玩家头像信息-玩家状态",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "04#17",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q36",
+      "title": "昵称截断\"超出第78个字符\"笔误（应为第 10 个）",
+      "priority": "P3",
+      "type": "逻辑错误",
+      "module": [
+        "玩家头像信息"
+      ],
+      "source_location": "玩家头像信息-玩家昵称",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "08#3",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q37",
+      "title": "设置开关相关范围未定义（出牌方式/放大/牌墙/快出/特效）",
+      "priority": "P3",
+      "type": "描述不完整",
+      "module": [
+        "全局"
+      ],
+      "source_location": "行牌操作-出牌等",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "01#12,19；07#8,14",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q38",
+      "title": "术语不统一（倒承包/反承包、老庄/牢庄）",
+      "priority": "P3",
+      "type": "定义歧义",
+      "module": [
+        "名词/小结算"
+      ],
+      "source_location": "名词表 / 小结算界面",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "文档内部对照",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q39",
+      "title": "非房主退出也提示\"解散房间\"，权限与文案歧义",
+      "priority": "P3",
+      "type": "定义歧义",
+      "module": [
+        "菜单"
+      ],
+      "source_location": "辅助功能-菜单",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "06#四（弱对照）",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q40",
+      "title": "结算表现细节缺失（番型动画选取规则、超基础番型震动）",
+      "priority": "P3",
+      "type": "需求缺失",
+      "module": [
+        "结算流程"
+      ],
+      "source_location": "结算流程-流程明细",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "03#9,16",
+      "status": "待确认",
+      "has_detail": false
+    },
+    {
+      "id": "Q41",
+      "title": "局与局之间的界面重置清理未描述",
+      "priority": "P3",
+      "type": "需求缺失",
+      "module": [
+        "全局"
+      ],
+      "source_location": "对局开始-触发逻辑",
+      "original_text": "",
+      "problem": "",
+      "impact": "",
+      "suggestion": "06#四.4,7",
+      "status": "待确认",
+      "has_detail": false
+    }
+  ],
+  "overall_recommendations": []
+}

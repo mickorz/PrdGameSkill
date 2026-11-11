@@ -191,7 +191,8 @@ export function parseReport(md) {
       priority: m[3],
       title: m[6].trim(),
       source_location: m[7].trim(),
-      suggestion: m[8].trim(),
+      // 第 8 列是基准依据（非 PRD 格式的建议列），挂独立字段，不进 suggestion
+      rule_ref: m[8].trim(),
       moduleCol: m[5].trim(),
     };
   }
@@ -234,6 +235,7 @@ export function parseReport(md) {
       module: initModules,
       dimension: row?.dimension || reportDim,
       source_location: row?.source_location || '',
+      rule_ref: row?.rule_ref || '',
       original_text: '',
       problem: '',
       impact: '',
@@ -298,6 +300,9 @@ export function parseReport(md) {
       const themeRaw = (body.match(/-\s*主题：\s*(.+)$/m) || [])[1]?.trim() || '';
       // suggestion：建议块 + 未知字段块（需要补的内容与必填格式、范例、验收口径等）按原顺序并入
       let suggestion = blockText('建议');
+      // Q 版详情字段：基准依据挂 rule_ref，验收口径挂 acceptance（不并入建议）
+      const ruleRefDetail = blockText('基准依据');
+      const acceptance = blockText('验收口径');
       for (const b of blocks) {
         if (KNOWN_BLOCKS.has(b.name)) continue;
         const content = [...(b.first ? [b.first] : []), ...b.lines].join('\n').trim();
@@ -316,6 +321,8 @@ export function parseReport(md) {
         problem: blockText('问题'),
         impact: blockText('影响'),
         suggestion: suggestion || issue.suggestion,
+        rule_ref: ruleRefDetail || issue.rule_ref,
+        acceptance,
         status: blockText('处理状态') || '待确认',
         has_detail: true,
       };
@@ -458,11 +465,15 @@ export function validateReport(data) {
   // 6. TOP5 引用存在
   for (const id of data.featured_issues) if (!ids.includes(id)) errors.push(`TOP5 引用了不存在的问题 ${id}`);
   // 7. 字段完整性：
-  //    所有条目：标题、优先级、类型、建议必须有（清单三列 + 类型兜底）
+  //    所有条目：标题、优先级、类型必须有；建议与基准依据至少一项非空
+  //    （Q 版清单条目无独立建议，rule_ref 条款号即证据；PRD 版建议在清单末列）
   //    有详情块条目（has_detail）：原文/问题/影响必须完整保留
   for (const it of data.issues) {
-    for (const f of ['title', 'priority', 'type', 'suggestion']) {
+    for (const f of ['title', 'priority', 'type']) {
       if (!it[f] || !String(it[f]).trim()) errors.push(`${it.id} 字段 ${f} 为空，原始信息丢失`);
+    }
+    if ((!it.suggestion || !String(it.suggestion).trim()) && (!it.rule_ref || !String(it.rule_ref).trim())) {
+      errors.push(`${it.id} 字段 suggestion 与 rule_ref 均为空，原始信息丢失`);
     }
     if (it.has_detail) {
       for (const f of ['original_text', 'problem', 'impact']) {

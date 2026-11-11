@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRD 质量分析报告</title>
+<style>
+  :root {
+    --bg: #F6F8FB;
+    --card: #FFFFFF;
+    --primary: #3478DB;
+    --p0: #DC5148;
+    --p1: #E8A044;
+    --p2: #4389D5;
+    --p3: #94A3B8;
+    --text: #253247;
+    --muted: #8491A3;
+    --border: #E7ECF2;
+    --radius: 12px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .page { max-width: 1440px; margin: 0 auto; padding: 24px 32px 48px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .section-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+  .section-title .sub { font-size: 12px; font-weight: 400; color: var(--muted); margin-left: 8px; }
+
+  /* 01 头部 */
+  .header { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .header h1 { font-size: 22px; font-weight: 700; }
+  .header .project { font-size: 15px; color: var(--muted); margin-top: 4px; }
+  .header .meta { font-size: 13px; color: var(--muted); margin-top: 10px; }
+  .header .meta span { margin-right: 20px; }
+  .badge { display: inline-block; padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .badge.blocked { background: #FDECEA; color: var(--p0); }
+  .badge.allowed { background: #E8F5EC; color: #2F9E5B; }
+  .badge.na { background: #EEF1F5; color: var(--muted); }
+
+  /* 02 KPI */
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 20px; }
+  .kpi {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 20px 24px; cursor: pointer; transition: box-shadow .15s, transform .15s;
+  }
+  .kpi:hover { box-shadow: 0 4px 14px rgba(52,120,219,.12); transform: translateY(-1px); }
+  .kpi .num { font-size: 34px; font-weight: 700; line-height: 1.2; }
+  .kpi .label { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .kpi .num.c-p0 { color: var(--p0); } .kpi .num.c-p1 { color: var(--p1); }
+  .kpi .num.c-p23 { color: var(--text); }
+
+  /* 03 结论 */
+  .conclusion .verdict { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+  .conclusion .verdict.blocked { color: var(--p0); }
+  .conclusion .verdict.allowed { color: #2F9E5B; }
+  .conclusion .reasons { margin-top: 10px; padding-left: 20px; color: var(--text); }
+  .conclusion .reasons li { margin: 3px 0; }
+
+  /* 04 风险 */
+  .risk-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .risk-group h3 { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+  .risk-item {
+    display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px;
+    border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  .risk-item:hover { border-color: var(--primary); background: #F7FAFE; }
+  .risk-item .pri { flex: none; font-size: 12px; font-weight: 700; padding: 1px 8px; border-radius: 4px; color: #fff; margin-top: 2px; }
+  .risk-item .body { flex: 1; min-width: 0; }
+  .risk-item .name { font-weight: 600; font-size: 13px; }
+  .risk-item .name .id { color: var(--muted); font-weight: 400; margin-left: 6px; white-space: nowrap; }
+  .risk-item .desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* 05 分布图表 */
+  .charts { display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 24px; }
+  .chart h3 { font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 12px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; cursor: pointer; padding: 3px 4px; border-radius: 6px; }
+  .bar-row:hover, .bar-row.active { background: #F0F6FD; }
+  .bar-row .bl { flex: none; width: 34px; font-weight: 600; font-size: 13px; }
+  .bar-row .track { flex: 1; display: block; height: 18px; background: #F0F3F7; border-radius: 4px; overflow: hidden; }
+  .bar-row .fill { display: block; height: 100%; border-radius: 4px; min-width: 6px; }
+  .bar-row .val { flex: none; width: 96px; font-size: 12px; color: var(--muted); text-align: right; }
+  .donut-wrap { display: flex; align-items: center; gap: 18px; }
+  .donut { flex: none; position: relative; width: 160px; height: 160px; }
+  .donut svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .donut .center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .donut .center b { font-size: 26px; }
+  .donut .center span { font-size: 11px; color: var(--muted); }
+  .legend { flex: 1; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 4px 6px; border-radius: 6px; cursor: pointer; }
+  .legend-item:hover, .legend-item.active { background: #F0F6FD; }
+  .legend-item .dot { flex: none; width: 10px; height: 10px; border-radius: 3px; }
+  .legend-item .t { flex: 1; }
+  .legend-item .v { color: var(--muted); }
+
+  /* 06 TOP5 */
+  .top-list .rank {
+    display: flex; align-items: center; gap: 12px; padding: 11px 12px;
+    border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  .top-list .rank:hover { border-color: var(--primary); background: #F7FAFE; }
+  .top-list .no { flex: none; width: 22px; height: 22px; border-radius: 50%; background: #EEF1F5; color: var(--muted); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .top-list .title { flex: 1; font-weight: 600; font-size: 13px; }
+  .top-list .title .id { color: var(--muted); font-weight: 400; margin-right: 8px; }
+  .top-list .tag { flex: none; font-size: 11px; color: var(--muted); }
+  .top-list .tag .rf { margin-left: 8px; }
+
+  /* 07 问题清单 */
+  .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px; }
+  .toolbar select, .toolbar input {
+    border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px;
+    font-size: 13px; background: #fff; color: var(--text); outline: none;
+  }
+  .toolbar input { width: 220px; }
+  .toolbar select:focus, .toolbar input:focus { border-color: var(--primary); }
+  .toolbar .count { font-size: 12px; color: var(--muted); }
+  .toolbar .spacer { flex: 1; }
+  .btn {
+    border: 1px solid var(--border); background: #fff; color: var(--text);
+    border-radius: 8px; padding: 7px 14px; font-size: 13px; cursor: pointer;
+  }
+  .btn:hover { border-color: var(--primary); color: var(--primary); }
+  .btn.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .btn.primary:hover { background: #2B66C4; }
+  table.issues { width: 100%; border-collapse: collapse; }
+  table.issues th {
+    text-align: left; font-size: 12px; color: var(--muted); font-weight: 600;
+    padding: 8px 10px; border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  table.issues td { padding: 10px; border-bottom: 1px solid #F0F3F7; vertical-align: top; }
+  table.issues tbody tr { cursor: pointer; }
+  table.issues tbody tr:hover { background: #F7FAFE; }
+  td.id, .pri-tag { font-family: "SF Mono", Consolas, monospace; }
+  td.id { color: var(--muted); font-size: 12px; white-space: nowrap; }
+  td.title { font-weight: 600; max-width: 460px; }
+  td.loc { color: var(--muted); font-size: 12px; max-width: 220px; }
+  .pri-tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 4px; color: #fff; }
+  .type-tag { display: inline-block; font-size: 11px; padding: 1px 8px; border-radius: 4px; background: #EEF1F5; color: var(--muted); }
+  .empty { text-align: center; color: var(--muted); padding: 32px 0; }
+
+  /* 08 综合分析 */
+  .analysis ul { padding-left: 20px; }
+  .analysis li { margin: 6px 0; }
+
+  /* 抽屉 */
+  .mask { position: fixed; inset: 0; background: rgba(20,30,45,.4); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 40; }
+  .mask.show { opacity: 1; pointer-events: auto; }
+  .drawer {
+    position: fixed; top: 0; right: -520px; width: 520px; max-width: 100vw; height: 100vh;
+    background: #fff; z-index: 50; box-shadow: -8px 0 30px rgba(20,30,45,.15);
+    transition: right .25s ease; display: flex; flex-direction: column;
+  }
+  .drawer.show { right: 0; }
+  .drawer-head { display: flex; align-items: center; gap: 10px; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+  .drawer-head .id { font-family: monospace; color: var(--muted); font-size: 13px; }
+  .drawer-head .title { font-weight: 700; font-size: 15px; flex: 1; }
+  .drawer-head .close { border: none; background: none; font-size: 20px; color: var(--muted); cursor: pointer; padding: 4px; }
+  .drawer-nav { display: flex; align-items: center; gap: 8px; padding: 8px 20px; border-bottom: 1px solid var(--border); }
+  .drawer-nav .pos { font-size: 12px; color: var(--muted); flex: 1; }
+  .drawer-body { flex: 1; overflow-y: auto; padding: 20px; }
+  .drawer-body h4 { font-size: 12px; color: var(--muted); font-weight: 600; margin: 18px 0 6px; }
+  .drawer-body h4:first-child { margin-top: 0; }
+  .drawer-body h5 { font-size: 13px; font-weight: 700; margin: 14px 0 6px; padding-top: 10px; border-top: 1px dashed var(--border); }
+  .drawer-body blockquote {
+    border-left: 3px solid var(--border); background: #F8FAFC;
+    padding: 10px 14px; border-radius: 0 8px 8px 0; white-space: pre-wrap; font-size: 13px; color: #47586E;
+  }
+  .drawer-body .mini-table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 12px; display: table; }
+  .drawer-body .mini-table th, .drawer-body .mini-table td { border: 1px solid var(--border); padding: 6px 8px; text-align: left; vertical-align: top; }
+  .drawer-body .mini-table th { background: #F6F8FB; color: var(--muted); font-weight: 600; white-space: nowrap; }
+  .drawer-body p { font-size: 13px; }
+  .drawer-body .status { margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--border); font-size: 12px; color: var(--muted); }
+  .drawer-body .kv { margin-bottom: 10px; }
+
+  /* 浮动操作 */
+  .fab { position: fixed; right: 28px; bottom: 28px; display: flex; flex-direction: column; gap: 10px; z-index: 30; }
+  .fab .btn { box-shadow: 0 4px 14px rgba(20,30,45,.12); }
+
+  /* 响应式 */
+  @media (max-width: 1180px) {
+    .charts { grid-template-columns: 1fr; }
+    .risk-cols { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 1024px) {
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .page { padding: 16px 20px 40px; }
+  }
+  @media (max-width: 768px) {
+    .kpis { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .card { padding: 16px; }
+    .toolbar input { width: 100%; }
+    .toolbar { gap: 8px; }
+    /* 表格转卡片 */
+    table.issues, table.issues tbody, table.issues tr, table.issues td { display: block; width: 100%; }
+    table.issues thead { display: none; }
+    table.issues tbody tr { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; padding: 10px; }
+    table.issues tbody td { border: none; padding: 2px 0; }
+    td.id { display: inline-block; }
+    /* 抽屉全屏 */
+    .drawer { width: 100vw; right: -100vw; }
+    .fab { right: 16px; bottom: 16px; }
+  }
+
+  /* 打印 */
+  @media print {
+    body { background: #fff; }
+    .page { max-width: none; padding: 0; }
+    .card { border: none; box-shadow: none; break-inside: avoid; padding: 12px 0; margin-bottom: 12px; }
+    .toolbar, .fab, .mask, .drawer, .kpi .label-tip { display: none !important; }
+    .kpi { border: 1px solid #ddd; }
+    .kpi:hover { transform: none; box-shadow: none; }
+    .top-list .rank, .risk-item, table.issues tbody tr { break-inside: avoid; cursor: default; }
+    table.issues tbody tr:hover { background: none; }
+    a { text-decoration: none; color: inherit; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- 01 报告头部 -->
+  <header class="card header" id="sec-header"></header>
+
+  <!-- 02 质量指标 -->
+  <section class="kpis" id="sec-kpis"></section>
+
+  <!-- 03 检查结论 -->
+  <section class="card conclusion" id="sec-conclusion"></section>
+
+  <!-- 04 风险分析 -->
+  <section class="card" id="sec-risks"></section>
+
+  <!-- 05 问题分布 -->
+  <section class="card charts" id="sec-charts"></section>
+
+  <!-- 06 重点问题 TOP5 -->
+  <section class="card" id="sec-top"></section>
+
+  <!-- 07 完整问题清单 -->
+  <section class="card" id="sec-list">
+    <div class="section-title">完整问题清单<span class="sub" id="list-count"></span></div>
+    <div class="toolbar" id="toolbar">
+      <select id="f-priority">
+        <option value="">全部优先级</option>
+        <option value="P0">P0</option><option value="P1">P1</option>
+        <option value="P2">P2</option><option value="P3">P3</option>
+      </select>
+      <select id="f-type"><option value="">全部类型</option></select>
+      <select id="f-dimension"><option value="">全部维度</option></select>
+      <select id="f-module"><option value="">全部模块</option></select>
+      <input id="f-q" type="search" placeholder="搜索 ID / 问题 / 位置">
+      <button class="btn" id="btn-clear">清除筛选</button>
+      <span class="spacer"></span>
+      <span class="count" id="f-count"></span>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="issues">
+        <thead><tr><th>ID</th><th>问题标题</th><th>优先级</th><th>类型</th><th>维度</th><th>原文位置</th></tr></thead>
+        <tbody id="issue-tbody"></tbody>
+      </table>
+      <div class="empty" id="issue-empty" style="display:none">没有符合筛选条件的问题</div>
+    </div>
+  </section>
+
+  <!-- 08 综合分析 -->
+  <section class="card analysis" id="sec-analysis"></section>
+
+</div>
+
+<!-- 详情抽屉 -->
+<div class="mask" id="mask"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-head">
+    <span class="pri-tag" id="d-pri"></span>
+    <span class="id" id="d-id"></span>
+    <div class="title" id="d-title"></div>
+    <button class="close" id="d-close" title="关闭">x</button>
+  </div>
+  <div class="drawer-nav">
+    <button class="btn" id="d-prev">上一条</button>
+    <button class="btn" id="d-next">下一条</button>
+    <span class="pos" id="d-pos"></span>
+  </div>
+  <div class="drawer-body" id="d-body"></div>
+</aside>
+
+<!-- 浮动操作 -->
+<div class="fab">
+  <button class="btn" id="btn-top" title="返回顶部">返回顶部</button>
+  <button class="btn primary" id="btn-print" title="打印 / 导出 PDF">打印 / PDF</button>
+</div>
+
+<script type="application/json" id="report-data">{"schema_version":1,"report":{"title":"PRD 质量分析报告","project_name":"","document_name":"","inspection_date":"","source_file":"","rule_baselines":[],"overall_conclusion":{"status":"NA","summary":"","reasons":[]}},"statistics":{"total":36,"priority":{"P0":2,"P1":3,"P2":16,"P3":15},"types":{"需求缺失":16,"内容冲突":5,"描述不完整":12,"定义歧义":2,"逻辑错误":1},"dimensions":{"UI 交互":36}},"risk_groups":[{"key":"blocker","name":"开发阻塞风险","description":"关键流程/规则缺失或矛盾，直接阻塞开发或验收","issue_ids":["Q01","Q02"]}],"modules":[{"name":"断线重连","issue_ids":["Q01"]},{"name":"吃碰杠胡-杠","issue_ids":["Q02","Q16"]},{"name":"行牌操作-出牌","issue_ids":["Q03"]},{"name":"吃碰杠胡","issue_ids":["Q04","Q14","Q25"]},{"name":"结算流程","issue_ids":["Q05","Q17","Q18","Q35"]},{"name":"方位信息-倒计时","issue_ids":["Q06","Q29"]},{"name":"手牌信息-听牌标签","issue_ids":["Q07"]},{"name":"玩家头像-庄标","issue_ids":["Q08"]},{"name":"小结算界面","issue_ids":["Q09","Q19","Q20"]},{"name":"桌面布局-准备","issue_ids":["Q10"]},{"name":"手牌信息","issue_ids":["Q11"]},{"name":"手牌信息-听牌","issue_ids":["Q12","Q23"]},{"name":"吃碰杠胡-胡","issue_ids":["Q13"]},{"name":"吃碰杠胡-吃","issue_ids":["Q15","Q24"]},{"name":"玩法信息","issue_ids":["Q21"]},{"name":"玩法信息-财神","issue_ids":["Q22"]},{"name":"吃碰杠胡/听牌","issue_ids":["Q26"]},{"name":"全局","issue_ids":["Q27","Q34","Q36"]},{"name":"发牌","issue_ids":["Q28"]},{"name":"行牌操作-摸牌","issue_ids":["Q30"]},{"name":"玩家状态","issue_ids":["Q31","Q32"]},{"name":"玩家头像信息","issue_ids":["Q33"]}],"featured_issues":["Q01","Q02"],"issues":[{"id":"Q01","title":"断线重连与场景恢复机制整体缺失","priority":"P0","type":"需求缺失","module":["断线重连"],"dimension":"UI 交互","source_location":"玩家头像信息-玩家状态","rule_ref":"04#1 场景应答恢复倒计时基准与记牌器；04#3 行牌快照恢复固定顺序（开局数据→玩家→配置→局数据→牌墙→手牌→河牌→权限→倒计时/方位灯→end_wait 应答）；04#6 他人手牌恢复为背面；04#8 权限与按钮按位完整恢复、他人权限立即收操作区；04#9 河牌恢复后补出牌放大；04#13 end_wait 自动应答防服务端卡死；04#18 重连后在托管态弹遮罩（无托管不适用，但恢复顺序适用）。","original_text":"位置\"三、对局流程 → 局中信息 → 玩家头像信息 → 玩家状态\"。引文：\"离线状态：头像处覆盖断线图标，且显示断线计时，格式为分秒'00:00'，每次断线重新计时。备注：在当前动画播放过程中有玩家离线切后台等，不会因此中断原本的动画流程\"。全文检索\"重连/恢复\"无任何场景恢复描述。","problem":"需求只定义了断线图标与计时，未定义断线玩家重连后如何恢复牌局：恢复哪些内容、按什么顺序、恢复期间动画是否静默、他人手牌是否翻开、倒计时以什么为基准、权限按钮如何还原、最后出牌放大是否补显。","impact":"好友房 8 局对局时长内断线必然发生；无恢复规格则该场景无法开发与验收，服务端 end_wait 应答缺失还会导致整桌卡死。","suggestion":"新增\"断线重连与场景恢复\"章节：恢复入口与状态分发、恢复顺序、静默模式（不播开局/摸牌/胡牌动画）、他人手牌背面、权限/倒计时/方位灯/出牌放大补刷、end_wait 自动应答；可直接以基准 04#1~#16 为对照逐条声明采纳或改版。","status":"待确认","has_detail":true,"acceptance":"行牌中断线重连后，本家手牌/河牌/牌墙/剩余数/权限按钮/倒计时/方位灯与断线前一致，他人手牌保持背面，最后出牌放大补显；开局/发牌/洗牌阶段断线重连各有定义的恢复表现。"},{"id":"Q02","title":"杠操作按钮组与加杠/暗杠触发交互完全未定义","priority":"P0","type":"需求缺失","module":["吃碰杠胡-杠"],"dimension":"UI 交互","source_location":"吃碰杠胡操作-杠牌","rule_ref":"01#3 操作区控制器页面状态（碰杠胡态/选择多杠态）；01#9 杠单组合直接发送、多组合进入选择多杠态显示牌面列表、多杠态点取消=同时执行过。","original_text":"位置\"三、对局流程 → 局内流程 → 吃碰杠胡操作 → 杠牌\"。引文（全文）：\"杠牌-复用现有血战杠的特效，主要区别删除刮风下雨，无论什么杠，统一使用杠字即可\"。","problem":"未定义：他人弃牌可直杠时是否显示【杠】+【过】按钮组及位置；本人出牌阶段加杠、暗杠的触发方式（点击手牌第 4 张弹选项？按钮？）；多种杠组合并存时的选择交互；杠按钮与过按钮的互斥/收起规则。\"复用血战杠的特效\"仅指动画特效，不构成按钮交互规格。","impact":"杠是本期启用的高频核心操作（含吃碰当前回合可杠），无入口定义无法开发与验收；暗杠 3 背 1 正的展示虽有玩法描述，但玩家如何发起暗杠无解。","suggestion":"补充杠操作小节：直杠按钮组（样式/位置/与碰胡并存时的排布）、加杠与暗杠的出牌阶段触发交互、多杠组合选择列表、选择态取消=过的行为。","status":"待确认","has_detail":true,"acceptance":"可直杠时出现杠按钮且点击后弃牌入副露并补牌；出牌阶段可按定义的交互完成加杠/暗杠；多种杠并存时出现选择列表，取消等同过。"},{"id":"Q03","title":"单击出牌前后矛盾","priority":"P1","type":"内容冲突","module":["行牌操作-出牌"],"dimension":"UI 交互","source_location":"行牌操作-出牌 / 修改对比版-出牌","rule_ref":"01#12 三种出牌方式均为设置项控制（单击直接出需设置开启）；01#13 打听牌禁止单击直接打出。","original_text":"位置一\"局内流程 → 行牌操作 → 出牌（前表）\"。引文：\"单击出牌：出牌阶段点击打出不可听牌的牌，则直接将其打出，无需提起。单机出牌开启时，若轮到自己出牌前有牌提起，则自动下落。\"位置二\"行牌操作｜修改对比版 → 出牌\"。引文：\"本方案默认双击出牌。滑动出牌默认开。单击出牌归设置模块，本方案不包含该模式。\"","problem":"前文将单击出牌作为本期可选出牌方式给出完整交互定义（含自动下落细节），后文明确\"本方案不包含该模式\"，范围互相矛盾；另\"单击仅限不可听牌\"的限制依附于被排除的模式，本期双击/滑动模式下可听牌能否滑动直接打出也未说明（基准 01#13 要求打听牌强制先提牌查看听牌信息）。","impact":"开发无法确定单击出牌是否在交付范围；可听牌的滑动出牌限制缺失可能导致绕过听牌提示交互。","suggestion":"删除或标注前文单击出牌段落为\"原方案对照\"；补充说明本期双击/滑动模式下可听牌是否允许滑动直接打出（基准要求禁止单击直接打出、须先提牌）。","status":"待确认","has_detail":true,"acceptance":"全文仅存在一种口径；滑动出牌对可听牌的限制有明确结论。"},{"id":"Q04","title":"\"多操作状态\"章节空引用","priority":"P1","type":"描述不完整","module":["吃碰杠胡"],"dimension":"UI 交互","source_location":"吃碰杠胡操作-多操作状态","rule_ref":"01#3 操作区按权限组合切换页面状态；01#4 他人收到权限时自己操作区直接收起（关按钮区、锁手牌、清提示）；01#25 操作区收起的统一时机。","original_text":"位置\"三、对局流程 → 局内流程 → 吃碰杠胡操作 → 多操作状态-复用功夫川麻\"。引文：仅有标题\"多操作状态-复用功夫川麻\"，其后直接进入\"对局内通用提示\"，无正文。","problem":"同一弃牌多人可响应（庄闲放铳下多人可胡、胡与碰并存）是本期规则明确支持的裁决场景，但各端按钮如何同时展示、裁决后未获权玩家的按钮如何收起、操作区互斥规则全部缺失，仅以外部项目名\"功夫川麻\"代替。","impact":"多人响应是常见分支，按钮残留/误操作风险高，无法验收。","suggestion":"补写多操作状态：各端按钮同时展示规则、他人权限到达时本家操作区立即收起、裁决完成后按钮区与方位高亮的联动切换。","status":"待确认","has_detail":true,"acceptance":"两人同时收到按钮时各自界面按钮正常；一方胡/碰成立后另一方按钮立即消失且手牌恢复可操作态。"},{"id":"Q05","title":"满 8 局\"结束本场\"的表现未定义","priority":"P1","type":"描述不完整","module":["结算流程"],"dimension":"UI 交互","source_location":"本期开发范围","rule_ref":"03#17 大结算数据组装（总局数/起止时间/总分/明细）；03#18 大结算弹出时机（动画链第 4 步延迟 2 秒/解散局直出）；03#19 收到大结算事件后小结算强制切\"最后一局\"页；03#14 最后一局继续按钮转弹大结算。","original_text":"位置\"本期开发范围\"。引文：\"每小局保留小结算，未满8局则继续下一小局，满8局结束本场。\"\"本期只做游戏内核心流程。原文中的创房面板、其他玩法选项、大结算和非核心桌面功能，如在核心段落中被引用，仅作原文上下文。\"","problem":"固定 8 局是本期规则，第 8 局小结算后玩家看到什么（大结算不做）未定义：直接解散回大厅？停留小结算？还是简化总分页？第 8 局小结算的\"继续游戏\"按钮行为也随之下落空。","impact":"8 局打完是必现场景，终点表现缺失导致整场流程无法走通验收。","suggestion":"明示第 8 局结束本场的表现（即使简化，也应定义：显示汇总分或直接回房间/解散），并定义最后一局小结算按钮文案与行为。","status":"待确认\n\n---","has_detail":true,"acceptance":"第 8 局小结算操作后有明确定义的结束表现，玩家可离开对局且房间状态可预期。"},{"id":"Q06","title":"倒计时末 3 秒颜色与基准冲突（需求黄/基准红）","priority":"P2","type":"内容冲突","module":["方位信息-倒计时"],"dimension":"UI 交互","source_location":"方位信息-倒计时","rule_ref":"07#2；01#20","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q07","title":"同牌点多张的标签标记位置与基准冲突（最右 vs 第一张）","priority":"P2","type":"内容冲突","module":["手牌信息-听牌标签"],"dimension":"UI 交互","source_location":"听牌标签显示规则-多/大","rule_ref":"02#6","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q08","title":"平庄庄标样式两处矛盾（【庄】vs【庄×1】）","priority":"P2","type":"内容冲突","module":["玩家头像-庄标"],"dimension":"UI 交互","source_location":"玩家头像信息 / 定庄","rule_ref":"07#9","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q09","title":"番型是否展示倍数自相矛盾（删除线 vs 示例含倍数）","priority":"P2","type":"内容冲突","module":["小结算界面"],"dimension":"UI 交互","source_location":"小结算界面-赢家结算","rule_ref":"03#12","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q10","title":"准备状态切换交互缺失，\"默认准备\"与未准备态矛盾","priority":"P2","type":"定义歧义","module":["桌面布局-准备"],"dimension":"UI 交互","source_location":"对局前-准备信息","rule_ref":"06#一（头像层准备标识）","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q11","title":"手牌标注体系不完整（典型 P2 之一）","priority":"P2","type":"描述不完整","module":["手牌信息"],"dimension":"UI 交互","source_location":"手牌信息 / 吃碰杠胡","rule_ref":"01#15 有碰或杠权限且无胡权限时除目标牌外整手置灰，有胡权限清灰；01#16 置灰颜色优先级 黄 > 灰 > 财神红 > 正常；01#17 置灰清除时机（点碰/杠/过、收操作区、他人权限到达）；07#12 手牌癞子角标按配置牌表设置黄色角标。","original_text":"位置\"吃碰杠胡操作 → 碰牌-复用\"。引文：\"手牌中可碰牌高亮其他暗置，如果有胡则不需要暗置\"；\"吃碰杠胡操作 → 杠牌\"仅有特效一句话；手牌信息章节无财神角标描述（仅小结算提到\"手牌里的财神也有需要染色\"）。","problem":"a) 权限为杠（含直杠/加杠/暗杠候选）时手牌哪些牌置灰/高亮未描述；b) 置灰何时清除（出牌后、点过、他人权限到达）未描述；c) 局内手牌财神无角标/染色定义，玩家无法识别手中哪张是白板财神；d) 胡权限与碰/杠权限并存时的置灰豁免仅一句\"如果有胡则不需要暗置\"，与基准的清灰口径需确认一致。","impact":"手牌状态表达不一致会导致误出牌与验收争议；财神不可见直接影响白板财神玩法的可玩性。","suggestion":"补齐杠权限置灰规则、置灰清除三时机、局内手牌财神角标（样式/位置），并声明与基准四色优先级（黄>灰>财神红>正常）是否一致。","status":"待确认","has_detail":true,"acceptance":"碰/杠/吃权限下置灰范围符合定义；出牌或点过后置灰清除；手牌财神有可见标识。"},{"id":"Q12","title":"听牌提示体系不完整（典型 P2 之二）","priority":"P2","type":"描述不完整","module":["手牌信息-听牌"],"dimension":"UI 交互","source_location":"手牌信息-听牌标签 / 提牌","rule_ref":"02#8 常驻听牌组件含查听按钮，显示条件为有已听牌数据且自己未胡，及成套显隐时机；02#9 弹窗每项=牌面+倍数+剩余张数、番数降序+牌值升序、剩余 0 张置灰、总张数+封顶文案；02#10 弹窗两入口（查听按钮重复点击切换/提牌自动弹）；02#11 弹窗关闭时机（摸牌、可胡、自己胡、流局摊牌、点桌面等）；02#5 自己胡后听牌数据清空、清箭头；02#6 出牌后仍保留有效箭头。","original_text":"位置\"手牌信息 → 听牌标签显示规则\"与\"行牌操作｜修改对比版 → 提牌\"。引文：\"提起候选牌时，面板显示该牌打出后可胡的牌面及各自剩余张数。改提另一张候选牌时更新面板。取消提牌、改选非候选牌或实际出牌后收起面板。\"","problem":"a) 无查听按钮，已听牌玩家无法主动查看全局听牌；b) 弹窗缺倍数列、排序规则、剩余 0 张置灰、总张数与封顶文案（本期无封顶时的文案）；c) 弹窗/箭头的关闭与保留时机只写了三条（取消提牌/改选/出牌），摸牌、获得胡权限、自己胡、流局、点桌面空白均未定义；d) 听牌箭头出牌后是否保留未定义。","impact":"听牌提示是牌手核心决策辅助，入口与生命周期残缺会直接造成交互回退或状态残留。","suggestion":"按基准 02#8~#11 补齐：查听按钮显隐时机、弹窗信息结构（含无封顶文案）、关闭时机清单、箭头出牌后保留与胡后清除。","status":"待确认","has_detail":true,"acceptance":"已听牌可见查听入口；弹窗含牌面/倍数/剩余数且 0 张置灰；摸牌、胡牌、流局等各时点弹窗与箭头状态符合清单。"},{"id":"Q13","title":"有胡权限期间点击手牌的拦截与\"点过才能出牌\"轻提示缺失","priority":"P2","type":"需求缺失","module":["吃碰杠胡-胡"],"dimension":"UI 交互","source_location":"胡牌-交互说明","rule_ref":"01#7；06#二","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q14","title":"操作按钮组的显示/收起时机未定义","priority":"P2","type":"描述不完整","module":["吃碰杠胡"],"dimension":"UI 交互","source_location":"吃碰杠胡操作（全文）","rule_ref":"01#4,25","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q15","title":"吃多组合选择交互未定义","priority":"P2","type":"描述不完整","module":["吃碰杠胡-吃"],"dimension":"UI 交互","source_location":"玩法规则-吃","rule_ref":"01#9","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q16","title":"多种杠组合的选择列表交互未定义","priority":"P2","type":"需求缺失","module":["吃碰杠胡-杠"],"dimension":"UI 交互","source_location":"杠牌（仅特效一句话）","rule_ref":"01#9","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q17","title":"局终演出链顺序与桌面摊牌表现未定义（仅\"参考功夫川麻\"）","priority":"P2","type":"描述不完整","module":["结算流程"],"dimension":"UI 交互","source_location":"结算流程-流程明细","rule_ref":"03#1,4","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q18","title":"流局结算表现未定义（荒牌页、摊牌、输赢文案）","priority":"P2","type":"描述不完整","module":["结算流程"],"dimension":"UI 交互","source_location":"结算流程-流程明细","rule_ref":"03#2","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q19","title":"小结算流水明细（文字结算）内容与格式未定义","priority":"P2","type":"描述不完整","module":["小结算界面"],"dimension":"UI 交互","source_location":"小结算界面","rule_ref":"03#10,12","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q20","title":"小结算继续/关闭交互与下一局衔接未定义（典型 P2 之三）","priority":"P2","type":"需求缺失","module":["小结算界面"],"dimension":"UI 交互","source_location":"小结算界面（全文）","rule_ref":"03#14 继续游戏按钮：最后一局转大结算，否则关小结算+自动准备下一局；03#15 关闭按钮：好友房直接关；03#18 小结算为动画链第 3 步、大结算第 4 步的先后关系。","original_text":"位置\"结算界面 → 小结算界面（好友房）\"。引文：触发逻辑仅\"播完胡牌结算流程，进入结算界面\"；UI 交互说明仅列玩家信息、手牌摆布、输赢显示、分数结算、承包标识、赢家结算、麻将牌标识、财神牌八项，无任何按钮。","problem":"未定义：小结算上的按钮集合（继续/关闭）；单人点击即关还是全员确认才开下一局；点击后到下一局摇骰的过渡；与 Q05 的第 8 局终点衔接。","impact":"局与局之间无法推进，好友房多人场景下\"谁点了才算数\"无标准会产生流程挂起或抢开。","suggestion":"定义按钮组与多端确认规则（建议沿用基准：继续=关小结算并进入下一局准备，全员确认或房主开局的口径需明确），并与 Q05 一并给出第 8 局分支。","status":"待确认\n\n---","has_detail":true,"acceptance":"任意一局小结算后按定义操作可稳定进入下一局；第 8 局走 Q05 定义分支。"},{"id":"Q21","title":"牌墙视觉布局与更新规则未定义","priority":"P2","type":"描述不完整","module":["玩法信息"],"dimension":"UI 交互","source_location":"局中信息（仅\"刷新牌墙\"字样）","rule_ref":"07#7,8；08#8,9","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q22","title":"财神指示牌 UI 为新增功能，建议补\"与现网实现差异说明\"","priority":"P3","type":"需求缺失","module":["玩法信息-财神"],"dimension":"UI 交互","source_location":"玩法信息-财神 / 定财神","rule_ref":"07#12,13","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q23","title":"听牌标签\"爆/飘\"与\"胡牌牌+tips\"为现网不存在的新增","priority":"P3","type":"需求缺失","module":["手牌信息-听牌"],"dimension":"UI 交互","source_location":"手牌信息-听牌标签","rule_ref":"02#14","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q24","title":"吃操作按钮 UI 为现网新增（42319 无吃入口），建议补差异说明","priority":"P3","type":"需求缺失","module":["吃碰杠胡-吃"],"dimension":"UI 交互","source_location":"吃碰杠胡操作-吃牌","rule_ref":"01#5","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q25","title":"两种\"过\"按钮的语义（是否上报服务端）未区分","priority":"P3","type":"需求缺失","module":["吃碰杠胡"],"dimension":"UI 交互","source_location":"吃碰杠胡操作-各按钮","rule_ref":"01#6","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q26","title":"权限按钮防连点与弹窗防抖规则未定义","priority":"P3","type":"需求缺失","module":["吃碰杠胡/听牌"],"dimension":"UI 交互","source_location":"吃碰杠胡操作","rule_ref":"01#11；06#三","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q27","title":"道具类功能范围未明示（记牌器/预约洗牌/道具引导/小结算外围按钮）","priority":"P3","type":"需求缺失","module":["全局"],"dimension":"UI 交互","source_location":"全文","rule_ref":"02#12；03#13；05#17；08#12","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q28","title":"首出庄/闲提示条的表现形式模糊","priority":"P3","type":"定义歧义","module":["发牌"],"dimension":"UI 交互","source_location":"发牌-切入行牌","rule_ref":"01#22；07#10","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q29","title":"倒计时音效未定义","priority":"P3","type":"需求缺失","module":["方位信息-倒计时"],"dimension":"UI 交互","source_location":"方位信息-倒计时","rule_ref":"01#20；07#2","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q30","title":"摸牌凑牌动画（凑成顺/刻/杠）未定义","priority":"P3","type":"需求缺失","module":["行牌操作-摸牌"],"dimension":"UI 交互","source_location":"行牌操作-摸牌","rule_ref":"08#10","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q31","title":"离线解散预警（好友房离线超时处理）未定义","priority":"P3","type":"需求缺失","module":["玩家状态"],"dimension":"UI 交互","source_location":"玩家头像信息-玩家状态","rule_ref":"05#14","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q32","title":"断线计时 1 小时封顶停表规则缺失","priority":"P3","type":"描述不完整","module":["玩家状态"],"dimension":"UI 交互","source_location":"玩家头像信息-玩家状态","rule_ref":"04#17","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q33","title":"昵称截断\"超出第78个字符\"笔误（应为第 10 个）","priority":"P3","type":"逻辑错误","module":["玩家头像信息"],"dimension":"UI 交互","source_location":"玩家头像信息-玩家昵称","rule_ref":"08#3","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q34","title":"设置开关相关范围未定义（出牌方式/放大/牌墙/快出/特效）","priority":"P3","type":"描述不完整","module":["全局"],"dimension":"UI 交互","source_location":"行牌操作-出牌等","rule_ref":"01#12,19；07#8,14","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q35","title":"结算表现细节缺失（番型动画选取规则、超基础番型震动）","priority":"P3","type":"需求缺失","module":["结算流程"],"dimension":"UI 交互","source_location":"结算流程-流程明细","rule_ref":"03#9,16","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false},{"id":"Q36","title":"局与局之间的界面重置清理未描述","priority":"P3","type":"需求缺失","module":["全局"],"dimension":"UI 交互","source_location":"对局开始-触发逻辑","rule_ref":"06#四.4,7","original_text":"","problem":"","impact":"","suggestion":"","status":"待确认","has_detail":false}],"overall_recommendations":[]}</script>
+<script>
+(function () {
+  'use strict';
+  var DATA = JSON.parse(document.getElementById('report-data').textContent);
+  var PRI_COLOR = { P0: '#DC5148', P1: '#E8A044', P2: '#4389D5', P3: '#94A3B8' };
+  var PRI_ORDER = { P0: 0, P1: 1, P2: 2, P3: 3 };
+  var TYPE_COLOR = ['#3478DB', '#9A6FE0', '#DC5148', '#E8A044', '#94A3B8', '#4EC3B0'];
+  var TYPE_DESC = {
+    '需求缺失': '基准规则已定义，但需求文档缺失或未描述（MISSING）',
+    '内容冲突': '需求文档内部两处描述互相矛盾（CONFLICT）',
+    '逻辑错误': '与规则基准冲突或自身逻辑错误（LOGIC）',
+    '定义歧义': '描述模糊，可多种理解（AMBIGUOUS）',
+    '描述不完整': '描述不完整，无法实现或验收（INCOMPLETE）',
+    '未分类': '源报告该条目仅登记在清单中，无详情块，未提供问题性质'
+  };
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function stripMd(s) { return String(s || '').replace(/\*\*/g, ''); }
+  function priTag(p) { return '<span class="pri-tag" style="background:' + PRI_COLOR[p] + '">' + p + '</span>'; }
+  function $(id) { return document.getElementById(id); }
+
+  var byId = {};
+  DATA.issues.forEach(function (it) { byId[it.id] = it; });
+
+  // ---------- 01 头部 ----------
+  (function () {
+    var c = DATA.report.overall_conclusion || {};
+    var badge = c.status === 'BLOCKED'
+      ? '<span class="badge blocked">存在阻塞问题</span>'
+      : c.status === 'ALLOWED'
+        ? '<span class="badge allowed">可进入下一阶段</span>'
+        : '<span class="badge na">检查完成</span>';
+    var baselines = (DATA.report.rule_baselines || []).map(stripMd).join('；');
+    $('sec-header').innerHTML =
+      '<div><h1>' + esc(DATA.report.title || 'PRD 质量分析报告') + '</h1>' +
+      '<div class="project">' + esc(DATA.report.project_name ? DATA.report.project_name + ' · ' + DATA.report.document_name : DATA.report.document_name) + '</div>' +
+      '<div class="meta">' +
+        '<span>检查对象：' + esc(DATA.report.source_file) + '</span>' +
+        '<span>检查日期：' + esc(DATA.report.inspection_date) + '</span>' +
+        (baselines ? '<span>检查基准：' + esc(baselines) + '</span>' : '') +
+      '</div></div><div>' + badge + '</div>';
+  })();
+
+  // ---------- 02 KPI ----------
+  (function () {
+    var p = DATA.statistics.priority;
+    var total = DATA.statistics.total;
+    var p23 = (p.P2 || 0) + (p.P3 || 0);
+    var cards = [
+      { num: total, label: '问题总数', cls: '', filter: {} },
+      { num: p.P0 || 0, label: 'P0 严重问题', cls: 'c-p0', filter: { priority: 'P0' } },
+      { num: p.P1 || 0, label: 'P1 高优先级', cls: 'c-p1', filter: { priority: 'P1' } },
+      { num: p23, label: 'P2 一般 + P3 建议', cls: 'c-p23', filter: { p23: true } }
+    ];
+    $('sec-kpis').innerHTML = cards.map(function (c) {
+      return '<div class="kpi" data-filter=\'' + esc(JSON.stringify(c.filter)) + '\' role="button" tabindex="0">' +
+        '<div class="num ' + c.cls + '">' + c.num + '</div><div class="label">' + esc(c.label) + '</div></div>';
+    }).join('');
+    Array.prototype.forEach.call(document.querySelectorAll('.kpi'), function (el) {
+      var go = function () {
+        var f = JSON.parse(el.getAttribute('data-filter'));
+        if (f.p23) { setFilter({ priority: ['P2', 'P3'] }); } else { setFilter(f); }
+        scrollTo(0, $('sec-list').offsetTop - 12);
+      };
+      el.addEventListener('click', go);
+      el.addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); });
+    });
+  })();
+
+  // ---------- 03 结论 ----------
+  (function () {
+    var c = DATA.report.overall_conclusion || {};
+    if (!c.summary) { $('sec-conclusion').style.display = 'none'; return; }
+    var reasons = (c.reasons || []).map(function (r) { return '<li>' + esc(stripMd(r)) + '</li>'; }).join('');
+    $('sec-conclusion').innerHTML =
+      '<div class="section-title">检查结论</div>' +
+      '<div class="verdict ' + (c.status === 'BLOCKED' ? 'blocked' : c.status === 'ALLOWED' ? 'allowed' : '') + '">' +
+        esc(stripMd(c.summary)) + '</div>' +
+      (reasons ? '<ul class="reasons">' + reasons + '</ul>' : '');
+  })();
+
+  // ---------- 04 风险 ----------
+  (function () {
+    var groups = DATA.risk_groups || [];
+    if (!groups.length) { $('sec-risks').style.display = 'none'; return; }
+    $('sec-risks').innerHTML = '<div class="section-title">重点风险分析</div><div class="risk-cols">' +
+      groups.map(function (g) {
+        var items = g.issue_ids.map(function (id) {
+          var it = byId[id]; if (!it) return '';
+          return '<div class="risk-item" data-open="' + id + '">' + priTag(it.priority) +
+            '<div class="body"><div class="name">' + esc(it.title) + '<span class="id">' + id + '</span></div>' +
+            '<div class="desc">' + esc(stripMd(it.impact)) + '</div></div></div>';
+        }).join('');
+        return '<div class="risk-group"><h3>' + esc(g.name) + '<span class="id" style="color:var(--muted);font-weight:400;margin-left:8px">' +
+          g.issue_ids.length + ' 项</span></h3>' + items + '</div>';
+      }).join('') + '</div>';
+  })();
+
+  // ---------- 05 图表 ----------
+  var typeKeys = Object.keys(DATA.statistics.types);
+  (function () {
+    var st = DATA.statistics, total = st.total;
+    // A 优先级进度条
+    var priRows = ['P0', 'P1', 'P2', 'P3'].filter(function (p) { return st.priority[p]; }).map(function (p) {
+      var n = st.priority[p];
+      return '<div class="bar-row" data-pri="' + p + '" title="点击按 ' + p + ' 筛选">' +
+        '<span class="bl" style="color:' + PRI_COLOR[p] + '">' + p + '</span>' +
+        '<span class="track"><span class="fill" style="width:' + (total ? (n / total * 100) : 0) + '%;background:' + PRI_COLOR[p] + '"></span></span>' +
+        '<span class="val">' + n + ' · ' + (total ? (n / total * 100).toFixed(2) : 0) + '%</span></div>';
+    }).join('');
+
+    // B 类型环形图（SVG stroke-dasharray 分段）
+    var R = 62, C = 2 * Math.PI * R, used = 0;
+    var segs = typeKeys.map(function (t, i) {
+      var n = st.types[t], len = total ? (n / total * C) : 0;
+      var s = '<circle r="' + R + '" cx="80" cy="80" fill="none" stroke="' + TYPE_COLOR[i % TYPE_COLOR.length] +
+        '" stroke-width="22" stroke-dasharray="' + Math.max(len - 2, 0) + ' ' + (C - Math.max(len - 2, 0)) +
+        '" stroke-dashoffset="' + (-used) + '"></circle>';
+      used += len;
+      return s;
+    }).join('');
+    var legend = typeKeys.map(function (t, i) {
+      var n = st.types[t];
+      return '<div class="legend-item" data-type="' + esc(t) + '" title="' + esc(TYPE_DESC[t] || t) + '" style="cursor:help">' +
+        '<span class="dot" style="background:' + TYPE_COLOR[i % TYPE_COLOR.length] + '"></span>' +
+        '<span class="t">' + esc(t) + '</span><span class="v">' + n + ' · ' + (total ? (n / total * 100).toFixed(1) : 0) + '%</span></div>';
+    }).join('');
+
+    // C 模块柱状图
+    var mods = (DATA.modules || []).slice().sort(function (a, b) { return b.issue_ids.length - a.issue_ids.length; });
+    var maxMod = mods.length ? mods[0].issue_ids.length : 1;
+    var modRows = mods.map(function (m) {
+      return '<div class="bar-row" data-mod="' + esc(m.name) + '" title="重点模块集合（非全量互斥分类），点击筛选">' +
+        '<span class="bl" style="width:auto;min-width:34px">' + esc(m.name) + '</span>' +
+        '<span class="track"><span class="fill" style="width:' + (m.issue_ids.length / maxMod * 100) + '%;background:var(--primary)"></span></span>' +
+        '<span class="val">' + m.issue_ids.length + ' 条</span></div>';
+    }).join('') || '<div class="empty">无模块数据</div>';
+
+    $('sec-charts').innerHTML =
+      '<div class="chart"><h3>优先级分布</h3>' + priRows + '</div>' +
+      '<div class="chart"><h3>问题类型分布</h3><div class="donut-wrap">' +
+        '<div class="donut"><svg viewBox="0 0 160 160">' + segs + '</svg>' +
+        '<div class="center"><b>' + total + '</b><span>问题总数</span></div></div>' +
+        '<div class="legend">' + legend + '</div></div></div>' +
+      '<div class="chart"><h3>重点业务模块分布</h3>' + modRows +
+        '<div style="font-size:11px;color:var(--muted);margin-top:8px">注：来自报告总结的重点模块集合，非全部问题的互斥分类</div></div>';
+  })();
+
+  // ---------- 06 TOP5 ----------
+  (function () {
+    var feat = DATA.featured_issues || [];
+    if (!feat.length) { $('sec-top').style.display = 'none'; return; }
+    var finIds = ((DATA.risk_groups || []).find(function (g) { return g.key === 'financial'; }) || {}).issue_ids || [];
+    $('sec-top').innerHTML = '<div class="section-title">重点问题 TOP ' + feat.length +
+      '<span class="sub">排序依据：开发阻塞、资损风险、优先级</span></div><div class="top-list">' +
+      feat.map(function (id, i) {
+        var it = byId[id]; if (!it) return '';
+        return '<div class="rank" data-open="' + id + '">' +
+          '<span class="no">' + (i + 1) + '</span>' +
+          priTag(it.priority) +
+          '<span class="title"><span class="id">' + id + '</span>' + esc(it.title) + '</span>' +
+          '<span class="tag">' + esc(it.type) +
+          (finIds.indexOf(id) >= 0 ? '<span class="rf">资损风险</span>' : '') + '</span></div>';
+      }).join('') + '</div>';
+  })();
+
+  // ---------- 08 综合分析 ----------
+  (function () {
+    var recs = DATA.overall_recommendations || [];
+    if (!recs.length) { $('sec-analysis').style.display = 'none'; return; }
+    $('sec-analysis').innerHTML = '<div class="section-title">综合分析与建议<span class="sub">保留报告原始结论</span></div><ul>' +
+      recs.map(function (r) { return '<li>' + esc(stripMd(r)) + '</li>'; }).join('') + '</ul>';
+  })();
+
+  // ---------- 07 清单 + 筛选 ----------
+  var filter = { priority: '', type: '', dimension: '', module: '', q: '' };
+  // 类型/模块/维度下拉选项
+  typeKeys.forEach(function (t) {
+    var o = document.createElement('option'); o.value = t; o.textContent = t; $('f-type').appendChild(o);
+  });
+  Object.keys(DATA.statistics.dimensions || {}).forEach(function (d) {
+    var o = document.createElement('option'); o.value = d; o.textContent = d + '（' + DATA.statistics.dimensions[d] + '）'; $('f-dimension').appendChild(o);
+  });
+  (DATA.modules || []).forEach(function (m) {
+    var o = document.createElement('option'); o.value = m.name; o.textContent = m.name + '（' + m.issue_ids.length + '）'; $('f-module').appendChild(o);
+  });
+
+  function filtered() {
+    var q = filter.q.trim().toLowerCase();
+    var priList = Array.isArray(filter.priority) ? filter.priority : (filter.priority ? [filter.priority] : null);
+    return DATA.issues.filter(function (it) {
+      if (priList && priList.indexOf(it.priority) < 0) return false;
+      if (filter.type && it.type !== filter.type) return false;
+      if (filter.dimension && (it.dimension || '') !== filter.dimension) return false;
+      if (filter.module && (it.module || []).indexOf(filter.module) < 0) return false;
+      if (q && (it.id + ' ' + it.title + ' ' + it.source_location).toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    }).sort(function (a, b) { return PRI_ORDER[a.priority] - PRI_ORDER[b.priority] || a.id.localeCompare(b.id); });
+  }
+
+  function renderList() {
+    var list = filtered();
+    $('issue-tbody').innerHTML = list.map(function (it) {
+      return '<tr data-open="' + it.id + '"><td class="id">' + it.id + '</td><td class="title">' + esc(it.title) + '</td>' +
+        '<td>' + priTag(it.priority) + '</td><td><span class="type-tag">' + esc(it.type) + '</span></td>' +
+        '<td><span class="type-tag">' + esc(it.dimension || '功能规则') + '</span></td>' +
+        '<td class="loc">' + esc(it.source_location) + '</td></tr>';
+    }).join('');
+    $('issue-empty').style.display = list.length ? 'none' : 'block';
+    $('f-count').textContent = '当前显示 ' + list.length + ' / ' + DATA.statistics.total + ' 条';
+    // 高亮当前筛选项
+    document.querySelectorAll('.bar-row[data-pri], .legend-item[data-type], .bar-row[data-mod]').forEach(function (el) {
+      var active = false;
+      if (el.dataset.pri) active = (Array.isArray(filter.priority) ? filter.priority.join() : filter.priority) === el.dataset.pri
+        || (Array.isArray(filter.priority) && filter.priority.length === 1 && filter.priority[0] === el.dataset.pri);
+      if (el.dataset.type) active = filter.type === el.dataset.type;
+      if (el.dataset.mod) active = filter.module === el.dataset.mod;
+      el.classList.toggle('active', active);
+    });
+  }
+
+  function setFilter(f) {
+    filter.priority = f.priority !== undefined ? f.priority : '';
+    filter.type = f.type !== undefined ? f.type : '';
+    filter.module = f.module !== undefined ? f.module : '';
+    $('f-priority').value = Array.isArray(filter.priority) ? '' : filter.priority;
+    $('f-type').value = filter.type;
+    $('f-module').value = filter.module;
+    renderList();
+  }
+
+  $('f-priority').addEventListener('change', function () { filter.priority = this.value; renderList(); });
+  $('f-type').addEventListener('change', function () { filter.type = this.value; renderList(); });
+  $('f-dimension').addEventListener('change', function () { filter.dimension = this.value; renderList(); });
+  $('f-module').addEventListener('change', function () { filter.module = this.value; renderList(); });
+  $('f-q').addEventListener('input', function () { filter.q = this.value; renderList(); });
+  $('btn-clear').addEventListener('click', function () {
+    filter = { priority: '', type: '', dimension: '', module: '', q: '' };
+    $('f-priority').value = ''; $('f-type').value = ''; $('f-dimension').value = ''; $('f-module').value = ''; $('f-q').value = '';
+    renderList();
+  });
+
+  // 图表点击筛选（toggle）
+  document.addEventListener('click', function (e) {
+    var priEl = e.target.closest ? e.target.closest('.bar-row[data-pri]') : null;
+    if (priEl) {
+      filter.priority = (filter.priority === priEl.dataset.pri) ? '' : priEl.dataset.pri;
+      $('f-priority').value = Array.isArray(filter.priority) ? '' : filter.priority;
+      renderList(); return;
+    }
+    var typeEl = e.target.closest ? e.target.closest('.legend-item[data-type]') : null;
+    if (typeEl) {
+      filter.type = (filter.type === typeEl.dataset.type) ? '' : typeEl.dataset.type;
+      $('f-type').value = filter.type; renderList(); return;
+    }
+    var modEl = e.target.closest ? e.target.closest('.bar-row[data-mod]') : null;
+    if (modEl) {
+      filter.module = (filter.module === modEl.dataset.mod) ? '' : modEl.dataset.mod;
+      $('f-module').value = filter.module; renderList(); return;
+    }
+    var openEl = e.target.closest ? e.target.closest('[data-open]') : null;
+    if (openEl) openDrawer(openEl.getAttribute('data-open'));
+  });
+
+  // ---------- 抽屉 ----------
+  var curId = null;
+  // 行内 Markdown：esc 后处理粗体（**x** -> strong）
+  function inlineMd(s) {
+    return esc(s).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  }
+  // 简易富文本渲染：**小节**： 行 -> 分块标题；逐行成段；连续 | 行组转表格
+  function renderRich(text) {
+    if (!text || !String(text).trim()) return '<p style="color:var(--muted)">（源报告清单条目，无详情块，未提供该字段内容）</p>';
+    var html = [], tbl = [];
+    function flush() {
+      if (!tbl.length) return;
+      var rows = tbl.filter(function (l) { return !/^\|[\s:|-]+\|?$/.test(l.trim()); });
+      var trs = rows.map(function (row, ri) {
+        var cells = row.replace(/^\|/, '').replace(/\|$/, '').split('|').map(function (c) { return c.trim(); });
+        var tag = ri === 0 ? 'th' : 'td';
+        return '<tr>' + cells.map(function (c) { return '<' + tag + '>' + inlineMd(c) + '</' + tag + '>'; }).join('') + '</tr>';
+      }).join('');
+      html.push('<table class="mini-table">' + trs + '</table>');
+      tbl = [];
+    }
+    String(text).split('\n').forEach(function (l) {
+      var t = l.trim();
+      if (t.startsWith('|')) { tbl.push(l); return; }
+      flush();
+      // **小节标题**： 单独成块（如「范例（需求必须按此格式写）：」）
+      var h = t.match(/^\*\*([^*]+)\*\*([：:])?\s*$/);
+      if (h) { html.push('<h5>' + esc(h[1]) + (h[2] || '') + '</h5>'); return; }
+      if (t) html.push('<p>' + inlineMd(l) + '</p>');
+    });
+    flush();
+    return html.length ? html.join('') : '<p style="color:var(--muted)">（源报告清单条目，无详情块，未提供该字段内容）</p>';
+  }
+  function openDrawer(id) {
+    var it = byId[id]; if (!it) return;
+    curId = id;
+    $('d-pri').textContent = it.priority; $('d-pri').style.background = PRI_COLOR[it.priority] || '#94A3B8';
+    $('d-id').textContent = id + ' · ' + it.type + (it.dimension ? ' · ' + it.dimension : '');
+    $('d-title').textContent = it.title;
+    $('d-body').innerHTML =
+      '<h4>原文位置</h4>' + renderRich(it.source_location) +
+      '<h4>原文引用</h4>' + ((it.original_text && String(it.original_text).trim())
+        ? '<blockquote>' + esc(it.original_text) + '</blockquote>'
+        : '<p style="color:var(--muted)">（源报告清单条目，无详情块，未提供该字段内容）</p>') +
+      '<h4>问题分析</h4>' + renderRich(it.problem) +
+      '<h4>影响说明</h4>' + renderRich(it.impact) +
+      '<h4>修改建议</h4>' + renderRich(it.suggestion) +
+      (it.rule_ref ? '<h4>基准依据</h4>' + renderRich(it.rule_ref) : '') +
+      (it.acceptance ? '<h4>验收口径</h4>' + renderRich(it.acceptance) : '') +
+      '<div class="status">处理状态：' + esc(it.status) + '（只读，Dashboard 不提供裁决操作）' +
+      (it.module && it.module.length ? ' · 模块：' + esc(it.module.join('、')) : '') + '</div>';
+    var list = filtered();
+    var idx = list.findIndex(function (x) { return x.id === id; });
+    $('d-pos').textContent = idx >= 0 ? (idx + 1) + ' / ' + list.length : '';
+    $('d-prev').disabled = idx <= 0;
+    $('d-next').disabled = idx >= 0 && idx >= list.length - 1;
+    $('drawer').classList.add('show'); $('drawer').setAttribute('aria-hidden', 'false');
+    $('mask').classList.add('show');
+    $('d-body').scrollTop = 0;
+  }
+  function closeDrawer() {
+    $('drawer').classList.remove('show'); $('drawer').setAttribute('aria-hidden', 'true');
+    $('mask').classList.remove('show'); curId = null;
+  }
+  $('d-close').addEventListener('click', closeDrawer);
+  $('mask').addEventListener('click', closeDrawer);
+  $('d-prev').addEventListener('click', function () {
+    var list = filtered(), i = list.findIndex(function (x) { return x.id === curId; });
+    if (i > 0) openDrawer(list[i - 1].id);
+  });
+  $('d-next').addEventListener('click', function () {
+    var list = filtered(), i = list.findIndex(function (x) { return x.id === curId; });
+    if (i >= 0 && i < list.length - 1) openDrawer(list[i + 1].id);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeDrawer();
+    if (!curId) return;
+    if (e.key === 'ArrowLeft') $('d-prev').click();
+    if (e.key === 'ArrowRight') $('d-next').click();
+  });
+
+  // ---------- 浮动操作 ----------
+  $('btn-top').addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  $('btn-print').addEventListener('click', function () { window.print(); });
+
+  renderList();
+})();
+</script>
+</body>
+</html>

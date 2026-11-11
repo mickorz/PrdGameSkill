@@ -919,94 +919,146 @@ const appendixBlocks = appendix.map((it) =>
   ].join('\n')
 )
 
-const reportParts = []
-reportParts.push('# UI 交互检查问题报告（基于客户端代码逆向基准）')
-reportParts.push('')
-reportParts.push('## 检查信息')
-reportParts.push('')
-reportParts.push('检查对象：' + requirementsPath)
-reportParts.push('')
-reportParts.push('规则基准：' + rulesDir + '（' + (ruleFileCount || ruleGroups.length) + ' 个规则文件）')
-reportParts.push('')
-reportParts.push('检查日期：' + checkDate)
-reportParts.push('')
-reportParts.push(
+const headParts = []
+headParts.push('# UI 交互检查问题报告（基于客户端代码逆向基准）')
+headParts.push('')
+headParts.push('## 检查信息')
+headParts.push('')
+headParts.push('检查对象：' + requirementsPath)
+headParts.push('')
+headParts.push('规则基准：' + rulesDir + '（' + (ruleFileCount || ruleGroups.length) + ' 个规则文件）')
+headParts.push('')
+headParts.push('检查日期：' + checkDate)
+headParts.push('')
+headParts.push(
   '说明：基准来源为客户端源码 ' + clientDir + ' 逆向提取的 UI 交互事实。需求与基准冲突时记需求文档问题；需求有意新增（现网不存在）的功能记 P3 差异说明；标注死代码/无消费方的条款不作缺失依据。'
 )
-reportParts.push('')
-reportParts.push(
+headParts.push('')
+headParts.push(
   '归因口径：每条问题的基准依据必须指向 UI 交互基准的具体条款号；玩法逻辑问题与纯文档质量问题移入附录，不计入统计。'
 )
-reportParts.push('')
-reportParts.push('---')
-reportParts.push('')
-reportParts.push('## 1. 检查概览')
-reportParts.push('')
-reportParts.push('### 1.1 问题统计')
-reportParts.push('')
-reportParts.push('| 优先级 | MISSING | CONFLICT | LOGIC | AMBIGUOUS | INCOMPLETE | 小计 |')
-reportParts.push('|---|---|---|---|---|---|---|')
-for (const r of matrixRows) reportParts.push(r)
-reportParts.push(totalRow)
-reportParts.push('')
-reportParts.push('### 1.2 总体总结')
-reportParts.push('')
-reportParts.push(overviewText)
-reportParts.push('')
-reportParts.push('---')
-reportParts.push('')
-reportParts.push('## 2. 问题清单')
-reportParts.push('')
-reportParts.push('| ID | 问题维度 | 优先级 | 类型 | 模块 | 问题 | 原文位置 | 基准依据 |')
-reportParts.push('|---|---|---|---|---|---|---|---|')
-for (const r of tableRows) reportParts.push(r)
-reportParts.push('')
-reportParts.push('---')
-reportParts.push('')
-reportParts.push('## 3. 问题详情')
-reportParts.push('')
-for (const b of detailBlocks) {
-  reportParts.push(b)
-  reportParts.push('')
-}
-reportParts.push('---')
-reportParts.push('')
-reportParts.push('## 4. 总体建议')
-reportParts.push('')
-reportParts.push(recommendText)
-reportParts.push('')
+headParts.push('')
+headParts.push('---')
+headParts.push('')
+headParts.push('## 1. 检查概览')
+headParts.push('')
+headParts.push('### 1.1 问题统计')
+headParts.push('')
+headParts.push('| 优先级 | MISSING | CONFLICT | LOGIC | AMBIGUOUS | INCOMPLETE | 小计 |')
+headParts.push('|---|---|---|---|---|---|---|')
+for (const r of matrixRows) headParts.push(r)
+headParts.push(totalRow)
+headParts.push('')
+headParts.push('### 1.2 总体总结')
+headParts.push('')
+headParts.push(overviewText)
+headParts.push('')
+headParts.push('---')
+headParts.push('')
+headParts.push('## 2. 问题清单')
+headParts.push('')
+headParts.push('| ID | 问题维度 | 优先级 | 类型 | 模块 | 问题 | 原文位置 | 基准依据 |')
+headParts.push('|---|---|---|---|---|---|---|---|')
+for (const r of tableRows) headParts.push(r)
+headParts.push('')
+headParts.push('---')
+headParts.push('')
+headParts.push('## 3. 问题详情')
+
+const tailParts = []
+tailParts.push('---')
+tailParts.push('')
+tailParts.push('## 4. 总体建议')
+tailParts.push('')
+tailParts.push(recommendText)
+tailParts.push('')
 if (appendixBlocks.length > 0) {
-  reportParts.push('## 附录：超出 UI 基准范围的发现（不计入统计）')
-  reportParts.push('')
-  reportParts.push('以下发现无 UI 交互基准条款支撑，不计入统计表与问题清单，仅作参考。')
-  reportParts.push('')
+  tailParts.push('## 附录：超出 UI 基准范围的发现（不计入统计）')
+  tailParts.push('')
+  tailParts.push('以下发现无 UI 交互基准条款支撑，不计入统计表与问题清单，仅作参考。')
+  tailParts.push('')
   for (const b of appendixBlocks) {
-    reportParts.push(b)
-    reportParts.push('')
+    tailParts.push(b)
+    tailParts.push('')
   }
 }
 
-const reportMarkdown = reportParts.join('\n')
+// 分片写入：单个大 prompt 容易触发上游 provider 长响应超时，
+// 把报告拆成 head + 若干详情分片 + tail，每片独立子代理写出，再按文件名顺序拼接。
+const HEAD_TEXT = headParts.join('\n') + '\n\n'
+const TAIL_TEXT = tailParts.join('\n') + '\n'
+const DETAIL_BUDGET = 7000
+const DETAIL_MAX_COUNT = 5
+const detailChunks = []
+{
+  let cur = []
+  let size = 0
+  for (const b of detailBlocks) {
+    if (cur.length > 0 && (size + b.length > DETAIL_BUDGET || cur.length >= DETAIL_MAX_COUNT)) {
+      detailChunks.push(cur)
+      cur = []
+      size = 0
+    }
+    cur.push(b)
+    size += b.length + 2
+  }
+  if (cur.length > 0) detailChunks.push(cur)
+}
 
-const writeResult = await agent(
+const reportPieces = [HEAD_TEXT]
+for (const chunk of detailChunks) reportPieces.push(chunk.join('\n\n') + '\n\n')
+reportPieces.push(TAIL_TEXT)
+const reportMarkdown = reportPieces.join('')
+
+const partDir = outDir + '/.report-parts'
+const partFiles = reportPieces.map((_, i) => partDir + '/part-' + pad2(i + 1) + '.md')
+
+await parallel(
+  reportPieces.map((content, i) => () =>
+    agent(
+      [
+        '你的任务是把下面 PART-BEGIN 与 PART-END 之间的 Markdown 内容逐字写入文件：' + partFiles[i],
+        '',
+        '要求：',
+        '1. 使用 write 工具写入，UTF-8 编码。',
+        '2. 内容逐字复制，不得改写、增删、总结、翻译或加代码围栏；标题、表格、字段、编号、空行全部保留。',
+        '3. 只写这一个分片文件，不要写其他文件，不要执行 git 命令。',
+        '4. 写完后返回文件路径。',
+        '',
+        'PART-BEGIN',
+        content,
+        'PART-END',
+      ].join('\n'),
+      { label: '写入分片 ' + (i + 1) + '/' + reportPieces.length, agentType: 'general', timeoutMs: 900000, retries: 2 }
+    )
+  )
+)
+
+const mergeCommand =
+  'node -e \'const fs=require("fs");const dir=process.argv[1];const out=process.argv[2];' +
+  'const files=fs.readdirSync(dir).filter(f=>/^part-\\d+\\.md$/.test(f)).sort();' +
+  'let s="";for(const f of files)s+=fs.readFileSync(dir+"/"+f,"utf8");' +
+  'fs.writeFileSync(out,s,"utf8");for(const f of files)fs.unlinkSync(dir+"/"+f);fs.rmdirSync(dir);\' ' +
+  '"' + partDir + '" "' + outPath + '"'
+
+const mergeResult = await agent(
   [
-    '你的任务是把下面 REPORT-BEGIN 与 REPORT-END 之间的 Markdown 内容逐字写入文件：' + outPath,
+    '你在项目根目录执行报告分片合并命令。',
+    '',
+    '执行下面这条命令（原样执行，不要改动参数；若当前 shell 不支持单引号，请改用等价的双引号转义写法，但逻辑必须一致）：',
+    mergeCommand,
     '',
     '要求：',
-    '1. 使用 write 工具写入，UTF-8 编码。',
-    '2. 内容逐字复制，不得改写、增删、总结、翻译或加代码围栏；标题、表格、字段、编号、空行全部保留。',
-    '3. 只写这一个文件，不要修改其他文件，不要执行 git 命令。',
-    '4. 写完后返回文件路径与写入的问题条数（' + stats.total + '）。',
-    '',
-    'REPORT-BEGIN',
-    reportMarkdown,
-    'REPORT-END',
+    '1. 只执行合并命令，然后确认 ' + outPath + ' 存在。',
+    '2. 不要读取或改写报告内容，不要执行 git 命令，不要保留 ' + partDir + ' 目录。',
+    '3. 返回 ok=true 与文件大小；命令失败返回 ok=false 与错误信息。',
   ].join('\n'),
-  { label: '写入 ' + outPath, agentType: 'general', timeoutMs: 3600000 }
+  { label: '合并报告分片', agentType: 'general', timeoutMs: 300000, retries: 2 }
 )
 
 await check(() => fileExists(outPath), '报告文件未生成：' + outPath)
-log('报告已写入：' + outPath + '（问题 ' + stats.total + ' 条）')
+log('报告已写入：' + outPath + '（问题 ' + stats.total + ' 条，' + reportPieces.length + ' 个分片）')
+const writeResult = mergeResult
 
 phase('报告审核')
 

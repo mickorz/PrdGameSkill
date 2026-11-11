@@ -14,18 +14,18 @@
     }
   },
   "statistics": {
-    "total": 41,
+    "total": 36,
     "priority": {
       "P0": 2,
       "P1": 3,
-      "P2": 19,
-      "P3": 17
+      "P2": 16,
+      "P3": 15
     },
     "types": {
       "需求缺失": 16,
-      "内容冲突": 6,
+      "内容冲突": 5,
       "描述不完整": 12,
-      "定义歧义": 6,
+      "定义歧义": 2,
       "逻辑错误": 1
     }
   },
@@ -51,7 +51,7 @@
       "name": "吃碰杠胡-杠",
       "issue_ids": [
         "Q02",
-        "Q18"
+        "Q16"
       ]
     },
     {
@@ -64,24 +64,24 @@
       "name": "吃碰杠胡",
       "issue_ids": [
         "Q04",
-        "Q16",
-        "Q28"
+        "Q14",
+        "Q25"
       ]
     },
     {
       "name": "结算流程",
       "issue_ids": [
         "Q05",
-        "Q19",
-        "Q20",
-        "Q40"
+        "Q17",
+        "Q18",
+        "Q35"
       ]
     },
     {
       "name": "方位信息-倒计时",
       "issue_ids": [
         "Q06",
-        "Q32"
+        "Q29"
       ]
     },
     {
@@ -100,116 +100,91 @@
       "name": "小结算界面",
       "issue_ids": [
         "Q09",
-        "Q21",
-        "Q22"
-      ]
-    },
-    {
-      "name": "行牌操作-补牌",
-      "issue_ids": [
-        "Q10"
-      ]
-    },
-    {
-      "name": "全局",
-      "issue_ids": [
-        "Q11",
-        "Q30",
-        "Q37",
-        "Q41"
+        "Q19",
+        "Q20"
       ]
     },
     {
       "name": "桌面布局-准备",
       "issue_ids": [
-        "Q12"
+        "Q10"
       ]
     },
     {
       "name": "手牌信息",
       "issue_ids": [
-        "Q13"
+        "Q11"
       ]
     },
     {
       "name": "手牌信息-听牌",
       "issue_ids": [
-        "Q14",
-        "Q26"
+        "Q12",
+        "Q23"
       ]
     },
     {
       "name": "吃碰杠胡-胡",
       "issue_ids": [
-        "Q15"
+        "Q13"
       ]
     },
     {
       "name": "吃碰杠胡-吃",
       "issue_ids": [
-        "Q17",
-        "Q27"
-      ]
-    },
-    {
-      "name": "通用提示",
-      "issue_ids": [
-        "Q23"
+        "Q15",
+        "Q24"
       ]
     },
     {
       "name": "玩法信息",
       "issue_ids": [
-        "Q24"
+        "Q21"
       ]
     },
     {
       "name": "玩法信息-财神",
       "issue_ids": [
-        "Q25"
+        "Q22"
       ]
     },
     {
       "name": "吃碰杠胡/听牌",
       "issue_ids": [
-        "Q29"
+        "Q26"
+      ]
+    },
+    {
+      "name": "全局",
+      "issue_ids": [
+        "Q27",
+        "Q34",
+        "Q36"
       ]
     },
     {
       "name": "发牌",
       "issue_ids": [
-        "Q31"
+        "Q28"
       ]
     },
     {
       "name": "行牌操作-摸牌",
       "issue_ids": [
-        "Q33"
+        "Q30"
       ]
     },
     {
       "name": "玩家状态",
       "issue_ids": [
-        "Q34",
-        "Q35"
+        "Q31",
+        "Q32"
       ]
     },
     {
       "name": "玩家头像信息",
       "issue_ids": [
-        "Q36"
-      ]
-    },
-    {
-      "name": "名词/小结算",
-      "issue_ids": [
-        "Q38"
-      ]
-    },
-    {
-      "name": "菜单",
-      "issue_ids": [
-        "Q39"
+        "Q33"
       ]
     }
   ],
@@ -364,38 +339,6 @@
     },
     {
       "id": "Q10",
-      "title": "杠后补牌取牌方向三处描述不一致且\"按配置\"未定义",
-      "priority": "P2",
-      "type": "内容冲突",
-      "module": [
-        "行牌操作-补牌"
-      ],
-      "source_location": "名词-杠 / 杠-逻辑 / 行牌-补牌",
-      "original_text": "",
-      "problem": "",
-      "impact": "",
-      "suggestion": "08#8,9",
-      "status": "待确认",
-      "has_detail": false
-    },
-    {
-      "id": "Q11",
-      "title": "章节编号与模块引用悬空（4.5/4.6/8.1/云检测）",
-      "priority": "P2",
-      "type": "定义歧义",
-      "module": [
-        "全局"
-      ],
-      "source_location": "方位信息、行牌操作、桌面布局、对局开始",
-      "original_text": "",
-      "problem": "",
-      "impact": "",
-      "suggestion": "06#一（对照）",
-      "status": "待确认",
-      "has_detail": false
-    },
-    {
-      "id": "Q12",
       "title": "准备状态切换交互缺失，\"默认准备\"与未准备态矛盾",
       "priority": "P2",
       "type": "定义歧义",
@@ -411,7 +354,7 @@
       "has_detail": false
     },
     {
-      "id": "Q13",
+      "id": "Q11",
       "title": "手牌标注体系不完整（典型 P2 之一）",
       "priority": "P2",
       "type": "描述不完整",
@@ -427,7 +370,7 @@
       "has_detail": true
     },
     {
-      "id": "Q14",
+      "id": "Q12",
       "title": "听牌提示体系不完整（典型 P2 之二）",
       "priority": "P2",
       "type": "描述不完整",
@@ -443,7 +386,7 @@
       "has_detail": true
     },
     {
-      "id": "Q15",
+      "id": "Q13",
       "title": "有胡权限期间点击手牌的拦截与\"点过才能出牌\"轻提示缺失",
       "priority": "P2",
       "type": "需求缺失",
@@ -459,7 +402,7 @@
       "has_detail": false
     },
     {
-      "id": "Q16",
+      "id": "Q14",
       "title": "操作按钮组的显示/收起时机未定义",
       "priority": "P2",
       "type": "描述不完整",
@@ -475,7 +418,7 @@
       "has_detail": false
     },
     {
-      "id": "Q17",
+      "id": "Q15",
       "title": "吃多组合选择交互未定义",
       "priority": "P2",
       "type": "描述不完整",
@@ -491,7 +434,7 @@
       "has_detail": false
     },
     {
-      "id": "Q18",
+      "id": "Q16",
       "title": "多种杠组合的选择列表交互未定义",
       "priority": "P2",
       "type": "需求缺失",
@@ -507,7 +450,7 @@
       "has_detail": false
     },
     {
-      "id": "Q19",
+      "id": "Q17",
       "title": "局终演出链顺序与桌面摊牌表现未定义（仅\"参考功夫川麻\"）",
       "priority": "P2",
       "type": "描述不完整",
@@ -523,7 +466,7 @@
       "has_detail": false
     },
     {
-      "id": "Q20",
+      "id": "Q18",
       "title": "流局结算表现未定义（荒牌页、摊牌、输赢文案）",
       "priority": "P2",
       "type": "描述不完整",
@@ -539,7 +482,7 @@
       "has_detail": false
     },
     {
-      "id": "Q21",
+      "id": "Q19",
       "title": "小结算流水明细（文字结算）内容与格式未定义",
       "priority": "P2",
       "type": "描述不完整",
@@ -555,7 +498,7 @@
       "has_detail": false
     },
     {
-      "id": "Q22",
+      "id": "Q20",
       "title": "小结算继续/关闭交互与下一局衔接未定义（典型 P2 之三）",
       "priority": "P2",
       "type": "需求缺失",
@@ -571,23 +514,7 @@
       "has_detail": true
     },
     {
-      "id": "Q23",
-      "title": "三摊计数边界表述歧义，影响\"三摊落地\"动画触发时机",
-      "priority": "P2",
-      "type": "定义歧义",
-      "module": [
-        "通用提示"
-      ],
-      "source_location": "名词-承包 / 对局内通用提示",
-      "original_text": "",
-      "problem": "",
-      "impact": "",
-      "suggestion": "06#二（提示层对照）",
-      "status": "待确认",
-      "has_detail": false
-    },
-    {
-      "id": "Q24",
+      "id": "Q21",
       "title": "牌墙视觉布局与更新规则未定义",
       "priority": "P2",
       "type": "描述不完整",
@@ -603,7 +530,7 @@
       "has_detail": false
     },
     {
-      "id": "Q25",
+      "id": "Q22",
       "title": "财神指示牌 UI 为新增功能，建议补\"与现网实现差异说明\"",
       "priority": "P3",
       "type": "需求缺失",
@@ -619,7 +546,7 @@
       "has_detail": false
     },
     {
-      "id": "Q26",
+      "id": "Q23",
       "title": "听牌标签\"爆/飘\"与\"胡牌牌+tips\"为现网不存在的新增",
       "priority": "P3",
       "type": "需求缺失",
@@ -635,7 +562,7 @@
       "has_detail": false
     },
     {
-      "id": "Q27",
+      "id": "Q24",
       "title": "吃操作按钮 UI 为现网新增（42319 无吃入口），建议补差异说明",
       "priority": "P3",
       "type": "需求缺失",
@@ -651,7 +578,7 @@
       "has_detail": false
     },
     {
-      "id": "Q28",
+      "id": "Q25",
       "title": "两种\"过\"按钮的语义（是否上报服务端）未区分",
       "priority": "P3",
       "type": "需求缺失",
@@ -667,7 +594,7 @@
       "has_detail": false
     },
     {
-      "id": "Q29",
+      "id": "Q26",
       "title": "权限按钮防连点与弹窗防抖规则未定义",
       "priority": "P3",
       "type": "需求缺失",
@@ -683,7 +610,7 @@
       "has_detail": false
     },
     {
-      "id": "Q30",
+      "id": "Q27",
       "title": "道具类功能范围未明示（记牌器/预约洗牌/道具引导/小结算外围按钮）",
       "priority": "P3",
       "type": "需求缺失",
@@ -699,7 +626,7 @@
       "has_detail": false
     },
     {
-      "id": "Q31",
+      "id": "Q28",
       "title": "首出庄/闲提示条的表现形式模糊",
       "priority": "P3",
       "type": "定义歧义",
@@ -715,7 +642,7 @@
       "has_detail": false
     },
     {
-      "id": "Q32",
+      "id": "Q29",
       "title": "倒计时音效未定义",
       "priority": "P3",
       "type": "需求缺失",
@@ -731,7 +658,7 @@
       "has_detail": false
     },
     {
-      "id": "Q33",
+      "id": "Q30",
       "title": "摸牌凑牌动画（凑成顺/刻/杠）未定义",
       "priority": "P3",
       "type": "需求缺失",
@@ -747,7 +674,7 @@
       "has_detail": false
     },
     {
-      "id": "Q34",
+      "id": "Q31",
       "title": "离线解散预警（好友房离线超时处理）未定义",
       "priority": "P3",
       "type": "需求缺失",
@@ -763,7 +690,7 @@
       "has_detail": false
     },
     {
-      "id": "Q35",
+      "id": "Q32",
       "title": "断线计时 1 小时封顶停表规则缺失",
       "priority": "P3",
       "type": "描述不完整",
@@ -779,7 +706,7 @@
       "has_detail": false
     },
     {
-      "id": "Q36",
+      "id": "Q33",
       "title": "昵称截断\"超出第78个字符\"笔误（应为第 10 个）",
       "priority": "P3",
       "type": "逻辑错误",
@@ -795,7 +722,7 @@
       "has_detail": false
     },
     {
-      "id": "Q37",
+      "id": "Q34",
       "title": "设置开关相关范围未定义（出牌方式/放大/牌墙/快出/特效）",
       "priority": "P3",
       "type": "描述不完整",
@@ -811,39 +738,7 @@
       "has_detail": false
     },
     {
-      "id": "Q38",
-      "title": "术语不统一（倒承包/反承包、老庄/牢庄）",
-      "priority": "P3",
-      "type": "定义歧义",
-      "module": [
-        "名词/小结算"
-      ],
-      "source_location": "名词表 / 小结算界面",
-      "original_text": "",
-      "problem": "",
-      "impact": "",
-      "suggestion": "文档内部对照",
-      "status": "待确认",
-      "has_detail": false
-    },
-    {
-      "id": "Q39",
-      "title": "非房主退出也提示\"解散房间\"，权限与文案歧义",
-      "priority": "P3",
-      "type": "定义歧义",
-      "module": [
-        "菜单"
-      ],
-      "source_location": "辅助功能-菜单",
-      "original_text": "",
-      "problem": "",
-      "impact": "",
-      "suggestion": "06#四（弱对照）",
-      "status": "待确认",
-      "has_detail": false
-    },
-    {
-      "id": "Q40",
+      "id": "Q35",
       "title": "结算表现细节缺失（番型动画选取规则、超基础番型震动）",
       "priority": "P3",
       "type": "需求缺失",
@@ -859,7 +754,7 @@
       "has_detail": false
     },
     {
-      "id": "Q41",
+      "id": "Q36",
       "title": "局与局之间的界面重置清理未描述",
       "priority": "P3",
       "type": "需求缺失",

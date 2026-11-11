@@ -122,7 +122,7 @@ confirmation_status: draft / pending-human / confirmed-human
 
 该工具对本次任务的可借鉴度低：它的核心价值在下游（生图/切图/Atlas 交付），交互文档只是"页面提示词的引用源"。真正值得吸收的是 **spec-generation 对同一套模板的加强层**（溯源、限制结构化、质检）。若将来 PrdGameSkill 需要"从 PRD 反向生成 UI 原型图"，game-ui-design-workflow 的 spec-kit → 生图链路可直接参考（其 LICENSE 允许，见 REFERENCES.md 登记）。
 
-## 5. 建议的模板修订清单（待确认后落地）
+## 5. 模板修订清单（已于 2026-11-11 全部落地）
 
 | # | 修订 | 落点 |
 |---|---|---|

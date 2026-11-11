@@ -2,7 +2,7 @@
 //
 // 流程：
 //   [extract] 扫描客户端代码与 FGUI 工程
-//     -> 按 UI 主题并行逆向提取，写规则基准文件（references/rules/{rulesName}/）
+//     -> 按 UI 主题并行逆向提取，写规则基准文件（{outDir}/rules/{rulesName}/）
 //     -> 生成 00-基准说明.md
 //   [check] 扫描规则基准与需求文档
 //     -> 按规则主题并行检查（严格 UI 交互口径）
@@ -17,11 +17,14 @@
 //   clientDir         客户端代码根目录，默认 input-ui/xuanwulobby/assets/42319
 //   fguiDir           FGUI 工程目录，默认 input-ui/kawuxing-fgui
 //   rulesName         规则基准子目录名，默认 hzmj_ui_interaction
-//   rulesDir          直接指定规则基准目录（覆盖 rulesName 推导）
+//   rulesDir          直接指定规则基准目录（覆盖默认推导）
 //   inputDir          需求文档目录，默认 input
 //   inputFiles        指定需求文档路径数组（给定时跳过目录扫描结果）
-//   outDir            产物目录，默认 examples/ui-interaction-prd-extract
+//   outDir            workflow 产物目录，默认 examples/ui-interaction-prd-extract-workflow
 //   outPath           报告路径，默认 {outDir}/report.md
+//
+// 产物隔离：extract/full 生成的规则基准默认写入 {outDir}/rules/{rulesName}/，
+// 不与 skill 的 references/rules/ 混放；check 模式未传 rulesDir 时读取 skill 的规则基准。
 //   date              检查/提取日期 YYYY-MM-DD（脚本内禁止取当前时间）
 //   themes            自定义提取主题数组 [{ title, focus }]
 //   fast              true 为速度档；默认质量档（保留审核与修正闭环）
@@ -62,11 +65,14 @@ if (mode !== 'full' && mode !== 'extract' && mode !== 'check') {
 const clientDir = A.clientDir || 'input-ui/xuanwulobby/assets/42319'
 const fguiDir = A.fguiDir || 'input-ui/kawuxing-fgui'
 const rulesName = A.rulesName || 'hzmj_ui_interaction'
-const rulesDir =
-  A.rulesDir || '.claude/skills/ui-interaction-prd-extract/references/rules/' + rulesName
 const inputDir = A.inputDir || 'input'
-const outDir = A.outDir || 'examples/ui-interaction-prd-extract'
+const outDir = A.outDir || 'examples/ui-interaction-prd-extract-workflow'
 const outPath = A.outPath || outDir + '/report.md'
+// extract/full 的基准文档属于 workflow 产物，放 outDir 下，避免污染 skill 目录；
+// check 模式默认复用 skill 已固化的基准，也可用 args.rulesDir 指向 workflow 产物。
+const skillRulesDir = '.claude/skills/ui-interaction-prd-extract/references/rules/' + rulesName
+const workflowRulesDir = outDir + '/rules/' + rulesName
+const rulesDir = A.rulesDir || (mode === 'check' ? skillRulesDir : workflowRulesDir)
 const checkDate = A.date || '未提供（调用时请传 args.date，格式 YYYY-MM-DD）'
 const maxIssuesPerGroup = A.maxIssuesPerGroup || 10
 const fastMode = A.fast === true

@@ -11,6 +11,7 @@
 | REF-004 | Arrow | https://github.com/mhgolkar/Arrow.git | `thirdparties/Arrow` | `5c0291c72e0fe1c1ac3024cb68826caa213532ee` | MIT | 可借鉴思想，复用代码需保留版权声明 | 游戏逻辑节点、变量/状态、可玩 HTML 导出 |
 | REF-005 | GDD-Forge | https://github.com/miventech/GDD-Forge.git | `thirdparties/GDD-Forge` | `75f41412d3699fbc3a0e406af277431ba0b0faa1` | 未发现 LICENSE 文件 | **只读研究，禁止复制任何代码** | GDD 数据结构（Manifest/Feature/Segment/Decision） |
 | REF-006 | Game Doc Forge | https://github.com/MisterVitoPro/gdd.git | `thirdparties/game-doc-forge` | `630ae23103cf722be209708c0a1b5f01af25b73c` | MIT | 可借鉴思想，复用代码需保留版权声明 | 游戏设计访谈、决策账本、Open Questions、审查 |
+| REF-007 | sessions-search | https://github.com/luckeyfaraday/sessions-search | `thirdparties/sessions-search`（本地目录，不入库） | -（clone main，2026-11-12） | MIT | 工具安装运行（venv），不复制代码进本仓库；skill 装于 `~/.claude/skills/sessions-search` | 跨 agent（Claude Code/Codex/opencode/Hermes）session 全文检索，用于查询 workflow 运行记录、回溯历史决策 |
 
 ## 说明
 

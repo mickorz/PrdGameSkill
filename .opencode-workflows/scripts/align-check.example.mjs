@@ -5,7 +5,7 @@ import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import path from 'node:path'
 import { execFileSync } from 'node:child_process'
-import { alignRequirements, fileBase } from './align-check.mjs'
+import { alignRequirements, fileBase, sectionNorm } from './align-check.mjs'
 
 const s = (id, text, section, file) => ({
   requirementId: id,
@@ -70,17 +70,17 @@ const b = (key, text, section, file) => ({
     [s('REQ-1', '断线重连后回到房间继续对局', '2.1')]
   )
   assert.equal(r.stats.unmatchedBaseline, 1)
-  assert.match(r.unmatchedBaseline[0].reason, /相似度不足/)
+  assert.match(r.unmatchedBaseline[0].reason, /相似度与包含度均不足/)
 }
 
-// 场景 6：无同章节候选（章节不同且文本不同，exact 不命中）
+// 场景 6：章节失配且全文相似度不足（回退后仍无匹配）
 {
   const r = alignRequirements(
     [b('B1', '任何文本内容甲甲', '一、总则')],
     [s('REQ-1', '完全不同的文本乙乙', '2.1')]
   )
   assert.equal(r.stats.unmatchedBaseline, 1)
-  assert.match(r.unmatchedBaseline[0].reason, /无同章节候选/)
+  assert.match(r.unmatchedBaseline[0].reason, /全文候选（章节失配回退）相似度与包含度均不足/)
 }
 
 // 场景 7：文件按 basename 归一（绝对路径 vs 相对路径同文件）
@@ -92,14 +92,17 @@ const b = (key, text, section, file) => ({
   assert.equal(r.stats.exactMatch, 1)
 }
 
-// 场景 8：快照条目被消耗后不复用（一_baseline 一快照）
+// 场景 8：一对多（多条基线可指向同一条快照，不消耗互斥——粗细粒度差异场景）
 {
   const r = alignRequirements(
     [b('B1', '同段文本', '2.1'), b('B2', '同段文本', '2.1')],
     [s('REQ-1', '同段文本', '2.1')]
   )
-  assert.equal(r.stats.exactMatch, 1)
-  assert.equal(r.stats.unmatchedBaseline, 1)
+  assert.equal(r.stats.exactMatch, 2)
+  assert.equal(r.stats.unmatchedBaseline, 0)
+  assert.equal(r.stats.unmatchedSnapshot, 0)
+  assert.equal(r.matches[0].snapshotId, 'REQ-1')
+  assert.equal(r.matches[1].snapshotId, 'REQ-1')
 }
 
 // 场景 9：空文本不参与 exact，anchor 相似度为 0
@@ -158,4 +161,41 @@ const b = (key, text, section, file) => ({
   assert.equal(r.stats.anchorMatch, 1)
 }
 
-console.log('[成功] align-check.example 全部断言通过（exact/anchor唯一/显著领先/多候选区分/相似度不足/无候选/basename归一/消耗不复用/空文本/门槛判定/跨版本文件名归一）')
+// 场景 12：章节标题归一（编号前缀剥离：一、/2.1/第X章）
+{
+  assert.equal(sectionNorm('一、本期开发范围'), '本期开发范围')
+  assert.equal(sectionNorm('2.1 游戏规则概述'), '游戏规则概述')
+  assert.equal(sectionNorm('4.5 行牌操作'), '行牌操作')
+  assert.equal(sectionNorm('本期开发范围'), '本期开发范围')
+  assert.equal(sectionNorm(''), '')
+  const r = alignRequirements(
+    [b('B1', '庄家发放13张牌，闲家14张牌', '一、本期开发范围')],
+    [s('REQ-1', '庄家发放13张牌，闲家15张牌', '本期开发范围')]
+  )
+  assert.equal(r.stats.anchorMatch, 1)
+}
+
+// 场景 13：章节失配回退全文候选（章节细化/改名场景，命中记 anchor-doc + 告警）
+{
+  const r = alignRequirements(
+    [b('B1', '庄家发放13张牌，闲家14张牌', '4.5 行牌操作')],
+    [s('REQ-1', '庄家发放13张牌，闲家15张牌', '4.5 行牌操作-出牌')]
+  )
+  assert.equal(r.stats.anchorDocMatch, 1)
+  assert.equal(r.matches[0].method, 'anchor-doc')
+  assert.equal(r.stats.unmatchedBaseline, 0)
+  assert.equal(r.warnings.length, 1)
+  assert.match(r.warnings[0], /全文候选命中/)
+}
+
+// 场景 14：全文回退仍无匹配（相似度不足）进人工清单，reason 标明回退
+{
+  const r = alignRequirements(
+    [b('B1', '白板财神算翻倍翻倍再翻倍', '4.5 行牌操作')],
+    [s('REQ-1', '断线重连后回到房间继续对局', '9.9 其它')]
+  )
+  assert.equal(r.stats.unmatchedBaseline, 1)
+  assert.match(r.unmatchedBaseline[0].reason, /全文候选（章节失配回退）/)
+}
+
+console.log('[成功] align-check.example 全部断言通过（exact/anchor唯一/显著领先/多候选区分/相似度不足/无候选/basename归一/一对多/空文本/门槛判定/跨版本文件名归一/章节归一/全文回退）')

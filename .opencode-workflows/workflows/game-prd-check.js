@@ -363,28 +363,29 @@ if (rtmEnabled) {
   reqResults = await parallel(
     inputFiles.map((f, i) => () => {
       const base = String(f).replace(/^.*\//, '').replace(/\.md$/i, '')
+      const planFile = runDir + '/requirements/plans/part-' + String(i + 1).padStart(2, '0') + '.plan.json'
       const partFile = runDir + '/requirements/parts/part-' + String(i + 1).padStart(2, '0') + '.json'
       return agent(
         [
           '你是需求分析师。工作目录为项目根目录。',
           '',
-          '任务：通读需求文档 ' + f + '，把它拆解为原子需求点清单，并写入指定 JSON 文件。',
+          '任务：通读需求文档 ' + f + '，把它拆解为原子需求点清单。',
           '',
           '拆分标准：一个原子需求点 = 能独立判断是否满足某项预期行为或验收条件。',
           '- 例："玩家可以碰牌，碰牌后需要广播给其他玩家，并更新手牌"拆为 ①满足条件可碰 ②碰后广播 ③碰后更新手牌 三条；',
           '- 不要机械逐句切分，避免无业务价值的碎片；总览/目录类内容不提取。',
           '',
-          '输出文件（只写这一个文件，UTF-8）：' + partFile,
-          'JSON 数组，每个元素：',
-          '{ "reqKey": "' + base + '-<三位序号>", "title": "≤20 字小标题", "source": { "file": ' + JSON.stringify(f) + ', "section": "章节号或标题", "fromLine": <起始行>, "toLine": <结束行> }, "text": "需求点原文（与源文件行范围内容一致，不要改写）" }',
+          '产出方式（两步，不要自己写脚本切原文）：',
+          '1. 用 write 工具写提取计划到 ' + planFile + '（UTF-8，小 JSON，不含任何原文）：',
+          '   { "sourceFile": ' + JSON.stringify(f) + ', "outFile": ' + JSON.stringify(partFile) + ', "items": [',
+          '     { "reqKey": "' + base + '-<三位序号>", "title": "≤20 字小标题", "section": "章节号或标题", "fromLine": <起始行>, "toLine": <结束行> } ] }',
+          '   reqKey 在本文件内从 001 连续编号；fromLine/toLine 用 read 工具显示的真实行号（1 基）。',
+          '2. 执行命令：node .opencode-workflows/scripts/slice-part.mjs "' + planFile + '"',
+          '   切片脚本会从源文件按行范围机械切原文组装分片（text 与源文件一致由脚本保证，禁止手抄原文）；',
+          '   命令输出含 [失败] 时：按错误修正计划文件后重跑，直到 [成功]；',
+          '3. 只写计划文件与分片产物，不要执行 git，不要修改源文件与脚本。',
           '',
-          '硬性要求：',
-          '1. reqKey 在本文件内从 001 连续编号；',
-          '2. text 必须照抄源文件行范围内原文，禁止改写（后续会做引文一致性校验）；',
-          '3. fromLine/toLine 用 read 工具显示的真实行号；',
-          '4. 只写这一个文件，不要执行 git。',
-          '',
-          '完成后返回：{ partFile: <写的文件路径>, count: <需求点条数> }',
+          '完成后返回：{ partFile: <分片产物路径>, count: <需求点条数> }',
         ].join('\n'),
         {
           label: '提取需求 ' + base,
@@ -416,6 +417,7 @@ if (rtmEnabled) {
           '拆分标准：一个原子检查点 = 一条可独立判定的规则要求（基准中的编号条款、表格行、明确的行为约束）。',
           '- 总览、目录、索引类条款 mandatory 填 false；其余 true。',
           '',
+          '产出方式：用 write 工具直接写 JSON 文件（禁止写临时脚本拼 JSON）：',
           '输出文件（只写这一个文件，UTF-8）：' + partFile,
           'JSON 数组，每个元素：',
           '{ "ruleId": "' + rulePrefix + '-<三位序号>", "file": "<规则文件相对路径>", "section": "章节或条款号", "fromLine": <行>, "toLine": <行>, "text": "规则原文摘要（与源文件一致，≤100 字）", "mandatory": true }',
@@ -492,7 +494,7 @@ const groupTasks = parallel(
               '   - reqKey 来自需求点清单；规则点不涉及任何需求点时 reqKey 填 null、status 填 na；',
               '   - 一条规则涉及多个需求点时输出多条 coverage。',
               '2. issues 每条加 requirementRefs 字段（字符串数组，列出该问题涉及的 reqKey；无法定位填空数组）。',
-              '3. 全部完成后，把 issues 与 coverage 合并写入一个 JSON 文件（UTF-8）：' + checkFile,
+              '3. 全部完成后，用 write 工具把 issues 与 coverage 合并写入一个 JSON 文件（UTF-8；禁止写临时脚本拼 JSON）：' + checkFile,
               '   结构：{ "groupId": ' + JSON.stringify(groupId) + ', "status": "completed", "checkVersion": "v1", "coverage": [...], "issues": [...与返回值一致] }',
             ].join('\n')
           : '',
@@ -971,33 +973,25 @@ if (fastMode) {
       ),
   ])
 
-  writeResult = await agent(
-    [
-      '把两个报告分片按顺序合并成一个文件，并清理临时文件。',
-      '分片 1：' + part1Path,
-      '分片 2：' + part2Path,
-      '目标文件：' + outPath,
-      '',
-      '在项目根目录一次执行下面的 PowerShell 命令：',
-      "Get-Content -LiteralPath '" +
-        part1Path +
-        "','" +
-        part2Path +
-        "' -Encoding UTF8 | Set-Content -LiteralPath '" +
-        outPath +
-        "' -Encoding UTF8; Remove-Item -LiteralPath '" +
-        part1Path +
-        "','" +
-        part2Path +
-        "'",
-      '',
-      '只有命令执行失败时，才自行读取两个分片并用 write 合并（两片之间空一行）。',
-      '合并后确认目标文件存在，返回合并结果与分片摘要：',
-      '只操作指定的输出文件，不要执行 git 命令、不要提交或推送、不要改动其他文件。',
-      JSON.stringify(partResults).slice(0, 600),
-    ].join('\n'),
-    { label: '合并报告分片', agentType: 'general', timeoutMs: 900000 }
+  // 合并报告分片（确定性命令 merge-parts.mjs，替代合并 agent；顺带消灭 PowerShell 5.1 写入 UTF-8 BOM 隐患）
+  // 续跑（resume）时分片可能已被上次运行删除：目标已存在且分片全无 → 保留现有产物
+  const mergeScript = '.opencode-workflows/scripts/merge-parts.mjs'
+  if (fileExists(outPath) && !fileExists(part1Path) && !fileExists(part2Path)) {
+    log('报告分片已在上次运行合并，保留现有 ' + outPath)
+  } else {
+    const merged = await commandSuccess(
+      'node "' + mergeScript + '" "' + outPath + '" "' + part1Path + '" "' + part2Path + '"'
+    )
+    if (!merged) throw new Error('报告分片合并失败（分片缺失或损坏，上次运行可能中断），请重跑 workflow')
+  }
+  // 乱码检查（确定性命令；发现乱码直接报错暴露，人工确认后重跑对应分片）
+  const fffdClean = await commandSuccess(
+    'node -e "process.exit(require(\'fs\').readFileSync(process.argv[1],\'utf8\').includes(\'\\uFFFD\')?1:0)" "' + outPath + '"'
   )
+  if (!fffdClean) {
+    throw new Error('报告 ' + outPath + ' 含乱码替换字符 U+FFFD（分片写入编码异常），请删除该文件后重跑 workflow')
+  }
+  writeResult = '已合并（确定性命令）：' + outPath
 } else {
   writeResult = await agent(
     [

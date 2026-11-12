@@ -48,6 +48,17 @@ function similarity(a, b) {
   return inter / (A.size + B.size - inter)
 }
 
+// 包含度（非对称）：小文本的 bigram 被大文本覆盖的比例；
+// 粗细粒度差异场景（基线细条目是快照粗条目的子串片段）的正确度量
+function containment(small, big) {
+  const A = bigrams(small)
+  const B = bigrams(big)
+  if (A.size === 0) return 0
+  let inter = 0
+  for (const x of A) if (B.has(x)) inter += 1
+  return inter / A.size
+}
+
 // 源文件名归一：RTM 基线是相对路径，快照可能是绝对路径，按 basename 对齐；
 // 文件名尾部日期或版本段（如 AI11-11、AI-11-12-2）一并剥离，支持 PRD 跨版本对齐
 export function fileBase(f) {
@@ -85,9 +96,25 @@ function writeJson(file, data) {
 }
 
 // ---------- 对齐核心（纯函数，供自检导入） ----------
+// 章节标题归一：剥离编号前缀（一、/1./2.3.1/第X章等），跨版本编号层级变化时可对齐
+export function sectionNorm(s) {
+  const t = String(s || '').trim()
+  const stripped = t.replace(
+    /^(?:第[一二三四五六七八九十百千\d]+[章节篇]|[一二三四五六七八九十]+[、.．]|\d+(?:[.．]\d+)*[.、．]?\s*)/,
+    ''
+  )
+  return (stripped || t).trim()
+}
+
+// anchor 键：归一文件名 | 归一章节标题
+function anchorKey(source) {
+  return fileBase(source && source.file) + '|' + sectionNorm(source && source.section)
+}
+
 export function alignRequirements(baseline, snapshot, opts = {}) {
   const threshold = opts.threshold === undefined ? 0.6 : Number(opts.threshold)
   const lead = opts.lead === undefined ? 0.25 : Number(opts.lead)
+  const containThreshold = opts.containThreshold === undefined ? 0.85 : Number(opts.containThreshold)
 
   // L1 exact：normText 全文索引（同文本直接对齐，一_baseline 一快照）
   const byText = new Map()
@@ -97,24 +124,26 @@ export function alignRequirements(baseline, snapshot, opts = {}) {
     if (!byText.has(key)) byText.set(key, [])
     byText.get(key).push(s)
   }
-  // anchor 索引：file(basename)|section -> 快照条目
+  // anchor 索引：file(basename)|section(归一) -> 快照条目；
+  // 章节标题归一：剥离编号前缀（一、/1./2.1/第X章 等）与首尾空白，
+  // 「一、本期开发范围」与「本期开发范围」、不同层级编号的同名章节可对齐
   const byAnchor = new Map()
   for (const s of snapshot) {
-    const aKey = fileBase(s.source && s.source.file) + '|' + String((s.source && s.source.section) || '')
+    const aKey = anchorKey(s.source)
     if (!byAnchor.has(aKey)) byAnchor.set(aKey, [])
     byAnchor.get(aKey).push(s)
   }
 
   const matches = [] // { baseline, snapshot, method, similarity }
-  const used = new Set() // 已对齐的快照条目（存元素引用，避免下标体系混淆）
+  const used = new Set() // 被至少一条基线命中的快照条目（一对多：多条基线可指向同一条快照，不消耗互斥）
   const unmatchedBaseline = []
   const warnings = []
 
   baseline.forEach((b, i) => {
-    // L1 exact
+    // L1 exact：文本相同直接对齐（不消耗——多条基线同文本可指向同一条快照）
     const textKey = normText(b.text)
     if (textKey) {
-      const cands = (byText.get(textKey) || []).filter((x) => !used.has(x))
+      const cands = byText.get(textKey) || []
       if (cands.length > 0) {
         const s = cands[0]
         used.add(s)
@@ -122,24 +151,38 @@ export function alignRequirements(baseline, snapshot, opts = {}) {
         return
       }
     }
-    // L2 anchor
-    const aKey = fileBase(b.source && b.source.file) + '|' + String((b.source && b.source.section) || '')
-    const cands = (byAnchor.get(aKey) || []).filter((x) => !used.has(x))
+    // L2 anchor：同归一章节候选；无同章节候选时回退全文候选（PRD 跨版本章节细化/改名场景）
+    const aKey = anchorKey(b.source)
+    let cands = byAnchor.get(aKey) || []
+    let scope = 'section'
     if (cands.length === 0) {
-      unmatchedBaseline.push({ baselineIndex: i, baselineKey: b.reqKey || b.requirementId, title: b.title, section: (b.source && b.source.section) || '', reason: '快照中无同章节候选' })
-      return
+      cands = snapshot
+      scope = 'document'
     }
     const scored = cands
-      .map((s) => ({ s, sim: similarity(b.text, s.text) }))
-      .sort((x, y) => y.sim - x.sim)
+      .map((s) => ({
+        s,
+        sim: similarity(b.text, s.text),
+        cont: containment(b.text, s.text),
+        score: Math.max(similarity(b.text, s.text), containment(b.text, s.text)),
+      }))
+      .sort((x, y) => y.score - x.score)
     const top = scored[0]
     const second = scored[1]
-    const unique = scored.length === 1 || second.sim < threshold
-    const leads = !second || top.sim - second.sim >= lead
-    if (top.sim >= threshold && (unique || leads)) {
+    const hit = top && (top.sim >= threshold || top.cont >= containThreshold)
+    if (!top || !hit) {
+      unmatchedBaseline.push({ baselineIndex: i, baselineKey: b.reqKey || b.requirementId, title: b.title, section: (b.source && b.source.section) || '', reason: (scope === 'section' ? '同章节候选' : '全文候选（章节失配回退）') + '相似度与包含度均不足（top1 相似 ' + (top ? top.sim.toFixed(2) : '-') + ' / 包含 ' + (top ? top.cont.toFixed(2) : '-') + '）' })
+      return
+    }
+    const unique = !second || second.score < Math.max(threshold, containThreshold) * 0.75 || (top.sim < threshold && top.cont >= containThreshold && second.cont < containThreshold)
+    const leads = !second || top.score - second.score >= lead * 0.5
+    if (unique || leads) {
+      const matchedBy = top.sim >= threshold ? 'similarity' : 'containment'
       used.add(top.s)
-      matches.push({ baselineIndex: i, baselineKey: b.reqKey || b.requirementId, snapshotId: top.s.requirementId, snapshotKey: top.s.reqKey, method: 'anchor', similarity: Math.round(top.sim * 1000) / 1000 })
-      if (!unique) warnings.push('基线 ' + (b.reqKey || i) + ' anchor 命中靠显著领先（top1 ' + top.sim.toFixed(2) + ' / top2 ' + second.sim.toFixed(2) + '），建议人工抽查')
+      matches.push({ baselineIndex: i, baselineKey: b.reqKey || b.requirementId, snapshotId: top.s.requirementId, snapshotKey: top.s.reqKey, method: (scope === 'document' ? 'anchor-doc' : 'anchor') + (matchedBy === 'containment' ? '-contains' : ''), similarity: Math.round(top.sim * 1000) / 1000, containment: Math.round(top.cont * 1000) / 1000 })
+      if (scope === 'document') warnings.push('基线 ' + (b.reqKey || i) + ' 章节「' + ((b.source && b.source.section) || '') + '」在快照中无同名章节，全文候选命中 ' + top.s.requirementId + '（相似 ' + top.sim.toFixed(2) + ' / 包含 ' + top.cont.toFixed(2) + '），建议人工抽查')
+      else if (matchedBy === 'containment') warnings.push('基线 ' + (b.reqKey || i) + ' 靠包含度命中 ' + top.s.requirementId + '（包含 ' + top.cont.toFixed(2) + '，相似仅 ' + top.sim.toFixed(2) + '，粗细粒度差异），建议人工抽查')
+      else if (!unique) warnings.push('基线 ' + (b.reqKey || i) + ' anchor 命中靠显著领先（top1 ' + top.sim.toFixed(2) + ' / top2 ' + second.sim.toFixed(2) + '），建议人工抽查')
       return
     }
     unmatchedBaseline.push({
@@ -147,7 +190,7 @@ export function alignRequirements(baseline, snapshot, opts = {}) {
       baselineKey: b.reqKey || b.requirementId,
       title: b.title,
       section: (b.source && b.source.section) || '',
-      reason: top.sim >= threshold ? '同章节多候选无法区分（top1 ' + top.sim.toFixed(2) + ' / top2 ' + (second ? second.sim.toFixed(2) : '-') + '）' : '相似度不足（top1 ' + top.sim.toFixed(2) + ' < ' + threshold + '）',
+      reason: (scope === 'section' ? '同章节多候选' : '全文候选（章节失配回退）多候选') + '无法区分（top1 相似 ' + top.sim.toFixed(2) + ' / 包含 ' + top.cont.toFixed(2) + '；top2 相似 ' + second.sim.toFixed(2) + ' / 包含 ' + second.cont.toFixed(2) + '）',
     })
   })
 
@@ -156,9 +199,10 @@ export function alignRequirements(baseline, snapshot, opts = {}) {
     .filter(({ s }) => !used.has(s))
     .map(({ s, i }) => ({ snapshotIndex: i, snapshotId: s.requirementId, title: s.title, section: (s.source && s.source.section) || '', identityStatus: s.identityStatus || '' }))
 
-  const exactCount = matches.filter((m) => m.method === 'exact').length
-  const anchorCount = matches.filter((m) => m.method === 'anchor').length
-  const rate = baseline.length === 0 ? null : (exactCount + anchorCount) / baseline.length
+const exactCount = matches.filter((m) => m.method === 'exact').length
+  const anchorCount = matches.filter((m) => m.method === 'anchor' || m.method === 'anchor-contains').length
+  const anchorDocCount = matches.filter((m) => m.method === 'anchor-doc' || m.method === 'anchor-doc-contains').length
+  const rate = baseline.length === 0 ? null : (exactCount + anchorCount + anchorDocCount) / baseline.length
   return {
     matches,
     unmatchedBaseline,
@@ -169,6 +213,8 @@ export function alignRequirements(baseline, snapshot, opts = {}) {
       snapshotTotal: snapshot.length,
       exactMatch: exactCount,
       anchorMatch: anchorCount,
+      anchorDocMatch: anchorDocCount,
+      containmentMatch: matches.filter((m) => m.method.endsWith('-contains')).length,
       unmatchedBaseline: unmatchedBaseline.length,
       unmatchedSnapshot: unmatchedSnapshot.length,
       rate,
@@ -221,7 +267,7 @@ md.push('')
 md.push('- 基线：' + baselinePath + '（' + stats.baselineTotal + ' 条）')
 md.push('- 快照：' + snapshotPath + '（' + stats.snapshotTotal + ' 条）')
 const rateText = stats.rate === null ? '无' : (stats.rate * 100).toFixed(1) + '%'
-md.push('- 对齐率：' + rateText + '（门槛 ' + (minRate * 100).toFixed(0) + '%，exact ' + stats.exactMatch + ' + anchor ' + stats.anchorMatch + '）/ 基线 ' + stats.baselineTotal + ' 条')
+md.push('- 对齐率：' + rateText + '（门槛 ' + (minRate * 100).toFixed(0) + '%，exact ' + stats.exactMatch + ' + anchor ' + stats.anchorMatch + ' + anchor-doc ' + stats.anchorDocMatch + '）/ 基线 ' + stats.baselineTotal + ' 条')
 md.push('- 判定：' + (stats.rate !== null && stats.rate >= minRate ? '达标' : '未达标（未匹配项须人工裁决，禁止自动合并）'))
 md.push('')
 md.push('## 未匹配基线（人工确认清单，' + result.unmatchedBaseline.length + ' 条）')
@@ -244,7 +290,7 @@ fs.writeFileSync(path.join(outDir, 'align-report.md'), md.join('\n'), 'utf8')
 const ok = stats.rate !== null && stats.rate >= minRate
 console.log(
   (ok ? '[成功] ' : '[失败] ') + '对齐验证：基线 ' + stats.baselineTotal + ' 条 / 快照 ' + stats.snapshotTotal
-    + ' 条，exact ' + stats.exactMatch + ' + anchor ' + stats.anchorMatch + '，对齐率 '
+    + ' 条，exact ' + stats.exactMatch + ' + anchor ' + stats.anchorMatch + ' + anchor-doc ' + stats.anchorDocMatch + '，对齐率 '
     + (stats.rate === null ? '无' : (stats.rate * 100).toFixed(1) + '%')
     + '（门槛 ' + (minRate * 100).toFixed(0) + '%）；未匹配基线 ' + stats.unmatchedBaseline
     + ' 条、快照侧 ' + stats.unmatchedSnapshot + ' 条、告警 ' + result.warnings.length + ' 条'

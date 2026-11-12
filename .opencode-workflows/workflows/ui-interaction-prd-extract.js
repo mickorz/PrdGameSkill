@@ -755,27 +755,21 @@ await parallel(
   )
 )
 
-const mergeCommand =
-  'node -e \'const fs=require("fs");const dir=process.argv[1];const out=process.argv[2];' +
-  'const files=fs.readdirSync(dir).filter(f=>/^part-\\d+\\.md$/.test(f)).sort();' +
-  'let s="";for(const f of files)s+=fs.readFileSync(dir+"/"+f,"utf8");' +
-  'fs.writeFileSync(out,s,"utf8");for(const f of files)fs.unlinkSync(dir+"/"+f);fs.rmdirSync(dir);\' ' +
-  '"' + partDir + '" "' + outPath + '"'
-
-const mergeResult = await agent(
-  [
-    '你在项目根目录执行报告分片合并命令。',
-    '',
-    '执行下面这条命令（原样执行，不要改动参数；若当前 shell 不支持单引号，请改用等价的双引号转义写法，但逻辑必须一致）：',
-    mergeCommand,
-    '',
-    '要求：',
-    '1. 只执行合并命令，然后确认 ' + outPath + ' 存在。',
-    '2. 不要读取或改写报告内容，不要执行 git 命令，不要保留 ' + partDir + ' 目录。',
-    '3. 返回 ok=true 与文件大小；命令失败返回 ok=false 与错误信息。',
-  ].join('\n'),
-  { label: '合并报告分片', agentType: 'general', timeoutMs: 300000, retries: 2 }
+// 合并报告分片（确定性命令 merge-parts.mjs，替代合并 agent：无 LLM 转述命令、无单引号转义问题）
+const mergeScript = '.opencode-workflows/scripts/merge-parts.mjs'
+const mergeCmd = 'node "' + mergeScript + '" "' + outPath + '" ' + partFiles.map((p) => '"' + p + '"').join(' ')
+const merged = await commandSuccess(mergeCmd)
+if (!merged) throw new Error('报告分片合并失败（分片缺失或损坏，上次运行可能中断），请重跑 workflow')
+// 乱码检查（确定性命令；发现乱码直接报错暴露）
+const fffdClean = await commandSuccess(
+  'node -e "process.exit(require(\'fs\').readFileSync(process.argv[1],\'utf8\').includes(\'\\uFFFD\')?1:0)" "' + outPath + '"'
 )
+if (!fffdClean) {
+  throw new Error('报告 ' + outPath + ' 含乱码替换字符 U+FFFD（分片写入编码异常），请删除该文件后重跑 workflow')
+}
+const mergeResult = '已合并（确定性命令）：' + outPath
+// 清理空分片目录（rmdirSync 仅空目录可删；目录不存在时失败可忽略）
+await commandSuccess('node -e "require(\'fs\').rmdirSync(process.argv[1])" "' + partDir + '"')
 
 await check(() => fileExists(outPath), '报告文件未生成：' + outPath)
 log('报告已写入：' + outPath + '（问题 ' + stats.total + ' 条，' + reportPieces.length + ' 个分片）')

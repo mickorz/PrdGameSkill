@@ -660,36 +660,37 @@ const shardResults = await parallel([
 const shardOk = (shardResults || []).filter((r) => typeof r === 'string' && r.length > 0).length
 log('报告分片完成 ' + shardOk + '/3')
 
-const mergeResult = await agent(
-  [
-    '把三个报告分片按顺序合并成一个文件，并清理临时文件。',
-    '分片 1：' + part1Path,
-    '分片 2：' + part2Path,
-    '分片 3：' + part3Path,
-    '目标文件：' + outPath,
-    '',
-    '在项目根目录一次执行下面的命令（用 node 合并，避免 PowerShell 5.1 写入 UTF-8 BOM）：',
-    'node -e "const fs=require(\'fs\');const ps=[\'' +
-      part1Path +
-      '\',\'' +
-      part2Path +
-      '\',\'' +
-      part3Path +
-      '\'];fs.writeFileSync(\'' +
-      outPath +
-      '\',ps.map(p=>fs.readFileSync(p,\'utf8\')).join(\'\\n\\n\'),\'utf8\');ps.forEach(p=>fs.unlinkSync(p))"',
-    '',
-    '续跑（resume）时三个分片可能已被上一次运行删除：若三个分片都不存在且目标文件 ' + outPath + ' 已存在，',
-    '则不要重新合并，直接进入下面的乱码检查与修复步骤，保留现有目标文件。',
-    '只有命令执行失败时，才自行读取三个分片并用 write 合并（分片之间空一行）。',
-    '合并后必须做乱码检查：用 Select-String 或 node 检查目标文件是否含替换字符 U+FFFD（显示为“�”）；',
-    '若有，逐处读取上下文，用 edit 工具只把这几处字符修正为原文正确汉字（常见为“好友房”“亮牌”“结算”等），不要重写整篇报告；',
-    '修正后再次确认文件内 U+FFFD 数量为 0。',
-    '最终返回：合并是否成功、文件行数与字节数、修复的乱码处数（没有则写 0）。',
-    '只操作指定的输出文件，不要执行 git 命令、不要提交或推送、不要改动其他文件。',
-  ].join('\n'),
-  { label: '合并报告分片', agentType: 'general', timeoutMs: 900000 }
+// 合并报告分片（确定性命令 merge-parts.mjs，替代合并 agent：无 LLM 转述命令、无 BOM 风险）
+// 续跑（resume）时三个分片可能已被上一次运行删除：目标文件已存在且分片全无 → 保留现有产物
+const mergeScript = '.opencode-workflows/scripts/merge-parts.mjs'
+let mergeSummary = '已在上次运行合并（保留现有产物）'
+if (fileExists(outPath) && !fileExists(part1Path) && !fileExists(part2Path) && !fileExists(part3Path)) {
+  log('报告分片已在上次运行合并，保留现有 ' + outPath)
+} else {
+  const merged = await commandSuccess(
+    'node "' + mergeScript + '" "' + outPath + '" "' + part1Path + '" "' + part2Path + '" "' + part3Path + '"'
+  )
+  if (!merged) throw new Error('报告分片合并失败（分片缺失或损坏，上次运行可能中断），请重跑 workflow')
+  mergeSummary = '已合并（确定性命令）'
+}
+
+// 乱码检查（确定性命令；发现乱码才请 agent 修复，只改乱码处不重写报告）
+const fffdClean = await commandSuccess(
+  'node -e "process.exit(require(\'fs\').readFileSync(process.argv[1],\'utf8\').includes(\'\\uFFFD\')?1:0)" "' + outPath + '"'
 )
+if (!fffdClean) {
+  log('[警告] 报告含乱码替换字符 U+FFFD，请修复 agent 处理')
+  await agent(
+    [
+      '报告文件 ' + outPath + ' 中含乱码替换字符 U+FFFD（显示为“�”）。',
+      '请逐处读取上下文，用 edit 工具只把这几处字符修正为原文正确汉字（常见为“好友房”“亮牌”“结算”等），不要重写整篇报告；',
+      '修正后再次确认文件内 U+FFFD 数量为 0，返回修复的乱码处数。',
+      '只操作指定的输出文件，不要执行 git 命令、不要提交或推送、不要改动其他文件。',
+    ].join('\n'),
+    { label: '修复乱码', agentType: 'general', timeoutMs: 900000 }
+  )
+  mergeSummary = mergeSummary + '，修复乱码字符'
+}
 
 await check(() => fileExists(outPath), '报告文件未生成：' + outPath)
 
@@ -808,5 +809,5 @@ return {
   fastMode: fastMode,
   reviewSkipped: skipReview,
   reviewOk: skipReview ? null : review ? review.ok === true || fixed : false,
-  mergeSummary: mergeResult,
+  mergeSummary: mergeSummary,
 }

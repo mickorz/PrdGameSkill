@@ -163,11 +163,14 @@ export function parseReport(md) {
   }
 
   // --- 问题清单表（全集索引）---
-  // 自适应两种列布局：
+  // 自适应三种列布局：
   //   PRD 版：| PRD-001 | 类型或主题 | P0 | 问题 | 位置 | 建议 |（6 列，第二列自适应类型/主题）
+  //   PRD 版（清单带问题性质列）：| PRD-001 | 主题 | 问题性质 | P0 | 问题 | 位置 | 建议 |（7 列，
+  //     第三列五类型，无详情块的长尾条目也有类型，不再落入未分类）
   //   Q 版（UI 交互基准）：| Q01 | P0 | MISSING | 模块 | 问题 | 位置 | 基准依据 |（7 列）
   const listRows = {};
-  const PRD_ROW_RE = /^\|\s*(PRD-\d{3})\s*\|\s*(\S+)\s*\|\s*(P[0-3])\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*$/gm;
+  // 第三列问题性质可选（中英文五类型），兼容旧 6 列无该列格式
+  const PRD_ROW_RE = /^\|\s*(PRD-\d{3})\s*\|\s*(\S+)\s*\|\s*(?:(需求缺失|内容冲突|逻辑错误|定义歧义|描述不完整|MISSING|CONFLICT|LOGIC|AMBIGUOUS|INCOMPLETE)\s*\|\s*)?(P[0-3])\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*$/gm;
   // Q 版 8 列：ID | 问题维度 | 优先级 | 类型 | 模块 | 问题 | 原文位置 | 基准依据；问题维度列可选（兼容旧 7 列格式）
   const Q_ROW_RE = /^\|\s*(Q\d{2,3})\s*\|\s*(?:(UI 交互|功能规则)\s*\|\s*)?(P[0-3])\s*\|\s*(\S+)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*$/gm;
   for (const m of md.matchAll(PRD_ROW_RE)) {
@@ -176,10 +179,11 @@ export function parseReport(md) {
       id: m[1],
       second,
       isTypeCol: TYPE_EN_RE.test(second),
-      priority: m[3],
-      title: m[4].trim(),
-      source_location: m[5].trim(),
-      suggestion: m[6].trim(),
+      typeCol: m[3] ? m[3].trim() : '',
+      priority: m[4],
+      title: m[5].trim(),
+      source_location: m[6].trim(),
+      suggestion: m[7].trim(),
     };
   }
   for (const m of md.matchAll(Q_ROW_RE)) {
@@ -231,7 +235,7 @@ export function parseReport(md) {
       id,
       title: row?.title || d?.title || '',
       priority: row?.priority || '',
-      type: row?.isTypeCol ? TYPE_ZH[row.second] : '',
+      type: row?.isTypeCol ? TYPE_ZH[row.second] : (row?.typeCol ? (TYPE_ZH[row.typeCol] || row.typeCol) : ''),
       module: initModules,
       dimension: row?.dimension || reportDim,
       source_location: row?.source_location || '',

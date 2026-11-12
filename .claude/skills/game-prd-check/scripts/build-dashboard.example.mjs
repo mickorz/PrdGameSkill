@@ -150,7 +150,7 @@ assert.ok(!fin.issue_ids.includes('PRD-003'), '范围写法 ID 不应混入资�
 console.log('[成功] build-dashboard.example 全部断言通过（parse/validate/风险组/TOP5/模块/结论）');
 
 // ================= workflow 格式自检 =================
-// 特征：清单第二列=中文主题、详情块「- 主题：」+「- 问题性质：」、「**原文**（位置）：」、基准单行、清单条目多于详情块
+// 特征：清单第二列=中文主题、第三列=问题性质（新 7 列格式）、详情块「- 主题：」+「- 问题性质：」、「**原文**（位置）：」、基准单行、清单条目多于详情块
 const wfReport = `# PRD 检查问题报告
 
 检查对象：input\\【测试麻将】测试玩法.md
@@ -177,11 +177,11 @@ const wfReport = `# PRD 检查问题报告
 
 ## 2. 问题清单
 
-| ID | 主题 | 优先级 | 问题 | 原文位置 | 建议 |
-| --- | --- | --- | --- | --- | --- |
-| PRD-001 | 结算链路缺陷 | P0 | 测试问题一 | 全文 | 补充描述 |
-| PRD-002 | 结算链路缺陷 | P1 | 测试问题二 | 第2章 | 统一口径 |
-| PRD-003 | 展示细节缺失 | P2 | 测试问题三 | 第3章 | 修正展示 |
+| ID | 主题 | 问题性质 | 优先级 | 问题 | 原文位置 | 建议 |
+| --- | --- | --- | --- | --- | --- | --- |
+| PRD-001 | 结算链路缺陷 | 需求缺失 | P0 | 测试问题一 | 全文 | 补充描述 |
+| PRD-002 | 结算链路缺陷 | 内容冲突 | P1 | 测试问题二 | 第2章 | 统一口径 |
+| PRD-003 | 展示细节缺失 | 描述不完整 | P2 | 测试问题三 | 第3章 | 修正展示 |
 
 ## 3. 重点问题详情
 
@@ -226,9 +226,16 @@ assert.strictEqual(wf.issues.filter((i) => i.has_detail).length, 1, '仅 1 条�
 assert.strictEqual(wf.issues[0].type, '需求缺失', '问题性质应映射为中文类型');
 assert.strictEqual(wf.issues[0].source_location, '全文（无结算章节）', '原文括号位置应提取');
 assert.ok(wf.issues[0].original_text.includes('外部文档'), '引文应保留');
-// 无详情条目：类型=未分类，建议来自清单
-assert.strictEqual(wf.issues[1].type, '未分类', '无详情条目应为未分类');
+// 无详情条目：类型取自清单问题性质列（新 7 列格式），不再落入未分类
+assert.strictEqual(wf.issues[1].type, '内容冲突', '无详情条目应取清单问题性质列');
+assert.strictEqual(wf.issues[2].type, '描述不完整', '清单问题性质列中文应原样保留');
 assert.strictEqual(wf.issues[1].suggestion, '统一口径', '清单建议应保留');
+// 旧 6 列格式（无问题性质列）：无详情条目回退未分类
+const legacyReport = wfReport.replace(/ \| (?:需求缺失|内容冲突|逻辑错误|定义歧义|描述不完整)(?= \| P[0-3])/g, '');
+const legacy = parseReport(legacyReport);
+assert.strictEqual(legacy.issues.length, 3, '旧格式清单条目应全部进入 issues');
+assert.strictEqual(legacy.issues[1].type, '未分类', '旧 6 列无问题性质列且无详情应为未分类');
+assert.strictEqual(legacy.issues[0].type, '需求缺失', '旧格式详情块问题性质仍应生效');
 // 主题挂模块 + modules 聚合
 assert.deepStrictEqual(wf.issues[0].module, ['结算链路缺陷'], '清单主题列应挂模块');
 const wfMod = wf.modules.find((m) => m.name === '结算链路缺陷');
@@ -415,7 +422,9 @@ assert.ok(nsug.includes('AC 编号 / 场景名称 / 前置条件'), '必填格�
 assert.ok(nsug.includes('**范例（需求必须按此格式写）**'), '范例块应保留');
 assert.ok(nsug.includes('AC-001'), '范例表格应保留');
 assert.ok(nsug.startsWith('文末新增验收场景章节。'), '建议正文应在最前');
-assert.ok(nsug.includes('**验收口径**') && nsug.includes('直接写出手工用例'), '建议后的验收口径块应保留');
+// 验收口径解析到独立 acceptance 字段（不混入 suggestion，Dashboard 抽屉单独渲染）
+assert.ok(nf.issues[0].acceptance && nf.issues[0].acceptance.includes('直接写出手工用例'), '验收口径应解析到独立 acceptance 字段');
+assert.ok(!nsug.includes('验收口径'), '验收口径不应混入建议字段');
 assert.strictEqual(nf.issues[0].status, '待确认', '处理状态正确');
 
-console.log('[成功] 模板新字段断言通过（必填格式/范例/验收口径全保留，顺序正确）');
+console.log('[成功] 模板新字段断言通过（必填格式/范例保留/验收口径独立字段/顺序正确）');

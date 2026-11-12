@@ -8,12 +8,14 @@
 //
 // 流程：
 //   [扫描]          列出需求文档目录下的 Markdown 文件
-//   [需求原子化]    每个文件一个 agent，按"独立可验证需求行为"拆原子点并写分片
+//   [需求原子化]    每个文件一个 agent：写提取计划（行范围映射，不含原文），
+//                   跑 slice-part.mjs 从源文件机械切原文组装分片（引文一致性从根保证）
 //   [构建与校验]    执行 requirements-build.mjs：分片合并、稳定 ID（三层匹配）、
 //                   源文件 SHA256 清单、引文一致性校验、manifest
 //
 // 产物目录（output/projects/{projectKey}/extractions/{extractionRunId}/）：
-//   requirements/parts/*.json   提取分片（agent 写）
+//   plans/part-XX.plan.json    提取计划（agent 写，行范围映射，不含原文）
+//   requirements/parts/*.json   需求分片（slice-part.mjs 从源文件机械切原文组装）
 //   requirements.json           合并 + 稳定 ID 后的需求清单（checker 消费）
 //   source-manifest.json        源文件 + SHA256
 //   validation.json             引文一致性校验结果（failed 时逐条列出文件/行/需求点）
@@ -104,28 +106,29 @@ phase('需求原子化')
 const reqResults = await parallel(
   inputFiles.map((f, i) => () => {
     const base = String(f).replace(/^.*\//, '').replace(/\.md$/i, '')
+    const planFile = extractionDir + '/plans/part-' + String(i + 1).padStart(2, '0') + '.plan.json'
     const partFile = extractionDir + '/requirements/parts/part-' + String(i + 1).padStart(2, '0') + '.json'
     return agent(
       [
         '你是需求分析师。工作目录为项目根目录。',
         '',
-        '任务：通读需求文档 ' + f + '，把它拆解为原子需求点清单，并写入指定 JSON 文件。',
+        '任务：通读需求文档 ' + f + '，把它拆解为原子需求点清单。',
         '',
         '拆分标准：一个原子需求点 = 能独立判断是否满足某项预期行为或验收条件。',
         '- 例："玩家可以碰牌，碰牌后需要广播给其他玩家，并更新手牌"拆为 ①满足条件可碰 ②碰后广播 ③碰后更新手牌 三条；',
         '- 不要机械逐句切分，避免无业务价值的碎片；总览/目录类内容不提取。',
         '',
-        '输出文件（只写这一个文件，UTF-8）：' + partFile,
-        'JSON 数组，每个元素：',
-        '{ "reqKey": "' + base + '-<三位序号>", "title": "≤20 字小标题", "source": { "file": ' + JSON.stringify(f) + ', "section": "章节号或标题", "fromLine": <起始行>, "toLine": <结束行> }, "text": "需求点原文（与源文件行范围内容一致，不要改写）" }',
+        '产出方式（两步，不要自己写脚本切原文）：',
+        '1. 用 write 工具写提取计划到 ' + planFile + '（UTF-8，小 JSON，不含任何原文）：',
+        '   { "sourceFile": ' + JSON.stringify(f) + ', "outFile": ' + JSON.stringify(partFile) + ', "items": [',
+        '     { "reqKey": "' + base + '-<三位序号>", "title": "≤20 字小标题", "section": "章节号或标题", "fromLine": <起始行>, "toLine": <结束行> } ] }',
+        '   reqKey 在本文件内从 001 连续编号；fromLine/toLine 用 read 工具显示的真实行号（1 基）。',
+        '2. 执行命令：node .opencode-workflows/scripts/slice-part.mjs "' + planFile + '"',
+        '   切片脚本会从源文件按行范围机械切原文组装分片（text 与源文件一致由脚本保证，禁止手抄原文）；',
+        '   命令输出含 [失败] 时：按错误修正计划文件后重跑，直到 [成功]；',
+        '3. 只写计划文件与分片产物，不要执行 git，不要修改源文件与脚本。',
         '',
-        '硬性要求：',
-        '1. reqKey 在本文件内从 001 连续编号；',
-        '2. text 必须照抄源文件行范围内原文，禁止改写（后续会做引文一致性校验）；',
-        '3. fromLine/toLine 用 read 工具显示的真实行号；',
-        '4. 只写这一个文件，不要执行 git。',
-        '',
-        '完成后返回：{ partFile: <写的文件路径>, count: <需求点条数> }',
+        '完成后返回：{ partFile: <分片产物路径>, count: <需求点条数> }',
       ].join('\n'),
       {
         label: '提取需求 ' + base,

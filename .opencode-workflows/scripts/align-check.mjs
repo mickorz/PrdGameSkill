@@ -48,8 +48,13 @@ function similarity(a, b) {
   return inter / (A.size + B.size - inter)
 }
 
-// 源文件名归一：RTM 基线是相对路径，快照可能是绝对路径，按 basename 对齐
-const fileBase = (f) => String(f || '').replace(/\\/g, '/').split('/').pop()
+// 源文件名归一：RTM 基线是相对路径，快照可能是绝对路径，按 basename 对齐；
+// 文件名尾部日期或版本段（如 AI11-11、AI-11-12-2）一并剥离，支持 PRD 跨版本对齐
+export function fileBase(f) {
+  const base = String(f || '').replace(/\\/g, '/').split('/').pop()
+  const stripped = base.replace(/[-_ ]?\d{1,4}[-_]\d{1,2}(?:[-_]\d{1,4})?(?:\.md)?$/i, '').replace(/\.md$/i, '')
+  return stripped || base
+}
 
 // 载入需求列表：数组 / {requirements:[]} / RTM run 目录（requirements/parts/*.json）
 function loadRequirements(target) {

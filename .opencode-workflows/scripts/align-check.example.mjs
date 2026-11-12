@@ -5,7 +5,7 @@ import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import path from 'node:path'
 import { execFileSync } from 'node:child_process'
-import { alignRequirements } from './align-check.mjs'
+import { alignRequirements, fileBase } from './align-check.mjs'
 
 const s = (id, text, section, file) => ({
   requirementId: id,
@@ -146,4 +146,16 @@ const b = (key, text, section, file) => ({
   fs.rmSync(root, { recursive: true, force: true })
 }
 
-console.log('[成功] align-check.example 全部断言通过（exact/anchor唯一/显著领先/多候选区分/相似度不足/无候选/basename归一/消耗不复用/空文本/门槛判定）')
+// 场景 11：跨版本文件名归一（日期或版本段剥离后同文档）
+{
+  assert.equal(fileBase('input/【杭州麻将】核心流程杭州麻将好友房AI11-11.md'), '【杭州麻将】核心流程杭州麻将好友房AI')
+  assert.equal(fileBase('E:/x/input/【杭州麻将】核心流程杭州麻将好友房AI-11-12-2.md'), '【杭州麻将】核心流程杭州麻将好友房AI')
+  assert.equal(fileBase('input/mock-prd.md'), 'mock-prd')
+  const r = alignRequirements(
+    [b('B1', '庄家发放13张牌，闲家14张牌', '2.1', 'input/【杭州麻将】核心流程杭州麻将好友房AI11-11.md')],
+    [s('REQ-1', '庄家发放13张牌，闲家15张牌', '2.1', 'input/【杭州麻将】核心流程杭州麻将好友房AI-11-12-2.md')]
+  )
+  assert.equal(r.stats.anchorMatch, 1)
+}
+
+console.log('[成功] align-check.example 全部断言通过（exact/anchor唯一/显著领先/多候选区分/相似度不足/无候选/basename归一/消耗不复用/空文本/门槛判定/跨版本文件名归一）')

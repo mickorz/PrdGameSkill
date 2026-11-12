@@ -197,12 +197,18 @@ function fileLines(f) {
 const covByRule = new Map()
 const covByReq = new Map()
 let covTotal = 0
+// 枚举容错：检查 agent 可能输出规范外状态（如 ambiguous），归一到最近合法状态
+const normStatus = (s) => {
+  s = String(s || 'unverified').trim()
+  if (s === 'ambiguous') return 'incomplete'
+  return STATUS_ORDER.includes(s) ? s : 'unverified'
+}
 for (const shard of checkShards) {
   const groupFailed = shard.status !== 'completed'
   const covs = Array.isArray(shard.coverage) ? shard.coverage : []
   for (const c of covs) {
     covTotal += 1
-    let status = c.status || 'unverified'
+    let status = normStatus(c.status)
     const evidence = c.evidence || ''
     const w = []
     // 校验 4：ruleId 存在于 rule-catalog
@@ -309,22 +315,24 @@ const ruleCoverage = [...ruleById.values()].map((c) => {
   }
 })
 
-// ---------- 6. 双指标统计（v4 2.3）----------
+// ---------- 6. 双指标统计（v4 2.3；na 为已确认不适用，不计入适用分母，不会超 100%） ----------
+const applicableRules = ruleCoverage.filter((r) => r.status !== 'na')
 const totalRulePoints = ruleCoverage.length
-const applicableRulePoints = ruleCoverage.filter((r) => r.mandatory).length
-const checkedRulePoints = ruleCoverage.filter((r) => r.status !== 'unverified').length
-const passedRulePoints = ruleCoverage.filter((r) => r.status === 'pass').length
+const applicableRulePoints = applicableRules.length
+const checkedRulePoints = applicableRules.filter((r) => r.status !== 'unverified').length
+const passedRulePoints = applicableRules.filter((r) => r.status === 'pass').length
 const stats = {
   requirementTotal: matrix.length,
   requirementByStatus: matrix.reduce((m, r) => { m[r.overallStatus] = (m[r.overallStatus] || 0) + 1; return m }, {}),
   rulePointTotal: totalRulePoints,
+  naRulePoints: totalRulePoints - applicableRulePoints,
   applicableRulePoints,
   checkedRulePoints,
   passedRulePoints,
   issueTotal: issuesOut.length,
   // 完成率 = 已完成检查的适用规则点 / 全部适用规则点
   checkCompleteRate: applicableRulePoints ? Number((checkedRulePoints / applicableRulePoints).toFixed(4)) : 0,
-  // 通过率 = 已通过 / 已完成检查（分母不含未检查项）
+  // 通过率 = 已通过 / 已完成检查（分母不含未验证项）
   rulePassRate: checkedRulePoints ? Number((passedRulePoints / checkedRulePoints).toFixed(4)) : 0,
   failedGroups: [...new Set(failedGroups)],
   coverageRecords: covTotal,

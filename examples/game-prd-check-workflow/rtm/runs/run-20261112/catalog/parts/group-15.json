@@ -1,0 +1,686 @@
+[
+  {
+    "ruleId": "R15-001",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.1 判定输入",
+    "fromLine": 727,
+    "toLine": 728,
+    "text": "番型判定基于：胡牌来源、拆牌结构、手牌/副露/进张、实际财神与财神计数、敲响状态、飘等级、杠链、飘杠先后、连续字牌数、相关规则开关。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-002",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.2-1",
+    "fromLine": 731,
+    "toLine": 731,
+    "text": "平胡的拆牌结构必须是 3N+2。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-003",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.2-2",
+    "fromLine": 732,
+    "toLine": 732,
+    "text": "有财必拷响开启、手牌含财神、且为自摸时，平胡不成立。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-004",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.2-3",
+    "fromLine": 733,
+    "toLine": 733,
+    "text": "其余情况只要 3N+2 成立，即命中平胡。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-005",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.2-4",
+    "fromLine": 734,
+    "toLine": 734,
+    "text": "全刻子的 3N+2 结构也按平胡计算。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-006",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.2-5",
+    "fromLine": 735,
+    "toLine": 735,
+    "text": "有财必拷响开启时，点炮/抢杠若手牌含财神，会在胡权限阶段被拦截，不进入平胡；开关关闭时不因此拦截。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-007",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.3 带财神组",
+    "fromLine": 738,
+    "toLine": 740,
+    "text": "带财神组适用于手牌财神数 >0 的 2N 七对结构，按四张相同组数区分档位，附加条件列另有约束。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-008",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.3 七对",
+    "fromLine": 741,
+    "toLine": 741,
+    "text": "七对：2 倍，四张相同组数 =0；有财必拷响开启且自摸时，进张必须与财神成将，否则不成立。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-009",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.3 豪华七对",
+    "fromLine": 742,
+    "toLine": 742,
+    "text": "豪华七对：4 倍，四张相同组数 =1；有财必拷响开启且自摸时，进张须与财神成将，否则不成立。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-010",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.3 双豪华七对",
+    "fromLine": 743,
+    "toLine": 743,
+    "text": "双豪华七对：8 倍，四张相同组数 =2；有财必拷响开启且自摸时，进张须与财神成将，否则不成立。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-011",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.3 三豪华七对",
+    "fromLine": 744,
+    "toLine": 744,
+    "text": "三豪华七对：16 倍，四张相同组数 ≥3；有财必拷响开启且自摸时，进张须与财神成将，否则不成立。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-012",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.3 清七对",
+    "fromLine": 749,
+    "toLine": 749,
+    "text": "清七对（清=无财神）：4 倍，四张相同组数 =0。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-013",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.3 豪华清七对",
+    "fromLine": 750,
+    "toLine": 750,
+    "text": "豪华清七对：8 倍，四张相同组数 =1。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-014",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.3 双豪华清七对",
+    "fromLine": 751,
+    "toLine": 751,
+    "text": "双豪华清七对：16 倍，四张相同组数 =2。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-015",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.3 三豪华清七对",
+    "fromLine": 752,
+    "toLine": 752,
+    "text": "三豪华清七对：32 倍，四张相同组数 ≥3。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-016",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.3 四张相同组数-1",
+    "fromLine": 755,
+    "toLine": 755,
+    "text": "四张相同组数的计算：先统计拆解中每个牌值的出现次数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-017",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.3 四张相同组数-2",
+    "fromLine": 756,
+    "toLine": 756,
+    "text": "将被财神补成的单张从对应牌值中扣除，得到“真实张数”。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-018",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.3 四张相同组数-3",
+    "fromLine": 757,
+    "toLine": 757,
+    "text": "财神替豪七关闭时，真实张数 ≥4 才算 1 组。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-019",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.3 四张相同组数-4a",
+    "fromLine": 759,
+    "toLine": 759,
+    "text": "财神替豪七开启时，财神预算 = 手牌财神数 − 已用于补单张的财神数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-020",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.3 四张相同组数-4b",
+    "fromLine": 760,
+    "toLine": 760,
+    "text": "每个牌值升级到 4 张所需额外财神 = 4 − 该牌值当前出现次数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-021",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.3 四张相同组数-4c",
+    "fromLine": 761,
+    "toLine": 761,
+    "text": "必须有至少 1 张真实牌作锚点，纯财神组不算。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-022",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.3 四张相同组数-4d",
+    "fromLine": 762,
+    "toLine": 762,
+    "text": "按所需财神从少到多贪心分配预算，能完成几组就算几组。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-023",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.3 四张相同组数-5",
+    "fromLine": 763,
+    "toLine": 763,
+    "text": "组内命中最高档后停止，低档不再重复计。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-024",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.4 杠上开花",
+    "fromLine": 768,
+    "toLine": 768,
+    "text": "杠上开花：2 倍，条件为自摸且杠链 =1。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-025",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.4 二连杠",
+    "fromLine": 769,
+    "toLine": 769,
+    "text": "二连杠：4 倍，条件为自摸且杠链 =2。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-026",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.4 三连杠",
+    "fromLine": 770,
+    "toLine": 770,
+    "text": "三连杠：8 倍，条件为自摸且杠链 =3。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-027",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.4 四连杠",
+    "fromLine": 771,
+    "toLine": 771,
+    "text": "四连杠：16 倍，条件为自摸且杠链 ≥4。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-028",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.4-1",
+    "fromLine": 773,
+    "toLine": 773,
+    "text": "杠链必须是“杠后未被非财神出牌/吃/碰打断”的有效链。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-029",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.4-2",
+    "fromLine": 774,
+    "toLine": 774,
+    "text": "点炮、抢杠不命中杠开系列。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-030",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.4-3",
+    "fromLine": 775,
+    "toLine": 775,
+    "text": "杠开系列组内取最高档。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-031",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.5 公共前提-1",
+    "fromLine": 779,
+    "toLine": 779,
+    "text": "财神系列公共前提一：必须自摸。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-032",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.5 公共前提-2a",
+    "fromLine": 781,
+    "toLine": 781,
+    "text": "进张是财神时，拆解中必须存在“财神 + 财神”将。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-033",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.5 公共前提-2b",
+    "fromLine": 782,
+    "toLine": 782,
+    "text": "进张不是财神时，拆解中必须存在“进张 + 财神”将。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-034",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.5 公共前提-2c",
+    "fromLine": 783,
+    "toLine": 783,
+    "text": "翻财神模式下，进张为白板时按实际财神值比对。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-035",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.5 公共前提-3",
+    "fromLine": 784,
+    "toLine": 784,
+    "text": "听牌提示场景（等待牌为“任意牌”）时，以敲响状态替代“进张与财神成将”判定。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-036",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.5 公共前提-4",
+    "fromLine": 785,
+    "toLine": 785,
+    "text": "实际胡牌时当前代码未额外强制判断敲响；是否增加该前提【待确认】。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-037",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.5 爆头",
+    "fromLine": 790,
+    "toLine": 790,
+    "text": "爆头：2 倍，飘等级 =0，条件为自摸 + 进张与财神成将。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-038",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.5 财飘",
+    "fromLine": 791,
+    "toLine": 791,
+    "text": "财飘：4 倍，飘等级 =1，条件为自摸 + 进张与财神成将。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-039",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.5 双财飘",
+    "fromLine": 792,
+    "toLine": 792,
+    "text": "双财飘：8 倍，飘等级 =2，条件为自摸 + 进张与财神成将。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-040",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.5 三财飘",
+    "fromLine": 793,
+    "toLine": 793,
+    "text": "三财飘：16 倍，飘等级 ≥3，条件为自摸 + 进张与财神成将。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-041",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.5-1",
+    "fromLine": 795,
+    "toLine": 795,
+    "text": "飘等级必须严格对应档位，不能跨档。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-042",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.5-2",
+    "fromLine": 796,
+    "toLine": 796,
+    "text": "进张未与财神成将时，即使手牌有财神也不命中财神系列。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-043",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.5-3",
+    "fromLine": 797,
+    "toLine": 797,
+    "text": "财神系列组内取最高档。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-044",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.6-1",
+    "fromLine": 800,
+    "toLine": 800,
+    "text": "十风仅限自摸。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-045",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.6-2",
+    "fromLine": 801,
+    "toLine": 801,
+    "text": "十风要求连续字牌数 ≥10。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-046",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.6-3",
+    "fromLine": 802,
+    "toLine": 802,
+    "text": "十风不要求手牌成 3N+2 或 2N。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-047",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.6-4",
+    "fromLine": 803,
+    "toLine": 803,
+    "text": "只记十风一条，不与任何其他番型叠加；三财/四财、封顶等额外倍率仍按规则生效。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-048",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.6-5",
+    "fromLine": 804,
+    "toLine": 804,
+    "text": "十风点数 = 2 × 2^(连续字牌数−10)。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-049",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.7 杠飘",
+    "fromLine": 809,
+    "toLine": 809,
+    "text": "杠飘：8 倍，同时命中“杠上开花”和“财飘”，且杠在飘之前。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-050",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.7 飘杠",
+    "fromLine": 810,
+    "toLine": 810,
+    "text": "飘杠：8 倍，同时命中“杠上开花”和“财飘”，且飘在杠之前。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-051",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.7 七客",
+    "fromLine": 811,
+    "toLine": 811,
+    "text": "七客：七对系列 × 财神系列，两者同时命中按乘积计算，不单列 ID。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-052",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.7-1",
+    "fromLine": 813,
+    "toLine": 813,
+    "text": "杠飘/飘杠只在基础档拆分：杠链 =1 且飘等级 =1。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-053",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.7-2",
+    "fromLine": 814,
+    "toLine": 814,
+    "text": "更高档组合（二连杠、双财飘等）不拆分，按基础番型连乘。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-054",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.7-3",
+    "fromLine": 815,
+    "toLine": 815,
+    "text": "飘杠先后由杠执行时的飘等级决定：杠时飘等级 >0 → 飘杠；否则 → 杠飘。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-055",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.8-1",
+    "fromLine": 818,
+    "toLine": 818,
+    "text": "三财翻倍：开关开启且财神总数 ≥3 → 最终番数 ×2。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-056",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.8-2",
+    "fromLine": 819,
+    "toLine": 819,
+    "text": "四财翻倍：开关开启且财神总数 ≥4 → 最终番数 ×2。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-057",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.8-3",
+    "fromLine": 820,
+    "toLine": 820,
+    "text": "两项独立判断；同时满足时连乘，最高 ×4。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-058",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.8-4",
+    "fromLine": 821,
+    "toLine": 821,
+    "text": "财神总数 = 手牌财神数 + 出牌区已打出财神数；不含副露。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-059",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.8-5",
+    "fromLine": 822,
+    "toLine": 822,
+    "text": "倍数封顶：金币场可配置最大倍数，最终番数超过上限时按上限截断。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-060",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.9-1",
+    "fromLine": 825,
+    "toLine": 825,
+    "text": "若连续字牌数 ≥10 且自摸 → 只取十风，直接结束。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-061",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.9-2 基础和七对组",
+    "fromLine": 827,
+    "toLine": 827,
+    "text": "基础/七对组按“三豪华清七对 → 双豪华清七对 → 豪华清七对 → 清七对 → 三豪华七对 → 双豪华七对 → 豪华七对 → 七对 → 平胡”顺序，命中第一个即停。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-062",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.9-2 杠开组",
+    "fromLine": 828,
+    "toLine": 828,
+    "text": "杠开组按“四连杠 → 三连杠 → 二连杠 → 杠上开花”顺序取。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-063",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.9-2 财神组",
+    "fromLine": 829,
+    "toLine": 829,
+    "text": "财神组按“三财飘 → 双财飘 → 财飘 → 爆头”顺序取。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-064",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.9-3",
+    "fromLine": 830,
+    "toLine": 830,
+    "text": "若同时命中“杠上开花”和“财飘”，替换为“杠飘”或“飘杠”。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-065",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.9-4",
+    "fromLine": 831,
+    "toLine": 831,
+    "text": "最终番数 = 命中番型倍数的乘积。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-066",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.9-5",
+    "fromLine": 832,
+    "toLine": 832,
+    "text": "再乘三财/四财翻倍与十风超出部分。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-067",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.9-6",
+    "fromLine": 833,
+    "toLine": 833,
+    "text": "最后按倍数封顶截断。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-068",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.9-7",
+    "fromLine": 834,
+    "toLine": 834,
+    "text": "若一条番型都未命中 → 不成立胡牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-069",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.9-8",
+    "fromLine": 835,
+    "toLine": 835,
+    "text": "普通胡牌存在多种合法拆解时，逐个计算番数取最高番方案；同番时按财神将、番型及展示拆解对齐情况选取，展示以服务端最终拆解为准。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-070",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.10 示例-七对+财飘",
+    "fromLine": 840,
+    "toLine": 840,
+    "text": "示例：七对 + 财飘 = 2 × 4 = 8。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-071",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.10 示例-豪华七对+双财飘",
+    "fromLine": 841,
+    "toLine": 841,
+    "text": "示例：豪华七对 + 双财飘 = 4 × 8 = 32。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-072",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.10 示例-杠上开花+财飘",
+    "fromLine": 842,
+    "toLine": 842,
+    "text": "示例：杠上开花 + 财飘 按杠飘计 8，不重复计算 2×4。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-073",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.10 示例-十风12张+四财",
+    "fromLine": 843,
+    "toLine": 843,
+    "text": "示例：十风 12 张 + 四财翻倍 = 2×2^(12−10)=8，再 ×2 = 16。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-074",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.10 示例-平胡+三财",
+    "fromLine": 844,
+    "toLine": 844,
+    "text": "示例：平胡 + 三财翻倍 = 1 × 2 = 2。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-075",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.10 牌例",
+    "fromLine": 846,
+    "toLine": 846,
+    "text": "牌例：白板为财神，无副露/飘/杠链，有财必拷响关闭；自摸 9 万后以“白 + 9 万”作将，命中平胡 ×1 与爆头 ×2，番数为 2。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-076",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "8.10 多拆解牌例",
+    "fromLine": 848,
+    "toLine": 848,
+    "text": "多拆解牌例：可拆为清七对 ×4，也可拆为 123万×2、456万×2、77万的平胡 ×1；当前代码取较高番的清七对 ×4。",
+    "mandatory": true
+  }
+]

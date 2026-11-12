@@ -1,0 +1,1 @@
+[{"ruleId":"R01-001","file":"E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/rules/mock-rule.md","section":"1","fromLine":2,"toLine":2,"text":"发牌规则","mandatory":true},{"ruleId":"R01-002","file":"E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/rules/mock-rule.md","section":"2","fromLine":3,"toLine":3,"text":"碰牌规则","mandatory":true}]

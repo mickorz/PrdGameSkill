@@ -1,0 +1,497 @@
+[
+  {
+    "ruleId": "R17-001",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10. 金币场",
+    "fromLine": 1005,
+    "toLine": 1005,
+    "text": "第 10 章金币场总览：涵盖默认/固定/不解析配置、底分与台费、输赢上限算法、写入及功能点明细",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R17-002",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.1 固定",
+    "fromLine": 1010,
+    "toLine": 1010,
+    "text": "金币场固定项：白板财神、牢庄起算笃三、财神替豪七开、三/四财翻倍关",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-003",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.1 默认",
+    "fromLine": 1011,
+    "toLine": 1011,
+    "text": "金币场默认项（可被等级规则覆盖）：放铳关、三摊承包开、碰不算摊、加倍开、托管开、十风开、吃/碰禁手开、有财必拷响关",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-004",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.1 不解析",
+    "fromLine": 1012,
+    "toLine": 1012,
+    "text": "金币场不解析项：跟庄、守庄、缺一色、去风、只碰不吃、简洁模式、单局输分封顶、打片、连庄不占局数",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-005",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.1 等级规则可覆盖项",
+    "fromLine": 1014,
+    "toLine": 1014,
+    "text": "金币场等级规则可覆盖项：放铳、三摊承包、碰算摊、有财必拷响、十风、吃禁手、碰禁手、打牌超时、加倍开关、加倍超时、托管等待、托管开关",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-006",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.1 根 JSON 读取",
+    "fromLine": 1014,
+    "toLine": 1014,
+    "text": "做牌、明牌和最大倍数从金币场根 JSON 读取；当前代码要求 game_rule 为对象才继续加载",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-007",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.1 最大倍数读取时机",
+    "fromLine": 1014,
+    "toLine": 1014,
+    "text": "最大倍数在应用存在的等级规则对象时读取",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-008",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.2-1 入场配置解析",
+    "fromLine": 1017,
+    "toLine": 1017,
+    "text": "入场配置解析：各座位用全桌最低金币匹配自己的底分区间表；无匹配时用该座位入场配置中的底分、台费",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-009",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.2-1 非混级归一",
+    "fromLine": 1017,
+    "toLine": 1017,
+    "text": "非混级房随后统一为最低底分及对应台费，并将该底分写为本局基础底分；混级房不执行此归一",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-010",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.2-2 开局逐视角计算",
+    "fromLine": 1018,
+    "toLine": 1022,
+    "text": "开局再按每个玩家视角计算底分与台费（取全桌虚拟金币最小值，再用该视角玩家自己的区间表匹配）",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-011",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.2-2 取全桌最小金币",
+    "fromLine": 1019,
+    "toLine": 1019,
+    "text": "开局重匹配时取本桌所有玩家虚拟金币的最小值作为匹配依据",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-012",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.2-2 视角区间表匹配",
+    "fromLine": 1020,
+    "toLine": 1020,
+    "text": "用该视角玩家自己的底分区间表匹配底分/台费",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-013",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.2-2 匹配失败兜底",
+    "fromLine": 1021,
+    "toLine": 1021,
+    "text": "匹配失败时取最低金币座位已记录的底分/台费",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-014",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.2-2 底分为 0 回退",
+    "fromLine": 1022,
+    "toLine": 1022,
+    "text": "底分为 0 时回退默认底分",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-015",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.2-3 未再次统一",
+    "fromLine": 1023,
+    "toLine": 1023,
+    "text": "开局重匹配后未再次统一各座位底分/台费；非混级但区间表不同或匹配失败时是否要求统一【待确认】",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-016",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.2-4 结算读取记录",
+    "fromLine": 1024,
+    "toLine": 1024,
+    "text": "结算阶段直接读取开局记录，不重新匹配底分/台费",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-017",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 输赢上限算法",
+    "fromLine": 1026,
+    "toLine": 1027,
+    "text": "输赢上限按每个视角分别计算，避免混级房互相污染",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-018",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 携带值定义",
+    "fromLine": 1030,
+    "toLine": 1030,
+    "text": "携带值 = V 视角下目标座位虚拟金币 − 台费，下限 0",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-019",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 理论赢定义",
+    "fromLine": 1031,
+    "toLine": 1031,
+    "text": "理论赢 = 该座位正分；若配置最大倍数，则理论赢不超过“最大倍数 × V 底分”",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-020",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 理论输定义",
+    "fromLine": 1032,
+    "toLine": 1032,
+    "text": "理论输 = 该座位负分的绝对值",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-021",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 实际最大赢定义",
+    "fromLine": 1033,
+    "toLine": 1033,
+    "text": "实际最大赢 = min(理论赢, 携带值)",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-022",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 实际最大输定义",
+    "fromLine": 1034,
+    "toLine": 1034,
+    "text": "实际最大输 = min(理论输, 携带值)",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-023",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 原始赢分定义",
+    "fromLine": 1035,
+    "toLine": 1035,
+    "text": "原始赢分 = 封顶前该座位正分（未经最大倍数截断）",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-024",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 Y1 定义",
+    "fromLine": 1036,
+    "toLine": 1036,
+    "text": "Y1 = 所有赢家实际最大赢之和",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-025",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 S1 定义",
+    "fromLine": 1037,
+    "toLine": 1037,
+    "text": "S1 = 所有输家实际最大输之和",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-026",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 Y1 = S1",
+    "fromLine": 1042,
+    "toLine": 1042,
+    "text": "Y1 = S1 时：赢家得实际最大赢，输家扣实际最大输",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-027",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 Y1 < S1",
+    "fromLine": 1043,
+    "toLine": 1043,
+    "text": "Y1 < S1 时：赢家各得实际最大赢；输家按理论输占比分摊 Y1，每人不超过实际最大输",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-028",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 Y1 > S1",
+    "fromLine": 1044,
+    "toLine": 1044,
+    "text": "Y1 > S1 时：输家各扣实际最大输；赢家按理论赢占比分摊 S1，每人不超过实际最大赢",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-029",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 分摊-按权重",
+    "fromLine": 1047,
+    "toLine": 1047,
+    "text": "分摊算法：每轮按权重比例分配",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-030",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 分摊-封顶退出",
+    "fromLine": 1048,
+    "toLine": 1048,
+    "text": "分摊算法：达到个人上限者立即封顶并退出本轮",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-031",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 分摊-剩余额度",
+    "fromLine": 1049,
+    "toLine": 1049,
+    "text": "分摊算法：剩余额度继续由未封顶者按比例分摊",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-032",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 分摊-终止",
+    "fromLine": 1050,
+    "toLine": 1050,
+    "text": "分摊算法：直到分完或全部封顶为止",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-033",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 分摊-余数补齐",
+    "fromLine": 1051,
+    "toLine": 1051,
+    "text": "分摊算法：最后一轮整除余数按 1 分逐个补齐",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-034",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 状态-倍数封顶",
+    "fromLine": 1056,
+    "toLine": 1056,
+    "text": "倍数封顶：最大倍数 >0 且“最大倍数 × 视角底分” ≤ 携带值；赢家分到实际最大赢且实际最大赢 < 原始赢分",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-035",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 状态-输赢封顶",
+    "fromLine": 1057,
+    "toLine": 1057,
+    "text": "输赢封顶：赢家分到实际最大赢且实际最大赢 < 原始赢分，且不满足倍数封顶条件",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-036",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 状态-破产",
+    "fromLine": 1058,
+    "toLine": 1058,
+    "text": "破产：输家携带值 >0，实际产生扣分且扣满携带值",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-037",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 状态-正常",
+    "fromLine": 1059,
+    "toLine": 1059,
+    "text": "正常：其他情况",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-038",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 无效最大倍数",
+    "fromLine": 1061,
+    "toLine": 1061,
+    "text": "未配置有效最大倍数（≤0）时，不会标记为倍数封顶",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-039",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 平衡校正-归零",
+    "fromLine": 1064,
+    "toLine": 1064,
+    "text": "若单个视角快照内分值和 ≠0，按比例向赢家扣回或向输家退回，直到该快照总和为 0",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-040",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 平衡校正-范围",
+    "fromLine": 1065,
+    "toLine": 1065,
+    "text": "该校正只保证“每个视角快照自身平衡”；不能据此推断各座位真实入账总和必为 0",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-041",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 混级房入账",
+    "fromLine": 1066,
+    "toLine": 1066,
+    "text": "混级房真实入账取各座位自己视角的对角线，是否守恒需联调验证",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-042",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 最大倍数两道作用",
+    "fromLine": 1068,
+    "toLine": 1068,
+    "text": "最大倍数两道作用：胡牌番数计算先按 max_mult 截断；结算再将赢家理论赢分限制在 max_mult × 视角底分",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-043",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 截断口径说明",
+    "fromLine": 1068,
+    "toLine": 1068,
+    "text": "两道限制分别作用于番数和赢家总分，后者不等同对每个输家单独封顶",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-044",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.3 示例",
+    "fromLine": 1070,
+    "toLine": 1070,
+    "text": "示例：底分 10、番数 4、庄家三牢自摸基础应收 960；最大倍数 10 时赢家实得 100，输家合计付 100",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-045",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.4-1 读对角线",
+    "fromLine": 1073,
+    "toLine": 1073,
+    "text": "写入时每个座位读取自己视角快照中“自己座位”的值（对角线），不读取他人视角",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-046",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.4-2 写入含台费",
+    "fromLine": 1074,
+    "toLine": 1074,
+    "text": "写入虚拟分时携带台费",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-047",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "10.4-3 埋点数据",
+    "fromLine": 1075,
+    "toLine": 1075,
+    "text": "结算数据附金币场埋点：是否庄家、底分、结算结果、总番、胡牌轮数、玩法结果、有财必拷响标记、房间等级",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-048",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "GOLD-01 底分匹配",
+    "fromLine": 1081,
+    "toLine": 1081,
+    "text": "GOLD-01 底分匹配：金币场开局取全桌最低金币匹配视角底分区间；失败取最低金币座位底分/台费",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-049",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "GOLD-02 非混级归一",
+    "fromLine": 1082,
+    "toLine": 1082,
+    "text": "GOLD-02 非混级归一：入场解析且非混级时全桌归一最低底分及对应台费并写回基础底分；开局仍逐视角重匹配",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-050",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "GOLD-03 逐视角口径",
+    "fromLine": 1083,
+    "toLine": 1083,
+    "text": "GOLD-03 逐视角口径：开局按各自区间表和视角最低金币重匹配底分/台费；结算读取各自记录",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-051",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "GOLD-04 最大倍数",
+    "fromLine": 1084,
+    "toLine": 1084,
+    "text": "GOLD-04 最大倍数：番数先截断；赢家理论总赢分再按最大倍数×视角底分截断；未配有效最大倍数不截断",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-052",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "GOLD-05 财富/携带封顶",
+    "fromLine": 1085,
+    "toLine": 1085,
+    "text": "GOLD-05 财富/携带封顶：结算按视角算理论赢/输、携带值、Y1/S1 三情况分摊；适用单视角快照",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-053",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "GOLD-06 状态标记",
+    "fromLine": 1086,
+    "toLine": 1086,
+    "text": "GOLD-06 状态标记：封顶后标记倍数封顶/输赢封顶/破产/正常；破产需携带值>0 且扣满",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-054",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "GOLD-07 平衡校正",
+    "fromLine": 1087,
+    "toLine": 1087,
+    "text": "GOLD-07 平衡校正：快照不平衡时按比例扣回/退回至快照和为 0；真实入账守恒待联调",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-055",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "GOLD-08 写分",
+    "fromLine": 1088,
+    "toLine": 1088,
+    "text": "GOLD-08 写分：结算读自己视角对角线，携带台费写虚拟分，并附埋点数据",
+    "mandatory": true
+  }
+]

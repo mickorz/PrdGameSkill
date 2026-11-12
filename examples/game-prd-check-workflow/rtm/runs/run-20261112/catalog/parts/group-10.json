@@ -1,0 +1,209 @@
+[
+  {
+    "ruleId": "R10-001",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3. 判定口径",
+    "fromLine": 164,
+    "toLine": 164,
+    "text": "## 3. 判定口径（本章总览，后续 3.1~3.5 各条款细则的索引）",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R10-002",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.1 胡牌来源-自摸",
+    "fromLine": 169,
+    "toLine": 169,
+    "text": "自摸：进张为自己摸到的牌，按自摸计算。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-003",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.1 胡牌来源-杠上开花",
+    "fromLine": 170,
+    "toLine": 170,
+    "text": "杠上开花：杠后补牌自摸，按自摸计算。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-004",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.1 胡牌来源-点炮",
+    "fromLine": 171,
+    "toLine": 171,
+    "text": "点炮：进张为他人打出的牌，不按自摸计算。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-005",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.1 胡牌来源-抢杠胡",
+    "fromLine": 172,
+    "toLine": 172,
+    "text": "抢杠胡：进张为他人补杠的那张牌，不按自摸计算。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-006",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.2 进张-自摸",
+    "fromLine": 175,
+    "toLine": 175,
+    "text": "自摸：进张为本次摸到的牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-007",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.2 进张-点炮",
+    "fromLine": 176,
+    "toLine": 176,
+    "text": "点炮：进张为他人打出的牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-008",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.2 进张-抢杠胡",
+    "fromLine": 177,
+    "toLine": 177,
+    "text": "抢杠胡：进张为被抢的补杠牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-009",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.3 财神与财神计数-实际财神",
+    "fromLine": 180,
+    "toLine": 180,
+    "text": "实际财神：白板财神时为白板；翻财神时为翻出的那张牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-010",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.3 财神与财神计数-替代牌",
+    "fromLine": 181,
+    "toLine": 181,
+    "text": "替代牌：翻财神且实际财神不是白板时，白板登记为替代牌，参与胡牌拆解；白板本身仍是箭牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-011",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.3 财神与财神计数-手牌财神数",
+    "fromLine": 182,
+    "toLine": 182,
+    "text": "手牌财神数：手牌中的实际财神数 + 进张为实际财神时 +1。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-012",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.3 财神与财神计数-财神总数",
+    "fromLine": 183,
+    "toLine": 183,
+    "text": "财神总数：手牌财神数 + 本座位出牌区已打出的实际财神数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-013",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.3 财神与财神计数-使用限制",
+    "fromLine": 184,
+    "toLine": 184,
+    "text": "财神不能用于吃、碰、杠的凑牌，只能用于胡牌拆解与听牌判断。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-014",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.4 敲响（万能听）-判定对象",
+    "fromLine": 187,
+    "toLine": 187,
+    "text": "敲响判定对象：进张前的手牌 + 副露 + 财神。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-015",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.4 敲响（万能听）-判定方法",
+    "fromLine": 188,
+    "toLine": 188,
+    "text": "敲响判定方法：枚举所有拆牌方案，只要存在一种方案的等待牌包含“任意牌”，即为敲响。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-016",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.4 敲响（万能听）-无财神",
+    "fromLine": 189,
+    "toLine": 189,
+    "text": "无财神时必然不敲响。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-017",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.4 敲响（万能听）-打财神与胡牌校验",
+    "fromLine": 190,
+    "toLine": 190,
+    "text": "打出财神后是否敲响用于更新飘等级；实际胡牌时爆头、财飘系列按自摸、飘等级和进张与财神成将判定，代码未额外强制检查敲响；万能听提示使用敲响判定。是否要求实际胡牌也必须敲响【待确认】。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-018",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.5 杠链-杠加一",
+    "fromLine": 193,
+    "toLine": 193,
+    "text": "每次杠（明杠、暗杠、补杠）杠链 +1；暗杠额外记录“含暗杠”标记。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-019",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.5 杠链-打出非财神",
+    "fromLine": 194,
+    "toLine": 194,
+    "text": "打出非财神 → 杠链清零、暗杠标记清零。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-020",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.5 杠链-打财神不敲响",
+    "fromLine": 195,
+    "toLine": 195,
+    "text": "打出财神且不敲响 → 杠链清零、暗杠标记清零。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-021",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.5 杠链-打财神且敲响",
+    "fromLine": 196,
+    "toLine": 196,
+    "text": "打出财神且敲响 → 杠链保留。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-022",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.5 杠链-吃碰清零",
+    "fromLine": 197,
+    "toLine": 197,
+    "text": "吃、碰 → 杠链清零、暗杠标记清零。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-023",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.5 杠链-用途",
+    "fromLine": 198,
+    "toLine": 198,
+    "text": "杠链用于杠开系列番型。",
+    "mandatory": true
+  }
+]

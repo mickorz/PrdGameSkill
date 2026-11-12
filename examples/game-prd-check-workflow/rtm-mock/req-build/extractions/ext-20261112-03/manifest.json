@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "projectKey": "mock",
+  "extractionRunId": "ext-20261112-03",
+  "sourceFiles": [
+    {
+      "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/req-build/input/mock-prd.md",
+      "sha256": "765fc063cde7d8c8e12081067e2dbb02715ed05c7b2016803de50776b78a931c",
+      "bytes": 208
+    }
+  ],
+  "requirementsPath": "requirements.json",
+  "identityMapPath": "E:\\WorkProjects\\PrdGameSkill\\examples\\game-prd-check-workflow\\rtm-mock\\req-build\\identity-map.json",
+  "identityMapVersion": 2,
+  "validationStatus": "failed",
+  "validationFailures": 1,
+  "identityStats": {
+    "exactMatch": 0,
+    "anchorMatch": 1,
+    "newWithPending": 0,
+    "newConfirmed": 0
+  },
+  "warningsCount": 0,
+  "warnings": [],
+  "errors": []
+}

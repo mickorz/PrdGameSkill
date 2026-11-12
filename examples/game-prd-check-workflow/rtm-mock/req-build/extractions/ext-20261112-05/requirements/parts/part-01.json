@@ -1,0 +1,1 @@
+[{"reqKey":"mock-prd-009","title":"广播消息改版","source":{"file":"E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/req-build/input/mock-prd.md","section":"2.2","fromLine":7,"toLine":7},"text":"碰牌成功后向其他玩家广播这条消息。"}]

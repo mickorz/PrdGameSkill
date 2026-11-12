@@ -1,0 +1,227 @@
+{
+  "stats": {
+    "requirementTotal": 4,
+    "requirementByStatus": {
+      "unverified": 3,
+      "pass": 1
+    },
+    "rulePointTotal": 4,
+    "naRulePoints": 0,
+    "applicableRulePoints": 4,
+    "checkedRulePoints": 2,
+    "passedRulePoints": 1,
+    "issueTotal": 2,
+    "fullyPassedRequirements": 1,
+    "unverifiedRequirements": 3,
+    "requirementTraceabilityRate": 0.25,
+    "checkCompleteRate": 0.5,
+    "rulePassRate": 0.5,
+    "failedGroups": [
+      "group-2（Bug覆盖）"
+    ],
+    "coverageRecords": 5,
+    "ruleCoverageAgg": {
+      "total": 4,
+      "fullyPassed": 1,
+      "partial": 0,
+      "conflict": 0,
+      "missing": 0,
+      "unverified": 3,
+      "pendingConfirm": 0,
+      "notApplicable": 0
+    },
+    "fullPassRate": 0.25
+  },
+  "requirements": [
+    {
+      "requirementId": "REQ-001",
+      "reqKey": "REQK-A1",
+      "title": "开局发牌",
+      "source": {
+        "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/input/mock-prd.md",
+        "section": "2.1",
+        "fromLine": 3,
+        "toLine": 4
+      },
+      "text": "庄家发放 13 张牌，闲家 13 张。发牌后刷新牌墙剩余数量。",
+      "ruleRefs": [
+        {
+          "ruleId": "R01-001",
+          "status": "pass",
+          "evidence": "PRD 2.1 与规则 1 一致",
+          "evidenceInvalid": false
+        },
+        {
+          "ruleId": "R01-999",
+          "status": "pass",
+          "evidence": "ruleId 不存在样例",
+          "evidenceInvalid": true
+        }
+      ],
+      "overallStatus": "unverified",
+      "issueIds": [],
+      "fullyPassed": false,
+      "coverageDimensions": [
+        "game"
+      ],
+      "verificationStatus": "unverified",
+      "unverifiedReason": "evidence-or-execution-failed"
+    },
+    {
+      "requirementId": "REQ-002",
+      "reqKey": "REQK-A2",
+      "title": "碰牌条件",
+      "source": {
+        "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/input/mock-prd.md",
+        "section": "2.2",
+        "fromLine": 6,
+        "toLine": 6
+      },
+      "text": "玩家满足条件时可以碰牌。",
+      "ruleRefs": [
+        {
+          "ruleId": "R01-002",
+          "status": "pass",
+          "evidence": "PRD 2.2 与规则 2 一致",
+          "evidenceInvalid": false
+        }
+      ],
+      "overallStatus": "pass",
+      "issueIds": [
+        "PRD-002"
+      ],
+      "fullyPassed": true,
+      "coverageDimensions": [
+        "game"
+      ],
+      "verificationStatus": "verified",
+      "unverifiedReason": null
+    },
+    {
+      "requirementId": "REQ-003",
+      "reqKey": "REQK-B1",
+      "title": "碰牌广播（文本不一致样例）",
+      "source": {
+        "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/input/mock-prd.md",
+        "section": "2.2",
+        "fromLine": 7,
+        "toLine": 7
+      },
+      "text": "碰牌成功后向全场玩家广播。",
+      "ruleRefs": [
+        {
+          "ruleId": "R01-002",
+          "status": "conflict",
+          "evidence": "文本不一致样例",
+          "evidenceInvalid": true
+        }
+      ],
+      "overallStatus": "unverified",
+      "issueIds": [
+        "PRD-001"
+      ],
+      "fullyPassed": false,
+      "coverageDimensions": [
+        "game"
+      ],
+      "verificationStatus": "unverified",
+      "unverifiedReason": "evidence-or-execution-failed"
+    },
+    {
+      "requirementId": "REQ-004",
+      "reqKey": "REQK-B2",
+      "title": "无效行号样例",
+      "source": {
+        "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/input/mock-prd.md",
+        "fromLine": 100,
+        "toLine": 200
+      },
+      "text": "不存在的内容",
+      "ruleRefs": [
+        {
+          "ruleId": "R02-404",
+          "status": "unverified",
+          "evidence": "组失败样例",
+          "evidenceInvalid": true
+        }
+      ],
+      "overallStatus": "unverified",
+      "issueIds": [],
+      "fullyPassed": false,
+      "coverageDimensions": [
+        "game"
+      ],
+      "verificationStatus": "unverified",
+      "unverifiedReason": "evidence-or-execution-failed"
+    }
+  ],
+  "ruleCoverage": [
+    {
+      "ruleId": "R01-001",
+      "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/rules/mock-rule.md",
+      "section": "1",
+      "text": "发牌规则",
+      "mandatory": true,
+      "status": "pass",
+      "evidenceInvalid": false,
+      "sourceType": "unknown",
+      "authority": "pending-confirm",
+      "sourceNote": "来源未分类，需人工确认",
+      "linkedRequirementIds": [
+        "REQ-001"
+      ],
+      "orphan": false,
+      "aggStatus": "fully-passed"
+    },
+    {
+      "ruleId": "R01-002",
+      "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/rules/mock-rule.md",
+      "section": "2",
+      "text": "碰牌规则",
+      "mandatory": true,
+      "status": "conflict",
+      "evidenceInvalid": true,
+      "sourceType": "unknown",
+      "authority": "pending-confirm",
+      "sourceNote": "来源未分类，需人工确认",
+      "linkedRequirementIds": [
+        "REQ-002",
+        "REQ-003"
+      ],
+      "orphan": false,
+      "aggStatus": "unverified"
+    },
+    {
+      "ruleId": "R02-003",
+      "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/rules/mock-rule.md",
+      "section": "2",
+      "text": "不适用规则样例",
+      "mandatory": false,
+      "status": "unverified",
+      "evidenceInvalid": false,
+      "sourceType": "unknown",
+      "authority": "pending-confirm",
+      "sourceNote": "来源未分类，需人工确认",
+      "linkedRequirementIds": [],
+      "orphan": true,
+      "aggStatus": "unverified"
+    },
+    {
+      "ruleId": "R02-404",
+      "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/rules/mock-rule.md",
+      "section": "2",
+      "text": "检查组失败的规则点",
+      "mandatory": true,
+      "status": "unverified",
+      "evidenceInvalid": true,
+      "sourceType": "unknown",
+      "authority": "pending-confirm",
+      "sourceNote": "来源未分类，需人工确认",
+      "linkedRequirementIds": [
+        "REQ-004"
+      ],
+      "orphan": false,
+      "aggStatus": "unverified"
+    }
+  ]
+}

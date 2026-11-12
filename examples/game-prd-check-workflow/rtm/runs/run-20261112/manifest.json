@@ -1,0 +1,41 @@
+{
+  "runDir": "run-20261112",
+  "generatedAt": "2026-11-12T06:01:44.471Z",
+  "stats": {
+    "requirementTotal": 363,
+    "requirementByStatus": {
+      "missing": 118,
+      "pass": 55,
+      "incomplete": 38,
+      "unverified": 116,
+      "conflict": 36
+    },
+    "rulePointTotal": 1455,
+    "naRulePoints": 468,
+    "applicableRulePoints": 987,
+    "checkedRulePoints": 980,
+    "passedRulePoints": 437,
+    "issueTotal": 185,
+    "fullyPassedRequirements": 55,
+    "unverifiedRequirements": 116,
+    "requirementTraceabilityRate": 0.6804,
+    "checkCompleteRate": 0.9929,
+    "rulePassRate": 0.4459,
+    "failedGroups": [],
+    "coverageRecords": 1486,
+    "ruleCoverageAgg": {
+      "total": 1455,
+      "fullyPassed": 437,
+      "partial": 178,
+      "conflict": 53,
+      "missing": 312,
+      "unverified": 7,
+      "pendingConfirm": 0,
+      "notApplicable": 468
+    },
+    "fullPassRate": 0.4428
+  },
+  "warningsCount": 0,
+  "warnings": [],
+  "errors": []
+}

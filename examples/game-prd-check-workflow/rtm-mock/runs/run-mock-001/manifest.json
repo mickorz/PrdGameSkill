@@ -1,0 +1,45 @@
+{
+  "runDir": "run-mock-001",
+  "generatedAt": "2026-11-12T06:01:56.512Z",
+  "stats": {
+    "requirementTotal": 4,
+    "requirementByStatus": {
+      "unverified": 3,
+      "pass": 1
+    },
+    "rulePointTotal": 4,
+    "naRulePoints": 0,
+    "applicableRulePoints": 4,
+    "checkedRulePoints": 2,
+    "passedRulePoints": 1,
+    "issueTotal": 2,
+    "fullyPassedRequirements": 1,
+    "unverifiedRequirements": 3,
+    "requirementTraceabilityRate": 0.25,
+    "checkCompleteRate": 0.5,
+    "rulePassRate": 0.5,
+    "failedGroups": [
+      "group-2（Bug覆盖）"
+    ],
+    "coverageRecords": 5,
+    "ruleCoverageAgg": {
+      "total": 4,
+      "fullyPassed": 1,
+      "partial": 0,
+      "conflict": 0,
+      "missing": 0,
+      "unverified": 3,
+      "pendingConfirm": 0,
+      "notApplicable": 0
+    },
+    "fullPassRate": 0.25
+  },
+  "warningsCount": 4,
+  "warnings": [
+    "[R01-999 -> REQK-A1] ruleId 不存在于 rule-catalog: R01-999",
+    "[R01-002 -> REQK-B1] 需求文本与源文件行范围内容不一致: REQ-003",
+    "[R02-404 -> REQK-B2] 所属检查组未完成: group-2",
+    "[R02-404 -> REQK-B2] fromLine/toLine 无效: 100~200（文件共 7 行）"
+  ],
+  "errors": []
+}

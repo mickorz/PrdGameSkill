@@ -1,0 +1,41 @@
+[
+  {
+    "requirementId": "REQ-001",
+    "reqKey": "mock-prd-001",
+    "title": "开局发牌",
+    "text": "庄家发放 13 张牌，闲家 13 张。发牌后刷新牌墙剩余数量。",
+    "source": {
+      "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/req-build/input/mock-prd.md",
+      "section": "2.1",
+      "fromLine": 3,
+      "toLine": 4
+    },
+    "identityStatus": "new"
+  },
+  {
+    "requirementId": "REQ-002",
+    "reqKey": "mock-prd-002",
+    "title": "碰牌条件",
+    "text": "玩家满足条件时可以碰牌。",
+    "source": {
+      "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/req-build/input/mock-prd.md",
+      "section": "2.2",
+      "fromLine": 6,
+      "toLine": 6
+    },
+    "identityStatus": "new"
+  },
+  {
+    "requirementId": "REQ-003",
+    "reqKey": "mock-prd-003",
+    "title": "碰牌广播",
+    "text": "碰牌成功后向其他玩家广播。",
+    "source": {
+      "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/req-build/input/mock-prd.md",
+      "section": "2.2",
+      "fromLine": 7,
+      "toLine": 7
+    },
+    "identityStatus": "new"
+  }
+]

@@ -1,0 +1,317 @@
+[
+  {
+    "ruleId": "R05-001",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/20-通知信息.md",
+    "section": "触发时机",
+    "fromLine": 3,
+    "toLine": 3,
+    "text": "服务端下发“规则限制、操作被拒、跟庄成功”等提示时出现通知信息",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-002",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/20-通知信息.md",
+    "section": "一、处理规则",
+    "fromLine": 7,
+    "toLine": 7,
+    "text": "通知信息需按提示类型区分处理",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-003",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/20-通知信息.md",
+    "section": "一、处理规则",
+    "fromLine": 8,
+    "toLine": 8,
+    "text": "若该提示客户端已点过“知道了”，不再重复提示",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-004",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/20-通知信息.md",
+    "section": "一、处理规则",
+    "fromLine": 9,
+    "toLine": 9,
+    "text": "“跟庄成功”需全桌播放跟庄动效，不按座位过滤",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-005",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/20-通知信息.md",
+    "section": "二、界面变化",
+    "fromLine": 15,
+    "toLine": 15,
+    "text": "跟庄成功（全桌）：若房间规则为“摇骰子赔付”则跳过；否则播放一次跟庄动画并定位到对应玩家位置；简单模式直接跳过",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-006",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/20-通知信息.md",
+    "section": "二、界面变化",
+    "fromLine": 16,
+    "toLine": 16,
+    "text": "自己的规则限制提示：中央文字提示出现并显示对应文案，1.3 秒后自动消失",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-007",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/20-通知信息.md",
+    "section": "提示文案",
+    "fromLine": 22,
+    "toLine": 22,
+    "text": "未过手碰牌的提示文案为“当前未过手，无法碰牌”",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-008",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/20-通知信息.md",
+    "section": "提示文案",
+    "fromLine": 23,
+    "toLine": 23,
+    "text": "未过手吃胡的提示文案为“当前未过手，无法吃胡”",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-009",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/20-通知信息.md",
+    "section": "提示文案",
+    "fromLine": 24,
+    "toLine": 24,
+    "text": "守庄规则的提示文案为“守庄规则生效中”",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-010",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/20-通知信息.md",
+    "section": "提示文案",
+    "fromLine": 25,
+    "toLine": 25,
+    "text": "吃禁手规则的提示文案为“吃禁手规则生效中”",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-011",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/20-通知信息.md",
+    "section": "提示文案",
+    "fromLine": 26,
+    "toLine": 26,
+    "text": "有财必拷响的提示文案为“有财必拷响规则生效中”",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-012",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/20-通知信息.md",
+    "section": "提示文案",
+    "fromLine": 27,
+    "toLine": 27,
+    "text": "只碰不吃的提示文案为“只碰不吃规则生效中”",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-013",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/20-通知信息.md",
+    "section": "提示文案",
+    "fromLine": 28,
+    "toLine": 28,
+    "text": "有财 2 番起胡的提示文案为“有财2番起胡”",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-014",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/20-通知信息.md",
+    "section": "三、连带影响",
+    "fromLine": 32,
+    "toLine": 32,
+    "text": "定时消失的提示在显示期间，普通“清提示”不会打断它，只有强制清除才会",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-015",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/20-通知信息.md",
+    "section": "三、连带影响",
+    "fromLine": 33,
+    "toLine": 33,
+    "text": "“跟庄成功”与“跟庄重扔骰子”是同一表现的两种来源，不要重复播放",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-016",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/20-通知信息.md",
+    "section": "四、重连 / 回放",
+    "fromLine": 37,
+    "toLine": 37,
+    "text": "重连 / 回放时只补数据，不进行提示",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-017",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/21-游戏配置.md",
+    "section": "触发时机",
+    "fromLine": 3,
+    "toLine": 3,
+    "text": "开局下发房间规则（财神类型、出牌速度、封顶倍数等）时出现游戏配置处理",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-018",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/21-游戏配置.md",
+    "section": "一、数据上记录了什么",
+    "fromLine": 7,
+    "toLine": 7,
+    "text": "保存整份房间配置，供翻财神动画、听牌封顶文案、结算封顶等读取",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-019",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/21-游戏配置.md",
+    "section": "二、界面变化",
+    "fromLine": 13,
+    "toLine": 13,
+    "text": "自己手牌按新配置重新刷一次财神颜色：财神牌染红，置灰优先于染色，可点击、不显示角标",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-020",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/21-游戏配置.md",
+    "section": "三、连带影响",
+    "fromLine": 17,
+    "toLine": 17,
+    "text": "配置决定是否播放翻财神动画",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-021",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/21-游戏配置.md",
+    "section": "三、连带影响",
+    "fromLine": 17,
+    "toLine": 17,
+    "text": "配置决定听牌界面的封顶文案",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-022",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/21-游戏配置.md",
+    "section": "三、连带影响",
+    "fromLine": 17,
+    "toLine": 17,
+    "text": "配置决定结算封顶",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-023",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/21-游戏配置.md",
+    "section": "三、连带影响",
+    "fromLine": 18,
+    "toLine": 18,
+    "text": "重连流程通常仍执行一次本消息（非“只补数据”），会顺手刷新一次手牌财神颜色，此为刻意设计",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-024",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/21-游戏配置.md",
+    "section": "四、重连 / 回放",
+    "fromLine": 22,
+    "toLine": 22,
+    "text": "“开局阶段重连”“旧场景开始”等纯补数据路径只保存配置，不刷新手牌颜色",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-025",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/29-匹配场底分.md",
+    "section": "触发时机",
+    "fromLine": 3,
+    "toLine": 3,
+    "text": "匹配场下发底分时触发匹配场底分处理",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-026",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/29-匹配场底分.md",
+    "section": "一、前置条件",
+    "fromLine": 7,
+    "toLine": 7,
+    "text": "只有匹配场才处理底分消息",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-027",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/29-匹配场底分.md",
+    "section": "一、前置条件",
+    "fromLine": 8,
+    "toLine": 8,
+    "text": "底分小于等于 0 时不处理",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-028",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/29-匹配场底分.md",
+    "section": "二、数据上记录了什么",
+    "fromLine": 12,
+    "toLine": 12,
+    "text": "保存底分，服务端两种数字格式统一转成普通数字",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-029",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/29-匹配场底分.md",
+    "section": "三、界面变化",
+    "fromLine": 18,
+    "toLine": 18,
+    "text": "背景底分文字显示“底分：XX”",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-030",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/29-匹配场底分.md",
+    "section": "三、界面变化",
+    "fromLine": 19,
+    "toLine": 19,
+    "text": "背景的“游戏中”状态页切到游戏中状态，显示空闲图标",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-031",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/29-匹配场底分.md",
+    "section": "三、界面变化",
+    "fromLine": 20,
+    "toLine": 20,
+    "text": "背景牌桌美术字按当前玩法切换",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-032",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/29-匹配场底分.md",
+    "section": "三、界面变化",
+    "fromLine": 21,
+    "toLine": 21,
+    "text": "房间名在未开局时按房间数据显示",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-033",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/29-匹配场底分.md",
+    "section": "四、连带影响",
+    "fromLine": 25,
+    "toLine": 25,
+    "text": "背景底分只在匹配场显示；包厢 / 好友房的底分由房间规则展示，不走本消息",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-034",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/29-匹配场底分.md",
+    "section": "四、连带影响",
+    "fromLine": 26,
+    "toLine": 26,
+    "text": "重连时本消息只保存数据，底分文字由后续的“游戏开始状态”或“底分刷新”补齐",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-035",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/29-匹配场底分.md",
+    "section": "五、重连 / 回放",
+    "fromLine": 30,
+    "toLine": 30,
+    "text": "只补数据时不刷新底分文字",
+    "mandatory": true
+  }
+]

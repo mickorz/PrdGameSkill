@@ -1,0 +1,55 @@
+{
+  "version": 2,
+  "byHash": {
+    "fc94224e139de73e17d3fc28d44e39e3dec4cf41631b3a6e0f0f42c108c0fbf5": "REQ-001",
+    "394e946899fadbf7b508682189e37818acb190d9c21472a371b4b8d419b86ca7": "REQ-002",
+    "333bae2bfaddc4de1e70acff273a0f3a981c2fc8c6fd83eaca1c44b53a4dfbbf": "REQ-003",
+    "903633eac5bcaced8396623d3368135ed0ae986dbe084d66a2874331a45466c0": "REQ-002",
+    "294019f73d83c8d54c5753b250b2ddf381d72e86933d3e0aca930e2d1391abd8": "REQ-004",
+    "b4fa49caa927669490d280e7a99ab890a2381e4b62287edd99350ea973ee0173": "REQ-003",
+    "d9ac0fee9dd6bcd90bf65e6634ae836304f4441ff17c9f51548e69d1515a2d0b": "REQ-005",
+    "0abf7820f821d2e14d2fc886335b0f150fa049778dbbb0ae18b1a40ff7b40f97": "REQ-006"
+  },
+  "byAnchor": {
+    "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/req-build/input/mock-prd.md|2.1": [
+      "REQ-001",
+      "REQ-005"
+    ],
+    "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/req-build/input/mock-prd.md|2.2": [
+      "REQ-002",
+      "REQ-003",
+      "REQ-004",
+      "REQ-006"
+    ]
+  },
+  "texts": {
+    "REQ-001": "庄家发放13张牌，闲家13张。发牌后刷新牌墙剩余数量。",
+    "REQ-002": "玩家满足吃碰条件时可以碰牌。",
+    "REQ-003": "碰牌成功后向其他玩家广播出来。",
+    "REQ-004": "碰牌成功后播放广播音效并通知玩家。",
+    "REQ-005": "这句原文里根本不存在。",
+    "REQ-006": "碰牌成功后向其他玩家广播这条消息。"
+  },
+  "pending": [
+    {
+      "reqKey": "mock-prd-009",
+      "requirementId": "REQ-006",
+      "candidates": [
+        {
+          "requirementId": "REQ-003",
+          "similarity": 0.579
+        },
+        {
+          "requirementId": "REQ-004",
+          "similarity": 0.231
+        },
+        {
+          "requirementId": "REQ-002",
+          "similarity": 0.074
+        }
+      ],
+      "reason": "相似度处于模糊区间"
+    }
+  ],
+  "next": 7
+}

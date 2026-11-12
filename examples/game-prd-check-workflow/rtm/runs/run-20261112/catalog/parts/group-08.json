@@ -1,0 +1,227 @@
+[
+  {
+    "ruleId": "R08-001",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "标题与总览",
+    "fromLine": 1,
+    "toLine": 5,
+    "text": "玩家头像由“桌子”管理而不由游戏管理；头像上显示头像、昵称、累计分、庄家标记、加倍标记、准备状态、托管/离线状态、预约洗牌角标，多由桌子服务维护，故由跨层通知触发更新而非游戏消息。",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R08-002",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "一、外部通知与头像变化对照 / 玩家进入",
+    "fromLine": 11,
+    "toLine": 11,
+    "text": "玩家进入：刷新昵称、累计分、头像、头像框、真人语音状态、离线倒计时、托管角标，并显示头像；未开局时刷新准备状态；同时通知玄学头像组件“玩家进入”。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-003",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "一、外部通知与头像变化对照 / 玩家数据刷新",
+    "fromLine": 12,
+    "toLine": 12,
+    "text": "玩家数据刷新：只刷新昵称、头像、头像框。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-004",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "一、外部通知与头像变化对照 / 玩家离开",
+    "fromLine": 13,
+    "toLine": 13,
+    "text": "玩家离开：清空该座位头像信息与准备状态、隐藏萧山可变庄标、通知玄学头像组件“玩家离开”。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-005",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "一、外部通知与头像变化对照 / 玩家准备或状态变化",
+    "fromLine": 14,
+    "toLine": 14,
+    "text": "玩家准备 / 状态变化：未开局时刷新准备状态；同步预约洗牌角标。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-006",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "一、外部通知与头像变化对照 / 预约洗牌",
+    "fromLine": 15,
+    "toLine": 15,
+    "text": "预约洗牌（本人或他人使用道具）：显示 / 隐藏该座位的“预约洗牌”文字动画与角标。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-007",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "一、外部通知与头像变化对照 / 换座",
+    "fromLine": 16,
+    "toLine": 16,
+    "text": "换座（随机座位）：除自己外，所有头像飞向屏幕中央 → 换位 → 飞回。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-008",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "一、外部通知与头像变化对照 / VIP 展示气泡",
+    "fromLine": 17,
+    "toLine": 17,
+    "text": "VIP 展示气泡：该座位显示 / 隐藏 VIP 气泡，可点击跳转。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-009",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "一、外部通知与头像变化对照 / 聊天与方言聊天",
+    "fromLine": 18,
+    "toLine": 18,
+    "text": "聊天 / 方言聊天：只播放对应语音（按性别切换男声 / 女声），不改节点。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-010",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "一、外部通知与头像变化对照 / 微信授权红点",
+    "fromLine": 19,
+    "toLine": 19,
+    "text": "微信授权红点：显示 / 隐藏红点。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-011",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "一、外部通知与头像变化对照 / 人数变化",
+    "fromLine": 20,
+    "toLine": 20,
+    "text": "人数变化：切换头像人数页，重新绑定每个座位对应的头像节点与准备标记。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-012",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "一、外部通知与头像变化对照 / 入座与准备状态标记",
+    "fromLine": 21,
+    "toLine": 21,
+    "text": "入座 / 准备状态标记：显示“已准备 / 已坐下”，出牌或无效状态则隐藏。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-013",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "一、外部通知与头像变化对照 / 头像整体显隐",
+    "fromLine": 22,
+    "toLine": 22,
+    "text": "头像整体显隐：进入动画期间隐藏其他界面；指定玩家显示 / 隐藏头像；自己头像可单独显示 / 隐藏。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-014",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "一、外部通知与头像变化对照 / 自己头像位置",
+    "fromLine": 23,
+    "toLine": 23,
+    "text": "自己头像位置：自由态与局内两种位置切换（坐下时位置不同），并通知公共层自己的头像位置变了。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-015",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "一、外部通知与头像变化对照 / 开局安全校验",
+    "fromLine": 24,
+    "toLine": 24,
+    "text": "开局安全校验：清空全桌准备状态。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-016",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "一、外部通知与头像变化对照 / 游戏结果返回",
+    "fromLine": 25,
+    "toLine": 25,
+    "text": "游戏结果返回：延迟 1.2 秒后，把“已坐下”的座位重新显示准备状态。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-017",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "一、外部通知与头像变化对照 / 托管弹窗打开成功",
+    "fromLine": 26,
+    "toLine": 26,
+    "text": "托管弹窗打开成功：取消自己的自动托管、隐藏托管蒙层、强制刷新头像。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-018",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "二、游戏服务负责的头像变化 / 庄家标记与连庄档位",
+    "fromLine": 32,
+    "toLine": 32,
+    "text": "庄家标记 / 连庄档位由游戏服务负责，来源为局数据、升庄广播。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-019",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "二、游戏服务负责的头像变化 / 加倍标记",
+    "fromLine": 33,
+    "toLine": 33,
+    "text": "加倍标记由游戏服务负责，来源为加倍阶段。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-020",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "二、游戏服务负责的头像变化 / 当前操作者头像发光框",
+    "fromLine": 34,
+    "toLine": 34,
+    "text": "当前操作者头像发光框由游戏服务负责，来源为权限。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-021",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "二、游戏服务负责的头像变化 / 累计分刷新",
+    "fromLine": 35,
+    "toLine": 35,
+    "text": "累计分刷新由游戏服务负责，来源为玩家分数、结算。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-022",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "二、游戏服务负责的头像变化 / 与头像无关的桌面表现",
+    "fromLine": 36,
+    "toLine": 36,
+    "text": "吃碰杠动画等桌面上与头像无关的表现由游戏服务负责，来源为各动作消息。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-023",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "三、注意 / 第1条",
+    "fromLine": 40,
+    "toLine": 40,
+    "text": "普通房与匹配场是两套头像界面，通知名相同但节点不同；改一个头像表现时两处都要检查，否则两种房型表现不一致。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-024",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "三、注意 / 第2条",
+    "fromLine": 41,
+    "toLine": 41,
+    "text": "头像上的“加倍常驻标记”和桌面上的“加倍标签”是两套，生命周期不同：桌面标签阶段结束就清，头像标记保留到下一局重置。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-025",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/40-玩家头像的外部触发.md",
+    "section": "三、注意 / 第3条",
+    "fromLine": 42,
+    "toLine": 42,
+    "text": "头像进入时会判断“是否已开局”：已开局就不显示准备状态，避免局中出现“已准备”。",
+    "mandatory": true
+  }
+]

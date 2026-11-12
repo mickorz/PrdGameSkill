@@ -1,0 +1,10 @@
+{
+  "projectKey": "mock",
+  "sourceFiles": [
+    {
+      "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/req-build/input/mock-prd.md",
+      "sha256": "25ee332cdb8f791d0814837a698cde390d744a23e6432440f7a0bce5f0bc17f3",
+      "bytes": 202
+    }
+  ]
+}

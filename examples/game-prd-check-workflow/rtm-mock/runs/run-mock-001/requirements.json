@@ -1,0 +1,123 @@
+[
+  {
+    "requirementId": "REQ-001",
+    "reqKey": "REQK-A1",
+    "title": "开局发牌",
+    "source": {
+      "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/input/mock-prd.md",
+      "section": "2.1",
+      "fromLine": 3,
+      "toLine": 4
+    },
+    "text": "庄家发放 13 张牌，闲家 13 张。发牌后刷新牌墙剩余数量。",
+    "ruleRefs": [
+      {
+        "ruleId": "R01-001",
+        "status": "pass",
+        "evidence": "PRD 2.1 与规则 1 一致",
+        "evidenceInvalid": false
+      },
+      {
+        "ruleId": "R01-999",
+        "status": "pass",
+        "evidence": "ruleId 不存在样例",
+        "evidenceInvalid": true
+      }
+    ],
+    "overallStatus": "unverified",
+    "issueIds": [],
+    "fullyPassed": false,
+    "coverageDimensions": [
+      "game"
+    ],
+    "verificationStatus": "unverified",
+    "unverifiedReason": "evidence-or-execution-failed"
+  },
+  {
+    "requirementId": "REQ-002",
+    "reqKey": "REQK-A2",
+    "title": "碰牌条件",
+    "source": {
+      "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/input/mock-prd.md",
+      "section": "2.2",
+      "fromLine": 6,
+      "toLine": 6
+    },
+    "text": "玩家满足条件时可以碰牌。",
+    "ruleRefs": [
+      {
+        "ruleId": "R01-002",
+        "status": "pass",
+        "evidence": "PRD 2.2 与规则 2 一致",
+        "evidenceInvalid": false
+      }
+    ],
+    "overallStatus": "pass",
+    "issueIds": [
+      "PRD-002"
+    ],
+    "fullyPassed": true,
+    "coverageDimensions": [
+      "game"
+    ],
+    "verificationStatus": "verified",
+    "unverifiedReason": null
+  },
+  {
+    "requirementId": "REQ-003",
+    "reqKey": "REQK-B1",
+    "title": "碰牌广播（文本不一致样例）",
+    "source": {
+      "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/input/mock-prd.md",
+      "section": "2.2",
+      "fromLine": 7,
+      "toLine": 7
+    },
+    "text": "碰牌成功后向全场玩家广播。",
+    "ruleRefs": [
+      {
+        "ruleId": "R01-002",
+        "status": "conflict",
+        "evidence": "文本不一致样例",
+        "evidenceInvalid": true
+      }
+    ],
+    "overallStatus": "unverified",
+    "issueIds": [
+      "PRD-001"
+    ],
+    "fullyPassed": false,
+    "coverageDimensions": [
+      "game"
+    ],
+    "verificationStatus": "unverified",
+    "unverifiedReason": "evidence-or-execution-failed"
+  },
+  {
+    "requirementId": "REQ-004",
+    "reqKey": "REQK-B2",
+    "title": "无效行号样例",
+    "source": {
+      "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/input/mock-prd.md",
+      "fromLine": 100,
+      "toLine": 200
+    },
+    "text": "不存在的内容",
+    "ruleRefs": [
+      {
+        "ruleId": "R02-404",
+        "status": "unverified",
+        "evidence": "组失败样例",
+        "evidenceInvalid": true
+      }
+    ],
+    "overallStatus": "unverified",
+    "issueIds": [],
+    "fullyPassed": false,
+    "coverageDimensions": [
+      "game"
+    ],
+    "verificationStatus": "unverified",
+    "unverifiedReason": "evidence-or-execution-failed"
+  }
+]

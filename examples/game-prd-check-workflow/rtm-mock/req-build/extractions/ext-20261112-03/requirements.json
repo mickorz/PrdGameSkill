@@ -1,0 +1,15 @@
+[
+  {
+    "requirementId": "REQ-003",
+    "reqKey": "mock-prd-003",
+    "title": "碰牌广播",
+    "text": "碰牌成功后向其他玩家广播出来。",
+    "source": {
+      "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/req-build/input/mock-prd.md",
+      "section": "2.2",
+      "fromLine": 7,
+      "toLine": 7
+    },
+    "identityStatus": "anchor-match"
+  }
+]

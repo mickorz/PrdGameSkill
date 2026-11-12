@@ -1,0 +1,938 @@
+[
+  {
+    "ruleId": "R01-001",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/总览.md",
+    "section": "文档说明/变化分类",
+    "fromLine": 3,
+    "toLine": 7,
+    "text": "每个行为实际让界面上的哪些元素发生变化，变化分为三类：直接变化、连带变化、补充数据（断线重连/回放只记录数据不播表现）。",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R01-002",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/总览.md",
+    "section": "文档说明/书写顺序",
+    "fromLine": 9,
+    "toLine": 16,
+    "text": "每篇说明按顺序书写：何时出现、数据记录什么、界面怎么变、连带影响、重连/回放差异、注意事项。",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R01-003",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/总览.md",
+    "section": "一、常规对局",
+    "fromLine": 18,
+    "toLine": 51,
+    "text": "常规对局按顺序共 30 个行为：开局、局数据、掷骰子、洗牌、牌墙、发牌、财神、摸牌、出牌、吃、碰、杠、权限、禁打、听牌、结算、游戏结束、等待结束、玩家分数、通知信息、游戏配置、做牌权限、做牌数据、三摊更新、飘、加倍阶段、跟庄重扔骰子、升庄广播、匹配场底分、重连开局阶段。",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R01-004",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/总览.md",
+    "section": "二、断线重连（按阶段）",
+    "fromLine": 53,
+    "toLine": 63,
+    "text": "断线重连按阶段分为：场景开始（旧协议）、场景做牌、场景发牌（旧协议）、场景动作、场景结算、场景加倍（金币场）、场景洗牌。",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R01-005",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/总览.md",
+    "section": "三、结算",
+    "fromLine": 65,
+    "toLine": 70,
+    "text": "结算含小结算（玩家列表 + 财神牌）与总战绩两个界面。",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R01-006",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/总览.md",
+    "section": "四、跨层补充",
+    "fromLine": 72,
+    "toLine": 77,
+    "text": "跨层补充含：玩家头像的外部触发（头像属于桌子而非游戏）、没有实现的协议（已声明但不引起界面变化）。",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R01-007",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/总览.md",
+    "section": "阅读建议",
+    "fromLine": 79,
+    "toLine": 83,
+    "text": "查表现先找对应行为再看界面变化表格；确认动了哪个元素看“界面区域”列；排查重连问题看对应重连说明中的先后顺序。",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R01-008",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/01-开局.md",
+    "section": "一、数据上记录了什么/游戏已开始标记",
+    "fromLine": 8,
+    "toLine": 8,
+    "text": "标记“游戏已开始”，该标记影响头像准备状态的显示，也影响后续重连判断。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-009",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/01-开局.md",
+    "section": "一、数据上记录了什么/牌墙与记牌器",
+    "fromLine": 9,
+    "toLine": 9,
+    "text": "记录牌墙总张数并初始化记牌器，“首出提示”的判断依赖该值。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-010",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/01-开局.md",
+    "section": "一、数据上记录了什么/倍数与底分",
+    "fromLine": 11,
+    "toLine": 11,
+    "text": "记录本局最大倍数；匹配场记录底分。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-011",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/01-开局.md",
+    "section": "一、数据上记录了什么/托管等待时间",
+    "fromLine": 12,
+    "toLine": 12,
+    "text": "记录托管、预托管的等待时间。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-012",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/01-开局.md",
+    "section": "一、数据上记录了什么/自动确认标记",
+    "fromLine": 13,
+    "toLine": 13,
+    "text": "不是第一局时，记下“发牌阶段自动确认”标记。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-013",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/01-开局.md",
+    "section": "二、界面变化/主界面操作区",
+    "fromLine": 18,
+    "toLine": 18,
+    "text": "主界面操作区收起吃、碰、杠、胡按钮回到空状态；隐藏匹配倒计时；隐藏“换桌”按钮。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-014",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/01-开局.md",
+    "section": "二、界面变化/玩家头像区",
+    "fromLine": 19,
+    "toLine": 19,
+    "text": "玩家头像区清除四家的加倍标记、庄家标记、头像发光框，并清掉此前未执行的定时任务。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-015",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/01-开局.md",
+    "section": "二、界面变化/背景",
+    "fromLine": 20,
+    "toLine": 20,
+    "text": "背景切换到“游戏中”状态：隐藏空闲图标，牌桌美术字切到当前玩法；匹配场刷新底分文字。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-016",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/01-开局.md",
+    "section": "二、界面变化/开局动画区内容",
+    "fromLine": 21,
+    "toLine": 21,
+    "text": "开局动画区播放开局音效；出现开局动画，四个头像显示头像、昵称、分数；动画中按节奏淡出并放行服务端，随后局内头像淡入；动画结束隐藏开局动画。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-017",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/01-开局.md",
+    "section": "二、界面变化/开局动画区播放条件",
+    "fromLine": 21,
+    "toLine": 21,
+    "text": "开局动画仅在本局是第一局或非包厢时播放。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-018",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/01-开局.md",
+    "section": "二、界面变化/提示动画层",
+    "fromLine": 22,
+    "toLine": 22,
+    "text": "提示动画层重置萧山玩法“先骰子、后升庄”的排队状态。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-019",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/01-开局.md",
+    "section": "三、连带影响/好运来图标",
+    "fromLine": 26,
+    "toLine": 26,
+    "text": "上一局摸到两张及以上财神且没有胡，本局开局会尝试把右下角“好运来/请神”图标切换成对应曝光图标，也可能弹出魅力道具使用引导。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-020",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/01-开局.md",
+    "section": "三、连带影响/动画结束确认",
+    "fromLine": 27,
+    "toLine": 27,
+    "text": "开局动画结束时会向服务端确认一次推进后续流程；如果动画被跳过，四个头像会直接显示。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-021",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/01-开局.md",
+    "section": "四、重连 / 回放",
+    "fromLine": 31,
+    "toLine": 31,
+    "text": "重连与回放只记录数据：不播开局动画、不刷新操作区与头像标记、不触发好运来图标。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-022",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/01-开局.md",
+    "section": "五、注意/动画播放条件",
+    "fromLine": 35,
+    "toLine": 35,
+    "text": "“开局动画是否播放”同时受“是否包厢”和“第几局”控制，改动该条件会同时影响动画表现和流程放行时机。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-023",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/02-局数据-庄家与方位.md",
+    "section": "一、数据上记录了什么/庄家座位",
+    "fromLine": 8,
+    "toLine": 8,
+    "text": "记录庄家座位，以及服务端座位与本地座位的对应关系。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-024",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/02-局数据-庄家与方位.md",
+    "section": "一、数据上记录了什么/连庄数",
+    "fromLine": 9,
+    "toLine": 9,
+    "text": "记录连庄数（牢庄档位），该值同时用于庄家标记和结算界面。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-025",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/02-局数据-庄家与方位.md",
+    "section": "一、数据上记录了什么/东风座位",
+    "fromLine": 10,
+    "toLine": 10,
+    "text": "根据门风找到“东风”所在座位用于摆正牌桌方位；找不到东风时直接按庄家座位摆正，避免方位盘空掉。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-026",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/02-局数据-庄家与方位.md",
+    "section": "二、界面变化/普通玩法庄家标记",
+    "fromLine": 16,
+    "toLine": 16,
+    "text": "普通玩法先清掉四家的庄家标记，再在庄家头像上显示“庄”以及连庄档位（1~3）。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-027",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/02-局数据-庄家与方位.md",
+    "section": "二、界面变化/萧山好友房庄家标记",
+    "fromLine": 16,
+    "toLine": 16,
+    "text": "萧山好友房改用可变数字的庄家标记组件，支持升庄时数字变化。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-028",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/02-局数据-庄家与方位.md",
+    "section": "二、界面变化/匹配场庄家标记",
+    "fromLine": 17,
+    "toLine": 17,
+    "text": "匹配场头像的庄家标记显示 庄/庄2/庄3；超过 3 档按 3 档显示；其他座位隐藏。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-029",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/02-局数据-庄家与方位.md",
+    "section": "二、界面变化/方位盘底图",
+    "fromLine": 18,
+    "toLine": 18,
+    "text": "牌桌中央方位盘底图按“人数 + 东风座位”换成对应的方位盘。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-030",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/02-局数据-庄家与方位.md",
+    "section": "二、界面变化/四角风向灯",
+    "fromLine": 18,
+    "toLine": 18,
+    "text": "方位盘四角的风向灯换成对应东风方向的贴图。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-031",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/02-局数据-庄家与方位.md",
+    "section": "二、界面变化/异常处理",
+    "fromLine": 18,
+    "toLine": 18,
+    "text": "人数或座位异常时跳过本次方位盘刷新，只打印告警，不会崩溃。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-032",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/02-局数据-庄家与方位.md",
+    "section": "三、连带影响/连庄档位复用",
+    "fromLine": 22,
+    "toLine": 22,
+    "text": "连庄档位会被“升庄广播”“胡牌结算”“重连开局”再次读取或覆盖；调整档位含义时要一起检查结算界面显示。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-033",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/02-局数据-庄家与方位.md",
+    "section": "三、连带影响/方位图资源",
+    "fromLine": 23,
+    "toLine": 23,
+    "text": "方位盘底图与风向灯依赖美术资源中的多套方位图（2 人 / 3 人 / 4 人各一套）。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-034",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/02-局数据-庄家与方位.md",
+    "section": "四、重连 / 回放",
+    "fromLine": 27,
+    "toLine": 27,
+    "text": "重连与回放只记录数据，不刷新庄家标记与方位盘；重连后由“权限”“恢复牌墙/手牌”等步骤补齐界面。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-035",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/03-掷骰子.md",
+    "section": "一、数据上记录了什么",
+    "fromLine": 8,
+    "toLine": 8,
+    "text": "记录两枚骰子的点数；断线重连、回放时用该数据静态还原骰子。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-036",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/03-掷骰子.md",
+    "section": "二、界面变化/两枚骰子表现",
+    "fromLine": 14,
+    "toLine": 14,
+    "text": "牌桌中央两枚骰子出现，按点数换图并播放滚动动画；播放结束后自动隐藏。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-037",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/03-掷骰子.md",
+    "section": "二、界面变化/骰子兜底隐藏",
+    "fromLine": 14,
+    "toLine": 14,
+    "text": "若骰子动画异常，5 秒后强制隐藏兜底。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-038",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/03-掷骰子.md",
+    "section": "二、界面变化/匹配场加倍标记",
+    "fromLine": 15,
+    "toLine": 15,
+    "text": "匹配场头像区清除桌面上所有“加倍”标记，新一局不保留上一局的加倍显示。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-039",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/03-掷骰子.md",
+    "section": "二、界面变化/倒计时区域屏蔽",
+    "fromLine": 16,
+    "toLine": 16,
+    "text": "骰子播放期间临时屏蔽倒计时数字与方位灯闪烁，业务计时仍在继续；骰子结束后恢复。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-040",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/03-掷骰子.md",
+    "section": "二、界面变化/萧山好友房升庄排队",
+    "fromLine": 17,
+    "toLine": 17,
+    "text": "萧山好友房记录本局开局动画的序号；骰子播完后如有排队中的“升庄”会接着播放，保证“先骰子、后升庄”。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-041",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/03-掷骰子.md",
+    "section": "三、连带影响/重连跳过动画",
+    "fromLine": 21,
+    "toLine": 21,
+    "text": "重连使用“跳过动画”方式：只显示骰子结果，不播放滚动，也不会自动隐藏。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-042",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/03-掷骰子.md",
+    "section": "四、重连 / 回放/重连",
+    "fromLine": 25,
+    "toLine": 25,
+    "text": "重连时仍然显示骰子点数，但不动画。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-043",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/03-掷骰子.md",
+    "section": "四、重连 / 回放/纯补数据",
+    "fromLine": 26,
+    "toLine": 26,
+    "text": "纯补数据（只记录不显示）时完全不出现骰子。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-044",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/03-掷骰子.md",
+    "section": "五、注意/两种处理差异",
+    "fromLine": 30,
+    "toLine": 30,
+    "text": "“跳过动画”和“只补数据”是两种不同处理：前者重连时仍能看到骰子面，后者什么都看不到。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-045",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/04-洗牌.md",
+    "section": "一、数据上记录了什么/预约洗牌状态",
+    "fromLine": 7,
+    "toLine": 7,
+    "text": "把对应座位的“预约洗牌”状态清掉，头像上的预约洗牌角标随之消失。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-046",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/04-洗牌.md",
+    "section": "二、界面变化/洗牌动画位",
+    "fromLine": 13,
+    "toLine": 13,
+    "text": "对应座位的洗牌动画出现并播放：自己洗牌播第一套动作，别人洗牌播第二套动作；同时播放洗牌音效。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-047",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/04-洗牌.md",
+    "section": "二、界面变化/自己洗牌结束",
+    "fromLine": 14,
+    "toLine": 14,
+    "text": "自己洗牌结束后额外播放一次“运势上升”祈福动画。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-048",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/04-洗牌.md",
+    "section": "二、界面变化/本组最后一人确认",
+    "fromLine": 14,
+    "toLine": 14,
+    "text": "本组最后一个洗牌的人播完后，向服务端确认一次，让流程继续。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-049",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/04-洗牌.md",
+    "section": "二、界面变化/预约洗牌角标",
+    "fromLine": 15,
+    "toLine": 15,
+    "text": "对应座位的“预约洗牌”文字动画与角标隐藏。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-050",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/04-洗牌.md",
+    "section": "三、连带影响/非包厢",
+    "fromLine": 19,
+    "toLine": 19,
+    "text": "不在包厢里时，这条消息不播放任何洗牌动画，只清掉预约状态。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-051",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/04-洗牌.md",
+    "section": "三、连带影响/重连",
+    "fromLine": 20,
+    "toLine": 20,
+    "text": "重连时不重播洗牌动画，只恢复数据。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-052",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/04-洗牌.md",
+    "section": "四、重连 / 回放/只补数据",
+    "fromLine": 24,
+    "toLine": 24,
+    "text": "带“只补数据”标记时，连预约状态都不改，由调用方负责。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-053",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/04-洗牌.md",
+    "section": "五、注意/动画重播排查",
+    "fromLine": 28,
+    "toLine": 28,
+    "text": "如果发现“重连后又看了一遍洗牌动画”，说明调用方没有带“只补数据”标记。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-054",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/05-牌墙.md",
+    "section": "一、数据上记录了什么/起点奇偶",
+    "fromLine": 7,
+    "toLine": 7,
+    "text": "处理起点奇偶：起点为奇数时减一，保证牌墙对齐。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-055",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/05-牌墙.md",
+    "section": "一、数据上记录了什么/牌墙总张数",
+    "fromLine": 8,
+    "toLine": 8,
+    "text": "记录牌墙总张数，首出提示、剩余张数换算都依赖它。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-056",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/05-牌墙.md",
+    "section": "一、数据上记录了什么/起点与方向",
+    "fromLine": 9,
+    "toLine": 9,
+    "text": "记录牌墙的起点与方向。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-057",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/05-牌墙.md",
+    "section": "二、界面变化/剩余张数牌背",
+    "fromLine": 15,
+    "toLine": 15,
+    "text": "桌面右侧的“剩余张数”牌背显示当前剩余张数；需要隐藏时隐藏该组件。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-058",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/05-牌墙.md",
+    "section": "二、界面变化/牌墙本身",
+    "fromLine": 16,
+    "toLine": 16,
+    "text": "牌墙本身不在本消息里直接绘制。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-059",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/05-牌墙.md",
+    "section": "二、界面变化/历史通知",
+    "fromLine": 17,
+    "toLine": 17,
+    "text": "“显示牌墙”“牌墙出现”两种界面通知目前没有任何界面在监听，不会产生可见变化，只在测试工具里用到。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-060",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/05-牌墙.md",
+    "section": "三、连带影响/职责范围",
+    "fromLine": 21,
+    "toLine": 21,
+    "text": "本消息只负责记录数据并刷新剩余张数文本，牌墙外观表现不在这条消息的表现范围内。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-061",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/05-牌墙.md",
+    "section": "三、连带影响/历史遗留通知",
+    "fromLine": 22,
+    "toLine": 22,
+    "text": "“显示牌墙”“牌墙出现”属于历史遗留通知，重连和回放里仍会发出，但界面上没有接收方。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-062",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/05-牌墙.md",
+    "section": "四、重连 / 回放",
+    "fromLine": 26,
+    "toLine": 26,
+    "text": "重连与回放只记录牌墙数据，不刷新剩余张数；重连时由“恢复牌墙”负责界面。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-063",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/05-牌墙.md",
+    "section": "五、注意/排查指引",
+    "fromLine": 30,
+    "toLine": 30,
+    "text": "排查“牌墙没显示”时不要只盯“显示牌墙”“牌墙出现”两个历史通知，当前正式界面并没有监听它们。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-064",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/06-发牌.md",
+    "section": "一、数据上记录了什么/初始手牌",
+    "fromLine": 7,
+    "toLine": 7,
+    "text": "写入自己的初始手牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-065",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/06-发牌.md",
+    "section": "一、数据上记录了什么/发牌状态",
+    "fromLine": 8,
+    "toLine": 8,
+    "text": "标记桌面进入“发牌”状态。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-066",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/06-发牌.md",
+    "section": "一、数据上记录了什么/记牌器扣除",
+    "fromLine": 9,
+    "toLine": 9,
+    "text": "自己的手牌会从记牌器中扣除。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-067",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/06-发牌.md",
+    "section": "一、数据上记录了什么/财神张数统计",
+    "fromLine": 10,
+    "toLine": 10,
+    "text": "统计自己手里已有几张财神，用于之后“多财神未胡”的好运来判断。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-068",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/06-发牌.md",
+    "section": "二、界面变化/剩余张数",
+    "fromLine": 16,
+    "toLine": 16,
+    "text": "桌面右侧的剩余张数刷新剩余张数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-069",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/06-发牌.md",
+    "section": "二、界面变化/手牌",
+    "fromLine": 17,
+    "toLine": 17,
+    "text": "本消息不直接刷手牌、也不播发牌动画，真正的表现由紧随其后的“摸牌”消息完成。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-070",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/06-发牌.md",
+    "section": "三、连带影响/自己发牌",
+    "fromLine": 22,
+    "toLine": 22,
+    "text": "紧随其后的第一次摸牌让自己手牌以随机顺序逐张立起，再自动排序。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-071",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/06-发牌.md",
+    "section": "三、连带影响/发牌结束确认",
+    "fromLine": 22,
+    "toLine": 22,
+    "text": "自己发牌结束时桌面进入对局状态，并向服务端确认，让流程继续。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-072",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/06-发牌.md",
+    "section": "三、连带影响/其他三家发牌",
+    "fromLine": 23,
+    "toLine": 23,
+    "text": "其他三家对应手牌逐张立起。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-073",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/06-发牌.md",
+    "section": "三、连带影响/消息顺序依赖",
+    "fromLine": 24,
+    "toLine": 24,
+    "text": "“发牌”的观感取决于“发牌 → 摸牌”两条消息的到达顺序，只收到发牌消息不会出现发牌动画。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-074",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/06-发牌.md",
+    "section": "四、重连 / 回放",
+    "fromLine": 28,
+    "toLine": 28,
+    "text": "重连与回放只记录手牌、记牌器、财神数量，不刷新剩余张数、不播动画。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-075",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/07-财神-翻财神.md",
+    "section": "一、数据上记录了什么/财神牌",
+    "fromLine": 8,
+    "toLine": 8,
+    "text": "记录财神牌、翻出的牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-076",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/07-财神-翻财神.md",
+    "section": "一、数据上记录了什么/手中财神张数",
+    "fromLine": 9,
+    "toLine": 9,
+    "text": "同步自己手里财神的张数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-077",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/07-财神-翻财神.md",
+    "section": "一、数据上记录了什么/已从牌墙拿走",
+    "fromLine": 10,
+    "toLine": 10,
+    "text": "如果是“翻出来并已从牌墙拿走”的财神：记牌器减一，牌墙同步少一张。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-078",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/07-财神-翻财神.md",
+    "section": "二、界面变化/桌面左侧财神牌",
+    "fromLine": 15,
+    "toLine": 15,
+    "text": "桌面左侧的财神牌显示本局财神牌面；需要隐藏时先隐藏，等翻牌动画结束后再出现。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-079",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/07-财神-翻财神.md",
+    "section": "二、界面变化/自己手牌排序与染色",
+    "fromLine": 16,
+    "toLine": 16,
+    "text": "自己手牌重新排序，保证财神靠左；财神牌染成红色。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-080",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/07-财神-翻财神.md",
+    "section": "二、界面变化/禁打置灰刷新",
+    "fromLine": 16,
+    "toLine": 16,
+    "text": "财神变化后重新刷新“禁打置灰”状态。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-081",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/07-财神-翻财神.md",
+    "section": "二、界面变化/桌面所有明牌",
+    "fromLine": 17,
+    "toLine": 17,
+    "text": "自己与三家的河牌、副露、胡牌区里的财神牌统一染色。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-082",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/07-财神-翻财神.md",
+    "section": "二、界面变化/翻财神动画前置",
+    "fromLine": 18,
+    "toLine": 18,
+    "text": "需要翻牌表现时先隐藏桌面财神牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-083",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/07-财神-翻财神.md",
+    "section": "二、界面变化/翻财神动画时序",
+    "fromLine": 18,
+    "toLine": 18,
+    "text": "1.5 秒后播放翻牌动画，翻牌动画结束再让桌面财神牌出现，并向服务端确认；2 秒兜底，避免卡住。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-084",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/07-财神-翻财神.md",
+    "section": "二、界面变化/音效",
+    "fromLine": 19,
+    "toLine": 19,
+    "text": "翻财神动画期间无额外呼喊，只有翻牌表现。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-085",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/07-财神-翻财神.md",
+    "section": "三、连带影响/白板财神播放条件",
+    "fromLine": 23,
+    "toLine": 23,
+    "text": "是否播放翻牌动画：翻出的是白板时，只有房间规则选择了“白板财神”才播放。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-086",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/07-财神-翻财神.md",
+    "section": "三、连带影响/染色公共效果",
+    "fromLine": 24,
+    "toLine": 24,
+    "text": "财神染色会同时影响自己手牌、三家副露、河牌、胡牌区，是后续所有牌面显示的公共效果。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-087",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/07-财神-翻财神.md",
+    "section": "三、连带影响/重连补发",
+    "fromLine": 25,
+    "toLine": 25,
+    "text": "重连时会补发一次“刷新桌面财神牌”，但不播翻牌动画。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-088",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/07-财神-翻财神.md",
+    "section": "四、重连 / 回放",
+    "fromLine": 29,
+    "toLine": 29,
+    "text": "重连与回放只记录财神数据与记牌器，不派发显示与动画；重连时由“场景动作”重连流程补一次桌面财神显示。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-089",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/08-摸牌.md",
+    "section": "一、数据上记录了什么/记牌器扣牌",
+    "fromLine": 7,
+    "toLine": 7,
+    "text": "自己的记牌器扣掉这张牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-090",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/08-摸牌.md",
+    "section": "一、数据上记录了什么/摸牌状态与当前操作者",
+    "fromLine": 8,
+    "toLine": 8,
+    "text": "桌面进入“摸牌”状态；别人摸牌时，把“当前操作者”同步为那个人。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-091",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/08-摸牌.md",
+    "section": "一、数据上记录了什么/摸到的牌与财神计数",
+    "fromLine": 9,
+    "toLine": 9,
+    "text": "记录摸到的牌；自己摸到财神时累加“自己摸到财神的张数”。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-092",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/08-摸牌.md",
+    "section": "一、数据上记录了什么/凑牌光效判断-不播",
+    "fromLine": 11,
+    "toLine": 11,
+    "text": "简单模式、或已有财神时摸到财神/白板，不播凑牌光效。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-093",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/08-摸牌.md",
+    "section": "一、数据上记录了什么/凑牌光效判断-刻子",
+    "fromLine": 12,
+    "toLine": 12,
+    "text": "凑成刻子时记录“敬神（刻）”特效。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-094",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/08-摸牌.md",
+    "section": "一、数据上记录了什么/凑牌光效判断-其他牌型",
+    "fromLine": 13,
+    "toLine": 13,
+    "text": "凑成顺子、刻子、杠（不含财神参与）时记录对应牌值，稍后在自己手牌上播光效。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-095",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/08-摸牌.md",
+    "section": "二、界面变化/自己的手牌",
+    "fromLine": 19,
+    "toLine": 19,
+    "text": "自己手牌先把所有手牌放下，再把摸到的牌摸进来；摸牌完成后触发“凑牌光效”。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-096",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/08-摸牌.md",
+    "section": "二、界面变化/其他三家手牌",
+    "fromLine": 20,
+    "toLine": 20,
+    "text": "其他三家对应座位的手牌做一次摸牌动作。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-097",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/08-摸牌.md",
+    "section": "二、界面变化/凑牌光效表现",
+    "fromLine": 21,
+    "toLine": 21,
+    "text": "自己手牌上的凑牌光效按顺子/刻子/杠的花色播放对应光效。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-098",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/08-摸牌.md",
+    "section": "二、界面变化/剩余张数",
+    "fromLine": 22,
+    "toLine": 22,
+    "text": "摸牌后刷新桌面右侧的剩余张数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-099",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/08-摸牌.md",
+    "section": "二、界面变化/听牌按钮",
+    "fromLine": 23,
+    "toLine": 23,
+    "text": "自己摸牌后，关闭听牌弹窗，并隐藏听牌按钮（等待新的听牌数据）。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-100",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/08-摸牌.md",
+    "section": "二、界面变化/桌面明牌高亮",
+    "fromLine": 24,
+    "toLine": 24,
+    "text": "摸到的牌在四家河牌、胡牌区、副露中高亮显示，并重刷财神颜色。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-101",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/08-摸牌.md",
+    "section": "二、界面变化/复盘模式按钮",
+    "fromLine": 25,
+    "toLine": 25,
+    "text": "复盘模式下隐藏复盘用的操作按钮。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-102",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/08-摸牌.md",
+    "section": "三、连带影响/本轮已摸牌标记",
+    "fromLine": 29,
+    "toLine": 29,
+    "text": "自己摸牌后置上“本轮已摸牌”标记并清掉“连续未听同花色”计数；之后“权限”到达时依据该标记决定是否播玄学/魅力特效。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-103",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/08-摸牌.md",
+    "section": "三、连带影响/音效与发牌动画",
+    "fromLine": 30,
+    "toLine": 31,
+    "text": "摸牌有抓牌音效；开局第一次摸牌会触发四家的发牌动画。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R01-104",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/08-摸牌.md",
+    "section": "四、重连 / 回放",
+    "fromLine": 35,
+    "toLine": 35,
+    "text": "重连与回放只记录状态、手牌、记牌器、牌墙与光效数据：不摸牌、不发光效、不刷新剩余张数。",
+    "mandatory": true
+  }
+]

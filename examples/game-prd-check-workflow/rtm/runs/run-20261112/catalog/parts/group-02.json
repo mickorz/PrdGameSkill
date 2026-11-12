@@ -1,0 +1,596 @@
+[
+  {
+    "ruleId": "R02-001",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/09-出牌.md",
+    "section": "总览-什么时候出现",
+    "fromLine": 3,
+    "toLine": 3,
+    "text": "任一玩家打出一张牌时进入出牌流程",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R02-002",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/09-出牌.md",
+    "section": "一、数据记录-1",
+    "fromLine": 7,
+    "toLine": 7,
+    "text": "别人出牌时，自己的记牌器扣掉这张牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-003",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/09-出牌.md",
+    "section": "一、数据记录-2",
+    "fromLine": 8,
+    "toLine": 8,
+    "text": "记录该玩家托管出牌的次数",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-004",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/09-出牌.md",
+    "section": "一、数据记录-3",
+    "fromLine": 9,
+    "toLine": 9,
+    "text": "记录该玩家打出的牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-005",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/09-出牌.md",
+    "section": "一、数据记录-4",
+    "fromLine": 10,
+    "toLine": 10,
+    "text": "自己出牌时，从打听表取出打这张能听什么的信息并保存，然后清空打听表",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-006",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/09-出牌.md",
+    "section": "一、数据记录-5",
+    "fromLine": 11,
+    "toLine": 11,
+    "text": "记录最后一张出牌，重连时用于恢复箭头位置",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-007",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/09-出牌.md",
+    "section": "二、界面变化-手牌",
+    "fromLine": 17,
+    "toLine": 17,
+    "text": "自己：手牌移除这张并可能重新排序，随后收起操作区；别人：对应手牌做一次打牌动作，手牌重排",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-008",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/09-出牌.md",
+    "section": "二、界面变化-河牌区",
+    "fromLine": 18,
+    "toLine": 18,
+    "text": "打出的牌落到该玩家的河牌区；落定后播放出牌落地特效，受动画开关控制，播完自动隐藏",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-009",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/09-出牌.md",
+    "section": "二、界面变化-出牌放大牌面",
+    "fromLine": 19,
+    "toLine": 19,
+    "text": "先隐藏所有放大牌；若开启放大出牌且不是自己出牌，则在对应玩家位置放大显示这张牌并做财神染色",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-010",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/09-出牌.md",
+    "section": "二、界面变化-听牌箭头",
+    "fromLine": 20,
+    "toLine": 20,
+    "text": "自己出牌后刷新打哪张听什么的箭头；如果还留有打听数据则保留箭头，否则清空",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-011",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/09-出牌.md",
+    "section": "二、界面变化-听牌按钮",
+    "fromLine": 21,
+    "toLine": 21,
+    "text": "自己出牌后关闭听牌弹窗：没有听牌或已胡则隐藏听牌按钮；有听牌则显示并标记可胡状态",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-012",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/09-出牌.md",
+    "section": "二、界面变化-听牌闪光",
+    "fromLine": 22,
+    "toLine": 22,
+    "text": "自己此前没播过听牌闪光时，播放一次手牌闪光",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-013",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/09-出牌.md",
+    "section": "二、界面变化-听牌界面（他人出牌）",
+    "fromLine": 23,
+    "toLine": 23,
+    "text": "他人出牌时刷新听牌列表里各张牌的剩余张数",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-014",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/09-出牌.md",
+    "section": "二、界面变化-操作区",
+    "fromLine": 24,
+    "toLine": 24,
+    "text": "收起吃碰杠胡按钮，隐藏多吃/多杠选择，清掉文字提示与庄家提示；已胡时恢复手牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-015",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/09-出牌.md",
+    "section": "二、界面变化-手牌置灰",
+    "fromLine": 25,
+    "toLine": 25,
+    "text": "清除本回合的出牌限制置灰，手牌恢复可点",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-016",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/09-出牌.md",
+    "section": "二、界面变化-音效",
+    "fromLine": 26,
+    "toLine": 26,
+    "text": "播报这张牌的方言语音（真财神或白板替牌会换播报内容），并播放出牌音效",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-017",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/09-出牌.md",
+    "section": "三、连带影响-1",
+    "fromLine": 30,
+    "toLine": 30,
+    "text": "自己出牌且听牌加手里只有一张财神连续未胡时累积次数，用于好运来图标切换或道具引导",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-018",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/09-出牌.md",
+    "section": "三、连带影响-2",
+    "fromLine": 31,
+    "toLine": 31,
+    "text": "河牌里出现财神牌时会自动染色",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-019",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/09-出牌.md",
+    "section": "三、连带影响-3",
+    "fromLine": 32,
+    "toLine": 32,
+    "text": "复盘模式下会隐藏复盘操作按钮",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-020",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/09-出牌.md",
+    "section": "四、重连/回放",
+    "fromLine": 36,
+    "toLine": 36,
+    "text": "只记录记牌器、托管次数、手牌、听牌信息与最后出牌：不播动画、不放大、不刷新听牌界面、不播语音，也不触发好运来累积",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-021",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/10-吃.md",
+    "section": "总览-什么时候出现",
+    "fromLine": 3,
+    "toLine": 3,
+    "text": "某个玩家吃了上家打出的牌时进入吃流程",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R02-022",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/10-吃.md",
+    "section": "一、数据记录-1",
+    "fromLine": 7,
+    "toLine": 7,
+    "text": "桌面进入吃状态",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-023",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/10-吃.md",
+    "section": "一、数据记录-2",
+    "fromLine": 8,
+    "toLine": 8,
+    "text": "在副露区记录这组牌（记录来源玩家），并按规则排序",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-024",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/10-吃.md",
+    "section": "一、数据记录-3",
+    "fromLine": 9,
+    "toLine": 9,
+    "text": "清掉最后一张出牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-025",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/10-吃.md",
+    "section": "一、数据记录-4",
+    "fromLine": 10,
+    "toLine": 10,
+    "text": "不是自己吃时，自己的记牌器扣掉被吃的牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-026",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/10-吃.md",
+    "section": "二、界面变化-出牌放大牌面",
+    "fromLine": 16,
+    "toLine": 16,
+    "text": "隐藏所有放大牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-027",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/10-吃.md",
+    "section": "二、界面变化-吃碰杠飘动画位",
+    "fromLine": 17,
+    "toLine": 17,
+    "text": "该座位播放吃动画，并播放吃的方言语音；播完自动隐藏",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-028",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/10-吃.md",
+    "section": "二、界面变化-操作区",
+    "fromLine": 18,
+    "toLine": 18,
+    "text": "收起吃碰杠胡按钮，隐藏多吃/多杠选择，清掉文字提示",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-029",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/10-吃.md",
+    "section": "二、界面变化-副露区",
+    "fromLine": 19,
+    "toLine": 19,
+    "text": "从来源玩家河牌移除被吃的那张；吃者副露区增加这组牌；刷新副露来源箭头；手牌重排；重刷财神颜色",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-030",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/10-吃.md",
+    "section": "二、界面变化-玩家头像（自己托管时）",
+    "fromLine": 20,
+    "toLine": 20,
+    "text": "自己托管时收起操作区、清提示、恢复手牌可点状态",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-031",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/10-吃.md",
+    "section": "二、界面变化-听牌界面（别人吃）",
+    "fromLine": 21,
+    "toLine": 21,
+    "text": "别人吃时刷新听牌列表的剩余张数",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-032",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/10-吃.md",
+    "section": "三、连带影响-1",
+    "fromLine": 25,
+    "toLine": 25,
+    "text": "被吃的牌来自出牌区；不是自己吃时，吃走的三张从自己记牌器扣除，否则听牌剩余张数会偏大",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-033",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/10-吃.md",
+    "section": "三、连带影响-2",
+    "fromLine": 26,
+    "toLine": 26,
+    "text": "吃后手牌出现三缺一的待出状态，但不是单放，出牌限制的置灰逻辑对此有专门处理",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-034",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/10-吃.md",
+    "section": "三、连带影响-3",
+    "fromLine": 27,
+    "toLine": 27,
+    "text": "吃/碰累计摊数由服务端另行下发（三摊更新），本消息不参与",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-035",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/10-吃.md",
+    "section": "四、重连/回放",
+    "fromLine": 31,
+    "toLine": 31,
+    "text": "只记录状态、副露、最后出牌与记牌器，不播放吃动画、不改操作区",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-036",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/11-碰.md",
+    "section": "总览-什么时候出现",
+    "fromLine": 3,
+    "toLine": 3,
+    "text": "某个玩家碰牌时进入碰流程",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R02-037",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/11-碰.md",
+    "section": "一、数据记录-1",
+    "fromLine": 7,
+    "toLine": 7,
+    "text": "桌面进入碰状态",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-038",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/11-碰.md",
+    "section": "一、数据记录-2",
+    "fromLine": 8,
+    "toLine": 8,
+    "text": "在副露区记录这组牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-039",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/11-碰.md",
+    "section": "一、数据记录-3",
+    "fromLine": 9,
+    "toLine": 9,
+    "text": "清掉最后一张出牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-040",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/11-碰.md",
+    "section": "一、数据记录-4",
+    "fromLine": 10,
+    "toLine": 10,
+    "text": "不是自己碰时，自己的记牌器扣掉两张（碰只消耗两张手牌）",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-041",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/11-碰.md",
+    "section": "二、界面变化-出牌放大牌面",
+    "fromLine": 16,
+    "toLine": 16,
+    "text": "隐藏所有放大牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-042",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/11-碰.md",
+    "section": "二、界面变化-吃碰杠飘动画位",
+    "fromLine": 17,
+    "toLine": 17,
+    "text": "该座位播放碰动画，并播放碰的方言语音；播完自动隐藏",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-043",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/11-碰.md",
+    "section": "二、界面变化-操作区",
+    "fromLine": 18,
+    "toLine": 18,
+    "text": "收起操作区，清掉文字提示",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-044",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/11-碰.md",
+    "section": "二、界面变化-副露区",
+    "fromLine": 19,
+    "toLine": 19,
+    "text": "从来源玩家河牌移除被碰的那张；碰者副露区增加这组牌；刷新副露来源箭头；手牌重排；重刷财神颜色",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-045",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/11-碰.md",
+    "section": "二、界面变化-玩家头像（自己托管时）",
+    "fromLine": 20,
+    "toLine": 20,
+    "text": "自己托管时收起操作区、清提示、恢复手牌可点状态",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-046",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/11-碰.md",
+    "section": "二、界面变化-听牌界面（别人碰）",
+    "fromLine": 21,
+    "toLine": 21,
+    "text": "别人碰时刷新听牌列表的剩余张数",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-047",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/11-碰.md",
+    "section": "三、连带影响-1",
+    "fromLine": 25,
+    "toLine": 25,
+    "text": "摊数由服务端计算，并通过三摊更新单独播落地动画，本消息不参与摊数逻辑",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-048",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/11-碰.md",
+    "section": "三、连带影响-2",
+    "fromLine": 26,
+    "toLine": 26,
+    "text": "只有有进牌的碰才会从河牌移除牌；没有进牌的碰不会误删河牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-049",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/11-碰.md",
+    "section": "三、连带影响-3",
+    "fromLine": 27,
+    "toLine": 27,
+    "text": "碰后待出的手牌不会被误判为单放，出牌限制的置灰逻辑对此有专门判断",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-050",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/11-碰.md",
+    "section": "四、重连/回放",
+    "fromLine": 31,
+    "toLine": 31,
+    "text": "只记录数据，不播放动画、不改操作区",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-051",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/12-杠.md",
+    "section": "总览-什么时候出现",
+    "fromLine": 3,
+    "toLine": 3,
+    "text": "某个玩家明杠、暗杠或补杠时进入杠流程",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R02-052",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/12-杠.md",
+    "section": "一、数据记录-1",
+    "fromLine": 7,
+    "toLine": 7,
+    "text": "桌面进入杠状态",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-053",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/12-杠.md",
+    "section": "一、数据记录-2",
+    "fromLine": 8,
+    "toLine": 8,
+    "text": "在副露区记录这组牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-054",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/12-杠.md",
+    "section": "一、数据记录-3",
+    "fromLine": 9,
+    "toLine": 9,
+    "text": "明杠时清掉最后一张出牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-055",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/12-杠.md",
+    "section": "一、数据记录-4",
+    "fromLine": 10,
+    "toLine": 10,
+    "text": "不是自己杠时，自己的记牌器扣掉这组牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-056",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/12-杠.md",
+    "section": "二、界面变化-操作区",
+    "fromLine": 16,
+    "toLine": 16,
+    "text": "收起操作区，隐藏多选池与多杠选择，清提示",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-057",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/12-杠.md",
+    "section": "二、界面变化-出牌放大牌面",
+    "fromLine": 17,
+    "toLine": 17,
+    "text": "隐藏出牌放大牌面",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-058",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/12-杠.md",
+    "section": "二、界面变化-吃碰杠飘动画位",
+    "fromLine": 18,
+    "toLine": 18,
+    "text": "该座位播放杠动画；语音按类型区分：明杠、暗杠、补杠各有一条",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-059",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/12-杠.md",
+    "section": "二、界面变化-副露区（明杠/暗杠）",
+    "fromLine": 19,
+    "toLine": 19,
+    "text": "明杠/暗杠新增一组副露；刷新副露来源箭头；手牌重排；重刷财神颜色",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-060",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/12-杠.md",
+    "section": "二、界面变化-副露区（补杠）",
+    "fromLine": 20,
+    "toLine": 20,
+    "text": "补杠先把手里那张牌去掉，再把这张牌追加到原来的刻子上（不新增一格副露）；重刷财神颜色",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-061",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/12-杠.md",
+    "section": "二、界面变化-玩家头像（自己托管时）",
+    "fromLine": 21,
+    "toLine": 21,
+    "text": "自己托管时收起操作区、清提示、恢复手牌可点状态",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-062",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/12-杠.md",
+    "section": "二、界面变化-听牌界面（别人杠）",
+    "fromLine": 22,
+    "toLine": 22,
+    "text": "别人杠时刷新听牌列表剩余张数",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-063",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/12-杠.md",
+    "section": "三、连带影响-1",
+    "fromLine": 26,
+    "toLine": 26,
+    "text": "杠牌权、杠上花、杠后听牌提示分别由权限和听牌信息继续处理，不在本消息里",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-064",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/12-杠.md",
+    "section": "三、连带影响-2",
+    "fromLine": 27,
+    "toLine": 27,
+    "text": "暗杠时别人看不到具体牌，但记牌器仍按协议扣减",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-065",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/12-杠.md",
+    "section": "三、连带影响-3",
+    "fromLine": 28,
+    "toLine": 28,
+    "text": "一次能杠好几种的多杠选择由权限消息里的多杠列表负责，本消息不涉及",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R02-066",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/12-杠.md",
+    "section": "四、重连/回放",
+    "fromLine": 32,
+    "toLine": 32,
+    "text": "只记录数据；补杠与普通杠在副露区的差异，重连时由恢复手牌统一还原",
+    "mandatory": true
+  }
+]

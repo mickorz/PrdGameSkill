@@ -1,0 +1,69 @@
+[
+  {
+    "ruleId": "R01-001",
+    "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/rules/mock-rule.md",
+    "section": "1",
+    "text": "发牌规则",
+    "mandatory": true,
+    "status": "pass",
+    "evidenceInvalid": false,
+    "sourceType": "unknown",
+    "authority": "pending-confirm",
+    "sourceNote": "来源未分类，需人工确认",
+    "linkedRequirementIds": [
+      "REQ-001"
+    ],
+    "orphan": false,
+    "aggStatus": "fully-passed"
+  },
+  {
+    "ruleId": "R01-002",
+    "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/rules/mock-rule.md",
+    "section": "2",
+    "text": "碰牌规则",
+    "mandatory": true,
+    "status": "conflict",
+    "evidenceInvalid": true,
+    "sourceType": "unknown",
+    "authority": "pending-confirm",
+    "sourceNote": "来源未分类，需人工确认",
+    "linkedRequirementIds": [
+      "REQ-002",
+      "REQ-003"
+    ],
+    "orphan": false,
+    "aggStatus": "unverified"
+  },
+  {
+    "ruleId": "R02-003",
+    "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/rules/mock-rule.md",
+    "section": "2",
+    "text": "不适用规则样例",
+    "mandatory": false,
+    "status": "unverified",
+    "evidenceInvalid": false,
+    "sourceType": "unknown",
+    "authority": "pending-confirm",
+    "sourceNote": "来源未分类，需人工确认",
+    "linkedRequirementIds": [],
+    "orphan": true,
+    "aggStatus": "unverified"
+  },
+  {
+    "ruleId": "R02-404",
+    "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/rules/mock-rule.md",
+    "section": "2",
+    "text": "检查组失败的规则点",
+    "mandatory": true,
+    "status": "unverified",
+    "evidenceInvalid": true,
+    "sourceType": "unknown",
+    "authority": "pending-confirm",
+    "sourceNote": "来源未分类，需人工确认",
+    "linkedRequirementIds": [
+      "REQ-004"
+    ],
+    "orphan": false,
+    "aggStatus": "unverified"
+  }
+]

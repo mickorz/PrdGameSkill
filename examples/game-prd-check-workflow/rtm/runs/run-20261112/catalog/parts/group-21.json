@@ -1,0 +1,119 @@
+[
+  {
+    "ruleId": "R21-001",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "16 风险与假设 / 风险 1",
+    "fromLine": 1182,
+    "toLine": 1182,
+    "text": "风险：本文基于静态源码核查，未跑对局、未验客户端。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R21-002",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "16 风险与假设 / 风险 2",
+    "fromLine": 1183,
+    "toLine": 1183,
+    "text": "风险：代码现状可能包含历史兼容或临时逻辑，不等同产品目标。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R21-003",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "16 风险与假设 / 风险 3",
+    "fromLine": 1184,
+    "toLine": 1184,
+    "text": "风险：配置组合多，覆盖矩阵可能遗漏。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R21-004",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "16 风险与假设 / 风险 4",
+    "fromLine": 1185,
+    "toLine": 1185,
+    "text": "风险：混级金币场真实入账是否守恒未验证。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R21-005",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "16 风险与假设 / 风险 5",
+    "fromLine": 1186,
+    "toLine": 1186,
+    "text": "风险：结算番型明细、加倍重连倒计时等仍需联调。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R21-006",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "16 风险与假设 / 假设 1",
+    "fromLine": 1189,
+    "toLine": 1189,
+    "text": "假设：基准玩法为 2/3/4 人杭麻，好友房与金币场共用主体流程。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R21-007",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "16 风险与假设 / 假设 3",
+    "fromLine": 1190,
+    "toLine": 1190,
+    "text": "假设：客户端按本文规则与状态展示，具体视觉待定。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R21-008",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "17 优先级与版本范围 / P0",
+    "fromLine": 1196,
+    "toLine": 1196,
+    "text": "P0：配置生效、开局、摸打、吃碰杠胡、结算、重连、金币场核心。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R21-009",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "17 优先级与版本范围 / P1",
+    "fromLine": 1197,
+    "toLine": 1197,
+    "text": "P1：飘、十风、三摊、跟庄、守庄、禁手、打片、封顶。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R21-010",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "17 优先级与版本范围 / P2",
+    "fromLine": 1198,
+    "toLine": 1198,
+    "text": "P2：客户端动效、文案、非核心展示。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R21-011",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "17 优先级与版本范围 / 版本说明",
+    "fromLine": 1200,
+    "toLine": 1200,
+    "text": "版本说明：本文为现状基线 v3.1；后续目标态变更另立 To-Be PRD，不在本文直接改写现状。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R21-012",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "16 风险与假设 / 章节结构",
+    "fromLine": 1181,
+    "toLine": 1190,
+    "text": "章节结构：风险与假设须分“风险”“假设”两组分别列出，不得混写。",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R21-013",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "17 优先级与版本范围 / 章节结构",
+    "fromLine": 1194,
+    "toLine": 1200,
+    "text": "章节结构：优先级须以表格按 P0/P1/P2 三档给出范围，并附版本说明。",
+    "mandatory": false
+  }
+]

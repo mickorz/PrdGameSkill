@@ -1,0 +1,542 @@
+[
+  {
+    "ruleId": "R12-001",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.1 开局准备 第1条",
+    "fromLine": 283,
+    "toLine": 283,
+    "text": "好友房杭麻游戏配置消息下发有财必拷响、三摊承包、简洁模式和局 ID；其余配置的客户端获取途径待核实。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-002",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.1 开局准备 第2条",
+    "fromLine": 284,
+    "toLine": 284,
+    "text": "金币场下发本局游戏配置、虚拟玩家信息（底分、台费、房间等级）。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-003",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.2 加倍 第1条",
+    "fromLine": 288,
+    "toLine": 288,
+    "text": "进入阶段时清空全桌加倍选择。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-004",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.2 加倍 第2条",
+    "fromLine": 289,
+    "toLine": 289,
+    "text": "每个座位下发独立倒计时，默认 10 秒。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-005",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.2 加倍 第3条",
+    "fromLine": 290,
+    "toLine": 290,
+    "text": "玩家可提交加倍或不加倍；重复提交无效；座位号不匹配无效。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-006",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.2 加倍 第4条",
+    "fromLine": 291,
+    "toLine": 291,
+    "text": "超时未提交按不加倍处理。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-007",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.2 加倍 第5条",
+    "fromLine": 292,
+    "toLine": 292,
+    "text": "断线玩家不立即处理，等待倒计时结束按不加倍处理。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-008",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.2 加倍 第6条",
+    "fromLine": 293,
+    "toLine": 293,
+    "text": "全员完成选择后广播阶段结束，固定停 1 秒，再进入定庄。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-009",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.2 加倍 第7条",
+    "fromLine": 294,
+    "toLine": 294,
+    "text": "加倍开关关闭时直接跳过加倍阶段。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-010",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.3 定庄 首局",
+    "fromLine": 299,
+    "toLine": 299,
+    "text": "首局庄家来源 0 为随机座位，1 为房主。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-011",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.3 定庄 非首局·流局",
+    "fromLine": 300,
+    "toLine": 300,
+    "text": "非首局流局：流局连庄开则庄家不变且连庄 +1；关则逆时针轮换下一位。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-012",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.3 定庄 非首局·胡牌·赢家坐庄",
+    "fromLine": 301,
+    "toLine": 301,
+    "text": "非首局胡牌且为赢家坐庄模式：赢家坐庄；原庄自胡视为连庄。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-013",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.3 定庄 非首局·胡牌·逆时针轮换",
+    "fromLine": 302,
+    "toLine": 302,
+    "text": "非首局胡牌且逆时针轮换模式：庄家单人胡牌（含自摸、接炮、抢杠）连庄；闲家胡牌则轮换下一位。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-014",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.3 定庄 补充第1条",
+    "fromLine": 305,
+    "toLine": 305,
+    "text": "首局定庄同时设置首局庄、连庄数 1、牢庄档位为起算档位。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-015",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.3 定庄 补充第2条",
+    "fromLine": 306,
+    "toLine": 306,
+    "text": "轮换后连庄数重置为 1。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-016",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.3 定庄 补充第3条",
+    "fromLine": 307,
+    "toLine": 307,
+    "text": "一炮多响不启用，不参与换庄判定。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-017",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.4 掷骰、洗牌、做牌 第1条",
+    "fromLine": 310,
+    "toLine": 310,
+    "text": "掷骰得到骰子点数，决定开牌位置和翻财神取值。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-018",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.4 掷骰、洗牌、做牌 第2条",
+    "fromLine": 311,
+    "toLine": 311,
+    "text": "好友房发牌前检测各座位待生效洗牌道具；存在触发座位则广播并停留 5 秒，不真正重排牌墙。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-019",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.4 掷骰、洗牌、做牌 第3条",
+    "fromLine": 312,
+    "toLine": 312,
+    "text": "做牌开启时，定财神前进入指定牌阶段，记录各座位指定手牌与指定摸牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-020",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.4 掷骰、洗牌、做牌 第4条",
+    "fromLine": 313,
+    "toLine": 313,
+    "text": "发牌阶段按指定牌取牌；不足标准起手牌数时从牌墙补齐其余手牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-021",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.4 掷骰、洗牌、做牌 第5条",
+    "fromLine": 314,
+    "toLine": 314,
+    "text": "好友房做牌模式：掷骰后、定财神前记录指定牌；定财神后发牌时落地。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-022",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.4 掷骰、洗牌、做牌 第7条",
+    "fromLine": 315,
+    "toLine": 315,
+    "text": "指定牌操作入口与客户端展示待核实。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-023",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.5 定财神 第1条",
+    "fromLine": 318,
+    "toLine": 318,
+    "text": "记录本局财神状态并清空历史。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-024",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.5 定财神 第2条 白板财神",
+    "fromLine": 319,
+    "toLine": 319,
+    "text": "白板财神：实际财神为白板，无替代牌，无翻出牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-025",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.5 定财神 第3条 翻财神",
+    "fromLine": 321,
+    "toLine": 321,
+    "text": "翻财神时取本局骰子点数和 S 作为翻牌依据。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-026",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.5 定财神 第3条 翻财神-不翻边界",
+    "fromLine": 322,
+    "toLine": 322,
+    "text": "若牌墙数 = 0、S = 0 或 S 大于牌墙数，则本局不翻，实际财神回退为白板。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-027",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.5 定财神 第3条 翻财神-翻牌位置",
+    "fromLine": 323,
+    "toLine": 323,
+    "text": "否则从牌墙尾部倒数第 S 张翻出。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-028",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.5 定财神 第3条 翻财神-财神确定",
+    "fromLine": 324,
+    "toLine": 324,
+    "text": "翻出牌即实际财神，并从牌墙中移除该张。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-029",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.5 定财神 第3条 翻财神-替代牌登记",
+    "fromLine": 325,
+    "toLine": 325,
+    "text": "若实际财神不是白板，则白板登记为替代牌；若翻出白板，则不登记。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-030",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.5 定财神 第4条 翻出白板边界",
+    "fromLine": 326,
+    "toLine": 326,
+    "text": "翻出的牌是白板时，实际财神仍为白板，不登记白板替代牌，翻出的白板从牌墙移除。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-031",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.5 定财神 第5条",
+    "fromLine": 327,
+    "toLine": 327,
+    "text": "注册财神与替代牌，用于胡牌与听牌算法。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-032",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.5 定财神 第6条",
+    "fromLine": 328,
+    "toLine": 328,
+    "text": "从吃、碰、杠候选组中剔除实际财神，保证财神不能用于吃碰杠。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-033",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.5 定财神 第7条",
+    "fromLine": 329,
+    "toLine": 329,
+    "text": "广播财神结果，等待客户端动画确认，超时 3 秒自动推进。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-034",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.6 发牌、首摸与听牌提示 第1条",
+    "fromLine": 332,
+    "toLine": 332,
+    "text": "按骰子开牌位置发牌，每人起手牌数按玩法标准。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-035",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.6 发牌、首摸与听牌提示 第2条",
+    "fromLine": 333,
+    "toLine": 333,
+    "text": "庄家摸第 14 张进入首摸等待。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-036",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.6 发牌、首摸与听牌提示 第3条 闲家",
+    "fromLine": 335,
+    "toLine": 335,
+    "text": "闲家首摸听牌提示按 13 张起手听牌检测。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-037",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.6 发牌、首摸与听牌提示 第3条 庄家",
+    "fromLine": 336,
+    "toLine": 336,
+    "text": "庄家首摸听牌提示按 14 张做打哪张到听什么牌的检测。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-038",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.6 发牌、首摸与听牌提示 第4条",
+    "fromLine": 337,
+    "toLine": 337,
+    "text": "听牌提示按自摸番型口径计算；与最终结算金额不等同，最终金额还受封顶、加倍、付款方、承包等影响。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-039",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.6 发牌、首摸与听牌提示 第5条",
+    "fromLine": 338,
+    "toLine": 338,
+    "text": "提示只下发信息，不授予听权限。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-040",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.6 发牌、首摸与听牌提示 第6条",
+    "fromLine": 339,
+    "toLine": 339,
+    "text": "客户端具体展示形式待核实。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-041",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.6 发牌、首摸与听牌提示 第7条",
+    "fromLine": 340,
+    "toLine": 340,
+    "text": "对局中有出牌权时也计算并下发打哪张到听什么牌；两张实际财神打出后仍敲响时补打财神听任意牌；有财必拷响且仅一张财神时可补普通听牌并排除再摸财神进张。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-042",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.7 开局 OPEN-01",
+    "fromLine": 346,
+    "toLine": 346,
+    "text": "OPEN-01 开局清理：进入开局时清局级状态、重置配置与上下文。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-043",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.7 开局 OPEN-02",
+    "fromLine": 347,
+    "toLine": 347,
+    "text": "OPEN-02 加倍初始化：金币场定庄前清空全桌加倍选择。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-044",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.7 开局 OPEN-03",
+    "fromLine": 348,
+    "toLine": 348,
+    "text": "OPEN-03 加倍上报：玩家提交时校验座位与重复，记录加倍或不加倍后广播全量。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-045",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.7 开局 OPEN-04",
+    "fromLine": 349,
+    "toLine": 349,
+    "text": "OPEN-04 加倍超时与离线：倒计时结束超时按不加倍；离线等超时，不阻塞。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-046",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.7 开局 OPEN-05",
+    "fromLine": 350,
+    "toLine": 350,
+    "text": "OPEN-05 加倍完成：全员已选则广播结束，停 1 秒后进入定庄。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-047",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.7 开局 OPEN-06",
+    "fromLine": 351,
+    "toLine": 351,
+    "text": "OPEN-06 首局定庄：第 1 局随机或房主，设首庄、连庄、牢庄后庄家确定。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-048",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.7 开局 OPEN-07",
+    "fromLine": 352,
+    "toLine": 352,
+    "text": "OPEN-07 流局换庄：非首局流局，连庄开则不变，关则下一位，并更新连庄数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-049",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.7 开局 OPEN-08",
+    "fromLine": 353,
+    "toLine": 353,
+    "text": "OPEN-08 胡牌换庄：非首局胡牌按赢家坐庄或逆时针轮换确定庄家。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-050",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.7 开局 OPEN-09",
+    "fromLine": 354,
+    "toLine": 354,
+    "text": "OPEN-09 掷骰：定庄后随机骰子，决定开牌位与翻财神。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-051",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.7 开局 OPEN-10",
+    "fromLine": 355,
+    "toLine": 355,
+    "text": "OPEN-10 洗牌：好友房发牌前检测洗牌道具，广播并停留 5 秒，不重排牌墙。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-052",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.7 开局 OPEN-11",
+    "fromLine": 356,
+    "toLine": 356,
+    "text": "OPEN-11 做牌记录：做牌开启时，定财神前记录指定手牌与指定摸牌入缓存。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-053",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.7 开局 OPEN-12",
+    "fromLine": 357,
+    "toLine": 357,
+    "text": "OPEN-12 做牌发牌：发牌阶段按指定牌取牌，不足补齐后手牌定型。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-054",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.7 开局 OPEN-13",
+    "fromLine": 358,
+    "toLine": 358,
+    "text": "OPEN-13 定财神白板：白板财神时财神为白板，无替代牌，广播财神。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-055",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.7 开局 OPEN-14",
+    "fromLine": 359,
+    "toLine": 359,
+    "text": "OPEN-14 定财神翻牌：按点数和从墙尾翻一张并移除，记录财神与翻出牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-056",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.7 开局 OPEN-15",
+    "fromLine": 360,
+    "toLine": 360,
+    "text": "OPEN-15 翻出白板：翻出牌为白板时财神仍为白板，不登记替代牌，翻出白板移除。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-057",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.7 开局 OPEN-16",
+    "fromLine": 361,
+    "toLine": 361,
+    "text": "OPEN-16 财神注册与广播：注册财神与替代牌，广播并等 3 秒后进入发牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-058",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.7 开局 OPEN-17",
+    "fromLine": 362,
+    "toLine": 362,
+    "text": "OPEN-17 发牌：定财神后按开牌位发牌，各家起手牌确定。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-059",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.7 开局 OPEN-18",
+    "fromLine": 363,
+    "toLine": 363,
+    "text": "OPEN-18 庄家首摸：发牌后庄家摸第 14 张，进入首摸等待。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R12-060",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "5.7 开局 OPEN-19",
+    "fromLine": 364,
+    "toLine": 364,
+    "text": "OPEN-19 听牌提示：首摸等待及对局中出牌权计算听牌提示，含符合条件的打财神提示，只提示不授报听。",
+    "mandatory": true
+  }
+]

@@ -1,0 +1,1 @@
+{"groupId":"group-2","status":"failed","checkVersion":"v1","coverage":[{"ruleId":"R02-404","reqKey":"REQK-B2","status":"pass","evidence":"组失败样例"}]}

@@ -1,0 +1,47 @@
+[
+  {
+    "ruleId": "R20-001",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "15. 数据与埋点",
+    "fromLine": 1170,
+    "toLine": 1170,
+    "text": "## 15. 数据与埋点",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R20-002",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "15. 数据与埋点 / 对局结果",
+    "fromLine": 1174,
+    "toLine": 1174,
+    "text": "对局结果：局 ID、座位、配置、胡型、番型、输赢；用途：结算/复盘",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R20-003",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "15. 数据与埋点 / 金币场数据",
+    "fromLine": 1175,
+    "toLine": 1175,
+    "text": "金币场数据：底分、台费、房间等级、虚拟分快照；用途：金币结算",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R20-004",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "15. 数据与埋点 / 异常数据",
+    "fromLine": 1176,
+    "toLine": 1176,
+    "text": "异常数据：超时、断线、重连、非法请求；用途：稳定性",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R20-005",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "15. 数据与埋点 / 客户端埋点",
+    "fromLine": 1177,
+    "toLine": 1177,
+    "text": "客户端埋点：提示曝光、按钮点击、结算面板；用途：产品分析（待补）",
+    "mandatory": true
+  }
+]

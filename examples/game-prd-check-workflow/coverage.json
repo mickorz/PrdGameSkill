@@ -1,0 +1,571 @@
+{
+  "generated_at": "2026-11-11",
+  "mapping": "issue.module + 主题关键词，文件级近似；无关联问题 = 未发现问题，不等同逐条确认通过",
+  "totalFiles": 41,
+  "totalSections": 166,
+  "hitFiles": 30,
+  "cleanFiles": 11,
+  "cleanRate": 26.8,
+  "passRateText": "11/41 文件未发现问题",
+  "unmatchedCount": 6,
+  "fallbackCount": 6,
+  "unmappedIssues": [
+    {
+      "id": "PRD-113",
+      "module": "特殊规则",
+      "title": "跟庄仅有提示条目，缺状态机、软硬跟与赔付规则"
+    },
+    {
+      "id": "PRD-138",
+      "module": "房间配置",
+      "title": "十风、缺一色、明牌、打片缺少启用声明与规则章节"
+    },
+    {
+      "id": "PRD-140",
+      "module": "断线重连",
+      "title": "中局可恢复状态缺少数据口径定义"
+    },
+    {
+      "id": "PRD-145",
+      "module": "牌桌区域",
+      "title": "吃副露缺来源箭头，摆放说明误写为碰牌"
+    },
+    {
+      "id": "PRD-152",
+      "module": "总览与文档",
+      "title": "好友房与匹配场头像节点适用范围未声明"
+    },
+    {
+      "id": "PRD-153",
+      "module": "特殊规则",
+      "title": "跟庄条目未标注本期是否实现，缺全桌播放与摇骰子赔付分支（与 PRD-113 同根因）"
+    }
+  ],
+  "items": [
+    {
+      "file": "01-开局.md",
+      "title": "开局",
+      "sections": 5,
+      "issueIds": [
+        "PRD-010",
+        "PRD-023",
+        "PRD-104",
+        "PRD-110"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "02-局数据-庄家与方位.md",
+      "title": "局数据（庄家与方位）",
+      "sections": 4,
+      "issueIds": [
+        "PRD-017",
+        "PRD-021",
+        "PRD-050",
+        "PRD-051",
+        "PRD-059",
+        "PRD-061",
+        "PRD-064",
+        "PRD-071",
+        "PRD-102",
+        "PRD-103",
+        "PRD-122",
+        "PRD-123",
+        "PRD-126"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "03-掷骰子.md",
+      "title": "掷骰子",
+      "sections": 5,
+      "issueIds": [
+        "PRD-070",
+        "PRD-093"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "04-洗牌.md",
+      "title": "洗牌（包厢洗牌 / 预约洗牌）",
+      "sections": 5,
+      "issueIds": [
+        "PRD-028",
+        "PRD-116",
+        "PRD-151"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "05-牌墙.md",
+      "title": "牌墙",
+      "sections": 5,
+      "issueIds": [
+        "PRD-093"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "06-发牌.md",
+      "title": "发牌",
+      "sections": 4,
+      "issueIds": [
+        "PRD-010",
+        "PRD-054",
+        "PRD-070",
+        "PRD-071",
+        "PRD-077",
+        "PRD-107",
+        "PRD-131"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "07-财神-翻财神.md",
+      "title": "财神（翻财神 / 白板财神）",
+      "sections": 4,
+      "issueIds": [
+        "PRD-037",
+        "PRD-078",
+        "PRD-088",
+        "PRD-119",
+        "PRD-129",
+        "PRD-136"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "08-摸牌.md",
+      "title": "摸牌（抓牌）",
+      "sections": 4,
+      "issueIds": [
+        "PRD-018",
+        "PRD-019",
+        "PRD-065",
+        "PRD-077",
+        "PRD-107"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "09-出牌.md",
+      "title": "出牌",
+      "sections": 4,
+      "issueIds": [
+        "PRD-018",
+        "PRD-019",
+        "PRD-065"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "10-吃.md",
+      "title": "吃",
+      "sections": 4,
+      "issueIds": [
+        "PRD-012",
+        "PRD-030",
+        "PRD-031",
+        "PRD-094",
+        "PRD-098"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "11-碰.md",
+      "title": "碰",
+      "sections": 4,
+      "issueIds": [
+        "PRD-030",
+        "PRD-031",
+        "PRD-073",
+        "PRD-094",
+        "PRD-098"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "12-杠.md",
+      "title": "杠",
+      "sections": 4,
+      "issueIds": [
+        "PRD-011",
+        "PRD-025",
+        "PRD-027",
+        "PRD-055",
+        "PRD-056",
+        "PRD-069",
+        "PRD-072",
+        "PRD-073",
+        "PRD-082",
+        "PRD-084",
+        "PRD-087",
+        "PRD-097",
+        "PRD-100",
+        "PRD-121",
+        "PRD-127"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "13-权限.md",
+      "title": "权限（轮到谁操作）",
+      "sections": 4,
+      "issueIds": [
+        "PRD-012",
+        "PRD-029",
+        "PRD-100",
+        "PRD-136",
+        "PRD-137"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "14-出牌限制-禁打.md",
+      "title": "出牌限制（禁打）",
+      "sections": 4,
+      "issueIds": [
+        "PRD-041",
+        "PRD-080",
+        "PRD-111",
+        "PRD-112",
+        "PRD-144"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "15-听牌信息.md",
+      "title": "听牌信息（查听 / 打听）",
+      "sections": 5,
+      "issueIds": [
+        "PRD-013",
+        "PRD-027",
+        "PRD-040",
+        "PRD-108",
+        "PRD-109",
+        "PRD-135"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "16-胡牌与流局结算.md",
+      "title": "胡牌 / 流局结算",
+      "sections": 5,
+      "issueIds": [
+        "PRD-002",
+        "PRD-003",
+        "PRD-004",
+        "PRD-022",
+        "PRD-026",
+        "PRD-032",
+        "PRD-033",
+        "PRD-034",
+        "PRD-035",
+        "PRD-042",
+        "PRD-043",
+        "PRD-072",
+        "PRD-075",
+        "PRD-076",
+        "PRD-086",
+        "PRD-090",
+        "PRD-091",
+        "PRD-096",
+        "PRD-099",
+        "PRD-105",
+        "PRD-124",
+        "PRD-130",
+        "PRD-134",
+        "PRD-139"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "17-游戏结束.md",
+      "title": "游戏结束",
+      "sections": 4,
+      "issueIds": [
+        "PRD-014",
+        "PRD-020",
+        "PRD-052",
+        "PRD-060",
+        "PRD-062",
+        "PRD-067"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "18-等待结束.md",
+      "title": "等待结束",
+      "sections": 4,
+      "issueIds": [
+        "PRD-118"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "19-玩家分数.md",
+      "title": "玩家分数",
+      "sections": 4,
+      "issueIds": [
+        "PRD-022",
+        "PRD-033",
+        "PRD-042",
+        "PRD-075",
+        "PRD-081",
+        "PRD-086",
+        "PRD-091",
+        "PRD-092",
+        "PRD-114",
+        "PRD-124",
+        "PRD-147",
+        "PRD-154"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "20-通知信息.md",
+      "title": "通知信息（规则提示 / 跟庄成功）",
+      "sections": 4,
+      "issueIds": [
+        "PRD-013",
+        "PRD-024",
+        "PRD-079",
+        "PRD-101",
+        "PRD-145",
+        "PRD-149"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "21-游戏配置.md",
+      "title": "游戏配置",
+      "sections": 4,
+      "issueIds": [
+        "PRD-053",
+        "PRD-055",
+        "PRD-083",
+        "PRD-097",
+        "PRD-106",
+        "PRD-110",
+        "PRD-115",
+        "PRD-138"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "22-做牌权限.md",
+      "title": "做牌权限",
+      "sections": 4,
+      "issueIds": [],
+      "status": "clean"
+    },
+    {
+      "file": "23-做牌数据.md",
+      "title": "做牌数据（候选牌）",
+      "sections": 4,
+      "issueIds": [],
+      "status": "clean"
+    },
+    {
+      "file": "24-三摊更新.md",
+      "title": "三摊更新（吃碰累计摊数）",
+      "sections": 4,
+      "issueIds": [
+        "PRD-002",
+        "PRD-043",
+        "PRD-058",
+        "PRD-063",
+        "PRD-066",
+        "PRD-074",
+        "PRD-076",
+        "PRD-082",
+        "PRD-090",
+        "PRD-092",
+        "PRD-096",
+        "PRD-113",
+        "PRD-114",
+        "PRD-125",
+        "PRD-141",
+        "PRD-148",
+        "PRD-153"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "25-飘.md",
+      "title": "飘",
+      "sections": 4,
+      "issueIds": [
+        "PRD-037",
+        "PRD-045",
+        "PRD-056",
+        "PRD-074",
+        "PRD-085",
+        "PRD-088",
+        "PRD-089",
+        "PRD-125",
+        "PRD-146"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "26-加倍阶段.md",
+      "title": "加倍阶段",
+      "sections": 4,
+      "issueIds": [],
+      "status": "clean"
+    },
+    {
+      "file": "27-跟庄重扔骰子.md",
+      "title": "跟庄重扔骰子",
+      "sections": 5,
+      "issueIds": [],
+      "status": "clean"
+    },
+    {
+      "file": "28-升庄广播.md",
+      "title": "升庄广播",
+      "sections": 4,
+      "issueIds": [],
+      "status": "clean"
+    },
+    {
+      "file": "29-匹配场底分.md",
+      "title": "匹配场底分",
+      "sections": 5,
+      "issueIds": [],
+      "status": "clean"
+    },
+    {
+      "file": "30-重连-开局阶段.md",
+      "title": "重连：开局 / 准备阶段",
+      "sections": 4,
+      "issueIds": [
+        "PRD-001",
+        "PRD-005",
+        "PRD-007",
+        "PRD-015",
+        "PRD-016",
+        "PRD-036",
+        "PRD-039",
+        "PRD-044",
+        "PRD-046",
+        "PRD-047",
+        "PRD-048",
+        "PRD-049",
+        "PRD-132",
+        "PRD-133",
+        "PRD-140"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "31-重连-场景开始旧协议.md",
+      "title": "场景开始（旧协议，兼容保留）",
+      "sections": 3,
+      "issueIds": [],
+      "status": "clean"
+    },
+    {
+      "file": "32-重连-场景做牌.md",
+      "title": "场景做牌（重连）",
+      "sections": 3,
+      "issueIds": [],
+      "status": "clean"
+    },
+    {
+      "file": "33-重连-场景发牌旧协议.md",
+      "title": "场景发牌（旧协议，兼容保留）",
+      "sections": 3,
+      "issueIds": [],
+      "status": "clean"
+    },
+    {
+      "file": "34-重连-场景动作.md",
+      "title": "场景动作（对局中重连，最常用）",
+      "sections": 3,
+      "issueIds": [
+        "PRD-016"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "35-重连-场景结算.md",
+      "title": "场景结算（重连）",
+      "sections": 4,
+      "issueIds": [
+        "PRD-048"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "36-重连-场景加倍.md",
+      "title": "场景加倍（金币场重连）",
+      "sections": 3,
+      "issueIds": [],
+      "status": "clean"
+    },
+    {
+      "file": "37-重连-场景洗牌.md",
+      "title": "场景洗牌（重连）",
+      "sections": 3,
+      "issueIds": [],
+      "status": "clean"
+    },
+    {
+      "file": "38-小结算.md",
+      "title": "小结算",
+      "sections": 4,
+      "issueIds": [
+        "PRD-032",
+        "PRD-035",
+        "PRD-057",
+        "PRD-081",
+        "PRD-095",
+        "PRD-099",
+        "PRD-130"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "39-总战绩.md",
+      "title": "总战绩",
+      "sections": 4,
+      "issueIds": [
+        "PRD-014"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "40-玩家头像的外部触发.md",
+      "title": "玩家头像的外部触发（头像由“桌子”管理，不由游戏管理）",
+      "sections": 3,
+      "issueIds": [
+        "PRD-024",
+        "PRD-068",
+        "PRD-102",
+        "PRD-120",
+        "PRD-147"
+      ],
+      "status": "hit"
+    },
+    {
+      "file": "总览.md",
+      "title": "杭州麻将（42319）行为与界面联动总览",
+      "sections": 5,
+      "issueIds": [
+        "PRD-006",
+        "PRD-008",
+        "PRD-009",
+        "PRD-038",
+        "PRD-117",
+        "PRD-128",
+        "PRD-142",
+        "PRD-143",
+        "PRD-150",
+        "PRD-152"
+      ],
+      "status": "hit"
+    }
+  ]
+}

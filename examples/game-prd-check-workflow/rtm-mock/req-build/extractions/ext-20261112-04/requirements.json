@@ -1,0 +1,15 @@
+[
+  {
+    "requirementId": "REQ-005",
+    "reqKey": "mock-prd-001",
+    "title": "坏引文",
+    "text": "这句原文里根本不存在。",
+    "source": {
+      "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/req-build/input/mock-prd.md",
+      "section": "2.1",
+      "fromLine": 3,
+      "toLine": 4
+    },
+    "identityStatus": "new"
+  }
+]

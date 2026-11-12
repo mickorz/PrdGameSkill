@@ -1,0 +1,13 @@
+{
+  "status": "failed",
+  "checkedRequirements": 1,
+  "failures": [
+    {
+      "reqKey": "mock-prd-003",
+      "requirementId": "REQ-003",
+      "file": "E:/WorkProjects/PrdGameSkill/examples/game-prd-check-workflow/rtm-mock/req-build/input/mock-prd.md",
+      "check": "quote-mismatch",
+      "detail": "需求文本未出现在声明的行范围内"
+    }
+  ]
+}

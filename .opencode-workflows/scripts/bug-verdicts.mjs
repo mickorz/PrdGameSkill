@@ -191,7 +191,14 @@ export function collectVerdicts({ allBugs, batches, batchResults, prePassBugs })
         warnings.push('跨批次错位：缺陷 ' + id + ' 属于批次「' + owner + '」，由批次「' + batchTitle + '」返回')
       }
       seen.add(id)
-      verdicts.push({ ...v, bugId: id, verdict: verdictRaw, executionStatus: 'completed' })
+      verdicts.push({
+        ...v,
+        bugId: id,
+        verdict: verdictRaw,
+        executionStatus: 'completed',
+        // REQ 关联归一化：非数组宽容成空数组（阶段 5 验收关注关联率，不作为批次失败条件）
+        requirementIds: Array.isArray(v.requirementIds) ? v.requirementIds.map(String) : [],
+      })
     }
   })
 
@@ -245,6 +252,17 @@ export function collectVerdicts({ allBugs, batches, batchResults, prePassBugs })
   }
   stats.applicable = stats.completed - stats.distribution.NOT_APPLICABLE
   stats.passRate = stats.applicable > 0 ? stats.distribution.PASS / stats.applicable : null
+  // REQ 关联统计：PASS/PARTIAL 带上 requirementIds 的条数（阶段 5 验收口径：关联率）
+  stats.reqLinked = verdicts.filter(
+    (v) =>
+      (v.verdict === 'PASS' || v.verdict === 'PARTIAL') &&
+      Array.isArray(v.requirementIds) &&
+      v.requirementIds.length > 0
+  ).length
+  stats.reqLinkRate =
+    stats.distribution.PASS + stats.distribution.PARTIAL > 0
+      ? stats.reqLinked / (stats.distribution.PASS + stats.distribution.PARTIAL)
+      : null
 
   return { verdicts, stats, warnings }
 }
@@ -283,6 +301,7 @@ export function projectAppendixRows(verdicts) {
       v.executionStatus === 'failed' ? '执行失败（未判定）' : VERDICT_LABELS[v.verdict] || String(v.verdict),
     location: v.prdRef === '无' ? '无' : v.prdRef,
     reason: v.reason,
+    requirementIds: Array.isArray(v.requirementIds) ? v.requirementIds : [],
   }))
 }
 

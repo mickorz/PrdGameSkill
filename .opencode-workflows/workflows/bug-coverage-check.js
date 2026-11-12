@@ -19,8 +19,12 @@
 //
 // 可选 args：
 //   bugDir        缺陷目录，默认 bugs/buglist
-//   prdPath       目标 PRD，默认 input/【杭州麻将】核心流程杭州麻将好友房AI.md
+//   prdPath       目标 PRD，默认 input/【杭州麻将】核心流程杭州麻将好友房AI.md（共享快照模式下保留为按需回查目标）
 //   prdFiles      指定 PRD 路径数组（给定时覆盖 prdPath）
+//   requirementsPath + extractionRunId 共享需求快照消费（v4 阶段 5，必项成对传入，只传其一直接报错）：
+//                 审核输入改为共享需求清单（REQ ID + 标题 + 原文 + 来源锚点）+ 按需回查 PRD 原文；
+//                 快照完整性/runId 一致/源 sha256 校验（check-shared-snapshot.mjs，变更即拒）；
+//                 PASS/PARTIAL 证据挂 REQ ID（requirementIds），附录判定表七列（含 REQ 关联列）
 //   outDir        产物目录，默认 examples/bug-check-workflow
 //   date          检查日期（YYYY-MM-DD）；脚本内禁止取当前时间，需由调用方传入
 //   batchSize     每批缺陷数，默认 15
@@ -79,6 +83,22 @@ const reviewAgentOptions = reviewModel
 
 setConcurrency(A.concurrency || 16)
 
+// 共享需求快照消费（v4 阶段 5）：传 requirementsPath + extractionRunId 成对校验（prdPath 保留为兼容旧路径）；
+// 传时审核输入改为共享需求清单（REQ ID + 标题 + 原文 + 来源锚点）+ 按需回查 PRD 原文，判定挂 REQ 关系
+const sharedRequirementsPath = A.requirementsPath || null
+const sharedExtractionRunId = A.extractionRunId || null
+if ((sharedRequirementsPath && !sharedExtractionRunId) || (!sharedRequirementsPath && sharedExtractionRunId)) {
+  throw new Error('requirementsPath 与 extractionRunId 必须成对传入（共享需求快照消费，v4 契约；只传其一直接报错）')
+}
+if (sharedRequirementsPath) {
+  // 沙箱无 readFile：快照完整性/runId 一致/源 sha256 校验下沉到 node 脚本（布尔回传，失败原因在 stderr 日志）
+  const ok = commandSuccess('node .opencode-workflows/scripts/check-shared-snapshot.mjs "' + sharedRequirementsPath + '" "' + sharedExtractionRunId + '" --verify-source')
+  if (!ok) {
+    throw new Error('共享快照校验失败：' + sharedRequirementsPath + '（extractionRunId ' + sharedExtractionRunId + '；原因见上方命令日志，不猜测、不回退旧路径静默运行）')
+  }
+  log('消费共享需求快照：' + sharedRequirementsPath + '（extractionRunId ' + sharedExtractionRunId + '），审核输入改为需求清单 + 按需回查 PRD，判定挂 REQ 关系')
+}
+
 const VERDICT_RULE = [
   '五类判定（每条缺陷必须选一个）：',
   'PASS：属于好友房范围，且 PRD 已有明确需求覆盖该场景（必须给出 PRD 章节标题与原文片段）。',
@@ -109,7 +129,8 @@ const BUG_VERDICT_SCHEMA = {
       type: 'string',
       enum: ['PASS', 'PARTIAL', 'MISSING', 'NOT_APPLICABLE', 'INSUFFICIENT'],
     },
-    prdRef: { type: 'string', description: 'PRD 章节标题定位，多处用、分隔；非缺口填“无”' },
+    prdRef: { type: 'string', description: 'PRD 章节标题定位，多处用、分隔；非缺口填“无”（共享快照模式下可填 REQ ID 定位）' },
+    requirementIds: { type: 'array', items: { type: 'string' }, description: '命中的共享快照需求点 ID 列表（REQ-xxx；PASS/PARTIAL 必须给出命中需求点；未传共享快照或无法定位填空数组）' },
     prdQuote: { type: 'string', description: 'PRD 原文片段，不超过 60 字；非缺口填“无”' },
     reason: { type: 'string', description: '一句话判定依据（为什么覆盖 / 为什么是缺口 / 为什么不适用）' },
     gapTitle: { type: 'string', description: '需求缺口标题（≤40 字，需求视角，不是缺陷视角）；非缺口填“无”' },
@@ -126,6 +147,7 @@ const BUG_VERDICT_SCHEMA = {
     'scope',
     'verdict',
     'prdRef',
+    'requirementIds',
     'prdQuote',
     'reason',
     'gapTitle',
@@ -206,7 +228,7 @@ function verdictRules() {
     VERDICT_RULE,
     '',
     '硬性要求：',
-    '1. 证据先行：PASS 与 PARTIAL 必须引用 PRD 章节标题与原文片段，禁止凭印象判定。',
+    '1. 证据先行：PASS 与 PARTIAL 必须引用 PRD 章节标题与原文片段，禁止凭印象判定。' + (sharedRequirementsPath ? '共享快照模式下：证据改为命中需求点的 REQ ID（requirementIds 必填）+ 需求原文引文，无法定位写空数组。' : ''),
     '2. MISSING 必须写明已检索的 PRD 章节范围，确认没有等价或相反描述才能判缺失。',
     '3. 同类合并：同一批内多条缺陷指向同一需求缺口时，每条仍输出自己的判定，但 gapTitle / gap / suggestion 写成同一条，便于后续合并统计。',
     '4. 不臆测：缺陷图片在当前环境无法读取，禁止根据图片文件名或猜测补充信息；标题与描述都没有的信息不得编造。',
@@ -313,8 +335,18 @@ const batchTasks = parallel(
       [
         '你是资深游戏 QA 与 PRD 审核员，正在核对缺陷清单里的问题在目标 PRD 中是否有对应需求。',
         '',
-        '目标 PRD（务必完整读完，长行被截断时分段读取，不要只读开头）：',
-        prdBrief,
+        sharedRequirementsPath
+          ? [
+              '需求判定依据（共享需求清单，REQ ID + 标题 + 原文 + 来源锚点；含 identityStatus 等额外字段，忽略即可）：',
+              '- ' + sharedRequirementsPath + '/requirements.json',
+              '',
+              '目标 PRD（需求清单不够定位时按需回查原文，source.file + fromLine/toLine 锚点直达）：',
+              prdBrief,
+            ].join('\n')
+          : [
+              '目标 PRD（务必完整读完，长行被截断时分段读取，不要只读开头）：',
+              prdBrief,
+            ].join('\n'),
         '',
         'PRD 章节大纲（便于定位与引用）：',
         prdOutline || '（未取得大纲，请自行 grep 章节标题）',
@@ -647,7 +679,7 @@ const shardResults = await parallel([
         '   - **缺口最集中的模块**：模块分布第一名，写模块名与条数，并列出对应 PRD ID。',
         '   - **可能影响开发的问题**：从 P0/P1 中挑影响最大的若干条，附 ID 与理由；如涉及结算/计分/资产，注明可能导致资损或结算错误。',
         '   - **是否建议进入下一阶段规格生成**：存在 P0 或 P1 数量较多时写“暂缓”，否则写“建议”，并给出理由。',
-        '3. 然后写附录：## 附录：全部缺陷判定表，表头固定为 | 缺陷ID | 模块 | 执行状态 | 判定 | PRD 位置 | 判定依据 |（六列；执行状态取 executionStatus，completed 写 执行完成、failed 写 执行失败；verdict 为 null 的行判定写 执行失败（未判定）），把给定数据一条不漏地列成表格行，判定依据取 reason 原文，顺序与数据一致。',
+        '3. 然后写附录：## 附录：全部缺陷判定表，表头固定为 | 缺陷ID | 模块 | 执行状态 | 判定 | ' + (sharedRequirementsPath ? 'REQ 关联 | ' : '') + 'PRD 位置 | 判定依据 |（' + (sharedRequirementsPath ? '七列，REQ 关联取 requirementIds 用、号连接、空数组写 无' : '六列') + '；执行状态取 executionStatus，completed 写 执行完成、failed 写 执行失败；verdict 为 null 的行判定写 执行失败（未判定）），把给定数据一条不漏地列成表格行，判定依据取 reason 原文，顺序与数据一致。',
         '4. 附录表格行不得改写为列表项，必须是表格行，且不要出现“（PRD-xxx）：N 条”这类写法。',
         '5. 只能使用给定数据中的事实，不得编造新的缺口或统计数字。',
         '6. 使用 write 工具写入 ' + part3Path + '，UTF-8 中文，不使用 Emoji。',
@@ -719,7 +751,7 @@ if (skipReview) {
       '3. 概览统计中 P0/P1/P2/P3 与缺口总数是否与期望一致，判定分布是否与期望一致；',
       '4. 问题清单行数是否等于缺口总数，ID 是否从 PRD-001 连续编号无跳号；表头是否为固定 7 列（含问题性质列）；',
       '5. 详情块 ID 是否都在清单内，每条是否有原文位置、问题、影响、建议、验收口径，是否出现数据里没有的缺口；',
-      '6. 附录判定表行数是否等于缺陷总数，执行状态列是否只用 执行完成/执行失败，判定是否只用“PRD 已覆盖/PRD 部分覆盖/PRD 未覆盖/不适用（单独统计）/信息不足（待复核）/执行失败（未判定）”六种；',
+      '6. 附录判定表行数是否等于缺陷总数，表头是否为固定 ' + (sharedRequirementsPath ? '七列（含 REQ 关联列）' : '六列') + '，执行状态列是否只用 执行完成/执行失败，判定是否只用“PRD 已覆盖/PRD 部分覆盖/PRD 未覆盖/不适用（单独统计）/信息不足（待复核）/执行失败（未判定）”六种；',
       '7. 是否存在明显编造（引文与清单对不上、凭空新增缺口）。',
       '',
       '全部通过返回 ok=true、problems 为空数组；有问题则 ok=false 并逐条写清位置与修改要求。',

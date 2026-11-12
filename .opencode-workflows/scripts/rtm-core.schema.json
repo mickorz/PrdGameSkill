@@ -1,0 +1,118 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "v4 Unified RTM Core",
+  "description": "v4 统一需求追踪模型（关系为中心）：REQ 实体唯一来自共享快照（identity-map 单写者），三维度 Checker 只以 relation 形式挂接，不得自造 REQ ID。状态机沿用 v4 契约（executionStatus 与 verdict 分离）。",
+  "type": "object",
+  "required": ["schemaVersion", "projectKey", "generatedAt", "requirements", "relations", "stats"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "projectKey": { "type": "string", "description": "身份隔离单位（文件改名不得影响 REQ 体系）" },
+    "generatedAt": { "type": "string" },
+    "extractionRunId": { "type": "string", "description": "消费的共享快照 extractionRunId" },
+    "requirements": {
+      "type": "array",
+      "description": "REQ 实体目录（唯一来源：共享快照）",
+      "items": {
+        "type": "object",
+        "required": ["requirementId", "reqKey", "title"],
+        "properties": {
+          "requirementId": { "type": "string", "pattern": "^REQ-[0-9]+$" },
+          "reqKey": { "type": "string" },
+          "title": { "type": "string" },
+          "text": { "type": "string" },
+          "source": { "type": ["object", "null"] }
+        }
+      }
+    },
+    "rules": {
+      "type": "array",
+      "description": "Game 规则点目录（R 前缀，目录确定性派生）",
+      "items": {
+        "type": "object",
+        "required": ["ruleId"],
+        "properties": {
+          "ruleId": { "type": "string" },
+          "file": { "type": "string" },
+          "section": { "type": ["string", "null"] },
+          "sourceType": { "type": "string" }
+        }
+      }
+    },
+    "issues": {
+      "type": "array",
+      "description": "UI 问题目录（issue ID）",
+      "items": {
+        "type": "object",
+        "required": ["id", "type"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "type": { "type": "string", "description": "MISSING/CONFLICT/LOGIC/AMBIGUOUS/INCOMPLETE" },
+          "module": { "type": "string" }
+        }
+      }
+    },
+    "bugs": {
+      "type": "array",
+      "description": "Bug 目录（buglist 数字 ID）",
+      "items": {
+        "type": "object",
+        "required": ["bugId"],
+        "properties": {
+          "bugId": { "type": "string" },
+          "title": { "type": "string" },
+          "module": { "type": "string" }
+        }
+      }
+    },
+    "relations": {
+      "type": "array",
+      "description": "关系为中心：每条 = 一个维度对一对 (REQ, target) 的判定",
+      "items": {
+        "type": "object",
+        "required": ["dimension", "requirementId", "targetType", "targetId", "verdict", "executionStatus"],
+        "properties": {
+          "dimension": { "enum": ["game", "ui", "bug"] },
+          "requirementId": { "type": "string", "description": "必须存在于 requirements（引用闭合）" },
+          "targetType": { "enum": ["rule", "issue", "bug"] },
+          "targetId": { "type": "string", "description": "rule/issue/bug 目录内 ID（引用闭合）" },
+          "verdict": {
+            "type": ["string", "null"],
+            "description": "统一小写枚举；executionStatus=failed 时必须为 null",
+            "enum": ["pass", "partial", "missing", "conflict", "incomplete", "unverified", "insufficient", "na", "logic", "ambiguous", null]
+          },
+          "executionStatus": { "enum": ["completed", "failed"] },
+          "evidence": { "type": "string", "description": "pass/partial 必须非空" },
+          "issueIds": { "type": "array", "items": { "type": "string" }, "description": "关联问题（game 维度）" }
+        }
+      }
+    },
+    "stats": {
+      "type": "object",
+      "description": "可由 relations 明细重算（validate-rtm 校验一致性）",
+      "required": ["byDimension", "requirements"],
+      "properties": {
+        "byDimension": {
+          "type": "object",
+          "propertyNames": { "enum": ["game", "ui", "bug"] },
+          "additionalProperties": {
+            "type": "object",
+            "required": ["total", "verdictDist"],
+            "properties": {
+              "total": { "type": "number" },
+              "verdictDist": { "type": "object" }
+            }
+          }
+        },
+        "requirements": {
+          "type": "object",
+          "required": ["total", "linked"],
+          "properties": {
+            "total": { "type": "number", "description": "REQ 总数" },
+            "linked": { "type": "number", "description": "至少有一条 relation 的 REQ 数" }
+          }
+        }
+      }
+    }
+  }
+}

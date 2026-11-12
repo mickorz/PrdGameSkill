@@ -10,13 +10,20 @@
 //   6. 产出 requirements-matrix.json / issues.json / manifest.json / matrix-report.md
 //
 // 用法：node rtm-assemble.mjs <runDir> [--issues-raw <path>] [--meta <path>] [--identity-map <path>]
+//                            [--shared-requirements <dir>] [--extraction-run-id <id>]
 //   <runDir>       本次运行快照目录（内含 requirements/parts、catalog/parts、checks/）
 //   --issues-raw   workflow 汇总去重后的规范化问题清单 JSON（含最终编号与 requirementRefs）
 //   --meta         运行元信息 JSON（checkDate、failedGroups、excludeKeywords 等）
-//   --identity-map 跨运行共享的 ID 映射表路径（缺省 <runDir>/../identity-map.json）
+//   --identity-map 跨运行共享的 ID 映射表路径（缺省 <runDir>/../identity-map.json；自提取模式用）
+//   --shared-requirements 共享需求快照目录（内含 requirements.json + manifest.json；跳过
+//                  requirements/parts 合并，requirementId 直接用快照 ID，不读不写 identity-map
+//                  —— 单写者契约：identity-map 只由 requirements-build.mjs 更新）
+//   --extraction-run-id 与共享快照 manifest.json 的 extractionRunId 校验一致，不一致直接失败
 //
 // 输入分片契约：
 //   requirements/parts/*.json : [{ reqKey, title, source:{file,section?,fromLine?,toLine?}, text }]
+//     共享模式（--shared-requirements）：requirements.json 元素含上述字段 + requirementId，
+//     投影四字段进 reqByKey，requirementId 直供（不再 byHash 分配，无 ID 漂移）
 //   catalog/parts/*.json      : [{ ruleId, file, section?, fromLine?, toLine?, text, mandatory? }]
 //   checks/*.json             : { groupId, status:"completed"|"failed",
 //                               inputFingerprint?, ruleFingerprint?, checkVersion?,
@@ -45,6 +52,8 @@ function argVal(name) {
 const issuesRawPath = argVal('--issues-raw')
 const metaPath = argVal('--meta')
 const identityMapPath = argVal('--identity-map') || path.join(path.dirname(path.resolve(runDir)), 'identity-map.json')
+const sharedRequirementsDir = argVal('--shared-requirements')
+const sharedRunIdArg = argVal('--extraction-run-id')
 
 const warnings = []
 const errors = []
@@ -101,8 +110,60 @@ function readChecks(dir) {
   return out
 }
 
-// ---------- 1. 合并需求点分片 ----------
-const requirementsParts = readJsonArray(path.join(runDir, 'requirements', 'parts'), 'requirements')
+// ---------- 1. 合并需求点分片（或消费共享快照） ----------
+let requirementsParts
+const sharedIds = new Map() // reqKey -> requirementId（共享快照直供 ID，跳过 byHash 分配）
+let sharedRunId = null
+if (sharedRequirementsDir) {
+  // 共享快照模式：requirements.json 投影四字段 + requirementId 直供；manifest 校验 runId 一致
+  const reqFile = path.join(sharedRequirementsDir, 'requirements.json')
+  const manifestFile = path.join(sharedRequirementsDir, 'manifest.json')
+  if (!fs.existsSync(reqFile)) {
+    console.error('[失败] 共享快照 requirements.json 不存在: ' + reqFile)
+    process.exit(1)
+  }
+  let snap
+  try {
+    snap = JSON.parse(fs.readFileSync(reqFile, 'utf8'))
+  } catch (e) {
+    console.error('[失败] 共享快照解析失败: ' + reqFile + ' -> ' + e.message)
+    process.exit(1)
+  }
+  if (!Array.isArray(snap)) snap = snap.requirements
+  if (!Array.isArray(snap)) {
+    console.error('[失败] 共享快照非需求数组: ' + reqFile)
+    process.exit(1)
+  }
+  if (fs.existsSync(manifestFile)) {
+    let snapManifest = null
+    try {
+      snapManifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8'))
+    } catch (e) {
+      warnings.push('共享快照 manifest 解析失败，跳过 runId 校验: ' + e.message)
+    }
+    if (snapManifest && snapManifest.extractionRunId) {
+      sharedRunId = String(snapManifest.extractionRunId)
+      if (sharedRunIdArg && String(sharedRunIdArg) !== sharedRunId) {
+        console.error('[失败] extractionRunId 不一致：参数 ' + sharedRunIdArg + ' vs 快照 manifest ' + sharedRunId + '（不猜测，请确认消费的快照目录）')
+        process.exit(1)
+      }
+    }
+  } else if (sharedRunIdArg) {
+    console.error('[失败] 共享快照缺 manifest.json，无法校验 extractionRunId: ' + manifestFile)
+    process.exit(1)
+  }
+  requirementsParts = snap.map((s) => ({
+    reqKey: s.reqKey,
+    title: s.title,
+    source: s.source,
+    text: s.text,
+  }))
+  for (const s of snap) {
+    if (s.reqKey && s.requirementId && !sharedIds.has(s.reqKey)) sharedIds.set(s.reqKey, s.requirementId)
+  }
+} else {
+  requirementsParts = readJsonArray(path.join(runDir, 'requirements', 'parts'), 'requirements')
+}
 const reqByKey = new Map()
 for (const r of requirementsParts) {
   if (!r || !r.reqKey || !r.title) {
@@ -125,38 +186,51 @@ for (const c of catalogParts) {
   else ruleById.set(c.ruleId, c)
 }
 
-// ---------- 3. identity-map：稳定 ID 匹配 ----------
-let idMap = { byHash: {}, next: 1 }
-if (fs.existsSync(identityMapPath)) {
-  try {
-    const prev = JSON.parse(fs.readFileSync(identityMapPath, 'utf8'))
-    if (prev && typeof prev === 'object') {
-      idMap.byHash = prev.byHash || {}
-      idMap.next = prev.next || (Object.keys(idMap.byHash).length + 1)
+// ---------- 3. identity-map：稳定 ID 匹配（共享快照模式：requirementId 直供，不读不写 identity-map） ----------
+let idMap = null // 自提取模式的 ID 映射（块外声明供写回；共享模式保持 null 不写）
+if (sharedRequirementsDir) {
+  for (const [reqKey, r] of reqByKey) {
+    const sharedId = sharedIds.get(reqKey)
+    if (sharedId) {
+      r.requirementId = sharedId
+    } else {
+      warnings.push('共享快照缺 reqKey 的 requirementId，按无 ID 处理: ' + reqKey)
     }
-  } catch (e) {
-    warnings.push('identity-map 解析失败，将重建: ' + e.message)
   }
-}
-// 已有 ID 最大序号兜底（防 byHash 丢失后 ID 回退重复）
-let maxSeq = 0
-for (const v of Object.values(idMap.byHash)) {
-  const m = String(v).match(/REQ-(\d+)/)
-  if (m) maxSeq = Math.max(maxSeq, Number(m[1]))
-}
-idMap.next = Math.max(idMap.next || 1, maxSeq + 1)
+} else {
+  idMap = { byHash: {}, next: 1 }
+  if (fs.existsSync(identityMapPath)) {
+    try {
+      const prev = JSON.parse(fs.readFileSync(identityMapPath, 'utf8'))
+      if (prev && typeof prev === 'object') {
+        idMap.byHash = prev.byHash || {}
+        idMap.next = prev.next || (Object.keys(idMap.byHash).length + 1)
+      }
+    } catch (e) {
+      warnings.push('identity-map 解析失败，将重建: ' + e.message)
+    }
+  }
+  // 已有 ID 最大序号兜底（防 byHash 丢失后 ID 回退重复）
+  let maxSeq = 0
+  for (const v of Object.values(idMap.byHash)) {
+    const m = String(v).match(/REQ-(\d+)/)
+    if (m) maxSeq = Math.max(maxSeq, Number(m[1]))
+  }
+  idMap.next = Math.max(idMap.next || 1, maxSeq + 1)
 
-// 匹配键：源文件 + 规范化文本哈希（行号漂移不影响）
-for (const [reqKey, r] of reqByKey) {
-  const h = sha((r.source && r.source.file || '') + '|' + normText(r.text))
-  if (idMap.byHash[h]) {
-    r.requirementId = idMap.byHash[h]
-  } else {
-    r.requirementId = 'REQ-' + String(idMap.next).padStart(3, '0')
-    idMap.byHash[h] = r.requirementId
-    idMap.next += 1
+  // 匹配键：源文件 + 规范化文本哈希（行号漂移不影响）
+  for (const [reqKey, r] of reqByKey) {
+    const h = sha((r.source && r.source.file || '') + '|' + normText(r.text))
+    if (idMap.byHash[h]) {
+      r.requirementId = idMap.byHash[h]
+    } else {
+      r.requirementId = 'REQ-' + String(idMap.next).padStart(3, '0')
+      idMap.byHash[h] = r.requirementId
+      idMap.next += 1
+    }
   }
 }
+
 const idByReqKey = new Map([...reqByKey].map(([k, v]) => [k, v.requirementId]))
 
 // ---------- 4. 读取检查分片与规范化问题 ----------
@@ -480,11 +554,15 @@ write('rule-catalog.json', JSON.stringify(ruleCoverage, null, 2))
 write('requirements-matrix.json', JSON.stringify({ stats, requirements: matrix, ruleCoverage }, null, 2))
 write('issues.json', JSON.stringify(issuesOut, null, 2))
 write('matrix-report.md', matrixReport)
-fs.writeFileSync(identityMapPath, JSON.stringify(idMap, null, 2), 'utf8')
+if (!sharedRequirementsDir) {
+  fs.writeFileSync(identityMapPath, JSON.stringify(idMap, null, 2), 'utf8')
+}
 
 const manifest = {
   runDir: path.basename(runDir),
   generatedAt: new Date().toISOString(),
+  extractionRunId: sharedRunId || null,
+  requirementsSource: sharedRequirementsDir ? 'shared-snapshot' : 'self-extract',
   stats,
   warningsCount: warnings.length,
   warnings: warnings.slice(0, 200),
@@ -498,6 +576,9 @@ if (errors.length) {
   process.exit(1)
 }
 console.log('[成功] RTM 矩阵组装完成')
+if (sharedRequirementsDir) {
+  console.log('  需求来源: 共享快照 ' + sharedRequirementsDir + '（extractionRunId ' + (sharedRunId || '未登记') + '，requirementId 直供，identity-map 未读写）')
+}
 console.log('  需求点: ' + stats.requirementTotal + '，规则点: ' + stats.rulePointTotal + '（适用 ' + stats.applicableRulePoints + '）')
 console.log('  检查完成率: ' + (stats.checkCompleteRate * 100).toFixed(1) + '%（' + stats.checkedRulePoints + '/' + stats.applicableRulePoints + '）')
 console.log('  规则通过率: ' + (stats.rulePassRate * 100).toFixed(1) + '%（' + stats.passedRulePoints + '/' + stats.checkedRulePoints + '，分母=已完成检查）')

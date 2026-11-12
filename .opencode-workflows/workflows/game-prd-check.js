@@ -30,6 +30,9 @@
 //   rtmScript   RTM 矩阵组装脚本，默认 .opencode-workflows/scripts/rtm-assemble.mjs
 //   runsDir     RTM 快照根目录，默认 examples/game-prd-check-workflow/rtm/runs
 //   runId       运行 ID（快照目录名后缀），默认取 date 数字串；需保留多次快照时由调用方传唯一值
+//   requirementsPath + extractionRunId 共享需求快照消费（v4 阶段 3，必項成对传入，只传其一直接报错）：
+//               跳过自提取，检查与矩阵直接消费共享快照（requirementId 与 requirements-build 一致，
+//               identity-map 不读不写）；extractionRunId 与快照 manifest 校验一致，不一致 fail-fast
 
 export const meta = {
   id: 'game-prd-check',
@@ -73,6 +76,20 @@ const dashboardScript =
 
 // RTM 追踪矩阵（需求点×规则点覆盖记录）；关闭时流程与旧版一致
 const rtmEnabled = A.rtm !== false
+
+// 共享需求快照消费（v4 阶段 3）：传 requirementsPath + extractionRunId 成对校验；
+// 传时跳过自提取，检查与矩阵直接消费共享快照（requirementId 与 requirements-build 一致，不碰 identity-map）
+const sharedRequirementsPath = A.requirementsPath || null
+const sharedExtractionRunId = A.extractionRunId || null
+if ((sharedRequirementsPath && !sharedExtractionRunId) || (!sharedRequirementsPath && sharedExtractionRunId)) {
+  throw new Error('requirementsPath 与 extractionRunId 必须成对传入（共享需求快照消费，v4 契约；只传其一直接报错）')
+}
+if (sharedRequirementsPath && !fileExists(sharedRequirementsPath + '/requirements.json')) {
+  throw new Error('共享快照缺 requirements.json：' + sharedRequirementsPath + '（不猜测、不回退旧路径静默运行，请确认路径）')
+}
+if (sharedRequirementsPath) {
+  log('消费共享需求快照：' + sharedRequirementsPath + '（extractionRunId ' + sharedExtractionRunId + '），跳过自提取')
+}
 const rtmScript = A.rtmScript || '.opencode-workflows/scripts/rtm-assemble.mjs'
 const runsDir = A.runsDir || 'examples/game-prd-check-workflow/rtm/runs'
 const runId =
@@ -359,7 +376,9 @@ let reqResults = []
 let catalogResults = []
 if (rtmEnabled) {
   phase('需求与规则原子化')
-  // 需求点提取：每个 PRD 文件一个 agent，按"独立可验证需求行为"拆原子点并写分片
+  // 需求点提取：每个 PRD 文件一个 agent，按"独立可验证需求行为"拆原子点并写分片；
+  // 共享快照模式（requirementsPath）下跳过，直接消费共享 requirements.json
+  if (rtmEnabled && !sharedRequirementsPath) {
   reqResults = await parallel(
     inputFiles.map((f, i) => () => {
       const base = String(f).replace(/^.*\//, '').replace(/\.md$/i, '')
@@ -401,6 +420,7 @@ if (rtmEnabled) {
       )
     })
   )
+  } // 共享快照模式需求提取结束
   // 规则目录提取：每个规则组一个 agent，拆原子检查点并写分片
   catalogResults = await parallel(
     ruleGroups.map((group, gi) => () => {
@@ -446,7 +466,9 @@ if (rtmEnabled) {
 }
 
 const reqPartFiles = rtmEnabled
-  ? (reqResults || []).filter(Boolean).map((r) => r.partFile).filter(Boolean)
+  ? sharedRequirementsPath
+    ? [sharedRequirementsPath + '/requirements.json']
+    : (reqResults || []).filter(Boolean).map((r) => r.partFile).filter(Boolean)
   : []
 const catalogPartFiles = rtmEnabled
   ? (catalogResults || []).filter(Boolean).map((r) => r.partFile).filter(Boolean)
@@ -457,9 +479,14 @@ if (rtmEnabled && (reqPartFiles.length === 0 || catalogPartFiles.length === 0)) 
   )
 }
 if (rtmEnabled) {
-  const reqCount = (reqResults || []).filter(Boolean).reduce((s, r) => s + (r.count || 0), 0)
+  if (sharedRequirementsPath) {
+    log('需求来源：共享快照 ' + reqPartFiles[0] + '（extractionRunId ' + sharedExtractionRunId + '）')
+  } else {
+    const reqCount = (reqResults || []).filter(Boolean).reduce((s, r) => s + (r.count || 0), 0)
+    log('RTM 原子化完成：需求点 ' + reqCount + ' 条（' + reqPartFiles.length + ' 片）')
+  }
   const clauseCount = (catalogResults || []).filter(Boolean).reduce((s, r) => s + (r.clauseCount || 0), 0)
-  log('RTM 原子化完成：需求点 ' + reqCount + ' 条（' + reqPartFiles.length + ' 片），规则检查点 ' + clauseCount + ' 条（' + catalogPartFiles.length + ' 片）')
+  log('规则检查点 ' + clauseCount + ' 条（' + catalogPartFiles.length + ' 片）')
 }
 
 phase('规则检查')
@@ -485,7 +512,7 @@ const groupTasks = parallel(
               '本组规则原子检查点清单（先读该文件，逐条对照检查）：',
               '- ' + catalogPart,
               '',
-              '需求点清单（分片文件，检查时用于定位需求点 reqKey）：',
+              '需求点清单文件（检查时用于定位需求点 reqKey；共享快照含 requirementId/identityStatus 等额外字段，忽略即可）：',
               reqPartFiles.map((f) => '- ' + f).join('\n'),
               '',
               'RTM 覆盖记录（必须完成，与找问题同等重要）：',
@@ -706,7 +733,7 @@ if (rtmEnabled) {
     module: it.module,
     requirementRefs: (it._src && it._src.requirementRefs) || [],
   }))
-  const rtmMeta = { checkDate, failedGroups: failedGroupTitles, excludeKeywords }
+  const rtmMeta = { checkDate, failedGroups: failedGroupTitles, excludeKeywords, extractionRunId: sharedExtractionRunId || null }
   const issuesRawFile = runDir + '/issues-raw.json'
   const metaFile = runDir + '/meta.json'
   await agent(
@@ -742,7 +769,10 @@ if (rtmEnabled) {
     [
       '你在项目根目录执行以下命令，然后按 schema 返回结果：',
       '',
-      'node ' + rtmScript + ' ' + runDir + ' --issues-raw ' + issuesRawFile + ' --meta ' + metaFile,
+      'node ' + rtmScript + ' ' + runDir + ' --issues-raw ' + issuesRawFile + ' --meta ' + metaFile
+        + (sharedRequirementsPath
+            ? ' --shared-requirements "' + sharedRequirementsPath + '" --extraction-run-id "' + sharedExtractionRunId + '"'
+            : ''),
       '',
       '要求：',
       '1. 命令输出 [成功] 时，从输出中提取需求点数/检查完成率/规则通过率，填入返回字段；',
@@ -1127,6 +1157,8 @@ return {
   dashboardPath: dashboardResult ? dashboardResult.htmlPath : null,
   reportJsonPath: dashboardResult ? dashboardResult.reportJsonPath : null,
   dashboardSkipped: !dashboardEnabled,
+  requirementsSource: sharedRequirementsPath ? 'shared-snapshot' : 'self-extract',
+  extractionRunId: sharedExtractionRunId || null,
   inputFiles: inputFiles,
   ruleGroups: ruleGroups.map((g) => ({
     title: g.title,

@@ -141,4 +141,10 @@ const rerunCmd = ['node', ASSEMBLE, runDir, '--issues-raw', path.join(runDir, 'i
 execSync(rerunCmd, { encoding: 'utf8', cwd: ROOT, stdio: 'pipe' });
 const matrix2 = JSON.parse(fs.readFileSync(path.join(runDir, 'requirements-matrix.json'), 'utf8'));
 assert(JSON.stringify(matrix2.requirements.map((r) => r.requirementId)) === JSON.stringify(matrix.requirements.map((r) => r.requirementId)), '二次运行 REQ ID 稳定不漂移');
+// 规则七状态聚合恒等式（v4 领导视图调整新增）
+const agg = matrix.stats.ruleCoverageAgg;
+const aggSum = agg.fullyPassed + agg.partial + agg.conflict + agg.missing + agg.unverified + agg.pendingConfirm + agg.notApplicable;
+assert(aggSum === agg.total && agg.total === 4, '规则七状态恒等式成立（4 = ' + aggSum + '）');
+assert(matrix.stats.fullPassRate !== undefined, '规则完整通过率字段已输出');
+assert(agg.fullyPassed === 1 && agg.unverified === 3, '聚合判定正确：R01-001 完整通过；R01-002（证据失效强制）、R02-003（无覆盖）、R02-404（组失败）均 unverified');
 console.log('\nmock 验证完成，产物目录: ' + MOCK);

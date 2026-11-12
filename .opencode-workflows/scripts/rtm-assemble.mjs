@@ -303,6 +303,7 @@ const ruleCoverage = [...ruleById.values()].map((c) => {
   let status = null
   for (const x of covs) status = worstStatus(status, x.status)
   if (!status) status = 'unverified'
+  const evidenceInvalid = covs.some((x) => x.evidenceInvalid)
   return {
     ruleId: c.ruleId,
     file: c.file,
@@ -310,10 +311,47 @@ const ruleCoverage = [...ruleById.values()].map((c) => {
     text: c.text || '',
     mandatory: c.mandatory !== false,
     status,
+    evidenceInvalid,
     linkedRequirementIds: linkedReqIds,
     orphan: linkedReqIds.length === 0 && (status === 'pass' || status === 'unverified'),
   }
 })
+
+// ---------- 5.5 规则级七状态聚合（互斥；完整通过判定，v4 领导视图调整） ----------
+// 完整通过判定条件（全部满足才计入 fullyPassed）：
+//   1 属本次检查范围 2 检查任务成功执行 3 关联需求点已核对
+//   4 所有必要检查记录均为 pass 5 引文/来源/证据通过校验 6 无关联的有效未解决问题（P0~P2）
+// 七状态互斥且穷尽：fully-passed / partial / conflict / missing / unverified / pending-confirm / na
+//   恒等式：total = fullyPassed + partial + conflict + missing + unverified + pendingConfirm + na
+const issuesById = new Map(issuesOut.map((i) => [i.id, i]))
+const ruleAgg = { total: 0, fullyPassed: 0, partial: 0, conflict: 0, missing: 0, unverified: 0, pendingConfirm: 0, notApplicable: 0 }
+for (const c of ruleCoverage) {
+  ruleAgg.total += 1
+  if (c.status === 'na') { ruleAgg.notApplicable += 1; c.aggStatus = 'na'; continue }
+  // 证据校验失败或检查未成功执行：强制 unverified，即使原判定为 pass
+  if (c.evidenceInvalid || c.status === 'unverified') { ruleAgg.unverified += 1; c.aggStatus = 'unverified'; continue }
+  // 有效未解决问题（P3 优化建议不算）：按最严重类型归入 missing/conflict/partial
+  const effIssues = (c.linkedRequirementIds || [])
+    .flatMap((rid) => { const req = reqByKey.get(rid); return req && req._issueIds ? req._issueIds : [] })
+    .map((id) => issuesById.get(id))
+    .filter((i) => i && i.priority !== 'P3')
+  if (effIssues.length > 0) {
+    if (effIssues.some((i) => i.type === 'MISSING')) { ruleAgg.missing += 1; c.aggStatus = 'missing'; continue }
+    if (effIssues.some((i) => i.type === 'CONFLICT' || i.type === 'LOGIC')) { ruleAgg.conflict += 1; c.aggStatus = 'conflict'; continue }
+    ruleAgg.partial += 1; c.aggStatus = 'partial'; continue
+  }
+  // 无有效问题：按覆盖判定结果归类
+  if (c.status === 'missing') { ruleAgg.missing += 1; c.aggStatus = 'missing'; continue }
+  if (c.status === 'conflict') { ruleAgg.conflict += 1; c.aggStatus = 'conflict'; continue }
+  if (c.status === 'incomplete') { ruleAgg.partial += 1; c.aggStatus = 'partial'; continue }
+  if (c.status === 'pass') { ruleAgg.fullyPassed += 1; c.aggStatus = 'fully-passed'; continue }
+  ruleAgg.unverified += 1; c.aggStatus = 'unverified'
+}
+// 恒等式自检
+const aggSum = ruleAgg.fullyPassed + ruleAgg.partial + ruleAgg.conflict + ruleAgg.missing + ruleAgg.unverified + ruleAgg.pendingConfirm + ruleAgg.notApplicable
+if (aggSum !== ruleAgg.total) {
+  errors.push('规则七状态恒等式不成立: ' + aggSum + ' != ' + ruleAgg.total)
+}
 
 // ---------- 6. 双指标统计（v4 2.3；na 为已确认不适用，不计入适用分母，不会超 100%） ----------
 const applicableRules = ruleCoverage.filter((r) => r.status !== 'na')
@@ -336,6 +374,9 @@ const stats = {
   rulePassRate: checkedRulePoints ? Number((passedRulePoints / checkedRulePoints).toFixed(4)) : 0,
   failedGroups: [...new Set(failedGroups)],
   coverageRecords: covTotal,
+  // 规则完整通过率（领导首页第一质量指标，分母=全部适用规则点）
+  ruleCoverageAgg: ruleAgg,
+  fullPassRate: applicableRulePoints ? Number((ruleAgg.fullyPassed / applicableRulePoints).toFixed(4)) : 0,
 }
 
 // ---------- 7. 矩阵 Markdown ----------
@@ -366,7 +407,9 @@ const matrixReport = [
   '| 需求点总数 | ' + stats.requirementTotal + ' |',
   '| 规则原子检查点总数 | ' + stats.rulePointTotal + '（适用 ' + stats.applicableRulePoints + '） |',
   '| 已完成检查 | ' + stats.checkedRulePoints + '（检查完成率 ' + (stats.checkCompleteRate * 100).toFixed(1) + '%） |',
-  '| 已通过 | ' + stats.passedRulePoints + '（规则通过率 ' + (stats.rulePassRate * 100).toFixed(1) + '%，分母=已完成检查） |',
+  '| 已通过 | ' + stats.passedRulePoints + '（已检查规则通过率 ' + (stats.rulePassRate * 100).toFixed(1) + '%，分母=已完成检查） |',
+  '| 规则完整通过率 | ' + (stats.fullPassRate * 100).toFixed(1) + '%（' + ruleAgg.fullyPassed + '/' + stats.applicableRulePoints + '，以全部适用规则为分母） |',
+  '| 规则七状态分布 | 完整通过 ' + ruleAgg.fullyPassed + ' / 部分满足 ' + ruleAgg.partial + ' / 冲突 ' + ruleAgg.conflict + ' / 需求缺失 ' + ruleAgg.missing + ' / 未验证 ' + ruleAgg.unverified + ' / 待确认 ' + ruleAgg.pendingConfirm + ' / 不适用 ' + ruleAgg.notApplicable + ' |',
   '| 关联问题 | ' + stats.issueTotal + ' |',
   '| 失败检查组 | ' + (stats.failedGroups.join('、') || '无') + ' |',
   '',

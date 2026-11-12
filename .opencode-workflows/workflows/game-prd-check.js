@@ -354,10 +354,13 @@ const inputList = inputFiles.map((f) => '- ' + f).join('\n')
 const ruleGroups = scan.ruleGroups
 
 // ---------- RTM T1：需求与规则原子化（提取分片，供检查对照与矩阵组装） ----------
+// 块外声明（T0 修复：此前 const 声明在 if 块内、块外引用会 ReferenceError）
+let reqResults = []
+let catalogResults = []
 if (rtmEnabled) {
   phase('需求与规则原子化')
   // 需求点提取：每个 PRD 文件一个 agent，按"独立可验证需求行为"拆原子点并写分片
-  const reqResults = await parallel(
+  reqResults = await parallel(
     inputFiles.map((f, i) => () => {
       const base = String(f).replace(/^.*\//, '').replace(/\.md$/i, '')
       const partFile = runDir + '/requirements/parts/part-' + String(i + 1).padStart(2, '0') + '.json'
@@ -398,7 +401,7 @@ if (rtmEnabled) {
     })
   )
   // 规则目录提取：每个规则组一个 agent，拆原子检查点并写分片
-  const catalogResults = await parallel(
+  catalogResults = await parallel(
     ruleGroups.map((group, gi) => () => {
       const partFile = runDir + '/catalog/parts/group-' + String(gi + 1).padStart(2, '0') + '.json'
       const rulePrefix = 'R' + String(gi + 1).padStart(2, '0')

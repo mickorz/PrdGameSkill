@@ -267,7 +267,7 @@ export function parseReport(md) {
         if (m) return { name: m[1].trim(), paren: '', first: m[2].trim() };
         return null;
       };
-      const KNOWN_BLOCKS = new Set(['原文', '问题', '影响', '建议', '处理状态', '问题性质', '基准依据', '验收口径']);
+      const KNOWN_BLOCKS = new Set(['原文', '问题', '影响', '建议', '处理状态', '问题性质', '基准依据', '验收口径', '需求点']);
       const blocks = [];
       let curBlock = null;
       for (const line of body.split(/\r?\n/)) {
@@ -307,6 +307,11 @@ export function parseReport(md) {
       // Q 版详情字段：基准依据挂 rule_ref，验收口径挂 acceptance（不并入建议）
       const ruleRefDetail = blockText('基准依据');
       const acceptance = blockText('验收口径');
+      // 需求点行（v4 阶段 4 UI 报告）：REQ 关联进 report.json，rtm-merge ui 维度消费
+      const reqIdsRaw = blockText('需求点');
+      const requirementIds = reqIdsRaw && reqIdsRaw !== '无'
+        ? [...reqIdsRaw.matchAll(/REQ-\d+/g)].map((m) => m[0])
+        : [];
       for (const b of blocks) {
         if (KNOWN_BLOCKS.has(b.name)) continue;
         const content = [...(b.first ? [b.first] : []), ...b.lines].join('\n').trim();
@@ -326,6 +331,7 @@ export function parseReport(md) {
         impact: blockText('影响'),
         suggestion: suggestion || issue.suggestion,
         rule_ref: ruleRefDetail || issue.rule_ref,
+        requirementIds,
         acceptance,
         status: blockText('处理状态') || '待确认',
         has_detail: true,

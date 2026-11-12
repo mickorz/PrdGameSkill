@@ -428,3 +428,40 @@ assert.ok(!nsug.includes('验收口径'), '验收口径不应混入建议字段'
 assert.strictEqual(nf.issues[0].status, '待确认', '处理状态正确');
 
 console.log('[成功] 模板新字段断言通过（必填格式/范例保留/验收口径独立字段/顺序正确）');
+
+// ================= 需求点行（v4 阶段 4 REQ 关联）自检 =================
+// UI 报告详情块新增「- **需求点**：REQ-101、REQ-102」→ report.json issues[].requirementIds
+const reqReport = `# UI 交互检查问题报告
+
+检查对象：input/测试玩法.md
+检查日期：2026-11-13
+
+## 2. 问题清单
+
+| ID | 问题维度 | 优先级 | 类型 | 模块 | 问题 | 原文位置 | 基准依据 |
+|---|---|---|---|---|---|---|---|
+| UI-001 | UI 交互 | P1 | MISSING | 发牌 | 缺张数 | 2.1 | 01#9 |
+
+## 3. 问题详情
+
+### UI-001【P1 / MISSING】缺张数
+
+- **问题性质**：需求缺失
+- **原文**：位置“2.1”。引文：“庄家发牌。”
+- **需求点**：REQ-101、REQ-102
+- **基准依据**：01#9。基准要求明确张数
+- **问题**：未写张数
+- **影响**：无法验收
+- **建议**：补张数
+- **验收口径**：写出具体张数
+- **处理状态**：待确认
+`;
+const rq = parseReport(reqReport);
+const rqErr = validateReport(rq);
+assert.strictEqual(rqErr.length, 0, '需求点报告校验应零错误：' + rqErr.join('；'));
+assert.deepStrictEqual(rq.issues[0].requirementIds, ['REQ-101', 'REQ-102'], '需求点行应解析为 requirementIds');
+assert.ok(!rq.issues[0].suggestion.includes('需求点'), '需求点不应混入建议字段');
+const reqNo = parseReport(reqReport.replace('REQ-101、REQ-102', '无'));
+assert.deepStrictEqual(reqNo.issues[0].requirementIds, [], '需求点为 无 时解析为空数组');
+
+console.log('[成功] 需求点行断言通过（REQ 关联解析/无→空数组/不混入建议）');

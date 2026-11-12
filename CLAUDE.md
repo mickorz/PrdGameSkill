@@ -70,6 +70,7 @@ PrdGameSkill 是一套面向游戏开发的 PRD（产品需求文档）技能库
 | 项目 | 管理方式 | 入库 |
 |---|---|---|
 | `bmad-module-game-dev-studio` | 本地只读目录，重新下载/克隆覆盖更新 | 否（.gitignore 忽略） |
+| `sessions-search` | 本地工具安装（venv），重新克隆覆盖 + 重装 venv 更新 | 否（.gitignore 忽略） |
 | `prd-pilot`、`prd-html-generator`、`prd-writer`、`Arrow`、`GDD-Forge`、`game-doc-forge` | Git Submodule，固定 commit，gitlink（mode 160000） | 是 |
 | `REFERENCES.md` | 参考项目清单（地址、License、SHA、研究目的） | 是 |
 
@@ -79,3 +80,18 @@ PrdGameSkill 是一套面向游戏开发的 PRD（产品需求文档）技能库
 2. **分类管理**：普通本地目录不入库；Submodule 必须固定明确 commit 并随仓库提交（克隆后 `git submodule update --init --recursive` 还原）。需要引用内容时，把提炼后的内容写进本仓库自己的文档，并标注来源。
 3. **升级方式**：本地目录用重新下载/克隆覆盖；Submodule 用 `git submodule update --remote` 并固定新 commit。
 4. **复用前检查**：复用第三方代码前核对其 License 与版权声明，记录在 `REFERENCES.md`。
+
+## Session 查询工具：`sessions-search`
+
+需要查询 agent session（历史对话、workflow 运行记录、找"之前哪个 session 讨论过 XX"）时，**默认使用 `sessions-search`**（不要手写 SQL 查 `opencode.db`，不要 grep jsonl）：
+
+```bash
+# 1. 增量更新索引（快，先跑）
+thirdparties/sessions-search/.venv/Scripts/sessions-search.exe reindex
+# 2. 搜索（--agent claude|codex|opencode|hermes 可选，返回 JSON）
+thirdparties/sessions-search/.venv/Scripts/sessions-search.exe search "关键词" --agent opencode --json
+# 3. 看完整记录（agent 和 source_id 取自搜索结果）
+thirdparties/sessions-search/.venv/Scripts/sessions-search.exe show opencode <source_id>
+```
+
+覆盖 Claude Code / Codex / opencode / Hermes 全部本地 session（FTS5 毫秒级）。查询语法：单词 AND、`"引号"`精确短语、`OR`/`NOT`/`*` 布尔。skill 位于 `~/.claude/skills/sessions-search/`，详见 `thirdparties/REFERENCES.md` REF-007。

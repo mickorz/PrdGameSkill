@@ -120,9 +120,9 @@ const idMap = JSON.parse(fs.readFileSync(path.join(MOCK, 'identity-map.json'), '
 const assert = (cond, msg) => { if (!cond) { console.error('[断言失败] ' + msg); process.exitCode = 1; } else console.log('[通过] ' + msg); };
 
 assert(matrix.stats.requirementTotal === 4, '需求点总数 = 4');
-assert(matrix.stats.rulePointTotal === 4 && matrix.stats.applicableRulePoints === 3, '规则点 4 / 适用 3');
+assert(matrix.stats.rulePointTotal === 4 && matrix.stats.applicableRulePoints === 4, '规则点 4 / 适用 4（v4 新口径：适用=非na，mandatory 不再决定分母）');
 // 完成率：适用 3（R01-001,R01-002,R02-404）中 unverified 的有 R02-404(组失败) → checked=2 → 2/3
-assert(Math.abs(matrix.stats.checkCompleteRate - 0.6667) < 1e-3, '完成率 = 2/3（组失败降级 unverified）');
+assert(Math.abs(matrix.stats.checkCompleteRate - 0.5) < 1e-3, '完成率 = 2/4（R02-003 无覆盖、R02-404 组失败 → unverified 不计入完成分子）');
 // 通过率：pass 的 R01-001,R01-002 → 2/2 = 1（R01-999 不存在于 catalog 不计入 catalog 侧统计）
 assert(matrix.stats.rulePassRate === 0.5, '通过率 = 1/2（R01-002 对 B1 的判定因证据失效降 unverified，保守正确）');
 assert(matrix.requirements.every((r) => r.requirementId && r.requirementId.startsWith('REQ-')), '全部需求点有稳定 REQ ID');

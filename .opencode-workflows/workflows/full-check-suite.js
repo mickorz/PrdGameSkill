@@ -3,7 +3,7 @@
 // 用途：一键跑齐三路检查并把产物 Dashboard 合并为单文件 Tab 切换版。
 //   1. 并行调度三个已注册子 workflow（输入相互独立，无数据依赖）：
 //      - game-prd-check          PRD 功能规则检查（对照规则基准）
-//      - ui-interaction-prd-extract UI 交互检查（full 模式：逆向提取基准 + 检查）
+//      - ui-interaction-prd-extract UI 交互检查（读取 skill 目录已固化基准，不再重复提取）
 //      - bug-coverage-check      Bug 覆盖检查（buglist 对照 PRD 找需求缺失）
 //   2. 任一路失败不拖累其余：失败路记入结果明细，成功路照常出产物
 //   3. 收尾自动合并：收集成功路的 dashboardPath，调 merge-prd-dashboard skill 的
@@ -24,9 +24,13 @@
 //   inputDir      需求文档目录，透传 PRD/UI 两路，默认 input
 //   inputFiles    指定需求文档路径数组，透传 PRD/UI 两路
 //   concurrency   并发上限（提供时透传三路，同值重复 set 无害），默认 16
-//   uiMode        UI 路模式 full/extract/check，默认 full（提取+检查一条龙）
+//   uiRulesDir    UI 路基准目录覆盖（默认读 skill 固化基准，一般不需要传）
 //   bugDir        Bug 路缺陷目录，默认 bugs/buglist
 //   dashboard     是否生成各路 Dashboard，默认 true；false 时无合并对象，收尾跳过
+//   coverage      PRD 路是否生成检查覆盖清单（rule-checklist），默认 true
+//   coverageRulesDir 覆盖统计使用的规则目录，默认 .claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler
+//   coverageScript   覆盖清单脚本，默认 .claude/skills/game-prd-check/scripts/gen-coverage.mjs
+//   prdDashboardScript PRD 覆盖后重建 Dashboard 的脚本，默认 .claude/skills/game-prd-check/scripts/build-dashboard.mjs
 //   mergedOutDir  合并产物目录，默认 examples/dashboard
 //   labels        三路 Tab 标签数组（1 起），默认 ['杭州麻将PRD分析','UI交互分析','Bug覆盖分析']
 //   extraPrd      透传给 game-prd-check 的额外 args 对象
@@ -44,6 +48,7 @@ export const meta = {
   phases: [
     { title: '准备' },
     { title: '并行检查' },
+    { title: '检查覆盖' },
     { title: '合并交付' },
   ],
 }
@@ -72,6 +77,13 @@ const ROUTES = [
   },
 ]
 
+const coverageEnabled = A.coverage !== false
+const coverageRulesDir =
+  A.coverageRulesDir || '.claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler'
+const coverageScript = A.coverageScript || '.claude/skills/game-prd-check/scripts/gen-coverage.mjs'
+const prdDashboardScript =
+  A.prdDashboardScript || '.claude/skills/game-prd-check/scripts/build-dashboard.mjs'
+
 // ---------- 阶段 1：准备 ----------
 phase('准备')
 
@@ -93,7 +105,7 @@ function buildRouteArgs(route) {
     if (A.inputDir) child.inputDir = A.inputDir
     if (A.inputFiles) child.inputFiles = A.inputFiles
   }
-  if (route.key === 'ui') child.mode = A.uiMode || 'full'
+  if (route.key === 'ui') child.rulesDir = A.uiRulesDir
   if (route.key === 'bug') {
     if (A.bugDir) child.bugDir = A.bugDir
   }
@@ -123,7 +135,98 @@ const failed = routeResults.filter((r) => r && !r.ok)
 succeeded.forEach((r) => log('[成功] ' + r.route + ' -> ' + (r.dashboardPath || '（无 Dashboard 产物）')))
 failed.forEach((r) => log('[失败] ' + r.route + ' -> ' + r.error))
 
-// ---------- 阶段 3：合并交付 ----------
+// ---------- 阶段 3：检查覆盖（rule-checklist） ----------
+phase('检查覆盖')
+
+// PRD 路完成后：先生成 coverage.json 并追加报告章节，再重建 PRD Dashboard，
+// 让合并产物里的 PRD Tab 带上「检查覆盖清单」；失败不拖累其余路，记入 coverage 明细。
+let coverage = { ok: false, skipped: true, reason: '' }
+{
+  const prd = routeResults[0]
+  if (!coverageEnabled) {
+    coverage = { ok: false, skipped: true, reason: 'args.coverage=false' }
+    log('[跳过] PRD 检查覆盖清单：args.coverage=false')
+  } else if (!prd || !prd.ok) {
+    coverage = { ok: false, skipped: true, reason: 'PRD 路未成功，无报告可统计' }
+    log('[跳过] PRD 检查覆盖清单：PRD 路未成功')
+  } else if (!prd.reportPath) {
+    coverage = { ok: false, skipped: true, reason: 'PRD 路未返回 reportPath' }
+    log('[跳过] PRD 检查覆盖清单：PRD 路未返回 reportPath')
+  } else if (A.dashboard === false) {
+    coverage = { ok: false, skipped: true, reason: 'args.dashboard=false，无需重建 Dashboard' }
+    log('[跳过] PRD 检查覆盖清单：未生成 Dashboard')
+  } else {
+    const reportPath = prd.reportPath
+    const slash = reportPath.lastIndexOf('/')
+    const reportDir = slash >= 0 ? reportPath.slice(0, slash) : '.'
+    const reportJsonPath = prd.reportJsonPath || reportDir + '/report.json'
+    const dateArg = A.date ? ' --date "' + A.date + '"' : ''
+    const coverageCmd =
+      'node "' + coverageScript + '" --report "' + reportPath + '" --report-json "' + reportJsonPath +
+      '" --rules-dir "' + coverageRulesDir + '"' + dateArg
+    const rebuildCmd = 'node "' + prdDashboardScript + '" "' + reportPath + '" "' + reportDir + '"'
+    try {
+      const out = await agent(
+        [
+          '你在项目根目录依次执行两条命令，然后把结果整理为 JSON 返回。只执行命令与确认文件，不要改写报告内容。',
+          '',
+          '第一步：生成检查覆盖清单并追加到 report.md',
+          coverageCmd,
+          '',
+          '第二步：重建 PRD Dashboard（读取同目录 coverage.json 注入覆盖区块）',
+          rebuildCmd,
+          '',
+          '结果判定：',
+          '1. 两条命令退出码都为 0、输出含 [成功]，且 coverage.json 与新的 dashboard HTML 都存在：ok=true。',
+          '2. coveragePath 填第一步输出的 coverage.json 路径，htmlPath 填第二步输出「dashboard ->」后的 HTML 路径，reportJsonPath 填「report.json ->」后的路径。',
+          '3. 任一步退出码非 0 或输出含 [失败]：ok=false，message 填失败命令与错误输出（最后 20 行）。',
+          '4. 路径统一转成相对项目根目录的形式，不要改写文件名。',
+          '5. 不执行 git 命令，不删除任何历史 Dashboard。',
+        ].join('\n'),
+        {
+          agentType: 'general',
+          label: 'PRD检查覆盖清单',
+          timeoutMs: 900000,
+          retries: 1,
+          schema: {
+            type: 'object',
+            properties: {
+              ok: { type: 'boolean' },
+              coveragePath: { type: 'string', description: 'coverage.json 路径，失败留空' },
+              htmlPath: { type: 'string', description: '重建后的 dashboard HTML 路径，失败留空' },
+              reportJsonPath: { type: 'string', description: 'report.json 路径，失败留空' },
+              message: { type: 'string', description: '结果说明或失败原因' },
+            },
+            required: ['ok', 'coveragePath', 'htmlPath', 'message'],
+          },
+        }
+      )
+      if (!out || out.ok !== true || !out.htmlPath) {
+        throw new Error((out && out.message) || '未返回成功的覆盖清单或 Dashboard 路径')
+      }
+      coverage = {
+        ok: true,
+        skipped: false,
+        coveragePath: out.coveragePath || '',
+        dashboardPath: out.htmlPath,
+        reportJsonPath: out.reportJsonPath || '',
+        message: out.message || '',
+      }
+      prd.coveragePath = coverage.coveragePath
+      prd.coverageDashboardPath = out.htmlPath
+      prd.dashboardPath = out.htmlPath
+      if (out.reportJsonPath) prd.reportJsonPath = out.reportJsonPath
+      log('[成功] PRD 检查覆盖清单 -> ' + coverage.coveragePath + '；Dashboard 已重建 -> ' + out.htmlPath)
+    } catch (e) {
+      const message = String(e && e.message ? e.message : e)
+      coverage = { ok: false, skipped: false, error: message }
+      prd.coverageError = message
+      log('[失败] PRD 检查覆盖清单 -> ' + message)
+    }
+  }
+}
+
+// ---------- 阶段 4：合并交付 ----------
 phase('合并交付')
 
 // 收集成功路且真实存在 Dashboard 产物的路径（dashboardSkipped 或生成失败时 dashboardPath 为 null）
@@ -200,6 +303,7 @@ return {
   prd: routeResults[0],
   ui: routeResults[1],
   bug: routeResults[2],
+  coverage: coverage,
   merged: merged,
   failed: failed.map((f) => ({ route: f.route, error: f.error })),
   dashboardPaths: dashPaths,

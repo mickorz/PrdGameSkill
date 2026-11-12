@@ -23,7 +23,8 @@
 //   excludeKeywords 本期不检查的主题关键词数组，默认 ["金币场"]；命中 module/title/location/ruleRef 即剔除
 //   dashboard     生成 HTML Dashboard，默认 true；传 false 跳过
 //   dashboardScript Dashboard 生成脚本，默认 .claude/skills/game-prd-check/scripts/build-dashboard.mjs
-//   skipReview    传 true 跳过报告质检阶段，直接出报告（更快，少一轮串行读文件）
+//   skipReview   传 true 跳过报告质检阶段，直接出报告（更快，少一轮串行读文件）
+//   skipConsistency 传 true 跳过全文一致性检查（大文档易触发长响应超时）；fast 档默认跳过
 
 export const meta = {
   id: 'game-prd-check',
@@ -52,6 +53,8 @@ const maxIssuesPerGroup = A.maxIssuesPerGroup || 10
 const fastMode = A.fast === true
 // fast 档默认跳过质检，可用 args.skipReview=false 强制保留
 const skipReview = A.skipReview === false ? false : A.skipReview === true || fastMode
+// fast 档默认跳过全文一致性检查：整篇大 PRD 单次请求容易触发上游长响应超时
+const skipConsistency = A.skipConsistency === false ? false : A.skipConsistency === true || fastMode
 // fast 档把规则组压到并发上限以内，避免排第二波
 const maxRuleGroups = fastMode ? 16 : 24
 // 本期不检查的主题关键词：命中的问题在汇总后剔除，不计入统计
@@ -363,7 +366,11 @@ const groupTasks = parallel(
 
 phase('一致性检查')
 
-const internalTask = agent(
+if (skipConsistency) {
+  log(fastMode ? 'fast 档默认跳过全文一致性检查（可用 args.skipConsistency=false 保留）' : '已按 args.skipConsistency 跳过全文一致性检查')
+}
+
+const internalTask = skipConsistency ? null : agent(
   [
     '你是资深游戏 PRD 审核员，本次只做需求文档内部一致性检查，不按规则清单逐条对照。',
     '',
@@ -383,7 +390,7 @@ const internalTask = agent(
 )
 
 const groupResults = await groupTasks
-const internalResult = await internalTask
+const internalResult = internalTask ? await internalTask : null
 
 phase('汇总去重')
 
@@ -882,6 +889,7 @@ return {
   excludedCount: excludedCount,
   excludeKeywords: excludeKeywords,
   reviewSkipped: skipReview,
+  consistencySkipped: skipConsistency,
   fastMode: fastMode,
   reviewOk: skipReview ? null : review ? review.ok === true || fixed : false,
   reportWriteSummary: writeResult,

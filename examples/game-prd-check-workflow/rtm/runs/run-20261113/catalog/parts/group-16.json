@@ -1,0 +1,119 @@
+[
+  {
+    "ruleId": "R16-001",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "12.1 其他消息的客户端展示需求",
+    "fromLine": 1127,
+    "toLine": 1127,
+    "text": "规则配置：按开关展示或抑制规则提示；简洁模式影响提示。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R16-002",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "12.1 其他消息的客户端展示需求",
+    "fromLine": 1128,
+    "toLine": 1128,
+    "text": "金币场玩家信息：显示底分、台费、房间等级。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R16-003",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "12.1 其他消息的客户端展示需求",
+    "fromLine": 1129,
+    "toLine": 1129,
+    "text": "摊/承包变化：更新摊数、承包/倒承包关系，变化即展示。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R16-004",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "12.1 其他消息的客户端展示需求",
+    "fromLine": 1130,
+    "toLine": 1130,
+    "text": "飘：提示出财神玩家与飘次数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R16-005",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "12.1 其他消息的客户端展示需求",
+    "fromLine": 1131,
+    "toLine": 1131,
+    "text": "加倍：显示加倍面板、倒计时、各玩家选择（金币场）。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R16-006",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "12.1 其他消息的客户端展示需求",
+    "fromLine": 1132,
+    "toLine": 1132,
+    "text": "洗牌：显示洗牌提示/动画（好友房）。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R16-007",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "12.1 其他消息的客户端展示需求",
+    "fromLine": 1133,
+    "toLine": 1133,
+    "text": "跟庄重掷骰子：显示骰子与赔付结果，仅跟庄摇骰时展示。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R16-008",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "12.1 其他消息的客户端展示需求",
+    "fromLine": 1134,
+    "toLine": 1134,
+    "text": "牢庄升级：显示升庄/牢庄档位（如适用）。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R16-009",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "12.1 其他消息的客户端展示需求",
+    "fromLine": 1135,
+    "toLine": 1135,
+    "text": "重连：恢复当前阶段界面；手牌可见性按明牌规则。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R16-010",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "12.1 展示原则",
+    "fromLine": 1138,
+    "toLine": 1138,
+    "text": "服务端提供数据，客户端展示形式按产品/UI 确认。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R16-011",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "12.1 展示原则",
+    "fromLine": 1139,
+    "toLine": 1139,
+    "text": "结算以最终得分为准，额外分明细不得重复计分。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R16-012",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "12.1 展示原则",
+    "fromLine": 1140,
+    "toLine": 1140,
+    "text": "规则提示受简洁模式影响；动效类展示待客户端核实。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R16-013",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "12.1 展示原则",
+    "fromLine": 1141,
+    "toLine": 1141,
+    "text": "重连时仅展示自己的手牌；明牌开启时才展示其他玩家手牌。",
+    "mandatory": true
+  }
+]

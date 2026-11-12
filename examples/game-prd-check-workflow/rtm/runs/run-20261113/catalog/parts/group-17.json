@@ -1,0 +1,83 @@
+[
+  {
+    "ruleId": "R17-001",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "13. 非功能需求",
+    "fromLine": 1143,
+    "toLine": 1143,
+    "text": "13. 非功能需求（含类别、要求、验收/备注三列的规范表）",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R17-002",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "13. 非功能需求-性能",
+    "fromLine": 1147,
+    "toLine": 1147,
+    "text": "性能：单次操作响应目标 ≤200ms；结算下发目标 ≤500ms。备注：目标值待产品确认",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-003",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "13. 非功能需求-稳定性",
+    "fromLine": 1148,
+    "toLine": 1148,
+    "text": "稳定性：单玩家掉线/超时不影响整桌；重连可恢复当前阶段。按重连章节验收",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-004",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "13. 非功能需求-一致性",
+    "fromLine": 1149,
+    "toLine": 1149,
+    "text": "一致性：写分幂等；同一局不重复结算；重连快照与实时状态一致。联调验证",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-005",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "13. 非功能需求-兼容性",
+    "fromLine": 1150,
+    "toLine": 1150,
+    "text": "兼容性：支持 2/3/4 人、好友房、金币场。配置组合验收",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-006",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "13. 非功能需求-安全/风控",
+    "fromLine": 1151,
+    "toLine": 1151,
+    "text": "安全/风控：随机发牌公平；配置仅房主/后台可改；关键操作有日志。防作弊待补",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-007",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "13. 非功能需求-可观测",
+    "fromLine": 1152,
+    "toLine": 1152,
+    "text": "可观测：关键阶段有结构化日志；结算、异常、重连有埋点。见数据与埋点章节",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-008",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "13. 非功能需求-可维护",
+    "fromLine": 1153,
+    "toLine": 1153,
+    "text": "可维护：规则配置化；新增玩法不改引擎分支。代码评审",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R17-009",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "13. 非功能需求-客户端体验",
+    "fromLine": 1154,
+    "toLine": 1154,
+    "text": "客户端体验：听牌、禁手、飘、三摊、牢庄、结算提示可见。客户端待核实",
+    "mandatory": true
+  }
+]

@@ -1,0 +1,551 @@
+[
+  {
+    "ruleId": "R08-001",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4. 房间配置",
+    "fromLine": 200,
+    "toLine": 200,
+    "text": "4. 房间配置（章节总览，含 4.1 配置项、4.2 覆盖顺序、4.3 配置联动与覆盖、4.4 默认时间参数、4.5 功能点明细）",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R08-002",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-底分",
+    "fromLine": 205,
+    "toLine": 205,
+    "text": "底分取值 >0；好友房默认 1，金币场按入场配置；作结算基准分，非法值保持 1",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-003",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-首局庄家来源",
+    "fromLine": 206,
+    "toLine": 206,
+    "text": "首局庄家来源：0 随机 / 1 房主；好友房默认 0，金币场固定 0；用于首局定庄",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-004",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-非首局庄家规则",
+    "fromLine": 207,
+    "toLine": 207,
+    "text": "非首局庄家规则：0 赢家坐庄 / 1 逆时针轮换；好友房默认 0，金币场固定 0；胡牌后换庄",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-005",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-流局连庄",
+    "fromLine": 208,
+    "toLine": 208,
+    "text": "流局连庄：开 / 关；好友房默认开，金币场固定开；流局后庄家不变",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-006",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-财神确认方式",
+    "fromLine": 209,
+    "toLine": 209,
+    "text": "财神确认方式：0 白板 / 1 翻财神；好友房默认 0，金币场固定 0；金币场固定白板",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-007",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-牢庄起算档位",
+    "fromLine": 210,
+    "toLine": 210,
+    "text": "牢庄起算档位：0 平庄 / 1 笃二 / 2 笃三；好友房默认 0，金币场固定 2；对应 1/2/3 牢",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-008",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-庄闲放铳",
+    "fromLine": 211,
+    "toLine": 211,
+    "text": "庄闲放铳：开 / 关；好友房默认开，金币场默认关且可配；仅三牢生效",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-009",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-三摊承包",
+    "fromLine": 212,
+    "toLine": 212,
+    "text": "三摊承包：开 / 关；好友房默认关，金币场默认开且可配；好友房 2 人强制关闭，金币场不校验人数",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-010",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-碰算摊",
+    "fromLine": 213,
+    "toLine": 213,
+    "text": "碰算摊：开 / 关；好友房默认开，金币场默认关且可配；碰/明杠记摊",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-011",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-有财必拷响",
+    "fromLine": 214,
+    "toLine": 214,
+    "text": "有财必拷响：开 / 关；好友房默认关，金币场默认关且可配；手牌含财神时普通自摸无效",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-012",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-三财翻倍",
+    "fromLine": 215,
+    "toLine": 215,
+    "text": "三财翻倍：开 / 关；好友房默认关，金币场固定关；财神总数 ≥3 胡牌 ×2",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-013",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-四财翻倍",
+    "fromLine": 216,
+    "toLine": 216,
+    "text": "四财翻倍：开 / 关；好友房默认关，金币场固定关；财神总数 ≥4 胡牌 ×2",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-014",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-财神替豪七",
+    "fromLine": 217,
+    "toLine": 217,
+    "text": "财神替豪七：开 / 关；好友房默认关，金币场固定开；财神可补足豪华七对四张相同牌，数量按财神预算",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-015",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-十风牌",
+    "fromLine": 218,
+    "toLine": 218,
+    "text": "十风牌：开 / 关；好友房默认开，金币场默认开且可配；连续 10 张字牌获胡牌资格",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-016",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-只碰不吃",
+    "fromLine": 219,
+    "toLine": 219,
+    "text": "只碰不吃：开 / 关；好友房默认关，金币场不解析（关）；设计仅 2/3 人，服务端不校验人数",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-017",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-吃碰次数限制",
+    "fromLine": 220,
+    "toLine": 220,
+    "text": "吃碰次数限制：0 关 / 1 限 2 次只碰 / 2 限 2 次可吃碰；定向吃+碰 ≤2；好友房与三摊互斥；金币场特殊覆盖下可能同时生效",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-018",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-缺一色",
+    "fromLine": 221,
+    "toLine": 221,
+    "text": "缺一色：开 / 关；好友房默认关，金币场不解析（关）；设计仅 2/3 人，服务端不校验，4 人局不生效",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-019",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-去风",
+    "fromLine": 222,
+    "toLine": 222,
+    "text": "去风：开 / 关；好友房默认关，金币场不解析（关）；去掉风牌与红中/发财，保留白板",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-020",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-吃禁手",
+    "fromLine": 223,
+    "toLine": 223,
+    "text": "吃禁手：开 / 关；好友房默认开，金币场默认开且可配；吃中禁中、吃边禁边",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-021",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-碰禁手",
+    "fromLine": 224,
+    "toLine": 224,
+    "text": "碰禁手：开 / 关；好友房默认开，金币场默认开且可配；碰后禁打被碰牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-022",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-跟庄",
+    "fromLine": 225,
+    "toLine": 225,
+    "text": "跟庄：0 关 / 1 软跟 / 2 硬跟；好友房默认 0，金币场不解析（关）；设计仅 4 人，服务端不校验人数",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-023",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-跟庄赔付",
+    "fromLine": 226,
+    "toLine": 226,
+    "text": "跟庄赔付：0 固定一片 / 1 摇骰子；好友房默认 0，金币场不解析（关）；为庄家赔付方式",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-024",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-守庄",
+    "fromLine": 227,
+    "toLine": 227,
+    "text": "守庄：开 / 关；好友房默认关，金币场不解析（关）；设计仅 3/4 人，服务端 2 人局忽略",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-025",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-简洁模式",
+    "fromLine": 228,
+    "toLine": 228,
+    "text": "简洁模式：开 / 关；好友房默认关，金币场不解析（关）；抑制规则类提示与部分动效",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-026",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-单局输分封顶",
+    "fromLine": 229,
+    "toLine": 229,
+    "text": "单局输分封顶：0 / 20 / 40 / 64 / 80 / 128 / 256；好友房默认 0，金币场不解析；仅好友房生效",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-027",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-打片起始片数",
+    "fromLine": 230,
+    "toLine": 230,
+    "text": "打片起始片数：>0 表示打片房；好友房默认 0，金币场不解析；仅好友房生效",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-028",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-连庄不占局数",
+    "fromLine": 231,
+    "toLine": 231,
+    "text": "连庄不占局数：开 / 关；好友房默认关，金币场不解析；仅打片房生效",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-029",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-做牌",
+    "fromLine": 232,
+    "toLine": 232,
+    "text": "做牌：开 / 关；好友房默认关，金币场可配；定财神前记录指定牌，发牌时取牌并补齐",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-030",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-明牌",
+    "fromLine": 233,
+    "toLine": 233,
+    "text": "明牌：开 / 关；好友房默认关，金币场可配；所有玩家手牌互见",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-031",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-托管",
+    "fromLine": 234,
+    "toLine": 234,
+    "text": "托管：开 / 关；好友房默认关，金币场默认开且可配；超时/离线自动操作",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-032",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.1 配置项-金币场加倍",
+    "fromLine": 235,
+    "toLine": 235,
+    "text": "金币场加倍：开 / 关；好友房无默认（—），金币场默认开且可配；定庄前选择是否加倍",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-033",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.2 覆盖顺序-1",
+    "fromLine": 238,
+    "toLine": 238,
+    "text": "好友房覆盖顺序：好友房默认值 → 好友房 JSON 覆盖",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-034",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.2 覆盖顺序-2",
+    "fromLine": 239,
+    "toLine": 239,
+    "text": "金币场覆盖顺序：好友房默认值 → 金币场固定差异 → 入场配置解析 → 金币场等级规则覆盖",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-035",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.2 覆盖顺序-3",
+    "fromLine": 240,
+    "toLine": 240,
+    "text": "金币场等级规则覆盖顺序：全局等级规则 → 本桌最高房间等级对应的等级规则",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-036",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.2 覆盖顺序-4",
+    "fromLine": 241,
+    "toLine": 241,
+    "text": "JSON 未下发某字段时保持当前默认值",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-037",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.2 覆盖顺序-5",
+    "fromLine": 242,
+    "toLine": 242,
+    "text": "底分 ≤0 时忽略本次下发并记录日志，保持原值",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-038",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.3 配置联动与覆盖-1",
+    "fromLine": 245,
+    "toLine": 245,
+    "text": "好友房三摊承包开启且人数 ≤2 时服务端忽略该开关并保持关闭，同时置吃碰次数限制为 2；金币场不校验人数",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-039",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.3 配置联动与覆盖-2",
+    "fromLine": 246,
+    "toLine": 246,
+    "text": "守庄开启且人数 ≤2 时服务端忽略该开关，保持关闭",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-040",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.3 配置联动与覆盖-3",
+    "fromLine": 247,
+    "toLine": 247,
+    "text": "显式下发三摊承包=关时先将吃碰次数限制置为 2；好友房可再覆盖，金币场不解析该字段；未下发三摊字段不触发联动",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-041",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.3 配置联动与覆盖-4",
+    "fromLine": 248,
+    "toLine": 248,
+    "text": "吃碰次数限制 = 1 时等价于限制 2 次且只能碰不能吃，并同时开启只碰不吃",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-042",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.3 配置联动与覆盖-5 覆盖边界",
+    "fromLine": 249,
+    "toLine": 249,
+    "text": "覆盖边界：金币场依次覆盖，全局关三摊置 2 后本桌重开三摊不清除限制；吃碰限制只查限制值，对吃恒生效、对碰/明杠仅碰算摊开启时生效；【待确认】",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-043",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.3 配置联动与覆盖-6",
+    "fromLine": 250,
+    "toLine": 250,
+    "text": "好友房三摊承包开启时吃碰次数限制配置不生效；金币场无此保证，按第 5 条处理",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-044",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.4 默认时间参数-总则",
+    "fromLine": 253,
+    "toLine": 254,
+    "text": "金币场打牌操作、加倍操作、托管等待可由等级规则覆盖；其余时间参数为默认固定值",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-045",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.4 默认时间参数-开局等待",
+    "fromLine": 258,
+    "toLine": 258,
+    "text": "开局等待：好友房 5 秒，金币场 1 秒",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-046",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.4 默认时间参数-发牌首摸等待",
+    "fromLine": 259,
+    "toLine": 259,
+    "text": "发牌首摸等待：好友房 5 秒，金币场 1 秒",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-047",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.4 默认时间参数-打牌操作",
+    "fromLine": 260,
+    "toLine": 260,
+    "text": "打牌操作：好友房 10 秒，金币场 10 秒（可配）",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-048",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.4 默认时间参数-加倍操作",
+    "fromLine": 261,
+    "toLine": 261,
+    "text": "加倍操作：好友房无（—），金币场 10 秒（可配，配置 >0 生效）",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-049",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.4 默认时间参数-定财神动画",
+    "fromLine": 262,
+    "toLine": 262,
+    "text": "定财神动画：好友房与金币场均为 3 秒",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-050",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.4 默认时间参数-洗牌停留",
+    "fromLine": 263,
+    "toLine": 263,
+    "text": "洗牌停留：好友房 5 秒，金币场无（—）",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-051",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.4 默认时间参数-跟庄重扔骰子停留",
+    "fromLine": 264,
+    "toLine": 264,
+    "text": "跟庄重扔骰子停留：好友房与金币场均为 3 秒",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-052",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.4 默认时间参数-托管等待",
+    "fromLine": 265,
+    "toLine": 265,
+    "text": "托管等待：好友房 3 秒，金币场 1 秒（可配）",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-053",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.4 默认时间参数-自动摸打间隔",
+    "fromLine": 266,
+    "toLine": 266,
+    "text": "自动摸打间隔：好友房 1 秒，金币场 0.5 秒",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-054",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.5 功能点明细（配置）-表头",
+    "fromLine": 268,
+    "toLine": 271,
+    "text": "4.5 功能点明细（配置）表：ID / 功能点 / 前置或触发 / 处理 / 结果或边界",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R08-055",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.5 CFG-01",
+    "fromLine": 272,
+    "toLine": 272,
+    "text": "CFG-01 加载默认配置：开局按好友房/金币场写入默认值，配置生效",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-056",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.5 CFG-02",
+    "fromLine": 273,
+    "toLine": 273,
+    "text": "CFG-02 好友房 JSON 覆盖：房主提交配置后逐项覆盖默认值；底分 ≤0 忽略，非法值保持原值",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-057",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.5 CFG-03",
+    "fromLine": 274,
+    "toLine": 274,
+    "text": "CFG-03 金币场入场配置：金币场开局解析等级、底分区间、底分、台费，并写入虚拟分",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-058",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.5 CFG-04",
+    "fromLine": 275,
+    "toLine": 275,
+    "text": "CFG-04 金币场等级规则：金币场开局先全局 level_rule，后本桌 level_rule_{lv}，后者覆盖前者",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-059",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.5 CFG-05",
+    "fromLine": 276,
+    "toLine": 276,
+    "text": "CFG-05 人数约束：好友房三摊/守庄 ≤2 强制关闭；缺一色 4 人不生效；只碰不吃/跟庄不校验人数（服务端现状）",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-060",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.5 CFG-06",
+    "fromLine": 277,
+    "toLine": 277,
+    "text": "CFG-06 三摊/吃碰联动：显式关三摊时吃碰限制置 2；好友房可再覆盖，金币场不可；特殊覆盖下可能同时生效，待产品确认",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R08-061",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "4.5 CFG-07",
+    "fromLine": 278,
+    "toLine": 278,
+    "text": "CFG-07 配置下发：开局杭麻游戏配置消息下发有财必拷响、三摊承包、简洁模式和局 ID；金币场另发虚拟玩家信息；其余配置客户端来源待核实",
+    "mandatory": true
+  }
+]

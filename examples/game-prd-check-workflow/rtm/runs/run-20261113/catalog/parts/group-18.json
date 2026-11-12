@@ -1,0 +1,74 @@
+[
+  {
+    "ruleId": "R18-001",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "14. 依赖与接口",
+    "fromLine": 1156,
+    "toLine": 1156,
+    "text": "第 14 章 依赖与接口：以表格列出依赖、说明、风险三列。",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R18-002",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "14. 依赖与接口 / 客户端",
+    "fromLine": 1160,
+    "toLine": 1160,
+    "text": "客户端：协议解析、牌局展示、提示、动效、重连；风险为展示未核实。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R18-003",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "14. 依赖与接口 / 服务端 Logic",
+    "fromLine": 1161,
+    "toLine": 1161,
+    "text": "服务端 Logic：对局流程、规则、结算、虚拟分；说明为本文主体。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R18-004",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "14. 依赖与接口 / 房间服务",
+    "fromLine": 1162,
+    "toLine": 1162,
+    "text": "房间服务：创建房间、座位、开局、结束；风险为依赖房间配置。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R18-005",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "14. 依赖与接口 / 配置中心",
+    "fromLine": 1163,
+    "toLine": 1163,
+    "text": "配置中心：好友房 JSON、金币场等级规则、入场配置；风险为配置缺失/冲突。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R18-006",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "14. 依赖与接口 / 机器人",
+    "fromLine": 1164,
+    "toLine": 1164,
+    "text": "机器人：托管、自动摸打；风险为与真实玩家分流。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R18-007",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "14. 依赖与接口 / 协议层",
+    "fromLine": 1165,
+    "toLine": 1165,
+    "text": "协议层：动作协议、结算协议、重连协议；风险为版本兼容。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R18-008",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "14. 依赖与接口 / 数据/埋点",
+    "fromLine": 1166,
+    "toLine": 1166,
+    "text": "数据/埋点：对局结果、异常、重连；风险为字段口径。",
+    "mandatory": true
+  }
+]

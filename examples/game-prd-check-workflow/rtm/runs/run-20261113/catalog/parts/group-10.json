@@ -1,0 +1,1343 @@
+[
+  {
+    "ruleId": "R10-001",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.1 主循环",
+    "fromLine": 369,
+    "toLine": 371,
+    "text": "主循环：摸牌 → 动作判定 → 出牌 → 其他玩家响应 → 下一摸。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-002",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.1-1",
+    "fromLine": 372,
+    "toLine": 372,
+    "text": "当前玩家动作：自摸胡、暗杠、补杠、过。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-003",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.1-2",
+    "fromLine": 373,
+    "toLine": 373,
+    "text": "出牌后其他玩家响应优先级：胡 > 碰/杠 > 吃。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-004",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.1-3",
+    "fromLine": 374,
+    "toLine": 374,
+    "text": "同一张牌多人响应时只执行优先级最高者。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-005",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.1-4",
+    "fromLine": 375,
+    "toLine": 375,
+    "text": "多人同时可胡时，按座位权重（相对当前出牌者的座位顺序）仲裁，不按点击先后；吃/碰/杠在同一张牌上通常唯一。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-006",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.1-5",
+    "fromLine": 376,
+    "toLine": 376,
+    "text": "吃、碰后由该玩家出牌；杠后补牌；补杠后保留抢杠胡窗口。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-007",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.1-6",
+    "fromLine": 377,
+    "toLine": 377,
+    "text": "无人响应 → 下家摸牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-008",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.2-1",
+    "fromLine": 380,
+    "toLine": 380,
+    "text": "出牌必须是手牌或刚摸进的牌，且不在禁打黑名单内。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-009",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.2-2",
+    "fromLine": 381,
+    "toLine": 381,
+    "text": "飘财窗口内，受限座位只能打刚摸进的牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-010",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.2-3",
+    "fromLine": 382,
+    "toLine": 382,
+    "text": "出牌后依次处理：飘等级与飘财窗口、十风计数、杠链、跟庄状态、解除本座位吃/碰禁手、进入响应分发。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-011",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.2-4",
+    "fromLine": 383,
+    "toLine": 383,
+    "text": "出牌阶段不修改财神、不修改牌墙。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-012",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.2.1 TURN-01",
+    "fromLine": 389,
+    "toLine": 389,
+    "text": "TURN-01 正常摸牌：轮到下家时从牌墙摸牌，写进张/当前座位/状态，进入动作判定。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-013",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.2.1 TURN-02",
+    "fromLine": 390,
+    "toLine": 390,
+    "text": "TURN-02 杠后补牌：杠成立后从牌墙补牌，写摸牌状态，进入动作判定。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-014",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.2.1 TURN-03",
+    "fromLine": 391,
+    "toLine": 391,
+    "text": "TURN-03 出牌校验：校验轮次、牌在手/刚摸、禁打黑名单、飘窗口限制，非法拒绝。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-015",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.2.1 TURN-04",
+    "fromLine": 392,
+    "toLine": 392,
+    "text": "TURN-04 出牌执行：校验通过后移除手牌、写出牌区、更新状态、下发出牌，进入响应分发。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-016",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.2.1 TURN-05",
+    "fromLine": 393,
+    "toLine": 393,
+    "text": "TURN-05 出牌联动：出牌落地后更新飘等级/窗口、十风计数、杠链、跟庄状态，影响后续番型/赔付。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-017",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.2.1 TURN-06",
+    "fromLine": 394,
+    "toLine": 394,
+    "text": "TURN-06 出牌解禁：出牌落地后清空本座位吃/碰禁手黑名单并通知，下次可正常出牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-018",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.2.1 TURN-07",
+    "fromLine": 395,
+    "toLine": 395,
+    "text": "TURN-07 过牌：玩家放弃响应时先广播过牌提示，再做合法性校验；非法也先广播，不改变状态。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-019",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3 判定条件-1",
+    "fromLine": 399,
+    "toLine": 399,
+    "text": "只能吃上家（打牌者的下家）打出的牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-020",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3 判定条件-2",
+    "fromLine": 400,
+    "toLine": 400,
+    "text": "吃牌座位未破产、未胡牌、未处于飘财受限。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-021",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3 判定条件-3",
+    "fromLine": 401,
+    "toLine": 401,
+    "text": "吃碰次数限制开启时，该座位对该上家的吃+碰次数 <2。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-022",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3 判定条件-4",
+    "fromLine": 402,
+    "toLine": 402,
+    "text": "三摊承包开启且吃方与被吃方均为闲家时，该方向摊数 <2。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-023",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3 判定条件-5",
+    "fromLine": 403,
+    "toLine": 403,
+    "text": "只碰不吃开启时禁止吃；若本可吃，提示“只碰不吃规则生效中”。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-024",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3 判定条件-6",
+    "fromLine": 404,
+    "toLine": 404,
+    "text": "吃禁手开启时逐组合过滤“吃后无牌可打”的吃法；全部被过滤则不给吃并提示。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-025",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3 执行结果-1",
+    "fromLine": 407,
+    "toLine": 407,
+    "text": "记录吃牌组合并下发。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-026",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3 执行结果-2",
+    "fromLine": 408,
+    "toLine": 408,
+    "text": "吃方对被吃方记 1 摊（恒定，不受碰算摊影响）。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-027",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3 执行结果-3",
+    "fromLine": 409,
+    "toLine": 409,
+    "text": "吃碰次数限制开启时，该方向吃+碰次数 +1。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-028",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3 执行结果-4",
+    "fromLine": 410,
+    "toLine": 410,
+    "text": "三摊承包开启且该方向摊数达到 3 → 承包关系记为 1，并广播摊数变化。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-029",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3 执行结果-5",
+    "fromLine": 411,
+    "toLine": 411,
+    "text": "吃禁手开启时写入禁打牌：吃中间禁打中间；吃两边禁打被吃的牌和另一侧延伸牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-030",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3 执行结果-6",
+    "fromLine": 412,
+    "toLine": 412,
+    "text": "吃中断跟庄、十风资格、杠链。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-031",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3.1 CHOW-01",
+    "fromLine": 418,
+    "toLine": 418,
+    "text": "CHOW-01 吃权限生成：上家出牌时仅下家可吃；跳过破产/已胡/飘受限，生成可吃组合。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-032",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3.1 CHOW-02",
+    "fromLine": 419,
+    "toLine": 419,
+    "text": "CHOW-02 吃碰次数限制：rule_chi_peng>0 时该方向吃+碰次数<2，达上限不给吃。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-033",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3.1 CHOW-03",
+    "fromLine": 420,
+    "toLine": 420,
+    "text": "CHOW-03 闲闲摊数限制：三摊开启且双方闲家时该方向摊数<2，达2摊不给吃。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-034",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3.1 CHOW-04",
+    "fromLine": 421,
+    "toLine": 421,
+    "text": "CHOW-04 只碰不吃：开关开启时本可吃也提示并禁止，不给吃。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-035",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3.1 CHOW-05",
+    "fromLine": 422,
+    "toLine": 422,
+    "text": "CHOW-05 吃牌合法性：通过前置后枚举吃牌组合，记录候选组合。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-036",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3.1 CHOW-06",
+    "fromLine": 423,
+    "toLine": 423,
+    "text": "CHOW-06 吃禁手过滤：吃禁手开启时过滤“吃后无牌可打”的组合，全被过滤则提示且不给吃。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-037",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3.1 CHOW-07",
+    "fromLine": 424,
+    "toLine": 424,
+    "text": "CHOW-07 吃执行：组合确定后移手牌、加副露、剔除弃牌、下发吃牌，手牌/副露更新。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-038",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3.1 CHOW-08",
+    "fromLine": 425,
+    "toLine": 425,
+    "text": "CHOW-08 吃记摊：吃成立后按 SPEC-09，吃方→被吃方 +1（恒记）。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-039",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3.1 CHOW-09",
+    "fromLine": 426,
+    "toLine": 426,
+    "text": "CHOW-09 吃碰次数：限制开启时该方向吃+碰次数+1。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-040",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3.1 CHOW-10",
+    "fromLine": 427,
+    "toLine": 427,
+    "text": "CHOW-10 吃承包：三摊开启且摊数≥3 时记承包关系1，广播摊更新，承包成立。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-041",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3.1 CHOW-11",
+    "fromLine": 428,
+    "toLine": 428,
+    "text": "CHOW-11 吃禁手：吃禁手开启时吃中禁中/吃边禁边，写出牌黑名单，下次出牌后解除。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-042",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.3.1 CHOW-12",
+    "fromLine": 429,
+    "toLine": 429,
+    "text": "CHOW-12 吃联动/流转：吃成立后中断跟庄、十风失效、清杠链，切到吃方出牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-043",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4 判定条件-1",
+    "fromLine": 433,
+    "toLine": 433,
+    "text": "不能碰自己打出的牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-044",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4 判定条件-2",
+    "fromLine": 434,
+    "toLine": 434,
+    "text": "碰牌座位未破产、未处于飘财受限。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-045",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4 判定条件-3",
+    "fromLine": 435,
+    "toLine": 435,
+    "text": "碰算摊开启时，该方向吃+碰次数 <2。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-046",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4 判定条件-4",
+    "fromLine": 436,
+    "toLine": 436,
+    "text": "碰算摊开启且三摊承包开启、双方均为闲家时，该方向摊数 <2。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-047",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4 判定条件-5",
+    "fromLine": 437,
+    "toLine": 437,
+    "text": "守庄判定命中时禁止碰，并提示。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-048",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4 判定条件-6",
+    "fromLine": 438,
+    "toLine": 438,
+    "text": "手牌中必须有 2 张与打出牌相同的牌；财神不能作为凑牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-049",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4 执行结果-1",
+    "fromLine": 441,
+    "toLine": 441,
+    "text": "碰牌组合下发。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-050",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4 执行结果-2",
+    "fromLine": 442,
+    "toLine": 442,
+    "text": "碰禁手开启时，禁打被碰的那张牌，直到本座位下次出牌后解除。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-051",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4 执行结果-3",
+    "fromLine": 443,
+    "toLine": 443,
+    "text": "碰算摊开启时，碰方对出牌方记 1 摊；达到 3 摊记承包关系 1 并广播。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-052",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4 执行结果-4",
+    "fromLine": 444,
+    "toLine": 444,
+    "text": "碰算摊开启且吃碰次数限制开启时，该方向次数 +1。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-053",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4 执行结果-5",
+    "fromLine": 445,
+    "toLine": 445,
+    "text": "碰中断跟庄、十风资格、杠链。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-054",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4.1 PUNG-01",
+    "fromLine": 451,
+    "toLine": 451,
+    "text": "PUNG-01 碰候选扫描：他人出牌时全桌扫描，跳过破产、飘受限、自身弃牌，找到可碰座位。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-055",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4.1 PUNG-02",
+    "fromLine": 452,
+    "toLine": 452,
+    "text": "PUNG-02 碰牌合法性：候选座位手牌2张同牌；财神不能凑碰，不合法不生成权限。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-056",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4.1 PUNG-03",
+    "fromLine": 453,
+    "toLine": 453,
+    "text": "PUNG-03 碰算摊限制：碰算摊开启时该方向吃碰次数<2、闲闲摊数<2；关闭时不检查。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-057",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4.1 PUNG-04",
+    "fromLine": 454,
+    "toLine": 454,
+    "text": "PUNG-04 守庄拦截：庄家上家无财神时，3人禁碰庄家弃牌；4人禁碰庄家与庄家下家弃牌；只禁碰不禁吃/杠。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-058",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4.1 PUNG-05",
+    "fromLine": 455,
+    "toLine": 455,
+    "text": "PUNG-05 碰组合记录：合法时记录碰牌组合、碰方、被碰来源；同一弃牌至多一个碰方。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-059",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4.1 PUNG-06",
+    "fromLine": 456,
+    "toLine": 456,
+    "text": "PUNG-06 碰执行-手牌：确认碰后移除手牌2张，加入副露，手牌/副露更新。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-060",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4.1 PUNG-07",
+    "fromLine": 457,
+    "toLine": 457,
+    "text": "PUNG-07 碰执行-出牌区：确认碰后剔除被碰弃牌，碰出的牌进入展示，出牌区更新。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-061",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4.1 PUNG-08",
+    "fromLine": 458,
+    "toLine": 458,
+    "text": "PUNG-08 碰禁手：碰禁手开启时禁打被碰牌，写黑名单（切步前），下次出牌后解除。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-062",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4.1 PUNG-09",
+    "fromLine": 459,
+    "toLine": 459,
+    "text": "PUNG-09 碰摊/承包：碰算摊开启时按 SPEC-09 记摊；三摊开启且≥3摊记承包1，广播摊变化。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-063",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4.1 PUNG-10",
+    "fromLine": 460,
+    "toLine": 460,
+    "text": "PUNG-10 吃碰次数：碰算摊+限制开启时该方向次数+1，关闭时不计。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-064",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4.1 PUNG-11",
+    "fromLine": 461,
+    "toLine": 461,
+    "text": "PUNG-11 碰联动-跟庄：碰成立时中断跟庄，未完成跟庄不赔付。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-065",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4.1 PUNG-12",
+    "fromLine": 462,
+    "toLine": 462,
+    "text": "PUNG-12 碰联动-十风：碰成立后十风资格永久失效，计数清零，影响十风番型。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-066",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4.1 PUNG-13",
+    "fromLine": 463,
+    "toLine": 463,
+    "text": "PUNG-13 碰联动-杠链：碰成立后清空本座位杠链与暗杠标记，影响杠开番型。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-067",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4.1 PUNG-14",
+    "fromLine": 464,
+    "toLine": 464,
+    "text": "PUNG-14 碰下发/流转：碰成立后下发碰牌，切到碰方出牌，进入出牌阶段。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-068",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4.1 PUNG-15",
+    "fromLine": 465,
+    "toLine": 465,
+    "text": "PUNG-15 飘窗口边界：飘窗口存在时仅所有者可碰（规则见 SPEC-03/04），交互待联调。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-069",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.4.1 PUNG-16",
+    "fromLine": 466,
+    "toLine": 466,
+    "text": "PUNG-16 托管/重连：托管按权限自动响应；重连恢复副露/禁手/摊，按现有快照。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-070",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 明杠 判定-1",
+    "fromLine": 472,
+    "toLine": 472,
+    "text": "明杠判定：牌墙剩余 ≥ 补牌张数 + 荒局张数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-071",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 明杠 判定-2",
+    "fromLine": 473,
+    "toLine": 473,
+    "text": "明杠判定：座位未破产、未处于飘财受限。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-072",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 明杠 判定-3",
+    "fromLine": 474,
+    "toLine": 474,
+    "text": "明杠判定：碰算摊开启时该方向吃+碰次数 <2；闲闲之间摊数 <2。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-073",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 明杠 判定-4",
+    "fromLine": 475,
+    "toLine": 475,
+    "text": "明杠判定：手牌中必须有 3 张与打出牌相同的牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-074",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 明杠 执行-1",
+    "fromLine": 478,
+    "toLine": 478,
+    "text": "明杠执行：明杠牌组下发。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-075",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 明杠 执行-2",
+    "fromLine": 479,
+    "toLine": 479,
+    "text": "明杠执行：碰算摊开启时记 1 摊，达到 3 摊记承包关系 1。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-076",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 明杠 执行-3",
+    "fromLine": 480,
+    "toLine": 480,
+    "text": "明杠执行：碰算摊开启且吃碰限制开启时，次数 +1。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-077",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 明杠 执行-4",
+    "fromLine": 481,
+    "toLine": 481,
+    "text": "明杠执行：杠链 +1，暗杠标记不变；记录飘杠先后。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-078",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 明杠 执行-5",
+    "fromLine": 482,
+    "toLine": 482,
+    "text": "明杠执行：中断跟庄、十风资格。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-079",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 明杠 执行-6",
+    "fromLine": 483,
+    "toLine": 483,
+    "text": "明杠执行：杠后补牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-080",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 暗杠 判定-1",
+    "fromLine": 487,
+    "toLine": 487,
+    "text": "暗杠判定：牌墙剩余 ≥ 补牌张数 + 荒局张数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-081",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 暗杠 判定-2",
+    "fromLine": 488,
+    "toLine": 488,
+    "text": "暗杠判定：座位未破产、未听牌等待。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-082",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 暗杠 判定-3",
+    "fromLine": 489,
+    "toLine": 489,
+    "text": "暗杠判定：手牌中必须有 4 张相同牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-083",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 暗杠 判定-4",
+    "fromLine": 490,
+    "toLine": 490,
+    "text": "暗杠判定：飘财窗口不限制暗杠。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-084",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 暗杠 执行-1",
+    "fromLine": 493,
+    "toLine": 493,
+    "text": "暗杠执行：暗杠牌组下发。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-085",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 暗杠 执行-2",
+    "fromLine": 494,
+    "toLine": 494,
+    "text": "暗杠执行：不记摊、不计吃碰次数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-086",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 暗杠 执行-3",
+    "fromLine": 495,
+    "toLine": 495,
+    "text": "暗杠执行：杠链 +1，暗杠标记置为真；记录飘杠先后。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-087",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 暗杠 执行-4",
+    "fromLine": 496,
+    "toLine": 496,
+    "text": "暗杠执行：中断跟庄、十风资格。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-088",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 暗杠 执行-5",
+    "fromLine": 497,
+    "toLine": 497,
+    "text": "暗杠执行：杠后补牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-089",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 补杠 判定-1",
+    "fromLine": 501,
+    "toLine": 501,
+    "text": "补杠判定：座位未处于飘财受限、未破产、未听牌等待。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-090",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 补杠 判定-2",
+    "fromLine": 502,
+    "toLine": 502,
+    "text": "补杠判定：牌墙剩余 ≥ 补牌张数 + 荒局张数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-091",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 补杠 判定-3",
+    "fromLine": 503,
+    "toLine": 503,
+    "text": "补杠判定：已碰过的牌与手牌中的同张可组成补杠。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-092",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 补杠 判定-4",
+    "fromLine": 504,
+    "toLine": 504,
+    "text": "同巡补杠限制开启且当前处于碰牌状态时，刚碰的同张不能立即补杠；杭麻默认关闭该限制，当前未见配置入口。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-093",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 补杠 执行-1",
+    "fromLine": 507,
+    "toLine": 507,
+    "text": "补杠执行：补杠牌组下发。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-094",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 补杠 执行-2",
+    "fromLine": 508,
+    "toLine": 508,
+    "text": "补杠执行：记录杠牌者，供抢杠胡判定赔付方。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-095",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 补杠 执行-3",
+    "fromLine": 509,
+    "toLine": 509,
+    "text": "补杠执行：杠链 +1，暗杠标记不变；记录飘杠先后。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-096",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 补杠 执行-4",
+    "fromLine": 510,
+    "toLine": 510,
+    "text": "补杠执行：中断跟庄、十风资格。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-097",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 补杠 执行-5",
+    "fromLine": 511,
+    "toLine": 511,
+    "text": "补杠执行：进入抢杠胡窗口，其他玩家可胡则该牌；无人抢则补牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-098",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5 杠分说明",
+    "fromLine": 513,
+    "toLine": 513,
+    "text": "杭麻明杠、暗杠、补杠本身不单独收取杠分；杠后胡牌可按杠开系列计算番型倍数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-099",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5.1 KONG-01",
+    "fromLine": 519,
+    "toLine": 519,
+    "text": "KONG-01 明杠条件：他人弃牌时牌墙≥补牌+荒局，非破产/飘受限，手牌3张同牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-100",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5.1 KONG-02",
+    "fromLine": 520,
+    "toLine": 520,
+    "text": "KONG-02 明杠限制：碰算摊开启时该方向吃碰次数<2、闲闲摊数<2，关闭时不检查。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-101",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5.1 KONG-03",
+    "fromLine": 521,
+    "toLine": 521,
+    "text": "KONG-03 明杠执行：移手牌、加副露、剔除弃牌、下发杠牌，手牌/副露更新。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-102",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5.1 KONG-04",
+    "fromLine": 522,
+    "toLine": 522,
+    "text": "KONG-04 明杠摊/次数/承包：碰算摊开启时按 SPEC-09 记摊/次数；三摊≥3记承包，广播摊变化。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-103",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5.1 KONG-05",
+    "fromLine": 523,
+    "toLine": 523,
+    "text": "KONG-05 明杠联动：中断跟庄、十风失效、杠链+1、记录飘杠先后，进入补牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-104",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5.1 KONG-06",
+    "fromLine": 524,
+    "toLine": 524,
+    "text": "KONG-06 暗杠条件：自己回合牌墙≥补牌+荒局，非破产/等待，手牌4张同牌，飘窗口不限制。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-105",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5.1 KONG-07",
+    "fromLine": 525,
+    "toLine": 525,
+    "text": "KONG-07 暗杠执行：移手牌、加副露、下发杠牌，手牌/副露更新。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-106",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5.1 KONG-08",
+    "fromLine": 526,
+    "toLine": 526,
+    "text": "KONG-08 暗杠联动：中断跟庄、十风失效、不记摊；杠链+1且暗杠标记=真，进入补牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-107",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5.1 KONG-09",
+    "fromLine": 527,
+    "toLine": 527,
+    "text": "KONG-09 补杠条件：牌墙≥补牌+荒局，非破产/等待/飘受限，已碰牌+手牌同张；同巡限制默认关闭。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-108",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5.1 KONG-10",
+    "fromLine": 528,
+    "toLine": 528,
+    "text": "KONG-10 补杠执行/记录：移手牌、加副露、下发杠牌；记录杠牌者。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-109",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5.1 KONG-11",
+    "fromLine": 529,
+    "toLine": 529,
+    "text": "KONG-11 补杠联动：中断跟庄、十风失效、杠链+1、记录飘杠先后，进入抢杠窗口。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-110",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5.1 KONG-12",
+    "fromLine": 530,
+    "toLine": 530,
+    "text": "KONG-12 抢杠窗口：补杠成立后其他玩家可胡该牌；无人抢则补牌，胡则进抢杠流程。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-111",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.5.1 KONG-13",
+    "fromLine": 531,
+    "toLine": 531,
+    "text": "KONG-13 抢杠胡还原：抢杠胡成立后补杠还原为碰用于展示（见 HU-10），不新增摊数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-112",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6 胡牌权限判定-1",
+    "fromLine": 536,
+    "toLine": 536,
+    "text": "胡牌权限：座位未破产、本局未胡过。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-113",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6 胡牌权限判定-2",
+    "fromLine": 537,
+    "toLine": 537,
+    "text": "胡牌权限：手牌（含进张）能拆成平胡 3N+2，或七对 2N。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-114",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6 胡牌权限判定-3",
+    "fromLine": 538,
+    "toLine": 538,
+    "text": "胡牌权限：番型命中且番数 ≥ 起胡门槛（默认 1 番）。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-115",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6 胡牌权限判定-4",
+    "fromLine": 539,
+    "toLine": 542,
+    "text": "有财必拷响开启且手牌含财神时：仅自摸可胡；点炮、抢杠一律不授予胡权限；自摸未敲响且成牌但无合法番型不授予，满足提示条件时提示（简洁模式抑制）。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-116",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6 胡牌权限判定-5",
+    "fromLine": 543,
+    "toLine": 543,
+    "text": "十风资格满足（连续 ≥10 张字牌）且为自摸时，直接授予胡权限，不要求手牌成牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-117",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6 胡牌权限判定-6",
+    "fromLine": 544,
+    "toLine": 544,
+    "text": "十风授权先于有财必拷响判定；两者同时满足时按十风自摸授权。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-118",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6 点炮条件-1",
+    "fromLine": 547,
+    "toLine": 547,
+    "text": "点炮条件：玩法开启放铳。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-119",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6 点炮条件-2",
+    "fromLine": 548,
+    "toLine": 548,
+    "text": "点炮条件：庄闲放铳开关开启。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-120",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6 点炮条件-3",
+    "fromLine": 549,
+    "toLine": 549,
+    "text": "点炮条件：当前牢庄为三牢。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-121",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6 点炮条件-4",
+    "fromLine": 550,
+    "toLine": 550,
+    "text": "点炮只在庄家与闲家之间成立：庄家打的牌只能被闲家胡，闲家打的牌只能被庄家胡；闲闲之间不可。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-122",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6 点炮条件-5",
+    "fromLine": 551,
+    "toLine": 551,
+    "text": "打出的牌是财神时不能胡。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-123",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6 抢杠胡条件-1",
+    "fromLine": 554,
+    "toLine": 554,
+    "text": "抢杠胡条件：玩法开启抢杠。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-124",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6 抢杠胡条件-2",
+    "fromLine": 555,
+    "toLine": 555,
+    "text": "抢杠胡条件：庄闲放铳开关开启且当前三牢。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-125",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6 抢杠胡条件-3",
+    "fromLine": 556,
+    "toLine": 556,
+    "text": "除杠牌者外，其他玩家均可抢，不限庄闲关系。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-126",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6 抢杠胡条件-4",
+    "fromLine": 557,
+    "toLine": 557,
+    "text": "财神不能进副露，因此不会成为补杠牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-127",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6 胡牌落地-1",
+    "fromLine": 560,
+    "toLine": 560,
+    "text": "胡牌落地：记录胡牌类型、进张、来源座位、胡牌拆解、番型与番数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-128",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6 胡牌落地-2",
+    "fromLine": 561,
+    "toLine": 561,
+    "text": "胡牌落地：记录三财/四财翻倍触发标记。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-129",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6 胡牌落地-3",
+    "fromLine": 562,
+    "toLine": 562,
+    "text": "本局只取唯一胡牌座位，不启用一炮多响。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-130",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6 胡牌落地-4",
+    "fromLine": 563,
+    "toLine": 563,
+    "text": "抢杠胡成立后，副露中的补杠还原为碰用于展示；已有摊数维持原记录，不因抢杠新增摊数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-131",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6 胡牌落地-5",
+    "fromLine": 564,
+    "toLine": 564,
+    "text": "胡牌落地后进入结算。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-132",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6.1 HU-01",
+    "fromLine": 570,
+    "toLine": 570,
+    "text": "HU-01 自摸授权：自己摸牌/首摸时手牌+进张能拆成3N+2或2N；番型命中且≥门槛则授权自摸。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-133",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6.1 HU-02",
+    "fromLine": 571,
+    "toLine": 571,
+    "text": "HU-02 点炮授权：他人出牌时需放铳开关+三牢，仅庄闲，财神不能放铳，授权或拒绝。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-134",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6.1 HU-03",
+    "fromLine": 572,
+    "toLine": 572,
+    "text": "HU-03 抢杠授权：他人补杠时需抢杠开关+三牢，除杠牌者外均可抢。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-135",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6.1 HU-04",
+    "fromLine": 573,
+    "toLine": 573,
+    "text": "HU-04 有财必拷响：手牌含财神时仅自摸；点炮/抢杠不授权；未敲响成牌但无合法番型不授权，满足条件提示，简洁模式抑制提示。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-136",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6.1 HU-05",
+    "fromLine": 574,
+    "toLine": 574,
+    "text": "HU-05 十风授权：连续字牌≥10且自摸时按 SPEC-06 授权，任意牌可胡，不要求成牌，进入十风番型。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-137",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6.1 HU-06",
+    "fromLine": 575,
+    "toLine": 575,
+    "text": "HU-06 拆牌合法性：普通胡牌授权前枚举3N+2/2N拆解；普通胡牌无拆解不成胡，十风无需成牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-138",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6.1 HU-07",
+    "fromLine": 576,
+    "toLine": 576,
+    "text": "HU-07 番型/门槛：有拆解时逐拆解测番型，取达门槛者；无命中不成胡。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-139",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6.1 HU-08",
+    "fromLine": 577,
+    "toLine": 577,
+    "text": "HU-08 番数计算：番型命中后按番型倍数乘积+三/四财+十风超出+封顶，写入番数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-140",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6.1 HU-09",
+    "fromLine": 578,
+    "toLine": 578,
+    "text": "HU-09 胡牌记录：胡牌落地时记录胡型、进张、来源、拆解、番型、座位、结束类型，供结算。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-141",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6.1 HU-10",
+    "fromLine": 579,
+    "toLine": 579,
+    "text": "HU-10 抢杠还原：抢杠胡落地后补杠还原为碰，不新增摊数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-142",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6.1 HU-11",
+    "fromLine": 580,
+    "toLine": 580,
+    "text": "HU-11 多人仲裁：多人可胡时按座位权重（相对当前出牌者）选一名，不按点击先后。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-143",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.6.1 HU-12",
+    "fromLine": 581,
+    "toLine": 581,
+    "text": "HU-12 胡后流转：胡牌落地后下发胡牌明细，进入结算；一炮多响不启用。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-144",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.7-1",
+    "fromLine": 584,
+    "toLine": 584,
+    "text": "玩家放弃本次响应时，向全桌广播过牌提示。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-145",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.7-2",
+    "fromLine": 585,
+    "toLine": 585,
+    "text": "合法过牌放弃本次响应，不执行对应吃、碰、杠或胡；响应收齐后继续仲裁或推进摸打流程。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-146",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.7-3",
+    "fromLine": 586,
+    "toLine": 586,
+    "text": "杭麻未启用专门的过胡禁张机制，不因过胡额外登记禁胡牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-147",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.7-4",
+    "fromLine": 587,
+    "toLine": 587,
+    "text": "服务端收到过牌请求时先广播提示，再做合法性校验；非法请求也会先广播，是否符合产品预期【待确认】。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-148",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.7.1 GUO-01",
+    "fromLine": 593,
+    "toLine": 593,
+    "text": "GUO-01 过牌请求：玩家放弃响应时先广播过牌提示，再做合法性校验，非法请求也先广播。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R10-149",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "6.7.1 GUO-02",
+    "fromLine": 594,
+    "toLine": 594,
+    "text": "GUO-02 过牌结果：校验通过后放弃本次响应，不执行对应动作，等待其他响应或继续流程，不额外设置过胡禁张。",
+    "mandatory": true
+  }
+]

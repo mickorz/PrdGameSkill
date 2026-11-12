@@ -1,0 +1,938 @@
+[
+  {
+    "ruleId": "R13-001",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.1 结算参数",
+    "fromLine": 855,
+    "toLine": 855,
+    "text": "参数 B 表示底分。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-002",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.1 结算参数",
+    "fromLine": 856,
+    "toLine": 856,
+    "text": "参数 F 表示番型倍数（含三/四财、十风超出、倍数封顶）。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-003",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.1 结算参数",
+    "fromLine": 857,
+    "toLine": 857,
+    "text": "参数 M 表示牢庄倍数，等于 2^牢庄档位。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-004",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.1 结算参数",
+    "fromLine": 858,
+    "toLine": 858,
+    "text": "参数 D胜 表示胡牌方加倍倍数（1 或 2）。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-005",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.1 结算参数",
+    "fromLine": 859,
+    "toLine": 859,
+    "text": "参数 D付 表示付款方加倍倍数（1 或 2）。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-006",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.2 基础赔付",
+    "fromLine": 864,
+    "toLine": 864,
+    "text": "点炮：付款方为放铳者，应付 B × F × M × D胜。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-007",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.2 基础赔付",
+    "fromLine": 865,
+    "toLine": 865,
+    "text": "抢杠胡·庄家赢：付款方为杠牌者，应付 B × F × M × (人数−1) × D胜。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-008",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.2 基础赔付",
+    "fromLine": 866,
+    "toLine": 866,
+    "text": "抢杠胡·闲家赢：付款方为杠牌者，应付 B × F × (M + 人数−2) × D胜。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-009",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.2 基础赔付",
+    "fromLine": 867,
+    "toLine": 867,
+    "text": "自摸·庄家赢：每个闲家各付 B × F × M × D胜。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-010",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.2 基础赔付",
+    "fromLine": 868,
+    "toLine": 868,
+    "text": "自摸·闲家赢：庄家付 B × F × M × D胜。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-011",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.2 基础赔付",
+    "fromLine": 869,
+    "toLine": 869,
+    "text": "自摸·闲家赢：其他闲家各付 B × F × D胜。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-012",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.2 基础赔付",
+    "fromLine": 872,
+    "toLine": 872,
+    "text": "点炮不额外翻倍。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-013",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.2 基础赔付",
+    "fromLine": 873,
+    "toLine": 873,
+    "text": "抢杠胡“三家钱”按实际人数折算；2 人局按 1 个对手。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-014",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.2 基础赔付",
+    "fromLine": 874,
+    "toLine": 874,
+    "text": "闲家自摸时，只有庄家承担牢庄倍数，其他闲家不乘牢庄倍数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-015",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.2 基础赔付",
+    "fromLine": 875,
+    "toLine": 875,
+    "text": "以上付款金额为负值，记入付款方。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-016",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.3 三摊承包改写",
+    "fromLine": 878,
+    "toLine": 878,
+    "text": "三摊承包改写仅在三摊承包开启时执行。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-017",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.3 三摊承包改写",
+    "fromLine": 879,
+    "toLine": 879,
+    "text": "只处理胡牌方本人参与的承包对；未参与的对不结算。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-018",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.3 三摊承包改写",
+    "fromLine": 880,
+    "toLine": 880,
+    "text": "只处理庄闲对；闲闲对跳过。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-019",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.3 三摊承包改写",
+    "fromLine": 881,
+    "toLine": 881,
+    "text": "点炮时只处理“放铳者 = 承包对方”的对。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-020",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.3 三摊承包改写",
+    "fromLine": 883,
+    "toLine": 883,
+    "text": "胡牌方对对方 ≥3 摊（胡牌方是摊方）时，对方承包全部输分 ×1。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-021",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.3 三摊承包改写",
+    "fromLine": 884,
+    "toLine": 884,
+    "text": "对方对胡牌方 ≥3 摊（对方是摊方）时，对方倒承包全部输分 ×2。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-022",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.3 三摊承包改写",
+    "fromLine": 885,
+    "toLine": 885,
+    "text": "双向都 ≥3 时，按倒承包 ×2 处理。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-023",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.3 三摊承包改写",
+    "fromLine": 886,
+    "toLine": 886,
+    "text": "无任何承包对时，保持原付款结构。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-024",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.3 三摊承包改写",
+    "fromLine": 887,
+    "toLine": 887,
+    "text": "抢杠胡时，承包金额独立叠加在原付款上，不接管原付款。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-025",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.3 三摊承包改写",
+    "fromLine": 888,
+    "toLine": 888,
+    "text": "点炮、自摸时，承包金额整体替换付款结构，未参与承包者不付。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-026",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.3 三摊承包改写",
+    "fromLine": 889,
+    "toLine": 889,
+    "text": "承包明细随结算下发：赔付方、胡牌方、金额、承包/倒承包类型。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-027",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.3 三摊承包改写",
+    "fromLine": 890,
+    "toLine": 890,
+    "text": "多个承包对同时成立时，每个承包方分别按“全部输分基数”承担，不共同分摊一份。是否符合产品预期【待确认】。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-028",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.3 三摊承包改写",
+    "fromLine": 891,
+    "toLine": 891,
+    "text": "承包明细在承包计算后乘付款方自身加倍，但不随好友房单局封顶、金币场财富/携带封顶重算，以最终输赢为准。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-029",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.4 加倍补乘",
+    "fromLine": 894,
+    "toLine": 894,
+    "text": "胡牌方加倍已在基础公式中作为 D胜 乘入。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-030",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.4 加倍补乘",
+    "fromLine": 895,
+    "toLine": 895,
+    "text": "承包改写完成后，对每个最终付款方再乘其 D付。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-031",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.4 加倍补乘",
+    "fromLine": 896,
+    "toLine": 896,
+    "text": "承包明细金额同步乘承包商自己的 D付。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-032",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.4 加倍补乘",
+    "fromLine": 897,
+    "toLine": 897,
+    "text": "未成为最终付款人的玩家，其自身加倍不计入承包基数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-033",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.5 封顶",
+    "fromLine": 900,
+    "toLine": 900,
+    "text": "封顶包括番型倍数封顶、单局输分封顶、金币场财富/携带封顶，分别作用于番数、单局输分和金币场真实入账。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-034",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.6 单局输分封顶",
+    "fromLine": 903,
+    "toLine": 903,
+    "text": "单局输分封顶仅在好友房配置 >0 时生效。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-035",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.6 单局输分封顶",
+    "fromLine": 904,
+    "toLine": 904,
+    "text": "对每个付款方：本局已产生输分（含跟庄）+ 本次应付 < −上限 时，本次应付改为“−上限 − 已产生输分”。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-036",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.6 单局输分封顶",
+    "fromLine": 905,
+    "toLine": 905,
+    "text": "记录命中封顶的座位。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-037",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.6 单局输分封顶",
+    "fromLine": 906,
+    "toLine": 906,
+    "text": "赢家胡牌得分 = 付款方调整后带符号金额之和取负；本局总分再计入已有跟庄分。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-038",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.6 单局输分封顶",
+    "fromLine": 907,
+    "toLine": 907,
+    "text": "边界：胡牌前若因跟庄产生超过单局上限的亏损，按公式可能出现“正应付”，该组合需联调确认产品预期。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-039",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.6 单局输分封顶",
+    "fromLine": 908,
+    "toLine": 908,
+    "text": "该计算只在胡牌结算时调整本次付款，不单独截断纯流局的跟庄分。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-040",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.7 结算顺序",
+    "fromLine": 911,
+    "toLine": 911,
+    "text": "结算第 1 步：按胡型计算基础赔付。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-041",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.7 结算顺序",
+    "fromLine": 912,
+    "toLine": 912,
+    "text": "结算第 2 步：三摊承包/倒承包改写付款人。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-042",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.7 结算顺序",
+    "fromLine": 913,
+    "toLine": 913,
+    "text": "结算第 3 步：付款方个人加倍补乘。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-043",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.7 结算顺序",
+    "fromLine": 914,
+    "toLine": 914,
+    "text": "结算第 4 步：单局输分封顶。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-044",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.7 结算顺序",
+    "fromLine": 915,
+    "toLine": 915,
+    "text": "结算第 5 步：赢家胡牌得分 = 各付款方带符号应付金额之和取负，再与已有跟庄分合并。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-045",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.7 结算顺序",
+    "fromLine": 916,
+    "toLine": 916,
+    "text": "结算第 6 步：金币场按各视角执行财富/携带封顶。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-046",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.7 结算顺序",
+    "fromLine": 917,
+    "toLine": 917,
+    "text": "结算第 7 步：累计跨局统计（胡牌、爆头、财飘、财神数量）。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-047",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.7 结算顺序",
+    "fromLine": 918,
+    "toLine": 918,
+    "text": "结算第 8 步：下发小结算（使用本局结算时牢庄档位）。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-048",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.7 结算顺序",
+    "fromLine": 919,
+    "toLine": 919,
+    "text": "结算第 9 步：逐座位写分（带当前牢庄档位）。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-049",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.7 结算顺序",
+    "fromLine": 920,
+    "toLine": 920,
+    "text": "结算第 10 步：更新牢庄档位；下一局开局时判定庄家。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-050",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.7 结算顺序",
+    "fromLine": 921,
+    "toLine": 921,
+    "text": "结算第 11 步：打片房判定是否进入大结算。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-051",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.7 结算顺序",
+    "fromLine": 922,
+    "toLine": 922,
+    "text": "结算第 12 步：结束本局。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-052",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.8 流局",
+    "fromLine": 927,
+    "toLine": 927,
+    "text": "流局不产生胡牌输赢分。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-053",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.8 流局",
+    "fromLine": 928,
+    "toLine": 928,
+    "text": "已产生的跟庄赔付正常结算并下发。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-054",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.8 流局",
+    "fromLine": 929,
+    "toLine": 929,
+    "text": "未完成的跟庄中断且不赔付。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-055",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.8 流局",
+    "fromLine": 930,
+    "toLine": 930,
+    "text": "流局后按流局连庄配置决定庄家是否继续。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-056",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.8 流局",
+    "fromLine": 931,
+    "toLine": 931,
+    "text": "流局也写分记录，保证座位齐全。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-057",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.8 流局",
+    "fromLine": 932,
+    "toLine": 932,
+    "text": "纯流局跟庄分不经胡牌付款封顶；打片房流局不执行片数结束检查。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-058",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.9 大结算",
+    "fromLine": 935,
+    "toLine": 935,
+    "text": "房间结束或解散时汇总各小局得分。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-059",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.9 大结算",
+    "fromLine": 936,
+    "toLine": 936,
+    "text": "胜负按总分正负判定。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-060",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.9 大结算",
+    "fromLine": 937,
+    "toLine": 937,
+    "text": "附加统计：胡牌次数、爆头次数、财飘次数、财神数量（手牌 + 出牌区 + 胡牌进张）。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-061",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.10 结算示例",
+    "fromLine": 940,
+    "toLine": 940,
+    "text": "设 4 人局，B=10，F=4，庄家 3 牢 → M=8，无人加倍；点炮/抢杠胡仅在三牢且对应开关开启时可触发，自摸不受牢数限制。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-062",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.10 结算示例",
+    "fromLine": 944,
+    "toLine": 944,
+    "text": "庄家自摸：每个闲家 10×4×8=320，庄家 +960，三闲各 −320。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-063",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.10 结算示例",
+    "fromLine": 945,
+    "toLine": 945,
+    "text": "闲家自摸：庄家 10×4×8=320；两闲各 10×4=40，闲家 +400，庄家 −320，两闲各 −40。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-064",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.10 结算示例",
+    "fromLine": 946,
+    "toLine": 946,
+    "text": "闲家点炮给庄家：放铳闲家 10×4×8=320，庄家 +320，放铳者 −320。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-065",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.10 结算示例",
+    "fromLine": 947,
+    "toLine": 947,
+    "text": "庄家点炮给闲家：庄家 10×4×8=320，闲家 +320，庄家 −320。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-066",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.10 结算示例",
+    "fromLine": 948,
+    "toLine": 948,
+    "text": "闲家抢庄家杠：10×4×(8+2)=400，闲家 +400，杠牌庄家 −400。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-067",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.10 结算示例",
+    "fromLine": 949,
+    "toLine": 949,
+    "text": "庄家抢闲家杠：10×4×8×(4−1)=960，庄家 +960，杠牌闲家 −960。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-068",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.10 结算示例",
+    "fromLine": 952,
+    "toLine": 952,
+    "text": "承包示例：A 对 Z 有 3 摊，A 胡牌 → Z 承包全部输分 ×1。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-069",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.10 结算示例",
+    "fromLine": 953,
+    "toLine": 953,
+    "text": "承包示例：Z 对 A 有 3 摊，A 胡牌 → Z 倒承包全部输分 ×2。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-070",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.10 结算示例",
+    "fromLine": 954,
+    "toLine": 954,
+    "text": "承包示例：A、Z 双向都满 3 摊，A 胡牌 → 按倒承包 ×2。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-071",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.10 结算示例",
+    "fromLine": 955,
+    "toLine": 955,
+    "text": "承包示例：庄家 Z 胡牌，闲家 A、B 各自对 Z 有 3 摊 → A、B 分别按全部输分 ×2 赔付，不共同分摊。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-072",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.10 结算示例",
+    "fromLine": 957,
+    "toLine": 957,
+    "text": "加倍与承包示例：庄家自摸且加倍，基础每闲 40，全部输分基数 120；A 倒承包 ×2 且自身加倍，最终付 120×2×2=480，其他闲家加倍不计入该承包基数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-073",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.11 结算客户端展示需求",
+    "fromLine": 961,
+    "toLine": 961,
+    "text": "目标：玩家在结算页能看懂“谁胡、怎么胡、赢多少、为什么”；服务端应在结算时提供上述数据，客户端负责展示。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-074",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.11 结算客户端展示需求",
+    "fromLine": 964,
+    "toLine": 964,
+    "text": "客户端必须展示结算结果：胡牌 / 流局 / 被动结束。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-075",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.11 结算客户端展示需求",
+    "fromLine": 965,
+    "toLine": 965,
+    "text": "客户端必须展示胡牌信息：胡牌玩家、胡型（自摸/点炮/抢杠）、番型名称、番数、进张、来源玩家。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-076",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.11 结算客户端展示需求",
+    "fromLine": 966,
+    "toLine": 966,
+    "text": "客户端必须展示输赢信息：每名玩家的本局得分、倍数、封顶/破产状态。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-077",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.11 结算客户端展示需求",
+    "fromLine": 967,
+    "toLine": 967,
+    "text": "客户端必须展示承包信息：承包方、被承包方、承包/倒承包类型、金额。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-078",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.11 结算客户端展示需求",
+    "fromLine": 968,
+    "toLine": 968,
+    "text": "客户端必须展示额外得分（如跟庄分等）；无则不展示。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-079",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.11 结算客户端展示需求",
+    "fromLine": 969,
+    "toLine": 969,
+    "text": "客户端必须展示牢庄信息：本局结算时牢庄档位与倍数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-080",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.11 结算客户端展示需求",
+    "fromLine": 970,
+    "toLine": 970,
+    "text": "客户端必须展示加倍信息：各玩家是否加倍。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-081",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.11 结算客户端展示需求",
+    "fromLine": 971,
+    "toLine": 971,
+    "text": "客户端必须展示亮牌信息：胡牌手牌与拆解；全桌手牌、副露、剩余牌墙是否展示由产品确认。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-082",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.11 结算客户端展示需求",
+    "fromLine": 974,
+    "toLine": 974,
+    "text": "展示规则：最终得分以结算结果为准，额外分明细不得重复计分。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-083",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.11 结算客户端展示需求",
+    "fromLine": 975,
+    "toLine": 975,
+    "text": "展示规则：番型明细缺失时，客户端应能按胡牌明细中的番型与番数展示。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-084",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.11 结算客户端展示需求",
+    "fromLine": 976,
+    "toLine": 976,
+    "text": "展示规则：十风赢家的胡牌手牌按出牌区字牌序列展示；全桌手牌区仍展示实际手牌。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-085",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.11 结算客户端展示需求",
+    "fromLine": 977,
+    "toLine": 977,
+    "text": "展示规则：结算亮牌与普通重连的手牌可见性规则不同。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-086",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.11 结算客户端展示需求",
+    "fromLine": 978,
+    "toLine": 978,
+    "text": "展示规则：结算展示使用本局结算时牢庄档位，下一局牢庄在结算后更新。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-087",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.11 结算客户端展示需求",
+    "fromLine": 979,
+    "toLine": 979,
+    "text": "展示规则：承包明细为封顶前口径，不应直接当作最终实扣；金币场每位玩家收到自己的结算视角，其他座位分值不保证等于真实入账。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-088",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.11 结算客户端展示需求",
+    "fromLine": 980,
+    "toLine": 980,
+    "text": "展示规则：番型倍率固定注册在算法中；结算番型明细读取另一份配置倍率，当前杭麻路径未见填入，明细可能为空，但胡牌项仍携带番型 ID 和总番，展示口径需联调。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-089",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.11 结算客户端展示需求",
+    "fromLine": 983,
+    "toLine": 983,
+    "text": "待确认：全桌手牌、副露、剩余牌墙是否全部展示。",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R13-090",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.11 结算客户端展示需求",
+    "fromLine": 984,
+    "toLine": 984,
+    "text": "待确认：番型明细为空时，客户端是否只展示番型名称与番数。",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R13-091",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.12 功能点明细（结算）",
+    "fromLine": 990,
+    "toLine": 990,
+    "text": "SET-01 点炮赔付：点炮胡时放铳者付 B×F×M×D胜；仅三牢+开关。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-092",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.12 功能点明细（结算）",
+    "fromLine": 991,
+    "toLine": 991,
+    "text": "SET-02 抢杠赔付：杠牌者付 B×F×D胜，庄赢 M×(人数−1)，闲赢 M+人数−2；仅三牢+开关。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-093",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.12 功能点明细（结算）",
+    "fromLine": 992,
+    "toLine": 992,
+    "text": "SET-03 自摸赔付：庄赢每个闲家付 B×F×M×D；闲赢庄付 B×F×M×D、其他闲家付 B×F×D；乘番数与加倍。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-094",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.12 功能点明细（结算）",
+    "fromLine": 993,
+    "toLine": 993,
+    "text": "SET-04 承包改写：按 SPEC-11 改写，摊方胡→被摊方×1；被摊方胡→摊方×2；双向×2；点炮仅放铳者，抢杠独立叠加。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-095",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.12 功能点明细（结算）",
+    "fromLine": 994,
+    "toLine": 994,
+    "text": "SET-05 多承包对：每个承包方分别按全部基数承担；明细不随后续封顶重算；不共同分摊，实扣以最终输赢为准。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-096",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.12 功能点明细（结算）",
+    "fromLine": 995,
+    "toLine": 995,
+    "text": "SET-06 加倍补乘：承包改写后每个最终付款方乘自身加倍倍数；胡牌方加倍已在基础公式。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-097",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.12 功能点明细（结算）",
+    "fromLine": 996,
+    "toLine": 996,
+    "text": "SET-07 单局封顶：好友房配置>0 时，已输+本次<−上限 → 本次=−上限−已输；可能正应付，需联调。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-098",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.12 功能点明细（结算）",
+    "fromLine": 997,
+    "toLine": 997,
+    "text": "SET-08 赢家合计：赢家胡牌分=各付款方带符号应付金额之和取负，再合并已有跟庄分；本局总分以最终输赢为准。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-099",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.12 功能点明细（结算）",
+    "fromLine": 998,
+    "toLine": 998,
+    "text": "SET-09 跨局统计：每小局累计胡牌/爆头/财飘/财神数，供大结算。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-100",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.12 功能点明细（结算）",
+    "fromLine": 999,
+    "toLine": 999,
+    "text": "SET-10 结算展示：结算完成后展示胡牌、手牌、输赢、番型、摊/承包、加倍；十风明细特殊。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-101",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.12 功能点明细（结算）",
+    "fromLine": 1000,
+    "toLine": 1000,
+    "text": "SET-11 写分：结算后好友房写真实分；金币场按金币场写分规则；带当前牢庄。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-102",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.12 功能点明细（结算）",
+    "fromLine": 1001,
+    "toLine": 1001,
+    "text": "SET-12 更新牢庄：写分后庄胡/流局连庄升牢；换庄重置；常规封顶三牢。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-103",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.12 功能点明细（结算）",
+    "fromLine": 1002,
+    "toLine": 1002,
+    "text": "SET-13 流局：荒局不产生胡牌分；跟庄分保留；未完成跟庄不赔付；跟庄分不经胡牌付款封顶；不检查打片结束。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R13-104",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "9.12 功能点明细（结算）",
+    "fromLine": 1003,
+    "toLine": 1003,
+    "text": "SET-14 大结算：房间结束/解散时汇总各小局得分与统计；打片触发由结算判。",
+    "mandatory": true
+  }
+]

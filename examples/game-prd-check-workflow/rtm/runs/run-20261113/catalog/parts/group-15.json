@@ -1,0 +1,236 @@
+[
+  {
+    "ruleId": "R15-001",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "11. 断线重连",
+    "fromLine": 1090,
+    "toLine": 1090,
+    "text": "断线重连章节（章节标题，仅用于索引定位）",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R15-002",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "11.1",
+    "fromLine": 1091,
+    "toLine": 1091,
+    "text": "玩家重连时按当前阶段恢复对局",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-003",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "11.2",
+    "fromLine": 1093,
+    "toLine": 1093,
+    "text": "开局阶段恢复：等待信息、开局信息、门风、游戏配置、虚拟玩家信息",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-004",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "11.2",
+    "fromLine": 1094,
+    "toLine": 1094,
+    "text": "定庄阶段恢复：局数据（局数、庄家、连庄、牢庄）",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-005",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "11.2",
+    "fromLine": 1095,
+    "toLine": 1095,
+    "text": "掷骰/发牌阶段恢复：骰子、牌墙、自己的手牌（明牌开启时才包含其他玩家手牌）",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-006",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "11.2",
+    "fromLine": 1096,
+    "toLine": 1096,
+    "text": "做牌阶段恢复：做牌阶段快照",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-007",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "11.2",
+    "fromLine": 1097,
+    "toLine": 1097,
+    "text": "洗牌阶段恢复：洗牌座位",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-008",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "11.2",
+    "fromLine": 1098,
+    "toLine": 1098,
+    "text": "加倍阶段恢复：各座位加倍状态",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-009",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "11.2",
+    "fromLine": 1098,
+    "toLine": 1098,
+    "text": "加倍阶段 remain_sec 为配置时长而非实际剩余时间，客户端如何恢复需联调确认",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-010",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "11.2",
+    "fromLine": 1099,
+    "toLine": 1099,
+    "text": "定财神阶段恢复：财神与替代牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-011",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "11.2",
+    "fromLine": 1100,
+    "toLine": 1100,
+    "text": "首摸等待阶段恢复：等待信息、牌墙、手牌、听牌提示",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-012",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "11.2",
+    "fromLine": 1101,
+    "toLine": 1101,
+    "text": "摸打循环恢复：等待信息、局数据、牌墙、自己手牌（明牌才含他人）、操作权限、财神、牢庄、摊/承包、飘次数、禁手、出牌区、跟庄骰子、加倍状态",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-013",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "11.2",
+    "fromLine": 1102,
+    "toLine": 1102,
+    "text": "结算阶段恢复：各座位输赢、历史累计分、虚拟玩家信息、加倍状态",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-014",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "11.3",
+    "fromLine": 1103,
+    "toLine": 1103,
+    "text": "普通重连只能看到自己的手牌；明牌开启时才展示其他玩家手牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-015",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "11.4",
+    "fromLine": 1104,
+    "toLine": 1104,
+    "text": "空闲或已结束状态重连时，仅下发空闲场景",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-016",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "11.1 功能点明细（断线重连）",
+    "fromLine": 1106,
+    "toLine": 1106,
+    "text": "功能点明细（断线重连）小节，含 RELINK-01 至 RELINK-10 功能点表",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R15-017",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "RELINK-01",
+    "fromLine": 1110,
+    "toLine": 1110,
+    "text": "开局重连：开局阶段补发等待、开局、门风、游戏配置、虚拟玩家信息，恢复开局",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-018",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "RELINK-02",
+    "fromLine": 1111,
+    "toLine": 1111,
+    "text": "定庄重连：定庄阶段补发局数据（局数/庄/连庄/牢庄），恢复庄家",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-019",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "RELINK-03",
+    "fromLine": 1112,
+    "toLine": 1112,
+    "text": "掷骰/发牌重连：补发骰子、牌墙、自己的手牌，明牌才含他人手牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-020",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "RELINK-04",
+    "fromLine": 1113,
+    "toLine": 1113,
+    "text": "做牌重连：做牌阶段补发做牌快照，恢复指定牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-021",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "RELINK-05",
+    "fromLine": 1114,
+    "toLine": 1114,
+    "text": "洗牌重连：洗牌阶段补发洗牌座位，恢复展示",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-022",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "RELINK-06",
+    "fromLine": 1115,
+    "toLine": 1115,
+    "text": "加倍重连：补发加倍状态与时钟，remain_sec 为配置时长",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-023",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "RELINK-07",
+    "fromLine": 1116,
+    "toLine": 1116,
+    "text": "定财神重连：补发财神/替代牌，恢复财神",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-024",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "RELINK-08",
+    "fromLine": 1117,
+    "toLine": 1117,
+    "text": "首摸重连：首摸等待补发等待、牌墙、手牌、听牌提示，恢复提示",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-025",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "RELINK-09",
+    "fromLine": 1118,
+    "toLine": 1118,
+    "text": "摸打重连：补发局数据、牌墙、自己的手牌（明牌才含他人）、权限、财神、牢庄、摊/承包、飘、禁手、出牌区、跟庄骰子、加倍",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R15-026",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "RELINK-10",
+    "fromLine": 1119,
+    "toLine": 1119,
+    "text": "结算重连：补发输赢、历史分、虚拟玩家信息、加倍状态，恢复结算",
+    "mandatory": true
+  }
+]

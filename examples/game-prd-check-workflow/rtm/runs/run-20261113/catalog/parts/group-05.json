@@ -1,0 +1,650 @@
+[
+  {
+    "ruleId": "R05-001",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/24-三摊更新.md",
+    "section": "24-三摊更新 什么时候出现 第1条",
+    "fromLine": 3,
+    "toLine": 3,
+    "text": "吃/碰累计摊数或“承包”关系发生变化时触发三摊更新消息。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-002",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/24-三摊更新.md",
+    "section": "24-三摊更新 一、数据记录 第1条",
+    "fromLine": 7,
+    "toLine": 7,
+    "text": "需要记录每家的摊计数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-003",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/24-三摊更新.md",
+    "section": "24-三摊更新 一、数据记录 第2条",
+    "fromLine": 7,
+    "toLine": 7,
+    "text": "需要记录“谁摊谁”的承包关系。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-004",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/24-三摊更新.md",
+    "section": "24-三摊更新 一、数据记录 第3条",
+    "fromLine": 7,
+    "toLine": 7,
+    "text": "摊计数与承包关系数据同时供结算与回放读取。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-005",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/24-三摊更新.md",
+    "section": "24-三摊更新 二、界面变化 第1行",
+    "fromLine": 13,
+    "toLine": 13,
+    "text": "某一家累计到 3 摊时，全桌中央（不分座位）播放“三摊落地”动画，播完自动隐藏。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-006",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/24-三摊更新.md",
+    "section": "24-三摊更新 二、界面变化 第1行",
+    "fromLine": 13,
+    "toLine": 13,
+    "text": "回放与简单模式下不播放“三摊落地”动画。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-007",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/24-三摊更新.md",
+    "section": "24-三摊更新 二、界面变化 第2行",
+    "fromLine": 14,
+    "toLine": 14,
+    "text": "一般的摊数变化在桌面上没有常驻显示，只记录数据，由结算界面读取。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-008",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/24-三摊更新.md",
+    "section": "24-三摊更新 三、连带影响 第1条",
+    "fromLine": 18,
+    "toLine": 18,
+    "text": "三摊是结算翻倍与承包判定的输入。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-009",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/24-三摊更新.md",
+    "section": "24-三摊更新 三、连带影响 第2条",
+    "fromLine": 18,
+    "toLine": 18,
+    "text": "小结算里的“承保”标记读结算消息中的承包数据，不读三摊数据。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-010",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/24-三摊更新.md",
+    "section": "24-三摊更新 三、连带影响 第3条",
+    "fromLine": 19,
+    "toLine": 19,
+    "text": "落地动画全桌居中显示，不跟随具体玩家位置。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-011",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/24-三摊更新.md",
+    "section": "24-三摊更新 四、重连回放 第1条",
+    "fromLine": 23,
+    "toLine": 23,
+    "text": "本消息没有“只补数据”判断：重连补数据时若当时恰好有 3 摊，可能重复播放一次落地动画。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-012",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/24-三摊更新.md",
+    "section": "24-三摊更新 四、重连回放 第2条",
+    "fromLine": 23,
+    "toLine": 23,
+    "text": "若出现“重连又播一次三摊”，需要在此处补“只补数据”判断。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-013",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/25-飘.md",
+    "section": "25-飘 什么时候出现 第1条",
+    "fromLine": 3,
+    "toLine": 3,
+    "text": "玩家打出财神产生“飘”后，服务端广播飘计数，触发飘表现。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-014",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/25-飘.md",
+    "section": "25-飘 一、数据记录 第1条",
+    "fromLine": 7,
+    "toLine": 7,
+    "text": "需要记录该玩家的飘计数。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-015",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/25-飘.md",
+    "section": "25-飘 二、界面变化 第1行",
+    "fromLine": 13,
+    "toLine": 13,
+    "text": "在该座位的吃碰杠飘动画位播放“飘”动画，播完自动隐藏。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-016",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/25-飘.md",
+    "section": "25-飘 二、界面变化 第2行",
+    "fromLine": 14,
+    "toLine": 14,
+    "text": "桌面常驻区域不显示飘计数数字，只播放动画。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-017",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/25-飘.md",
+    "section": "25-飘 三、连带影响 第1条",
+    "fromLine": 18,
+    "toLine": 18,
+    "text": "飘计数会进入结算（结算界面与飘分数据），桌面只负责播放一次动画。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-018",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/25-飘.md",
+    "section": "25-飘 三、连带影响 第2条",
+    "fromLine": 19,
+    "toLine": 19,
+    "text": "重连时飘计数只恢复数据，不播放飘动画。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-019",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/25-飘.md",
+    "section": "25-飘 四、重连回放 第1条",
+    "fromLine": 23,
+    "toLine": 23,
+    "text": "本消息没有“只补数据”判断：若同一条消息在补数据路径复用，可能重复播一次飘动画，排查时注意。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-020",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/26-加倍阶段.md",
+    "section": "26-加倍阶段 什么时候出现 第1条",
+    "fromLine": 3,
+    "toLine": 3,
+    "text": "金币场在定庄前进入加倍阶段，服务端在“阶段开始 / 每人选择 / 阶段结束”时各下发一次。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-021",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/26-加倍阶段.md",
+    "section": "26-加倍阶段 一、数据记录 第1条",
+    "fromLine": 7,
+    "toLine": 7,
+    "text": "需要记录当前是否阶段结束。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-022",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/26-加倍阶段.md",
+    "section": "26-加倍阶段 一、数据记录 第2条",
+    "fromLine": 7,
+    "toLine": 7,
+    "text": "需要记录每家的选择状态。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-023",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/26-加倍阶段.md",
+    "section": "26-加倍阶段 一、数据记录 第3条",
+    "fromLine": 7,
+    "toLine": 7,
+    "text": "需要记录剩余选择时间。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-024",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/26-加倍阶段.md",
+    "section": "26-加倍阶段 二、界面变化 第1行",
+    "fromLine": 13,
+    "toLine": 13,
+    "text": "阶段进行中且自己还没选时，主界面操作区显示“加倍 / 不加倍”按钮页，并显示选择倒计时。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-025",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/26-加倍阶段.md",
+    "section": "26-加倍阶段 二、界面变化 第1行",
+    "fromLine": 13,
+    "toLine": 13,
+    "text": "阶段结束或没有数据时，收起加倍按钮页并隐藏选择倒计时。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-026",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/26-加倍阶段.md",
+    "section": "26-加倍阶段 二、界面变化 第2行",
+    "fromLine": 14,
+    "toLine": 14,
+    "text": "玩家头像上有“加倍”常驻标记，选择加倍时显示。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-027",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/26-加倍阶段.md",
+    "section": "26-加倍阶段 二、界面变化 第2行",
+    "fromLine": 14,
+    "toLine": 14,
+    "text": "重连后头像上的加倍常驻标记也要恢复。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-028",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/26-加倍阶段.md",
+    "section": "26-加倍阶段 二、界面变化 第3行",
+    "fromLine": 15,
+    "toLine": 15,
+    "text": "玩家头像旁的桌面加倍标签在阶段进行中显示“未加倍 / 加倍”状态。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-029",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/26-加倍阶段.md",
+    "section": "26-加倍阶段 二、界面变化 第3行",
+    "fromLine": 15,
+    "toLine": 15,
+    "text": "桌面加倍标签在阶段结束后延迟 1 秒清除，避免一直挂在桌面上。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-030",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/26-加倍阶段.md",
+    "section": "26-加倍阶段 二、界面变化 第4行",
+    "fromLine": 16,
+    "toLine": 16,
+    "text": "匹配场头像表现与普通房相同：头像常驻标记加桌面标签。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-031",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/26-加倍阶段.md",
+    "section": "26-加倍阶段 二、界面变化 第5行",
+    "fromLine": 17,
+    "toLine": 17,
+    "text": "开局动画里的头像也要同步显示加倍标记。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-032",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/26-加倍阶段.md",
+    "section": "26-加倍阶段 二、界面变化 第5行",
+    "fromLine": 17,
+    "toLine": 17,
+    "text": "加倍阶段结束时，开局动画里的加倍标记全部归零。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-033",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/26-加倍阶段.md",
+    "section": "26-加倍阶段 三、连带影响 第1条",
+    "fromLine": 21,
+    "toLine": 21,
+    "text": "操作区状态共用：加倍页与吃碰杠胡页互斥，任何一次操作或重置都把操作区恢复为空状态。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-034",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/26-加倍阶段.md",
+    "section": "26-加倍阶段 三、连带影响 第2条",
+    "fromLine": 22,
+    "toLine": 22,
+    "text": "头像常驻标记与桌面标签是两套：桌面标签阶段结束后清除，头像标记保留到下一局重置。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-035",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/26-加倍阶段.md",
+    "section": "26-加倍阶段 四、重连回放 第1条",
+    "fromLine": 26,
+    "toLine": 26,
+    "text": "加倍消息只记录数据、不单独刷新界面；重连到加倍阶段时由“场景加倍”重连流程补一次刷新。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-036",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/27-跟庄重扔骰子.md",
+    "section": "27-跟庄重扔骰子 什么时候出现 第1条",
+    "fromLine": 3,
+    "toLine": 3,
+    "text": "跟庄成功且房间规则选择“摇骰子赔付”时触发跟庄重扔骰子。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-037",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/27-跟庄重扔骰子.md",
+    "section": "27-跟庄重扔骰子 一、数据记录 第1条",
+    "fromLine": 7,
+    "toLine": 7,
+    "text": "保存这次跟庄骰子的完整数据，供回放拖动或跳转到该步时静态还原。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-038",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/27-跟庄重扔骰子.md",
+    "section": "27-跟庄重扔骰子 二、界面变化 第1行",
+    "fromLine": 13,
+    "toLine": 13,
+    "text": "牌桌中央倒计时区先临时屏蔽倒计时数字与方位灯闪烁，业务计时继续。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-039",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/27-跟庄重扔骰子.md",
+    "section": "27-跟庄重扔骰子 二、界面变化 第2行",
+    "fromLine": 14,
+    "toLine": 14,
+    "text": "两枚骰子播放骰子动画。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-040",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/27-跟庄重扔骰子.md",
+    "section": "27-跟庄重扔骰子 二、界面变化 第3行",
+    "fromLine": 15,
+    "toLine": 15,
+    "text": "在协议指定的座位播放“跟庄”动画。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-041",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/27-跟庄重扔骰子.md",
+    "section": "27-跟庄重扔骰子 二、界面变化 第4行",
+    "fromLine": 16,
+    "toLine": 16,
+    "text": "骰子与跟庄动画都结束后，在四家飘分位的对应座位播放跟庄赔付的飘分。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-042",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/27-跟庄重扔骰子.md",
+    "section": "27-跟庄重扔骰子 二、界面变化 第5行",
+    "fromLine": 17,
+    "toLine": 17,
+    "text": "动画全部结束后向服务端确认一次，以推进流程。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-043",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/27-跟庄重扔骰子.md",
+    "section": "27-跟庄重扔骰子 三、异常处理 第1条",
+    "fromLine": 21,
+    "toLine": 21,
+    "text": "需校验数据合法性：人数为 4 人、座位不越界、骰子点数在 1~6、赔付金额正常。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-044",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/27-跟庄重扔骰子.md",
+    "section": "27-跟庄重扔骰子 三、异常处理 第2条",
+    "fromLine": 21,
+    "toLine": 21,
+    "text": "数据不合法时直接跳过动画并回包，避免流程卡住。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-045",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/27-跟庄重扔骰子.md",
+    "section": "27-跟庄重扔骰子 四、连带影响 第1条",
+    "fromLine": 25,
+    "toLine": 25,
+    "text": "骰子期间倒计时区域被临时屏蔽，骰子结束或本次流程失效后自动恢复。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-046",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/27-跟庄重扔骰子.md",
+    "section": "27-跟庄重扔骰子 四、连带影响 第2条",
+    "fromLine": 26,
+    "toLine": 26,
+    "text": "回放时用保存的数据静态重放，且不会向服务端确认。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-047",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/27-跟庄重扔骰子.md",
+    "section": "27-跟庄重扔骰子 五、重连回放 第1条",
+    "fromLine": 30,
+    "toLine": 30,
+    "text": "只补数据时仅保存数据，不播放骰子与跟庄动画、不播放飘分。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-048",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/28-升庄广播.md",
+    "section": "28-升庄广播 什么时候出现 第1条",
+    "fromLine": 3,
+    "toLine": 3,
+    "text": "本局升庄成功时，服务端广播新的庄家等级。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-049",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/28-升庄广播.md",
+    "section": "28-升庄广播 一、数据记录 第1条",
+    "fromLine": 7,
+    "toLine": 7,
+    "text": "更新庄家等级与连庄数，用于庄家标记和结算显示。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-050",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/28-升庄广播.md",
+    "section": "28-升庄广播 二、界面变化 第1行",
+    "fromLine": 13,
+    "toLine": 13,
+    "text": "萧山好友房：若此时正在等开局骰子，则等骰子播完再播“升庄”。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-051",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/28-升庄广播.md",
+    "section": "28-升庄广播 二、界面变化 第1行",
+    "fromLine": 13,
+    "toLine": 13,
+    "text": "萧山好友房：不在等开局骰子时，立即播放“升庄”。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-052",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/28-升庄广播.md",
+    "section": "28-升庄广播 二、界面变化 第1行",
+    "fromLine": 13,
+    "toLine": 13,
+    "text": "萧山好友房：升级失败或简单模式下直接跳过升庄表现。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-053",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/28-升庄广播.md",
+    "section": "28-升庄广播 二、界面变化 第2行",
+    "fromLine": 14,
+    "toLine": 14,
+    "text": "其他玩法：先隐藏全桌庄家标记。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-054",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/28-升庄广播.md",
+    "section": "28-升庄广播 二、界面变化 第2行",
+    "fromLine": 14,
+    "toLine": 14,
+    "text": "其他玩法：再在协议座位显示“庄”。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-055",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/28-升庄广播.md",
+    "section": "28-升庄广播 二、界面变化 第2行",
+    "fromLine": 14,
+    "toLine": 14,
+    "text": "其他玩法：更新连庄档位，超过 3 档按 3 档显示。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-056",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/28-升庄广播.md",
+    "section": "28-升庄广播 二、界面变化 第3行",
+    "fromLine": 15,
+    "toLine": 15,
+    "text": "其他玩法：在协议座位位置播放“加庄”动画。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-057",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/28-升庄广播.md",
+    "section": "28-升庄广播 二、界面变化 第3行",
+    "fromLine": 15,
+    "toLine": 15,
+    "text": "其他玩法：升级失败、简单模式或没有对应节点时直接跳过加庄动画。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-058",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/28-升庄广播.md",
+    "section": "28-升庄广播 三、连带影响 第1条",
+    "fromLine": 19,
+    "toLine": 19,
+    "text": "萧山好友房要求“先开局骰子、后升庄”，由开局阶段记录的状态排队控制。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-059",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/28-升庄广播.md",
+    "section": "28-升庄广播 三、连带影响 第2条",
+    "fromLine": 20,
+    "toLine": 20,
+    "text": "回放时加庄并入最近的“掷骰子”步骤一起播放，保证骰子与加庄动画都不丢。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-060",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/28-升庄广播.md",
+    "section": "28-升庄广播 四、重连回放 第1条",
+    "fromLine": 24,
+    "toLine": 24,
+    "text": "只补数据时只更新庄家等级与连庄数，不显示庄家标记、不播放动画。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-061",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/29-匹配场底分.md",
+    "section": "29-匹配场底分 什么时候出现 第1条",
+    "fromLine": 3,
+    "toLine": 3,
+    "text": "匹配场下发底分时触发匹配场底分处理。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-062",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/29-匹配场底分.md",
+    "section": "29-匹配场底分 一、前置条件 第1条",
+    "fromLine": 7,
+    "toLine": 7,
+    "text": "只有匹配场才处理底分消息。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-063",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/29-匹配场底分.md",
+    "section": "29-匹配场底分 一、前置条件 第2条",
+    "fromLine": 8,
+    "toLine": 8,
+    "text": "底分小于等于 0 时不做处理。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-064",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/29-匹配场底分.md",
+    "section": "29-匹配场底分 二、数据记录 第1条",
+    "fromLine": 12,
+    "toLine": 12,
+    "text": "保存底分数据。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-065",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/29-匹配场底分.md",
+    "section": "29-匹配场底分 二、数据记录 第2条",
+    "fromLine": 12,
+    "toLine": 12,
+    "text": "服务端可能用两种数字格式，需统一转成普通数字。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-066",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/29-匹配场底分.md",
+    "section": "29-匹配场底分 三、界面变化 第1行",
+    "fromLine": 18,
+    "toLine": 18,
+    "text": "背景底分文字显示“底分：XX”。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-067",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/29-匹配场底分.md",
+    "section": "29-匹配场底分 三、界面变化 第2行",
+    "fromLine": 19,
+    "toLine": 19,
+    "text": "背景的“游戏中”状态页切到游戏中状态并显示空闲图标。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-068",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/29-匹配场底分.md",
+    "section": "29-匹配场底分 三、界面变化 第3行",
+    "fromLine": 20,
+    "toLine": 20,
+    "text": "背景牌桌美术字按当前玩法切换。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-069",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/29-匹配场底分.md",
+    "section": "29-匹配场底分 三、界面变化 第4行",
+    "fromLine": 21,
+    "toLine": 21,
+    "text": "未开局时房间名按房间数据显示。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-070",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/29-匹配场底分.md",
+    "section": "29-匹配场底分 四、连带影响 第1条",
+    "fromLine": 25,
+    "toLine": 25,
+    "text": "背景底分只在匹配场显示；包厢 / 好友房底分由房间规则展示，不走本消息。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-071",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/29-匹配场底分.md",
+    "section": "29-匹配场底分 四、连带影响 第2条",
+    "fromLine": 26,
+    "toLine": 26,
+    "text": "重连时本消息只保存数据，底分文字由后续“游戏开始状态”或“底分刷新”补齐。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R05-072",
+    "file": ".claude/skills/game-prd-check/references/rules/hzmj_game_flow_handler/hzmj_game_flow_handler/29-匹配场底分.md",
+    "section": "29-匹配场底分 五、重连回放 第1条",
+    "fromLine": 30,
+    "toLine": 30,
+    "text": "只补数据时不刷新底分文字。",
+    "mandatory": true
+  }
+]

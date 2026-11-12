@@ -1,0 +1,587 @@
+[
+  {
+    "ruleId": "R07-001",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.1 文档信息",
+    "fromLine": 18,
+    "toLine": 18,
+    "text": "适用玩法：2/3/4 人基准杭州麻将；好友房、金币场",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-002",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.1 文档信息",
+    "fromLine": 21,
+    "toLine": 21,
+    "text": "维护要求：规则变更需同步更新功能点、验收场景与待确认项",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-003",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.2 变更记录",
+    "fromLine": 23,
+    "toLine": 29,
+    "text": "变更记录表：v3.1 补齐财神、飘财、听牌、杠牌及结算边界；v3.0 统一口径补标准章节；v2.x 多轮源码复核；v1.0 现状基线初版",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R07-004",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.3 背景与目标",
+    "fromLine": 32,
+    "toLine": 35,
+    "text": "背景：杭麻规则分散在配置、步骤、算法与结算代码中；缺少可独立阅读可验收的完整文档；部分行为属代码现状需确认",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R07-005",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.3 背景与目标",
+    "fromLine": 37,
+    "toLine": 40,
+    "text": "目标：形成覆盖配置、开局、摸打、吃碰杠胡、特殊规则、番型、结算、金币场、重连的完整 PRD",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R07-006",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.3 背景与目标",
+    "fromLine": 42,
+    "toLine": 44,
+    "text": "非目标：不定义客户端视觉动效与页面布局；不定义充值、商城、活动等运营功能",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R07-007",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.3 背景与目标",
+    "fromLine": 47,
+    "toLine": 47,
+    "text": "成功指标：功能点覆盖率，配置/开局/动作/特殊/结算/金币/重连均有功能点",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-008",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.3 背景与目标",
+    "fromLine": 48,
+    "toLine": 48,
+    "text": "成功指标：验收覆盖率，每条 P0/P1 功能点至少对应一条 AC",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-009",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.3 背景与目标",
+    "fromLine": 49,
+    "toLine": 49,
+    "text": "成功指标：联调闭环率，所有【待核实】【待确认】项有结论",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-010",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.3 背景与目标",
+    "fromLine": 50,
+    "toLine": 50,
+    "text": "成功指标：回归质量，上线前 P0/P1 缺陷为 0，规则类回归通过率 100%",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-011",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.4.1 纳入范围",
+    "fromLine": 53,
+    "toLine": 56,
+    "text": "纳入范围：2/3/4 人基准杭州麻将；好友房（包厢）与金币场；配置、开局、摸打、吃碰杠胡、番型、结算、断线重连、结束与大结算",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-012",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.4.2 不纳入范围",
+    "fromLine": 58,
+    "toLine": 62,
+    "text": "不纳入范围：非杭州麻将玩法；客户端视觉动效页面布局与文案；充值商城活动等运营功能；AI 回放、牌库干预等基类能力",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-013",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.4.3 标记约定",
+    "fromLine": 64,
+    "toLine": 69,
+    "text": "标记约定：【现状】源码确认行为；【待核实】客户端或联调才能确认；【待确认】产品口径未定需评审",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-014",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.4.4 核查边界",
+    "fromLine": 71,
+    "toLine": 72,
+    "text": "核查边界：基于服务端静态源码核查，未运行对局、未检查客户端；展示效果、多人仲裁、混级房入账需联调确认",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-015",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.5 用户与角色",
+    "fromLine": 74,
+    "toLine": 83,
+    "text": "用户角色表：房主、普通玩家、机器人、产品/运营、客户端、服务端、测试及各自主场景与关注点",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R07-016",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.6 术语表",
+    "fromLine": 85,
+    "toLine": 103,
+    "text": "术语表：财神、敲响、飘、牢庄、摊、承包/倒承包、十风、明杠/暗杠/补杠、抢杠胡、跟庄、守庄、禁手、打片、番型、底分/台费、加倍",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R07-017",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.7 产品流程总览",
+    "fromLine": 107,
+    "toLine": 107,
+    "text": "金币场流程：开局 → 加倍 → 定庄 → 掷骰 → [做牌] → 定财神 → 发牌 → 庄家首摸 → 首摸等待 → 对局",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-018",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.7 产品流程总览",
+    "fromLine": 108,
+    "toLine": 108,
+    "text": "好友房流程：开局 → 定庄 → 掷骰 → [做牌] → [洗牌] → 定财神 → 发牌 → 庄家首摸 → 首摸等待 → 对局",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-019",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.7 产品流程总览",
+    "fromLine": 110,
+    "toLine": 110,
+    "text": "对局循环：摸牌 → 动作判定 → 出牌 → 其他玩家响应 → 下一摸",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-020",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.7 产品流程总览",
+    "fromLine": 111,
+    "toLine": 111,
+    "text": "响应优先级：胡 > 碰/杠 > 吃",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-021",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.7 产品流程总览",
+    "fromLine": 112,
+    "toLine": 112,
+    "text": "结束流程：胡牌/流局 → 结算 → 更新牢庄 → 下一局或大结算",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-022",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.8 阅读约定与功能点索引",
+    "fromLine": 117,
+    "toLine": 117,
+    "text": "阅读约定：规则正文解释条件、处理与边界；各章功能点明细是实现/验收清单",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R07-023",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.8 阅读约定与功能点索引",
+    "fromLine": 118,
+    "toLine": 118,
+    "text": "同一规则只保留一个权威口径；功能点表与正文冲突时，以功能点表为准并回写正文",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-024",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.8 阅读约定与功能点索引",
+    "fromLine": 119,
+    "toLine": 119,
+    "text": "功能点表不重复展开公式与示例，公式见对应规则章节",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R07-025",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.8 阅读约定与功能点索引",
+    "fromLine": 120,
+    "toLine": 120,
+    "text": "标注【待确认】【待核实】的内容不作为验收通过依据",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-026",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.8 阅读约定与功能点索引",
+    "fromLine": 121,
+    "toLine": 121,
+    "text": "跨动作共用规则（摊/承包、跟庄、十风、杠链、飘、禁手）在特殊规则章节统一定义；动作表只列本动作触发与影响",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-027",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.8 阅读约定与功能点索引",
+    "fromLine": 123,
+    "toLine": 135,
+    "text": "功能点索引表：配置 CFG-01~07、开局 OPEN-01~19、摸打 TURN/GUO、吃 CHOW、碰 PUNG、杠 KONG、胡 HU、特殊 SPEC、结算 SET、金币 GOLD、重连 RELINK 的 ID 范围与章节",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R07-028",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.9 玩法概述",
+    "fromLine": 140,
+    "toLine": 140,
+    "text": "玩法概述-人数：2 / 3 / 4 人",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-029",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.9 玩法概述",
+    "fromLine": 141,
+    "toLine": 141,
+    "text": "玩法概述-场景：好友房（包厢）、金币场",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-030",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.9 玩法概述",
+    "fromLine": 142,
+    "toLine": 142,
+    "text": "牌墙：万 36 + 条 36 + 筒 36 + 风 16 + 箭 12 = 136 张，无花牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-031",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.9 玩法概述",
+    "fromLine": 143,
+    "toLine": 143,
+    "text": "牌墙裁剪：单独去风 112 张；单独缺一色 100 张；同时开启 76 张",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-032",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.9 玩法概述",
+    "fromLine": 144,
+    "toLine": 144,
+    "text": "财神：每局定财神，财神为万能牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-033",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.9 玩法概述",
+    "fromLine": 145,
+    "toLine": 145,
+    "text": "核心特色：爆头、财飘、十风、三摊承包、牢庄、跟庄、守庄",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-034",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.9 玩法概述",
+    "fromLine": 146,
+    "toLine": 146,
+    "text": "荒局：牌墙剩余 ≤20 张流局",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-035",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "1.9 玩法概述",
+    "fromLine": 147,
+    "toLine": 147,
+    "text": "起胡：默认 ≥1 番",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-036",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "2 玩家场景地图",
+    "fromLine": 153,
+    "toLine": 153,
+    "text": "场景-创建/进入房间：选择规则并开始；功能含配置生效、人数与配置联动",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-037",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "2 玩家场景地图",
+    "fromLine": 154,
+    "toLine": 154,
+    "text": "场景-开局：完成定庄与发牌；功能含加倍、定庄、掷骰、洗牌、定财神、发牌、首摸提示",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-038",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "2 玩家场景地图",
+    "fromLine": 155,
+    "toLine": 155,
+    "text": "场景-我的回合：摸牌后决策；功能含出牌、暗杠、补杠、自摸、过",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-039",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "2 玩家场景地图",
+    "fromLine": 156,
+    "toLine": 156,
+    "text": "场景-响应他人：对他人出牌决策；功能含胡、碰、杠、吃、过",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-040",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "2 玩家场景地图",
+    "fromLine": 157,
+    "toLine": 157,
+    "text": "场景-特殊牌局：处理特殊规则；功能含飘、十风、三摊承包、跟庄、守庄、禁手、牢庄",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-041",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "2 玩家场景地图",
+    "fromLine": 158,
+    "toLine": 158,
+    "text": "场景-胡牌判定：确认能否胡、胡多少；功能含胡牌权限、番型、倍数",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-042",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "2 玩家场景地图",
+    "fromLine": 159,
+    "toLine": 159,
+    "text": "场景-结算：确认输赢与明细；功能含基础赔付、承包、加倍、封顶、小结算",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-043",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "2 玩家场景地图",
+    "fromLine": 160,
+    "toLine": 160,
+    "text": "场景-金币场：按金币规则对局；功能含底分/台费、加倍、破产保护、财富封顶",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-044",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "2 玩家场景地图",
+    "fromLine": 161,
+    "toLine": 161,
+    "text": "场景-断线重连：恢复牌局；按阶段恢复、手牌可见范围",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-045",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "2 玩家场景地图",
+    "fromLine": 162,
+    "toLine": 162,
+    "text": "场景-结束：确认整场结果；功能含打片触发、大结算、统计",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-046",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.1 胡牌来源",
+    "fromLine": 169,
+    "toLine": 169,
+    "text": "胡牌来源-自摸：进张为自己摸到的牌，按自摸计算",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-047",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.1 胡牌来源",
+    "fromLine": 170,
+    "toLine": 170,
+    "text": "胡牌来源-杠上开花：杠后补牌自摸，按自摸计算",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-048",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.1 胡牌来源",
+    "fromLine": 171,
+    "toLine": 171,
+    "text": "胡牌来源-点炮：进张为他人打出的牌，不按自摸计算",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-049",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.1 胡牌来源",
+    "fromLine": 172,
+    "toLine": 172,
+    "text": "胡牌来源-抢杠胡：进张为他人补杠的那张牌，不按自摸计算",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-050",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.2 进张",
+    "fromLine": 175,
+    "toLine": 177,
+    "text": "进张定义：自摸为本次摸到的牌；点炮为他人打出的牌；抢杠胡为被抢的补杠牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-051",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.3 财神与财神计数",
+    "fromLine": 180,
+    "toLine": 180,
+    "text": "实际财神：白板财神时为白板；翻财神时为翻出的那张牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-052",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.3 财神与财神计数",
+    "fromLine": 181,
+    "toLine": 181,
+    "text": "替代牌：翻财神且实际财神不是白板时，白板登记为替代牌，参与胡牌拆解；白板本身仍是箭牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-053",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.3 财神与财神计数",
+    "fromLine": 182,
+    "toLine": 182,
+    "text": "手牌财神数：手牌中的实际财神数 + 进张为实际财神时 +1",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-054",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.3 财神与财神计数",
+    "fromLine": 183,
+    "toLine": 183,
+    "text": "财神总数：手牌财神数 + 本座位出牌区已打出的实际财神数",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-055",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.3 财神与财神计数",
+    "fromLine": 184,
+    "toLine": 184,
+    "text": "财神不能用于吃、碰、杠的凑牌，只能用于胡牌拆解与听牌判断",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-056",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.4 敲响（万能听）",
+    "fromLine": 187,
+    "toLine": 187,
+    "text": "敲响判定对象：进张前的手牌 + 副露 + 财神",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-057",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.4 敲响（万能听）",
+    "fromLine": 188,
+    "toLine": 188,
+    "text": "敲响判定方法：枚举所有拆牌方案，只要存在一种方案的等待牌包含“任意牌”，即为敲响",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-058",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.4 敲响（万能听）",
+    "fromLine": 189,
+    "toLine": 189,
+    "text": "无财神时必然不敲响",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-059",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.4 敲响（万能听）",
+    "fromLine": 190,
+    "toLine": 190,
+    "text": "打出财神后是否敲响用于更新飘等级；爆头、财飘系列按自摸、飘等级和进张与财神成将判定，未额外强制检查敲响；是否要求实际胡牌必须敲响【待确认】",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-060",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.5 杠链",
+    "fromLine": 193,
+    "toLine": 193,
+    "text": "每次杠（明杠、暗杠、补杠）杠链 +1；暗杠额外记录“含暗杠”标记",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-061",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.5 杠链",
+    "fromLine": 194,
+    "toLine": 194,
+    "text": "打出非财神 → 杠链清零、暗杠标记清零",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-062",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.5 杠链",
+    "fromLine": 195,
+    "toLine": 195,
+    "text": "打出财神且不敲响 → 杠链清零、暗杠标记清零",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-063",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.5 杠链",
+    "fromLine": 196,
+    "toLine": 196,
+    "text": "打出财神且敲响 → 杠链保留",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-064",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.5 杠链",
+    "fromLine": 197,
+    "toLine": 197,
+    "text": "吃、碰 → 杠链清零、暗杠标记清零",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R07-065",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "3.5 杠链",
+    "fromLine": 198,
+    "toLine": 198,
+    "text": "杠链用于杠开系列番型",
+    "mandatory": true
+  }
+]

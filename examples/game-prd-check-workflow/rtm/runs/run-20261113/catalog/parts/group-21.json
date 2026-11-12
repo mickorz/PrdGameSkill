@@ -1,0 +1,47 @@
+[
+  {
+    "ruleId": "R21-001",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "17. 优先级与版本范围",
+    "fromLine": 1192,
+    "toLine": 1198,
+    "text": "第17章 优先级与版本范围：以 P0/P1/P2 三级优先级表格界定本期需求范围。",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R21-002",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "17. 优先级与版本范围 / 优先级表 P0",
+    "fromLine": 1196,
+    "toLine": 1196,
+    "text": "P0 范围：配置生效、开局、摸打、吃碰杠胡、结算、重连、金币场核心。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R21-003",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "17. 优先级与版本范围 / 优先级表 P1",
+    "fromLine": 1197,
+    "toLine": 1197,
+    "text": "P1 范围：飘、十风、三摊、跟庄、守庄、禁手、打片、封顶。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R21-004",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "17. 优先级与版本范围 / 优先级表 P2",
+    "fromLine": 1198,
+    "toLine": 1198,
+    "text": "P2 范围：客户端动效、文案、非核心展示。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R21-005",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "17. 优先级与版本范围 / 版本说明",
+    "fromLine": 1200,
+    "toLine": 1200,
+    "text": "本文为现状基线 v3.1；后续目标态变更另立 To-Be PRD，不在本文直接改写现状。",
+    "mandatory": true
+  }
+]

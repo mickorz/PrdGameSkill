@@ -1,0 +1,65 @@
+[
+  {
+    "ruleId": "R20-001",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "16. 风险与假设 - 风险 1",
+    "fromLine": 1182,
+    "toLine": 1182,
+    "text": "本文基于静态源码核查，未跑对局、未验客户端。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R20-002",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "16. 风险与假设 - 风险 2",
+    "fromLine": 1183,
+    "toLine": 1183,
+    "text": "代码现状可能包含历史兼容或临时逻辑，不等同产品目标。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R20-003",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "16. 风险与假设 - 风险 3",
+    "fromLine": 1184,
+    "toLine": 1184,
+    "text": "配置组合多，覆盖矩阵可能遗漏。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R20-004",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "16. 风险与假设 - 风险 4",
+    "fromLine": 1185,
+    "toLine": 1185,
+    "text": "混级金币场真实入账是否守恒未验证。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R20-005",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "16. 风险与假设 - 风险 5",
+    "fromLine": 1186,
+    "toLine": 1186,
+    "text": "结算番型明细、加倍重连倒计时等仍需联调。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R20-006",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "16. 风险与假设 - 假设 1",
+    "fromLine": 1189,
+    "toLine": 1189,
+    "text": "基准玩法为 2/3/4 人杭麻，好友房与金币场共用主体流程。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R20-007",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "16. 风险与假设 - 假设 3",
+    "fromLine": 1190,
+    "toLine": 1190,
+    "text": "客户端按本文规则与状态展示，具体视觉待定。",
+    "mandatory": true
+  }
+]

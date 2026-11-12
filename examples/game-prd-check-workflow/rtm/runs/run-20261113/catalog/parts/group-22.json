@@ -1,0 +1,317 @@
+[
+  {
+    "ruleId": "R22-001",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18. 现状差异与待确认",
+    "fromLine": 1202,
+    "toLine": 1205,
+    "text": "第18章汇总杭麻规则现状口径与待确认事项，按“事项/现状口径/待确认备注”三列逐条列出。",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R22-002",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 牌张",
+    "fromLine": 1206,
+    "toLine": 1206,
+    "text": "牌张：完整136；去风112；缺一色100；同时76。无待确认事项。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-003",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 杠与杠链",
+    "fromLine": 1207,
+    "toLine": 1207,
+    "text": "杠与杠链：吃/碰清空杠链；杠使杠链+1。无待确认事项。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-004",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 金币场放铳/三摊/碰算摊/加倍/托管",
+    "fromLine": 1208,
+    "toLine": 1208,
+    "text": "金币场放铳、三摊、碰算摊、加倍、托管走默认值，可由等级规则覆盖；需明确等级规则配置表。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-005",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 三摊显式关闭",
+    "fromLine": 1209,
+    "toLine": 1209,
+    "text": "三摊显式关闭自动置吃碰次数限制为2；好友房可覆盖，金币场不可；待确认业务是否保留该联动。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-006",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 缺一色",
+    "fromLine": 1210,
+    "toLine": 1210,
+    "text": "缺一色4人局不生效，服务端不拒绝配置；待确认是否补人数校验。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-007",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 只碰不吃",
+    "fromLine": 1211,
+    "toLine": 1211,
+    "text": "只碰不吃：服务端不校验人数；待确认是否补人数校验。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-008",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 跟庄",
+    "fromLine": 1212,
+    "toLine": 1212,
+    "text": "跟庄：服务端不校验4人；待确认是否补人数校验。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-009",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 飘财受限",
+    "fromLine": 1213,
+    "toLine": 1213,
+    "text": "飘财受限：出牌只清除本次禁打；窗口所有者可切换；待交互表现联调。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-010",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 多人可胡",
+    "fromLine": 1214,
+    "toLine": 1214,
+    "text": "多人可胡按座位权重仲裁；待确认是否符合产品预期。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-011",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 十风+三/四财",
+    "fromLine": 1215,
+    "toLine": 1215,
+    "text": "十风与三/四财：番型独占，额外倍率仍生效；待展示与倍数联调。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-012",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 金币场守恒",
+    "fromLine": 1216,
+    "toLine": 1216,
+    "text": "金币场守恒：每个视角快照平衡，真实对角线和未证实；待混级房联调验证。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-013",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 重连手牌",
+    "fromLine": 1217,
+    "toLine": 1217,
+    "text": "重连手牌：自己可见，他人需明牌；待客户端展示核实。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-014",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 非法过牌",
+    "fromLine": 1218,
+    "toLine": 1218,
+    "text": "非法过牌先广播再校验；待确认是否符合产品预期。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-015",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 三摊与吃碰覆盖",
+    "fromLine": 1219,
+    "toLine": 1219,
+    "text": "全局关三摊、等级规则开三摊时限制仍生效；待确认是否符合预期。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-016",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 二人金币场三摊",
+    "fromLine": 1220,
+    "toLine": 1220,
+    "text": "二人金币场三摊：服务端不校验人数，可能开启；待确认是否允许。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-017",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 简洁模式提示",
+    "fromLine": 1221,
+    "toLine": 1221,
+    "text": "简洁模式抑制守庄/巡限碰/吃禁手/有财必拷响/只碰不吃等提示，跟庄、飘财不抑制；待客户端动效核实。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-018",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 翻出白板",
+    "fromLine": 1222,
+    "toLine": 1222,
+    "text": "翻出白板时实际财神仍为白板，不登记替代牌；待展示联调。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-019",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 做牌阶段",
+    "fromLine": 1223,
+    "toLine": 1223,
+    "text": "做牌阶段：定财神前记录指定牌，发牌时落地；待操作入口核实。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-020",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 结算亮牌",
+    "fromLine": 1224,
+    "toLine": 1224,
+    "text": "结算亮牌下发全桌手牌与剩余牌墙，十风特殊处理；待客户端展示核实。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-021",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 抢杠胡摊数",
+    "fromLine": 1225,
+    "toLine": 1225,
+    "text": "抢杠胡摊数：副露还原为碰，不新增摊数。无待确认事项。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-022",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 多承包对",
+    "fromLine": 1226,
+    "toLine": 1226,
+    "text": "多承包对：每个承包方按全部基数承担；待确认是否符合预期。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-023",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 金币场时间",
+    "fromLine": 1227,
+    "toLine": 1227,
+    "text": "金币场打牌、加倍、托管等待时长均可配；需明确配置表。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-024",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 番型明细",
+    "fromLine": 1228,
+    "toLine": 1228,
+    "text": "番型明细依赖配置倍率，可能为空；待联调验证。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-025",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 听牌提示",
+    "fromLine": 1229,
+    "toLine": 1229,
+    "text": "听牌提示按自摸番型口径，不等同最终结算金额；待联调验证。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-026",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 封顶+跟庄",
+    "fromLine": 1230,
+    "toLine": 1230,
+    "text": "封顶与跟庄组合可能出现过超上限后的“正应付”；待产品确认。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-027",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 加倍重连",
+    "fromLine": 1231,
+    "toLine": 1231,
+    "text": "加倍重连时 remain_sec 为配置时长；待客户端联调。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-028",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 爆头/财飘敲响",
+    "fromLine": 1232,
+    "toLine": 1232,
+    "text": "爆头/财飘敲响：实际胡牌按进张与财神成将及飘等级判定，未额外强制敲响；待确认是否要求显式敲响。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-029",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 飘等级",
+    "fromLine": 1233,
+    "toLine": 1233,
+    "text": "飘等级：打非财神归零，吃碰杠本身不清飘等级；待客户端提示与结算联调。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-030",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 单局杠分",
+    "fromLine": 1234,
+    "toLine": 1234,
+    "text": "单局杠分：杭麻无独立杠分，杠后胡按杠开番型计算。无待确认事项。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-031",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 承包明细",
+    "fromLine": 1235,
+    "toLine": 1235,
+    "text": "承包明细乘付款方加倍，但不随单局输分或金币封顶重算；待确认明细与最终实扣是否要求一致。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-032",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 打片与流局",
+    "fromLine": 1236,
+    "toLine": 1236,
+    "text": "打片与流局：胡牌结算后检查片数，付款不按余额截断，纯流局不检查；待确认流局跟庄后是否要求结束。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-033",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 金币场底分",
+    "fromLine": 1237,
+    "toLine": 1237,
+    "text": "金币场底分：非混级在入场解析时归一，开局仍逐视角重匹配；待确认是否要求重匹配后统一。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-034",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 最大倍数",
+    "fromLine": 1238,
+    "toLine": 1238,
+    "text": "最大倍数：番数及金币场赢家理论总赢分各限制一次；待配置来源与展示口径联调。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R22-035",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "18 游戏配置下发",
+    "fromLine": 1239,
+    "toLine": 1239,
+    "text": "游戏配置下发：杭麻配置消息仅含有财必拷响、三摊、简洁模式和局ID；待明确其余配置的客户端来源。",
+    "mandatory": true
+  }
+]

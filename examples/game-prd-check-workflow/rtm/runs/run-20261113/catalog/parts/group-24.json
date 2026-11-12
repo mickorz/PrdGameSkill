@@ -1,0 +1,164 @@
+[
+  {
+    "ruleId": "R24-001",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "20. 待确认清单",
+    "fromLine": 1301,
+    "toLine": 1301,
+    "text": "第 20 章待确认清单：汇总需产品确认的规则边界问题，含问题、影响、建议处理三列。",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R24-002",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "20. 待确认清单 P-01",
+    "fromLine": 1305,
+    "toLine": 1305,
+    "text": "P-01 跟庄亏损已超过单局封顶后胡牌，公式可能出现“正应付”；影响结算边界；产品确认是否接受，不接受按缺陷处理。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R24-003",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "20. 待确认清单 P-02",
+    "fromLine": 1306,
+    "toLine": 1306,
+    "text": "P-02 混级金币场各座位真实入账是否要求全桌守恒；影响金币结算；由产品/财务确认验收口径。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R24-004",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "20. 待确认清单 P-03",
+    "fromLine": 1307,
+    "toLine": 1307,
+    "text": "P-03 实际爆头、财飘是否必须额外校验进张前敲响；影响胡牌权限与番型；产品确认，按代码现状与目标态分别验收。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R24-005",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "20. 待确认清单 P-04",
+    "fromLine": 1308,
+    "toLine": 1308,
+    "text": "P-04 承包明细是否必须随封顶调整为实际扣分；影响结算展示；产品确认明细及实扣口径。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R24-006",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "20. 待确认清单 P-05",
+    "fromLine": 1309,
+    "toLine": 1309,
+    "text": "P-05 打片房流局跟庄后片数≤0 时是否立即结束；影响房间结束；产品确认触发时机。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R24-007",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "20. 待确认清单 P-06",
+    "fromLine": 1310,
+    "toLine": 1310,
+    "text": "P-06 非混级房开局逐视角重匹配后是否必须统一底分和台费；影响金币结算；产品确认并覆盖区间表差异场景。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R24-008",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "20.1 待联调验证",
+    "fromLine": 1312,
+    "toLine": 1312,
+    "text": "第 20.1 节待联调验证：列出需实际联调核对的事项，含事项与验证方式两列。",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R24-009",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "20.1 待联调验证 V-01",
+    "fromLine": 1316,
+    "toLine": 1316,
+    "text": "V-01 结算番型明细是否为空；验证方式为实际结算结果核对。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R24-010",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "20.1 待联调验证 V-02",
+    "fromLine": 1317,
+    "toLine": 1317,
+    "text": "V-02 听牌提示番数与最终结算金额差异；验证方式为同一牌局对比。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R24-011",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "20.1 待联调验证 V-03",
+    "fromLine": 1318,
+    "toLine": 1318,
+    "text": "V-03 混级金币场逐座位快照与真实入账；验证方式为逐座位核对。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R24-012",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "20.1 待联调验证 V-04",
+    "fromLine": 1319,
+    "toLine": 1319,
+    "text": "V-04 加倍阶段重连剩余时间来源；验证方式为客户端联调。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R24-013",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "20.1 待联调验证 V-05",
+    "fromLine": 1320,
+    "toLine": 1320,
+    "text": "V-05 结算全桌手牌与剩余牌墙展示；验证方式为客户端联调。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R24-014",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "20.1 待联调验证 V-06",
+    "fromLine": 1321,
+    "toLine": 1321,
+    "text": "V-06 做牌指定牌入口与展示；验证方式为客户端联调。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R24-015",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "20.1 待联调验证 V-07",
+    "fromLine": 1322,
+    "toLine": 1322,
+    "text": "V-07 打片房大结算展示与入口；验证方式为客户端联调。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R24-016",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "20.1 待联调验证 V-08",
+    "fromLine": 1323,
+    "toLine": 1323,
+    "text": "V-08 简洁模式客户端动效抑制；验证方式为客户端联调。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R24-017",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "20.1 待联调验证 V-09",
+    "fromLine": 1324,
+    "toLine": 1324,
+    "text": "V-09 杭麻配置消息未包含的规则由客户端如何获取；验证方式为核对创房配置及客户端数据链。",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R24-018",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "20.1 待联调验证 V-10",
+    "fromLine": 1325,
+    "toLine": 1325,
+    "text": "V-10 多拆解最高番、财神成将与敲响关系；验证方式为使用固定牌例实际对局核对番型及展示。",
+    "mandatory": true
+  }
+]

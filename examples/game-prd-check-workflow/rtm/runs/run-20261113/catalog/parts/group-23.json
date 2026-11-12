@@ -1,0 +1,488 @@
+[
+  {
+    "ruleId": "R23-001",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "19 验收场景",
+    "fromLine": 1241,
+    "toLine": 1244,
+    "text": "验收场景总览：以 Given/When/Then 形式列出 AC-01 至 AC-51 全部验收用例",
+    "mandatory": false
+  },
+  {
+    "ruleId": "R23-002",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-01",
+    "fromLine": 1245,
+    "toLine": 1245,
+    "text": "好友房开启缺一色，2/3 人开局时牌墙为 100 张",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-003",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-02",
+    "fromLine": 1246,
+    "toLine": 1246,
+    "text": "好友房开启去风，开局时牌墙为 112 张",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-004",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-03",
+    "fromLine": 1247,
+    "toLine": 1247,
+    "text": "好友房同时开启缺一色和去风，开局时牌墙为 76 张",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-005",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-04",
+    "fromLine": 1248,
+    "toLine": 1248,
+    "text": "金币场等级规则关闭加倍、开启放铳、关闭三摊：无加倍阶段；三牢可放铳；三摊关闭且吃碰限制为 2",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-006",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-05",
+    "fromLine": 1249,
+    "toLine": 1249,
+    "text": "好友房显式关闭三摊，未传吃碰限制时为 2，传入时按传入值生效",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-007",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-06",
+    "fromLine": 1250,
+    "toLine": 1250,
+    "text": "两名玩家同时具有胡牌权限且同一张牌可胡时，按座位权重选一名，不受点击先后影响",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-008",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-07",
+    "fromLine": 1251,
+    "toLine": 1251,
+    "text": "飘财窗口存在时，受限玩家出牌只清本次禁打；随后他人打财神，所有者切换正确",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-009",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-08",
+    "fromLine": 1252,
+    "toLine": 1252,
+    "text": "十风满足且三财/四财均开启，自摸时展示十风番型，最终倍数乘三/四财",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-010",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-09",
+    "fromLine": 1253,
+    "toLine": 1253,
+    "text": "混级金币场结算逐座位核对视角快照与真实入账；确认每个视角快照内部平衡，真实入账总和是否守恒待联调",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-011",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-10",
+    "fromLine": 1254,
+    "toLine": 1254,
+    "text": "打片房任一座位片数≤0 且未命中连庄不占局数的庄家胡牌例外时，胡牌结算触发大结算",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-012",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-11",
+    "fromLine": 1255,
+    "toLine": 1255,
+    "text": "明牌关闭时重连，只能看到自己的手牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-013",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-12",
+    "fromLine": 1256,
+    "toLine": 1256,
+    "text": "明牌开启时重连，可看到其他玩家手牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-014",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-13",
+    "fromLine": 1257,
+    "toLine": 1257,
+    "text": "跟庄进行中牌局提前结束，跟庄中断不赔付，已成功跟庄分保留",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-015",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-14",
+    "fromLine": 1258,
+    "toLine": 1258,
+    "text": "金币场输家携带值为 0 时不标记破产；携带值 >0 且扣满才标记",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-016",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-15",
+    "fromLine": 1259,
+    "toLine": 1259,
+    "text": "有财必拷响开启且手牌含财神，点炮胡不授予胡权限",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-017",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-16",
+    "fromLine": 1260,
+    "toLine": 1260,
+    "text": "有财必拷响开启、手牌含财神，未敲响自摸且成牌但无合法番型时不授予胡权限；满足提示条件时提示，简洁模式抑制",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-018",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-17",
+    "fromLine": 1261,
+    "toLine": 1261,
+    "text": "翻财神时骰子点数和 > 牌墙数，实际财神回退白板，不翻牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-019",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-18",
+    "fromLine": 1262,
+    "toLine": 1262,
+    "text": "七对带财神时，按财神替豪七关闭/开启分别以真实四张/财神补足计算豪华档",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-020",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-19",
+    "fromLine": 1263,
+    "toLine": 1263,
+    "text": "杠上开花 + 财飘，杠在前记杠飘、飘在前记飘杠，均为 8 倍",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-021",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-20",
+    "fromLine": 1264,
+    "toLine": 1264,
+    "text": "财神系列中进张未与财神成将时，不命中爆头/财飘系列",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-022",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-21",
+    "fromLine": 1265,
+    "toLine": 1265,
+    "text": "金币场全局规则关三摊、等级规则开三摊：限制值仍为 2；吃第 3 次被拦；碰/明杠在碰算摊开时累计并受拦，关时不计次数也不受拦",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-023",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-22",
+    "fromLine": 1266,
+    "toLine": 1266,
+    "text": "二人金币场开启三摊并形成 3 摊时，承包关系可形成，需确认是否允许",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-024",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-23",
+    "fromLine": 1267,
+    "toLine": 1267,
+    "text": "翻财神翻出白板时，实际财神仍为白板，不登记替代牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-025",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-24",
+    "fromLine": 1268,
+    "toLine": 1268,
+    "text": "做牌开启时，定财神前记录指定牌，发牌按指定牌取牌并补齐其余手牌",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-026",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-25",
+    "fromLine": 1269,
+    "toLine": 1269,
+    "text": "抢杠胡胡牌成立时，副露还原为碰，已有摊数不新增",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-027",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-26",
+    "fromLine": 1270,
+    "toLine": 1270,
+    "text": "庄家胡牌且两名闲家各 3 摊，结算时两名闲家分别按全部输分 ×2 赔付",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-028",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-27",
+    "fromLine": 1271,
+    "toLine": 1271,
+    "text": "金币场等级规则修改打牌/加倍/托管时间，开局时时间生效；加倍配置 ≤0 不覆盖",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-029",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-28",
+    "fromLine": 1272,
+    "toLine": 1272,
+    "text": "下发小结算时胡牌明细手牌：十风为出牌区序列、拆解与单放为空；全桌手牌字段按实际手牌；含剩余牌墙",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-030",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-29",
+    "fromLine": 1273,
+    "toLine": 1273,
+    "text": "结算查看番型明细时，验证番型明细是否为空",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-031",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-30",
+    "fromLine": 1274,
+    "toLine": 1274,
+    "text": "听牌提示对比最终结算：提示按自摸番型口径，金额不保证一致",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-032",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-31",
+    "fromLine": 1275,
+    "toLine": 1275,
+    "text": "跟庄亏损已超单局上限后胡牌结算，观察是否出现“正应付”",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-033",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-32",
+    "fromLine": 1276,
+    "toLine": 1276,
+    "text": "加倍阶段重连时，核对客户端倒计时来源字段",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-034",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-33",
+    "fromLine": 1277,
+    "toLine": 1277,
+    "text": "简洁模式触发规则提示时，守庄/巡限碰/吃禁手/有财/只碰不吃抑制；跟庄、飘财不抑制",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-035",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-34",
+    "fromLine": 1278,
+    "toLine": 1278,
+    "text": "对局中查看他人手牌：明牌开启时可见，关闭时不可见",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-036",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-35",
+    "fromLine": 1279,
+    "toLine": 1279,
+    "text": "托管开启时玩家超时或离线，自动摸打；自动摸打状态不重复进入托管",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-037",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-36",
+    "fromLine": 1280,
+    "toLine": 1280,
+    "text": "已有飘等级 1 或更高时打出非财神，飘等级归 0，杠链及暗杠标记清零",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-038",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-37",
+    "fromLine": 1281,
+    "toLine": 1281,
+    "text": "听牌前有 2 张实际财神，打出 1 张后仍万能听：出现打财神后听任意牌提示，不授予报听权限",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-039",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-38",
+    "fromLine": 1282,
+    "toLine": 1282,
+    "text": "有财必拷响开启且十风资格达 10 张字牌，自摸任意牌授予十风胡权，无需普通成牌；番型只记十风及适用额外倍率",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-040",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-39",
+    "fromLine": 1283,
+    "toLine": 1283,
+    "text": "白板为替代牌且十风资格未失效时连续打出白板：白板按字牌计入十风；实际财神不是白板时不按打出财神开启飘窗口",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-041",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-40",
+    "fromLine": 1284,
+    "toLine": 1284,
+    "text": "白板为财神、无副露飘杠链，手牌为 1-6 万各两张加 7 万一张，自摸 7 万时平胡×1 与清七对×4 均可拆，选清七对×4 并展示拆解",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-042",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-41",
+    "fromLine": 1285,
+    "toLine": 1285,
+    "text": "胡牌权限已授予但玩家选择过，完成本次响应后不执行胡牌，继续仲裁或流程，不额外设置过胡禁张",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-043",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-42",
+    "fromLine": 1286,
+    "toLine": 1286,
+    "text": "杭麻默认配置下玩家刚碰牌且持有同张，判断补杠时默认同巡限制关闭，满足其他条件时不因该限制拦截",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-044",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-43",
+    "fromLine": 1287,
+    "toLine": 1287,
+    "text": "玩家明杠、暗杠或补杠后未胡牌，最终流局且无跟庄，结算不产生独立杠分",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-045",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-44",
+    "fromLine": 1288,
+    "toLine": 1288,
+    "text": "4 人局底分 10、平胡、庄家 1 牢且加倍，闲家 A 对庄有 3 摊且 A 加倍无封顶，庄家自摸：A 倒承包应付 480，其他闲家不付，庄家胡牌分 480",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-046",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-45",
+    "fromLine": 1289,
+    "toLine": 1289,
+    "text": "好友房承包后应付超过单局输分上限，胡牌结算最终输赢按封顶计算，承包明细保留封顶前金额",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-047",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-46",
+    "fromLine": 1290,
+    "toLine": 1290,
+    "text": "打片房跟庄后有人片数≤0 随后流局，流局结算跟庄分保留，本次不因片数触发大结算",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-048",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-47",
+    "fromLine": 1291,
+    "toLine": 1291,
+    "text": "打片房付款方剩余 5 片、本次应付 10 片且无其他封顶，按 10 片付款余额可为负，随后按打片结束规则判断",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-049",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-48",
+    "fromLine": 1292,
+    "toLine": 1292,
+    "text": "4 人金币场底分 10、庄家三牢、自摸番数 4、最大倍数 10：番数仍为 4；该视角赢家理论总赢分及实得封顶为 100，输家合计付 100",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-050",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-49",
+    "fromLine": 1293,
+    "toLine": 1293,
+    "text": "非混级房各座位入场已归一但开局区间表不同，按各视角重匹配并逐座位核对开局记录，不假定底分和台费必然相同",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-051",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-50",
+    "fromLine": 1294,
+    "toLine": 1294,
+    "text": "实际自摸可组成进张与财神成将时，判定爆头或财飘需核对当前代码番型结果；是否必须额外检查敲响待产品确认",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-052",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "AC-51",
+    "fromLine": 1295,
+    "toLine": 1295,
+    "text": "杭麻配置消息下发后客户端接收，核对有财必拷响、三摊、简洁模式和局 ID；其余配置来源另行验证",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-053",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "19.1 客户端待核实",
+    "fromLine": 1298,
+    "toLine": 1298,
+    "text": "客户端待核实：听牌提示、飘财受限置灰、禁手置灰、三摊与牢庄提示、定财神动画、跟庄骰子动画、结算面板",
+    "mandatory": true
+  },
+  {
+    "ruleId": "R23-054",
+    "file": ".claude/skills/game-prd-check/references/rules/杭州麻将产品需求文档PRD.md",
+    "section": "19.1 客户端待核实",
+    "fromLine": 1299,
+    "toLine": 1299,
+    "text": "重连时他人手牌可见范围以明牌配置为准，客户端实际展示需联调",
+    "mandatory": true
+  }
+]

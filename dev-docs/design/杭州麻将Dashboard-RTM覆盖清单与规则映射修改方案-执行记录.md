@@ -125,6 +125,19 @@
 - 与已检查通过率 44.6%（437/980）差异：分母差 7 条 unverified；核实当前 pass 规则点无一关联 P0~P2 有效问题，两口径在本次数据上一致（完整通过率是显式化与防护，防 evidenceInvalid 规则点误标 pass）
 - verify-rtm-assemble.js 新增恒等式与聚合判定断言（19 断言全过）
 
+### 7.8 外部评审第二轮：三项 P0 验收约束（2026-11-12，已落地数据字段）
+
+**P0-1 规则来源权威性**：rule-catalog/ruleCoverage 每条规则点新增 sourceType / authority / sourceNote 字段，来源类型与可信度分开管理，未经人工确认一律 authority=pending-confirm。实测分类：reference-prd 877 条（PRD 基准参照，需确认与待检 PRD 是否同源，防循环验证抬高通过率）、implementation-reverse 578 条（42319 客户端实现逆向）、unknown 0。领导首页展示规则来源构成，权威性确认前不称“已确认的标准规范”。
+**P0-2 148 条未验证需求归因**：矩阵需求点新增 verificationStatus（verified/unverified）与 unverifiedReason（no-coverage-record / evidence-or-execution-failed）；stats 新增需求追踪完成率 68%（247/363）。四类归因（确实未检查/映射遗漏/摘要性需求/范围待确认）中后两类需人工/语义判断，当前机械归因为 no-coverage-record，人工分类待做；禁止删除摘要性需求来提高比例。
+**P0-3 完整通过率来源质量提示**：Dashboard 展示 44.3% 时必须附带口径说明（基于 987 个被判定适用的原子规则点，衡量需求文档对规则基准的符合情况，不代表最终产品验收通过率）；468 条 na 需有可追溯排除依据（coverage 记录中 na 即 agent 判定不适用，理由在 evidence 字段）。
+
+### 7.9 PRD 完整通过清单（新增需求定案，数据字段已落地）
+
+- **需求级完整通过判定（五条全满足）**：至少关联一条有效适用 Rule；所有关联 Rule 检查完成且 pass；证据通过校验；无关联有效未解决问题（P0~P2）；无未完成必要检查/适用性待确认项。
+- 矩阵需求点新增 fullyPassed / coverageDimensions（["game"]）/ verificationStatus / unverifiedReason 字段；stats 新增 fullyPassedRequirements（**实测 55/363**——需求级口径比规则级 437 更严格：要求该需求点的全部关联 Rule 均 pass）。
+- 已关联 Rule 全部 pass ≠ 已经过所有维度检查：coverageDimensions 标注维度，game/UI/Bug 多维度接入后完整通过判定需按维度分别确认。
+- “完整通过需求列表 + 详情（原文/关联 Rule/通过依据/整体结论）”为需求覆盖 Tab 的 P1 强制验收项（随 P1 UI 实施）。
+
 ## 六、遗留待办（更新）
 
 | # | 事项 | 说明 |

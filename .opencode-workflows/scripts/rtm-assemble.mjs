@@ -271,6 +271,7 @@ const issuesOut = issuesRaw.map((it, i) => {
 // 需求矩阵条目
 // 证据校验失败（evidenceInvalid）的记录：引用不可信 -> 整条需求结论强制 unverified，
 // 不被更严重的语义状态（如 missing）覆盖——否则校验信号会被吞掉
+const issuesByIdLocal = new Map(issuesRaw.map((i) => [i.id, i]))
 const matrix = [...reqByKey.values()].map((r) => {
   const covs = covByReq.get(r.reqKey) || []
   const ruleRefs = covs.map((c) => ({
@@ -284,6 +285,21 @@ const matrix = [...reqByKey.values()].map((r) => {
   if (r._issueStatus) overall = worstStatus(overall, r._issueStatus)
   if (!overall) overall = covs.length ? 'pass' : 'unverified'
   if (covs.some((c) => c.evidenceInvalid)) overall = 'unverified'
+  // PRD 完整通过判定（外部评审：需求覆盖 Tab 独立完整通过清单的判定条件，五条全满足）：
+  //   1 至少关联一条有效适用 Rule 2 所有关联 Rule 检查完成且 pass
+  //   3 证据通过校验 4 无关联的有效未解决问题（P0~P2） 5 无未完成必要检查/待确认项
+  // 注意：已关联 Rule 全部 pass ≠ 已经过所有应执行维度的检查（多维度 game/UI/Bug 需分别确认），
+  // coverageDimensions 标注当前结论所属维度
+  const hasValidRule = ruleRefs.length > 0 && ruleRefs.some((x) => x.status !== 'na' && x.status !== 'unverified')
+  const allPass = ruleRefs.length > 0 && ruleRefs.every((x) => x.status === 'pass')
+  const evidenceOk = !ruleRefs.some((x) => x.evidenceInvalid)
+  const noActiveIssue = !(r._issueIds || []).some((id) => { const i = issuesByIdLocal.get(id); return i && i.priority !== 'P3' })
+  const fullyPassed = hasValidRule && allPass && evidenceOk && noActiveIssue
+  // 未验证归因（外部评审 P0-2）：unverified 需求点显式标注原因，供分类统计
+  const verificationStatus = overall === 'unverified' ? 'unverified' : 'verified'
+  const unverifiedReason = overall === 'unverified'
+    ? (ruleRefs.length === 0 ? 'no-coverage-record（无规则点覆盖记录，需人工归因：确实未检查/映射遗漏/摘要性需求/范围待确认）' : 'evidence-or-execution-failed')
+    : null
   return {
     requirementId: r.requirementId,
     reqKey: r.reqKey,
@@ -293,6 +309,10 @@ const matrix = [...reqByKey.values()].map((r) => {
     ruleRefs,
     overallStatus: overall,
     issueIds: r._issueIds || [],
+    fullyPassed,
+    coverageDimensions: ['game'],
+    verificationStatus,
+    unverifiedReason,
   }
 })
 
@@ -304,6 +324,9 @@ const ruleCoverage = [...ruleById.values()].map((c) => {
   for (const x of covs) status = worstStatus(status, x.status)
   if (!status) status = 'unverified'
   const evidenceInvalid = covs.some((x) => x.evidenceInvalid)
+  // 规则来源权威性（外部评审 P0-1）：sourceType 与 authority 分开管理；
+  // 来源类型不决定可信程度，权威性未经人工确认前一律 pending-confirm
+  const cls = classifyRuleSource(c.file)
   return {
     ruleId: c.ruleId,
     file: c.file,
@@ -312,6 +335,9 @@ const ruleCoverage = [...ruleById.values()].map((c) => {
     mandatory: c.mandatory !== false,
     status,
     evidenceInvalid,
+    sourceType: cls.sourceType,
+    authority: cls.authority,
+    sourceNote: cls.note,
     linkedRequirementIds: linkedReqIds,
     orphan: linkedReqIds.length === 0 && (status === 'pass' || status === 'unverified'),
   }
@@ -324,6 +350,18 @@ const ruleCoverage = [...ruleById.values()].map((c) => {
 // 七状态互斥且穷尽：fully-passed / partial / conflict / missing / unverified / pending-confirm / na
 //   恒等式：total = fullyPassed + partial + conflict + missing + unverified + pendingConfirm + na
 const issuesById = new Map(issuesOut.map((i) => [i.id, i]))
+// 规则来源权威性（外部评审 P0-1）：sourceType 与 authority 分开管理，
+// 来源类型不决定可信程度；权威性未经人工确认前一律 pending-confirm
+function classifyRuleSource(file) {
+  const RULE_SOURCE_CLASSIFY = [
+    { match: /产品需求文档PRD\.md$/, sourceType: 'reference-prd', note: 'PRD 基准参照文档，需确认与待检 PRD 是否同源（防循环验证抬高达成率）' },
+    { match: /hzmj_game_flow_handler/, sourceType: 'implementation-reverse', note: '42319 客户端实现逆向，需人工确认权威性' },
+  ]
+  for (const r of RULE_SOURCE_CLASSIFY) {
+    if (r.match.test(String(file || ''))) return { sourceType: r.sourceType, authority: 'pending-confirm', note: r.note }
+  }
+  return { sourceType: 'unknown', authority: 'pending-confirm', note: '来源未分类，需人工确认' }
+}
 const ruleAgg = { total: 0, fullyPassed: 0, partial: 0, conflict: 0, missing: 0, unverified: 0, pendingConfirm: 0, notApplicable: 0 }
 for (const c of ruleCoverage) {
   ruleAgg.total += 1
@@ -368,6 +406,10 @@ const stats = {
   checkedRulePoints,
   passedRulePoints,
   issueTotal: issuesOut.length,
+  fullyPassedRequirements: matrix.filter((r) => r.fullyPassed).length,
+  unverifiedRequirements: matrix.filter((r) => r.overallStatus === 'unverified').length,
+  // 需求追踪完成率 = 非 unverified 需求点 / 全部需求点
+  requirementTraceabilityRate: matrix.length ? Number((matrix.filter((r) => r.overallStatus !== 'unverified').length / matrix.length).toFixed(4)) : 0,
   // 完成率 = 已完成检查的适用规则点 / 全部适用规则点
   checkCompleteRate: applicableRulePoints ? Number((checkedRulePoints / applicableRulePoints).toFixed(4)) : 0,
   // 通过率 = 已通过 / 已完成检查（分母不含未验证项）

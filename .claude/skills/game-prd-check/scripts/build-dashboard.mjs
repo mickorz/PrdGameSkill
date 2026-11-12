@@ -554,6 +554,9 @@ function buildRtmView(runDir) {
     requirementIds: c.linkedRequirementIds || [],
     executionStatus: c.status === 'unverified' ? 'unverified' : 'completed',
     verdict: c.status,
+    sourceType: c.sourceType || 'unknown',
+    authority: c.authority || 'pending-confirm',
+    sourceNote: c.sourceNote || '',
     issueIds: [...new Set((matrix.requirements || [])
       .filter((r) => (r.ruleRefs || []).some((x) => x.ruleId === c.ruleId))
       .flatMap((r) => r.issueIds || []))],
@@ -573,6 +576,10 @@ function buildRtmView(runDir) {
     })),
     overallStatus: r.overallStatus,
     issueIds: r.issueIds || [],
+    fullyPassed: r.fullyPassed === true,
+    coverageDimensions: r.coverageDimensions || ['game'],
+    verificationStatus: r.verificationStatus || (r.overallStatus === 'unverified' ? 'unverified' : 'verified'),
+    unverifiedReason: r.unverifiedReason || null,
   }));
   const issuesView = issues.map((i) => ({
     id: i.id,

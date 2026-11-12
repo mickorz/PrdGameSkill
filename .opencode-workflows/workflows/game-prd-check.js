@@ -25,16 +25,23 @@
 //   dashboardScript Dashboard 生成脚本，默认 .claude/skills/game-prd-check/scripts/build-dashboard.mjs
 //   skipReview   传 true 跳过报告质检阶段，直接出报告（更快，少一轮串行读文件）
 //   skipConsistency 传 true 跳过全文一致性检查（大文档易触发长响应超时）；fast 档默认跳过
+//   rtm         生成 RTM 追踪矩阵（需求点×规则点覆盖记录+证据校验），默认 true；传 false 关闭
+//               需求文档见 dev-docs/design/game-prd-check-workflow-评审改进需求.md（v4）
+//   rtmScript   RTM 矩阵组装脚本，默认 .opencode-workflows/scripts/rtm-assemble.mjs
+//   runsDir     RTM 快照根目录，默认 examples/game-prd-check-workflow/rtm/runs
+//   runId       运行 ID（快照目录名后缀），默认取 date 数字串；需保留多次快照时由调用方传唯一值
 
 export const meta = {
   id: 'game-prd-check',
   name: 'game_prd_check',
-  description: '对照规则基准检查游戏 PRD 文档的完整性、一致性与逻辑正确性，生成结构化问题报告',
+  description: '对照规则基准检查游戏 PRD 文档的完整性、一致性与逻辑正确性，生成结构化问题报告，并输出需求点×规则点全量追踪矩阵（RTM）',
   phases: [
     { title: '扫描' },
+    { title: '需求与规则原子化' },
     { title: '规则检查' },
     { title: '一致性检查' },
     { title: '汇总去重' },
+    { title: '矩阵组装' },
     { title: '主题归类' },
     { title: '生成报告' },
     { title: '报告审核' },
@@ -63,6 +70,14 @@ const excludeKeywords = Array.isArray(A.excludeKeywords) ? A.excludeKeywords : [
 const dashboardEnabled = A.dashboard !== false
 const dashboardScript =
   A.dashboardScript || '.claude/skills/game-prd-check/scripts/build-dashboard.mjs'
+
+// RTM 追踪矩阵（需求点×规则点覆盖记录）；关闭时流程与旧版一致
+const rtmEnabled = A.rtm !== false
+const rtmScript = A.rtmScript || '.opencode-workflows/scripts/rtm-assemble.mjs'
+const runsDir = A.runsDir || 'examples/game-prd-check-workflow/rtm/runs'
+const runId =
+  A.runId || (/^\d{4}-\d{2}-\d{2}$/.test(String(checkDate)) ? String(checkDate).replace(/-/g, '') : 'undated')
+const runDir = runsDir + '/run-' + runId
 
 // 分析阶段（扫描 / 规则检查 / 一致性检查 / 去重）统一用快速模型，报告撰写用会话默认模型
 const analysisModel =
@@ -104,6 +119,11 @@ const ISSUE_ITEM_SCHEMA = {
     location: { type: 'string', description: '需求文档原文位置（章节/小节标题），多处用、分隔' },
     quote: { type: 'string', description: '需求文档原文引文，不超过 200 字；MISSING 类写缺失说明' },
     ruleRef: { type: 'string', description: '对应规则文件与规则点（相对路径 + 章节或条目）' },
+    requirementRefs: {
+      type: 'array',
+      items: { type: 'string' },
+      description: '本问题涉及的需求点 reqKey 数组（来自需求点清单文件）；无法定位填空数组',
+    },
     problem: { type: 'string', description: '问题说明，指出违反了哪条规则基准或哪里矛盾；涉及专有术语时先说清术语含义' },
     impact: { type: 'string', description: '对开发 / 测试 / 验收的具体影响' },
     suggestion: { type: 'string', description: '具体可执行的补充或修正建议' },
@@ -333,11 +353,118 @@ if (inputFiles.length === 0) {
 const inputList = inputFiles.map((f) => '- ' + f).join('\n')
 const ruleGroups = scan.ruleGroups
 
+// ---------- RTM T1：需求与规则原子化（提取分片，供检查对照与矩阵组装） ----------
+if (rtmEnabled) {
+  phase('需求与规则原子化')
+  // 需求点提取：每个 PRD 文件一个 agent，按"独立可验证需求行为"拆原子点并写分片
+  const reqResults = await parallel(
+    inputFiles.map((f, i) => () => {
+      const base = String(f).replace(/^.*\//, '').replace(/\.md$/i, '')
+      const partFile = runDir + '/requirements/parts/part-' + String(i + 1).padStart(2, '0') + '.json'
+      return agent(
+        [
+          '你是需求分析师。工作目录为项目根目录。',
+          '',
+          '任务：通读需求文档 ' + f + '，把它拆解为原子需求点清单，并写入指定 JSON 文件。',
+          '',
+          '拆分标准：一个原子需求点 = 能独立判断是否满足某项预期行为或验收条件。',
+          '- 例："玩家可以碰牌，碰牌后需要广播给其他玩家，并更新手牌"拆为 ①满足条件可碰 ②碰后广播 ③碰后更新手牌 三条；',
+          '- 不要机械逐句切分，避免无业务价值的碎片；总览/目录类内容不提取。',
+          '',
+          '输出文件（只写这一个文件，UTF-8）：' + partFile,
+          'JSON 数组，每个元素：',
+          '{ "reqKey": "' + base + '-<三位序号>", "title": "≤20 字小标题", "source": { "file": ' + JSON.stringify(f) + ', "section": "章节号或标题", "fromLine": <起始行>, "toLine": <结束行> }, "text": "需求点原文（与源文件行范围内容一致，不要改写）" }',
+          '',
+          '硬性要求：',
+          '1. reqKey 在本文件内从 001 连续编号；',
+          '2. text 必须照抄源文件行范围内原文，禁止改写（后续会做引文一致性校验）；',
+          '3. fromLine/toLine 用 read 工具显示的真实行号；',
+          '4. 只写这一个文件，不要执行 git。',
+          '',
+          '完成后返回：{ partFile: <写的文件路径>, count: <需求点条数> }',
+        ].join('\n'),
+        {
+          label: '提取需求 ' + base,
+          agentType: 'general',
+          schema: {
+            type: 'object',
+            properties: { partFile: { type: 'string' }, count: { type: 'number' } },
+            required: ['partFile', 'count'],
+          },
+          timeoutMs: 1800000,
+          retries: 1,
+        }
+      )
+    })
+  )
+  // 规则目录提取：每个规则组一个 agent，拆原子检查点并写分片
+  const catalogResults = await parallel(
+    ruleGroups.map((group, gi) => () => {
+      const partFile = runDir + '/catalog/parts/group-' + String(gi + 1).padStart(2, '0') + '.json'
+      const rulePrefix = 'R' + String(gi + 1).padStart(2, '0')
+      return agent(
+        [
+          '你是规则工程师。工作目录为项目根目录。',
+          '',
+          '任务：把下列规则文件拆解为原子检查点清单，并写入指定 JSON 文件。',
+          '',
+          ruleScopeText(group),
+          '',
+          '拆分标准：一个原子检查点 = 一条可独立判定的规则要求（基准中的编号条款、表格行、明确的行为约束）。',
+          '- 总览、目录、索引类条款 mandatory 填 false；其余 true。',
+          '',
+          '输出文件（只写这一个文件，UTF-8）：' + partFile,
+          'JSON 数组，每个元素：',
+          '{ "ruleId": "' + rulePrefix + '-<三位序号>", "file": "<规则文件相对路径>", "section": "章节或条款号", "fromLine": <行>, "toLine": <行>, "text": "规则原文摘要（与源文件一致，≤100 字）", "mandatory": true }',
+          '',
+          '硬性要求：',
+          '1. ruleId 用前缀 ' + rulePrefix + '- 从 001 连续编号；',
+          '2. 必须覆盖组内全部规则内容，不得遗漏章节；',
+          '3. 只写这一个文件，不要执行 git。',
+          '',
+          '完成后返回：{ partFile: <写的文件路径>, clauseCount: <检查点条数> }',
+        ].join('\n'),
+        {
+          label: '提取规则 ' + group.title,
+          agentType: 'general',
+          schema: {
+            type: 'object',
+            properties: { partFile: { type: 'string' }, clauseCount: { type: 'number' } },
+            required: ['partFile', 'clauseCount'],
+          },
+          timeoutMs: 1800000,
+          retries: 1,
+        }
+      )
+    })
+  )
+}
+
+const reqPartFiles = rtmEnabled
+  ? (reqResults || []).filter(Boolean).map((r) => r.partFile).filter(Boolean)
+  : []
+const catalogPartFiles = rtmEnabled
+  ? (catalogResults || []).filter(Boolean).map((r) => r.partFile).filter(Boolean)
+  : []
+if (rtmEnabled && (reqPartFiles.length === 0 || catalogPartFiles.length === 0)) {
+  throw new Error(
+    'RTM 原子化阶段失败：需求分片 ' + reqPartFiles.length + ' 个 / 规则目录分片 ' + catalogPartFiles.length + ' 个，至少各需 1 个'
+  )
+}
+if (rtmEnabled) {
+  const reqCount = (reqResults || []).filter(Boolean).reduce((s, r) => s + (r.count || 0), 0)
+  const clauseCount = (catalogResults || []).filter(Boolean).reduce((s, r) => s + (r.clauseCount || 0), 0)
+  log('RTM 原子化完成：需求点 ' + reqCount + ' 条（' + reqPartFiles.length + ' 片），规则检查点 ' + clauseCount + ' 条（' + catalogPartFiles.length + ' 片）')
+}
+
 phase('规则检查')
 
 const groupTasks = parallel(
-  ruleGroups.map((group) => () =>
-    agent(
+  ruleGroups.map((group, gi) => () => {
+    const groupId = 'group-' + String(gi + 1).padStart(2, '0')
+    const catalogPart = rtmEnabled ? runDir + '/catalog/parts/' + groupId + '.json' : null
+    const checkFile = rtmEnabled ? runDir + '/checks/' + groupId + '.json' : null
+    return agent(
       [
         '你是资深游戏 PRD 审核员，正在对照规则基准检查需求文档。',
         '',
@@ -347,6 +474,25 @@ const groupTasks = parallel(
         '本次负责的规则范围：' + group.title,
         '范围聚焦：' + (group.focus || '该组全部规则'),
         ruleScopeText(group),
+        rtmEnabled && catalogPart
+          ? [
+              '',
+              '本组规则原子检查点清单（先读该文件，逐条对照检查）：',
+              '- ' + catalogPart,
+              '',
+              '需求点清单（分片文件，检查时用于定位需求点 reqKey）：',
+              reqPartFiles.map((f) => '- ' + f).join('\n'),
+              '',
+              'RTM 覆盖记录（必须完成，与找问题同等重要）：',
+              '1. 本组每个规则原子检查点（ruleId）都必须输出一条 coverage 记录，包括完全没问题的（status=pass）；',
+              '   { "ruleId": "<清单中的 ruleId>", "reqKey": "<需求点键或 null>", "status": "pass|incomplete|conflict|missing|unverified|na", "evidence": "判断依据（需求原文位置与理由，≤200 字）" }；',
+              '   - reqKey 来自需求点清单；规则点不涉及任何需求点时 reqKey 填 null、status 填 na；',
+              '   - 一条规则涉及多个需求点时输出多条 coverage。',
+              '2. issues 每条加 requirementRefs 字段（字符串数组，列出该问题涉及的 reqKey；无法定位填空数组）。',
+              '3. 全部完成后，把 issues 与 coverage 合并写入一个 JSON 文件（UTF-8）：' + checkFile,
+              '   结构：{ "groupId": ' + JSON.stringify(groupId) + ', "status": "completed", "checkVersion": "v1", "coverage": [...], "issues": [...与返回值一致] }',
+            ].join('\n')
+          : '',
         '',
         '检查方式：把本组每条规则与需求文档逐条对照，找出需求文档的问题。',
         '注意：规则文件描述的是应有的正确行为，它是基准；只需报告需求文档的缺失、冲突、逻辑错误、模糊与不完整。',
@@ -361,7 +507,7 @@ const groupTasks = parallel(
         retries: 1,
       }
     )
-  )
+  })
 )
 
 phase('一致性检查')
@@ -396,9 +542,12 @@ phase('汇总去重')
 
 let allIssues = []
 let droppedGroup = 0
-for (const r of groupResults || []) {
+const failedGroupTitles = []
+for (let gi = 0; gi < (groupResults || []).length; gi++) {
+  const r = groupResults[gi]
   if (!r || !Array.isArray(r.issues)) {
     droppedGroup += 1
+    failedGroupTitles.push(ruleGroups[gi] ? ruleGroups[gi].title : 'group-' + (gi + 1))
     continue
   }
   for (const it of r.issues) allIssues.push(it)
@@ -538,6 +687,111 @@ const moduleRank = Object.keys(moduleStats)
   .sort((a, b) => b.count - a.count)
 
 log('汇总完成：共 ' + stats.total + ' 条问题（P0 ' + stats.P0 + ' / P1 ' + stats.P1 + ' / P2 ' + stats.P2 + ' / P3 ' + stats.P3 + '）')
+
+// ---------- RTM T2/T3：矩阵组装与校验（确定性脚本，AI 只负责执行命令与落盘） ----------
+let rtmResult = null
+if (rtmEnabled) {
+  phase('矩阵组装')
+  // 步骤 1：规范化问题清单（精简字段，含 requirementRefs）与运行元信息落盘
+  const issuesSlim = issues.map((it) => ({
+    id: it.id,
+    type: it.type,
+    priority: it.priority,
+    title: it.title,
+    module: it.module,
+    requirementRefs: (it._src && it._src.requirementRefs) || [],
+  }))
+  const rtmMeta = { checkDate, failedGroups: failedGroupTitles, excludeKeywords }
+  const issuesRawFile = runDir + '/issues-raw.json'
+  const metaFile = runDir + '/meta.json'
+  await agent(
+    [
+      '你在项目根目录执行两次文件写入（用 write 工具，UTF-8）：',
+      '',
+      '文件 1：' + issuesRawFile,
+      '内容为以下 JSON 原样写入：',
+      JSON.stringify(issuesSlim),
+      '',
+      '文件 2：' + metaFile,
+      '内容为以下 JSON 原样写入：',
+      JSON.stringify(rtmMeta),
+      '',
+      '完成后返回 { done: true }。不要修改 JSON 内容。',
+    ].join('\n'),
+    {
+      label: 'RTM 数据落盘',
+      agentType: 'general',
+      schema: {
+        type: 'object',
+        properties: { done: { type: 'boolean' } },
+        required: ['done'],
+      },
+      timeoutMs: 600000,
+    }
+  )
+  await check(() => fileExists(issuesRawFile), 'issues-raw 未写入: ' + issuesRawFile)
+  await check(() => fileExists(metaFile), 'meta 未写入: ' + metaFile)
+
+  // 步骤 2：执行确定性组装脚本（分片合并/ID 匹配/证据校验/矩阵/双指标统计）
+  rtmResult = await agent(
+    [
+      '你在项目根目录执行以下命令，然后按 schema 返回结果：',
+      '',
+      'node ' + rtmScript + ' ' + runDir + ' --issues-raw ' + issuesRawFile + ' --meta ' + metaFile,
+      '',
+      '要求：',
+      '1. 命令输出 [成功] 时，从输出中提取需求点数/检查完成率/规则通过率，填入返回字段；',
+      '2. 命令输出 [失败] 时，原样记录错误清单到 message，ok 填 false；',
+      '3. 不要修改脚本与数据文件。',
+    ].join('\n'),
+    {
+      label: 'RTM 矩阵组装',
+      agentType: 'general',
+      schema: {
+        type: 'object',
+        properties: {
+          ok: { type: 'boolean' },
+          requirementTotal: { type: 'number' },
+          checkCompleteRate: { type: 'number' },
+          rulePassRate: { type: 'number' },
+          message: { type: 'string', description: '结果说明或失败原因' },
+        },
+        required: ['ok', 'message'],
+      },
+      timeoutMs: 600000,
+    }
+  )
+  if (rtmResult && rtmResult.ok) {
+    log(
+      'RTM 矩阵完成：需求点 ' + (rtmResult.requirementTotal || '?') + '，完成率 ' +
+        (rtmResult.checkCompleteRate != null ? (rtmResult.checkCompleteRate * 100).toFixed(1) + '%' : '?') +
+        '，通过率 ' + (rtmResult.rulePassRate != null ? (rtmResult.rulePassRate * 100).toFixed(1) + '%' : '?')
+    )
+  } else {
+    log('[降级] RTM 矩阵组装失败：' + (rtmResult && rtmResult.message))
+  }
+
+  // 步骤 3：矩阵章节追加进报告尾部（报告主体结构不变）
+  if (rtmResult && rtmResult.ok) {
+    await agent(
+      [
+        '你在项目根目录执行一段 node 命令：把 RTM 矩阵章节追加到报告文件尾部。',
+        '',
+        '要求：',
+        '1. 读取 ' + runDir + '/matrix-report.md 全文；',
+        '2. 把首行 "# 需求全量检查矩阵" 替换为 "## 需求全量检查矩阵（RTM）"；',
+        '3. 在 ' + outPath + ' 文件末尾追加：先加一行 "\\n---\\n"，再接替换后的全文；',
+        '4. 用 node -e 完成读写（fs.readFileSync/writeFileSync，utf8），写完后确认 ' + outPath + ' 包含 "需求全量检查矩阵（RTM）"；',
+        '5. 不要改动报告其他内容。',
+      ].join('\n'),
+      {
+        label: '矩阵章节合并',
+        agentType: 'general',
+        timeoutMs: 300000,
+      }
+    )
+  }
+}
 
 phase('主题归类')
 
@@ -893,4 +1147,18 @@ return {
   fastMode: fastMode,
   reviewOk: skipReview ? null : review ? review.ok === true || fixed : false,
   reportWriteSummary: writeResult,
+  rtm: rtmEnabled
+    ? {
+        ok: !!(rtmResult && rtmResult.ok),
+        runDir: runDir,
+        matrixPath: runDir + '/requirements-matrix.json',
+        issuesPath: runDir + '/issues.json',
+        manifestPath: runDir + '/manifest.json',
+        requirementTotal: rtmResult ? rtmResult.requirementTotal || null : null,
+        checkCompleteRate: rtmResult ? rtmResult.checkCompleteRate || null : null,
+        rulePassRate: rtmResult ? rtmResult.rulePassRate || null : null,
+        failedGroups: failedGroupTitles,
+        message: rtmResult ? rtmResult.message : '',
+      }
+    : { disabled: true },
 }

@@ -348,6 +348,22 @@ export function parseReport(md) {
   }
   out.overall_recommendations = recLines;
 
+  // --- RTM 追踪矩阵统计（可选：report.md 尾部 RTM 章节，v4 需求 T3）---
+  const rtmIdx = md.indexOf('需求全量检查矩阵（RTM）');
+  if (rtmIdx >= 0) {
+    const rtmSection = md.slice(rtmIdx);
+    const cov = {};
+    const reqTotal = rtmSection.match(/需求点总数 \|( (\d+))/);
+    const ruleTotal = rtmSection.match(/规则原子检查点总数 \| (\d+)（适用 (\d+)）/);
+    const checked = rtmSection.match(/已完成检查 \| (\d+)（检查完成率 ([\d.]+)%/);
+    const passed = rtmSection.match(/已通过 \| (\d+)（规则通过率 ([\d.]+)%/);
+    if (reqTotal) cov.requirementTotal = parseInt(reqTotal[2], 10);
+    if (ruleTotal) { cov.rulePointTotal = parseInt(ruleTotal[1], 10); cov.applicableRulePoints = parseInt(ruleTotal[2], 10); }
+    if (checked) { cov.checkedRulePoints = parseInt(checked[1], 10); cov.completeRatePct = parseFloat(checked[2]); }
+    if (passed) { cov.passedRulePoints = parseInt(passed[1], 10); cov.passRatePct = parseFloat(passed[2]); }
+    if (cov.requirementTotal !== undefined) out.coverageStats = cov;
+  }
+
   // --- 模块归属 ---
   // workflow 版：清单主题列已挂到 issue.module，这里聚合为 modules；
   // skill 版：总体建议中 "模块名（PRD-xxx/yyy）：N 条" 形式补充（以「：N 条」为特征）
@@ -524,6 +540,16 @@ function main() {
     process.exit(1);
   }
   delete data._checks; // 校验用临时数据不进入产物
+
+  // 检查覆盖清单（可选）：gen-coverage.mjs 与 report.json 同目录产出 coverage.json
+  const coveragePath = path.join(outDir, 'coverage.json');
+  if (fs.existsSync(coveragePath)) {
+    try {
+      data.coverage = JSON.parse(fs.readFileSync(coveragePath, 'utf8'));
+    } catch (e) {
+      console.error('[警告] coverage.json 解析失败，已跳过覆盖清单：' + e.message);
+    }
+  }
 
   const template = fs.readFileSync(path.join(SKILL_ROOT, 'dashboard', 'template.html'), 'utf8');
   const html = buildDashboardHtml(data, template);

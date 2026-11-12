@@ -526,13 +526,90 @@ export function nextDashboardName(dir, projectName, now = new Date()) {
   return `${prefix}${pad(seq)}.html`;
 }
 
+// RTM 视图投影（v4 Dashboard 方案 P0 数据贯通）：
+// 从某次运行的 RTM 快照（requirements-matrix.json + issues.json）构建 Dashboard 视图模型，
+// 注入 data.rtm 随 report-data 内嵌进单文件 HTML（file:// 离线可用，不依赖运行时 fetch）。
+// 缺失产物时抛错，由调用方决定回退——禁止用旧 coverage.json 静默替代。
+function buildRtmView(runDir) {
+  const matrixPath = path.join(runDir, 'requirements-matrix.json');
+  if (!fs.existsSync(matrixPath)) {
+    throw new Error('RTM 快照缺少 requirements-matrix.json: ' + runDir);
+  }
+  const matrix = JSON.parse(fs.readFileSync(matrixPath, 'utf8'));
+  let issues = [];
+  const issuesPath = path.join(runDir, 'issues.json');
+  if (fs.existsSync(issuesPath)) {
+    try { issues = JSON.parse(fs.readFileSync(issuesPath, 'utf8')); } catch (e) {
+      throw new Error('issues.json 解析失败: ' + e.message);
+    }
+  }
+  const reqByKey = new Map((matrix.requirements || []).map((r) => [r.reqKey, r]));
+  // 双向索引：需求 -> ruleLinks；规则 -> requirementIds + issueIds
+  const rules = (matrix.ruleCoverage || []).map((c) => ({
+    ruleId: c.ruleId,
+    file: c.file,
+    section: c.section || null,
+    text: c.text || '',
+    mandatory: c.mandatory !== false,
+    requirementIds: c.linkedRequirementIds || [],
+    executionStatus: c.status === 'unverified' ? 'unverified' : 'completed',
+    verdict: c.status,
+    issueIds: [...new Set((matrix.requirements || [])
+      .filter((r) => (r.ruleRefs || []).some((x) => x.ruleId === c.ruleId))
+      .flatMap((r) => r.issueIds || []))],
+  }));
+  const ruleIssueIndex = new Map(rules.map((r) => [r.ruleId, r.issueIds]));
+  const requirements = (matrix.requirements || []).map((r) => ({
+    requirementId: r.requirementId,
+    title: r.title,
+    source: r.source || null,
+    text: r.text || '',
+    ruleLinks: (r.ruleRefs || []).map((x) => ({
+      ruleId: x.ruleId,
+      executionStatus: x.status === 'unverified' ? 'unverified' : 'completed',
+      verdict: x.status,
+      evidence: x.evidence || '',
+      issueIds: x.evidenceInvalid ? [] : (r.issueIds || []),
+    })),
+    overallStatus: r.overallStatus,
+    issueIds: r.issueIds || [],
+  }));
+  const issuesView = issues.map((i) => ({
+    id: i.id,
+    type: i.type,
+    priority: i.priority,
+    title: i.title,
+    requirementIds: (i.requirementRefs || [])
+      .map((k) => (reqByKey.get(k) || {}).requirementId)
+      .filter(Boolean),
+    ruleIds: [...new Set((i.requirementRefs || [])
+      .flatMap((k) => { const r = reqByKey.get(k); return r ? (r.ruleRefs || []).map((x) => x.ruleId) : []; }))],
+  }));
+  return {
+    schemaVersion: 2,
+    runId: path.basename(runDir),
+    statistics: matrix.stats,
+    requirements,
+    rules,
+    issues: issuesView,
+  };
+}
+
 function main() {
-  const [reportArg, outDirArg] = process.argv.slice(2);
+  const argv = process.argv.slice(2);
+  const rtmFlag = argv.indexOf('--rtm');
+  const positional = argv.filter((a, i) => a !== '--rtm' && argv[i - 1] !== '--rtm');
+  const [reportArg, outDirArg] = positional;
+  const rtmRunDir = rtmFlag >= 0 ? argv[rtmFlag + 1] : null;
   const reportPath = path.resolve(reportArg || path.join(SKILL_ROOT, '..', '..', '..', 'examples', 'game-prd-check', 'report.md'));
   const outDir = path.resolve(outDirArg || path.dirname(reportPath));
 
   const md = fs.readFileSync(reportPath, 'utf8');
   const data = parseReport(md);
+  // RTM 视图投影（--rtm <runDir>）：缺失产物直接报错，不用旧 coverage 静默替代
+  if (rtmRunDir) {
+    data.rtm = buildRtmView(rtmRunDir);
+  }
   const errors = validateReport(data);
   if (errors.length) {
     console.error('[失败] report.md 校验未通过：');

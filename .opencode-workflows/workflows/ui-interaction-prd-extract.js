@@ -30,6 +30,9 @@
 //   maxRuleGroups     规则分组上限，默认质量档 24，fast 档 16
 //   dashboard         false 跳过 Dashboard
 //   dashboardScript   默认 .claude/skills/game-prd-check/scripts/build-dashboard.mjs
+//   requirementsPath + extractionRunId 共享需求快照消费（v4 阶段 4，必项成对传入，只传其一直接报错）：
+//                     快照完整性/extractionRunId 一致/源 PRD sha256 校验（check-shared-snapshot.mjs，变更即拒）；
+//                     检查/一致性/审核 agent 附需求点清单（REQ ID 定位），issue 增加 requirementIds 关联
 
 export const meta = {
   id: 'ui-interaction-prd-extract',
@@ -74,6 +77,25 @@ const reviewAgentOptions = reviewModel
   : { timeoutMs: 1800000 }
 
 setConcurrency(A.concurrency || 16)
+
+// 共享需求快照消费（v4 阶段 4）：传 requirementsPath + extractionRunId 成对校验；
+// 传时需求文档清单从快照 manifest.sourceFiles 确定性推导（跳过目录扫描），
+// 检查/一致性/审核 agent 附需求点清单（REQ ID 定位），issue 增加 requirementIds 关联
+const sharedRequirementsPath = A.requirementsPath || null
+const sharedExtractionRunId = A.extractionRunId || null
+if ((sharedRequirementsPath && !sharedExtractionRunId) || (!sharedRequirementsPath && sharedExtractionRunId)) {
+  throw new Error('requirementsPath 与 extractionRunId 必须成对传入（共享需求快照消费，v4 契约；只传其一直接报错）')
+}
+let sharedManifestOk = false
+if (sharedRequirementsPath) {
+  // 沙箱无 readFile：快照完整性/runId 一致/源 sha256 校验下沉到 node 脚本（布尔回传，失败原因在 stderr 日志）
+  const ok = commandSuccess('node .opencode-workflows/scripts/check-shared-snapshot.mjs "' + sharedRequirementsPath + '" "' + sharedExtractionRunId + '" --verify-source')
+  if (!ok) {
+    throw new Error('共享快照校验失败：' + sharedRequirementsPath + '（extractionRunId ' + sharedExtractionRunId + '；原因见上方命令日志，不猜测、不回退旧路径静默运行）')
+  }
+  sharedManifestOk = true
+  log('消费共享需求快照：' + sharedRequirementsPath + '（extractionRunId ' + sharedExtractionRunId + '），检查/一致性/审核 agent 附需求点清单（REQ ID 定位）')
+}
 
 const TYPE_RULE = [
   'MISSING：基准中定义了、但需求文档缺失或未描述',
@@ -144,6 +166,7 @@ const ISSUE_ITEM_SCHEMA = {
     location: { type: 'string', description: '需求文档原文位置（章节/小节标题），多处用、分隔' },
     quote: { type: 'string', description: '需求文档原文引文，不超过 200 字；MISSING 类写缺失说明' },
     ruleRef: { type: 'string', description: 'UI 基准条款号，如 01#9,03#12；scope=out 填 无' },
+    requirementIds: { type: 'array', items: { type: 'string' }, description: '共享快照需求点 ID 列表（REQ-xxx；未传共享快照或无法定位时填空数组）' },
     problem: { type: 'string', description: '问题说明，指出与哪条 UI 基准冲突或哪里缺失/矛盾' },
     impact: { type: 'string', description: '对开发 / 测试 / 验收的具体影响' },
     suggestion: { type: 'string', description: '具体可执行的补充或修正建议' },
@@ -281,7 +304,7 @@ function uiIssueRules() {
     '4. 交互限制四类（前置守卫/互斥/超时/失败与恢复）是重点检查维度，需求缺失即报 INCOMPLETE。',
     '5. 严格 UI 归因：ruleRef 必须指向 UI 基准的具体条款号（如 01#9、02#6）；玩法逻辑（何时可碰杠胡、番型、算分）与纯文档质量问题（编号悬空、术语不一致）scope 填 out，outReason 写归口，不计入统计。',
     '6. 需求有意新增、现网不存在的功能，记 P3 并建议补充“与现网实现的差异说明”，不要报 CONFLICT。',
-    '7. 证据先行：每条必须有需求原文位置与引文；报 MISSING 前复核基准条款与需求确实未覆盖。',
+    '7. 证据先行：每条必须有需求原文位置与引文；报 MISSING 前复核基准条款与需求确实未覆盖。' + (sharedRequirementsPath ? '提供 requirementIds：命中共享快照需求点时列出其 REQ ID（REQ-xxx），无法定位填空数组。' : ''),
     '8. 不重复：同一缺陷只记一条，多处证据合并进同一条的 location。',
     '9. 按优先级从高到低自检，最多输出 ' + maxIssuesPerGroup + ' 条最有价值的问题。',
     '10. 只输出结构化结果，不要输出报告正文。',
@@ -334,8 +357,16 @@ if (inputFiles.length === 0) {
   throw new Error('未找到需求文档：请检查目录 ' + inputDir + ' 或通过 args.inputFiles 指定')
 }
 
-const requirementsPath = A.inputFiles && A.inputFiles.length > 0 ? A.inputFiles.join('、') : inputFiles[0]
+const prdDisplayPath = A.inputFiles && A.inputFiles.length > 0 ? A.inputFiles.join('、') : inputFiles[0]
 const inputList = inputFiles.map((f) => '- ' + f).join('\n')
+// 共享快照模式：检查/一致性/审核 agent 附需求点清单（REQ ID 定位）
+const reqListHint = sharedRequirementsPath
+  ? [
+      '需求点清单文件（定位需求点 reqKey 与 requirementId；含 requirementId/identityStatus 等额外字段，忽略即可）：',
+      '- ' + sharedRequirementsPath + '/requirements.json',
+      '',
+    ].join('\n')
+  : ''
 const ruleGroups = scan.ruleGroups
 const ruleFileCount = ruleGroups.reduce((s, g) => s + (g.files || []).length, 0)
 
@@ -351,6 +382,7 @@ const groupTasks = parallel(
         '',
         '需求文档（务必全文逐段读完，文件较大可分多次读取）：',
         inputList,
+        sharedRequirementsPath ? reqListHint : '',
         '',
         '本次负责的规则范围：' + group.title,
         '范围聚焦：' + (group.focus || '该组全部规则'),
@@ -380,6 +412,7 @@ const internalTask = agent(
     '',
     '需求文档（务必全文读完，可分多次读取）：',
     inputList,
+    sharedRequirementsPath ? reqListHint : '',
     '',
     '只找以下三类问题：',
     '1. CONFLICT：文档内部两处（不同章节/表格/流程图）对 UI 交互的描述互相矛盾。',
@@ -620,6 +653,7 @@ const detailBlocks = issues.map((it) =>
     '',
     detailField('问题性质', TYPE_LABELS[it.type] || it.type),
     detailField('原文', '位置“' + (it.location || '') + '”。引文：“' + (it.quote || '') + '”'),
+    detailField('需求点', (it.requirementIds || []).join('、') || '无'),
     detailField('基准依据', it.ruleRef + '。' + (it.problem || '')),
     detailField('问题', it.problem),
     detailField('影响', it.impact),
@@ -645,7 +679,7 @@ headParts.push('# UI 交互检查问题报告（基于客户端代码逆向基�
 headParts.push('')
 headParts.push('## 检查信息')
 headParts.push('')
-headParts.push('检查对象：' + requirementsPath)
+headParts.push('检查对象：' + prdDisplayPath)
 headParts.push('')
 headParts.push('规则基准：' + rulesDir + '（' + (ruleFileCount || ruleGroups.length) + ' 个规则文件）')
 headParts.push('')
@@ -790,7 +824,7 @@ if (skipReview) {
       '',
       '报告文件：' + outPath,
       '规则基准目录：' + rulesDir,
-      '需求文档：' + requirementsPath,
+      '需求文档：' + prdDisplayPath,
       '期望问题总数：' + stats.total + '（P0 ' + stats.P0 + ' / P1 ' + stats.P1 + ' / P2 ' + stats.P2 + ' / P3 ' + stats.P3 + '）',
       '期望 ID 序列：' + expectedIds,
       '期望详情条数：' + issues.length,
@@ -831,6 +865,7 @@ if (skipReview) {
             title: it.title,
             location: it.location,
             ruleRef: it.ruleRef,
+            requirementIds: it.requirementIds || [],
           })),
           null,
           1

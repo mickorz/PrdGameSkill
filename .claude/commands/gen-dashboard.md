@@ -22,6 +22,12 @@ node .claude/skills/game-prd-check/scripts/build-dashboard.mjs <report路径>
 
 兼容 skill 版与 workflow 版两种报告格式（自动识别）。
 
+**RTM 附加（重要，防降级）**：若 report 为 workflow 版（`examples/game-prd-check-workflow/report.md`），必须检查 `examples/game-prd-check-workflow/rtm/runs/` 下的 run 目录（命名 `run-YYYYMMDD`）：
+
+- 存在 run 目录时，取字典序最大的一个（即最新 run），构建命令追加 `--rtm <该run目录绝对或相对路径>`。缺了 `--rtm` 会生成降级版 Dashboard：需求覆盖/规则覆盖 Tab 只显示"无 RTM 需求追踪数据"提示，需求点抽屉、规则抽屉、双向跳转全部缺失
+- 无任何 run 目录时，不传 `--rtm`（按旧版报告构建）
+- skill 版 report 不涉及 RTM，直接构建
+
 ## 3. 处理结果
 
 - **校验失败**（输出含 `[失败]`）：不要生成产物，向用户展示错误清单（统计与明细不一致、字段丢失等），等待修复 report.md 后重跑

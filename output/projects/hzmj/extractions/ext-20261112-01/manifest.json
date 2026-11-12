@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "projectKey": "hzmj",
+  "extractionRunId": "ext-20261112-01",
+  "sourceFiles": [
+    {
+      "file": "E:/WorkProjects/PrdGameSkill/input/【杭州麻将】核心流程杭州麻将好友房AI-11-12-2.md",
+      "sha256": "77758b3f1cce44362971dfc8bad11741b9a5fbf7a6070c805501281980269d97",
+      "bytes": 143121
+    }
+  ],
+  "requirementsPath": "requirements.json",
+  "identityMapPath": "output/projects/hzmj/identity-map.json",
+  "identityMapVersion": 2,
+  "validationStatus": "passed",
+  "validationFailures": 0,
+  "identityStats": {
+    "exactMatch": 15,
+    "anchorMatch": 0,
+    "newWithPending": 1,
+    "newConfirmed": 364
+  },
+  "warningsCount": 0,
+  "warnings": [],
+  "errors": []
+}

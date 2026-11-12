@@ -1,0 +1,3972 @@
+{
+ "baseline": "examples/game-prd-check-workflow/rtm/runs/run-20261112",
+ "snapshot": "output/projects/hzmj/extractions/ext-20261112-01/requirements.json",
+ "minRate": 0.9,
+ "stats": {
+  "baselineTotal": 363,
+  "snapshotTotal": 380,
+  "exactMatch": 31,
+  "anchorMatch": 200,
+  "anchorDocMatch": 69,
+  "containmentMatch": 49,
+  "unmatchedBaseline": 63,
+  "unmatchedSnapshot": 104,
+  "rate": 0.8264462809917356
+ },
+ "warnings": [
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-007 靠包含度命中 REQ-121（包含 1.00，相似仅 0.46，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-015 靠包含度命中 REQ-129（包含 1.00，相似仅 0.56，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-026 靠包含度命中 REQ-142（包含 1.00，相似仅 0.51，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-027 靠包含度命中 REQ-142（包含 1.00，相似仅 0.54，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-028 靠包含度命中 REQ-143（包含 1.00，相似仅 0.41，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-052 章节「2.3.1.1 操作优先级」在快照中无同名章节，全文候选命中 REQ-170（相似 0.98 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-053 章节「2.3.1.1 操作优先级」在快照中无同名章节，全文候选命中 REQ-171（相似 0.98 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-054 章节「2.3.1.1 操作优先级」在快照中无同名章节，全文候选命中 REQ-172（相似 0.80 / 包含 0.81），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-055 章节「2.3.1.1 操作优先级」在快照中无同名章节，全文候选命中 REQ-173（相似 0.98 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-056 章节「2.3.1.2 吃」在快照中无同名章节，全文候选命中 REQ-174（相似 0.98 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-057 章节「2.3.1.2 吃」在快照中无同名章节，全文候选命中 REQ-175（相似 0.97 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-060 章节「2.3.1.3 碰」在快照中无同名章节，全文候选命中 REQ-178（相似 0.99 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-061 章节「2.3.1.3 碰」在快照中无同名章节，全文候选命中 REQ-179（相似 0.97 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-064 章节「2.3.1.4 杠」在快照中无同名章节，全文候选命中 REQ-182（相似 0.60 / 包含 0.61），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-065 章节「2.3.1.4 杠」在快照中无同名章节，全文候选命中 REQ-183（相似 0.99 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-066 章节「2.3.1.4 杠」在快照中无同名章节，全文候选命中 REQ-184（相似 0.70 / 包含 0.71），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-067 章节「2.3.1.4 杠」在快照中无同名章节，全文候选命中 REQ-185（相似 0.99 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-068 章节「2.3.1.4 杠」在快照中无同名章节，全文候选命中 REQ-186（相似 0.98 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-069 章节「2.3.1.4 杠」在快照中无同名章节，全文候选命中 REQ-187（相似 0.98 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-071 章节「2.3.1.4 杠」在快照中无同名章节，全文候选命中 REQ-189（相似 0.97 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-073 章节「2.3.1.4 杠」在快照中无同名章节，全文候选命中 REQ-191（相似 0.98 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-074 章节「2.3.1.4 杠」在快照中无同名章节，全文候选命中 REQ-192（相似 0.94 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-076 章节「2.3.1.4 杠」在快照中无同名章节，全文候选命中 REQ-195（相似 0.98 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-077 章节「2.3.1.4 杠」在快照中无同名章节，全文候选命中 REQ-196（相似 0.98 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-078 章节「2.3.1.4 杠」在快照中无同名章节，全文候选命中 REQ-197（相似 0.80 / 包含 0.82），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-079 章节「2.3.1.5 自摸」在快照中无同名章节，全文候选命中 REQ-198（相似 0.77 / 包含 0.77），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-081 章节「2.3.1.6 放铳」在快照中无同名章节，全文候选命中 REQ-201（相似 0.98 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-083 章节「2.3.1.6 放铳」在快照中无同名章节，全文候选命中 REQ-203（相似 0.77 / 包含 0.78），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-084 章节「2.3.1.6 放铳」在快照中无同名章节，全文候选命中 REQ-204（相似 0.95 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-086 章节「2.3.2.2 人数」在快照中无同名章节，全文候选命中 REQ-207（相似 0.97 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-087 章节「2.3.2.2 人数」在快照中无同名章节，全文候选命中 REQ-208（相似 0.96 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-090 章节「2.3.2.4 轮庄」在快照中无同名章节，全文候选命中 REQ-211（相似 0.97 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-092 章节「2.3.2.5 财神」在快照中无同名章节，全文候选命中 REQ-214（相似 0.96 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-093 章节「2.3.2.6 笃三老庄」在快照中无同名章节，全文候选命中 REQ-215（相似 0.97 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-094 章节「2.3.2.6 笃三老庄」在快照中无同名章节，全文候选命中 REQ-216（相似 0.97 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-095 章节「2.3.2.6 笃三老庄」在快照中无同名章节，全文候选命中 REQ-217（相似 0.97 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-096 章节「2.3.2.6 笃三老庄」在快照中无同名章节，全文候选命中 REQ-218（相似 0.96 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-097 章节「2.3.2.7 庄闲放铳」在快照中无同名章节，全文候选命中 REQ-219（相似 0.98 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-098 章节「2.3.2.7 庄闲放铳」在快照中无同名章节，全文候选命中 REQ-220（相似 0.96 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-099 章节「2.3.2.7 庄闲放铳」在快照中无同名章节，全文候选命中 REQ-221（相似 0.74 / 包含 0.76），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-100 章节「2.3.2.8 三摊承包」在快照中无同名章节，全文候选命中 REQ-222（相似 0.64 / 包含 0.93），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-101 章节「2.3.2.8 三摊承包」在快照中无同名章节，全文候选命中 REQ-223（相似 0.48 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-102 章节「2.3.2.8 三摊承包」在快照中无同名章节，全文候选命中 REQ-224（相似 0.58 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-103 章节「2.3.2.8 三摊承包」在快照中无同名章节，全文候选命中 REQ-225（相似 0.66 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-104 章节「2.3.2.8 三摊承包」在快照中无同名章节，全文候选命中 REQ-226（相似 0.98 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-105 章节「2.3.2.8 三摊承包」在快照中无同名章节，全文候选命中 REQ-227（相似 0.98 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-107 章节「2.3.2.8 三摊承包」在快照中无同名章节，全文候选命中 REQ-229（相似 0.99 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-109 章节「2.3.2.9 吃碰禁手」在快照中无同名章节，全文候选命中 REQ-231（相似 0.27 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-110 章节「2.3.2.9 吃碰禁手」在快照中无同名章节，全文候选命中 REQ-231（相似 0.71 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-111 章节「2.3.2.9 吃碰禁手」在快照中无同名章节，全文候选命中 REQ-232（相似 0.97 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-112 章节「2.3.2.9 吃碰禁手」在快照中无同名章节，全文候选命中 REQ-233（相似 0.99 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-113 章节「2.3.2.9 吃碰禁手」在快照中无同名章节，全文候选命中 REQ-234（相似 0.99 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-114 章节「2.3.2.10 底分」在快照中无同名章节，全文候选命中 REQ-235（相似 0.95 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-115 章节「2.3.2.10 底分」在快照中无同名章节，全文候选命中 REQ-236（相似 0.99 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-117 靠包含度命中 REQ-238（包含 1.00，相似仅 0.48，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-118 靠包含度命中 REQ-238（包含 1.00，相似仅 0.51，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-145 章节「3.2 桌面布局-对局前」在快照中无同名章节，全文候选命中 REQ-255（相似 0.36 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-146 章节「3.2 桌面布局-对局前」在快照中无同名章节，全文候选命中 REQ-255（相似 0.59 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-147 章节「3.2 桌面布局-对局前」在快照中无同名章节，全文候选命中 REQ-256（相似 0.08 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-148 章节「3.2 桌面布局-对局前」在快照中无同名章节，全文候选命中 REQ-257（相似 0.23 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-149 章节「3.2 桌面布局-对局前」在快照中无同名章节，全文候选命中 REQ-257（相似 0.49 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-150 章节「3.2 桌面布局-对局前」在快照中无同名章节，全文候选命中 REQ-258（相似 0.99 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-151 章节「3.2 桌面布局-对局前」在快照中无同名章节，全文候选命中 REQ-259（相似 0.99 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-152 章节「3.2 桌面布局-对局前」在快照中无同名章节，全文候选命中 REQ-260（相似 0.89 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-154 章节「3.2 桌面布局-对局前」在快照中无同名章节，全文候选命中 REQ-261（相似 0.22 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-158 靠包含度命中 REQ-265（包含 1.00，相似仅 0.60，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-169 靠包含度命中 REQ-275（包含 1.00，相似仅 0.33，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-170 靠包含度命中 REQ-275（包含 1.00，相似仅 0.46，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-176 靠包含度命中 REQ-280（包含 1.00，相似仅 0.32，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-205 靠包含度命中 REQ-312（包含 1.00，相似仅 0.45，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-220 章节「3.3.5.1 手牌交互说明」在快照中无同名章节，全文候选命中 REQ-330（相似 0.99 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-221 章节「3.3.5.1 手牌交互说明」在快照中无同名章节，全文候选命中 REQ-331（相似 0.99 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-222 章节「3.3.5.1 手牌交互说明」在快照中无同名章节，全文候选命中 REQ-332（相似 0.77 / 包含 0.90），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-223 章节「3.3.5.1 手牌交互说明」在快照中无同名章节，全文候选命中 REQ-333（相似 0.98 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-224 章节「3.3.5.1 手牌交互说明」在快照中无同名章节，全文候选命中 REQ-334（相似 0.98 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-225 章节「3.3.5.1 手牌交互说明」在快照中无同名章节，全文候选命中 REQ-335（相似 0.72 / 包含 0.73），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-226 章节「3.3.5.1 手牌交互说明」在快照中无同名章节，全文候选命中 REQ-336（相似 0.97 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-227 靠包含度命中 REQ-337（包含 1.00，相似仅 0.31，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-230 靠包含度命中 REQ-339（包含 1.00，相似仅 0.46，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-231 靠包含度命中 REQ-339（包含 1.00，相似仅 0.40，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-234 靠包含度命中 REQ-343（包含 1.00，相似仅 0.13，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-235 靠包含度命中 REQ-343（包含 1.00，相似仅 0.31，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-237 靠包含度命中 REQ-349（包含 1.00，相似仅 0.46，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-238 靠包含度命中 REQ-349（包含 1.00，相似仅 0.49，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-239 靠包含度命中 REQ-350（包含 1.00，相似仅 0.22，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-278 anchor 命中靠显著领先（top1 0.96 / top2 0.42），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-296 靠包含度命中 REQ-429（包含 1.00，相似仅 0.41，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-297 靠包含度命中 REQ-430（包含 1.00，相似仅 0.30，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-307 靠包含度命中 REQ-440（包含 1.00，相似仅 0.36，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-308 靠包含度命中 REQ-440（包含 1.00，相似仅 0.60，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-311 靠包含度命中 REQ-443（包含 1.00，相似仅 0.47，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-312 靠包含度命中 REQ-443（包含 1.00，相似仅 0.49，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-316 靠包含度命中 REQ-447（包含 1.00，相似仅 0.37，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-317 靠包含度命中 REQ-447（包含 1.00，相似仅 0.25，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-318 靠包含度命中 REQ-447（包含 1.00，相似仅 0.19，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-320 靠包含度命中 REQ-449（包含 1.00，相似仅 0.47，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-322 靠包含度命中 REQ-450（包含 1.00，相似仅 0.47，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-323 靠包含度命中 REQ-450（包含 1.00，相似仅 0.52，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-327 靠包含度命中 REQ-453（包含 1.00，相似仅 0.35，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-337 靠包含度命中 REQ-460（包含 1.00，相似仅 0.33，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-338 靠包含度命中 REQ-461（包含 1.00，相似仅 0.33，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-339 靠包含度命中 REQ-461（包含 1.00，相似仅 0.55，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-340 靠包含度命中 REQ-461（包含 1.00，相似仅 0.17，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-342 靠包含度命中 REQ-107（包含 1.00，相似仅 0.56，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-344 靠包含度命中 REQ-463（包含 1.00，相似仅 0.60，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-345 靠包含度命中 REQ-463（包含 1.00，相似仅 0.40，粗细粒度差异），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-354 章节「7.2 同步与异常处理」在快照中无同名章节，全文候选命中 REQ-474（相似 0.88 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-357 章节「7.2 同步与异常处理」在快照中无同名章节，全文候选命中 REQ-477（相似 0.88 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-358 章节「7.2 同步与异常处理」在快照中无同名章节，全文候选命中 REQ-478（相似 0.90 / 包含 1.00），建议人工抽查",
+  "基线 【杭州麻将】核心流程杭州麻将好友房AI11-11-359 章节「7.2 同步与异常处理」在快照中无同名章节，全文候选命中 REQ-479（相似 0.84 / 包含 1.00），建议人工抽查"
+ ],
+ "matches": [
+  {
+   "baselineIndex": 0,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-001",
+   "snapshotId": "REQ-115",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-001",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 2,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-003",
+   "snapshotId": "REQ-117",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-003",
+   "method": "anchor",
+   "similarity": 0.762,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 3,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-004",
+   "snapshotId": "REQ-118",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-004",
+   "method": "anchor",
+   "similarity": 0.652,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 4,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-005",
+   "snapshotId": "REQ-119",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-005",
+   "method": "anchor",
+   "similarity": 0.727,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 5,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-006",
+   "snapshotId": "REQ-120",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-006",
+   "method": "anchor",
+   "similarity": 0.68,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 6,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-007",
+   "snapshotId": "REQ-121",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-007",
+   "method": "anchor-contains",
+   "similarity": 0.456,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 7,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-008",
+   "snapshotId": "REQ-122",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-008",
+   "method": "anchor",
+   "similarity": 0.654,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 8,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-009",
+   "snapshotId": "REQ-123",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-009",
+   "method": "anchor",
+   "similarity": 0.743,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 9,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-010",
+   "snapshotId": "REQ-124",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-010",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 10,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-011",
+   "snapshotId": "REQ-125",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-011",
+   "method": "anchor",
+   "similarity": 0.667,
+   "containment": 0.686
+  },
+  {
+   "baselineIndex": 12,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-013",
+   "snapshotId": "REQ-128",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-014",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 13,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-014",
+   "snapshotId": "REQ-129",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-015",
+   "method": "anchor",
+   "similarity": 0.61,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 14,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-015",
+   "snapshotId": "REQ-129",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-015",
+   "method": "anchor-contains",
+   "similarity": 0.561,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 15,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-016",
+   "snapshotId": "REQ-130",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-016",
+   "method": "anchor",
+   "similarity": 0.974,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 16,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-017",
+   "snapshotId": "REQ-132",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-018",
+   "method": "anchor",
+   "similarity": 0.974,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 18,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-019",
+   "snapshotId": "REQ-135",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-021",
+   "method": "anchor",
+   "similarity": 0.614,
+   "containment": 0.614
+  },
+  {
+   "baselineIndex": 19,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-020",
+   "snapshotId": "REQ-136",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-022",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 20,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-021",
+   "snapshotId": "REQ-137",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-023",
+   "method": "anchor",
+   "similarity": 0.84,
+   "containment": 0.84
+  },
+  {
+   "baselineIndex": 21,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-022",
+   "snapshotId": "REQ-138",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-024",
+   "method": "anchor",
+   "similarity": 0.836,
+   "containment": 0.836
+  },
+  {
+   "baselineIndex": 22,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-023",
+   "snapshotId": "REQ-139",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-025",
+   "method": "anchor",
+   "similarity": 0.859,
+   "containment": 0.859
+  },
+  {
+   "baselineIndex": 24,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-025",
+   "snapshotId": "REQ-141",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-027",
+   "method": "anchor",
+   "similarity": 0.6,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 25,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-026",
+   "snapshotId": "REQ-142",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-028",
+   "method": "anchor-contains",
+   "similarity": 0.506,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 26,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-027",
+   "snapshotId": "REQ-142",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-028",
+   "method": "anchor-contains",
+   "similarity": 0.539,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 27,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-028",
+   "snapshotId": "REQ-143",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-029",
+   "method": "anchor-contains",
+   "similarity": 0.412,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 28,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-029",
+   "snapshotId": "REQ-144",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-030",
+   "method": "anchor",
+   "similarity": 0.982,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 29,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-030",
+   "snapshotId": "REQ-145",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-031",
+   "method": "anchor",
+   "similarity": 0.98,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 30,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-031",
+   "snapshotId": "REQ-146",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-032",
+   "method": "anchor",
+   "similarity": 0.988,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 31,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-032",
+   "snapshotId": "REQ-147",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-033",
+   "method": "anchor",
+   "similarity": 0.62,
+   "containment": 0.628
+  },
+  {
+   "baselineIndex": 32,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-033",
+   "snapshotId": "REQ-148",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-034",
+   "method": "anchor",
+   "similarity": 0.729,
+   "containment": 0.729
+  },
+  {
+   "baselineIndex": 33,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-034",
+   "snapshotId": "REQ-149",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-035",
+   "method": "anchor",
+   "similarity": 0.986,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 34,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-035",
+   "snapshotId": "REQ-150",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-036",
+   "method": "anchor",
+   "similarity": 0.984,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 35,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-036",
+   "snapshotId": "REQ-009",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-037",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 37,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-038",
+   "snapshotId": "REQ-151",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-038",
+   "method": "anchor",
+   "similarity": 0.706,
+   "containment": 0.72
+  },
+  {
+   "baselineIndex": 38,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-039",
+   "snapshotId": "REQ-153",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-040",
+   "method": "anchor",
+   "similarity": 0.967,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 40,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-041",
+   "snapshotId": "REQ-156",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-043",
+   "method": "anchor",
+   "similarity": 0.99,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 41,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-042",
+   "snapshotId": "REQ-157",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-044",
+   "method": "anchor",
+   "similarity": 0.875,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 42,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-043",
+   "snapshotId": "REQ-158",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-045",
+   "method": "anchor",
+   "similarity": 0.781,
+   "containment": 0.788
+  },
+  {
+   "baselineIndex": 43,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-044",
+   "snapshotId": "REQ-159",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-046",
+   "method": "anchor",
+   "similarity": 0.988,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 44,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-045",
+   "snapshotId": "REQ-160",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-047",
+   "method": "anchor",
+   "similarity": 0.985,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 45,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-046",
+   "snapshotId": "REQ-161",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-048",
+   "method": "anchor",
+   "similarity": 0.99,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 47,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-048",
+   "snapshotId": "REQ-163",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-050",
+   "method": "anchor",
+   "similarity": 0.714,
+   "containment": 0.727
+  },
+  {
+   "baselineIndex": 48,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-049",
+   "snapshotId": "REQ-164",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-051",
+   "method": "anchor",
+   "similarity": 0.923,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 49,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-050",
+   "snapshotId": "REQ-166",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-053",
+   "method": "anchor",
+   "similarity": 0.989,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 50,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-051",
+   "snapshotId": "REQ-168",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-055",
+   "method": "anchor",
+   "similarity": 0.984,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 51,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-052",
+   "snapshotId": "REQ-170",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-057",
+   "method": "anchor-doc",
+   "similarity": 0.983,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 52,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-053",
+   "snapshotId": "REQ-171",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-058",
+   "method": "anchor-doc",
+   "similarity": 0.984,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 53,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-054",
+   "snapshotId": "REQ-172",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-059",
+   "method": "anchor-doc",
+   "similarity": 0.802,
+   "containment": 0.811
+  },
+  {
+   "baselineIndex": 54,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-055",
+   "snapshotId": "REQ-173",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-060",
+   "method": "anchor-doc",
+   "similarity": 0.98,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 55,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-056",
+   "snapshotId": "REQ-174",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-061",
+   "method": "anchor-doc",
+   "similarity": 0.983,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 56,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-057",
+   "snapshotId": "REQ-175",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-062",
+   "method": "anchor-doc",
+   "similarity": 0.973,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 59,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-060",
+   "snapshotId": "REQ-178",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-065",
+   "method": "anchor-doc",
+   "similarity": 0.986,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 60,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-061",
+   "snapshotId": "REQ-179",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-066",
+   "method": "anchor-doc",
+   "similarity": 0.966,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 63,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-064",
+   "snapshotId": "REQ-182",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-069",
+   "method": "anchor-doc",
+   "similarity": 0.604,
+   "containment": 0.607
+  },
+  {
+   "baselineIndex": 64,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-065",
+   "snapshotId": "REQ-183",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-071",
+   "method": "anchor-doc",
+   "similarity": 0.988,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 65,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-066",
+   "snapshotId": "REQ-184",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-072",
+   "method": "anchor-doc",
+   "similarity": 0.702,
+   "containment": 0.714
+  },
+  {
+   "baselineIndex": 66,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-067",
+   "snapshotId": "REQ-185",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-073",
+   "method": "anchor-doc",
+   "similarity": 0.986,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 67,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-068",
+   "snapshotId": "REQ-186",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-074",
+   "method": "anchor-doc",
+   "similarity": 0.981,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 68,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-069",
+   "snapshotId": "REQ-187",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-075",
+   "method": "anchor-doc",
+   "similarity": 0.978,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 70,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-071",
+   "snapshotId": "REQ-189",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-077",
+   "method": "anchor-doc",
+   "similarity": 0.973,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 72,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-073",
+   "snapshotId": "REQ-191",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-079",
+   "method": "anchor-doc",
+   "similarity": 0.983,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 73,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-074",
+   "snapshotId": "REQ-192",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-080",
+   "method": "anchor-doc",
+   "similarity": 0.941,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 75,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-076",
+   "snapshotId": "REQ-195",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-083",
+   "method": "anchor-doc",
+   "similarity": 0.982,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 76,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-077",
+   "snapshotId": "REQ-196",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-084",
+   "method": "anchor-doc",
+   "similarity": 0.98,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 77,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-078",
+   "snapshotId": "REQ-197",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-085",
+   "method": "anchor-doc",
+   "similarity": 0.803,
+   "containment": 0.817
+  },
+  {
+   "baselineIndex": 78,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-079",
+   "snapshotId": "REQ-198",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-086",
+   "method": "anchor-doc",
+   "similarity": 0.766,
+   "containment": 0.772
+  },
+  {
+   "baselineIndex": 80,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-081",
+   "snapshotId": "REQ-201",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-089",
+   "method": "anchor-doc",
+   "similarity": 0.98,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 81,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-082",
+   "snapshotId": "REQ-202",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-090",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 82,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-083",
+   "snapshotId": "REQ-203",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-091",
+   "method": "anchor-doc",
+   "similarity": 0.769,
+   "containment": 0.781
+  },
+  {
+   "baselineIndex": 83,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-084",
+   "snapshotId": "REQ-204",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-092",
+   "method": "anchor-doc",
+   "similarity": 0.95,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 85,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-086",
+   "snapshotId": "REQ-207",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-095",
+   "method": "anchor-doc",
+   "similarity": 0.969,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 86,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-087",
+   "snapshotId": "REQ-208",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-096",
+   "method": "anchor-doc",
+   "similarity": 0.957,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 89,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-090",
+   "snapshotId": "REQ-211",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-099",
+   "method": "anchor-doc",
+   "similarity": 0.974,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 91,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-092",
+   "snapshotId": "REQ-214",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-102",
+   "method": "anchor-doc",
+   "similarity": 0.958,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 92,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-093",
+   "snapshotId": "REQ-215",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-103",
+   "method": "anchor-doc",
+   "similarity": 0.974,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 93,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-094",
+   "snapshotId": "REQ-216",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-104",
+   "method": "anchor-doc",
+   "similarity": 0.966,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 94,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-095",
+   "snapshotId": "REQ-217",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-105",
+   "method": "anchor-doc",
+   "similarity": 0.971,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 95,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-096",
+   "snapshotId": "REQ-218",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-106",
+   "method": "anchor-doc",
+   "similarity": 0.962,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 96,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-097",
+   "snapshotId": "REQ-219",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-107",
+   "method": "anchor-doc",
+   "similarity": 0.985,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 97,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-098",
+   "snapshotId": "REQ-220",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-108",
+   "method": "anchor-doc",
+   "similarity": 0.958,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 98,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-099",
+   "snapshotId": "REQ-221",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-109",
+   "method": "anchor-doc",
+   "similarity": 0.745,
+   "containment": 0.761
+  },
+  {
+   "baselineIndex": 99,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-100",
+   "snapshotId": "REQ-222",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-110",
+   "method": "anchor-doc",
+   "similarity": 0.636,
+   "containment": 0.926
+  },
+  {
+   "baselineIndex": 100,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-101",
+   "snapshotId": "REQ-223",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-111",
+   "method": "anchor-doc-contains",
+   "similarity": 0.48,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 101,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-102",
+   "snapshotId": "REQ-224",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-112",
+   "method": "anchor-doc-contains",
+   "similarity": 0.58,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 102,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-103",
+   "snapshotId": "REQ-225",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-113",
+   "method": "anchor-doc",
+   "similarity": 0.657,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 103,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-104",
+   "snapshotId": "REQ-226",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-114",
+   "method": "anchor-doc",
+   "similarity": 0.976,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 104,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-105",
+   "snapshotId": "REQ-227",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-115",
+   "method": "anchor-doc",
+   "similarity": 0.985,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 106,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-107",
+   "snapshotId": "REQ-229",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-117",
+   "method": "anchor-doc",
+   "similarity": 0.988,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 108,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-109",
+   "snapshotId": "REQ-231",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-119",
+   "method": "anchor-doc-contains",
+   "similarity": 0.267,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 109,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-110",
+   "snapshotId": "REQ-231",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-119",
+   "method": "anchor-doc",
+   "similarity": 0.708,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 110,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-111",
+   "snapshotId": "REQ-232",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-120",
+   "method": "anchor-doc",
+   "similarity": 0.973,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 111,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-112",
+   "snapshotId": "REQ-233",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-121",
+   "method": "anchor-doc",
+   "similarity": 0.988,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 112,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-113",
+   "snapshotId": "REQ-234",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-122",
+   "method": "anchor-doc",
+   "similarity": 0.987,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 113,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-114",
+   "snapshotId": "REQ-235",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-123",
+   "method": "anchor-doc",
+   "similarity": 0.95,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 114,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-115",
+   "snapshotId": "REQ-236",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-124",
+   "method": "anchor-doc",
+   "similarity": 0.986,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 116,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-117",
+   "snapshotId": "REQ-238",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-126",
+   "method": "anchor-contains",
+   "similarity": 0.475,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 117,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-118",
+   "snapshotId": "REQ-238",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-126",
+   "method": "anchor-contains",
+   "similarity": 0.515,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 118,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-119",
+   "snapshotId": "REQ-058",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-127",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 120,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-121",
+   "snapshotId": "REQ-239",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-129",
+   "method": "anchor",
+   "similarity": 0.622,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 121,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-122",
+   "snapshotId": "REQ-240",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-130",
+   "method": "anchor",
+   "similarity": 0.702,
+   "containment": 0.702
+  },
+  {
+   "baselineIndex": 123,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-124",
+   "snapshotId": "REQ-242",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-132",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 124,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-125",
+   "snapshotId": "REQ-243",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-133",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 126,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-127",
+   "snapshotId": "REQ-245",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-135",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 127,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-128",
+   "snapshotId": "REQ-246",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-136",
+   "method": "anchor",
+   "similarity": 0.783,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 128,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-129",
+   "snapshotId": "REQ-247",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-137",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 129,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-130",
+   "snapshotId": "REQ-248",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-138",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 133,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-134",
+   "snapshotId": "REQ-063",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-142",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 134,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-135",
+   "snapshotId": "REQ-064",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-143",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 135,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-136",
+   "snapshotId": "REQ-065",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-144",
+   "method": "anchor",
+   "similarity": 0.877,
+   "containment": 0.877
+  },
+  {
+   "baselineIndex": 137,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-138",
+   "snapshotId": "REQ-251",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-146",
+   "method": "anchor",
+   "similarity": 0.758,
+   "containment": 0.758
+  },
+  {
+   "baselineIndex": 138,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-139",
+   "snapshotId": "REQ-252",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-147",
+   "method": "anchor",
+   "similarity": 0.753,
+   "containment": 0.753
+  },
+  {
+   "baselineIndex": 142,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-143",
+   "snapshotId": "REQ-253",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-151",
+   "method": "anchor",
+   "similarity": 0.713,
+   "containment": 0.713
+  },
+  {
+   "baselineIndex": 144,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-145",
+   "snapshotId": "REQ-255",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-153",
+   "method": "anchor-doc-contains",
+   "similarity": 0.357,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 145,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-146",
+   "snapshotId": "REQ-255",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-153",
+   "method": "anchor-doc-contains",
+   "similarity": 0.589,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 146,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-147",
+   "snapshotId": "REQ-256",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-154",
+   "method": "anchor-doc-contains",
+   "similarity": 0.082,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 147,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-148",
+   "snapshotId": "REQ-257",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-155",
+   "method": "anchor-doc-contains",
+   "similarity": 0.231,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 148,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-149",
+   "snapshotId": "REQ-257",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-155",
+   "method": "anchor-doc-contains",
+   "similarity": 0.487,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 149,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-150",
+   "snapshotId": "REQ-258",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-156",
+   "method": "anchor-doc",
+   "similarity": 0.986,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 150,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-151",
+   "snapshotId": "REQ-259",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-157",
+   "method": "anchor-doc",
+   "similarity": 0.985,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 151,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-152",
+   "snapshotId": "REQ-260",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-158",
+   "method": "anchor-doc",
+   "similarity": 0.889,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 153,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-154",
+   "snapshotId": "REQ-261",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-159",
+   "method": "anchor-doc-contains",
+   "similarity": 0.22,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 155,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-156",
+   "snapshotId": "REQ-263",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-161",
+   "method": "anchor",
+   "similarity": 0.982,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 156,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-157",
+   "snapshotId": "REQ-264",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-162",
+   "method": "anchor",
+   "similarity": 0.979,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 157,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-158",
+   "snapshotId": "REQ-265",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-163",
+   "method": "anchor-contains",
+   "similarity": 0.596,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 158,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-159",
+   "snapshotId": "REQ-266",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-164",
+   "method": "anchor",
+   "similarity": 0.985,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 160,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-161",
+   "snapshotId": "REQ-268",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-166",
+   "method": "anchor",
+   "similarity": 0.988,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 161,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-162",
+   "snapshotId": "REQ-269",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-167",
+   "method": "anchor",
+   "similarity": 0.987,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 162,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-163",
+   "snapshotId": "REQ-270",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-168",
+   "method": "anchor",
+   "similarity": 0.988,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 164,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-165",
+   "snapshotId": "REQ-271",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-169",
+   "method": "anchor",
+   "similarity": 0.984,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 165,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-166",
+   "snapshotId": "REQ-272",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-170",
+   "method": "anchor",
+   "similarity": 0.986,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 167,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-168",
+   "snapshotId": "REQ-274",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-172",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 168,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-169",
+   "snapshotId": "REQ-275",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-173",
+   "method": "anchor-contains",
+   "similarity": 0.329,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 169,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-170",
+   "snapshotId": "REQ-275",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-173",
+   "method": "anchor-contains",
+   "similarity": 0.459,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 170,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-171",
+   "snapshotId": "REQ-276",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-174",
+   "method": "anchor",
+   "similarity": 0.87,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 171,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-172",
+   "snapshotId": "REQ-277",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-175",
+   "method": "anchor",
+   "similarity": 0.868,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 172,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-173",
+   "snapshotId": "REQ-278",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-176",
+   "method": "anchor",
+   "similarity": 0.86,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 173,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-174",
+   "snapshotId": "REQ-279",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-177",
+   "method": "anchor",
+   "similarity": 0.867,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 174,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-175",
+   "snapshotId": "REQ-280",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-178",
+   "method": "anchor",
+   "similarity": 0.663,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 175,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-176",
+   "snapshotId": "REQ-280",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-178",
+   "method": "anchor-contains",
+   "similarity": 0.315,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 176,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-177",
+   "snapshotId": "REQ-281",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-179",
+   "method": "anchor",
+   "similarity": 0.981,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 177,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-178",
+   "snapshotId": "REQ-282",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-180",
+   "method": "anchor",
+   "similarity": 0.984,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 178,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-179",
+   "snapshotId": "REQ-283",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-181",
+   "method": "anchor",
+   "similarity": 0.985,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 179,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-180",
+   "snapshotId": "REQ-285",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-183",
+   "method": "anchor",
+   "similarity": 0.986,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 180,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-181",
+   "snapshotId": "REQ-286",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-184",
+   "method": "anchor",
+   "similarity": 0.73,
+   "containment": 0.742
+  },
+  {
+   "baselineIndex": 182,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-183",
+   "snapshotId": "REQ-289",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-187",
+   "method": "anchor",
+   "similarity": 0.987,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 183,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-184",
+   "snapshotId": "REQ-290",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-188",
+   "method": "anchor",
+   "similarity": 0.949,
+   "containment": 0.987
+  },
+  {
+   "baselineIndex": 184,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-185",
+   "snapshotId": "REQ-291",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-189",
+   "method": "anchor",
+   "similarity": 0.989,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 185,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-186",
+   "snapshotId": "REQ-292",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-190",
+   "method": "anchor",
+   "similarity": 0.988,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 186,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-187",
+   "snapshotId": "REQ-293",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-191",
+   "method": "anchor",
+   "similarity": 0.987,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 187,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-188",
+   "snapshotId": "REQ-294",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-192",
+   "method": "anchor",
+   "similarity": 0.974,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 188,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-189",
+   "snapshotId": "REQ-295",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-193",
+   "method": "anchor",
+   "similarity": 0.99,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 189,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-190",
+   "snapshotId": "REQ-296",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-194",
+   "method": "anchor",
+   "similarity": 0.985,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 190,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-191",
+   "snapshotId": "REQ-297",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-195",
+   "method": "anchor",
+   "similarity": 0.99,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 191,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-192",
+   "snapshotId": "REQ-298",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-196",
+   "method": "anchor",
+   "similarity": 0.836,
+   "containment": 0.848
+  },
+  {
+   "baselineIndex": 192,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-193",
+   "snapshotId": "REQ-299",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-197",
+   "method": "anchor",
+   "similarity": 0.987,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 193,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-194",
+   "snapshotId": "REQ-300",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-198",
+   "method": "anchor",
+   "similarity": 0.982,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 194,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-195",
+   "snapshotId": "REQ-301",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-199",
+   "method": "anchor",
+   "similarity": 0.981,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 195,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-196",
+   "snapshotId": "REQ-302",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-200",
+   "method": "anchor",
+   "similarity": 0.986,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 196,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-197",
+   "snapshotId": "REQ-303",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-201",
+   "method": "anchor",
+   "similarity": 0.981,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 197,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-198",
+   "snapshotId": "REQ-305",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-203",
+   "method": "anchor",
+   "similarity": 0.986,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 198,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-199",
+   "snapshotId": "REQ-306",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-204",
+   "method": "anchor",
+   "similarity": 0.987,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 199,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-200",
+   "snapshotId": "REQ-307",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-205",
+   "method": "anchor",
+   "similarity": 0.922,
+   "containment": 0.937
+  },
+  {
+   "baselineIndex": 200,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-201",
+   "snapshotId": "REQ-308",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-206",
+   "method": "anchor",
+   "similarity": 0.986,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 201,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-202",
+   "snapshotId": "REQ-309",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-207",
+   "method": "anchor",
+   "similarity": 0.871,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 202,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-203",
+   "snapshotId": "REQ-310",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-208",
+   "method": "anchor",
+   "similarity": 0.698,
+   "containment": 0.74
+  },
+  {
+   "baselineIndex": 203,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-204",
+   "snapshotId": "REQ-311",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-209",
+   "method": "anchor",
+   "similarity": 0.995,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 204,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-205",
+   "snapshotId": "REQ-312",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-210",
+   "method": "anchor-contains",
+   "similarity": 0.45,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 205,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-206",
+   "snapshotId": "REQ-313",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-211",
+   "method": "anchor",
+   "similarity": 0.795,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 206,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-207",
+   "snapshotId": "REQ-314",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-212",
+   "method": "anchor",
+   "similarity": 0.841,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 207,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-208",
+   "snapshotId": "REQ-315",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-213",
+   "method": "anchor",
+   "similarity": 0.8,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 208,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-209",
+   "snapshotId": "REQ-316",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-214",
+   "method": "anchor",
+   "similarity": 0.836,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 210,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-211",
+   "snapshotId": "REQ-318",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-216",
+   "method": "anchor",
+   "similarity": 0.898,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 211,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-212",
+   "snapshotId": "REQ-319",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-217",
+   "method": "anchor",
+   "similarity": 0.936,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 212,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-213",
+   "snapshotId": "REQ-320",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-218",
+   "method": "anchor",
+   "similarity": 0.682,
+   "containment": 0.698
+  },
+  {
+   "baselineIndex": 213,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-214",
+   "snapshotId": "REQ-322",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-220",
+   "method": "anchor",
+   "similarity": 0.939,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 214,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-215",
+   "snapshotId": "REQ-323",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-221",
+   "method": "anchor",
+   "similarity": 0.917,
+   "containment": 0.985
+  },
+  {
+   "baselineIndex": 215,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-216",
+   "snapshotId": "REQ-324",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-222",
+   "method": "anchor",
+   "similarity": 0.977,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 219,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-220",
+   "snapshotId": "REQ-330",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-228",
+   "method": "anchor-doc",
+   "similarity": 0.992,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 220,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-221",
+   "snapshotId": "REQ-331",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-229",
+   "method": "anchor-doc",
+   "similarity": 0.994,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 221,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-222",
+   "snapshotId": "REQ-332",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-230",
+   "method": "anchor-doc",
+   "similarity": 0.768,
+   "containment": 0.897
+  },
+  {
+   "baselineIndex": 222,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-223",
+   "snapshotId": "REQ-333",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-231",
+   "method": "anchor-doc",
+   "similarity": 0.981,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 223,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-224",
+   "snapshotId": "REQ-334",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-232",
+   "method": "anchor-doc",
+   "similarity": 0.979,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 224,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-225",
+   "snapshotId": "REQ-335",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-233",
+   "method": "anchor-doc",
+   "similarity": 0.723,
+   "containment": 0.731
+  },
+  {
+   "baselineIndex": 225,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-226",
+   "snapshotId": "REQ-336",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-234",
+   "method": "anchor-doc",
+   "similarity": 0.969,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 226,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-227",
+   "snapshotId": "REQ-337",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-235",
+   "method": "anchor-contains",
+   "similarity": 0.308,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 227,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-228",
+   "snapshotId": "REQ-337",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-235",
+   "method": "anchor",
+   "similarity": 0.738,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 229,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-230",
+   "snapshotId": "REQ-339",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-237",
+   "method": "anchor-contains",
+   "similarity": 0.461,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 230,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-231",
+   "snapshotId": "REQ-339",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-237",
+   "method": "anchor-contains",
+   "similarity": 0.404,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 231,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-232",
+   "snapshotId": "REQ-341",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-239",
+   "method": "anchor",
+   "similarity": 0.955,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 232,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-233",
+   "snapshotId": "REQ-342",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-240",
+   "method": "anchor",
+   "similarity": 0.978,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 233,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-234",
+   "snapshotId": "REQ-343",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-241",
+   "method": "anchor-contains",
+   "similarity": 0.134,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 234,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-235",
+   "snapshotId": "REQ-343",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-241",
+   "method": "anchor-contains",
+   "similarity": 0.309,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 235,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-236",
+   "snapshotId": "REQ-348",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-246",
+   "method": "anchor",
+   "similarity": 0.968,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 236,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-237",
+   "snapshotId": "REQ-349",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-247",
+   "method": "anchor-contains",
+   "similarity": 0.463,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 237,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-238",
+   "snapshotId": "REQ-349",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-247",
+   "method": "anchor-contains",
+   "similarity": 0.488,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 238,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-239",
+   "snapshotId": "REQ-350",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-248",
+   "method": "anchor-contains",
+   "similarity": 0.22,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 239,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-240",
+   "snapshotId": "REQ-351",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-249",
+   "method": "anchor",
+   "similarity": 0.861,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 241,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-242",
+   "snapshotId": "REQ-352",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-250",
+   "method": "anchor",
+   "similarity": 0.904,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 242,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-243",
+   "snapshotId": "REQ-353",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-251",
+   "method": "anchor",
+   "similarity": 0.873,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 243,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-244",
+   "snapshotId": "REQ-354",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-252",
+   "method": "anchor",
+   "similarity": 0.861,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 244,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-245",
+   "snapshotId": "REQ-355",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-253",
+   "method": "anchor",
+   "similarity": 0.824,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 245,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-246",
+   "snapshotId": "REQ-356",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-254",
+   "method": "anchor",
+   "similarity": 0.842,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 246,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-247",
+   "snapshotId": "REQ-357",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-255",
+   "method": "anchor",
+   "similarity": 0.774,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 247,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-248",
+   "snapshotId": "REQ-358",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-256",
+   "method": "anchor",
+   "similarity": 0.809,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 248,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-249",
+   "snapshotId": "REQ-359",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-257",
+   "method": "anchor",
+   "similarity": 0.963,
+   "containment": 0.987
+  },
+  {
+   "baselineIndex": 249,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-250",
+   "snapshotId": "REQ-360",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-258",
+   "method": "anchor",
+   "similarity": 0.75,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 250,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-251",
+   "snapshotId": "REQ-361",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-259",
+   "method": "anchor",
+   "similarity": 0.81,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 252,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-253",
+   "snapshotId": "REQ-365",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-263",
+   "method": "anchor",
+   "similarity": 0.89,
+   "containment": 0.89
+  },
+  {
+   "baselineIndex": 253,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-254",
+   "snapshotId": "REQ-367",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-265",
+   "method": "anchor",
+   "similarity": 0.98,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 254,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-255",
+   "snapshotId": "REQ-368",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-266",
+   "method": "anchor",
+   "similarity": 0.986,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 255,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-256",
+   "snapshotId": "REQ-369",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-267",
+   "method": "anchor",
+   "similarity": 0.986,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 256,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-257",
+   "snapshotId": "REQ-371",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-269",
+   "method": "anchor",
+   "similarity": 0.991,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 257,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-258",
+   "snapshotId": "REQ-372",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-270",
+   "method": "anchor",
+   "similarity": 0.984,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 258,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-259",
+   "snapshotId": "REQ-373",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-271",
+   "method": "anchor",
+   "similarity": 0.992,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 259,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-260",
+   "snapshotId": "REQ-374",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-272",
+   "method": "anchor",
+   "similarity": 0.984,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 260,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-261",
+   "snapshotId": "REQ-375",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-273",
+   "method": "anchor",
+   "similarity": 0.969,
+   "containment": 0.992
+  },
+  {
+   "baselineIndex": 261,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-262",
+   "snapshotId": "REQ-376",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-274",
+   "method": "anchor",
+   "similarity": 0.991,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 262,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-263",
+   "snapshotId": "REQ-377",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-275",
+   "method": "anchor",
+   "similarity": 0.989,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 263,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-264",
+   "snapshotId": "REQ-381",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-279",
+   "method": "anchor",
+   "similarity": 0.727,
+   "containment": 0.731
+  },
+  {
+   "baselineIndex": 264,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-265",
+   "snapshotId": "REQ-383",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-281",
+   "method": "anchor",
+   "similarity": 0.989,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 265,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-266",
+   "snapshotId": "REQ-384",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-282",
+   "method": "anchor",
+   "similarity": 0.988,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 266,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-267",
+   "snapshotId": "REQ-386",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-284",
+   "method": "anchor",
+   "similarity": 0.981,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 267,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-268",
+   "snapshotId": "REQ-387",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-285",
+   "method": "anchor",
+   "similarity": 0.99,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 268,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-269",
+   "snapshotId": "REQ-388",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-286",
+   "method": "anchor",
+   "similarity": 0.976,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 269,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-270",
+   "snapshotId": "REQ-389",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-287",
+   "method": "anchor",
+   "similarity": 0.988,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 270,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-271",
+   "snapshotId": "REQ-390",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-288",
+   "method": "anchor",
+   "similarity": 0.987,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 271,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-272",
+   "snapshotId": "REQ-391",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-289",
+   "method": "anchor",
+   "similarity": 0.99,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 272,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-273",
+   "snapshotId": "REQ-392",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-290",
+   "method": "anchor",
+   "similarity": 0.99,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 273,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-274",
+   "snapshotId": "REQ-396",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-294",
+   "method": "anchor",
+   "similarity": 0.694,
+   "containment": 0.694
+  },
+  {
+   "baselineIndex": 274,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-275",
+   "snapshotId": "REQ-397",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-295",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 275,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-276",
+   "snapshotId": "REQ-398",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-296",
+   "method": "anchor",
+   "similarity": 0.663,
+   "containment": 0.779
+  },
+  {
+   "baselineIndex": 276,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-277",
+   "snapshotId": "REQ-402",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-300",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 277,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-278",
+   "snapshotId": "REQ-089",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-301",
+   "method": "anchor",
+   "similarity": 0.961,
+   "containment": 0.986
+  },
+  {
+   "baselineIndex": 278,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-279",
+   "snapshotId": "REQ-403",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-302",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 279,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-280",
+   "snapshotId": "REQ-404",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-303",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 280,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-281",
+   "snapshotId": "REQ-405",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-304",
+   "method": "anchor",
+   "similarity": 0.827,
+   "containment": 0.838
+  },
+  {
+   "baselineIndex": 282,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-283",
+   "snapshotId": "REQ-409",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-308",
+   "method": "anchor",
+   "similarity": 0.764,
+   "containment": 0.764
+  },
+  {
+   "baselineIndex": 283,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-284",
+   "snapshotId": "REQ-411",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-310",
+   "method": "anchor",
+   "similarity": 0.805,
+   "containment": 0.805
+  },
+  {
+   "baselineIndex": 284,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-285",
+   "snapshotId": "REQ-413",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-312",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 285,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-286",
+   "snapshotId": "REQ-415",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-314",
+   "method": "anchor",
+   "similarity": 0.972,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 286,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-287",
+   "snapshotId": "REQ-416",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-315",
+   "method": "anchor",
+   "similarity": 0.848,
+   "containment": 0.848
+  },
+  {
+   "baselineIndex": 287,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-288",
+   "snapshotId": "REQ-418",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-317",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 288,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-289",
+   "snapshotId": "REQ-419",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-318",
+   "method": "anchor",
+   "similarity": 0.928,
+   "containment": 0.928
+  },
+  {
+   "baselineIndex": 289,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-290",
+   "snapshotId": "REQ-420",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-319",
+   "method": "anchor",
+   "similarity": 0.791,
+   "containment": 0.791
+  },
+  {
+   "baselineIndex": 291,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-292",
+   "snapshotId": "REQ-423",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-322",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 292,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-293",
+   "snapshotId": "REQ-424",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-323",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 293,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-294",
+   "snapshotId": "REQ-426",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-325",
+   "method": "anchor",
+   "similarity": 0.679,
+   "containment": 0.877
+  },
+  {
+   "baselineIndex": 295,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-296",
+   "snapshotId": "REQ-429",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-328",
+   "method": "anchor-contains",
+   "similarity": 0.407,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 296,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-297",
+   "snapshotId": "REQ-430",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-329",
+   "method": "anchor-contains",
+   "similarity": 0.299,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 297,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-298",
+   "snapshotId": "REQ-430",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-329",
+   "method": "anchor",
+   "similarity": 0.658,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 299,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-300",
+   "snapshotId": "REQ-432",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-331",
+   "method": "anchor",
+   "similarity": 0.983,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 300,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-301",
+   "snapshotId": "REQ-433",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-332",
+   "method": "anchor",
+   "similarity": 0.982,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 301,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-302",
+   "snapshotId": "REQ-434",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-333",
+   "method": "anchor",
+   "similarity": 0.98,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 302,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-303",
+   "snapshotId": "REQ-435",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-334",
+   "method": "anchor",
+   "similarity": 0.981,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 303,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-304",
+   "snapshotId": "REQ-436",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-335",
+   "method": "anchor",
+   "similarity": 0.988,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 304,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-305",
+   "snapshotId": "REQ-438",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-337",
+   "method": "anchor",
+   "similarity": 0.903,
+   "containment": 0.933
+  },
+  {
+   "baselineIndex": 306,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-307",
+   "snapshotId": "REQ-440",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-339",
+   "method": "anchor-contains",
+   "similarity": 0.359,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 307,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-308",
+   "snapshotId": "REQ-440",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-339",
+   "method": "anchor-contains",
+   "similarity": 0.598,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 308,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-309",
+   "snapshotId": "REQ-441",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-340",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 309,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-310",
+   "snapshotId": "REQ-442",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-341",
+   "method": "anchor",
+   "similarity": 0.685,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 310,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-311",
+   "snapshotId": "REQ-443",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-342",
+   "method": "anchor-contains",
+   "similarity": 0.467,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 311,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-312",
+   "snapshotId": "REQ-443",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-342",
+   "method": "anchor-contains",
+   "similarity": 0.493,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 312,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-313",
+   "snapshotId": "REQ-444",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-343",
+   "method": "anchor",
+   "similarity": 0.847,
+   "containment": 0.852
+  },
+  {
+   "baselineIndex": 313,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-314",
+   "snapshotId": "REQ-445",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-344",
+   "method": "anchor",
+   "similarity": 0.908,
+   "containment": 0.918
+  },
+  {
+   "baselineIndex": 314,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-315",
+   "snapshotId": "REQ-446",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-345",
+   "method": "anchor",
+   "similarity": 0.992,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 315,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-316",
+   "snapshotId": "REQ-447",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-346",
+   "method": "anchor-contains",
+   "similarity": 0.37,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 316,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-317",
+   "snapshotId": "REQ-447",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-346",
+   "method": "anchor-contains",
+   "similarity": 0.247,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 317,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-318",
+   "snapshotId": "REQ-447",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-346",
+   "method": "anchor-contains",
+   "similarity": 0.192,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 318,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-319",
+   "snapshotId": "REQ-448",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-347",
+   "method": "anchor",
+   "similarity": 0.99,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 319,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-320",
+   "snapshotId": "REQ-449",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-348",
+   "method": "anchor-contains",
+   "similarity": 0.469,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 321,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-322",
+   "snapshotId": "REQ-450",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-349",
+   "method": "anchor-contains",
+   "similarity": 0.467,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 322,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-323",
+   "snapshotId": "REQ-450",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-349",
+   "method": "anchor-contains",
+   "similarity": 0.518,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 323,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-324",
+   "snapshotId": "REQ-451",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-350",
+   "method": "anchor",
+   "similarity": 0.989,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 324,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-325",
+   "snapshotId": "REQ-452",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-351",
+   "method": "anchor",
+   "similarity": 0.692,
+   "containment": 0.711
+  },
+  {
+   "baselineIndex": 325,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-326",
+   "snapshotId": "REQ-453",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-352",
+   "method": "anchor",
+   "similarity": 0.646,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 326,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-327",
+   "snapshotId": "REQ-453",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-352",
+   "method": "anchor-contains",
+   "similarity": 0.354,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 327,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-328",
+   "snapshotId": "REQ-454",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-353",
+   "method": "anchor",
+   "similarity": 0.98,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 330,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-331",
+   "snapshotId": "REQ-456",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-355",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 331,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-332",
+   "snapshotId": "REQ-457",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-356",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 332,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-333",
+   "snapshotId": "REQ-458",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-357",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 334,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-335",
+   "snapshotId": "REQ-459",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-359",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 335,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-336",
+   "snapshotId": "REQ-460",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-360",
+   "method": "anchor",
+   "similarity": 0.656,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 336,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-337",
+   "snapshotId": "REQ-460",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-360",
+   "method": "anchor-contains",
+   "similarity": 0.328,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 337,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-338",
+   "snapshotId": "REQ-461",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-361",
+   "method": "anchor-contains",
+   "similarity": 0.326,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 338,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-339",
+   "snapshotId": "REQ-461",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-361",
+   "method": "anchor-contains",
+   "similarity": 0.551,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 339,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-340",
+   "snapshotId": "REQ-461",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-361",
+   "method": "anchor-contains",
+   "similarity": 0.174,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 340,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-341",
+   "snapshotId": "REQ-462",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-362",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 341,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-342",
+   "snapshotId": "REQ-107",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-363",
+   "method": "anchor-contains",
+   "similarity": 0.557,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 342,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-343",
+   "snapshotId": "REQ-107",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-363",
+   "method": "anchor",
+   "similarity": 0.697,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 343,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-344",
+   "snapshotId": "REQ-463",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-364",
+   "method": "anchor-contains",
+   "similarity": 0.597,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 344,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-345",
+   "snapshotId": "REQ-463",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-364",
+   "method": "anchor-contains",
+   "similarity": 0.403,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 345,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-346",
+   "snapshotId": "REQ-464",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-365",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 346,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-347",
+   "snapshotId": "REQ-465",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-366",
+   "method": "exact",
+   "similarity": 1
+  },
+  {
+   "baselineIndex": 349,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-350",
+   "snapshotId": "REQ-470",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-371",
+   "method": "anchor",
+   "similarity": 0.949,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 350,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-351",
+   "snapshotId": "REQ-471",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-372",
+   "method": "anchor",
+   "similarity": 0.884,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 351,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-352",
+   "snapshotId": "REQ-472",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-373",
+   "method": "anchor",
+   "similarity": 0.789,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 352,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-353",
+   "snapshotId": "REQ-473",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-374",
+   "method": "anchor",
+   "similarity": 0.97,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 353,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-354",
+   "snapshotId": "REQ-474",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-375",
+   "method": "anchor-doc",
+   "similarity": 0.877,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 356,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-357",
+   "snapshotId": "REQ-477",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-378",
+   "method": "anchor-doc",
+   "similarity": 0.879,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 357,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-358",
+   "snapshotId": "REQ-478",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-379",
+   "method": "anchor-doc",
+   "similarity": 0.904,
+   "containment": 1
+  },
+  {
+   "baselineIndex": 358,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-359",
+   "snapshotId": "REQ-479",
+   "snapshotKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-380",
+   "method": "anchor-doc",
+   "similarity": 0.842,
+   "containment": 1
+  }
+ ],
+ "unmatchedBaseline": [
+  {
+   "baselineIndex": 1,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-002",
+   "title": "本期范围与无托管",
+   "section": "一、本期开发范围",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.41 / 包含 0.51）"
+  },
+  {
+   "baselineIndex": 11,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-012",
+   "title": "使用136张牌",
+   "section": "二、游戏规则概述",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.51 / 包含 0.53）"
+  },
+  {
+   "baselineIndex": 17,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-018",
+   "title": "风牌箭牌不可吃",
+   "section": "二、游戏规则概述",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.56 / 包含 0.57）"
+  },
+  {
+   "baselineIndex": 23,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-024",
+   "title": "胡牌自摸与点炮",
+   "section": "2.2 操作名词",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.60 / 包含 0.60）"
+  },
+  {
+   "baselineIndex": 36,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-037",
+   "title": "财神不得参与吃碰",
+   "section": "2.2 名词介绍",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.08 / 包含 0.22）"
+  },
+  {
+   "baselineIndex": 39,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-040",
+   "title": "计摊由创房配置决定",
+   "section": "2.2 名词介绍",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.04 / 包含 0.13）"
+  },
+  {
+   "baselineIndex": 46,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-047",
+   "title": "自摸定义与结构",
+   "section": "2.2 名词介绍",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.40 / 包含 0.40）"
+  },
+  {
+   "baselineIndex": 57,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-058",
+   "title": "吃成立后进入出牌",
+   "section": "2.3.1.2 吃",
+   "reason": "全文候选（章节失配回退）多候选无法区分（top1 相似 0.99 / 包含 1.00；top2 相似 0.90 / 包含 0.94）"
+  },
+  {
+   "baselineIndex": 58,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-059",
+   "title": "吃牌用牌与飘财限制",
+   "section": "2.3.1.2 吃",
+   "reason": "全文候选（章节失配回退）多候选无法区分（top1 相似 0.97 / 包含 1.00；top2 相似 0.78 / 包含 0.89）"
+  },
+  {
+   "baselineIndex": 61,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-062",
+   "title": "碰成立后进入出牌",
+   "section": "2.3.1.3 碰",
+   "reason": "全文候选（章节失配回退）多候选无法区分（top1 相似 0.99 / 包含 1.00；top2 相似 0.90 / 包含 0.97）"
+  },
+  {
+   "baselineIndex": 62,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-063",
+   "title": "碰牌用牌与飘财限制",
+   "section": "2.3.1.3 碰",
+   "reason": "全文候选（章节失配回退）多候选无法区分（top1 相似 0.97 / 包含 1.00；top2 相似 0.78 / 包含 0.89）"
+  },
+  {
+   "baselineIndex": 69,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-070",
+   "title": "暗杠条件",
+   "section": "2.3.1.4 杠",
+   "reason": "全文候选（章节失配回退）多候选无法区分（top1 相似 0.75 / 包含 0.77；top2 相似 0.55 / 包含 0.70）"
+  },
+  {
+   "baselineIndex": 71,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-072",
+   "title": "杠开判定",
+   "section": "2.3.1.4 杠",
+   "reason": "全文候选（章节失配回退）相似度与包含度均不足（top1 相似 0.42 / 包含 0.53）"
+  },
+  {
+   "baselineIndex": 74,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-075",
+   "title": "杠飘记录保留清除",
+   "section": "2.3.1.4 杠",
+   "reason": "全文候选（章节失配回退）相似度与包含度均不足（top1 相似 0.19 / 包含 0.28）"
+  },
+  {
+   "baselineIndex": 79,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-080",
+   "title": "自摸胡牌结构",
+   "section": "2.3.1.5 自摸",
+   "reason": "全文候选（章节失配回退）相似度与包含度均不足（top1 相似 0.44 / 包含 0.73）"
+  },
+  {
+   "baselineIndex": 84,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-085",
+   "title": "固定8局与小结算",
+   "section": "2.3.2.1 局数",
+   "reason": "全文候选（章节失配回退）相似度与包含度均不足（top1 相似 0.54 / 包含 0.55）"
+  },
+  {
+   "baselineIndex": 87,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-088",
+   "title": "首局随机坐庄",
+   "section": "2.3.2.3 定庄",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.43 / 包含 0.79）"
+  },
+  {
+   "baselineIndex": 88,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-089",
+   "title": "第二局起按轮庄",
+   "section": "2.3.2.3 定庄",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.09 / 包含 0.31）"
+  },
+  {
+   "baselineIndex": 90,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-091",
+   "title": "流局原庄连庄",
+   "section": "2.3.2.4 轮庄",
+   "reason": "全文候选（章节失配回退）相似度与包含度均不足（top1 相似 0.54 / 包含 0.55）"
+  },
+  {
+   "baselineIndex": 105,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-106",
+   "title": "飘财期间延后第4摊",
+   "section": "2.3.2.8 三摊承包",
+   "reason": "全文候选（章节失配回退）相似度与包含度均不足（top1 相似 0.18 / 包含 0.33）"
+  },
+  {
+   "baselineIndex": 107,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-108",
+   "title": "小结算承包标识",
+   "section": "2.3.2.8 三摊承包",
+   "reason": "全文候选（章节失配回退）相似度与包含度均不足（top1 相似 0.57 / 包含 0.57）"
+  },
+  {
+   "baselineIndex": 115,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-116",
+   "title": "无封顶与黄庄0分",
+   "section": "2.3.2.10 底分",
+   "reason": "全文候选（章节失配回退）相似度与包含度均不足（top1 相似 0.44 / 包含 0.45）"
+  },
+  {
+   "baselineIndex": 119,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-120",
+   "title": "点炮抢杠一笔计算",
+   "section": "2.3.3 算分规则",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.49 / 包含 0.49）"
+  },
+  {
+   "baselineIndex": 122,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-123",
+   "title": "黄庄与积分记账",
+   "section": "2.3.3 算分规则",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.52 / 包含 0.52）"
+  },
+  {
+   "baselineIndex": 125,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-126",
+   "title": "杠开番型分类",
+   "section": "2.3.4.1 番型分类",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.48 / 包含 0.48）"
+  },
+  {
+   "baselineIndex": 130,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-131",
+   "title": "飘财后连杠两次",
+   "section": "2.3.4.2 番型介绍",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.09 / 包含 0.23）"
+  },
+  {
+   "baselineIndex": 131,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-132",
+   "title": "杠1飘1再杠定飘杠",
+   "section": "2.3.4.2 番型介绍",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.45 / 包含 0.45）"
+  },
+  {
+   "baselineIndex": 132,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-133",
+   "title": "同时成立取最高倍数",
+   "section": "2.3.4.2 番型介绍",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.09 / 包含 0.14）"
+  },
+  {
+   "baselineIndex": 136,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-137",
+   "title": "杠开各档倍数",
+   "section": "2.3.4.2 番型介绍",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.33 / 包含 0.42）"
+  },
+  {
+   "baselineIndex": 139,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-140",
+   "title": "杠爆各档",
+   "section": "2.3.4.2 番型介绍",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.54 / 包含 0.54）"
+  },
+  {
+   "baselineIndex": 140,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-141",
+   "title": "杠飘各档",
+   "section": "2.3.4.2 番型介绍",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.49 / 包含 0.60）"
+  },
+  {
+   "baselineIndex": 141,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-142",
+   "title": "飘杠各档",
+   "section": "2.3.4.2 番型介绍",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.27 / 包含 0.38）"
+  },
+  {
+   "baselineIndex": 143,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-144",
+   "title": "等待阶段菜单入口",
+   "section": "3.2 桌面布局-对局前",
+   "reason": "全文候选（章节失配回退）相似度与包含度均不足（top1 相似 0.48 / 包含 0.50）"
+  },
+  {
+   "baselineIndex": 152,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-153",
+   "title": "按加入顺序逆时针入座",
+   "section": "3.2 桌面布局-对局前",
+   "reason": "全文候选（章节失配回退）多候选无法区分（top1 相似 0.61 / 包含 1.00；top2 相似 0.17 / 包含 0.96）"
+  },
+  {
+   "baselineIndex": 154,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-155",
+   "title": "等待阶段座位映射",
+   "section": "3.2 桌面布局-对局前",
+   "reason": "全文候选（章节失配回退）相似度与包含度均不足（top1 相似 0.51 / 包含 0.51）"
+  },
+  {
+   "baselineIndex": 159,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-160",
+   "title": "各视角方位与换庄",
+   "section": "3.3.1 方位信息",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.39 / 包含 0.39）"
+  },
+  {
+   "baselineIndex": 163,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-164",
+   "title": "响应高亮不参与判定",
+   "section": "3.3.1 方位信息",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.08 / 包含 0.14）"
+  },
+  {
+   "baselineIndex": 166,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-167",
+   "title": "倒计时归零保持等待",
+   "section": "3.3.1 方位信息",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.51 / 包含 0.52）"
+  },
+  {
+   "baselineIndex": 181,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-182",
+   "title": "昵称截断规则",
+   "section": "3.3.3 玩家头像信息",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.40 / 包含 0.59）"
+  },
+  {
+   "baselineIndex": 209,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-210",
+   "title": "普通听牌标签文案",
+   "section": "3.3.5 手牌信息",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.48 / 包含 0.48）"
+  },
+  {
+   "baselineIndex": 216,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-217",
+   "title": "出牌后插入式整理",
+   "section": "3.3.5.1 手牌交互说明",
+   "reason": "全文候选（章节失配回退）相似度与包含度均不足（top1 相似 0.05 / 包含 0.37）"
+  },
+  {
+   "baselineIndex": 217,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-218",
+   "title": "出牌后平移式整理",
+   "section": "3.3.5.1 手牌交互说明",
+   "reason": "全文候选（章节失配回退）相似度与包含度均不足（top1 相似 0.55 / 包含 0.77）"
+  },
+  {
+   "baselineIndex": 218,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-219",
+   "title": "听牌候选牌筛选",
+   "section": "3.3.5.1 手牌交互说明",
+   "reason": "全文候选（章节失配回退）相似度与包含度均不足（top1 相似 0.55 / 包含 0.56）"
+  },
+  {
+   "baselineIndex": 228,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-229",
+   "title": "后续小局跳过动画",
+   "section": "4.1 对局开始",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.38 / 包含 0.38）"
+  },
+  {
+   "baselineIndex": 240,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-241",
+   "title": "庄标文字格式",
+   "section": "4.2 定庄",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.03 / 包含 0.10）"
+  },
+  {
+   "baselineIndex": 251,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-252",
+   "title": "理牌后切入行牌",
+   "section": "4.4 发牌",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.57 / 包含 0.67）"
+  },
+  {
+   "baselineIndex": 281,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-282",
+   "title": "多组吃显示与展开",
+   "section": "4.6 吃碰杠胡操作",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.58 / 包含 0.67）"
+  },
+  {
+   "baselineIndex": 290,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-291",
+   "title": "自摸按钮与预览",
+   "section": "4.6 吃碰杠胡操作",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.52 / 包含 0.55）"
+  },
+  {
+   "baselineIndex": 294,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-295",
+   "title": "胡牌张与来源展示",
+   "section": "4.6 吃碰杠胡操作",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.37 / 包含 0.66）"
+  },
+  {
+   "baselineIndex": 298,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-299",
+   "title": "补牌后重新判定",
+   "section": "4.7 多操作状态",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.10 / 包含 0.48）"
+  },
+  {
+   "baselineIndex": 305,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-306",
+   "title": "飘财期间延后提示",
+   "section": "4.8 对局内通用提示",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.18 / 包含 0.31）"
+  },
+  {
+   "baselineIndex": 320,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-321",
+   "title": "主按钮文案",
+   "section": "5.1 流程明细",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.34 / 包含 0.64）"
+  },
+  {
+   "baselineIndex": 328,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-329",
+   "title": "预览显示内容",
+   "section": "5.2 长按查看桌面",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.42 / 包含 0.64）"
+  },
+  {
+   "baselineIndex": 329,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-330",
+   "title": "预览仅本端",
+   "section": "5.2 长按查看桌面",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.13 / 包含 0.26）"
+  },
+  {
+   "baselineIndex": 333,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-334",
+   "title": "本场结束返回大厅",
+   "section": "6.1.1 触发逻辑",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.29 / 包含 0.58）"
+  },
+  {
+   "baselineIndex": 347,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-348",
+   "title": "继续与返回大厅",
+   "section": "6.1.2 UI交互以及说明",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.59 / 包含 0.68）"
+  },
+  {
+   "baselineIndex": 348,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-349",
+   "title": "长按查看牌桌入口",
+   "section": "6.1.2 UI交互以及说明",
+   "reason": "同章节候选相似度与包含度均不足（top1 相似 0.13 / 包含 0.19）"
+  },
+  {
+   "baselineIndex": 354,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-355",
+   "title": "重连恢复内容",
+   "section": "7.2 同步与异常处理",
+   "reason": "全文候选（章节失配回退）相似度与包含度均不足（top1 相似 0.47 / 包含 0.58）"
+  },
+  {
+   "baselineIndex": 355,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-356",
+   "title": "无托管断线停留",
+   "section": "7.2 同步与异常处理",
+   "reason": "全文候选（章节失配回退）相似度与包含度均不足（top1 相似 0.18 / 包含 0.52）"
+  },
+  {
+   "baselineIndex": 359,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-360",
+   "title": "后续人数与用牌",
+   "section": "附录A 后续版本配置",
+   "reason": "全文候选（章节失配回退）相似度与包含度均不足（top1 相似 0.04 / 包含 0.10）"
+  },
+  {
+   "baselineIndex": 360,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-361",
+   "title": "片数模式",
+   "section": "附录A 后续版本配置",
+   "reason": "全文候选（章节失配回退）相似度与包含度均不足（top1 相似 0.06 / 包含 0.16）"
+  },
+  {
+   "baselineIndex": 361,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-362",
+   "title": "翻财神模式",
+   "section": "附录A 后续版本配置",
+   "reason": "全文候选（章节失配回退）相似度与包含度均不足（top1 相似 0.17 / 包含 0.21）"
+  },
+  {
+   "baselineIndex": 362,
+   "baselineKey": "【杭州麻将】核心流程杭州麻将好友房AI11-11-363",
+   "title": "起庄与创房选项",
+   "section": "附录A 后续版本配置",
+   "reason": "全文候选（章节失配回退）相似度与包含度均不足（top1 相似 0.08 / 包含 0.14）"
+  }
+ ],
+ "unmatchedSnapshot": [
+  {
+   "snapshotIndex": 1,
+   "snapshotId": "REQ-116",
+   "title": "本期范围与无托管",
+   "section": "本期开发范围",
+   "identityStatus": "pending-confirm"
+  },
+  {
+   "snapshotIndex": 11,
+   "snapshotId": "REQ-126",
+   "title": "后续小局自动开始",
+   "section": "游戏规则概述",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 12,
+   "snapshotId": "REQ-127",
+   "title": "136张牌构成",
+   "section": "游戏规则概述",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 16,
+   "snapshotId": "REQ-131",
+   "title": "吃碰杠优先级概述",
+   "section": "游戏规则概述",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 18,
+   "snapshotId": "REQ-133",
+   "title": "风牌箭牌可碰杠不可吃",
+   "section": "游戏规则概述",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 19,
+   "snapshotId": "REQ-134",
+   "title": "自摸与点炮胡方式",
+   "section": "游戏规则概述",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 25,
+   "snapshotId": "REQ-140",
+   "title": "胡牌两种来源",
+   "section": "操作名词",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 38,
+   "snapshotId": "REQ-152",
+   "title": "摊的定义",
+   "section": "名词介绍",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 40,
+   "snapshotId": "REQ-154",
+   "title": "承包定义",
+   "section": "名词介绍",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 41,
+   "snapshotId": "REQ-155",
+   "title": "倒承包定义",
+   "section": "名词介绍",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 48,
+   "snapshotId": "REQ-162",
+   "title": "自摸定义",
+   "section": "名词介绍",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 51,
+   "snapshotId": "REQ-165",
+   "title": "闲家人数规则",
+   "section": "名词介绍",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 53,
+   "snapshotId": "REQ-167",
+   "title": "向听数计算口径",
+   "section": "名词介绍",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 55,
+   "snapshotId": "REQ-169",
+   "title": "对家定义",
+   "section": "名词介绍",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 62,
+   "snapshotId": "REQ-176",
+   "title": "吃成功后行牌流程",
+   "section": "【吃】",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 63,
+   "snapshotId": "REQ-177",
+   "title": "吃牌财神与飘财限制",
+   "section": "【吃】",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 66,
+   "snapshotId": "REQ-180",
+   "title": "碰成功后行牌流程",
+   "section": "【碰】",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 67,
+   "snapshotId": "REQ-181",
+   "title": "碰牌财神与飘财限制",
+   "section": "【碰】",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 69,
+   "snapshotId": "REQ-027",
+   "title": "杠的余牌门槛",
+   "section": "【杠】",
+   "identityStatus": "exact-match"
+  },
+  {
+   "snapshotIndex": 75,
+   "snapshotId": "REQ-188",
+   "title": "暗杠成立条件",
+   "section": "【杠】",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 77,
+   "snapshotId": "REQ-190",
+   "title": "杠上开花判定",
+   "section": "【杠】",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 80,
+   "snapshotId": "REQ-193",
+   "title": "杠飘记录保留条件",
+   "section": "【杠】",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 81,
+   "snapshotId": "REQ-194",
+   "title": "杠飘记录清除条件",
+   "section": "【杠】",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 86,
+   "snapshotId": "REQ-199",
+   "title": "自摸牌型结构",
+   "section": "【自摸】",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 87,
+   "snapshotId": "REQ-200",
+   "title": "杠后自摸定番口径",
+   "section": "【自摸】",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 92,
+   "snapshotId": "REQ-205",
+   "title": "固定8局与计局",
+   "section": "【局数】",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 93,
+   "snapshotId": "REQ-206",
+   "title": "小结算与满8局结束",
+   "section": "【局数】",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 96,
+   "snapshotId": "REQ-209",
+   "title": "首局随机坐庄",
+   "section": "【定庄】",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 97,
+   "snapshotId": "REQ-210",
+   "title": "第二局起按轮庄",
+   "section": "【定庄】",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 99,
+   "snapshotId": "REQ-212",
+   "title": "流局原庄连庄",
+   "section": "**【轮庄】**",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 100,
+   "snapshotId": "REQ-213",
+   "title": "首局庄家确定方式",
+   "section": "**【轮庄】**",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 115,
+   "snapshotId": "REQ-228",
+   "title": "飘财期间第三摊例外",
+   "section": "【三摊承包】",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 117,
+   "snapshotId": "REQ-230",
+   "title": "承包小结算标识",
+   "section": "【三摊承包】",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 124,
+   "snapshotId": "REQ-237",
+   "title": "无封顶与黄庄0分",
+   "section": "【底分】",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 127,
+   "snapshotId": "REQ-059",
+   "title": "点炮抢杠单笔计算",
+   "section": "算分规则",
+   "identityStatus": "exact-match"
+  },
+  {
+   "snapshotIndex": 130,
+   "snapshotId": "REQ-241",
+   "title": "黄庄与积分记账",
+   "section": "算分规则",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 133,
+   "snapshotId": "REQ-244",
+   "title": "杠开番型分档",
+   "section": "番型分类",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 138,
+   "snapshotId": "REQ-249",
+   "title": "先飘后杠爆头按飘杠",
+   "section": "番型介绍",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 139,
+   "snapshotId": "REQ-250",
+   "title": "飘后杠爆头档位",
+   "section": "番型介绍",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 140,
+   "snapshotId": "REQ-062",
+   "title": "多番型取最高档",
+   "section": "番型介绍",
+   "identityStatus": "exact-match"
+  },
+  {
+   "snapshotIndex": 144,
+   "snapshotId": "REQ-066",
+   "title": "连杠番型",
+   "section": "番型介绍",
+   "identityStatus": "exact-match"
+  },
+  {
+   "snapshotIndex": 147,
+   "snapshotId": "REQ-068",
+   "title": "杠爆番型各档",
+   "section": "番型介绍",
+   "identityStatus": "exact-match"
+  },
+  {
+   "snapshotIndex": 148,
+   "snapshotId": "REQ-069",
+   "title": "杠飘番型各档",
+   "section": "番型介绍",
+   "identityStatus": "exact-match"
+  },
+  {
+   "snapshotIndex": 149,
+   "snapshotId": "REQ-070",
+   "title": "飘杠番型判定",
+   "section": "番型介绍",
+   "identityStatus": "exact-match"
+  },
+  {
+   "snapshotIndex": 151,
+   "snapshotId": "REQ-254",
+   "title": "等待阶段菜单入口",
+   "section": "对局前",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 159,
+   "snapshotId": "REQ-262",
+   "title": "等待阶段视角方位",
+   "section": "对局前",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 164,
+   "snapshotId": "REQ-267",
+   "title": "换庄后风位更新",
+   "section": "方位信息",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 170,
+   "snapshotId": "REQ-273",
+   "title": "倒计时归零保持00",
+   "section": "方位信息",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 181,
+   "snapshotId": "REQ-284",
+   "title": "房主标记与庄标角位",
+   "section": "玩家头像信息",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 184,
+   "snapshotId": "REQ-287",
+   "title": "昵称显示与截断",
+   "section": "玩家头像信息",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 185,
+   "snapshotId": "REQ-288",
+   "title": "昵称字符计数截断",
+   "section": "玩家头像信息",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 201,
+   "snapshotId": "REQ-304",
+   "title": "取消提牌清除高亮",
+   "section": "牌河信息",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 214,
+   "snapshotId": "REQ-317",
+   "title": "普通听牌标签文案",
+   "section": "手牌信息",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 218,
+   "snapshotId": "REQ-321",
+   "title": "听牌详情行列换行",
+   "section": "手牌信息",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 222,
+   "snapshotId": "REQ-325",
+   "title": "出牌后插入式理牌",
+   "section": "**手牌交互说明**",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 223,
+   "snapshotId": "REQ-326",
+   "title": "同牌插入最右侧",
+   "section": "**手牌交互说明**",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 224,
+   "snapshotId": "REQ-327",
+   "title": "单张按排序插入",
+   "section": "**手牌交互说明**",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 225,
+   "snapshotId": "REQ-328",
+   "title": "出牌后平移式理牌",
+   "section": "**手牌交互说明**",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 226,
+   "snapshotId": "REQ-329",
+   "title": "听牌候选筛选",
+   "section": "**手牌交互说明**",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 235,
+   "snapshotId": "REQ-338",
+   "title": "后续小局直接发牌",
+   "section": "对局开始",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 237,
+   "snapshotId": "REQ-340",
+   "title": "开局座位相对次序",
+   "section": "对局开始",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 241,
+   "snapshotId": "REQ-344",
+   "title": "开局动画起手阶段",
+   "section": "对局开始",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 242,
+   "snapshotId": "REQ-345",
+   "title": "开局动画介绍卡阶段",
+   "section": "对局开始",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 243,
+   "snapshotId": "REQ-346",
+   "title": "开局动画退场阶段",
+   "section": "对局开始",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 244,
+   "snapshotId": "REQ-347",
+   "title": "开局动画收尾阶段",
+   "section": "对局开始",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 259,
+   "snapshotId": "REQ-362",
+   "title": "理牌完成切入行牌",
+   "section": "发牌",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 260,
+   "snapshotId": "REQ-363",
+   "title": "首批牌背入场",
+   "section": "发牌",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 261,
+   "snapshotId": "REQ-364",
+   "title": "分批翻开手牌",
+   "section": "发牌",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 263,
+   "snapshotId": "REQ-366",
+   "title": "发牌音效不添加",
+   "section": "发牌",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 267,
+   "snapshotId": "REQ-370",
+   "title": "常规摸牌时机",
+   "section": "行牌操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 275,
+   "snapshotId": "REQ-378",
+   "title": "点击提牌与再次点击出牌",
+   "section": "行牌操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 276,
+   "snapshotId": "REQ-379",
+   "title": "横滑切换提牌",
+   "section": "行牌操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 277,
+   "snapshotId": "REQ-380",
+   "title": "飘财限制下点按无效",
+   "section": "行牌操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 279,
+   "snapshotId": "REQ-382",
+   "title": "点过后出牌仍受限",
+   "section": "行牌操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 282,
+   "snapshotId": "REQ-385",
+   "title": "出牌前虚影预览",
+   "section": "行牌操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 290,
+   "snapshotId": "REQ-393",
+   "title": "操作方位提示切换",
+   "section": "行牌操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 291,
+   "snapshotId": "REQ-394",
+   "title": "其他家出牌起点",
+   "section": "行牌操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 292,
+   "snapshotId": "REQ-395",
+   "title": "放大弃牌退场",
+   "section": "行牌操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 296,
+   "snapshotId": "REQ-399",
+   "title": "高优先级成立取消等待",
+   "section": "吃碰杠胡操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 297,
+   "snapshotId": "REQ-400",
+   "title": "吃碰同时出现处理",
+   "section": "吃碰杠胡操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 298,
+   "snapshotId": "REQ-401",
+   "title": "主动点过的处理",
+   "section": "吃碰杠胡操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 304,
+   "snapshotId": "REQ-406",
+   "title": "吃后禁手压暗",
+   "section": "吃碰杠胡操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 305,
+   "snapshotId": "REQ-407",
+   "title": "多组吃手牌高亮",
+   "section": "吃碰杠胡操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 306,
+   "snapshotId": "REQ-408",
+   "title": "多组吃展开选组",
+   "section": "吃碰杠胡操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 308,
+   "snapshotId": "REQ-410",
+   "title": "多组吃选中提交",
+   "section": "吃碰杠胡操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 310,
+   "snapshotId": "REQ-412",
+   "title": "点过解除杠拦截",
+   "section": "吃碰杠胡操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 312,
+   "snapshotId": "REQ-414",
+   "title": "杠可选组手牌亮度",
+   "section": "吃碰杠胡操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 315,
+   "snapshotId": "REQ-417",
+   "title": "杠后收拢与补牌",
+   "section": "吃碰杠胡操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 319,
+   "snapshotId": "REQ-421",
+   "title": "多组杠成立后刷新",
+   "section": "吃碰杠胡操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 320,
+   "snapshotId": "REQ-422",
+   "title": "自摸按钮与预览",
+   "section": "吃碰杠胡操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 323,
+   "snapshotId": "REQ-425",
+   "title": "胡牌按钮预览倍数",
+   "section": "吃碰杠胡操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 325,
+   "snapshotId": "REQ-427",
+   "title": "放弃点炮胡",
+   "section": "吃碰杠胡操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 326,
+   "snapshotId": "REQ-428",
+   "title": "胡牌成立移除弃牌",
+   "section": "吃碰杠胡操作",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 329,
+   "snapshotId": "REQ-431",
+   "title": "多杠选组亮度",
+   "section": "多操作状态",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 335,
+   "snapshotId": "REQ-437",
+   "title": "共用过与取消作用",
+   "section": "多操作状态",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 337,
+   "snapshotId": "REQ-439",
+   "title": "三摊落地飘财例外",
+   "section": "对局内通用提示",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 353,
+   "snapshotId": "REQ-455",
+   "title": "长按预览内容",
+   "section": "长按查看桌面",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 357,
+   "snapshotId": "REQ-106",
+   "title": "本场结束返回大厅",
+   "section": "触发逻辑",
+   "identityStatus": "exact-match"
+  },
+  {
+   "snapshotIndex": 366,
+   "snapshotId": "REQ-466",
+   "title": "小结算底部主按钮",
+   "section": "UI交互以及说明",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 367,
+   "snapshotId": "REQ-467",
+   "title": "小结算无剩余牌功能",
+   "section": "UI交互以及说明",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 368,
+   "snapshotId": "REQ-468",
+   "title": "小结算长按查看牌桌",
+   "section": "UI交互以及说明",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 369,
+   "snapshotId": "REQ-469",
+   "title": "小结算无底栏辅助入口",
+   "section": "UI交互以及说明",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 375,
+   "snapshotId": "REQ-475",
+   "title": "重连恢复页面选择",
+   "section": "7\\.2 同步与异常处理",
+   "identityStatus": "new"
+  },
+  {
+   "snapshotIndex": 376,
+   "snapshotId": "REQ-476",
+   "title": "重连恢复数据内容",
+   "section": "7\\.2 同步与异常处理",
+   "identityStatus": "new"
+  }
+ ]
+}

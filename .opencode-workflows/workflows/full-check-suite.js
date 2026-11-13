@@ -336,61 +336,69 @@ if (!sharedMode) {
   }
 }
 
-// ---------- 阶段 5：合并交付 ----------
+// ---------- 阶段 5：合并交付（混编单一清单，v4：不再用三路 Tab 切换版） ----------
 phase('合并交付')
 
-// 收集成功路且真实存在 Dashboard 产物的路径（dashboardSkipped 或生成失败时 dashboardPath 为 null）
-const dashPaths = succeeded.filter((r) => r.dashboardPath).map((r) => r.dashboardPath)
-const dashLabels = succeeded.filter((r) => r.dashboardPath).map((r) => r.tabLabel)
-
+// 主报告必须为 PRD 路成功（game report.md 为底）；ui/bug 至少一路成功才值得混编
 let merged = { ok: false, skipped: true, reason: '' }
-if (dashPaths.length >= 2) {
-  // 组装 merge-dashboard.mjs 命令行：label 从 1 起，文件名重名场景必须显式指定
-  const labelArgs = dashLabels.map((l, i) => '--label ' + (i + 1) + '=' + l).join(' ')
-  const cmd =
-    'node .claude/skills/merge-prd-dashboard/scripts/merge-dashboard.mjs ' +
-    dashPaths.map((p) => '"' + p + '"').join(' ') +
-    ' --out-dir ' + (A.mergedOutDir || 'examples/dashboard') +
-    (labelArgs ? ' ' + labelArgs : '')
-  log('执行合并：' + cmd)
-  try {
-    // 机械 bash 执行 + 结构自检结果回读，任务快：5 分钟超时足够；失败降级为返回各路产物路径
-    const mergeOut = await agent(
-      '在仓库根目录执行以下命令（bash），然后把结果整理为 JSON 返回：\n\n' +
-        cmd +
-        '\n\n要求：\n' +
-        '1. 输出含 [成功] 时，从输出提取合并产物 HTML 路径\n' +
-        '2. 输出含 [失败] 时，原样记录原因清单\n' +
-        '3. 用 ls 确认产物文件存在后再返回',
-      {
-        agentType: 'general',
-        label: '合并Dashboard',
-        timeoutMs: 300000,
-        retries: 1,
-        schema: {
-          type: 'object',
-          properties: {
-            ok: { type: 'boolean', description: '合并是否成功' },
-            mergedPath: { type: 'string', description: '合并产物 HTML 路径，失败时为空串' },
-            message: { type: 'string', description: '结果说明或失败原因' },
-          },
-          required: ['ok', 'mergedPath', 'message'],
-        },
-      }
-    )
-    merged = { ok: mergeOut.ok === true, skipped: false, mergedPath: mergeOut.mergedPath || '', message: mergeOut.message || '' }
-  } catch (e) {
-    // 合并属收尾增强动作，失败不拖死 run：降级返回三路独立产物
-    merged = { ok: false, skipped: false, error: String(e && e.message ? e.message : e) }
-    log('[降级] 合并失败，返回各路独立 Dashboard 产物：' + merged.error)
-  }
-} else if (dashPaths.length === 1) {
-  merged = { ok: false, skipped: true, reason: '仅 1 份 Dashboard 产物，无需合并：' + dashPaths[0] }
+const prdR2 = routeResults[0]
+const uiR2 = routeResults[1]
+const bugR2 = routeResults[2]
+if (A.dashboard === false) {
+  merged = { ok: false, skipped: true, reason: 'args.dashboard=false，未生成 Dashboard' }
+} else if (!prdR2 || !prdR2.ok || !prdR2.reportPath) {
+  merged = { ok: false, skipped: true, reason: 'PRD 路未成功，无主报告可混编' }
 } else {
-  merged = { ok: false, skipped: true, reason: failed.length ? '全部路失败或无 Dashboard 产物' : '各路 Dashboard 均未生成（args.dashboard=false 或生成失败）' }
-  if (failed.length === 0 && dashPaths.length === 0 && succeeded.length > 0) {
-    // 三路都成功但都没产物：大概率 dashboard=false，正常情况不算错误
-    merged = { ok: true, skipped: true, reason: '各路未生成 Dashboard（args.dashboard=false）' }
+  const uiOk = uiR2 && uiR2.ok && uiR2.reportJsonPath
+  const bugOk = bugR2 && bugR2.ok && bugR2.verdictsFile
+  if (!uiOk && !bugOk) {
+    merged = { ok: false, skipped: true, reason: 'ui/bug 路均未成功，无混编对象' }
+  } else {
+    const mixDir = A.mergedOutDir || 'output/projects/hzmj/mixed-check/' + (A.date || 'undated')
+    const uiDirMix = uiOk ? uiR2.reportJsonPath.replace(/[\\/]report\.json$/, '') : null
+    const bugDirMix = bugOk ? bugR2.verdictsFile.replace(/[\\/]bug-verdicts\.json$/, '') : null
+    const mixCmd =
+      'node .claude/skills/game-prd-check/scripts/build-dashboard.mjs "' + prdR2.reportPath + '" "' + mixDir + '"' +
+      (prdR2.rtmRunDir ? ' --rtm "' + prdR2.rtmRunDir + '"' : '') +
+      (unified.ok && unified.rtmPath ? ' --unified-rtm "' + unifiedOutDir + '"' : '') +
+      (uiDirMix ? ' --mix-ui "' + uiDirMix + '"' : '') +
+      (bugDirMix ? ' --mix-bug "' + bugDirMix + '"' : '')
+    log('混编单一清单：' + mixCmd)
+    try {
+      const mixOut = await agent(
+        [
+          '在仓库根目录执行以下命令（bash），然后把结果整理为 JSON 返回：',
+          '',
+          mixCmd,
+          '',
+          '要求：',
+          '1. 输出含 [成功] 时，从输出提取「dashboard ->」后的 HTML 路径与总条数',
+          '2. 输出含 [失败] 时，原样记录错误清单（最后 15 行）',
+          '3. 用 ls 确认产物 HTML 存在后再返回',
+          '4. 不执行 git 命令，不删除任何历史 Dashboard',
+        ].join('\n'),
+        {
+          agentType: 'general',
+          label: '混编Dashboard',
+          timeoutMs: 300000,
+          retries: 1,
+          schema: {
+            type: 'object',
+            properties: {
+              ok: { type: 'boolean', description: '混编是否成功' },
+              mergedPath: { type: 'string', description: '混编产物 HTML 路径，失败时为空串' },
+              total: { type: 'number', description: '混编总条数，失败时为 0' },
+              message: { type: 'string', description: '结果说明或失败原因' },
+            },
+            required: ['ok', 'mergedPath', 'total', 'message'],
+          },
+        }
+      )
+      merged = { ok: mixOut.ok === true, skipped: false, mergedPath: mixOut.mergedPath || '', total: mixOut.total || 0, message: mixOut.message || '' }
+    } catch (e) {
+      merged = { ok: false, skipped: false, error: String(e && e.message ? e.message : e) }
+      log('[降级] 混编失败，返回各路独立 Dashboard 产物：' + merged.error)
+    }
   }
 }
 
@@ -418,6 +426,6 @@ return {
   merged: merged,
   unified: unified,
   failed: failed.map((f) => ({ route: f.route, error: f.error })),
-  dashboardPaths: dashPaths,
+  dashboardPaths: succeeded.filter((r) => r.dashboardPath).map((r) => r.dashboardPath),
   summary: summary,
 }

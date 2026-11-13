@@ -1,0 +1,1902 @@
+[
+ {
+  "requirementId": "REQ-115",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-001",
+  "title": "本期固定规则范围"
+ },
+ {
+  "requirementId": "REQ-116",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-002",
+  "title": "本期范围与无托管"
+ },
+ {
+  "requirementId": "REQ-117",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-003",
+  "title": "人数与局数固定"
+ },
+ {
+  "requirementId": "REQ-118",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-004",
+  "title": "牌组与财神固定"
+ },
+ {
+  "requirementId": "REQ-119",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-005",
+  "title": "定庄与轮庄固定"
+ },
+ {
+  "requirementId": "REQ-120",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-006",
+  "title": "连庄数笃三老庄"
+ },
+ {
+  "requirementId": "REQ-121",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-007",
+  "title": "胡牌玩法固定"
+ },
+ {
+  "requirementId": "REQ-122",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-008",
+  "title": "承包与行牌固定"
+ },
+ {
+  "requirementId": "REQ-123",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-009",
+  "title": "计分与结算固定"
+ },
+ {
+  "requirementId": "REQ-124",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-010",
+  "title": "无可选规则直接开局"
+ },
+ {
+  "requirementId": "REQ-125",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-011",
+  "title": "对局固定四人"
+ },
+ {
+  "requirementId": "REQ-126",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-012",
+  "title": "后续小局自动开始"
+ },
+ {
+  "requirementId": "REQ-127",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-013",
+  "title": "136张牌构成"
+ },
+ {
+  "requirementId": "REQ-128",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-014",
+  "title": "数牌花色点数构成"
+ },
+ {
+  "requirementId": "REQ-129",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-015",
+  "title": "风牌箭牌构成"
+ },
+ {
+  "requirementId": "REQ-130",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-016",
+  "title": "胡牌判定依据"
+ },
+ {
+  "requirementId": "REQ-131",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-017",
+  "title": "吃碰杠优先级概述"
+ },
+ {
+  "requirementId": "REQ-132",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-018",
+  "title": "仅可吃上家弃牌"
+ },
+ {
+  "requirementId": "REQ-133",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-019",
+  "title": "风牌箭牌可碰杠不可吃"
+ },
+ {
+  "requirementId": "REQ-134",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-020",
+  "title": "自摸与点炮胡方式"
+ },
+ {
+  "requirementId": "REQ-135",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-021",
+  "title": "摸牌取牌方向"
+ },
+ {
+  "requirementId": "REQ-136",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-022",
+  "title": "出牌定义"
+ },
+ {
+  "requirementId": "REQ-137",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-023",
+  "title": "吃牌条件与示例"
+ },
+ {
+  "requirementId": "REQ-138",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-024",
+  "title": "碰牌条件与限制"
+ },
+ {
+  "requirementId": "REQ-139",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-025",
+  "title": "杠牌与补牌方向"
+ },
+ {
+  "requirementId": "REQ-140",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-026",
+  "title": "胡牌两种来源"
+ },
+ {
+  "requirementId": "REQ-141",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-027",
+  "title": "对子定义与财神替代"
+ },
+ {
+  "requirementId": "REQ-142",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-028",
+  "title": "顺子定义与财神替代"
+ },
+ {
+  "requirementId": "REQ-143",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-029",
+  "title": "刻子定义"
+ },
+ {
+  "requirementId": "REQ-144",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-030",
+  "title": "杠子定义"
+ },
+ {
+  "requirementId": "REQ-145",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-031",
+  "title": "面子定义与计数"
+ },
+ {
+  "requirementId": "REQ-146",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-032",
+  "title": "碰杠区组合计入面子"
+ },
+ {
+  "requirementId": "REQ-147",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-033",
+  "title": "副露定义"
+ },
+ {
+  "requirementId": "REQ-148",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-034",
+  "title": "暗杠不计副露"
+ },
+ {
+  "requirementId": "REQ-149",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-035",
+  "title": "财神替代与操作限制"
+ },
+ {
+  "requirementId": "REQ-150",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-036",
+  "title": "可主动打出财神"
+ },
+ {
+  "requirementId": "REQ-009",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-037",
+  "title": "财神弃牌不可被利用"
+ },
+ {
+  "requirementId": "REQ-151",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-038",
+  "title": "牢庄即连庄档位"
+ },
+ {
+  "requirementId": "REQ-152",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-039",
+  "title": "摊的定义"
+ },
+ {
+  "requirementId": "REQ-153",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-040",
+  "title": "摊数按取牌方向记录"
+ },
+ {
+  "requirementId": "REQ-154",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-041",
+  "title": "承包定义"
+ },
+ {
+  "requirementId": "REQ-155",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-042",
+  "title": "倒承包定义"
+ },
+ {
+  "requirementId": "REQ-156",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-043",
+  "title": "爆头结构定义"
+ },
+ {
+  "requirementId": "REQ-157",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-044",
+  "title": "爆头只能自摸胡"
+ },
+ {
+  "requirementId": "REQ-158",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-045",
+  "title": "飘财触发与计数"
+ },
+ {
+  "requirementId": "REQ-159",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-046",
+  "title": "飘财限制其他三家"
+ },
+ {
+  "requirementId": "REQ-160",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-047",
+  "title": "飘财限制独立记录"
+ },
+ {
+  "requirementId": "REQ-161",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-048",
+  "title": "飘财限制解除条件"
+ },
+ {
+  "requirementId": "REQ-162",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-049",
+  "title": "自摸定义"
+ },
+ {
+  "requirementId": "REQ-163",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-050",
+  "title": "放铳定义"
+ },
+ {
+  "requirementId": "REQ-164",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-051",
+  "title": "庄家先出牌"
+ },
+ {
+  "requirementId": "REQ-165",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-052",
+  "title": "闲家人数规则"
+ },
+ {
+  "requirementId": "REQ-166",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-053",
+  "title": "流局判定时机"
+ },
+ {
+  "requirementId": "REQ-167",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-054",
+  "title": "向听数计算口径"
+ },
+ {
+  "requirementId": "REQ-168",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-055",
+  "title": "上家定义"
+ },
+ {
+  "requirementId": "REQ-169",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-056",
+  "title": "对家定义"
+ },
+ {
+  "requirementId": "REQ-170",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-057",
+  "title": "弃牌响应优先级"
+ },
+ {
+  "requirementId": "REQ-171",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-058",
+  "title": "多人可胡裁决顺序"
+ },
+ {
+  "requirementId": "REQ-172",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-059",
+  "title": "低优先级需等待"
+ },
+ {
+  "requirementId": "REQ-173",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-060",
+  "title": "吃牌仅限上家"
+ },
+ {
+  "requirementId": "REQ-174",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-061",
+  "title": "吃牌成立条件"
+ },
+ {
+  "requirementId": "REQ-175",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-062",
+  "title": "吃需按优先级裁决"
+ },
+ {
+  "requirementId": "REQ-176",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-063",
+  "title": "吃成功后行牌流程"
+ },
+ {
+  "requirementId": "REQ-177",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-064",
+  "title": "吃牌财神与飘财限制"
+ },
+ {
+  "requirementId": "REQ-178",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-065",
+  "title": "碰牌成立条件"
+ },
+ {
+  "requirementId": "REQ-179",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-066",
+  "title": "碰与吃胡优先级"
+ },
+ {
+  "requirementId": "REQ-180",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-067",
+  "title": "碰成功后行牌流程"
+ },
+ {
+  "requirementId": "REQ-181",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-068",
+  "title": "碰牌财神与飘财限制"
+ },
+ {
+  "requirementId": "REQ-182",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-069",
+  "title": "杠后补牌取墩规则"
+ },
+ {
+  "requirementId": "REQ-027",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-070",
+  "title": "杠的余牌门槛"
+ },
+ {
+  "requirementId": "REQ-183",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-071",
+  "title": "出牌阶段可杠与连杠"
+ },
+ {
+  "requirementId": "REQ-184",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-072",
+  "title": "杠的财神与飘财限制"
+ },
+ {
+  "requirementId": "REQ-185",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-073",
+  "title": "直杠成立条件"
+ },
+ {
+  "requirementId": "REQ-186",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-074",
+  "title": "加杠成立条件"
+ },
+ {
+  "requirementId": "REQ-187",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-075",
+  "title": "加杠先处理抢杠胡"
+ },
+ {
+  "requirementId": "REQ-188",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-076",
+  "title": "暗杠成立条件"
+ },
+ {
+  "requirementId": "REQ-189",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-077",
+  "title": "暗杠展示方式"
+ },
+ {
+  "requirementId": "REQ-190",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-078",
+  "title": "杠上开花判定"
+ },
+ {
+  "requirementId": "REQ-191",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-079",
+  "title": "杠爆成立条件"
+ },
+ {
+  "requirementId": "REQ-192",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-080",
+  "title": "七对不允许开杠"
+ },
+ {
+  "requirementId": "REQ-193",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-081",
+  "title": "杠飘记录保留条件"
+ },
+ {
+  "requirementId": "REQ-194",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-082",
+  "title": "杠飘记录清除条件"
+ },
+ {
+  "requirementId": "REQ-195",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-083",
+  "title": "抢杠胡适用条件"
+ },
+ {
+  "requirementId": "REQ-196",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-084",
+  "title": "抢杠胡多人裁决"
+ },
+ {
+  "requirementId": "REQ-197",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-085",
+  "title": "抢杠胡赔付方式"
+ },
+ {
+  "requirementId": "REQ-198",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-086",
+  "title": "自摸定义与即时提示"
+ },
+ {
+  "requirementId": "REQ-199",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-087",
+  "title": "自摸牌型结构"
+ },
+ {
+  "requirementId": "REQ-200",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-088",
+  "title": "杠后自摸定番口径"
+ },
+ {
+  "requirementId": "REQ-201",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-089",
+  "title": "放铳定义与财神弃牌"
+ },
+ {
+  "requirementId": "REQ-202",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-090",
+  "title": "庄闲放铳点炮资格"
+ },
+ {
+  "requirementId": "REQ-203",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-091",
+  "title": "放铳多人可胡裁决"
+ },
+ {
+  "requirementId": "REQ-204",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-092",
+  "title": "放铳仅放铳者支付"
+ },
+ {
+  "requirementId": "REQ-205",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-093",
+  "title": "固定8局与计局"
+ },
+ {
+  "requirementId": "REQ-206",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-094",
+  "title": "小结算与满8局结束"
+ },
+ {
+  "requirementId": "REQ-207",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-095",
+  "title": "开局条件四人已准备"
+ },
+ {
+  "requirementId": "REQ-208",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-096",
+  "title": "以本家为视角布局"
+ },
+ {
+  "requirementId": "REQ-209",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-097",
+  "title": "首局随机坐庄"
+ },
+ {
+  "requirementId": "REQ-210",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-098",
+  "title": "第二局起按轮庄"
+ },
+ {
+  "requirementId": "REQ-211",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-099",
+  "title": "胡牌者坐庄与连庄"
+ },
+ {
+  "requirementId": "REQ-212",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-100",
+  "title": "流局原庄连庄"
+ },
+ {
+  "requirementId": "REQ-213",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-101",
+  "title": "首局庄家确定方式"
+ },
+ {
+  "requirementId": "REQ-214",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-102",
+  "title": "白板固定财神"
+ },
+ {
+  "requirementId": "REQ-215",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-103",
+  "title": "三牢与8倍倍率"
+ },
+ {
+  "requirementId": "REQ-216",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-104",
+  "title": "连庄保持三牢"
+ },
+ {
+  "requirementId": "REQ-217",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-105",
+  "title": "闲家胡牌接任庄"
+ },
+ {
+  "requirementId": "REQ-218",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-106",
+  "title": "三牢为最高牢数"
+ },
+ {
+  "requirementId": "REQ-219",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-107",
+  "title": "庄闲放铳启用条件"
+ },
+ {
+  "requirementId": "REQ-220",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-108",
+  "title": "庄闲出牌点炮关系"
+ },
+ {
+  "requirementId": "REQ-221",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-109",
+  "title": "点炮多人裁决"
+ },
+ {
+  "requirementId": "REQ-222",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-110",
+  "title": "摊数记录与碰算摊关闭"
+ },
+ {
+  "requirementId": "REQ-223",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-111",
+  "title": "承包赔付规则"
+ },
+ {
+  "requirementId": "REQ-224",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-112",
+  "title": "反承包赔付规则"
+ },
+ {
+  "requirementId": "REQ-225",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-113",
+  "title": "链式承包赔付规则"
+ },
+ {
+  "requirementId": "REQ-226",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-114",
+  "title": "承包仅在自摸赔付"
+ },
+ {
+  "requirementId": "REQ-227",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-115",
+  "title": "仅庄闲之间可承包"
+ },
+ {
+  "requirementId": "REQ-228",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-116",
+  "title": "飘财期间第三摊例外"
+ },
+ {
+  "requirementId": "REQ-229",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-117",
+  "title": "三摊落地桌面提示"
+ },
+ {
+  "requirementId": "REQ-230",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-118",
+  "title": "承包小结算标识"
+ },
+ {
+  "requirementId": "REQ-231",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-119",
+  "title": "吃禁手判定规则"
+ },
+ {
+  "requirementId": "REQ-232",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-120",
+  "title": "碰禁手判定规则"
+ },
+ {
+  "requirementId": "REQ-233",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-121",
+  "title": "禁打牌交互表现"
+ },
+ {
+  "requirementId": "REQ-234",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-122",
+  "title": "禁手解除时机"
+ },
+ {
+  "requirementId": "REQ-235",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-123",
+  "title": "底分固定1分"
+ },
+ {
+  "requirementId": "REQ-236",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-124",
+  "title": "原应赔分公式"
+ },
+ {
+  "requirementId": "REQ-237",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-125",
+  "title": "无封顶与黄庄0分"
+ },
+ {
+  "requirementId": "REQ-238",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-126",
+  "title": "原应赔分与庄闲倍数"
+ },
+ {
+  "requirementId": "REQ-058",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-127",
+  "title": "自摸三笔计算"
+ },
+ {
+  "requirementId": "REQ-059",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-128",
+  "title": "点炮抢杠单笔计算"
+ },
+ {
+  "requirementId": "REQ-239",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-129",
+  "title": "承包与倒承包算分"
+ },
+ {
+  "requirementId": "REQ-240",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-130",
+  "title": "链式承包算分"
+ },
+ {
+  "requirementId": "REQ-241",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-131",
+  "title": "黄庄与积分记账"
+ },
+ {
+  "requirementId": "REQ-242",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-132",
+  "title": "基础番型判定"
+ },
+ {
+  "requirementId": "REQ-243",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-133",
+  "title": "财神番型分档"
+ },
+ {
+  "requirementId": "REQ-244",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-134",
+  "title": "杠开番型分档"
+ },
+ {
+  "requirementId": "REQ-245",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-135",
+  "title": "七对番型分档"
+ },
+ {
+  "requirementId": "REQ-246",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-136",
+  "title": "组合番型与倍数口径"
+ },
+ {
+  "requirementId": "REQ-247",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-137",
+  "title": "已定组合档优先结算"
+ },
+ {
+  "requirementId": "REQ-248",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-138",
+  "title": "爆头与七客取七客"
+ },
+ {
+  "requirementId": "REQ-249",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-139",
+  "title": "先飘后杠爆头按飘杠"
+ },
+ {
+  "requirementId": "REQ-250",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-140",
+  "title": "飘后杠爆头档位"
+ },
+ {
+  "requirementId": "REQ-062",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-141",
+  "title": "多番型取最高档"
+ },
+ {
+  "requirementId": "REQ-063",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-142",
+  "title": "平胡番型"
+ },
+ {
+  "requirementId": "REQ-064",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-143",
+  "title": "爆头番型"
+ },
+ {
+  "requirementId": "REQ-065",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-144",
+  "title": "财飘各档番型"
+ },
+ {
+  "requirementId": "REQ-066",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-145",
+  "title": "连杠番型"
+ },
+ {
+  "requirementId": "REQ-251",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-146",
+  "title": "七对及豪华档"
+ },
+ {
+  "requirementId": "REQ-252",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-147",
+  "title": "清七对及豪华档"
+ },
+ {
+  "requirementId": "REQ-068",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-148",
+  "title": "杠爆番型各档"
+ },
+ {
+  "requirementId": "REQ-069",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-149",
+  "title": "杠飘番型各档"
+ },
+ {
+  "requirementId": "REQ-070",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-150",
+  "title": "飘杠番型判定"
+ },
+ {
+  "requirementId": "REQ-253",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-151",
+  "title": "七客番型各档"
+ },
+ {
+  "requirementId": "REQ-254",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-152",
+  "title": "等待阶段菜单入口"
+ },
+ {
+  "requirementId": "REQ-255",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-153",
+  "title": "房间玩法与局数显示"
+ },
+ {
+  "requirementId": "REQ-256",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-154",
+  "title": "对局前玩家信息内容"
+ },
+ {
+  "requirementId": "REQ-257",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-155",
+  "title": "准备状态显示"
+ },
+ {
+  "requirementId": "REQ-258",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-156",
+  "title": "首局开始游戏条件"
+ },
+ {
+  "requirementId": "REQ-259",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-157",
+  "title": "开局后收起准备标记"
+ },
+ {
+  "requirementId": "REQ-260",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-158",
+  "title": "合规信息展示"
+ },
+ {
+  "requirementId": "REQ-261",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-159",
+  "title": "入座与座位映射"
+ },
+ {
+  "requirementId": "REQ-262",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-160",
+  "title": "等待阶段视角方位"
+ },
+ {
+  "requirementId": "REQ-263",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-161",
+  "title": "摇骰展示"
+ },
+ {
+  "requirementId": "REQ-264",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-162",
+  "title": "骰子退场与首庄倒计时"
+ },
+ {
+  "requirementId": "REQ-265",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-163",
+  "title": "未分配风位显示"
+ },
+ {
+  "requirementId": "REQ-266",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-164",
+  "title": "风位分配规则"
+ },
+ {
+  "requirementId": "REQ-267",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-165",
+  "title": "换庄后风位更新"
+ },
+ {
+  "requirementId": "REQ-268",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-166",
+  "title": "操作方位高亮规则"
+ },
+ {
+  "requirementId": "REQ-269",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-167",
+  "title": "方位高亮切换"
+ },
+ {
+  "requirementId": "REQ-270",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-168",
+  "title": "弃牌响应方位高亮"
+ },
+ {
+  "requirementId": "REQ-271",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-169",
+  "title": "倒计时显示样式"
+ },
+ {
+  "requirementId": "REQ-272",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-170",
+  "title": "响应阶段倒计时同步"
+ },
+ {
+  "requirementId": "REQ-273",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-171",
+  "title": "倒计时归零保持00"
+ },
+ {
+  "requirementId": "REQ-274",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-172",
+  "title": "小局结束停止倒计时"
+ },
+ {
+  "requirementId": "REQ-275",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-173",
+  "title": "余牌数显示位置"
+ },
+ {
+  "requirementId": "REQ-276",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-174",
+  "title": "余牌数行牌更新"
+ },
+ {
+  "requirementId": "REQ-277",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-175",
+  "title": "余牌数含保留20张"
+ },
+ {
+  "requirementId": "REQ-278",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-176",
+  "title": "财神指示牌出现时机"
+ },
+ {
+  "requirementId": "REQ-279",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-177",
+  "title": "财神指示牌持续展示"
+ },
+ {
+  "requirementId": "REQ-280",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-178",
+  "title": "头像位置与资料"
+ },
+ {
+  "requirementId": "REQ-281",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-179",
+  "title": "庄家标签文字"
+ },
+ {
+  "requirementId": "REQ-282",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-180",
+  "title": "庄家标签角位"
+ },
+ {
+  "requirementId": "REQ-283",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-181",
+  "title": "房主标记显示"
+ },
+ {
+  "requirementId": "REQ-284",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-182",
+  "title": "房主标记与庄标角位"
+ },
+ {
+  "requirementId": "REQ-285",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-183",
+  "title": "当前积分显示"
+ },
+ {
+  "requirementId": "REQ-286",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-184",
+  "title": "积分万位换算"
+ },
+ {
+  "requirementId": "REQ-287",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-185",
+  "title": "昵称显示与截断"
+ },
+ {
+  "requirementId": "REQ-288",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-186",
+  "title": "昵称字符计数截断"
+ },
+ {
+  "requirementId": "REQ-289",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-187",
+  "title": "操作状态金色流光"
+ },
+ {
+  "requirementId": "REQ-290",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-188",
+  "title": "响应阶段头像流光"
+ },
+ {
+  "requirementId": "REQ-291",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-189",
+  "title": "离线覆盖与计时"
+ },
+ {
+  "requirementId": "REQ-292",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-190",
+  "title": "离线覆盖层级"
+ },
+ {
+  "requirementId": "REQ-293",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-191",
+  "title": "被挤下线提示"
+ },
+ {
+  "requirementId": "REQ-294",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-192",
+  "title": "无托管处理"
+ },
+ {
+  "requirementId": "REQ-295",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-193",
+  "title": "牌河摆放与朝向"
+ },
+ {
+  "requirementId": "REQ-296",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-194",
+  "title": "牌河每排每列数量"
+ },
+ {
+  "requirementId": "REQ-297",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-195",
+  "title": "牌河溢出叠放"
+ },
+ {
+  "requirementId": "REQ-298",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-196",
+  "title": "弃牌落入牌河"
+ },
+ {
+  "requirementId": "REQ-299",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-197",
+  "title": "响应期间保留弃牌"
+ },
+ {
+  "requirementId": "REQ-300",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-198",
+  "title": "被取走弃牌的显示"
+ },
+ {
+  "requirementId": "REQ-301",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-199",
+  "title": "同牌面高亮触发"
+ },
+ {
+  "requirementId": "REQ-302",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-200",
+  "title": "同牌面查找范围"
+ },
+ {
+  "requirementId": "REQ-303",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-201",
+  "title": "同牌面仅本端显示"
+ },
+ {
+  "requirementId": "REQ-304",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-202",
+  "title": "取消提牌清除高亮"
+ },
+ {
+  "requirementId": "REQ-305",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-203",
+  "title": "最近弃牌浮标"
+ },
+ {
+  "requirementId": "REQ-306",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-204",
+  "title": "浮标清除时机"
+ },
+ {
+  "requirementId": "REQ-307",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-205",
+  "title": "麻将子牌面材质"
+ },
+ {
+  "requirementId": "REQ-308",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-206",
+  "title": "庄家起手手牌与独立位"
+ },
+ {
+  "requirementId": "REQ-309",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-207",
+  "title": "主体手牌排序"
+ },
+ {
+  "requirementId": "REQ-310",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-208",
+  "title": "行牌独立位规则"
+ },
+ {
+  "requirementId": "REQ-311",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-209",
+  "title": "吃碰后手牌刷新"
+ },
+ {
+  "requirementId": "REQ-312",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-210",
+  "title": "杠后手牌刷新"
+ },
+ {
+  "requirementId": "REQ-313",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-211",
+  "title": "庄家看三家牌背"
+ },
+ {
+  "requirementId": "REQ-314",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-212",
+  "title": "闲家起手手牌"
+ },
+ {
+  "requirementId": "REQ-315",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-213",
+  "title": "闲家主体牌排序"
+ },
+ {
+  "requirementId": "REQ-316",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-214",
+  "title": "闲家看庄家牌背"
+ },
+ {
+  "requirementId": "REQ-317",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-215",
+  "title": "普通听牌标签文案"
+ },
+ {
+  "requirementId": "REQ-318",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-216",
+  "title": "听牌详情开启收起"
+ },
+ {
+  "requirementId": "REQ-319",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-217",
+  "title": "听牌详情面板布局"
+ },
+ {
+  "requirementId": "REQ-320",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-218",
+  "title": "听牌详情牌项样式"
+ },
+ {
+  "requirementId": "REQ-321",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-219",
+  "title": "听牌详情行列换行"
+ },
+ {
+  "requirementId": "REQ-322",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-220",
+  "title": "听牌详情牌项顺序"
+ },
+ {
+  "requirementId": "REQ-323",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-221",
+  "title": "杭麻爆飘听牌标签"
+ },
+ {
+  "requirementId": "REQ-324",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-222",
+  "title": "任意牌可胡详情面板"
+ },
+ {
+  "requirementId": "REQ-325",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-223",
+  "title": "出牌后插入式理牌"
+ },
+ {
+  "requirementId": "REQ-326",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-224",
+  "title": "同牌插入最右侧"
+ },
+ {
+  "requirementId": "REQ-327",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-225",
+  "title": "单张按排序插入"
+ },
+ {
+  "requirementId": "REQ-328",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-226",
+  "title": "出牌后平移式理牌"
+ },
+ {
+  "requirementId": "REQ-329",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-227",
+  "title": "听牌候选筛选"
+ },
+ {
+  "requirementId": "REQ-330",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-228",
+  "title": "听牌标签比较口径"
+ },
+ {
+  "requirementId": "REQ-331",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-229",
+  "title": "剩余张数推算"
+ },
+ {
+  "requirementId": "REQ-332",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-230",
+  "title": "听牌面板倍数口径"
+ },
+ {
+  "requirementId": "REQ-333",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-231",
+  "title": "听牌箭头标签"
+ },
+ {
+  "requirementId": "REQ-334",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-232",
+  "title": "听牌多标签"
+ },
+ {
+  "requirementId": "REQ-335",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-233",
+  "title": "听牌大标签"
+ },
+ {
+  "requirementId": "REQ-336",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-234",
+  "title": "听牌优标签"
+ },
+ {
+  "requirementId": "REQ-337",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-235",
+  "title": "首次开局动画触发"
+ },
+ {
+  "requirementId": "REQ-338",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-236",
+  "title": "后续小局直接发牌"
+ },
+ {
+  "requirementId": "REQ-339",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-237",
+  "title": "常驻信息区显示"
+ },
+ {
+  "requirementId": "REQ-340",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-238",
+  "title": "开局座位相对次序"
+ },
+ {
+  "requirementId": "REQ-341",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-239",
+  "title": "四人局视角布局"
+ },
+ {
+  "requirementId": "REQ-342",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-240",
+  "title": "开局风位显示"
+ },
+ {
+  "requirementId": "REQ-343",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-241",
+  "title": "开局动画画布与布局"
+ },
+ {
+  "requirementId": "REQ-344",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-242",
+  "title": "开局动画起手阶段"
+ },
+ {
+  "requirementId": "REQ-345",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-243",
+  "title": "开局动画介绍卡阶段"
+ },
+ {
+  "requirementId": "REQ-346",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-244",
+  "title": "开局动画退场阶段"
+ },
+ {
+  "requirementId": "REQ-347",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-245",
+  "title": "开局动画收尾阶段"
+ },
+ {
+  "requirementId": "REQ-348",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-246",
+  "title": "首局随机定庄已定牢数"
+ },
+ {
+  "requirementId": "REQ-349",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-247",
+  "title": "第2局起赢家庄"
+ },
+ {
+  "requirementId": "REQ-350",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-248",
+  "title": "庄标显示前提与对象"
+ },
+ {
+  "requirementId": "REQ-351",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-249",
+  "title": "庄标外观与角位"
+ },
+ {
+  "requirementId": "REQ-352",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-250",
+  "title": "庄标持续与刷新"
+ },
+ {
+  "requirementId": "REQ-353",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-251",
+  "title": "财神指示出现时机"
+ },
+ {
+  "requirementId": "REQ-354",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-252",
+  "title": "财神指示位置外观"
+ },
+ {
+  "requirementId": "REQ-355",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-253",
+  "title": "财神指示持续到局末"
+ },
+ {
+  "requirementId": "REQ-356",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-254",
+  "title": "四轮发牌每人12张"
+ },
+ {
+  "requirementId": "REQ-357",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-255",
+  "title": "补齐每人13张"
+ },
+ {
+  "requirementId": "REQ-358",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-256",
+  "title": "庄家14张余83张"
+ },
+ {
+  "requirementId": "REQ-359",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-257",
+  "title": "庄家首个操作与自摸提示"
+ },
+ {
+  "requirementId": "REQ-360",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-258",
+  "title": "发牌批次节奏"
+ },
+ {
+  "requirementId": "REQ-361",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-259",
+  "title": "发牌余牌数显示"
+ },
+ {
+  "requirementId": "REQ-362",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-260",
+  "title": "理牌完成切入行牌"
+ },
+ {
+  "requirementId": "REQ-363",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-261",
+  "title": "首批牌背入场"
+ },
+ {
+  "requirementId": "REQ-364",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-262",
+  "title": "分批翻开手牌"
+ },
+ {
+  "requirementId": "REQ-365",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-263",
+  "title": "倒下立起与理牌"
+ },
+ {
+  "requirementId": "REQ-366",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-264",
+  "title": "发牌音效不添加"
+ },
+ {
+  "requirementId": "REQ-367",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-265",
+  "title": "摸牌本家视角"
+ },
+ {
+  "requirementId": "REQ-368",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-266",
+  "title": "摸牌其他家视角"
+ },
+ {
+  "requirementId": "REQ-369",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-267",
+  "title": "吃碰后分隔位展示"
+ },
+ {
+  "requirementId": "REQ-370",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-268",
+  "title": "常规摸牌时机"
+ },
+ {
+  "requirementId": "REQ-371",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-269",
+  "title": "摸牌与响应裁决顺序"
+ },
+ {
+  "requirementId": "REQ-372",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-270",
+  "title": "补牌视角显示"
+ },
+ {
+  "requirementId": "REQ-373",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-271",
+  "title": "补牌取牌与抢杠不补"
+ },
+ {
+  "requirementId": "REQ-374",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-272",
+  "title": "提牌抬起与禁手压暗"
+ },
+ {
+  "requirementId": "REQ-375",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-273",
+  "title": "飘财限制可提范围"
+ },
+ {
+  "requirementId": "REQ-376",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-274",
+  "title": "听牌提示仅本家"
+ },
+ {
+  "requirementId": "REQ-377",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-275",
+  "title": "提牌其他家视角"
+ },
+ {
+  "requirementId": "REQ-378",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-276",
+  "title": "点击提牌与再次点击出牌"
+ },
+ {
+  "requirementId": "REQ-379",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-277",
+  "title": "横滑切换提牌"
+ },
+ {
+  "requirementId": "REQ-380",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-278",
+  "title": "飘财限制下点按无效"
+ },
+ {
+  "requirementId": "REQ-381",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-279",
+  "title": "出牌权与自摸拦截"
+ },
+ {
+  "requirementId": "REQ-382",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-280",
+  "title": "点过后出牌仍受限"
+ },
+ {
+  "requirementId": "REQ-383",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-281",
+  "title": "出牌吃碰禁手表"
+ },
+ {
+  "requirementId": "REQ-384",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-282",
+  "title": "出牌飘财摸打限制"
+ },
+ {
+  "requirementId": "REQ-385",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-283",
+  "title": "出牌前虚影预览"
+ },
+ {
+  "requirementId": "REQ-386",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-284",
+  "title": "双击出牌"
+ },
+ {
+  "requirementId": "REQ-387",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-285",
+  "title": "滑动出牌"
+ },
+ {
+  "requirementId": "REQ-388",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-286",
+  "title": "超时不自动出牌"
+ },
+ {
+  "requirementId": "REQ-389",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-287",
+  "title": "本家弃牌飞入牌河"
+ },
+ {
+  "requirementId": "REQ-390",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-288",
+  "title": "出牌后手牌更新"
+ },
+ {
+  "requirementId": "REQ-391",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-289",
+  "title": "最新弃牌浮标规则"
+ },
+ {
+  "requirementId": "REQ-392",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-290",
+  "title": "出牌放大显示"
+ },
+ {
+  "requirementId": "REQ-393",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-291",
+  "title": "操作方位提示切换"
+ },
+ {
+  "requirementId": "REQ-394",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-292",
+  "title": "其他家出牌起点"
+ },
+ {
+  "requirementId": "REQ-395",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-293",
+  "title": "放大弃牌退场"
+ },
+ {
+  "requirementId": "REQ-396",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-294",
+  "title": "响应按钮与倒计时"
+ },
+ {
+  "requirementId": "REQ-397",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-295",
+  "title": "倒计时归零仍可响应"
+ },
+ {
+  "requirementId": "REQ-398",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-296",
+  "title": "低优先级进入等待"
+ },
+ {
+  "requirementId": "REQ-399",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-297",
+  "title": "高优先级成立取消等待"
+ },
+ {
+  "requirementId": "REQ-400",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-298",
+  "title": "吃碰同时出现处理"
+ },
+ {
+  "requirementId": "REQ-401",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-299",
+  "title": "主动点过的处理"
+ },
+ {
+  "requirementId": "REQ-402",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-300",
+  "title": "碰按钮与手牌亮度"
+ },
+ {
+  "requirementId": "REQ-089",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-301",
+  "title": "碰成立动效与副露"
+ },
+ {
+  "requirementId": "REQ-403",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-302",
+  "title": "碰牌组展示与来源箭头"
+ },
+ {
+  "requirementId": "REQ-404",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-303",
+  "title": "单组吃按钮与高亮"
+ },
+ {
+  "requirementId": "REQ-405",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-304",
+  "title": "吃成立副露与出牌"
+ },
+ {
+  "requirementId": "REQ-406",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-305",
+  "title": "吃后禁手压暗"
+ },
+ {
+  "requirementId": "REQ-407",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-306",
+  "title": "多组吃手牌高亮"
+ },
+ {
+  "requirementId": "REQ-408",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-307",
+  "title": "多组吃展开选组"
+ },
+ {
+  "requirementId": "REQ-409",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-308",
+  "title": "多组吃取消作用范围"
+ },
+ {
+  "requirementId": "REQ-410",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-309",
+  "title": "多组吃选中提交"
+ },
+ {
+  "requirementId": "REQ-411",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-310",
+  "title": "杠按钮与出牌拦截"
+ },
+ {
+  "requirementId": "REQ-412",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-311",
+  "title": "点过解除杠拦截"
+ },
+ {
+  "requirementId": "REQ-413",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-312",
+  "title": "单组杠直接提交"
+ },
+ {
+  "requirementId": "REQ-414",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-313",
+  "title": "杠可选组手牌亮度"
+ },
+ {
+  "requirementId": "REQ-415",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-314",
+  "title": "杠移牌与第4张标记"
+ },
+ {
+  "requirementId": "REQ-416",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-315",
+  "title": "暗杠牌组展示"
+ },
+ {
+  "requirementId": "REQ-417",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-316",
+  "title": "杠后收拢与补牌"
+ },
+ {
+  "requirementId": "REQ-418",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-317",
+  "title": "连续杠动效覆盖"
+ },
+ {
+  "requirementId": "REQ-419",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-318",
+  "title": "多组杠选组面板"
+ },
+ {
+  "requirementId": "REQ-420",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-319",
+  "title": "多组杠取消与提交"
+ },
+ {
+  "requirementId": "REQ-421",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-320",
+  "title": "多组杠成立后刷新"
+ },
+ {
+  "requirementId": "REQ-422",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-321",
+  "title": "自摸按钮与预览"
+ },
+ {
+  "requirementId": "REQ-423",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-322",
+  "title": "自摸拦截后点过"
+ },
+ {
+  "requirementId": "REQ-424",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-323",
+  "title": "自摸成立演出"
+ },
+ {
+  "requirementId": "REQ-425",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-324",
+  "title": "胡牌按钮预览倍数"
+ },
+ {
+  "requirementId": "REQ-426",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-325",
+  "title": "吃胡抢杠胡按钮"
+ },
+ {
+  "requirementId": "REQ-427",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-326",
+  "title": "放弃点炮胡"
+ },
+ {
+  "requirementId": "REQ-428",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-327",
+  "title": "胡牌成立移除弃牌"
+ },
+ {
+  "requirementId": "REQ-429",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-328",
+  "title": "胡牌亮牌与飘分演出"
+ },
+ {
+  "requirementId": "REQ-430",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-329",
+  "title": "多杠按多组规则"
+ },
+ {
+  "requirementId": "REQ-431",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-330",
+  "title": "多杠选组亮度"
+ },
+ {
+  "requirementId": "REQ-432",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-331",
+  "title": "多杠取消作用范围"
+ },
+ {
+  "requirementId": "REQ-433",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-332",
+  "title": "可多吃按钮与高亮"
+ },
+ {
+  "requirementId": "REQ-434",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-333",
+  "title": "可多吃取消作用"
+ },
+ {
+  "requirementId": "REQ-435",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-334",
+  "title": "多操作按钮排列"
+ },
+ {
+  "requirementId": "REQ-436",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-335",
+  "title": "多操作手牌亮度"
+ },
+ {
+  "requirementId": "REQ-437",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-336",
+  "title": "共用过与取消作用"
+ },
+ {
+  "requirementId": "REQ-438",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-337",
+  "title": "三摊落地触发"
+ },
+ {
+  "requirementId": "REQ-439",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-338",
+  "title": "三摊落地飘财例外"
+ },
+ {
+  "requirementId": "REQ-440",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-339",
+  "title": "三摊落地展示效果"
+ },
+ {
+  "requirementId": "REQ-441",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-340",
+  "title": "点过才能出牌触发"
+ },
+ {
+  "requirementId": "REQ-442",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-341",
+  "title": "点过提示展示"
+ },
+ {
+  "requirementId": "REQ-443",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-342",
+  "title": "结算触发与胡牌张来源"
+ },
+ {
+  "requirementId": "REQ-444",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-343",
+  "title": "结算停止行牌与亮牌"
+ },
+ {
+  "requirementId": "REQ-445",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-344",
+  "title": "结算番型与点炮字效"
+ },
+ {
+  "requirementId": "REQ-446",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-345",
+  "title": "结算积分刷新与飘分"
+ },
+ {
+  "requirementId": "REQ-447",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-346",
+  "title": "流局流程与计局"
+ },
+ {
+  "requirementId": "REQ-448",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-347",
+  "title": "黄庄展示与小结算"
+ },
+ {
+  "requirementId": "REQ-449",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-348",
+  "title": "小结算进入时机与主按钮"
+ },
+ {
+  "requirementId": "REQ-450",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-349",
+  "title": "小结算面板内容"
+ },
+ {
+  "requirementId": "REQ-451",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-350",
+  "title": "继续游戏回到准备"
+ },
+ {
+  "requirementId": "REQ-452",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-351",
+  "title": "四人准备后开始下一局"
+ },
+ {
+  "requirementId": "REQ-453",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-352",
+  "title": "长按区域与500毫秒"
+ },
+ {
+  "requirementId": "REQ-454",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-353",
+  "title": "长按取消与恢复"
+ },
+ {
+  "requirementId": "REQ-455",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-354",
+  "title": "长按预览内容"
+ },
+ {
+  "requirementId": "REQ-456",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-355",
+  "title": "胡牌后进入小结算"
+ },
+ {
+  "requirementId": "REQ-457",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-356",
+  "title": "流局后进入小结算"
+ },
+ {
+  "requirementId": "REQ-458",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-357",
+  "title": "本场继续按钮流程"
+ },
+ {
+  "requirementId": "REQ-106",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-358",
+  "title": "本场结束返回大厅"
+ },
+ {
+  "requirementId": "REQ-459",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-359",
+  "title": "小结算玩家信息行"
+ },
+ {
+  "requirementId": "REQ-460",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-360",
+  "title": "小结算手牌摆布"
+ },
+ {
+  "requirementId": "REQ-461",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-361",
+  "title": "小结算输赢主题"
+ },
+ {
+  "requirementId": "REQ-462",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-362",
+  "title": "小结算分数显示"
+ },
+ {
+  "requirementId": "REQ-107",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-363",
+  "title": "小结算承包标识"
+ },
+ {
+  "requirementId": "REQ-463",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-364",
+  "title": "小结算赢家番型与胡法"
+ },
+ {
+  "requirementId": "REQ-464",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-365",
+  "title": "小结算胡张标识"
+ },
+ {
+  "requirementId": "REQ-465",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-366",
+  "title": "小结算财神牌区"
+ },
+ {
+  "requirementId": "REQ-466",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-367",
+  "title": "小结算底部主按钮"
+ },
+ {
+  "requirementId": "REQ-467",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-368",
+  "title": "小结算无剩余牌功能"
+ },
+ {
+  "requirementId": "REQ-468",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-369",
+  "title": "小结算长按查看牌桌"
+ },
+ {
+  "requirementId": "REQ-469",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-370",
+  "title": "小结算无底栏辅助入口"
+ },
+ {
+  "requirementId": "REQ-470",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-371",
+  "title": "菜单退出入口与权限"
+ },
+ {
+  "requirementId": "REQ-471",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-372",
+  "title": "退出确认弹窗"
+ },
+ {
+  "requirementId": "REQ-472",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-373",
+  "title": "取消或关闭退出"
+ },
+ {
+  "requirementId": "REQ-473",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-374",
+  "title": "确认解散与胡牌冲突"
+ },
+ {
+  "requirementId": "REQ-474",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-375",
+  "title": "服务端状态为准"
+ },
+ {
+  "requirementId": "REQ-475",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-376",
+  "title": "重连恢复页面选择"
+ },
+ {
+  "requirementId": "REQ-476",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-377",
+  "title": "重连恢复数据内容"
+ },
+ {
+  "requirementId": "REQ-477",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-378",
+  "title": "重复提交与过期操作"
+ },
+ {
+  "requirementId": "REQ-478",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-379",
+  "title": "动画追赶"
+ },
+ {
+  "requirementId": "REQ-479",
+  "reqKey": "【杭州麻将】核心流程杭州麻将好友房AI-11-12-2-380",
+  "title": "手牌可见范围"
+ }
+]

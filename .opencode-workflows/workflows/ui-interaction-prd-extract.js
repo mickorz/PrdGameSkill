@@ -4,6 +4,12 @@
 //   基准提取已独立为 ui-interaction-baseline-extract.js（产物固化到 skill 的
 //   references/rules/{rulesName}/），本 workflow 只做对照检查，直接读取该目录基准。
 //
+// 2026-11-13 v2（FX 修正闭环提速，runId 见优化台账）：
+//   A1 MISSING 类原文栏确定性归一化（quote 的 schema 口径对齐 SKILL.md 硬性要求，
+//      agent 的缺失自述并入 problem 字段）——v1 中 schema 与报告口径冲突产生 10 条质检问题；
+//   B1/B4 修正 agent 显式用 analysisModel（flash）与 1h 超时——v1 修正阶段 3241s 占全程 53%
+//      （默认重型模型 attempt1 撞 30 分钟超时全量作废）。
+//
 // 流程：
 //   [check] 扫描规则基准与需求文档
 //     -> 按规则主题并行检查（严格 UI 交互口径）
@@ -169,7 +175,7 @@ const ISSUE_ITEM_SCHEMA = {
     module: { type: 'string', description: '问题所属模块或界面，如 吃碰杠胡 / 断线重连 / 小结算界面' },
     title: { type: 'string', description: '一句话问题，不超过 40 字' },
     location: { type: 'string', description: '需求文档原文位置（章节/小节标题），多处用、分隔' },
-    quote: { type: 'string', description: '需求文档原文引文，不超过 200 字；MISSING 类写缺失说明' },
+    quote: { type: 'string', description: '需求文档原文引文，不超过 200 字；MISSING 类固定写「需求文档无对应描述」，缺失原因说明写进 problem 字段，不要写进引文' },
     ruleRef: { type: 'string', description: 'UI 基准条款号，如 01#9,03#12；scope=out 填 无' },
     requirementIds: { type: 'array', items: { type: 'string' }, description: '共享快照需求点 ID 列表（REQ-xxx；未传共享快照或无法定位时填空数组）' },
     problem: { type: 'string', description: '问题说明，指出与哪条 UI 基准冲突或哪里缺失/矛盾' },
@@ -653,21 +659,32 @@ const tableRows = issues.map((it) =>
   cell(it.module) + ' | ' + cell(it.title) + ' | ' + cell(it.location) + ' | ' + cell(it.ruleRef) + ' |'
 )
 
-const detailBlocks = issues.map((it) =>
-  [
+// A1：MISSING 类原文栏确定性归一化（SKILL.md 硬性要求），agent 的缺失自述并入 problem 字段；
+// 消除 quote 的 schema 口径与报告口径不一致导致的质检-修正往返（v1 中 10 条质检问题由此产生）
+const detailBlocks = issues.map((it) => {
+  const isMissing = it.type === 'MISSING'
+  const originText = isMissing
+    ? '位置“' + (it.location || '') + '”。需求文档无对应描述。'
+    : '位置“' + (it.location || '') + '”。引文：“' + (it.quote || '') + '”'
+  const quoteNote = it.quote || ''
+  const problemText =
+    isMissing && quoteNote && quoteNote.indexOf('需求文档无对应描述') < 0
+      ? (it.problem || '') + '。缺失说明：' + quoteNote
+      : it.problem
+  return [
     '### ' + it.id + '【' + it.priority + ' / ' + it.type + '】' + it.title,
     '',
     detailField('问题性质', TYPE_LABELS[it.type] || it.type),
-    detailField('原文', '位置“' + (it.location || '') + '”。引文：“' + (it.quote || '') + '”'),
+    detailField('原文', originText),
     detailField('需求点', (it.requirementIds || []).join('、') || '无'),
-    detailField('基准依据', it.ruleRef + '。' + (it.problem || '')),
-    detailField('问题', it.problem),
+    detailField('基准依据', it.ruleRef + '。' + (problemText || '')),
+    detailField('问题', problemText),
     detailField('影响', it.impact),
     detailField('建议', it.suggestion),
     detailField('验收口径', it.acceptance),
     detailField('处理状态', '待确认'),
   ].join('\n')
-)
+})
 
 const appendixBlocks = appendix.map((it) =>
   [
@@ -882,7 +899,7 @@ if (skipReview) {
         '',
         '完成后返回修改摘要。只操作指定报告文件，不要执行 git 命令、不要提交或推送。',
       ].join('\n'),
-      { label: '修正报告', agentType: 'general', timeoutMs: 1800000 }
+      { label: '修正报告', agentType: 'general', ...analysisAgentOptions }
     )
     fixed = true
   }

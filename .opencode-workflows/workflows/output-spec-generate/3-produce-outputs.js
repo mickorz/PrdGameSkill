@@ -19,6 +19,18 @@
 //     dev-docs/experience/outputspec续跑不重执行重试耗尽agent.md）
 //   - 写作 prompt 硬性规则强化：直接逐个功能点边写边落盘，禁止先全量脑内整理再写盘
 //
+// v3 策划版投影（2026-11-14，备份 3-produce-outputs.v2-org-20261114.js，需求 R1/R2/R3/R7/R10，
+//   见 dev-docs/requirements/2026-11-14-outputspec策划需求视图与技术实现视图分离.md）：
+//   - 新增策划版分片产出（runtime/planner-parts/，与技术补充版分片并行的第二套投影）：
+//     slimPlannerEvidence 结构化字段隔离（写作输入只含业务字段 id/name/rule/uiRequirement/
+//     uiInteraction/notes/verdict + businessBehavior 若有，不含 clientLogic/evidence/messages），
+//     plannerPartPrompt 以阶段 0 实验定稿 Prompt 为蓝本（experiment-planner-projection.js T0.2，
+//     三检查点评审已通过：无技术泄漏/信息不丢失/AT-ID 可追溯）。
+//   - 投影任务开关（R7 模式契约）：skipPlanner=true 不进策划版任务（legacy 行为=v2）；
+//     plannerOnly=true 只进策划版任务（跳过阶段规格/索引片段/技术补充版），两者互斥。
+//   - build-config.json 增加 mode/plannerPath/plannerParts/sourceSpecDir/allowlist，
+//     供 build-output-spec.mjs（v2 起）分模式装配与泄漏检查。
+//
 // 由主 workflow 经显式路径调用（本目录不在注册表扫描范围）：
 //   await workflow({ scriptPath: './.opencode-workflows/workflows/output-spec-generate/3-produce-outputs.js', label: '产出编写' }, { ...childArgs, scan, verify })
 // args：
@@ -29,11 +41,17 @@
 //   fguiDir        FairyGUI 工程，默认 source-code/client/Fgui（用于 sourceDesc）
 //   specDir        1-spec 产出目录，默认 spec-workflow/output-spec/2026-11-13/1-spec
 //   supplementPath 补充版文档输出路径，默认 spec-workflow/output-spec/核心流程杭州麻将好友房AI-补充版本.md
+//   plannerPath    策划版文档输出路径（v3 新增），默认 spec-workflow/output-spec/核心流程杭州麻将好友房AI-策划版.md
+//   skipPlanner    true 时不产出策划版（legacy 模式，行为等同 v2），默认 false
+//   plannerOnly    true 时只产出策划版（跳过技术文档/索引/补充版），默认 false；与 skipPlanner 互斥
+//   sourceSpecDir  历史查证证据目录（planner-only 覆盖检查基准，v3 新增透传进 build-config），默认空
+//   leakAllowlist  泄漏检查白名单词数组（v3 新增透传进 build-config），默认 ['AI']
 //   date           产出日期 YYYY-MM-DD（脚本内禁止取当前时间），默认 2026-11-13
 //   analysisModel  分析类模型（echo 类任务），默认 biangfeng-gateway/deepseek-v4.1-flash-official（传空串用会话默认）
 //
 // 返回（供主 workflow 汇总）：
-//   { specDir, stageDocCount, fragmentCount, partCount, docSplitStages, docPartTotal }
+//   { specDir, stageDocCount, fragmentCount, partCount, docSplitStages, docPartTotal,
+//     plannerPath, plannerPartCount, plannerOnly, skipPlanner }
 
 export const meta = {
   id: 'output-spec-produce-outputs',
@@ -51,6 +69,17 @@ const fguiDir = A.fguiDir || 'source-code/client/Fgui'
 const specDir = A.specDir || 'spec-workflow/output-spec/2026-11-13/1-spec'
 const supplementPath =
   A.supplementPath || 'spec-workflow/output-spec/核心流程杭州麻将好友房AI-补充版本.md'
+const plannerPath =
+  A.plannerPath || 'spec-workflow/output-spec/核心流程杭州麻将好友房AI-策划版.md'
+// 投影任务开关（R7 模式契约，T1.4）：互斥校验在输入检查段 fail fast
+const skipPlanner = A.skipPlanner === true
+const plannerOnly = A.plannerOnly === true
+if (skipPlanner && plannerOnly) {
+  throw new Error('skipPlanner 与 plannerOnly 互斥（不可同时为 true，见需求 R7 模式契约）')
+}
+// planner-only 覆盖检查基准目录与泄漏白名单（透传进 build-config，阶段 3 build-output-spec v2 消费）
+const sourceSpecDir = A.sourceSpecDir || ''
+const leakAllowlist = Array.isArray(A.leakAllowlist) ? A.leakAllowlist : ['AI']
 const checkDate = A.date || '2026-11-13'
 const analysisModel =
   A.analysisModel === undefined ? 'biangfeng-gateway/deepseek-v4.1-flash-official' : A.analysisModel
@@ -74,6 +103,11 @@ function readRangeHint(sec) {
 
 function partPath(sec) {
   return specDir + '/runtime/supplement-parts/part-' + pad2(sec.no) + '.md'
+}
+
+// v3 策划版分片路径（T1.3）：与技术补充版分片并行的第二套 runtime 产物
+function plannerPartPath(sec) {
+  return specDir + '/runtime/planner-parts/part-' + pad2(sec.no) + '.md'
 }
 
 // v2 分片写盘：重阶段（原子项 > 阈值）按功能点贪心分组分片编写，规避单会话写不动 60KB 级文档
@@ -296,6 +330,12 @@ function indexFragment(r) {
         messages: at.messages || [],
         evidence: (at.evidence || []).map((e) => ({ file: e.file, location: e.location })),
         notes: at.notes || '',
+        // schemaVersion 2 新字段透传（T2.2/T3.4）：undefined 字段 JSON.stringify 自动省略，
+        // v1 数据不补空串冒充（需求 6.4：未经新 Schema 查证的字段视为缺失）
+        businessBehavior: at.businessBehavior || undefined,
+        difference: at.difference || undefined,
+        differenceDetail: at.differenceDetail || undefined,
+        verification: at.verification || undefined,
       })),
     })),
   }
@@ -320,59 +360,112 @@ function slimEvidence(r) {
   }
 }
 
-const writeTasks = []
-
-// A. 阶段规格文档（写作类，会话默认模型；v2 起重阶段按功能点分片写盘）
-const docPlans = []
-let docPartTotal = 0
-for (const s of stageSections) {
-  const result = byId.get(s.stageId)
-  const groups = splitDocParts(result.features || [], MAX_ATOMS_PER_DOC_PART)
-  docPlans.push({ stageId: s.stageId, groups: groups })
-  docPartTotal += groups.length
-  for (let n = 1; n <= groups.length; n++) {
-    const partNo = n
-    writeTasks.push(() =>
-      agent(stageDocPartPrompt(s, result, groups, partNo), {
-        label: '规格文档 ' + s.stageId + (groups.length > 1 ? ' 片' + partNo + '/' + groups.length : ''),
-        agentType: 'general',
-        timeoutMs: 3600000,
-        retries: 2,
+// v3 策划版章节写作用的业务证据（T1.2，R2 第一级结构化字段隔离）：
+// 只含业务字段（id/name/rule/uiRequirement/uiInteraction/notes/verdict + businessBehavior 若有），
+// clientLogic、evidence 路径、refs、messages（协议名）等技术字段不进策划版写作上下文
+function slimPlannerEvidence(r) {
+  return {
+    stage: r.stage.id + ' ' + r.stage.name,
+    atoms: r.features.flatMap((fe) =>
+      fe.atoms.map((at) => {
+        const o = {
+          id: at.id,
+          name: at.name,
+          rule: at.rule || '',
+          uiRequirement: at.uiRequirement || '',
+          uiInteraction: at.uiInteraction || '',
+          notes: at.notes || '',
+          verdict: at.verdict,
+        }
+        // schemaVersion 2 数据带业务语义四元组时透传（T2.2 之后），作为界面表现转写的首选依据
+        if (at.businessBehavior) o.businessBehavior = at.businessBehavior
+        return o
       })
-    )
+    ),
   }
 }
 
-// B. 索引片段 echo（机械逐字写入，分析模型即可）
-for (const s of stageSections) {
-  const fragmentText = JSON.stringify(indexFragment(byId.get(s.stageId)), null, 1)
-  writeTasks.push(() =>
-    agent(echoPrompt(fragmentText, specDir + '/runtime/parts/' + s.stageId + '.json'), {
-      label: '索引片段 ' + s.stageId,
-      agentType: 'general',
-      timeoutMs: 900000,
-      retries: 2,
-      ...withModel({}),
-    })
-  )
+// v3 策划版章节分片 prompt（T1.2）：以阶段 0 实验定稿 Prompt 为蓝本
+// （experiment-planner-projection.js，三检查点评审已通过），差异：
+//   证据 JSON 由内存内嵌（正式链路 verify 结果经主编排内存传入，无需 agent 读盘）
+//   引语去掉「投影实验」字样；businessBehavior 有则作为界面表现转写首选依据
+function plannerPartPrompt(sec, evidence) {
+  return [
+    '你是需求文档整理员，面向策划输出。任务：把一个游戏需求章节增强成「策划版」文档分片——原文规则全部保留，补充玩家可理解的界面表现与待确认差异。工作目录为项目根目录。',
+    '',
+    '本章节：' + sec.title + '（来源章节：' + (sec.sourceTitle || sec.title) + '）。',
+    '',
+    '第一步，读模板章节原文：用 read 工具打开 ' + templatePath + '，' + readRangeHint(sec) + '。',
+    '',
+    '第二步，写目标分片文件（write 工具，UTF-8）：' + plannerPartPath(sec),
+    '',
+    '文档结构：',
+    '1. 分片直接以本章节原文开头（含章节标题行）；章节标题行（# 开头的行）必须逐字保留，不得增删原有标题层级、不得改动原语义；可修明显笔误但不改规则含义。阶段章节分片可在标题行后另起一行引语：> 来源：模板「' + (sec.sourceTitle || sec.title) + '」章节（策划版）。',
+    '2. 章节原文逐条保留：标题行与规则语句的顺序、语义不得删改。',
+    '3. 在每条规则语句（列表项/段落）之后补充缩进两个空格的子列表项（没有原子项对应的原文语句不补充，保留原样；一条原文语句对应多个原子项时合并成一条补充行）：',
+    '   - 该语句对应的原子项 verdict=confirmed/partial 且 uiInteraction 或 notes 或 businessBehavior 有内容：写「  - 界面表现：{玩家可理解的行为描述}（{原子项id}）」',
+    '   - 原子项 notes 描述了实现与需求不一致（如需求说按普通白板展示、实际牌河中仍高亮）：另起一条「  - 待确认：需求为「{原文规则}」，实际表现为「{实际行为}」（{原子项id}）」',
+    '   - 原子项 verdict=not_found：写「  - 待确认：客户端未查到对应实现（{原子项id}）」',
+    '   - 原子项 uiInteraction、notes、businessBehavior 均为空且 verdict=confirmed/partial：不硬凑补充行，只保留原文。',
+    '',
+    '转写硬规则（最重要）：',
+    '1. uiInteraction、notes、businessBehavior 是工程师写的查证记录，其中残留大量技术词，禁止原样复制进策划版：出现类名（如 GameJuDataCmd、GameData）、方法名（如 onShowZhuang、showDice）、协议名（MsgJuData、CMD_xxx、GP_xxx）、常量（C_Bank、KW_RESULT、POWER_ID_HU）、UI 组件名（box_hzmj_xxx）、文件路径（source-code/...、xxx.ts:31）时，必须转写成玩家能看见、能操作的行为描述（例：「BoxHzmjMah2DView.showDice」转写为「牌桌播放骰子动画」；「C_Bank 的 zhuang1~3 页」转写为「庄家标志按牢庄等级分三档点亮」）。',
+    '2. businessBehavior 四元组（触发 trigger/条件 condition/行为 action/结果 result）是业务语义的权威来源，界面表现行优先按它转写。',
+    '3. 无法转写成玩家行为的技术细节直接丢弃，不写进策划版；转写不得改变该行为的事实本身。',
+    '4. 没有证据支撑的规则宁可标注「待确认」，严禁为了让文档完整而编造业务规则或编造界面表现。',
+    '5. 每条补充行末尾用括号附原子项 id（AT-ST-Cxx-nnn 形式），供追溯。',
+    '6. 全文不得出现：类名、方法名、Msg/CMD/GP 前缀协议名、C_/KW_/ET_ 前缀常量、box_ 组件名、source-code 路径、任何 .ts/.xml 文件名与 file:line。',
+    '7. 中文书写，无 Emoji，不要用代码围栏包裹分片；直接逐条边写边落盘，不要先整理全部再写盘。',
+    '',
+    '写完只返回目标文件路径与一句话摘要，不要输出分片全文，不要执行 git 命令。',
+    '',
+    '本章节查证结果 JSON（唯一事实依据，原子项业务字段）：',
+    JSON.stringify(evidence, null, 1),
+  ].join('\n')
 }
 
-// C. 补充版章节分片（stage 章节为写作任务；intro/nouns 为机械复制）
-for (const sec of sections) {
-  if (sec.kind === 'stage') {
-    const evidence = slimEvidence(byId.get(sec.stageId))
+// v3 策划版引言/名词分片：机械复制（copyPartPrompt 同款，仅换目标路径）
+function plannerCopyPartPrompt(sec) {
+  return [
+    '你是文档复制员。读模板文件 ' + templatePath + ' 指定行范围的内容，' + readRangeHint(sec) + '，把内容逐字写入：' + plannerPartPath(sec),
+    '',
+    '要求：使用 write 工具写入，UTF-8 编码。内容逐字复制，不得改写、增删、总结、翻译或加代码围栏；标题、空行、列表符号全部保留。只写这一个文件，不要执行 git 命令。写完后返回文件路径。',
+  ].join('\n')
+}
+
+const writeTasks = []
+
+// A. 阶段规格文档（写作类，会话默认模型；v2 起重阶段按功能点分片写盘）
+//    plannerOnly=true 时不调度（R7：planner-only 绝不重写技术文档）
+const docPlans = []
+let docPartTotal = 0
+if (!plannerOnly) {
+  for (const s of stageSections) {
+    const result = byId.get(s.stageId)
+    const groups = splitDocParts(result.features || [], MAX_ATOMS_PER_DOC_PART)
+    docPlans.push({ stageId: s.stageId, groups: groups })
+    docPartTotal += groups.length
+    for (let n = 1; n <= groups.length; n++) {
+      const partNo = n
+      writeTasks.push(() =>
+        agent(stageDocPartPrompt(s, result, groups, partNo), {
+          label: '规格文档 ' + s.stageId + (groups.length > 1 ? ' 片' + partNo + '/' + groups.length : ''),
+          agentType: 'general',
+          timeoutMs: 3600000,
+          retries: 2,
+        })
+      )
+    }
+  }
+}
+
+// B. 索引片段 echo（机械逐字写入，分析模型即可；plannerOnly 时不调度）
+if (!plannerOnly) {
+  for (const s of stageSections) {
+    const fragmentText = JSON.stringify(indexFragment(byId.get(s.stageId)), null, 1)
     writeTasks.push(() =>
-      agent(supplementPartPrompt(sec, evidence), {
-        label: '补充版 ' + sec.stageId,
-        agentType: 'general',
-        timeoutMs: 3600000,
-        retries: 1,
-      })
-    )
-  } else {
-    writeTasks.push(() =>
-      agent(copyPartPrompt(sec), {
-        label: '复制 ' + (sec.kind === 'intro' ? '引言' : '名词'),
+      agent(echoPrompt(fragmentText, specDir + '/runtime/parts/' + s.stageId + '.json'), {
+        label: '索引片段 ' + s.stageId,
         agentType: 'general',
         timeoutMs: 900000,
         retries: 2,
@@ -382,16 +475,81 @@ for (const sec of sections) {
   }
 }
 
+// C. 补充版章节分片（stage 章节为写作任务；intro/nouns 为机械复制；plannerOnly 时不调度）
+if (!plannerOnly) {
+  for (const sec of sections) {
+    if (sec.kind === 'stage') {
+      const evidence = slimEvidence(byId.get(sec.stageId))
+      writeTasks.push(() =>
+        agent(supplementPartPrompt(sec, evidence), {
+          label: '补充版 ' + sec.stageId,
+          agentType: 'general',
+          timeoutMs: 3600000,
+          retries: 1,
+        })
+      )
+    } else {
+      writeTasks.push(() =>
+        agent(copyPartPrompt(sec), {
+          label: '复制 ' + (sec.kind === 'intro' ? '引言' : '名词'),
+          agentType: 'general',
+          timeoutMs: 900000,
+          retries: 2,
+          ...withModel({}),
+        })
+      )
+    }
+  }
+}
+
+// C2. 策划版章节分片（v3 新增第二套投影；skipPlanner=true 时不调度）
+//     stage 章节为写作任务（会话默认模型、timeoutMs 3600000、retries 2，T1.4）；
+//     intro/nouns 为机械复制（plannerCopyPartPrompt）
+if (!skipPlanner) {
+  for (const sec of sections) {
+    if (sec.kind === 'stage') {
+      const evidence = slimPlannerEvidence(byId.get(sec.stageId))
+      writeTasks.push(() =>
+        agent(plannerPartPrompt(sec, evidence), {
+          label: '策划版 ' + sec.stageId,
+          agentType: 'general',
+          timeoutMs: 3600000,
+          retries: 2,
+        })
+      )
+    } else {
+      writeTasks.push(() =>
+        agent(plannerCopyPartPrompt(sec), {
+          label: '策划版复制 ' + (sec.kind === 'intro' ? '引言' : '名词'),
+          agentType: 'general',
+          timeoutMs: 900000,
+          retries: 2,
+          ...withModel({}),
+        })
+      )
+    }
+  }
+}
+
 // D. 构建配置 echo（中文路径经配置文件传给确定性脚本，CLI 参数保持 ASCII）
 const buildConfigText = JSON.stringify(
   {
+    // v3 起增加 mode：'full'（默认双投影装配）/'planner-only'（只装配策划版链路）
+    mode: plannerOnly ? 'planner-only' : 'full',
     specDir: specDir,
     supplementPath: supplementPath,
+    plannerPath: plannerPath,
     templatePath: templatePath,
     date: checkDate,
     sourceDesc: sourceDesc,
     expectedStageCount: stageSections.length,
-    supplementParts: sections.map((sec) => partPath(sec)),
+    supplementParts: plannerOnly ? [] : sections.map((sec) => partPath(sec)),
+    // 策划版分片清单（planner-only 装配链路的合并输入；skipPlanner 时空数组）
+    plannerParts: skipPlanner ? [] : sections.map((sec) => plannerPartPath(sec)),
+    // planner-only 模式覆盖检查基准（feature_index.json 所在 1-spec 目录）
+    sourceSpecDir: sourceSpecDir,
+    // 泄漏检查白名单（verify-output-spec v2 checkPlannerLeakage 消费）
+    allowlist: leakAllowlist,
   },
   null,
   1
@@ -410,6 +568,7 @@ await parallel(writeTasks)
 
 // v2 产出闸门：分片阶段确定性合并 + 全部阶段文档落盘检查
 // （agent 返回但未写盘当场拦截，不推迟到子流程 4 装配校验）
+// plannerOnly 时 docPlans 为空（A 段未调度），循环自然跳过
 for (const plan of docPlans) {
   if (plan.groups.length > 1) {
     const partsDir = docPartsDir(plan.stageId)
@@ -433,16 +592,36 @@ for (const plan of docPlans) {
   )
 }
 
+// v3 策划版分片闸门（T1.5）：全部章节策划版分片落盘检查
+// （skipPlanner 时无策划版任务，跳过；合并归子流程 4 / build-output-spec v2）
+if (!skipPlanner) {
+  for (const sec of sections) {
+    await check(
+      () => fileExists(plannerPartPath(sec)),
+      '策划版分片未生成（agent 返回但未写盘）：' + plannerPartPath(sec)
+    )
+  }
+}
+
 const docSplitStages = docPlans.filter((p) => p.groups.length > 1).map((p) => p.stageId + '(' + p.groups.length + '片)')
+const plannerPartCount = skipPlanner ? 0 : sections.length
 log(
-  '产出编写完成：阶段文档 ' + stageSections.length + ' 份（分片阶段 ' + docSplitStages.length + ' 个：' + docSplitStages.join('、') + '），索引片段 ' + stageSections.length + ' 份，补充版分片 ' + sections.length + ' 份'
+  (plannerOnly
+    ? '策划版投影产出：策划版分片 ' + plannerPartCount + ' 份（plannerOnly，技术文档任务零调度）'
+    : '产出编写完成：阶段文档 ' + stageSections.length + ' 份（分片阶段 ' + docSplitStages.length + ' 个：' + docSplitStages.join('、') + '），索引片段 ' + stageSections.length + ' 份，补充版分片 ' + sections.length + ' 份' +
+      (skipPlanner ? '，策划版分片 0 份（skipPlanner）' : '，策划版分片 ' + plannerPartCount + ' 份')
+  )
 )
 
 return {
   specDir: specDir,
-  stageDocCount: stageSections.length,
-  fragmentCount: stageSections.length,
-  partCount: sections.length,
+  stageDocCount: plannerOnly ? 0 : stageSections.length,
+  fragmentCount: plannerOnly ? 0 : stageSections.length,
+  partCount: plannerOnly ? 0 : sections.length,
   docPartTotal: docPartTotal,
   docSplitStages: docSplitStages,
+  plannerPath: plannerPath,
+  plannerPartCount: plannerPartCount,
+  plannerOnly: plannerOnly,
+  skipPlanner: skipPlanner,
 }

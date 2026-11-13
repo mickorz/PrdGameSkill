@@ -1,7 +1,8 @@
 // Bug Coverage Check Workflow
 //
 // 用途：把 bugs/buglist 里的历史缺陷逐条对照目标 PRD，判断 PRD 是否缺失对应需求。
-//   1. 扫描缺陷清单与 PRD 目录
+//   1. 确定性扫描（bug-scan-plan.mjs：清单抽取/PRD 大纲/分批/收集输入全部落盘，agent 只转发小摘要，
+//      不再经模型 schema 转述全量清单——原扫描 agent 曾对 200+ 条逐条推理分类两轮 15 分钟超时）
 //   2. 按模块分组分批并行审核（每条缺陷给出 PASS / PARTIAL / MISSING / NOT_APPLICABLE / INSUFFICIENT）
 //      - 非好友房缺陷（金币场、大厅、登录、订阅等）与杭州麻将不存在的玩法环节判 NOT_APPLICABLE（不计入通过，单独统计）
 //      - 判定不经模型 schema 返回：批次 agent 直接写分片 verdicts-parts/batch-XX.json，避免大数组转述失真
@@ -19,8 +20,9 @@
 //
 // 可选 args：
 //   bugDir        缺陷目录，默认 bugs/buglist
-//   prdPath       目标 PRD，默认 input/【杭州麻将】核心流程杭州麻将好友房AI.md（共享快照模式下保留为按需回查目标）
-//   prdFiles      指定 PRD 路径数组（给定时覆盖 prdPath）
+//   prdPath       目标 PRD（非共享快照模式必传且必须存在，确定性校验缺失即失败不静默适配；
+//                 共享快照模式下忽略，PRD 路径权威来源为快照 manifest.sourceFiles，全程 ASCII 参数）
+//   prdFiles      指定 PRD 路径数组（给定时覆盖 prdPath，仅非共享快照模式使用）
 //   requirementsPath + extractionRunId 共享需求快照消费（v4 阶段 5，必项成对传入，只传其一直接报错）：
 //                 审核输入改为共享需求清单（REQ ID + 标题 + 原文 + 来源锚点）+ 按需回查 PRD 原文；
 //                 快照完整性/runId 一致/源 sha256 校验（check-shared-snapshot.mjs，变更即拒）；
@@ -175,27 +177,30 @@ const BATCH_CONFIRM_SCHEMA = {
   required: ['ok'],
 }
 
-const SCAN_SCHEMA = {
+// 扫描摘要转发（清单/批次/大纲已由确定性脚本 bug-scan-plan.mjs 落盘，agent 只转发小摘要，不转述全量清单）
+const SCAN_SUMMARY_SCHEMA = {
   type: 'object',
   properties: {
-    bugs: {
+    ok: { type: 'boolean', description: 'scan-summary.json 是否读取并转发成功' },
+    bugCount: { type: 'number', description: '待审核缺陷总数（autoPass 已剔除）' },
+    prePassCount: { type: 'number', description: '预判不适用缺陷数' },
+    batchCount: { type: 'number', description: '审核批次数' },
+    batches: {
       type: 'array',
       items: {
         type: 'object',
         properties: {
-          path: { type: 'string', description: '相对项目根目录的缺陷文件路径' },
-          title: { type: 'string' },
-          module: {
-            type: 'string',
-            description: '文件名第二层【】标签；没有标签时按标题关键词归类（结算 / 创房 / 亮牌 / 行牌 / 桌面 / 流程 / 其他）',
-          },
+          index: { type: 'number', description: '批次下标（与 batches.json 下标对齐）' },
+          title: { type: 'string', description: '批次主题（模块名或合并模块名）' },
+          count: { type: 'number', description: '本批缺陷数' },
         },
-        required: ['path', 'title', 'module'],
+        required: ['index', 'title', 'count'],
       },
     },
-    prdOutline: { type: 'string', description: 'PRD 一级到三级标题清单，每行“行号 标题”' },
+    prdFiles: { type: 'array', items: { type: 'string' }, description: '实际 PRD 路径（共享快照模式来自快照 manifest.sourceFiles）' },
+    message: { type: 'string', description: '失败原因（成功时留空）' },
   },
-  required: ['bugs', 'prdOutline'],
+  required: ['ok', 'bugCount', 'batchCount', 'batches'],
 }
 
 const DEDUP_SCHEMA = {
@@ -243,91 +248,46 @@ function verdictRules() {
   ].join('\n')
 }
 
-function bugLine(b) {
-  return '- ' + b.path + '（缺陷 ' + b.bugId + '｜模块 ' + b.module + '）'
-}
-
-// 按模块分桶后切成固定容量批次，再把小批次并入相邻批次，保证同一波并发跑完
-function buildBatches(bugs, capacity) {
-  const order = []
-  const buckets = {}
-  for (const b of bugs) {
-    const m = b.module || '其他'
-    if (!buckets[m]) {
-      buckets[m] = []
-      order.push(m)
-    }
-    buckets[m].push(b)
-  }
-  const chunks = []
-  for (const m of order) {
-    const list = buckets[m]
-    for (let i = 0; i < list.length; i += capacity) {
-      chunks.push({ title: m, files: list.slice(i, i + capacity) })
-    }
-  }
-  const batches = []
-  for (const c of chunks) {
-    const last = batches[batches.length - 1]
-    const mergeThreshold = Math.floor(capacity / 3)
-    if (last && c.files.length <= mergeThreshold && last.files.length + c.files.length <= capacity) {
-      last.files = last.files.concat(c.files)
-      if (last.title.indexOf(c.title) < 0) last.title = last.title + '、' + c.title
-      continue
-    }
-    batches.push({ title: c.title, files: c.files.slice() })
-  }
-  return batches
-}
-
-function bugIdOf(path) {
-  const name = String(path || '').split(/[\\/]/).pop() || ''
-  const m = name.match(/^(\d+)/)
-  return m ? m[1] : name
-}
-
 phase('扫描')
+
+// 确定性扫描（bug-scan-plan.mjs）：清单抽取（bug-catalog 同语义）/ PRD 大纲 / 分批 / 收集输入全部落盘，
+// 模型不再转述全量清单（原扫描 agent 曾对 200+ 条逐条推理分类，两轮 15 分钟超时）
+// PRD 路径来源：共享快照模式用快照 manifest.sourceFiles（权威，全程 ASCII 参数规避编码风险）；否则显式 prdFiles（缺失即失败不静默适配）
+const scanPlanCmd =
+  'node .opencode-workflows/scripts/bug-scan-plan.mjs "' + bugDir + '" "' + outDir + '" '
+  + (sharedRequirementsPath
+    ? '--prd-from-snapshot "' + sharedRequirementsPath + '"'
+    : '--prd "' + prdFiles.join(',') + '"')
+  + ' --batch-size ' + batchSize
+  + autoPassModules.map((m) => ' --auto-pass-module "' + m + '"').join('')
+if (!commandSuccess(scanPlanCmd)) {
+  throw new Error('扫描计划生成失败：' + scanPlanCmd + '（原因见上方命令日志：缺陷目录/PRD 路径不存在或 bugId 重复即失败，不静默回退）')
+}
 
 const scan = await agent(
   [
-    '你是缺陷清单扫描器，工作目录为项目根目录。只做清单扫描，不读缺陷正文做判断。',
+    '你是扫描摘要转发员，工作目录为项目根目录。只读取一个 JSON 文件并原样转发摘要字段，不做判断、不改写、不合并。',
     '',
-    '任务：',
-    '1. 用 glob 或 Get-ChildItem 列出缺陷目录 ' + bugDir + ' 下所有 .md 文件（不含 attachments、_batch.log），返回相对项目根目录的路径、标题（去掉文件名前缀数字与 .md）与模块。',
-    '   模块取文件名第二层【】标签；没有第二层标签时按标题关键词归类为：结算 / 创房 / 亮牌 / 行牌 / 桌面 / 流程 / 其他。',
-    '2. 用 grep 匹配 "^#{1,3} " 或 Get-Content 过滤，给出 PRD 的章节大纲（一级到三级标题，每行“行号 标题”），PRD 路径：' + prdFiles.join('、'),
-    '3. 输出必须覆盖全部缺陷文件，一条不漏，不要合并文件。',
+    '步骤：',
+    '1. 读取 ' + outDir + '/scan-summary.json（UTF-8 JSON）；',
+    '2. 按 schema 返回其中字段：ok / bugCount / prePassCount / batchCount / batches（数组逐条原样转发，一条不漏，顺序不变）/ prdFiles / message；',
+    '3. 文件读取或解析失败时 ok=false 并在 message 写明原因；不要改动任何文件，不要执行 git 命令。',
   ].join('\n'),
-  // 扫描是轻量清单活，固定 bf-flash（不随 analysisModel/会话默认变；并行跑时与判定路模型错开）
-  { label: '扫描缺陷与 PRD 大纲', schema: SCAN_SCHEMA, model: 'biangfeng-gateway/deepseek-v4.1-flash-official', timeoutMs: 900000 }
+  { label: '转发扫描摘要', schema: SCAN_SUMMARY_SCHEMA, retries: 2, timeoutMs: 600000 }
 )
 
-if (!scan || !Array.isArray(scan.bugs) || scan.bugs.length === 0) {
-  throw new Error('扫描阶段失败：未取得缺陷清单，请检查目录 ' + bugDir)
+if (!scan || scan.ok !== true || !Array.isArray(scan.batches) || scan.batches.length === 0) {
+  throw new Error('扫描阶段失败：未取得批次摘要（' + ((scan && scan.message) || '转发代理未成功') + '），请检查 ' + outDir + '/scan-summary.json 与上方命令日志')
 }
 
-const allBugs = scan.bugs.map((b) => ({
-  path: b.path,
-  title: b.title || '',
-  module: b.module || '其他',
-  bugId: bugIdOf(b.path),
-}))
-const prdOutline = scan.prdOutline || ''
-const prdBrief = prdFiles.map((f) => '- ' + f).join('\n')
-
-let prePassBugs = []
-if (autoPassModules.length > 0) {
-  const kept = []
-  for (const b of allBugs) {
-    if (autoPassModules.indexOf(b.module) >= 0) prePassBugs.push(b)
-    else kept.push(b)
-  }
-  if (prePassBugs.length > 0) log('按 args.autoPassModules 预判不适用（单独统计）' + prePassBugs.length + ' 条缺陷')
-  allBugs.splice.apply(allBugs, [0, allBugs.length].concat(kept))
-}
-
-const batches = buildBatches(allBugs, batchSize)
-log('缺陷共 ' + allBugs.length + ' 条，分 ' + batches.length + ' 批审核')
+const batches = scan.batches
+const prdBrief = (Array.isArray(scan.prdFiles) && scan.prdFiles.length > 0 ? scan.prdFiles : prdFiles)
+  .map((f) => '- ' + f)
+  .join('\n')
+log(
+  '扫描完成：缺陷 ' + scan.bugCount + ' 条（预判不适用 ' + (scan.prePassCount || 0) + ' 条），分 ' + batches.length
+  + ' 批审核；清单/批次/大纲/收集输入已落盘 ' + outDir + '（batches.json / prd-outline.txt / bug-verdicts-input.json）'
+)
 
 phase('缺陷审核')
 
@@ -354,11 +314,12 @@ const batchTasks = parallel(
               prdBrief,
             ].join('\n'),
         '',
-        'PRD 章节大纲（便于定位与引用）：',
-        prdOutline || '（未取得大纲，请自行 grep 章节标题）',
+        'PRD 章节大纲（便于定位与引用，读文件）：' + outDir + '/prd-outline.txt（读不到大纲再自行 grep PRD 章节标题）',
         '',
-        '本批缺陷（逐条读取下列 Markdown 文件；只读文字，不要尝试读图片）：',
-        batch.files.map(bugLine).join('\n'),
+        '本批缺陷清单（先读批次定义再逐条读取缺陷 Markdown 文件；只读文字，不要尝试读图片）：',
+        '  读 ' + outDir + '/batches.json，取 batches[' + batchIndex + ']（第 ' + (batchIndex + 1) + ' 批「' + batch.title + '」，'
+        + (typeof batch.count === 'number' ? batch.count : '?') + ' 条）；其 files 数组每项含 bugId / path / title / module，按 path 逐条读取，一条不漏',
+        '  若该下标的 title 或条数与上句不符（转发失真），不要写分片，直接按 schema 返回 ok=false 并在 message 写明差异',
         '',
         '本批模块主题：' + batch.title,
         '',
@@ -389,30 +350,17 @@ log('批次审核分片写入完成 ' + shardOkCount + '/' + batches.length + '�
 phase('判定收集与校验')
 
 const verdictsScript = '.opencode-workflows/scripts/bug-verdicts.mjs'
-const collectInputFile = outDir + '/bug-verdicts-input.json'
+const collectInputFile = outDir + '/bug-verdicts-input.json' // 扫描计划已确定性生成（allBugs/batches/prePassBugs/verdictsPartsDir）
 
 const collectResult = await agent(
   [
     '你在项目根目录执行判定收集与批次完整性校验，然后按 schema 返回结果。',
     '',
     '步骤：',
-    '1. 用 node 把下面的输入 JSON 原样写入 ' + collectInputFile + '（UTF-8 无 BOM；内容不要改动）：',
-    '',
-    JSON.stringify(
-      {
-        allBugs: allBugs.map((b) => ({ title: b.title, module: b.module, bugId: b.bugId })),
-        batches: batches.map((b) => ({ title: b.title, files: b.files.map((f) => f.bugId) })),
-        prePassBugs: prePassBugs.map((b) => ({ title: b.title, module: b.module, bugId: b.bugId })),
-        verdictsPartsDir: verdictsPartsDir,
-      },
-      null,
-      1
-    ),
-    '',
-    '2. 执行命令：node ' + verdictsScript + ' collect "' + collectInputFile + '" "' + outDir + '"',
-    '3. 命令输出含 [成功] 时：从 SUMMARY 行解析 stats（total/completed/failed/failedBatches/missingVerdict/distribution/applicable/passRate）、warningsCount、gapsRawCount 填入返回字段；',
-    '4. 命令输出含 [失败] 时：ok 填 false，message 填错误内容；',
-    '5. 不要修改脚本与数据文件，不要删除产物文件。',
+    '1. 执行命令：node ' + verdictsScript + ' collect "' + collectInputFile + '" "' + outDir + '"（输入文件已预生成，不要改动）',
+    '2. 命令输出含 [成功] 时：从 SUMMARY 行解析 stats（total/completed/failed/failedBatches/missingVerdict/distribution/applicable/passRate）、warningsCount、gapsRawCount 填入返回字段；',
+    '3. 命令输出含 [失败] 时：ok 填 false，message 填错误内容；',
+    '4. 不要修改脚本与数据文件，不要删除产物文件。',
   ].join('\n'),
   {
     label: '判定收集与批次校验',

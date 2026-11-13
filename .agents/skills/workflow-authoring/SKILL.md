@@ -19,6 +19,7 @@ description: 编写 OpenCode 动态工作流 JavaScript 脚本时加载。涉及
 
    分析类（扫描 / 对照 / 枚举 / 归类）与写作类（长输出报告 / 终稿）分两问让用户各选一个；写作类缺省用会话默认模型。
 3. **并发**：默认 16（运行时钳制上限，组数 ≤ 并发才能一波跑完）；网关限流环境建议 8；允许自定义正整数。
+4. **拆分形态**：多阶段流程默认推荐 **sub workflow 拆分**（问询确认，用户未明确反对即按拆分做）：主编排 + 各阶段子流程，创建 `.opencode-workflows/workflows/<workflow 名>/` 子文件夹，主编排与全部子流程都放里面（布局与调用约定见「拆分：子文件夹布局」）；只有无阶段边界、agent 总数少的短流程才单文件全写。用户明确说「写一起」时按单文件做。
 
 答案直接落成脚本头部：model 常量、args 默认值与 `setConcurrency(并发)`，并在头注释里记录用户选择。档位执行细节见 [性能与质量模式手册](references/performance.md)。
 
@@ -66,6 +67,19 @@ const rs = await parallel([
 - args 与返回值必须是可克隆数据（对象/数组/标量）；子内修改不影响父对象
 - 子脚本错误直接上抛，父 try-catch 自理；返回 `{ok:false}` 之类的业务结果不影响执行成功
 - 同 run 共享并发配额与中断；子内 phase 自动带 `▸ label / ` 前缀分组；结果带「子流程耗时」段（wall-clock，并行对比的正确口径）
+
+## 拆分：子文件夹布局（默认推荐形态）
+
+多阶段 workflow 拆分时的文件组织与调用约定（output-spec-generate 拆分经验沉淀）：
+
+- **目录布局**：创建 `.opencode-workflows/workflows/<workflow 名>/` 子文件夹，主编排与子流程**全部**放里面；子流程按执行顺序编号命名（`1-scan.js`、`2-verify.js`…），主编排沿用 workflow 原名（如 `output-spec-generate.js`）。
+- **注册表代价（拆分前告知用户）**：注册表只扫描 `workflows/` 一级目录的 `*.js`，子目录脚本**不进注册表**——不能按 workflowId 被 Schedule 寻址、不能被其他脚本按名 `workflow('id')` 引用；需要这两个能力的 workflow 留一级目录。调用子目录脚本一律用显式路径。
+- **调用路径**：`workflow({ scriptPath: './.opencode-workflows/workflows/<名>/1-x.js', label: '阶段名' }, childArgs)`；路径相对**项目根**解析，与父脚本自己放在哪无关（子文件夹内互相引用也写项目根相对路径）。
+- **数据传递**：VM 沙箱无 fs，脚本不能直接读写文件——子流程之间用**内存链式传参**（上游 `workflow()` 返回值克隆后作为下游 args，可传大 JSON）；需要人工观察/复用的中间产物（如扫描结果）由 echo agent 落盘到产出目录 `runtime/state/`。
+- **分步执行 + 观察**：需要「逐步跑、逐步看」时主编排加 `mode` 开关（`'all'` 默认 | `'step'`）：step 模式每个子流程完成后 `checkpoint('步骤 N 完成：<确定性摘要>，继续？', { default: true })`；父脚本 try-catch `e.code === 'CHECKPOINT_REJECTED'` 返回 `{ stopped: true }` 正常收尾（已完成产物保留在磁盘）；checkpoint prompt 必须由结果数据拼出（确定性，journal 回放按 prompt 哈希匹配）；headless 无确认通道时自动按 default 继续（退化为 all）。
+- **并发透传**：并发配额是 run 级共享的，主编排 `setConcurrency` 一次即可；若子流程内部也调 `setConcurrency`，args 必须把 `concurrency` 原样透传给子流程，否则子流程缺省逻辑会把它重置回 16。
+- **拆分边界**：按「阶段产物」切——产物被后续多个任务消费的阶段单独成子流程（如模板扫描）；结果校验逻辑放在产出它的子流程内 fail-fast 上抛，主编排只做输入检查（`check`/`fileExists`）与汇总返回，零 agent 合法。
+- **失败与续跑**：子脚本错误直接上抛；中途中止后 `resumeFromRunId` 断点续跑（已完成 agent 从 journal 重放不重扣 token），这是分步执行跨会话续跑的正式通道。
 
 ## 组合控制流（Composite：sequence / fallback / race）
 
@@ -211,3 +225,4 @@ node <skill 目录>/scripts/wf-syntax-check.cjs <脚本路径> [更多脚本...]
 - [Schedule 定时执行](references/schedule.md)
 - [范例：扇出汇总](examples/fan-out-and-synthesize.js)
 - [范例：分阶段流水线](examples/phased-pipeline-review.js)
+- 实装范例（本仓库）：`.opencode-workflows/workflows/output-spec-generate/`（主编排 + 四子流程拆分、mode=all/step、checkpoint 闸门、内存链式传参）

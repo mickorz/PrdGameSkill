@@ -70,8 +70,8 @@ if (gameDir) {
 // ---------- ui 维度：report.json（issues[].requirementIds，阶段 4 产物） ----------
 if (uiDir) {
   const report = readJson(path.join(uiDir, 'report.json'), 'ui report.json')
-  const rep = report.report || report
-  const uiIssues = (rep.issues || []).filter(Boolean)
+  // build-dashboard 产物：issues 在顶层；兼容 {report:{issues:[]}} 包装（report.report 为元信息对象，无 issues 字段）
+  const uiIssues = (report.issues || (report.report && report.report.issues) || []).filter(Boolean)
   for (const it of uiIssues) {
     issues.push({ id: it.id, title: it.title, type: it.type, module: it.module || '未分类' })
     for (const rid of Array.isArray(it.requirementIds) ? it.requirementIds : []) {

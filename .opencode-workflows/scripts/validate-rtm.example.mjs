@@ -133,5 +133,25 @@ assert.equal(r.code, 1); assert.match(r.out, /至少传一个维度/)
   console.log('[成功] 包装格式 rule-catalog 兼容断言通过（rules 目录非空）')
 }
 
+// 13. ui report.json 顶层 issues 解析（build-dashboard 产物：issues 在顶层，report.report 为元信息）
+{
+  const u2 = root + '/ui-top'
+  fs.mkdirSync(u2, { recursive: true })
+  // 顶层 issues + report.report 元信息（无 issues 字段）——与真实 build-dashboard 产物同构
+  fs.writeFileSync(u2 + '/report.json', JSON.stringify({
+    report: { title: 'UI 报告', project_name: 'x' },
+    issues: [
+      { id: 'Q01', title: '缺张数', type: '描述不完整', module: '发牌', requirementIds: ['REQ-101'] },
+      { id: 'Q02', title: '无关联', type: '需求缺失', module: '发牌', requirementIds: [] },
+    ],
+  }), 'utf8')
+  const r3 = run('rtm-merge.mjs', [root + '/unified-ui-top', '--requirements', snapDir, '--ui', u2])
+  assert.equal(r3.code, 0, '顶层 issues 应合并成功: ' + r3.out)
+  const rtm3 = JSON.parse(fs.readFileSync(root + '/unified-ui-top/rtm.json', 'utf8'))
+  assert.equal(rtm3.issues.length, 2, '顶层 issues 目录应 2 条')
+  assert.equal(rtm3.relations.filter((x) => x.dimension === 'ui').length, 1, 'ui relations 应 1 条（Q01 挂 REQ-101）')
+  console.log('[成功] 顶层 issues 解析断言通过（issues 目录 + ui relations）')
+}
+
 fs.rmSync(root, { recursive: true, force: true })
 console.log('[成功] validate-rtm.example 12 场景全过（三维度合并/通过校验/悬空REQ拒绝/引用不闭合/坏枚举/failed带判定/pass无证据/统计不一致/维度错配/rule不闭合/空REQ目录/缺维度/包装格式兼容）')

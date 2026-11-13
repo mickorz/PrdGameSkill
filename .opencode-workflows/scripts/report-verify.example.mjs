@@ -35,8 +35,9 @@ w(gameDir + '/manifest.json', { extractionRunId: 'ext-t-01', requirementsSource:
 
 const uiDir = root + '/ui'
 w(uiDir + '/report.json', { report: { issues: [
-  { id: 'Q01', title: '缺张数', requirementIds: ['REQ-101', 'REQ-102'] },
-  { id: 'Q02', title: '无关联条目', requirementIds: [] },
+  { id: 'Q01', title: '缺张数', type: '描述不完整', requirementIds: ['REQ-101', 'REQ-102'] },
+  { id: 'Q02', title: '无关联条目', type: '描述不完整', requirementIds: [] },
+  { id: 'Q03', title: '需求缺失豁免', type: '需求缺失', requirementIds: [] },
 ] } })
 
 const bugDir = root + '/bug'
@@ -50,6 +51,8 @@ let r = run([snapDir, '--game', gameDir, '--ui', uiDir, '--bug', bugDir])
 assert.equal(r.code, 0, '三维度应全过: ' + r.out)
 assert.match(r.out, /game 零漂移/)
 assert.match(r.out, /"requirements":2/)
+assert.match(r.out, /"issues":3/)
+assert.match(r.out, /"eligible":2/)
 assert.match(r.out, /"linkRate":0\.5/)
 assert.match(r.out, /"reqLinkRate":0\.5/)
 assert.match(r.out, /核对通过（4 项）/)

@@ -94,7 +94,7 @@ if (gameDir) {
   })
 }
 
-// ---------- 2. ui：requirementIds 无漂移 + 关联率 ----------
+// ---------- 2. ui：requirementIds 无漂移 + 关联率（「需求缺失」类豁免分母：PRD 未写的问题天然无快照条目） ----------
 if (uiDir) {
   section('ui 关联核对', () => {
     const report = readJson(path.join(uiDir, 'report.json'), 'ui report.json')
@@ -102,13 +102,18 @@ if (uiDir) {
     if (!issues.length) throw new Error('ui report 无 issues')
     const outOfSnap = []
     let linked = 0
+    let eligible = 0
     for (const it of issues) {
       const ids = it.requirementIds || []
       if (ids.length) linked++
-      for (const id of ids) if (!snapReqs.has(id)) outOfSnap.push(it.id + ' -> ' + id)
+      // 需求缺失类（PRD 未写）天然无 REQ 可挂，不计入分母；其余类型 PRD 有描述必可对应快照条目
+      if (it.type !== '需求缺失' && it.type !== 'MISSING') {
+        eligible++
+        for (const id of ids) if (!snapReqs.has(id)) outOfSnap.push(it.id + ' -> ' + id)
+      }
     }
     if (outOfSnap.length) throw new Error('ui 引用快照外 REQ ' + outOfSnap.length + ' 条：' + outOfSnap.slice(0, 5).join('；'))
-    return { issues: issues.length, linked, linkRate: +(linked / issues.length).toFixed(4) }
+    return { issues: issues.length, linked, eligible, linkRate: eligible ? +(linked / eligible).toFixed(4) : null }
   })
 }
 

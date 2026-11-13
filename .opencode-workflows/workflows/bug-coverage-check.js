@@ -94,12 +94,13 @@ if ((sharedRequirementsPath && !sharedExtractionRunId) || (!sharedRequirementsPa
 }
 if (sharedRequirementsPath) {
   // 沙箱无 readFile：快照完整性/runId 一致/源 sha256 校验下沉到 node 脚本（布尔回传，失败原因在 stderr 日志）
-  const ok = commandSuccess('node .opencode-workflows/scripts/check-shared-snapshot.mjs "' + sharedRequirementsPath + '" "' + sharedExtractionRunId + '" --verify-source')
+  // 注意 commandSuccess 返回 Promise，必须 await（漏 await 恒真值 = 校验空转）
+  const ok = await commandSuccess('node .opencode-workflows/scripts/check-shared-snapshot.mjs "' + sharedRequirementsPath + '" "' + sharedExtractionRunId + '" --verify-source')
   if (!ok) {
     throw new Error('共享快照校验失败：' + sharedRequirementsPath + '（extractionRunId ' + sharedExtractionRunId + '；原因见上方命令日志，不猜测、不回退旧路径静默运行）')
   }
   // 需求清单瘦身：只含 requirementId/reqKey/title 的索引写到 outDir（快照目录保持只读），判定 agent 读索引定位 + 按需回查原文
-  const idxOk = commandSuccess('node .opencode-workflows/scripts/gen-req-index.mjs "' + sharedRequirementsPath + '" --out "' + outDir + '/requirements-index.json"')
+  const idxOk = await commandSuccess('node .opencode-workflows/scripts/gen-req-index.mjs "' + sharedRequirementsPath + '" --out "' + outDir + '/requirements-index.json"')
   if (!idxOk) {
     throw new Error('需求索引生成失败：' + sharedRequirementsPath + '（快照 requirements.json 字段不完整）')
   }
@@ -260,7 +261,8 @@ const scanPlanCmd =
     : '--prd "' + prdFiles.join(',') + '"')
   + ' --batch-size ' + batchSize
   + autoPassModules.map((m) => ' --auto-pass-module "' + m + '"').join('')
-if (!commandSuccess(scanPlanCmd)) {
+// 注意 commandSuccess 返回 Promise，必须 await（漏 await 恒真值 = 校验空转）
+if (!(await commandSuccess(scanPlanCmd))) {
   throw new Error('扫描计划生成失败：' + scanPlanCmd + '（原因见上方命令日志：缺陷目录/PRD 路径不存在或 bugId 重复即失败，不静默回退）')
 }
 

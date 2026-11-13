@@ -18,6 +18,10 @@
 //   背景：v1/v2 中检查 agent 幻觉条款号 9+ 处（01#42 等，规则文件实际只有 1~25 条），
 //   v2 靠修正 agent 行为波动修复，本版做成机制保证。
 //
+// 2026-11-13 v3 修复（同日）：commandSuccess 返回 Promise，漏 await 的调用恒为真值（假通过）。
+//   v3 首跑（run-mweo250p-3）闸门与修正后复检整体空转，最终报告残留 9 个幻觉条款号；
+//   已全面补 await：条款号闸门/复验/修正后复检 + 共享快照校验与需求索引检查（pre-existing 同类 bug）。
+//
 // 流程：
 //   [check] 扫描规则基准与需求文档
 //     -> 按规则主题并行检查（严格 UI 交互口径）
@@ -104,12 +108,13 @@ if ((sharedRequirementsPath && !sharedExtractionRunId) || (!sharedRequirementsPa
 let sharedManifestOk = false
 if (sharedRequirementsPath) {
   // 沙箱无 readFile：快照完整性/runId 一致/源 sha256 校验下沉到 node 脚本（布尔回传，失败原因在 stderr 日志）
-  const ok = commandSuccess('node .opencode-workflows/scripts/check-shared-snapshot.mjs "' + sharedRequirementsPath + '" "' + sharedExtractionRunId + '" --verify-source')
+  // 注意 commandSuccess 返回 Promise，必须 await（漏 await 恒真值 = 校验空转）
+  const ok = await commandSuccess('node .opencode-workflows/scripts/check-shared-snapshot.mjs "' + sharedRequirementsPath + '" "' + sharedExtractionRunId + '" --verify-source')
   if (!ok) {
     throw new Error('共享快照校验失败：' + sharedRequirementsPath + '（extractionRunId ' + sharedExtractionRunId + '；原因见上方命令日志，不猜测、不回退旧路径静默运行）')
   }
   // 需求清单瘦身：只含 requirementId/reqKey/title 的索引写到 outDir（快照目录保持只读），agent 读索引定位 + 按需 grep 回查
-  const idxOk = commandSuccess('node .opencode-workflows/scripts/gen-req-index.mjs "' + sharedRequirementsPath + '" --out "' + outDir + '/requirements-index.json"')
+  const idxOk = await commandSuccess('node .opencode-workflows/scripts/gen-req-index.mjs "' + sharedRequirementsPath + '" --out "' + outDir + '/requirements-index.json"')
   if (!idxOk) {
     throw new Error('需求索引生成失败：' + sharedRequirementsPath + '（快照 requirements.json 字段不完整）')
   }
@@ -366,7 +371,8 @@ function detailField(name, value) {
 // check：对照 UI 交互基准检查需求文档
 // ============================================================
 
-await check(() => fileExists(rulesDir), '规则基准目录不存在：' + rulesDir)
+const rulesDirExists = await fileExists(rulesDir)
+await check(() => rulesDirExists, '规则基准目录不存在：' + rulesDir)
 
 phase('扫描规则与需求')
 
@@ -593,8 +599,9 @@ phase('条款号校验')
 const MARKED_REF = '无（原条款号未匹配规则基准，待人工核对）'
 const validateRefsScript = '.opencode-workflows/scripts/validate-rulerefs.mjs'
 const refTokens = (ref) => (String(ref || '').match(/\d{2}#\d+/g) || []).join(',')
-const refValidate = (it) =>
-  commandSuccess(
+// commandSuccess 返回 Promise：必须 async + await，否则恒真值（闸门空转，v3 首跑教训）
+const refValidate = async (it) =>
+  await commandSuccess(
     'node "' + validateRefsScript + '" --rules "' + rulesDir + '" --refs "' +
       it.id + '@' + (refTokens(it.ruleRef) || '无') + '"'
   )
@@ -602,7 +609,11 @@ const refValidate = (it) =>
 let refGateInvalid = 0
 let refGateFixed = 0
 let refGateMarked = 0
-const invalidRefIssues = issues.filter((it) => !it._refMarked && !refValidate(it))
+const invalidRefIssues = []
+for (const it of issues) {
+  if (it._refMarked) continue
+  if (!(await refValidate(it))) invalidRefIssues.push(it)
+}
 if (invalidRefIssues.length === 0) {
   log('条款号闸门通过：' + issues.length + ' 条问题的基准条款号全部真实存在')
 } else {
@@ -651,7 +662,7 @@ if (invalidRefIssues.length === 0) {
   // 复验（确定性）：matched=true 仍非法（修正 agent 再幻觉）或漏改的，降级为标记项，不裸奔进报告
   for (const it of invalidRefIssues) {
     if (it._refMarked) continue
-    if (!refValidate(it)) {
+    if (!(await refValidate(it))) {
       it.ruleRef = MARKED_REF
       it._refMarked = true
       refGateMarked++
@@ -1027,7 +1038,7 @@ const fffdCleanAfterFix = await commandSuccess(
 if (!fffdCleanAfterFix) {
   throw new Error('审核修正后报告 ' + outPath + ' 含乱码替换字符 U+FFFD（审核/修正阶段编辑引入），需定位根因后重跑，不得带病出报告')
 }
-const reportRefOkAfterFix = commandSuccess(
+const reportRefOkAfterFix = await commandSuccess(
   'node "' + validateRefsScript + '" --rules "' + rulesDir + '" --report "' + outPath + '"'
 )
 if (!reportRefOkAfterFix) {

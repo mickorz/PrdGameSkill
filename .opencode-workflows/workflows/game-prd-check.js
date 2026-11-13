@@ -90,7 +90,8 @@ if (sharedRequirementsPath && !fileExists(sharedRequirementsPath + '/requirement
 if (sharedRequirementsPath) {
   // 快照完整性校验（与 ui/bug 两 Checker 同规则：runId 一致 + 源 PRD sha256 未变，变更即拒）；
   // 索引输出到 runDir（定义在下方），先记 flag，在 runDir 就绪后生成
-  const snapOk = commandSuccess('node .opencode-workflows/scripts/check-shared-snapshot.mjs "' + sharedRequirementsPath + '" "' + sharedExtractionRunId + '" --verify-source')
+  // 注意 commandSuccess 返回 Promise，必须 await（漏 await 恒真值 = 校验空转）
+  const snapOk = await commandSuccess('node .opencode-workflows/scripts/check-shared-snapshot.mjs "' + sharedRequirementsPath + '" "' + sharedExtractionRunId + '" --verify-source')
   if (!snapOk) {
     throw new Error('共享快照校验失败：' + sharedRequirementsPath + '（extractionRunId ' + sharedExtractionRunId + '，请核对快照完整性或源 PRD 是否已变更）')
   }
@@ -105,7 +106,7 @@ const runDir = runsDir + '/run-' + runId
 // 检查 agent 读索引定位，需要原文时 grep 全量回查，不整读 236KB 快照（防上下文膨胀与凭记忆编造超范围 reqKey）
 const reqIndexPath = sharedRequirementsPath ? runDir + '/requirements-index.json' : null
 if (reqIndexPath) {
-  const idxOk = commandSuccess('node .opencode-workflows/scripts/gen-req-index.mjs "' + sharedRequirementsPath + '" --out "' + reqIndexPath + '"')
+  const idxOk = await commandSuccess('node .opencode-workflows/scripts/gen-req-index.mjs "' + sharedRequirementsPath + '" --out "' + reqIndexPath + '"')
   if (!idxOk) {
     throw new Error('需求索引生成失败：' + sharedRequirementsPath + '（快照 requirements.json 字段不完整）')
   }

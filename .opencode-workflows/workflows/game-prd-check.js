@@ -100,8 +100,8 @@ const runDir = runsDir + '/run-' + runId
 const analysisModel =
   A.analysisModel === undefined ? 'biangfeng-gateway/deepseek-v4.1-flash-official' : A.analysisModel
 const analysisAgentOptions = analysisModel
-  ? { model: analysisModel, timeoutMs: 3600000 }
-  : { timeoutMs: 3600000 }
+  ? { model: analysisModel, timeoutMs: 7200000 }
+  : { timeoutMs: 7200000 }
 
 const reviewModel = A.reviewModel === undefined ? analysisModel : A.reviewModel
 const reviewAgentOptions = reviewModel
@@ -351,6 +351,7 @@ const scan = await agent(
     '   - 普通规则文件按主题成组，files 必须是相对项目根目录的完整路径，组内文件要覆盖到每一份规则文档，不能漏。',
     '   - 单个规则文件超过 20KB（约 8000 字）时按一级章节拆分：一章一个片段、一个片段一组，files 留空数组，sections 填 { file, fromLine, toLine, title }。片段必须首尾相接覆盖全文（从第 1 行到文件最后一行），不能留空档。用 grep 查章节标题、read 带 offset 确认行号（read 显示的行号即真实行号）。',
     '   - 小文件（≤20KB）按业务流程阶段合并成组（例如 开局与发牌 / 摸打吃碰杠 / 结算与分数 / 配置与做牌 / 重连 / 广播与数据），总览、目录、索引类文件放进第一组。',
+    '   - 组间均衡：估算每组规则条数（小文件按每份约 30-60 条，大文件按章节行数占比），单组不超过 120 条；超出时必须拆成两组（同主题可拆上下半，title 加后缀区分）。检查工作按组并发，超大组会撞单组超时墙导致整次 run 失败。',
     '   - focus 用一句话说明这组规则管什么。',
     '   - 总组数上限 ' + maxRuleGroups + ' 组。章节数超过上限时，把相邻章节合并进同一组：同一组的 sections 可包含多个连续片段，fromLine/toLine 必须衔接覆盖全文，不得漏内容；章节数不超过上限时保持一章一组。',
     '3. 如果规则目录结构与本说明不同，按实际结构自适应分组，仍要覆盖全部规则文件。',
@@ -1154,6 +1155,7 @@ if (dashboardEnabled) {
 
 return {
   reportPath: outPath,
+  rtmRunDir: runDir,
   dashboardPath: dashboardResult ? dashboardResult.htmlPath : null,
   reportJsonPath: dashboardResult ? dashboardResult.reportJsonPath : null,
   dashboardSkipped: !dashboardEnabled,

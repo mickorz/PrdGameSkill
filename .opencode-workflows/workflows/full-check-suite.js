@@ -36,9 +36,14 @@
 //   extraPrd      透传给 game-prd-check 的额外 args 对象
 //   extraUi       透传给 ui-interaction-prd-extract 的额外 args 对象
 //   extraBug      透传给 bug-coverage-check 的额外 args 对象
+//   requirementsPath + extractionRunId  共享需求快照消费（v4 阶段 8 串联，成对传入，只传其一直接报错）：
+//                     透传三路子流程（REQ ID 定位与关联）；三路跑完后追加「统一汇总」阶段
+//                     （rtm-merge 合并三维度 → validate-rtm → 统一 Dashboard 第 5 Tab）
+//   unifiedOutDir 统一 RTM 产物目录，默认 output/projects/hzmj/unified-rtm/{date}
 //
 // 返回：
 //   { ok, prd|ui|bug: {ok, ...子流程返回} , merged: {ok, mergedPath|skipped|error},
+//     unified: {ok, rtmPath, htmlPath|skipped|error},
 //     failed: [失败路明细], summary: 一句话汇总 }
 
 export const meta = {
@@ -49,11 +54,21 @@ export const meta = {
     { title: '准备' },
     { title: '并行检查' },
     { title: '检查覆盖' },
+    { title: '统一汇总' },
     { title: '合并交付' },
   ],
 }
 
 const A = args || {}
+
+// 共享快照参数成对校验（与三个 Checker 同规则：只传其一直接报错，不精测入子流程再拦）
+const sharedReq = A.requirementsPath || null
+const sharedExt = A.extractionRunId || null
+if ((sharedReq && !sharedExt) || (!sharedReq && sharedExt)) {
+  throw new Error('requirementsPath 与 extractionRunId 必须成对传入：只传其一直接报错（共享快照消费契约）')
+}
+const sharedMode = !!(sharedReq && sharedExt)
+const unifiedOutDir = A.unifiedOutDir || 'output/projects/hzmj/unified-rtm/' + (A.date || 'undated')
 
 // 三路子流程注册名与展示信息（顺序即合并 Tab 顺序）
 const ROUTES = [
@@ -101,6 +116,10 @@ function buildRouteArgs(route) {
     dashboard: A.dashboard !== false,
   }
   if (A.concurrency) child.concurrency = A.concurrency
+  if (sharedMode) {
+    child.requirementsPath = sharedReq
+    child.extractionRunId = sharedExt
+  }
   if (route.key === 'prd' || route.key === 'ui') {
     if (A.inputDir) child.inputDir = A.inputDir
     if (A.inputFiles) child.inputFiles = A.inputFiles
@@ -226,7 +245,98 @@ let coverage = { ok: false, skipped: true, reason: '' }
   }
 }
 
-// ---------- 阶段 4：合并交付 ----------
+// ---------- 阶段 4：统一汇总（v4 共享模式：rtm-merge → validate-rtm → 统一 Dashboard） ----------
+phase('统一汇总')
+
+let unified = { ok: false, skipped: true, reason: '' }
+if (!sharedMode) {
+  unified = { ok: false, skipped: true, reason: '未传共享快照参数，走旧三路合并链' }
+  log('[跳过] 统一汇总：未传 requirementsPath + extractionRunId，保持旧合并交付链')
+} else if (succeeded.length === 0) {
+  unified = { ok: false, skipped: true, reason: '三路全部失败，无产物可合并' }
+  log('[跳过] 统一汇总：三路全部失败')
+} else {
+  // 维度输入目录：成功路才有（game=rtm 快照目录， ui=report.json 所在目录， bug=bug-verdicts.json 所在目录）
+  const prdR = routeResults[0]
+  const uiR = routeResults[1]
+  const bugR = routeResults[2]
+  const dimArgs = []
+  let gameDirArg = null
+  if (prdR && prdR.ok && prdR.rtmRunDir) {
+    gameDirArg = prdR.rtmRunDir
+    dimArgs.push('--game "' + gameDirArg + '"')
+  }
+  if (uiR && uiR.ok && uiR.reportJsonPath) {
+    const uiDir = uiR.reportJsonPath.replace(/[\\/]report\.json$/, '')
+    dimArgs.push('--ui "' + uiDir + '"')
+  }
+  if (bugR && bugR.ok && bugR.verdictsFile) {
+    const bugDir = bugR.verdictsFile.replace(/[\\/]bug-verdicts\.json$/, '')
+    dimArgs.push('--bug "' + bugDir + '"')
+  }
+  if (dimArgs.length === 0) {
+    unified = { ok: false, skipped: true, reason: '成功路均未返回可合并产物路径' }
+    log('[跳过] 统一汇总：成功路无 rtm/report/verdicts 产物路径')
+  } else {
+    const prdReport = prdR && prdR.ok ? prdR.reportPath : null
+    const mergeCmd =
+      'node .opencode-workflows/scripts/rtm-merge.mjs "' + unifiedOutDir + '" --requirements "' + sharedReq + '" ' + dimArgs.join(' ')
+    const validateCmd = 'node .opencode-workflows/scripts/validate-rtm.mjs "' + unifiedOutDir + '/rtm.json"'
+    // 统一 Dashboard：底报用 PRD 路报告（无则失败，不再找替代）；--rtm 仅在 game 成功时传
+    const dashboardCmd =
+      'node .claude/skills/game-prd-check/scripts/build-dashboard.mjs "' + (prdReport || '') + '" "' + unifiedOutDir + '"' +
+      (gameDirArg ? ' --rtm "' + gameDirArg + '"' : '') + ' --unified-rtm "' + unifiedOutDir + '"'
+    try {
+      const out = await agent(
+        [
+          '你在项目根目录依次执行命令，把结果整理为 JSON 返回。只执行命令与确认文件，不要改写任何文件内容。',
+          '',
+          '第一步：合并三维度产物为统一 rtm.json（输出目录不存在会自动创建；任一维度产物缺失会报错，此时如实报告）',
+          mergeCmd,
+          '',
+          '第二步：校验统一 rtm.json（退出码 0 且输出含 [成功] 才算过；失败时把错误前 10 行放进 message）',
+          validateCmd,
+          '',
+          '第三步：生成统一 Dashboard（含第 5 Tab 统一覆盖）',
+          dashboardCmd,
+          '',
+          '结果判定：',
+          '1. 三步退出码都为 0 且输出含 [成功]：ok=true。',
+          '2. rtmPath 填 "' + unifiedOutDir + '/rtm.json"，htmlPath 填第三步输出「dashboard ->」后的 HTML 路径。',
+          '3. 任一步失败：ok=false，message 填失败步骤与错误输出（最后 20 行）。',
+          '4. 路径统一转相对项目根目录形式。',
+          '5. 不执行 git 命令，不删除任何历史 Dashboard。',
+        ].join('\n'),
+        {
+          agentType: 'general',
+          label: '统一RTM汇总',
+          timeoutMs: 900000,
+          retries: 1,
+          schema: {
+            type: 'object',
+            properties: {
+              ok: { type: 'boolean' },
+              rtmPath: { type: 'string', description: '统一 rtm.json 路径，失败留空' },
+              htmlPath: { type: 'string', description: '统一 Dashboard HTML 路径，失败留空' },
+              message: { type: 'string', description: '结果说明或失败原因' },
+            },
+            required: ['ok', 'rtmPath', 'htmlPath', 'message'],
+          },
+        }
+      )
+      if (!out || out.ok !== true || !out.htmlPath) {
+        throw new Error((out && out.message) || '统一汇总未返回成功路径')
+      }
+      unified = { ok: true, skipped: false, rtmPath: out.rtmPath || unifiedOutDir + '/rtm.json', htmlPath: out.htmlPath, message: out.message || '' }
+      log('[成功] 统一 RTM -> ' + unified.rtmPath + '；统一 Dashboard -> ' + unified.htmlPath)
+    } catch (e) {
+      unified = { ok: false, skipped: false, error: String(e && e.message ? e.message : e) }
+      log('[失败] 统一汇总 -> ' + unified.error)
+    }
+  }
+}
+
+// ---------- 阶段 5：合并交付 ----------
 phase('合并交付')
 
 // 收集成功路且真实存在 Dashboard 产物的路径（dashboardSkipped 或生成失败时 dashboardPath 为 null）
@@ -294,6 +404,7 @@ const summary =
   '三路检查：' +
   (succeeded.length ? '成功 ' + succeeded.length + ' 路（' + summaryParts.join('、') + '）' : '全部失败') +
   (failed.length ? '；失败 ' + failed.length + ' 路（' + failed.map((f) => f.route).join('、') + '）' : '') +
+  '；统一汇总：' + (unified.skipped ? '跳过（' + (unified.reason || '') + '）' : unified.ok ? '完成 ' + (unified.htmlPath || '') : '失败') +
   '；合并：' + (merged.skipped ? '跳过（' + (merged.reason || '') + '）' : merged.ok ? '完成 ' + (merged.mergedPath || '') : '失败')
 
 log(summary)
@@ -305,6 +416,7 @@ return {
   bug: routeResults[2],
   coverage: coverage,
   merged: merged,
+  unified: unified,
   failed: failed.map((f) => ({ route: f.route, error: f.error })),
   dashboardPaths: dashPaths,
   summary: summary,

@@ -96,7 +96,12 @@ if (sharedRequirementsPath) {
   if (!ok) {
     throw new Error('共享快照校验失败：' + sharedRequirementsPath + '（extractionRunId ' + sharedExtractionRunId + '；原因见上方命令日志，不猜测、不回退旧路径静默运行）')
   }
-  log('消费共享需求快照：' + sharedRequirementsPath + '（extractionRunId ' + sharedExtractionRunId + '），审核输入改为需求清单 + 按需回查 PRD，判定挂 REQ 关系')
+  // 需求清单瘦身：只含 requirementId/reqKey/title 的索引写到 outDir（快照目录保持只读），判定 agent 读索引定位 + 按需回查原文
+  const idxOk = commandSuccess('node .opencode-workflows/scripts/gen-req-index.mjs "' + sharedRequirementsPath + '" --out "' + outDir + '/requirements-index.json"')
+  if (!idxOk) {
+    throw new Error('需求索引生成失败：' + sharedRequirementsPath + '（快照 requirements.json 字段不完整）')
+  }
+  log('消费共享需求快照：' + sharedRequirementsPath + '（extractionRunId ' + sharedExtractionRunId + '），判定用瘦身索引 + 按需回查 PRD，判定挂 REQ 关系')
 }
 
 const VERDICT_RULE = [
@@ -337,10 +342,10 @@ const batchTasks = parallel(
         '',
         sharedRequirementsPath
           ? [
-              '需求判定依据（共享需求清单，REQ ID + 标题 + 原文 + 来源锚点；含 identityStatus 等额外字段，忽略即可）：',
-              '- ' + sharedRequirementsPath + '/requirements.json',
+              '需求判定依据（共享需求索引，REQ ID + reqKey + 标题三字段；定位用，不整读全量）：',
+              '- ' + outDir + '/requirements-index.json',
               '',
-              '目标 PRD（需求清单不够定位时按需回查原文，source.file + fromLine/toLine 锚点直达）：',
+              '目标 PRD（索引不够定位时按需回查原文：source 锚点直达，或按 requirementId 在 ' + sharedRequirementsPath + '/requirements.json grep 回查）：',
               prdBrief,
             ].join('\n')
           : [

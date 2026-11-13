@@ -88,13 +88,28 @@ if (sharedRequirementsPath && !fileExists(sharedRequirementsPath + '/requirement
   throw new Error('共享快照缺 requirements.json：' + sharedRequirementsPath + '（不猜测、不回退旧路径静默运行，请确认路径）')
 }
 if (sharedRequirementsPath) {
-  log('消费共享需求快照：' + sharedRequirementsPath + '（extractionRunId ' + sharedExtractionRunId + '），跳过自提取')
+  // 快照完整性校验（与 ui/bug 两 Checker 同规则：runId 一致 + 源 PRD sha256 未变，变更即拒）；
+  // 索引输出到 runDir（定义在下方），先记 flag，在 runDir 就绪后生成
+  const snapOk = commandSuccess('node .opencode-workflows/scripts/check-shared-snapshot.mjs "' + sharedRequirementsPath + '" "' + sharedExtractionRunId + '" --verify-source')
+  if (!snapOk) {
+    throw new Error('共享快照校验失败：' + sharedRequirementsPath + '（extractionRunId ' + sharedExtractionRunId + '，请核对快照完整性或源 PRD 是否已变更）')
+  }
+  log('消费共享需求快照：' + sharedRequirementsPath + '（extractionRunId ' + sharedExtractionRunId + '），跳过自提取，检查用瘦身索引')
 }
 const rtmScript = A.rtmScript || '.opencode-workflows/scripts/rtm-assemble.mjs'
 const runsDir = A.runsDir || 'examples/game-prd-check-workflow/rtm/runs'
 const runId =
   A.runId || (/^\d{4}-\d{2}-\d{2}$/.test(String(checkDate)) ? String(checkDate).replace(/-/g, '') : 'undated')
 const runDir = runsDir + '/run-' + runId
+// 需求清单瘦身（共享模式）：只含 requirementId/reqKey/title 的索引写到 runDir（快照目录保持只读），
+// 检查 agent 读索引定位，需要原文时 grep 全量回查，不整读 236KB 快照（防上下文膨胀与凭记忆编造超范围 reqKey）
+const reqIndexPath = sharedRequirementsPath ? runDir + '/requirements-index.json' : null
+if (reqIndexPath) {
+  const idxOk = commandSuccess('node .opencode-workflows/scripts/gen-req-index.mjs "' + sharedRequirementsPath + '" --out "' + reqIndexPath + '"')
+  if (!idxOk) {
+    throw new Error('需求索引生成失败：' + sharedRequirementsPath + '（快照 requirements.json 字段不完整）')
+  }
+}
 
 // 分析阶段（扫描 / 规则检查 / 一致性检查 / 去重）统一用快速模型，报告撰写用会话默认模型
 const analysisModel =
@@ -468,7 +483,7 @@ if (rtmEnabled) {
 
 const reqPartFiles = rtmEnabled
   ? sharedRequirementsPath
-    ? [sharedRequirementsPath + '/requirements.json']
+    ? [runDir + '/requirements-index.json']
     : (reqResults || []).filter(Boolean).map((r) => r.partFile).filter(Boolean)
   : []
 const catalogPartFiles = rtmEnabled
@@ -513,8 +528,9 @@ const groupTasks = parallel(
               '本组规则原子检查点清单（先读该文件，逐条对照检查）：',
               '- ' + catalogPart,
               '',
-              '需求点清单文件（检查时用于定位需求点 reqKey；共享快照含 requirementId/identityStatus 等额外字段，忽略即可）：',
+              '需求点索引文件（requirementId/reqKey/title 三字段，检查时用于定位需求点 reqKey）：',
               reqPartFiles.map((f) => '- ' + f).join('\n'),
+              '需要需求点原文佐证时，用 requirementId 在全量快照 grep 回查：- ' + sharedRequirementsPath + '/requirements.json（不要整读全量文件，只按行回查）。',
               '',
               'RTM 覆盖记录（必须完成，与找问题同等重要）：',
               '1. 本组每个规则原子检查点（ruleId）都必须输出一条 coverage 记录，包括完全没问题的（status=pass）；',

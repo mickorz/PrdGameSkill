@@ -93,8 +93,13 @@ if (sharedRequirementsPath) {
   if (!ok) {
     throw new Error('共享快照校验失败：' + sharedRequirementsPath + '（extractionRunId ' + sharedExtractionRunId + '；原因见上方命令日志，不猜测、不回退旧路径静默运行）')
   }
+  // 需求清单瘦身：只含 requirementId/reqKey/title 的索引写到 outDir（快照目录保持只读），agent 读索引定位 + 按需 grep 回查
+  const idxOk = commandSuccess('node .opencode-workflows/scripts/gen-req-index.mjs "' + sharedRequirementsPath + '" --out "' + outDir + '/requirements-index.json"')
+  if (!idxOk) {
+    throw new Error('需求索引生成失败：' + sharedRequirementsPath + '（快照 requirements.json 字段不完整）')
+  }
   sharedManifestOk = true
-  log('消费共享需求快照：' + sharedRequirementsPath + '（extractionRunId ' + sharedExtractionRunId + '），检查/一致性/审核 agent 附需求点清单（REQ ID 定位）')
+  log('消费共享需求快照：' + sharedRequirementsPath + '（extractionRunId ' + sharedExtractionRunId + '），检查/一致性/审核 agent 用瘦身索引，按需回查原文')
 }
 
 const TYPE_RULE = [
@@ -359,11 +364,12 @@ if (inputFiles.length === 0) {
 
 const prdDisplayPath = A.inputFiles && A.inputFiles.length > 0 ? A.inputFiles.join('、') : inputFiles[0]
 const inputList = inputFiles.map((f) => '- ' + f).join('\n')
-// 共享快照模式：检查/一致性/审核 agent 附需求点清单（REQ ID 定位）
+// 共享快照模式：检查/一致性/审核 agent 附需求点瘦身索引（REQ ID 定位；需要原文时 grep 回查，不整读全量）
 const reqListHint = sharedRequirementsPath
   ? [
-      '需求点清单文件（定位需求点 reqKey 与 requirementId；含 requirementId/identityStatus 等额外字段，忽略即可）：',
-      '- ' + sharedRequirementsPath + '/requirements.json',
+      '需求点索引文件（requirementId/reqKey/title 三字段，定位需求点）：',
+      '- ' + outDir + '/requirements-index.json',
+      '需要需求点原文佐证时，用 requirementId 在全量快照 grep 回查：- ' + sharedRequirementsPath + '/requirements.json（只按行回查，不要整读全量文件）。',
       '',
     ].join('\n')
   : ''

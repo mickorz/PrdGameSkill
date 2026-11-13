@@ -4,6 +4,15 @@
 // （每阶段一份原子拆分+代码查证结果片段），装配 feature_index.json 与 stage_manifest.md。
 // 片段由 workflow 内 echo agent 逐字写入（脚本侧不做 LLM 转述，数据保真）。
 //
+// v2 业务语义透传（2026-11-14，需求 R4/R5，T3.4）：
+//   - feature_index 顶层新增 schema_version: 2 与 difference_stats
+//     （consistent/partial/conflict/unverified 计数，conflict 优先原则：单值字段直接按值计数）。
+//   - 原子项透传新字段（camel 转 snake）：business_behavior{trigger,condition,action,result}、
+//     difference、difference_detail、verification{business_rule_verified,unverified_reason,client_observed}。
+//   - v1 旧片段（原子项无 difference/verification 字段）兼容：difference 按 unverified 计入
+//     difference_stats 并计入 difference_unmarked（未经新 Schema 查证，不冒充已验证，
+//     需求 6.4）；business_behavior 视为空对象。
+//
 // 可导入：export assembleIndex(specDir, date, sourceDesc, expectedStageCount)
 //         返回 { ok, problems, summary }，不直接退出进程
 // CLI 用法：
@@ -115,6 +124,10 @@ export function assembleIndex(specDir, date, sourceDesc, expectedStageCount) {
         if (!at.id || !at.name) return bad('原子项 id/name 缺失：' + JSON.stringify({ id: at.id }))
         if (atomIds.has(at.id)) return bad('原子项 ID 重复：' + at.id)
         atomIds.add(at.id)
+        // v2 新字段透传（T3.4）：v1 旧片段无 difference/verification/businessBehavior 时按
+        // 「未经新 Schema 查证」处理（difference 兜底 unverified，不冒充已验证，需求 6.4）
+        const hasV2 = at.difference !== undefined || at.verification !== undefined || at.businessBehavior !== undefined
+        const verification = at.verification || { businessRuleVerified: false, unverifiedReason: 'v1 旧 Schema 数据（未经新 Schema 查证）' }
         atoms.push({
           id: at.id,
           name: at.name,
@@ -128,6 +141,22 @@ export function assembleIndex(specDir, date, sourceDesc, expectedStageCount) {
           // 索引证据只留 file/location（摘录保留在阶段文档），确定性剥离，防止片段带摘录混入
           evidence: (at.evidence || []).map((e) => ({ file: e.file, location: e.location })),
           notes: at.notes || '',
+          business_behavior: at.businessBehavior
+            ? {
+                trigger: at.businessBehavior.trigger || '',
+                condition: at.businessBehavior.condition || '',
+                action: at.businessBehavior.action || '',
+                result: at.businessBehavior.result || '',
+              }
+            : {},
+          difference: at.difference !== undefined ? at.difference : 'unverified',
+          difference_detail: at.differenceDetail || '',
+          verification: {
+            business_rule_verified: verification.businessRuleVerified === true,
+            unverified_reason: verification.unverifiedReason || '',
+            client_observed: at.verdict !== 'not_found',
+          },
+          schema_marked: hasV2,
         })
       }
       if (atoms.length === 0) return bad('功能点无原子项：' + fe.id)
@@ -161,6 +190,17 @@ export function assembleIndex(specDir, date, sourceDesc, expectedStageCount) {
     })
   }
 
+  // v2 差异统计（T3.4）：v1 旧片段无 difference 字段按 unverified 计（schema_marked=false 区分）
+  const diffStats = { consistent: 0, partial: 0, conflict: 0, unverified: 0 }
+  let diffUnmarked = 0
+  for (const fe of features) {
+    for (const at of fe.atoms || []) {
+      if (diffStats[at.difference] === undefined) at.difference = 'unverified'
+      diffStats[at.difference]++
+      if (at.schema_marked !== true) diffUnmarked++
+    }
+  }
+
   const index = {
     module: '42320',
     source:
@@ -168,9 +208,19 @@ export function assembleIndex(specDir, date, sourceDesc, expectedStageCount) {
       'templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md（需求模板）+ source-code/client/Code + source-code/client/Fgui（客户端代码证据）',
     generated_by: 'output-spec-generate workflow',
     date: date || '未提供',
+    // v2 新增（T3.4/T2.2）：Schema 版本（2 = 含 businessBehavior/difference/verification）
+    schema_version: 2,
     stage_count: stages.length,
     feature_count: features.length,
     atom_count: atomIds.size,
+    // v2 新增（T3.4）：difference 分布（v1 未标注原子按 unverified 计，diff_unmarked 为其数量）
+    difference_stats: {
+      consistent: diffStats.consistent,
+      partial: diffStats.partial,
+      conflict: diffStats.conflict,
+      unverified: diffStats.unverified,
+      unmarked_v1: diffUnmarked,
+    },
     stages: stages,
     features: features,
   }
@@ -218,6 +268,8 @@ export function assembleIndex(specDir, date, sourceDesc, expectedStageCount) {
     confirmed: total.c,
     partial: total.p,
     notFound: total.n,
+    differenceStats: diffStats,
+    differenceUnmarked: diffUnmarked,
   }
   console.log(
     '[成功] feature_index.json：' + stages.length + ' 阶段 / ' + features.length + ' 功能点 / ' + atomIds.size + ' 原子项'

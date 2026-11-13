@@ -140,5 +140,67 @@ function atom(id, over) {
   assert.match(r.out, /片段目录不存在/)
 }
 
+// 场景 8（v2）：v2 片段新字段透传 + v1 片段兜底 + schema_version/difference_stats
+{
+  fs.rmSync(root, { recursive: true, force: true })
+  fs.mkdirSync(root + '/runtime/parts', { recursive: true })
+  makePart('ST-C01.json', {
+    stage: { id: 'ST-C01', name: '定庄与轮庄', chapter: '开局', summary: '概述', terms: [], crossCutting: [] },
+    features: [
+      {
+        id: 'FP-ST-C01-001', name: '定庄', description: 'd', scope: '', coordination: '',
+        atoms: [
+          atom('AT-ST-C01-001', {
+            businessBehavior: { trigger: '开局', condition: '首局', action: '点亮庄家标志', result: '玩家看到庄家' },
+            difference: 'consistent',
+            differenceDetail: '',
+            verification: { businessRuleVerified: false, unverifiedReason: '服务端行为不可证', clientObserved: true },
+          }),
+          atom('AT-ST-C01-002', {
+            verdict: 'not_found', evidence: [], clientLogic: '', uiInteraction: '',
+            difference: 'conflict', differenceDetail: '需求按白板展示，实际高亮',
+            verification: { businessRuleVerified: false, unverifiedReason: '差异待确认' },
+          }),
+        ],
+      },
+    ],
+  })
+  makePart('ST-C02.json', {
+    stage: { id: 'ST-C02', name: '算分', chapter: '算分', summary: '概述', terms: [], crossCutting: [] },
+    features: [
+      {
+        id: 'FP-ST-C02-001', name: '底分', description: 'd', scope: '', coordination: '',
+        atoms: [atom('AT-ST-C02-001')], // v1 片段：无新字段
+      },
+    ],
+  })
+  const r = run([root, '2026-11-14', '模板+代码', '2'])
+  assert.equal(r.code, 0)
+  const idx = JSON.parse(fs.readFileSync(root + '/feature_index.json', 'utf8'))
+  assert.equal(idx.schema_version, 2)
+  assert.deepEqual(idx.difference_stats, { consistent: 1, partial: 0, conflict: 1, unverified: 1, unmarked_v1: 1 })
+
+  const a1 = idx.features[0].atoms[0]
+  assert.deepEqual(a1.business_behavior, { trigger: '开局', condition: '首局', action: '点亮庄家标志', result: '玩家看到庄家' })
+  assert.equal(a1.difference, 'consistent')
+  assert.equal(a1.difference_detail, '')
+  assert.equal(a1.schema_marked, true)
+  assert.deepEqual(a1.verification, { business_rule_verified: false, unverified_reason: '服务端行为不可证', client_observed: true })
+
+  // conflict 且 verdict=not_found：装配器不重判（校验归 workflow 校验循环），透传原值
+  const a2 = idx.features[0].atoms[1]
+  assert.equal(a2.difference, 'conflict')
+  assert.equal(a2.difference_detail, '需求按白板展示，实际高亮')
+  assert.equal(a2.verification.client_observed, false, 'not_found 派生 client_observed=false')
+
+  // v1 片段：difference 兜底 unverified + schema_marked=false + business_behavior 空对象（不冒充已验证）
+  const a3 = idx.features[1].atoms[0]
+  assert.equal(a3.difference, 'unverified')
+  assert.equal(a3.schema_marked, false)
+  assert.deepEqual(a3.business_behavior, {})
+  assert.equal(a3.verification.business_rule_verified, false)
+  assert.ok(a3.verification.unverified_reason.includes('v1 旧 Schema 数据'))
+}
+
 fs.rmSync(root, { recursive: true, force: true })
-console.log('[成功] assemble-output-spec-index.example 全部断言通过（正常装配/阶段数不符/ID错位/原子ID重复/空功能点/空目录/目录缺失）')
+console.log('[成功] assemble-output-spec-index.example 全部断言通过（正常装配/阶段数不符/ID错位/原子ID重复/空功能点/空目录/目录缺失/v2 新字段透传与 v1 兜底）')

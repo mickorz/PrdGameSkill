@@ -1,6 +1,12 @@
 // Output-Spec Generate Workflow（主编排，四子流程拆分版）
 //
-// 由 dev-docs/design/outputspec生成工作流计划.md 转写（2026-11-13），2026-11-13 拆分为四个子 workflow：
+// 位置：本文件与四个子流程同在 output-spec-generate/ 子目录（2026-11-13 拆分时一并移入）。
+// 注意：注册表只扫描 workflows/ 一级目录，本目录脚本均不进注册表——
+//   调用本工作流用 workflow 工具的 scriptPath（相对项目根）：
+//   ./.opencode-workflows/workflows/output-spec-generate/output-spec-generate.js
+//   不能按 workflowId 被 Schedule 引用或被其他脚本按名调用（如需恢复按名调用，移回一级目录即可）。
+//
+// 由 dev-docs/design/outputspec生成工作流计划.md 转写（2026-11-13），同日拆分为四个子 workflow：
 //   本文件只做编排：输入检查 -> 顺序调度四个子流程（内存链式传参，不经文件中转）-> 汇总返回。
 //   子流程位于本目录（注册表只扫描 workflows/ 一级目录，子目录脚本经显式相对路径调用）：
 //     output-spec-generate/1-scan-template.js   扫描模板章节 + 覆盖校验 + scan.json 落盘
@@ -70,7 +76,7 @@ const supplementPath =
 
 setConcurrency(A.concurrency || 16)
 
-// 子流程脚本路径（显式相对路径；注册表只扫描 workflows/ 一级目录，子目录脚本不可按名调用）
+// 子流程脚本路径（显式相对项目根的路径；子目录脚本不可按名调用）
 const DIR = './.opencode-workflows/workflows/output-spec-generate'
 const STEPS = [
   { n: 1, label: '扫描模板', script: DIR + '/1-scan-template.js' },

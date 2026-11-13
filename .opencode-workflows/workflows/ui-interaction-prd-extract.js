@@ -10,6 +10,14 @@
 //   B1/B4 修正 agent 显式用 analysisModel（flash）与 1h 超时——v1 修正阶段 3241s 占全程 53%
 //      （默认重型模型 attempt1 撞 30 分钟超时全量作废）。
 //
+// 2026-11-13 v3（GATE ruleRef 确定性闸门）：
+//   A2 生成报告前 validate-rulerefs.mjs 逐条校验条款号真实性（幻觉条款号拦截）；
+//   A3 非法时定向修正 agent 逐条找回真实支撑条款（matched=false 降级为标记项，不进报告裸奔）；
+//   A4 审核修正后确定性复检（乱码 + 条款号全文复验，防修正 agent 编辑引入缺陷）；
+//   C 检查 agent 的 schema/prompt 加「条款号必须逐字抄自规则文件、报出前先验证存在」硬约束。
+//   背景：v1/v2 中检查 agent 幻觉条款号 9+ 处（01#42 等，规则文件实际只有 1~25 条），
+//   v2 靠修正 agent 行为波动修复，本版做成机制保证。
+//
 // 流程：
 //   [check] 扫描规则基准与需求文档
 //     -> 按规则主题并行检查（严格 UI 交互口径）
@@ -49,6 +57,7 @@ export const meta = {
     { title: '规则检查' },
     { title: '一致性检查' },
     { title: '汇总去重' },
+    { title: '条款号校验' },
     { title: '生成报告' },
     { title: '报告审核' },
     { title: '生成Dashboard' },
@@ -176,7 +185,7 @@ const ISSUE_ITEM_SCHEMA = {
     title: { type: 'string', description: '一句话问题，不超过 40 字' },
     location: { type: 'string', description: '需求文档原文位置（章节/小节标题），多处用、分隔' },
     quote: { type: 'string', description: '需求文档原文引文，不超过 200 字；MISSING 类固定写「需求文档无对应描述」，缺失原因说明写进 problem 字段，不要写进引文' },
-    ruleRef: { type: 'string', description: 'UI 基准条款号，如 01#9,03#12；scope=out 填 无' },
+    ruleRef: { type: 'string', description: 'UI 基准条款号，如 01#9,03#12；scope=out 填 无；条款号必须是规则文件中逐字真实存在的条款（条款形如 “1. ” 的有序列表行），报出前先用 grep/read 核对存在，禁止引用不存在的条款号' },
     requirementIds: { type: 'array', items: { type: 'string' }, description: '共享快照需求点 ID 列表（REQ-xxx；未传共享快照或无法定位时填空数组）' },
     problem: { type: 'string', description: '问题说明，指出与哪条 UI 基准冲突或哪里缺失/矛盾' },
     impact: { type: 'string', description: '对开发 / 测试 / 验收的具体影响' },
@@ -207,6 +216,25 @@ const ISSUES_SCHEMA = {
     summary: { type: 'string', description: '本次检查覆盖了哪些基准条款、是否有条款无法对照' },
   },
   required: ['issues'],
+}
+
+const REF_FIX_SCHEMA = {
+  type: 'object',
+  properties: {
+    corrections: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'string', description: '问题 ID（Q01 形式）' },
+          ruleRef: { type: 'string', description: '修正后的基准条款号（NN#M，必须已在规则文件中逐字验证存在）；无支撑条款时填 无' },
+          matched: { type: 'boolean', description: 'true=已找到真实支撑条款；false=规则基准无支撑条款（ruleRef 填 无）' },
+        },
+        required: ['id', 'ruleRef', 'matched'],
+      },
+    },
+  },
+  required: ['corrections'],
 }
 
 const DEDUP_SCHEMA = {
@@ -313,7 +341,7 @@ function uiIssueRules() {
     '2. 需求文档明示“本期不做/按无托管处理”的项，不报缺失。',
     '3. 基准中标注“死代码/无消费方/已移除”的条款，不作为要求需求文档覆盖的依据；需求若描述了这些行为且与实现不符，记 CONFLICT。',
     '4. 交互限制四类（前置守卫/互斥/超时/失败与恢复）是重点检查维度，需求缺失即报 INCOMPLETE。',
-    '5. 严格 UI 归因：ruleRef 必须指向 UI 基准的具体条款号（如 01#9、02#6）；玩法逻辑（何时可碰杠胡、番型、算分）与纯文档质量问题（编号悬空、术语不一致）scope 填 out，outReason 写归口，不计入统计。',
+    '5. 严格 UI 归因：ruleRef 必须指向 UI 基准的具体条款号（如 01#9、02#6）；条款号必须逐字抄自规则文件中真实存在的条款（报出前用 grep 或 read 核对该条款号存在，引用不存在的条款号视为无效输出）；玩法逻辑（何时可碰杠胡、番型、算分）与纯文档质量问题（编号悬空、术语不一致）scope 填 out，outReason 写归口，不计入统计。',
     '6. 需求有意新增、现网不存在的功能，记 P3 并建议补充“与现网实现的差异说明”，不要报 CONFLICT。',
     '7. 证据先行：每条必须有需求原文位置与引文；报 MISSING 前复核基准条款与需求确实未覆盖。' + (sharedRequirementsPath ? 'REQ 关联（必做步骤）：除「需求缺失」类外，每条问题必须先读需求点索引文件（' + outDir + '/requirements-index.json）定位涉及的需求点，requirementIds 列出对应 REQ ID（REQ-xxx，可多条）；「需求缺失」类是 PRD 未写、快照天然无条目，可填空数组。非缺失类不许整体留空。' : ''),
     '8. 不重复：同一缺陷只记一条，多处证据合并进同一条的 location。',
@@ -555,6 +583,91 @@ for (const it of issues) {
   }
 }
 
+// ============================================================
+// 条款号校验（A2/A3）：幻觉条款号在生成报告前拦截
+// v1 残留 9 个幻觉条款号进最终报告（审核发现了但修正 prompt 禁改 ruleRef）
+// ============================================================
+
+phase('条款号校验')
+
+const MARKED_REF = '无（原条款号未匹配规则基准，待人工核对）'
+const validateRefsScript = '.opencode-workflows/scripts/validate-rulerefs.mjs'
+const refTokens = (ref) => (String(ref || '').match(/\d{2}#\d+/g) || []).join(',')
+const refValidate = (it) =>
+  commandSuccess(
+    'node "' + validateRefsScript + '" --rules "' + rulesDir + '" --refs "' +
+      it.id + '@' + (refTokens(it.ruleRef) || '无') + '"'
+  )
+
+let refGateInvalid = 0
+let refGateFixed = 0
+let refGateMarked = 0
+const invalidRefIssues = issues.filter((it) => !it._refMarked && !refValidate(it))
+if (invalidRefIssues.length === 0) {
+  log('条款号闸门通过：' + issues.length + ' 条问题的基准条款号全部真实存在')
+} else {
+  refGateInvalid = invalidRefIssues.length
+  log('条款号闸门拦截：' + refGateInvalid + ' 条问题引用了不存在的基准条款号，进入定向修正')
+  const refFix = await agent(
+    [
+      '你是 UI 交互检查的基准依据修正员。下列问题的 ruleRef（基准条款号）引用了规则基准中不存在的条款、用了非条款号格式（如表行名）、或未引用任何条款：',
+      JSON.stringify(
+        invalidRefIssues.map((it) => ({
+          id: it.id,
+          module: it.module,
+          title: it.title,
+          problem: it.problem,
+          ruleRef: it.ruleRef,
+        })),
+        null,
+        1
+      ),
+      '',
+      '任务：逐条在规则基准目录 ' + rulesDir + ' 下找到真正支撑该问题的条款号。',
+      '条款格式：规则文件中 “N. 内容” 的有序列表行即第 N 条；条款号格式 NN#M（NN 为两位文件号，如 01-操作按钮与权限.md 的第 9 条是 01#9）。',
+      '要求：',
+      '1. 按问题模块与原引用前缀定位相关规则文件，通读条款，选出真正支撑该问题的条款号（可多选，逗号分隔）。',
+      '2. 返回前用 grep 或 read 逐个验证条款号在规则文件中真实存在，禁止再返回不存在的条款号。',
+      '3. 整个规则基准都找不到支撑条款时：ruleRef 填 无，matched=false（如实返回，不算失败）。',
+      '4. 只修正 ruleRef，不得改动其他字段；corrections 必须覆盖上面列出的全部 id。',
+    ].join('\n'),
+    { label: '修正基准条款号', schema: REF_FIX_SCHEMA, ...analysisAgentOptions, retries: 1 }
+  )
+
+  const invalidIds = new Set(invalidRefIssues.map((it) => it.id))
+  const byId = new Map(issues.map((it) => [it.id, it]))
+  const corrections = (refFix && refFix.corrections) || []
+  for (const c of corrections) {
+    const it = byId.get(c.id)
+    if (!it || !invalidIds.has(c.id) || !c.ruleRef) continue
+    if (c.matched === false) {
+      it.ruleRef = MARKED_REF
+      it._refMarked = true
+      refGateMarked++
+    } else {
+      it.ruleRef = c.ruleRef
+    }
+  }
+  // 复验（确定性）：matched=true 仍非法（修正 agent 再幻觉）或漏改的，降级为标记项，不裸奔进报告
+  for (const it of invalidRefIssues) {
+    if (it._refMarked) continue
+    if (!refValidate(it)) {
+      it.ruleRef = MARKED_REF
+      it._refMarked = true
+      refGateMarked++
+    } else {
+      refGateFixed++
+    }
+  }
+  if (refGateMarked > 0) {
+    log(
+      '条款号修正完成：找回真实支撑条款 ' + refGateFixed + ' 条，规则基准无支撑条款降级标记 ' + refGateMarked + ' 条（待人工核对）'
+    )
+  } else {
+    log('条款号修正完成：' + refGateFixed + ' 条全部找回真实支撑条款')
+  }
+}
+
 const stats = { total: issues.length, P0: 0, P1: 0, P2: 0, P3: 0 }
 const typeStats = { MISSING: 0, CONFLICT: 0, LOGIC: 0, AMBIGUOUS: 0, INCOMPLETE: 0 }
 const moduleStats = {}
@@ -667,9 +780,10 @@ const detailBlocks = issues.map((it) => {
     ? '位置“' + (it.location || '') + '”。需求文档无对应描述。'
     : '位置“' + (it.location || '') + '”。引文：“' + (it.quote || '') + '”'
   const quoteNote = it.quote || ''
+  const baseProblem = String(it.problem || '').replace(/[。.；;\s]+$/, '')
   const problemText =
     isMissing && quoteNote && quoteNote.indexOf('需求文档无对应描述') < 0
-      ? (it.problem || '') + '。缺失说明：' + quoteNote
+      ? baseProblem + '。缺失说明：' + quoteNote
       : it.problem
   return [
     '### ' + it.id + '【' + it.priority + ' / ' + it.type + '】' + it.title,
@@ -852,6 +966,7 @@ if (skipReview) {
       '期望 ID 序列：' + expectedIds,
       '期望详情条数：' + issues.length,
       '期望附录条数：' + appendix.length,
+      '合规说明：基准依据为「' + MARKED_REF + '」的条目是确定性校验拦截后的标记项（规则基准无支撑条款），视为合规，不报问题。',
       '',
       '逐项检查并输出问题列表：',
       '1. 是否包含检查信息、1 检查概览（1.1 统计矩阵 + 1.2 总体总结）、2 问题清单、3 问题详情、4 总体建议；有附录时附录在 4 之后。',
@@ -905,6 +1020,21 @@ if (skipReview) {
   }
 }
 
+// A4：审核修正后确定性复检——v1 中修正 agent 的编辑引入了 2 个 U+FFFD 乱码且无任何复检
+const fffdCleanAfterFix = await commandSuccess(
+  'node -e "process.exit(require(\'fs\').readFileSync(process.argv[1],\'utf8\').includes(\'\\uFFFD\')?1:0)" "' + outPath + '"'
+)
+if (!fffdCleanAfterFix) {
+  throw new Error('审核修正后报告 ' + outPath + ' 含乱码替换字符 U+FFFD（审核/修正阶段编辑引入），需定位根因后重跑，不得带病出报告')
+}
+const reportRefOkAfterFix = commandSuccess(
+  'node "' + validateRefsScript + '" --rules "' + rulesDir + '" --report "' + outPath + '"'
+)
+if (!reportRefOkAfterFix) {
+  throw new Error('审核修正后报告含不存在的基准条款号（审核/修正阶段编辑引入），详见命令日志，不得带病出报告')
+}
+log('审核修正后确定性复检通过：乱码 0、全文条款号复验通过')
+
 phase('生成Dashboard')
 
 let dashboardResult = null
@@ -955,5 +1085,10 @@ return {
   reviewSkipped: skipReview,
   fastMode: fastMode,
   reviewOk: skipReview ? null : review ? review.ok === true || fixed : false,
+  ruleRefGate: {
+    invalidFound: refGateInvalid,
+    fixed: refGateFixed,
+    marked: refGateMarked,
+  },
   reportWriteSummary: writeResult,
 }

@@ -8,6 +8,7 @@
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | v1 | 2026-11-13 | 原始版（回溯补录） | ui-interaction-prd-extract.v1.js.bak | run-mwee0k70-1 | 6098.5 | 248703 | 1 | passed | RED | - | （无独立报告，耗时分析见 dev-docs/design/2026-11-13-ui-prd-check修正报告耗时分析与优化方案.md） | 6 |
 | v2 | 2026-11-13 | FX 修正闭环提速（A1+B1+B4） | ui-interaction-prd-extract.v2-FX-20261113.js | run-mwekpt2y-2 | 4151.9 | 204078 | 1 | passed | Y | 4 金（4 维评审全胜） | dev-docs/progress-result/ui-interaction-prd-extract-演进报告-v2.md | 6（另 L9/L10 不修归档） |
+| v3 | 2026-11-13 | GATE ruleRef 确定性闸门（A2+A3+A4+C，顺带修 L8） | ui-interaction-prd-extract.v3-GATE-20261113.js（完成后备份） | | | | | | | | | |
 
 ## 版本备注
 

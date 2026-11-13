@@ -4,6 +4,14 @@
 // 职责：按阶段并行执行「拆原子需求 + 客户端代码查证」（explore 只读 + JSON schema），
 //       逐阶段校验 ID 规范与 verdict/证据自洽，汇总统计返回。
 //
+// v3 查证墙钟加固（2026-11-13，备份 2-verify-stages.v1-org-20261113.js）：
+//   首跑实测（run-mwep59gd-1，journal 27 次失败 attempt 中 20 次在本阶段）：
+//   15 个查证 agent 中 14 个至少一次撞 1h 墙钟超时（agent超时 18 次）+ 结构化降级失败
+//   （网关缓存 format unsupported (cached)）2 次，全部靠重试/续跑续命才成功；
+//   成功 attempt 平均 2398s / 最大 3355s，原 3600s 墙钟裕度仅 1.07x，超时是常态而非异常。
+//   加固：timeoutMs 3600000 -> 7200000（2x 裕度）；retries 1 -> 2（覆盖网关缓存错误与偶发超时）。
+//   效果结论待下次真实执行补充（本次为机制落地，未重跑验证）。
+//
 // 由主 workflow 经显式路径调用（本目录不在注册表扫描范围）：
 //   await workflow({ scriptPath: './.opencode-workflows/workflows/output-spec-generate/2-verify-stages.js', label: '原子拆分与代码查证' }, { ...childArgs, scan })
 // args：
@@ -181,8 +189,8 @@ const stageResults = await parallel(
       withModel({
         label: '查证 ' + s.stageId + ' ' + s.title,
         schema: STAGE_EVIDENCE_SCHEMA,
-        timeoutMs: 3600000,
-        retries: 1,
+        timeoutMs: 7200000,
+        retries: 2,
       })
     )
   )

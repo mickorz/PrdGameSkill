@@ -1,13 +1,28 @@
 // Output-Spec Generate 子流程 3/4：产出编写
 //
 // 从主 workflow output-spec-generate.js 拆分而来（2026-11-13，拆分方案见主文件头注释）。
-// 职责：一轮并行产出全部文件——阶段规格文档、索引片段 echo、补充版章节分片、构建配置 echo。
+// 职责：一轮并行产出全部文件——阶段规格文档（v2 起重阶段分片写盘）、索引片段 echo、
+//       补充版章节分片、构建配置 echo。
 //       写作类任务用会话默认模型，机械 echo 类任务用分析模型。
+//
+// v2 分片写盘（2026-11-13，备份 3-produce-outputs.v1-org-20261113.js）：
+//   首跑实测原子项 56/31/59 的重章节（ST-C11/C05/C15）单 agent 单会话写 60KB 级文档
+//   连续 provider_timeout 重试耗尽 / 输出中断（outputTokens=0 脑内整理不落盘），
+//   见 dev-docs/experience/outputspec大文档agent输出中断分片写盘.md。
+//   修复脚本（fix-st-c11-doc-2/3）真实执行验证分片方案可行后回填：
+//   - 原子项 > MAX_ATOMS_PER_DOC_PART（24）的阶段按功能点贪心分组分片编写（不拆散功能点），
+//     分片写 runtime/state/doc-parts/<stageId>/part-N.md，全部落盘后 merge-stage-doc-parts.mjs
+//     确定性合并（含 U+FFFD 检查）成 stages/spec_stage_<stageId>.md
+//   - 单片阶段保持直写 stages/spec_stage_<stageId>.md
+//   - 全部阶段紧跟落盘闸门：check(spec_stage 文件存在)，agent 返回但未写盘当场拦截
+//     （首跑 ST-C11 被跳过后问题推迟到装配校验才暴露，见
+//     dev-docs/experience/outputspec续跑不重执行重试耗尽agent.md）
+//   - 写作 prompt 硬性规则强化：直接逐个功能点边写边落盘，禁止先全量脑内整理再写盘
 //
 // 由主 workflow 经显式路径调用（本目录不在注册表扫描范围）：
 //   await workflow({ scriptPath: './.opencode-workflows/workflows/output-spec-generate/3-produce-outputs.js', label: '产出编写' }, { ...childArgs, scan, verify })
 // args：
-//   scan           必填，子流程 1 的返回值（{ sections, stageSections, ... }），缺失直接报错
+//   scan           必填，子流程 1 的返回值（{ sections, termsSection, stageSections, ... }），缺失直接报错
 //   verify         必填，子流程 2 的返回值（{ byStage, ... }），缺失直接报错
 //   templatePath   需求模板路径，默认 templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md
 //   codeDir        客户端代码工程，默认 source-code/client/Code（用于 sourceDesc）
@@ -18,7 +33,7 @@
 //   analysisModel  分析类模型（echo 类任务），默认 biangfeng-gateway/deepseek-v4.1-flash-official（传空串用会话默认）
 //
 // 返回（供主 workflow 汇总）：
-//   { specDir, stageDocCount, fragmentCount, partCount }
+//   { specDir, stageDocCount, fragmentCount, partCount, docSplitStages, docPartTotal }
 
 export const meta = {
   id: 'output-spec-produce-outputs',
@@ -59,6 +74,32 @@ function readRangeHint(sec) {
 
 function partPath(sec) {
   return specDir + '/runtime/supplement-parts/part-' + pad2(sec.no) + '.md'
+}
+
+// v2 分片写盘：重阶段（原子项 > 阈值）按功能点贪心分组分片编写，规避单会话写不动 60KB 级文档
+const MAX_ATOMS_PER_DOC_PART = 24
+
+function docPartsDir(stageId) {
+  return specDir + '/runtime/state/doc-parts/' + stageId
+}
+
+// 按功能点顺序贪心装箱（不拆散功能点；单片塞不下整功能点时该功能点独占一片）
+function splitDocParts(features, maxAtoms) {
+  const groups = []
+  let cur = []
+  let curAtoms = 0
+  for (const fe of features) {
+    const n = (fe.atoms || []).length
+    if (curAtoms > 0 && curAtoms + n > maxAtoms) {
+      groups.push(cur)
+      cur = []
+      curAtoms = 0
+    }
+    cur.push(fe)
+    curAtoms += n
+  }
+  if (cur.length > 0) groups.push(cur)
+  return groups
 }
 
 // ============================================================
@@ -144,11 +185,16 @@ const STAGE_DOC_FORMAT = [
   '- **原文摘录**：`{evidence[0].excerpt}`（not_found 写 无）',
 ].join('\n')
 
-function stageDocPrompt(s, result) {
-  return [
-    '你是游戏需求规格编写员，为阶段 ' + s.stageId + ' 撰写客户端视角的阶段规格文档。',
+// v2 分片版阶段文档 prompt（单片与多片同构：多片时只嵌本片 features，写分片文件；单片写目标文件）
+function stageDocPartPrompt(s, result, groups, n) {
+  const multi = groups.length > 1
+  const target = multi
+    ? docPartsDir(s.stageId) + '/part-' + n + '.md'
+    : specDir + '/stages/spec_stage_' + s.stageId + '.md'
+  const lines = [
+    '你是游戏需求规格编写员，为阶段 ' + s.stageId + ' 撰写客户端视角的阶段规格文档' + (multi ? '的分片（第 ' + n + '/' + groups.length + ' 片）' : '') + '。',
     '',
-    '写入目标文件（write 工具，UTF-8）：' + specDir + '/stages/spec_stage_' + s.stageId + '.md',
+    '写入目标文件（write 工具，UTF-8）：' + target,
     '',
     '输入一，阶段信息：',
     '- 阶段 ID：' + s.stageId,
@@ -156,20 +202,34 @@ function stageDocPrompt(s, result) {
     '- 来源章节：' + (s.sourceTitle || s.title),
     '- 可读模板 ' + templatePath + ' 本阶段原文核对语义，' + readRangeHint(s),
     '',
-    '输入二，本阶段原子拆分与代码查证结果 JSON（唯一事实依据）：',
-    JSON.stringify(result, null, 1),
+    '输入二，本' + (multi ? '片' : '阶段') + '原子拆分与代码查证结果 JSON（唯一事实依据）：',
+    JSON.stringify({ stage: result.stage, features: groups[n - 1] }, null, 1),
     '',
+  ]
+  if (multi && n === 1) {
+    lines.push(
+      '本片为第 1/' + groups.length + ' 片：先写文档头（从 # 阶段标题行开始，依次写引语、## 0. 阶段、## 术语与单位、## 跨切面行为，直到「（以下按 JSON 中 features 顺序，每个功能点一节）」行，其中 涉及协议消息/涉及 UI 模块 由本片 JSON 原子项的 messages 与证据文件汇总；其余功能点由后续分片覆盖，不冲突），随后写本片 JSON 中每个功能点各节。',
+      ''
+    )
+  } else if (multi) {
+    lines.push(
+      '本片为第 ' + n + '/' + groups.length + ' 片：只写本片 JSON 中每个功能点各节（从 ## 功能点标题行开始），不写文档头，不加任何收尾内容。',
+      ''
+    )
+  }
+  lines.push(
     '文档格式骨架（严格遵循结构与标题层级，花括号为占位说明不是要写出的内容）：',
     STAGE_DOC_FORMAT,
     '',
     '硬性规则：',
-    '1. 功能点与原子项必须与 JSON 的 features/atoms 一一对应：数量、ID、顺序一致，不得增删、合并、改名。',
+    '1. 功能点与原子项必须与本' + (multi ? '片' : '阶段') + ' JSON 的 features/atoms 一一对应：数量、ID、顺序一致，不得增删、合并、改名' + (multi ? '；禁止写入本片 JSON 之外的功能点' : '') + '。',
     '2. evidence 的 file/location/excerpt 原样保留（excerpt 超长可截断到 120 字内）；第一条证据填 来源文件/来源定位/原文摘录 三字段，其余证据并入 职责依据（分号分隔）。',
     '3. 触发条件/配置影响/限制与禁止/异常与边界/验收 由 rule 加证据推导，禁止引入 JSON 之外的新事实。',
-    '4. verdict=not_found 的原子项：职责依据写 无（客户端代码未找到），来源文件/来源定位/原文摘录 各写 无，客户端交互写 客户端代码未找到对应实现（待确认）。',
+    '4. verdict=not_found 的原子项：职责依据写 无（客户端代码未找到），来源文件/来源定位/原文摘录 各写 无，客户端交互写 客户端代码未找到对应实现（待确认），客户端职责写 待确认（clientLogic 非空时如实写 clientLogic）。',
     '5. 中文书写，无 Emoji，不要用代码围栏包裹整份文档；表格保留 Markdown 表格语法。',
-    '6. 写完后只返回文件路径与一句话摘要，不要输出文档全文，不要执行 git 命令。',
-  ].join('\n')
+    '6. 直接逐个功能点边写边落盘：先在思考中整理当前功能点，随即写入文件，不要先在回复中整理全部内容再写盘；写完只返回文件路径与一句话摘要，不要输出文档全文，不要执行 git 命令。'
+  )
+  return lines.join('\n')
 }
 
 function echoPrompt(text, targetPath) {
@@ -262,17 +322,25 @@ function slimEvidence(r) {
 
 const writeTasks = []
 
-// A. 阶段规格文档（写作类，会话默认模型）
+// A. 阶段规格文档（写作类，会话默认模型；v2 起重阶段按功能点分片写盘）
+const docPlans = []
+let docPartTotal = 0
 for (const s of stageSections) {
   const result = byId.get(s.stageId)
-  writeTasks.push(() =>
-    agent(stageDocPrompt(s, result), {
-      label: '规格文档 ' + s.stageId,
-      agentType: 'general',
-      timeoutMs: 3600000,
-      retries: 1,
-    })
-  )
+  const groups = splitDocParts(result.features || [], MAX_ATOMS_PER_DOC_PART)
+  docPlans.push({ stageId: s.stageId, groups: groups })
+  docPartTotal += groups.length
+  for (let n = 1; n <= groups.length; n++) {
+    const partNo = n
+    writeTasks.push(() =>
+      agent(stageDocPartPrompt(s, result, groups, partNo), {
+        label: '规格文档 ' + s.stageId + (groups.length > 1 ? ' 片' + partNo + '/' + groups.length : ''),
+        agentType: 'general',
+        timeoutMs: 3600000,
+        retries: 2,
+      })
+    )
+  }
 }
 
 // B. 索引片段 echo（机械逐字写入，分析模型即可）
@@ -340,11 +408,41 @@ writeTasks.push(() =>
 
 await parallel(writeTasks)
 
-log('产出编写完成：阶段文档 ' + stageSections.length + ' 份，索引片段 ' + stageSections.length + ' 份，补充版分片 ' + sections.length + ' 份')
+// v2 产出闸门：分片阶段确定性合并 + 全部阶段文档落盘检查
+// （agent 返回但未写盘当场拦截，不推迟到子流程 4 装配校验）
+for (const plan of docPlans) {
+  if (plan.groups.length > 1) {
+    const partsDir = docPartsDir(plan.stageId)
+    for (let n = 1; n <= plan.groups.length; n++) {
+      await check(
+        () => fileExists(partsDir + '/part-' + n + '.md'),
+        '阶段 ' + plan.stageId + ' 规格文档分片 part-' + n + '.md 未生成（agent 返回但未写盘）'
+      )
+    }
+    const mergeCmd =
+      'node ".opencode-workflows/scripts/merge-stage-doc-parts.mjs" "' +
+      partsDir + '" "' + specDir + '/stages/spec_stage_' + plan.stageId + '.md" ' + plan.groups.length
+    const mergeOk = await commandSuccess(mergeCmd, 120000)
+    if (!mergeOk) {
+      throw new Error('阶段 ' + plan.stageId + ' 规格文档分片合并失败（分片缺失或含乱码），见上方命令日志')
+    }
+  }
+  await check(
+    () => fileExists(specDir + '/stages/spec_stage_' + plan.stageId + '.md'),
+    '阶段 ' + plan.stageId + ' 规格文档未生成（agent 返回但未写盘）'
+  )
+}
+
+const docSplitStages = docPlans.filter((p) => p.groups.length > 1).map((p) => p.stageId + '(' + p.groups.length + '片)')
+log(
+  '产出编写完成：阶段文档 ' + stageSections.length + ' 份（分片阶段 ' + docSplitStages.length + ' 个：' + docSplitStages.join('、') + '），索引片段 ' + stageSections.length + ' 份，补充版分片 ' + sections.length + ' 份'
+)
 
 return {
   specDir: specDir,
   stageDocCount: stageSections.length,
   fragmentCount: stageSections.length,
   partCount: sections.length,
+  docPartTotal: docPartTotal,
+  docSplitStages: docSplitStages,
 }

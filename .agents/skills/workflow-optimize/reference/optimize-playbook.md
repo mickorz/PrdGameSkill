@@ -50,6 +50,20 @@
 
 - 案例：v2 残留 {module} 占位且漏列 3 个被校验文件；v4 回填成功 9 文件全列（v4 验证 3.3 节）
 
+### 8. 大产物分片写盘 + 当阶段落盘闸门（2026-11-13 验证，output-spec-generate v2）
+
+单 agent 单会话要求「读 45KB 输入 + 一次写出 60KB 文档」超出 provider 稳定承载时，按功能点贪心分组分片并行写盘（单片 ≤ 阈值），node 确定性合并（含 U+FFFD 检查）；每阶段紧跟 `check(fileExists)` 闸门，agent 返回但未写盘当场拦截，不推迟到下游装配校验。
+
+- 案例：ST-C11（56 原子项）单会话 3 连败（provider_timeout×2 + 输出中断×1），分片 3 片后 4/5 次一次成功、1 片重试成功，合并产物 100907B 机械校验放行（演进报告 v2 第 6 节）
+- 适用信号：产物文档预计超 ~40KB、或 agent 长时间「整理」却不写盘、或 provider_timeout 集中在重产物任务
+
+### 9. 超时参数按实测成功耗时定裕度（2026-11-13 验证设计，output-spec-generate v3）
+
+timeoutMs 不是拍脑袋值：取「成功 attempt 平均/最大耗时」复算裕度，低于 ~1.5x 即为设计过紧（超时会成为常态而非异常）。配套 retries 覆盖外部网关类偶发错误。
+
+- 案例：查证 agent 成功 attempt 平均 2398s/最大 3355s，原 3600s 墙钟裕度仅 1.07x，15 个 agent 中 14 个至少一次撞墙（18 次超时）；v3 提到 7200s（≈2.1x）+ retries 1→2（演进报告 v2 第 6 节，效果待真实执行回填）
+- 适用信号：journal executions 里同类 agent 大量「超时(墙钟ms)」记录但重试后都能成功
+
 ## 二、踩坑库
 
 ### 坑 1：模型越守约，产物越差——责任反转
@@ -87,6 +101,18 @@ prepare_split_input.py 会清空重建 module 目录，v1 产物在 v2 启动后
 v2 首跑失败用 resumeFromRunId 续跑，Phase 1 的 13 个 agent 从 journal 零成本回放。
 
 - 教训：执行失败先 resume 再谈重跑；失败原因本身是评审证据（三版对比第 8 节）
+
+### 坑 7：resume 对「重试耗尽」的失败 agent 静默跳过，不重执行（2026-11-13，output-spec-generate）
+
+resumeFromRunId 对有 executions 失败记录但无 result 的 entry，既不回放成功结果、也不重新执行、更不在 parallel 层报 agent 重试耗尽——失败被静默吞掉，问题推迟到下游确定性校验（文件存在性）才暴露；两次续跑均复现（run-mwep59gd-1，规格文档 ST-C11）。
+
+- 教训：写盘型任务的失败拦截只能靠自己的当阶段闸门（check fileExists），不能指望 resume 修复 agent 级失败；续跑后必须核对 journal 该 entry 是否新增 execution、目标文件是否真的写盘。根治需 workflow 插件层修复（案例：dev-docs/experience/outputspec续跑不重执行重试耗尽agent.md + 演进报告 v2 第 5 节）
+
+### 坑 8：agent status ok 不等于产物落盘（2026-11-13，output-spec-generate）
+
+runtime 只认「会话结束」不认「输出为空」：输出流中断（outputTokens=0、preview 空）记 status ok；模型自发「先全量脑内整理再一次性写盘」的行为（session 1484 行推理零次 write 调用）放大中断概率。
+
+- 教训：写盘型 agent 的 prompt 里显式写「直接逐个功能点边写边落盘、禁止先全量整理再写盘」；判断产物只看文件存在性（check fileExists）与 run 记录 outputTokens，不看 status（案例：dev-docs/experience/outputspec大文档agent输出中断分片写盘.md + 演进报告 v2 第 6 节）
 
 ## 三、评审维度模板
 

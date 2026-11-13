@@ -1,0 +1,442 @@
+{
+ "stage": {
+  "id": "ST-C11",
+  "name": "出牌与响应",
+  "chapter": "行牌 > 出牌与响应",
+  "summary": "规定出牌权归属与出牌前置拦截、弃牌被吃碰杠胡的裁决回收、操作按钮与响应倒计时、过与放弃语义、手牌压暗规则、多组吃/杠选择面板、听牌爆头飘标记、碰杠区牌组与杠标记展示，以及动作字效与胡牌结束表现。",
+  "terms": [
+   {
+    "term": "财神",
+    "definition": "白板固定为财神。只在胡牌判定时代替顺子、刻子或对子所缺的牌；吃、碰、杠必须用真实的非财神牌。",
+    "source": "模板名词章节 第12行"
+   },
+   {
+    "term": "面子",
+    "definition": "一组顺子、刻子或杠。杠含 4 张，仍计 1 组面子。对子不是面子。已完成的吃、碰、明杠、暗杠都计入面子。",
+    "source": "模板名词章节 第11行"
+   },
+   {
+    "term": "爆头",
+    "definition": "摸牌前为 4 组面子加 1 张财神。下一张摸到任意牌，都与这张财神组成对子后自摸。只能自摸。",
+    "source": "模板名词章节 第16行"
+   },
+   {
+    "term": "飘",
+    "definition": "自己出牌阶段打出一张财神，即飘财 1 次。连续打出财神则累加，打出普通牌清零。每小局从 0 次起算。",
+    "source": "模板名词章节 第18行"
+   },
+   {
+    "term": "放铳",
+    "definition": "打出的牌被他人合法胡走。胡牌者称为点炮胡。白板财神弃牌不能点炮胡。",
+    "source": "模板名词章节 第19行"
+   }
+  ],
+  "crossCutting": [
+   "权限位统一驱动界面：服务端 MsgPower 的 POWER_ID_* 位掩码（PLAY/CHOW/PONG/KONG/HU/CANCEL_C/CANCEL_S）同时决定按钮显隐、手牌压暗和能否出牌，客户端无本地优先级判定（source-code/client/Code/layer/BoxHzmjMainView.ts:549）。",
+   "所有行牌命令都带 justUpdateData 分支：断线重连补数据时只写数据缓存，不播动画、不弹提示（source-code/client/Code/controller/cmd/gameCmd/GamePlayCmd.ts:33）。",
+   "倒计时统一由服务端下发的剩余秒数驱动，客户端用 CountdownTime 本地递减，归零只把数字置为「00」，不禁用任何按钮（source-code/client/Code/layer/BoxHzmjMah2DView.ts:674）。",
+   "两套灰度来源会互相覆盖：权限压暗（吃碰杠候选亮牌）与禁手/禁打灰（MsgPlayLmts）分别刷新，点过之后先清权限灰再按禁手重压（source-code/client/Code/layer/BoxHzmjMainView.ts:1262）。",
+   "字效按座位单节点复用，新动作直接改写同一节点的 skin 与 url，因此连续杠时新字效天然覆盖上一段（source-code/client/Code/layer/BoxHzmjTipAniView.ts:524）。"
+  ]
+ },
+ "features": [
+  {
+   "id": "FP-ST-C11-001",
+   "name": "出牌权与出牌前置条件",
+   "description": "出牌权由当前拥有 PLAY 权限的玩家持有；在等待响应、选组合、杠后未补牌或本小局结束时不允许出牌。",
+   "scope": "覆盖出牌入口 canPlayMahCheck/onPlayMah 与 power 驱动的 canPutCard 开关，不含禁手规则本身（见 ST-C10）。",
+   "coordination": "GamePowerCmd 写入权限 → BoxHzmjMainView.setPower 设置 canPutCard 与按钮 → 手牌触摸回调 onPlayMah → GameController.sendPlay 发 MsgPlayC。",
+   "atoms": [
+    {
+     "id": "AT-ST-C11-001",
+     "name": "仅出牌权持有者可出牌",
+     "rule": "只有当前拿到出牌权、且目标牌可打的玩家能出牌。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "摸牌命令给其他座位直接写入 POWER_ID_PLAY 权限；MainView 按 power 中的 PLAY 位置置 canPutCard，手牌触摸才可提起出牌。",
+     "uiInteraction": "出牌权者手牌 canTouch/canPutCard 打开，可提牌、横滑、点击出牌；无出牌权时不能操作。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts:70",
+       "excerpt": "GameData.setCurPower(localSeat, BoxMahDefine.PowerType.POWER_ID_PLAY, null);"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:536",
+       "excerpt": "this._selfHand.canPutCard = powerState.canPlay;"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:556",
+       "excerpt": "canPlay: (power & BoxMahDefine.PowerType.POWER_ID_PLAY) > 0 && !hasHu,"
+      }
+     ],
+     "messages": [
+      "MsgPower",
+      "MsgTake",
+      "MsgPlayC"
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C11-002",
+     "name": "非出牌时机禁止出牌",
+     "rule": "等待他人响应、正在选择组合、杠后尚未补牌或本小局已经结束时，不能出牌。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "canPlayMahCheck 在有吃碰杠胡按钮（C_BtnState 为 PENG_GANG_HU）时拦下出牌并弹提示；托管/权限为 NONE 时 canPutCard 直接置 false。杠后未补牌、小局结束没有独立的客户端守卫，依赖服务端不下发 PLAY 权限。",
+     "uiInteraction": "出牌被拦截时弹 MessageSimpleBoxListView 文本提示；托管时收起操作区。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1453",
+       "excerpt": "if (showAction && btnState.selectedIndex == BtnState.PENG_GANG_HU && !this._isGangOffMoCard) {"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1643",
+       "excerpt": "this._selfHand.canPutCard = false;"
+      }
+     ],
+     "messages": [
+      "MsgPower",
+      "MsgKongS",
+      "MsgPlayLmts"
+     ],
+     "notes": "「杠后尚未补牌」「小局已结束」两个场景客户端无显式判断，靠服务端不下发 PLAY 权限兜住。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C11-002",
+   "name": "弃牌裁决与牌河回收",
+   "description": "弃牌可被吃碰直杠或点炮胡时由服务端先裁决；成立后各端把该牌从牌河取走并清掉浮标与放大显示，全部放弃则牌留在牌河继续下家摸牌。",
+   "scope": "客户端只做结果呈现（移除河牌、清浮标、清放大），裁决优先级在服务端。",
+   "coordination": "MsgChowS/MsgPungS/MsgKongS/MsgHuEx 到达 → PlayerCardsData.setCombo → BoxHzmjMah2DView.setCombo/setHu 移除河牌并刷新碰杠区。",
+   "atoms": [
+    {
+     "id": "AT-ST-C11-003",
+     "name": "弃牌先裁决再结算",
+     "rule": "弃牌可被吃、碰、直杠或点炮胡时，先裁决。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端在收到吃/碰/杠/胡下行命令后才切表状态并播动作，无本地优先级裁决逻辑；等待期间保持对方弃牌状态。",
+     "uiInteraction": "裁决期间各端仅看到弃牌与响应按钮，动作成立后才播字效与牌组变化。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts:32",
+       "excerpt": "GameData.setTableState(MahGameState.MAH_STATE_CHOW);"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePungCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePungCmd.ts:32",
+       "excerpt": "GameData.setTableState(MahGameState.MAH_STATE_PUNG);"
+      }
+     ],
+     "messages": [
+      "MsgChowS",
+      "MsgPungS",
+      "MsgKongS",
+      "MsgHuEx"
+     ],
+     "notes": "裁决优先级完全在服务端，客户端无对应实现。"
+    },
+    {
+     "id": "AT-ST-C11-004",
+     "name": "成立后从牌河取走弃牌并清浮标放大",
+     "rule": "成立后各端从牌河取走该牌，并清除它的浮标和放大显示。",
+     "uiRequirement": "清除它的浮标和放大显示。",
+     "verdict": "confirmed",
+     "clientLogic": "setCombo 在副露带进牌时调用 outs[进牌座位].removeLastMah() 移除河牌；点炮胡在 setHu 中按 dfFrom 移除河牌最后一张；吃碰杠命令同时派发 onHidePutCardUi 收起出牌放大。",
+     "uiInteraction": "牌河中该张消失，其他方位的出牌放大图（KW_ShowCard）同时隐藏。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:892",
+       "excerpt": "if (_combo.nInMahs.length > 0) {\n            this.outs[_combo.nSeat].removeLastMah();"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts:42",
+       "excerpt": "this.dispatch(GameEventBoxHzmj.onHidePutCardUi);"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:997",
+       "excerpt": "if (dfFrom != localSeat && this.outs[dfFrom]?.getLastMah() == huValue && needRemove) {"
+      }
+     ],
+     "messages": [
+      "MsgChowS",
+      "MsgPungS",
+      "MsgKongS",
+      "MsgResultHu"
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C11-005",
+     "name": "全部放弃则牌留牌河轮到下家摸",
+     "rule": "全部放弃则牌留在牌河，再轮到下家摸牌。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端不保留弃牌回收逻辑，弃牌持续留在 outs 牌河中；随后收到 MsgTake 由下家摸牌并写入 PLAY 权限。",
+     "uiInteraction": "牌河保持该张，下家摸牌动画后出牌权转移。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts:70",
+       "excerpt": "GameData.setCurPower(localSeat, BoxMahDefine.PowerType.POWER_ID_PLAY, null);"
+      }
+     ],
+     "messages": [
+      "MsgTake",
+      "MsgPower"
+     ],
+     "notes": "「全部放弃」判定在服务端，客户端只被动接收下一条摸牌命令。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C11-003",
+   "name": "必须先「过」才能出牌",
+   "description": "存在自摸提示或本次杠提示时，出牌会被拦截并提示先点【过】；只有暗杠所需牌全部来自摸牌前手牌时可直出，碰后又能杠的仍须先过。",
+   "scope": "覆盖 canPlayMahCheck 的拦截分支与 _isGangOffMoCard 例外判定。",
+   "coordination": "MsgPower → setPower 计算 _isGangOffMoCard 与按钮状态 → 手牌出牌回调被 canPlayMahCheck 拦截或放行。",
+   "atoms": [
+    {
+     "id": "AT-ST-C11-006",
+     "name": "自摸或杠提示未过时拦截出牌",
+     "rule": "【自摸】还在，或本次杠提示必须先过时，双击或滑动出牌会被拦住，只在本家显示「点“过”才能出牌」。须先点【过】。",
+     "uiRequirement": "只在本家显示「点“过”才能出牌」。",
+     "verdict": "confirmed",
+     "clientLogic": "canPlayMahCheck 检测 power 含 HU/KONG/PONG/CHOW 且按钮态为 PENG_GANG_HU 时返回 false，并弹出文本提示；只有本家会走到该分支。",
+     "uiInteraction": "本家弹出 MessageSimpleBoxListView 提示「点“过”才能出牌」，最长显示 3 秒，牌不落河。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1453",
+       "excerpt": "if (showAction && btnState.selectedIndex == BtnState.PENG_GANG_HU && !this._isGangOffMoCard) {"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1455",
+       "excerpt": "text: `点“过”才能出牌`,"
+      }
+     ],
+     "messages": [
+      "MsgPower",
+      "MsgPlayC"
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C11-007",
+     "name": "摸牌前已持有的暗杠可直出",
+     "rule": "例外：可杠的只是摸牌或补牌之前已经拿在手里的暗杠，可以直接出牌。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "_updateGangOffMoCard 判定：有杠权限、无胡权限、存在摸牌位牌且所有可杠组合都不含该摸牌值时，_isGangOffMoCard 置真；随后 _updatePowerGray 直接清灰并允许出牌。",
+     "uiInteraction": "手牌不做压暗，不点【过】也能提牌出牌。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:697",
+       "excerpt": "const hasGangOnMoCard = (PowerData.combs ?? []).some(\n            (comb) => this._isGangComb(comb.flag) && (comb.mahs?.[0] ?? 0) === moCard\n        );"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:713",
+       "excerpt": "if (this._isGangOffMoCard) {\n            this.onClearGray();"
+      }
+     ],
+     "messages": [
+      "MsgPower"
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C11-008",
+     "name": "碰后又能杠仍须先过",
+     "rule": "碰之后又能杠的，仍须先过。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "碰后摸牌位为空（moCard=0），_updateGangOffMoCard 直接 return 使 _isGangOffMoCard 保持 false，因此仍走「必须先点过」的拦截分支。",
+     "uiInteraction": "与自摸提示一致，本家弹「点“过”才能出牌」。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:696",
+       "excerpt": "if (moCard <= 0) return;"
+      }
+     ],
+     "messages": [
+      "MsgPower"
+     ],
+     "notes": "该结论由 moCard<=0 分支推导，代码无「碰后加杠」的显式分支。"
+    },
+    {
+     "id": "AT-ST-C11-039",
+     "name": "可杠牌均非刚摸牌时不压暗可直接出",
+     "rule": "有杠、没有胡，且所有可杠牌都不是刚摸的那张时，手牌不压暗，不点过也能出牌。",
+     "uiRequirement": "手牌不压暗，不点过也能出牌。",
+     "verdict": "confirmed",
+     "clientLogic": "_isGangOffMoCard 命中后 _updatePowerGray 走 onClearGray 清掉权限压暗，canPlayMahCheck 因 _isGangOffMoCard 跳过拦截。",
+     "uiInteraction": "手牌保持常态亮度，【杠】【过】按钮仍显示，可直接提牌出牌。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:701",
+       "excerpt": "this._isGangOffMoCard = true;"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:714",
+       "excerpt": "this.onClearGray();"
+      }
+     ],
+     "messages": [
+      "MsgPower"
+     ],
+     "notes": ""
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C11-004",
+   "name": "过与放弃语义及响应提交",
+   "description": "【过】只放弃当前这次提示；过2 只本地收起按钮并按禁手重压；多组吃/杠的取消等同上行过；低优先级先提交后收起按钮等待服务端裁决。",
+   "scope": "覆盖 onBtnGuo/onBtnGuo2/onBtnCancel 与提交后的按钮收起，不含服务端裁决实现。",
+   "coordination": "点击按钮 → GameController.sendCancel 发 MsgCancel（或本地不上行）→ 服务端重发 MsgPower 决定后续按钮。",
+   "atoms": [
+    {
+     "id": "AT-ST-C11-009",
+     "name": "点过只放弃本次提示并收起按钮预览",
+     "rule": "点【过】只放弃这一次提示，收起本次按钮和预览。",
+     "uiRequirement": "收起本次按钮和预览。",
+     "verdict": "confirmed",
+     "clientLogic": "onBtnGuo 发 MsgCancel，按钮态置 EMPTY，隐藏多组选择面板，清 selectChiCb 与权限压暗后按禁手重压。",
+     "uiInteraction": "吃碰杠胡按钮整组退场，候选牌面板收起，手牌恢复可触摸但保留禁手灰。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1236",
+       "excerpt": "onBtnGuo(): void {\n        GameController.instance.sendCancel();\n        this.view.KW_Main.KW_Handler.C_BtnState.selectedIndex = BtnState.EMPTY;\n        this._hideMoreSelect();"
+      }
+     ],
+     "messages": [
+      "MsgCancel",
+      "MsgPower"
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C11-010",
+     "name": "新弃牌重新判断",
+     "rule": "之后别人再打出相同牌，按新弃牌重新判断。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "每次弃牌后服务端重新下发 MsgPower，客户端 setPower 全量重算按钮与压暗，不复用上一次的放弃结果。",
+     "uiInteraction": "新一轮按钮与压暗按新权限重新出现。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePowerCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePowerCmd.ts:71",
+       "excerpt": "this.dispatch(GameEventBoxHzmj.setPower, localSeat, data.power, data);"
+      }
+     ],
+     "messages": [
+      "MsgPower"
+     ],
+     "notes": "重判逻辑在服务端，客户端仅全量刷新。"
+    },
+    {
+     "id": "AT-ST-C11-011",
+     "name": "放弃杠后同次机会不再出杠",
+     "rule": "放弃杠后，同一次操作机会内不再出现【杠】；下一次拿到操作机会再判断。",
+     "uiRequirement": "同一次操作机会内不再出现【杠】。",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "evidence": [],
+     "messages": [],
+     "notes": "客户端未找到对「已放弃杠」的本地抑制状态；按钮显隐完全由下一次 MsgPower 位掩码决定。"
+    },
+    {
+     "id": "AT-ST-C11-020",
+     "name": "低优先级先提交收起按钮等待",
+     "rule": "较低优先级先提交时，本端收起自己的按钮并等待。",
+     "uiRequirement": "本端收起自己的按钮并等待。",
+     "verdict": "partial",
+     "clientLogic": "发送吃/碰/杠请求后立即把 C_BtnState 置 EMPTY 并清压暗，进入等待服务端结果状态，无专门等待面板。",
+     "uiInteraction": "请求提交后按钮组与候选面板立即收起，手牌恢复常态。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1102",
+       "excerpt": "GameController.instance.sendChow(comb);\n        this.view.KW_Main.KW_Handler.C_BtnState.selectedIndex = BtnState.EMPTY;"
+      }
+     ],
+     "messages": [
+      "MsgChowC",
+      "MsgPungC",
+      "MsgKongC"
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C11-021",
+     "name": "更高优先级成立则取消等待请求",
+     "rule": "更高优先级成立后，结束等待并取消该请求。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "evidence": [],
+     "messages": [],
+     "notes": "无客户端实现，由服务端丢弃低优先级请求后下发新状态。"
+    },
+    {
+     "id": "AT-ST-C11-022",
+     "name": "更高优先级放弃后执行已提交请求",
+     "rule": "更高优先级都放弃后，再执行已经提交的较低优先级请求。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "evidence": [],
+     "messages": [],
+     "notes": "无客户端实现，属服务端排队逻辑。"
+    },
+    {
+     "id": "AT-ST-C11-038",
+     "name": "多组吃杠取消等同上行过",
+     "rule": "多组吃、杠的取消等于上行过。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "onBtnCancel 依次关闭吃/杠选择面板后直接调用 onBtnGuo，走与【过】相同的上行 MsgCancel 流程。",
+     "uiInteraction": "【取消】点下后面板收起并发送过，按钮整组退场。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1174",
+       "excerpt": "onBtnCancel(): void {\n        this.showChooseChi(false);\n        this.showChooseGang(false);\n        this.onBtnGuo();\n    }"
+      }
+     ],
+     "messages": [
+      "MsgCancel"
+     ],
+     "notes": "模板另述「多组吃的取消包含同时存在的胡」「多组杠的取消包含自摸」，均通过同一条 MsgCancel 上行表达，未单独区分。"
+    }
+   ]
+  }
+ ],
+ "partNo": 1,
+ "partTotal": 3,
+ "featureRange": [
+  1,
+  4
+ ]
+}

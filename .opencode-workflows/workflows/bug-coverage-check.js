@@ -377,7 +377,7 @@ const batchTasks = parallel(
       ].join('\n'),
       { label: '审核 ' + batch.title, schema: BATCH_CONFIRM_SCHEMA, ...analysisAgentOptions, retries: 1 }
     )
-  }
+  })
 )
 
 const batchResults = await batchTasks

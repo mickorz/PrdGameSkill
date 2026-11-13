@@ -3,7 +3,7 @@
 // build-dashboard.mjs 的最小自检：用内嵌 mini report 跑 parse + validate + 关键断言。
 // 用法：node build-dashboard.example.mjs
 
-import { parseReport, validateReport } from './build-dashboard.mjs';
+import { parseReport, validateReport, mixDimensions } from './build-dashboard.mjs';
 import assert from 'node:assert';
 
 // 构造一份覆盖全部结构的最小报告（含范围写法 PRD-001~002、斜线连写、模块、资损句、暂缓结论）
@@ -465,3 +465,59 @@ const reqNo = parseReport(reqReport.replace('REQ-101、REQ-102', '无'));
 assert.deepStrictEqual(reqNo.issues[0].requirementIds, [], '需求点为 无 时解析为空数组');
 
 console.log('[成功] 需求点行断言通过（REQ 关联解析/无→空数组/不混入建议）');
+
+// ---------- 混编三维度（mixDimensions，v4）：主报告功能规则 + UI 交互 + Bug 缺口合入同一清单 ----------
+{
+  const fs2 = (await import('node:fs')).default;
+  const path2 = (await import('node:path')).default;
+  const tmp = '.claude/skills/game-prd-check/scripts/tmp-mix';
+  fs2.rmSync(tmp, { recursive: true, force: true });
+  // mock 主报告（功能规则 1 条）
+  const mainMd = `# 测试报告
+
+检查对象：input/【x】t.md
+检查日期：2026-11-13
+
+## 2. 问题清单
+
+| PRD-001 | 测试问题 | 需求缺失 | P1 | 问题 | 位置 | 建议 |
+|---|---|---|---|---|---|---|
+
+## 3. 问题详情
+
+### PRD-001【P1 / MISSING】测试问题
+
+- **原文**：位置“1.1”。引文：“原文”
+- **问题**：测试
+- **影响**：影响
+- **建议**：建议
+`;
+  const data = parseReport(mainMd);
+  // mock ui/bug 产物目录（report.json）
+  fs2.mkdirSync(tmp + '/ui', { recursive: true });
+  fs2.writeFileSync(tmp + '/ui/report.json', JSON.stringify({ report: { issues: [
+    { id: 'Q01', title: 'ui问题', priority: 'P2', type: '描述不完整', module: ['模块A'], dimension: 'UI 交互', source_location: '3.1', problem: 'p' },
+  ] } }));
+  fs2.mkdirSync(tmp + '/bug', { recursive: true });
+  fs2.writeFileSync(tmp + '/bug/report.json', JSON.stringify({ report: { issues: [
+    { id: 'PRD-001', title: 'bug缺口', priority: 'P1', type: '描述不完整', module: ['模块B'], dimension: '功能规则', source_location: 'REQ-101', problem: 'p' },
+  ] } }));
+  mixDimensions(data, tmp + '/ui', tmp + '/bug');
+  assert.equal(data.mixed, true, '混编标记');
+  assert.equal(data.statistics.total, 3, '混编总数应为 3');
+  assert.deepEqual(data.statistics.dimensions, { 功能规则: 1, 'UI 交互': 1, 缺陷: 1 }, '三维度各 1 条');
+  assert.equal(data.issues[1].dimension, 'UI 交互', 'ui 条目维度');
+  assert.equal(data.issues[2].id, 'BUG-001', 'bug 缺口 ID 重写为 BUG-001 防冲突');
+  assert.equal(data.issues[2].dimension, '缺陷', 'bug 条目维度强制为缺陷');
+  assert.equal(data.statistics.priority.P1, 2, 'P1 统计重算（主报告 1 + bug 1）');
+  // ID 冲突检测：ui 产物与主报告 ID 重复应报错
+  const data2 = parseReport(mainMd);
+  fs2.writeFileSync(tmp + '/ui/report.json', JSON.stringify({ report: { issues: [
+    { id: 'PRD-001', title: '冲突', priority: 'P1', type: '描述不完整', module: [], dimension: 'UI 交互', source_location: 'x', problem: 'p' },
+  ] } }));
+  assert.throws(() => mixDimensions(data2, tmp + '/ui', null), /混编 ID 冲突/, 'ID 冲突应报错不静默');
+  // 缺 report.json 应报错
+  assert.throws(() => mixDimensions(parseReport(mainMd), tmp + '/none', null), /缺 report\.json/, '缺产物应报错');
+  fs2.rmSync(tmp, { recursive: true, force: true });
+  console.log('[成功] 混编三维度断言通过（维度标注/ID重写防冲突/统计重算/冲突检测/缺产物报错）');
+}

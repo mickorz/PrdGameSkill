@@ -465,10 +465,11 @@ export function parseReport(md) {
 export function validateReport(data) {
   const errors = [];
   const ids = data.issues.map((it) => it.id);
+  const mixed = data.mixed === true; // 混编模式：统计以合并清单为准，跳过与主报告正文的交叉比对（概览表/类型分布行是主报告单维度的）
   // 1. ID 唯一
   if (new Set(ids).size !== ids.length) errors.push('存在重复的问题 ID');
-  // 2. 总数一致（与报告概览表交叉校验）
-  if (data._checks.overview['发现问题总数'] !== undefined && data._checks.overview['发现问题总数'] !== data.statistics.total) {
+  // 2. 总数一致（与报告概览表交叉校验；混编跳过）
+  if (!mixed && data._checks.overview['发现问题总数'] !== undefined && data._checks.overview['发现问题总数'] !== data.statistics.total) {
     errors.push(`问题总数与概览表不一致：概览 ${data._checks.overview['发现问题总数']} vs 明细 ${data.statistics.total}`);
   }
   // 3. 优先级总和
@@ -479,11 +480,13 @@ export function validateReport(data) {
   if (tSum !== data.statistics.total) errors.push(`类型统计总和 ${tSum} != 总数 ${data.statistics.total}`);
   const dSum = Object.values(data.statistics.dimensions || {}).reduce((a, b) => a + b, 0);
   if (dSum && dSum !== data.statistics.total) errors.push(`维度统计总和 ${dSum} != 总数 ${data.statistics.total}`);
-  // skill 版类型分布行交叉校验（workflow 版无此行，跳过）
-  for (const [en, n] of Object.entries(data._checks.typeDist)) {
-    const zh = TYPE_ZH[en];
-    if (zh && data.statistics.types[zh] !== undefined && data.statistics.types[zh] !== n) {
-      errors.push(`类型 ${zh} 数量与报告类型分布行不一致：${data.statistics.types[zh]} vs ${n}`);
+  // skill 版类型分布行交叉校验（workflow 版无此行，跳过；混编跳过）
+  if (!mixed) {
+    for (const [en, n] of Object.entries(data._checks.typeDist)) {
+      const zh = TYPE_ZH[en];
+      if (zh && data.statistics.types[zh] !== undefined && data.statistics.types[zh] !== n) {
+        errors.push(`类型 ${zh} 数量与报告类型分布行不一致：${data.statistics.types[zh]} vs ${n}`);
+      }
     }
   }
   // 5. 风险组引用存在
@@ -669,19 +672,89 @@ function buildUnifiedView(unifiedDir) {
   };
 }
 
+// 混编三维度问题清单（v4）：主 report（功能规则）+ --mix-ui（UI 交互）+ --mix-bug（Bug 缺口）
+// 来源维度入 dimension 字段；bug 缺口 ID 与 game 报告同为 PRD-xxx 格式，重写为 BUG-xxx 防冲突；
+// 统计/模块/TOP5 全部从合并清单重算（与 parseReport 同口径），风险组保留主报告维度分析
+export function mixDimensions(data, uiDir, bugDir) {
+  const readIssues = (dir, what) => {
+    const p = path.join(dir, 'report.json');
+    if (!fs.existsSync(p)) throw new Error(what + ' 缺 report.json: ' + dir + '（先用各 Checker 生成 Dashboard 产物，不猜测路径）');
+    const j = JSON.parse(fs.readFileSync(p, 'utf8'));
+    const issues = (j.report && j.report.issues) || j.issues || [];
+    if (!Array.isArray(issues) || !issues.length) throw new Error(what + ' report.json 无 issues');
+    return issues;
+  };
+  // 主 report（功能规则）补维度
+  for (const it of data.issues) it.dimension = it.dimension || '功能规则';
+  const seen = new Set(data.issues.map((i) => i.id));
+  if (uiDir) {
+    for (const it of readIssues(uiDir, '--mix-ui')) {
+      it.dimension = 'UI 交互';
+      if (seen.has(it.id)) throw new Error('混编 ID 冲突: ' + it.id + '（UI 产物与主报告 ID 重复）');
+      seen.add(it.id);
+      data.issues.push(it);
+    }
+  }
+  if (bugDir) {
+    for (const it of readIssues(bugDir, '--mix-bug')) {
+      it.dimension = '缺陷';
+      const newId = 'BUG-' + String(it.id).replace(/^PRD-/, '');
+      if (seen.has(newId)) throw new Error('混编 ID 冲突: ' + newId + '（Bug 缺口重写后仍与已有 ID 重复）');
+      seen.add(newId);
+      it.id = newId;
+      data.issues.push(it);
+    }
+  }
+  // 统计/模块/TOP5 重算（与 parseReport 同口径）
+  const st = data.statistics;
+  st.total = data.issues.length;
+  st.priority = { P0: 0, P1: 0, P2: 0, P3: 0 };
+  st.types = {};
+  st.dimensions = {};
+  for (const it of data.issues) {
+    if (st.priority[it.priority] !== undefined) st.priority[it.priority]++;
+    const t = it.type || '未分类';
+    it.type = t;
+    st.types[t] = (st.types[t] || 0) + 1;
+    st.dimensions[it.dimension] = (st.dimensions[it.dimension] || 0) + 1;
+  }
+  const modMap = new Map();
+  for (const it of data.issues) {
+    const names = Array.isArray(it.module) ? it.module : (it.module ? [it.module] : ['未分类']);
+    for (const n of names) {
+      if (!modMap.has(n)) modMap.set(n, { name: n, issue_ids: [] });
+      modMap.get(n).issue_ids.push(it.id);
+    }
+  }
+  data.modules = [...modMap.values()].sort((a, b) => b.issue_ids.length - a.issue_ids.length);
+  data.featured_issues = [...data.issues.filter((it) => it.priority === 'P0').sort((a, b) => a.id.localeCompare(b.id)),
+    ...data.issues.filter((it) => it.priority !== 'P0')]
+    .slice(0, 5).map((it) => it.id);
+  data.mixed = true;
+}
+
 function main() {
   const argv = process.argv.slice(2);
   const rtmFlag = argv.indexOf('--rtm');
   const unifiedFlag = argv.indexOf('--unified-rtm');
-  const positional = argv.filter((a, i) => a !== '--rtm' && argv[i - 1] !== '--rtm' && a !== '--unified-rtm' && argv[i - 1] !== '--unified-rtm');
+  const positional = argv.filter((a, i) => a !== '--rtm' && argv[i - 1] !== '--rtm' && a !== '--unified-rtm' && argv[i - 1] !== '--unified-rtm' && a !== '--mix-ui' && argv[i - 1] !== '--mix-ui' && a !== '--mix-bug' && argv[i - 1] !== '--mix-bug');
   const [reportArg, outDirArg] = positional;
   const rtmRunDir = rtmFlag >= 0 ? argv[rtmFlag + 1] : null;
   const unifiedDir = unifiedFlag >= 0 ? argv[unifiedFlag + 1] : null;
+  const mixUiFlag = argv.indexOf('--mix-ui');
+  const mixBugFlag = argv.indexOf('--mix-bug');
+  const mixUiDir = mixUiFlag >= 0 ? argv[mixUiFlag + 1] : null;
+  const mixBugDir = mixBugFlag >= 0 ? argv[mixBugFlag + 1] : null;
   const reportPath = path.resolve(reportArg || path.join(SKILL_ROOT, '..', '..', '..', 'examples', 'game-prd-check', 'report.md'));
   const outDir = path.resolve(outDirArg || path.dirname(reportPath));
 
   const md = fs.readFileSync(reportPath, 'utf8');
   const data = parseReport(md);
+  // 混编三维度（--mix-ui / --mix-bug，v4）：主 report（功能规则）+ UI 交互 + Bug 缺口合入同一问题清单，
+  // 来源维度入 dimension 字段（功能规则/UI 交互/缺陷），统计与 TOP5 重算；模板维度列/筛选已有，零模板改动
+  if (mixUiDir || mixBugDir) {
+    mixDimensions(data, mixUiDir, mixBugDir);
+  }
   // RTM 视图投影（--rtm <runDir>）：缺失产物直接报错，不用旧 coverage 静默替代
   if (rtmRunDir) {
     data.rtm = buildRtmView(rtmRunDir);

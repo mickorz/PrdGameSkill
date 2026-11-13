@@ -15,7 +15,9 @@
 | 实现差异以「需求原文 vs 实际表现 vs 待确认」呈现 | R3 | 三功能抽查（ST-C01/05/02）可见差异条目 |
 | 原子项带业务语义与差异字段 | R4/R5 | 新 Schema 校验自洽 + differenceStats 统计进索引 |
 | 机械校验扩展 | R6 | verify-output-spec 新增检查项进报告 |
-| 主编排 outputMode 兼容旧行为 | R7 | legacy 模式产物与 v2 完全一致 |
+| 主编排 outputMode 兼容旧行为 | R7 | 三模式契约落地：planner-only 绝不重写技术文档（只生成策划版+校验）；legacy 行为与 v2 完全一致 |
+| 产物目录读写分离 | R10 | outputDir 与 sourceSpecDir 冲突检查生效；2026-11-13 目录零改动 |
+| 结构化追溯索引 | R9 | trace_index.json 确定性生成；verify-report 输出 AT-ID 覆盖率与缺失清单 |
 | 局部验证先行 | R8 | 阶段 0 三个检查点通过后才进入阶段 2 正式改 Schema |
 
 ## 2. 现状基线（已核实，直接引用）
@@ -62,7 +64,7 @@
 
 - **新增** `.opencode-workflows/workflows/output-spec-generate/experiment-planner-projection.js`（显式 scriptPath 调用，不入注册表，同目录惯例）。
 - 脚本逻辑：
-  1. args：`specDir`（默认 `spec-workflow/output-spec/2026-11-13/1-spec`）、`stages`（默认 `['ST-C01','ST-C05','ST-C02']`）、`outDir`（默认 `spec-workflow/output-spec/quality-compare/planner-experiment`）。
+  1. args：`sourceSpecDir`（只读，历史证据目录，默认 `spec-workflow/output-spec/2026-11-13/1-spec`）、`stages`（默认 `['ST-C01','ST-C05','ST-C02']`）、`outDir`（可写，默认 `spec-workflow/output-spec/quality-compare/planner-experiment`）。
   2. `read` scan.json → 取 `sections`/`stageSections`/`termsSection`，按 stages 过滤（**实现前先人工核对该文件字段与 1-scan-template 返回值的一致性，不一致时在脚本内适配**）。
   3. `read` feature_index.json → 按 stage_id 过滤 features，**snake_case 转 camelCase**（ui_requirement→uiRequirement、client_logic→clientLogic、ui_interaction→uiInteraction；evidence 无 excerpt 不影响——策划版写作只需 slimEvidence 同款字段），构造 `verify = { byStage: [...] }`。
   4. 每个目标阶段：`agent(plannerPromptDraft(...))` 写 `outDir/策划版_ST-Cxx.md`（写作任务，会话默认模型，timeoutMs 3600000，retries 2）；intro/nouns 对照分片复用 `copyPartPrompt` 逻辑（实验可比性）。
@@ -91,6 +93,7 @@
   2. 信息不丢失——对照现有补充版同章节：白板财神高亮等差异条目仍以业务语言存在。
   3. 可追溯——每条补充行有 AT-ID，能回查 feature_index.json 证据。
 - **闸门**：三检查点全部通过才进入阶段 1/2；不过则修 Prompt 草案重跑实验（仍不碰阶段 2）。
+- **验收范围**：仅 Prompt 投影可行性（v1 索引无新字段，本阶段不验证 businessBehavior/difference，见需求文档 7.2）；新 Schema 验收归阶段 2（T2.6）。
 
 ## 4. 阶段 1：3-produce-outputs.js 策划版产出改造（P0）
 
@@ -99,13 +102,13 @@
 | 任务 | 内容 |
 |---|---|
 | T1.1 | 备份 `3-produce-outputs.js` → `3-produce-outputs.v2-org-20261114.js` |
-| T1.2 | 新增 `plannerPartPrompt(sec, evidence)`：以 T0.2 定稿草案为准；参数与 `supplementPartPrompt` 同构 |
-| T1.3 | 新增 `plannerPartPath(sec)` = `<specDir>/runtime/planner-parts/part-NN.md`；intro/nouns 分片同样写 planner-parts（复用 `copyPartPrompt` 换目标路径） |
-| T1.4 | `writeTasks` 增加策划版分片任务：stage 章节为写作任务（会话默认模型、timeoutMs 3600000、retries 2，与技术补充版同参数）；args 增加 `plannerPath`（默认 `spec-workflow/output-spec/核心流程杭州麻将好友房AI-策划版.md`）与 `skipPlanner`（legacy 模式用，默认 false） |
-| T1.5 | `buildConfigText` 增加 `plannerPath` + `plannerParts`（skipPlanner 时空数组）；落盘闸门扩展：parallel 后 check 每个 planner 分片存在（skipPlanner 时跳过） |
+| T1.2 | 新增 `slimPlannerEvidence(r)`（结构化字段隔离，R2 第一级）：策划版写作输入只含业务字段（id/name/rule/uiRequirement/uiInteraction/notes/verdict + businessBehavior 若有），**不含 clientLogic/evidence 路径**；新增 `plannerPartPrompt(sec, evidence)`：以 T0.2 定稿草案为准，参数与 `supplementPartPrompt` 同构但只吃 slimPlannerEvidence 产物 |
+| T1.3 | 新增 `plannerPartPath(sec)` = `<outputDir>/runtime/planner-parts/part-NN.md`；intro/nouns 分片同样写 planner-parts（复用 `copyPartPrompt` 换目标路径） |
+| T1.4 | **投影任务选择机制**：`writeTasks` 按开关组装——`skipPlanner=true`（legacy）不进策划版任务；`plannerOnly=true` 只进策划版分片 + 策划版配置任务，**跳过阶段规格文档/索引片段/技术补充版任务**（互斥校验：两者同时 true 直接报错）；策划版 stage 章节为写作任务（会话默认模型、timeoutMs 3600000、retries 2）；args 增加 `plannerPath`（默认 `spec-workflow/output-spec/核心流程杭州麻将好友房AI-策划版.md`，新文件名不冲突） |
+| T1.5 | `buildConfigText` 增加 `plannerPath` + `plannerParts` + `sourceSpecDir`/`outputDir`（见 T4.1）；落盘闸门按开关分支：parallel 后 check 本模式应有的分片存在（plannerOnly 时只查策划版分片） |
 | T1.6 | 头注释补 v3 段落（改造日期、动机指向需求文档、备份文件名） |
 
-**验收**：单阶段模拟调用（构造 1 个 stage 的最小 scan/verify）可产出技术补充版 + 策划版两套分片；legacy 路径（skipPlanner=true）行为与当前 v2 完全一致。
+**验收**：单阶段模拟调用（构造 1 个 stage 的最小 scan/verify）可产出技术补充版 + 策划版两套分片；`plannerOnly=true` 时技术文档/索引任务零调度（writeTasks 数量可静态断言）；`skipPlanner=true` 行为与当前 v2 完全一致。
 
 ## 5. 阶段 2：2-verify-stages.js 业务语义与差异 Schema（P1）
 
@@ -114,12 +117,13 @@
 | 任务 | 内容 |
 |---|---|
 | T2.1 | 备份 `2-verify-stages.js` → `2-verify-stages.v3-org-20261114.js` |
-| T2.2 | `STAGE_EVIDENCE_SCHEMA` 原子项新增（全部 required + 空串兜底，与现有字段风格一致）：`businessBehavior{trigger,condition,action,result}`、`difference`（enum: consistent/partial/conflict/unverified）、`differenceDetail`（string）、`verification{businessRuleVerified(boolean), unverifiedReason(string)}`。`clientObserved` 不进 Schema——校验代码从 `verdict != 'not_found'` 派生后填入返回值（减少 agent 输出负担） |
-| T2.3 | `stageVerifyPrompt` 增加「第三步，业务语义与差异判定」：businessBehavior 四元组用玩家语言（禁止代码词汇）；difference 判定规则（实现与需求一致=consistent / 部分一致或表现不同=partial / 明确冲突=conflict / 无实现证据=unverified）；conflict 必须给 differenceDetail + 证据 |
-| T2.4 | 校验循环扩展：`not_found` ⇒ difference 强制补 `unverified`（缺省兜底而非报错，兼容旧 journal 重放）；`conflict` ⇒ differenceDetail 非空且 evidence 非空；新增 `differenceStats` 计数，进返回值与 `perStage` |
+| T2.2 | 返回值与索引顶层增加 `schemaVersion: 2`（需求文档 6.4：v1 数据新字段按「未经新 Schema 查证」处理，不补空串冒充）；`STAGE_EVIDENCE_SCHEMA` 原子项新增（全部 required + 空串兜底，与现有字段风格一致）：`businessBehavior{trigger,condition,action,result}`、`difference`（enum: consistent/partial/conflict/unverified）、`differenceDetail`（string）、`verification{businessRuleVerified(boolean), unverifiedReason(string)}`。`clientObserved` 不进 Schema——校验代码从 `verdict != 'not_found'` 派生后填入返回值（减少 agent 输出负担） |
+| T2.3 | `stageVerifyPrompt` 增加「第三步，业务语义与差异判定」：businessBehavior 四元组用玩家语言（禁止代码词汇）；difference 判定按需求文档 6.1 规则表（**部分证据不足以判定 = unverified，不等同 partial**；部分子要求已验证满足 = partial；明确矛盾实现 = conflict）；conflict 必须给 differenceDetail + 证据；**禁止把 verdict=confirmed 写成 businessRuleVerified=true** |
+| T2.4 | 校验循环扩展：`not_found` ⇒ difference 强制补 `unverified`（缺省兜底而非报错，兼容旧 journal 重放）；`conflict` ⇒ differenceDetail 非空且 evidence 非空；differenceStats 按 conflict 优先原则计数（同一原子项冲突与其他状态并存时只计 conflict）；进返回值与 `perStage` |
 | T2.5 | 头注释补 v4 段落（含「Schema 变更后不要用阶段 2 旧 run resume 重放」警示） |
+| T2.6 | **新 Schema 质量验收（用户触发）**：选 1 个阶段（建议 ST-C05 吃碰杠，差异高发）跑一次真实查证，检查 businessBehavior 是否玩家语言、difference 分布是否符合 6.1 规则、confirmed 项是否存在 businessRuleVerified 误标——阶段 0 无法替代本项 |
 
-**验收**：构造含合法/非法 difference 的最小 JSON 过一遍校验逻辑（node 临时断言即可，不落脚本文件——校验逻辑在 workflow 内，无独立 example 惯例）；schema 合法样例能让 agent 正常返回。
+**验收**：构造含合法/非法 difference 的最小 JSON 过一遍校验逻辑（node 临时断言即可，不落脚本文件——校验逻辑在 workflow 内，无独立 example 惯例）；schema 合法样例能让 agent 正常返回；T2.6 单阶段真实查证样本人工复核通过。
 
 ## 6. 阶段 3：装配与校验扩展（P1）
 
@@ -129,32 +133,42 @@
 |---|---|
 | T3.1 | 备份 `4-assemble-verify.js` / `build-output-spec.mjs` / `verify-output-spec.mjs`（后两者在 scripts/ 下，备份为 `*.v1-org-20261114.mjs`；也可依赖 git 历史回滚，二选一，倾向 git 即可——scripts 下无备份先例，不新增备份文件） |
 | T3.2 | `build-output-spec.mjs`：`stepMergeSupplement` 泛化为 `mergeDocumentParts(parts, outPath, label)`，技术补充版与策划版各调一次；U+FFFD 检查沿用 merge-stage-doc-parts 同款逻辑 |
-| T3.3 | `verify-output-spec.mjs` 新增 `checkPlannerLeakage(plannerPath, allowlist)`：按第 9 节正则清单扫描，命中即 fail（allowlist 从 build-config 传入）；新增 difference 覆盖统计段（从 feature_index.json 聚合）写进 verify-report.md |
+| T3.3 | `verify-output-spec.mjs` 新增 `checkPlannerLeakage(plannerPath, allowlist)`：按第 9 节正则清单扫描（正则为三级验收的第二级防线，见需求文档 6.2），命中即 fail（allowlist 从 build-config 传入）；新增 difference 覆盖统计段（从 feature_index.json 聚合）写进 verify-report.md |
 | T3.4 | `assemble-output-spec-index.mjs`：feature_index.json 顶层增加 `difference_stats`（consistent/partial/conflict/unverified 计数）；原子项保留 `difference`/`businessBehavior` 字段透传 |
 | T3.5 | `4-assemble-verify.js`：check `plannerPath` 文件存在（skipPlanner 时跳过）；返回值增加 plannerPath |
-| T3.6 | `verify-output-spec.example.mjs` / `build-output-spec.example.mjs` 增加用例：策划版合并 + 泄漏命中/放行 + difference 统计（沿用现有自检跑法 `node xxx.example.mjs`） |
+| T3.6 | `verify-output-spec.example.mjs` / `build-output-spec.example.mjs` 增加用例：策划版合并 + 泄漏命中/放行 + difference 统计 + trace 覆盖命中/缺失（沿用现有自检跑法 `node xxx.example.mjs`） |
+| T3.7 | 新增 `build-planner-trace.mjs`（R9，确定性脚本 + example 自检）：输入 scan.json + feature_index.json，机械生成 `<outputDir>/trace_index.json`（atomId/sourceStage/sourceRule/plannerSection/plannerPart/evidenceCount/reviewStatus=pending，结构见需求文档 6.3，不设 EV 编号）；`verify-output-spec.mjs` 增加 AT-ID 覆盖检查：策划版分片中出现的 AT-ID 集合与 trace_index 对比，覆盖率非 100% 时在 verify-report 列缺失清单并 fail（not_found 的待确认行同样带 AT-ID，覆盖检查不受 verdict 影响） |
 
-**验收**：两个 example 自检全绿；用首跑 feature_index.json + 人工拼装的 planner 分片样例跑 build-output-spec 全链路通过。
+**验收**：example 自检全绿（含 trace 用例）；用首跑 feature_index.json + 人工拼装的 planner 分片样例跑 build-output-spec 全链路通过；历史产物保护断言（对 2026-11-13 目录只读访问，内容零变化）。
 
 ## 7. 阶段 4：主编排 outputMode（P1）
 
 > 需求 R7。
 
+模式契约（需求 R7，`3-produce-outputs.js` 任务开关由这些模式驱动）：
+
+| 模式 | 查证 | 技术文档（阶段规格/索引/技术补充版） | 策划版 |
+|---|---|---|---|
+| `all`（默认） | 执行（子流程 2） | 生成 | 生成 |
+| `planner-only` | 跳过 | **复用已有，绝不重写** | 生成 |
+| `legacy` | 执行 | 生成 | 不生成（行为等同 v2） |
+
 | 任务 | 内容 |
 |---|---|
-| T4.1 | `output-spec-generate.js` args 增加 `outputMode`：`'all'`（默认）/ `'planner-only'` / `'legacy'`；`plannerPath` 默认值同 T1.4 |
+| T4.1 | `output-spec-generate.js` args 增加 `outputMode`（`'all'` 默认 / `'planner-only'` / `'legacy'`）、`plannerPath`（默认同 T1.4）、`sourceSpecDir`（只读，默认 `spec-workflow/output-spec/2026-11-13/1-spec`）、`outputDir`（可写，默认 `spec-workflow/output-spec/2026-11-14/1-spec`） |
 | T4.2 | `legacy`：向子流程 3/4 传 `skipPlanner=true`，其余不变（旧行为兼容） |
-| T4.3 | `planner-only`：跳过子流程 1/2，从磁盘读 scan.json + feature_index.json 构造 scan/verify（snake_case 转 camelCase 逻辑与 T0.1 同款，抽公共片段或复制——两处代码量小，允许复制）传入子流程 3/4；**这是阶段 0 实验的正式化，复用已有高成本查证结果** |
-| T4.4 | 返回汇总增加 plannerPath、differenceStats；头注释补段落 |
+| T4.3 | `planner-only`：跳过子流程 1/2，从 `sourceSpecDir` 磁盘读 scan.json + feature_index.json 构造 scan/verify（snake_case 转 camelCase 逻辑与 T0.1 同款，允许复制）传入子流程 3/4；子流程 3 以 `plannerOnly=true` 只调度策划版任务；子流程 4 走策划版分支：合并策划版分片 -> `checkPlannerLeakage` -> AT-ID 覆盖检查 -> check plannerPath 存在，**不重跑 assembleIndex/verifyOutputSpec 全套、不触碰 sourceSpecDir 任何文件** |
+| T4.4 | `all`：查证与产出写入 `outputDir`（子流程 1/2/3/4 的 specDir 参数统一取 outputDir），策划版最终文件仍输出到 `plannerPath` |
+| T4.5 | 运行前路径冲突检查（R10，主编排 fail fast）：`outputDir === sourceSpecDir` 直接报错；`outputDir` 内已存在 `feature_index.json` 或 `stage_manifest.md` 报错（提示换目录，策划版分片残留允许以支持续跑）；返回汇总增加 plannerPath、differenceStats、outputDir/sourceSpecDir；头注释补段落 |
 
-**验收**：代码评审走查三种模式的传参路径；真实行为验证并入阶段 5。
+**验收**：代码评审走查三种模式的传参路径与冲突检查分支；真实行为验证并入阶段 5。
 
 ## 8. 阶段 5：全量重跑与收尾（用户触发）
 
 | 任务 | 内容 |
 |---|---|
-| T5.1 | 用户先以 `outputMode=planner-only` 跑一次（零查证成本，验证装配链路），再 `mode=all` 全量重跑 |
-| T5.2 | 验收：verify-report 全部通过（含新泄漏检查）；抽查 ST-C01/05/02 三章节满足 R8 三检查点；difference_stats 分布合理（conflict 条目逐条人工复核） |
+| T5.1 | 用户先以 `outputMode=planner-only` 跑一次（零查证成本，验证旧证据 -> 策划版完整链路：分片 -> 合并 -> 泄漏检查 -> 覆盖检查），并核对 2026-11-13 目录零改动；再 `outputMode=all` 全量重跑（查证与产出落 `outputDir` 新目录） |
+| T5.2 | 验收（三级验收收口，需求文档 6.2）：verify-report 全部通过（泄漏正则 + AT-ID 覆盖 + difference 统计）；抽查 ST-C01/05/02 三章节逐行人工复核（第三级验收）满足 R8 三检查点；difference_stats 分布合理（conflict 条目逐条人工复核；unverified 占比高属预期——服务端规则不可由客户端代码证实） |
 | T5.3 | 文档收尾：`dev-docs/progress/执行进度.md` 里程碑状态更新；`output-spec-generate-演进报告-v3.md`；阶段 2 新超时/Schema 表现回填 experience 文档 |
 
 ## 9. 泄漏正则清单（T0.3 临时核验与 T3.3 正式检查共用）
@@ -166,14 +180,18 @@
 | `\b[A-Z][a-z]+[A-Z]\w*(Cmd\|View\|Data\|Config\|Protocol\|Manager)\b` | 大驼峰类名（GameJuDataCmd/GameData 等） |
 | `\bMsg[A-Z]\w+` / `\bCMD_[A-Z_]+` | 协议消息名 |
 | `\b(set\|get\|on)[A-Z]\w+` | 方法名（setZhuangSeat 等） |
+| `\bC_[A-Za-z]` | 组件引用名（C_Bank 等） |
+| `\b[A-Z]{2,}(_[A-Z0-9]+)+\b` | SCREAMING_SNAKE 常量（KW_BTN_Hu、POWER_ID_HU 等） |
 | `box_hzmj_\|box_mah_` | FairyGUI 组件/包名 |
+
+正则是三级验收（需求文档 6.2）的最后一道防线，不是根治：第一级结构化字段隔离在 T1.2 落实（写作输入不含技术字段），第三级人工抽查在 T5.2 收口；正则拦不住的新泄漏模式靠人工抽查暴露后回填清单。
 
 白名单（allowlist，从 build-config 传入）：`AI` 等业务允许词；策划版正文确需提及的技术名词应改写为业务语言而非加白名单（白名单只留给无法避免的通用词）。
 
 ## 10. 兼容性与回滚
 
-1. **产物兼容**：策划版走独立路径（runtime/planner-parts/ + 策划版.md），现有技术补充版/阶段规格/feature_index 结构不变（只新增字段与 difference_stats），首跑产物目录整体只读。
-2. **journal 重放**：阶段 2 Schema 变更后，**不要用旧 run 的 resumeFromRunId 重放阶段 2**（旧 agent 输出缺新字段）；校验逻辑对缺省字段兜底赋默认值而非报错，保证重放不炸但不产出脏统计。
+1. **产物兼容与保护**：历史查证证据目录（sourceSpecDir，默认 2026-11-13）整体只读；新产物写 outputDir；策划版最终文件走独立路径 plannerPath（新文件名，不冲突）；feature_index 结构只新增字段（schema_version/difference_stats/原子项新字段），向下可读。
+2. **journal 重放**：阶段 2 Schema 变更后，**不要用旧 run 的 resumeFromRunId 重放阶段 2**（旧 agent 输出缺新字段）；校验逻辑按 schemaVersion 分支——v1 数据新字段按「未经新 Schema 查证」处理（difference 视为 unverified），不补空串冒充已验证，重放不炸也不产出脏统计。
 3. **回滚**：各文件有 `*-org-20261114` 备份（scripts/ 下依赖 git 历史）；主编排 outputMode=legacy 可在不动代码的情况下关闭策划版产出。
 4. **中文路径**：全部经 runtime/build-config.json 传递，CLI 保持 ASCII（沿用既定经验，不新增风险）。
 
@@ -186,6 +204,9 @@
 | 阶段 2 新字段拉高 agent 输出长度、加剧超时 | businessBehavior 用短句；clientObserved 派生不进 Schema；阶段 5 观察超时率，必要时 businessBehavior 只要求 trigger/result 两字段 |
 | planner-only 模式 scan.json 结构与返回值不一致 | T0.1 已强制先人工核对并在实验脚本内适配；T4.3 复用同款适配 |
 | 策划版分片写作超时 | 沿用写作任务 1h 超时 + retries 2 + 逐条落盘硬规则（策划版比技术补充版短，风险低于现状） |
+| 新运行覆盖历史产物（feature_index/stage_manifest/阶段规格） | R10：outputDir/sourceSpecDir 分离 + 主编排 fail fast 冲突检查（outputDir 含 feature_index.json 即报错）；阶段 5 planner-only 首跑后核对 2026-11-13 目录零改动 |
+| AI 漏写某原子项补充内容而校验仍通过 | R9 追溯索引：trace_index 机械生成 + AT-ID 覆盖率检查，非 100% fail |
+| v1 旧数据新字段被误当已验证 | schemaVersion 版本分支（需求文档 6.4）：v1 的 difference 视为 unverified、businessBehavior 视为空，不补空串冒充 |
 
 ## 12. 阶段依赖
 
@@ -199,7 +220,7 @@ flowchart TD
     E --> F[阶段五 全量重跑与收尾]
 ```
 
-说明：阶段 1 与阶段 2 在阶段 0 闸门通过后可并行改造（不同文件）；阶段 3 依赖两者；阶段 0 与阶段 5 的 workflow 运行由用户触发。
+说明：阶段 1 与阶段 2 在阶段 0 闸门通过后可并行改造（不同文件）；阶段 3 依赖两者；阶段 0、阶段 2 的 T2.6、阶段 5 的 workflow 运行由用户触发；阶段 5 先 planner-only 后 all（见 T5.1）。
 
 ## 13. 提交计划（每阶段完成即 commit + push）
 

@@ -119,18 +119,24 @@ flowchart TD
 
 现有「补充版本」（模板原文 + 客户端实现/UI 交互子项）**保留不动**，定位为「证据增强视图」；策划版是**新增**的第四类产物。
 
+### 4.3 投影机制与长期方向
+
+策划版本质是同一份高成本查证结果的一种**输出投影**。本次落地投影任务选择机制（R7 模式契约），使 `3-produce-outputs.js` 的技术文档任务与策划版任务可独立开关；后续从同一份查证结果派生测试用例、UI 交互规格、需求差异报告等新文档时，**新增投影即可，不再重新扫描代码**。长期方向（非本次范围），本次不为未来投影预留超出任务开关之外的复杂度。
+
 ## 5. 需求清单
 
 | 编号 | 需求 | 优先级 | 验收标准 |
 |---|---|---|---|
 | R1 | 策划版补充文档生成：按 Stage 章节分片编写，合并成完整策划版文档 | P0 | 文档按模板章节结构组织；原文规则语义完整保留；每条规则后附业务化 UI 行为与业务化结果描述 |
-| R2 | 策划版无技术泄漏：正文不出现类名、方法名、协议消息名、文件路径、file:line | P0 | 机械正则校验通过（泄漏清单为空），可经 Atom ID 追溯但不内联展示 |
+| R2 | 策划版无技术泄漏：正文不出现类名、方法名、协议消息名、常量名、文件路径、file:line | P0 | 三级验收（见 6.2）：结构化字段隔离（写作输入不含技术字段）+ 正则拦截（最后一道防线，清单见执行计划第 9 节）+ 人工抽查；正则命中即 fail |
 | R3 | 策划版保留真实 UI 行为与实现差异：`uiInteraction` 中有价值的玩家可见行为以业务语言保留；实现与需求不一致处列为「待策划确认」条目 | P0 | 抽查定庄/吃牌/财神表现三章节：白板财神高亮这类差异以「需求原文 vs 实际表现 vs 待确认」形式呈现，既不删原文也不改写规则 |
 | R4 | 原子项 Schema 增加 `businessBehavior`（trigger/condition/action/result 业务语义四元组） | P0 | 查证 agent 按新 Schema 返回；校验容忍缺省（兼容旧数据） |
-| R5 | 原子项 Schema 增加 `difference`（consistent/partial/conflict/unverified + detail），与 `verdict` 语义分离 | P1 | `verdict` 回答「是否发现客户端实现证据」；`difference` 回答「实际实现是否符合策划需求」；两者独立统计 |
+| R5 | 原子项 Schema 增加 `difference`（consistent/partial/conflict/unverified + detail），与 `verdict` 语义分离，判定规则见 6.1 | P1 | `verdict` 回答「是否发现客户端实现证据」；`difference` 回答「实现与需求在已验证范围内的关系」；两者独立统计；conflict 优先于 partial/consistent 保留 |
 | R6 | 机械校验扩展：策划版技术泄漏检查 + difference 覆盖统计进 verify-report | P1 | `verify-output-spec.mjs` 输出新检查项；泄漏非零时 fail |
-| R7 | 主编排增加 `outputMode`，默认兼容旧行为 | P1 | `all`（默认，全产物）/ `planner-only`（复用现有查证结果只补策划版）/ `legacy`（不生成策划版） |
-| R8 | 局部验证先行：全量重跑前，用首跑已生成的 `feature_index.json` 对定庄（ST-C01）、吃牌（ST-C05）、财神表现（ST-C02）做第三阶段 Prompt 对照实验 | P0（前置） | 三个检查点通过（见 7.1）后才进入 Schema 正式调整与全量重跑 |
+| R7 | 主编排增加 `outputMode`，默认兼容旧行为；产物目录读写分离见 R10 | P1 | 模式契约：`all`=查证 + 技术文档 + 策划版全生成；`planner-only`=跳过查证、复用 sourceSpecDir 历史证据、**只生成策划版，绝不重写技术文档**；`legacy`=查证 + 技术文档，不生成策划版（行为等同 v2） |
+| R8 | 局部验证先行：全量重跑前，用首跑已生成的 `feature_index.json` 对定庄（ST-C01）、吃牌（ST-C05）、财神表现（ST-C02）做第三阶段 Prompt 对照实验 | P0（前置） | 三个检查点通过（见 7.1）；验收范围仅限 Prompt 投影可行性，不含新 Schema（边界见 7.2） |
+| R9 | 结构化追溯索引：机械生成「原文规则 与 Atom ID 与 策划版章节」映射（trace_index.json），校验用其检查策划版 Atom ID 覆盖，杜绝 AI 漏写补充内容后校验仍通过 | P1 | trace_index 由确定性脚本从 scan.json + feature_index 生成（不经 LLM 归纳，结构见 6.3）；verify-report 输出 AT-ID 覆盖率与缺失清单，非 100% fail |
+| R10 | 产物目录读写分离：历史查证证据目录只读（sourceSpecDir），本次运行新产物写独立目录（outputDir），运行前做路径冲突检查 | P0 | outputDir 不等于 sourceSpecDir；outputDir 内已存在 feature_index.json/stage_manifest.md 时 fail（策划版分片残留允许，支持断点续跑）；首跑 2026-11-13 目录零改动 |
 
 ## 6. 数据结构设计（新增字段，非仓库现状）
 
@@ -163,8 +169,51 @@ flowchart TD
    - `verdict`（confirmed/partial/not_found）：是否发现客户端实现证据。
    - `difference`（consistent/partial/conflict/unverified）：实际实现是否符合策划需求。
 2. **`verification.clientObserved` 可由 `verdict != not_found` 派生**，落地时由脚本填充派生值，减少 agent 输出负担（执行时允许简化，见执行计划 T2）。
-3. **`businessRuleVerified` 只在 difference=consistent 且证据覆盖完整业务规则时为 true**；典型反例：客户端显示吃牌按钮 confirmed，但服务端吃牌优先级规则不可由客户端代码证实。
-4. **自洽规则**：`verdict=not_found` 时 `difference` 强制为 `unverified`；`difference=conflict` 时必须携带证据且 detail 非空。
+3. **禁止从 `verdict` 直接推导 `businessRuleVerified=true`**：confirmed 只证明「客户端存在实现证据」。典型反例：客户端显示吃牌按钮 confirmed，但服务端吃牌优先级规则不可由客户端代码证实，此时 difference=unverified、businessRuleVerified=false。
+4. **conflict 优先**：同一原子项内同时存在一致部分与冲突部分时，`difference` 取 `conflict`（冲突结论优先保留，一致部分写进 differenceDetail）。
+5. **自洽规则**：`verdict=not_found` 时 `difference` 强制为 `unverified`；`difference=conflict` 时必须携带证据且 differenceDetail 非空。
+
+### 6.1 difference 判定规则
+
+| 状态 | 判定条件 |
+|---|---|
+| `consistent` | 可观察范围内符合需求，且用于判定的每项要求均有充分证据 |
+| `partial` | 同一原子需求中**部分已验证满足、其他部分未验证**（未证实不等于证实不符） |
+| `conflict` | 发现明确与需求矛盾的实现行为（如需求「财神打出按普通白板展示」、实现「牌河白板财神仍高亮」） |
+| `unverified` | 没有足以判定需求符合性的证据（含 verdict=not_found；含只有间接证据、无法支撑判定的情况） |
+
+关键区分：**客户端只有部分证据（如仅前端按钮）不等于 partial**——若已有证据不足以判定需求符合性，归 `unverified`；partial 只用于「部分子要求已验证满足、其余子要求未验证」的原子项。
+
+### 6.2 泄漏检查三级验收
+
+1. **结构化字段隔离**（第一级，根治）：策划版写作 prompt 的输入只含业务字段（rule/uiRequirement/uiInteraction 业务化表述/notes/AT-ID，businessBehavior 有则一并），`clientLogic`、evidence 路径等技术字段不进入写作上下文——从源头保证无技术内容可抄。
+2. **正则拦截**（第二级，机械防线）：对策划版成品跑泄漏正则清单（见执行计划第 9 节），命中即 fail；正则只能拦已知模式（类名、Msg/CMD、file:line、SCREAMING_SNAKE 常量等），是防线不是根治。
+3. **人工抽查**（第三级，兜底）：阶段 5 全量产物对三目标章节逐行复核，新泄漏模式暴露后回填正则清单。
+
+### 6.3 追溯索引（trace_index.json，R9）
+
+确定性脚本从 scan.json（章节结构）+ feature_index.json（原子项）机械生成，**不经 LLM 归纳**：
+
+```json
+{
+  "atomId": "AT-ST-C05-001",
+  "sourceStage": "ST-C05",
+  "sourceRule": "吃牌只能吃上家打出的牌",
+  "plannerSection": "行牌 > 吃、碰、杠",
+  "plannerPart": "part-05.md",
+  "evidenceCount": 2,
+  "reviewStatus": "pending"
+}
+```
+
+说明：不另设 EV 证据编号（feature_index 中 atom.evidence 的 location 列表即为证据引用，evidenceCount 仅作统计，避免重复编号体系）；`reviewStatus` 供人工抽查后翻转 pending/confirmed，仅作记录不作闸门。校验时以 trace_index 为基准，检查策划版分片中 AT-ID 的覆盖情况（覆盖率 + 缺失清单进 verify-report）。
+
+### 6.4 Schema 版本边界（schemaVersion）
+
+`feature_index.json` 顶层新增 `schema_version`：`1` = 首跑旧 Schema（无 businessBehavior/difference）；`2` = 本次新增业务语义后。校验与投影按版本分支：
+
+- v1 数据进入新校验/投影时，新字段一律按「**未经新 Schema 查证**」处理（difference 视为 unverified、businessBehavior 视为空），**不得自动补空串后冒充已验证**。
+- 策划版投影只依赖 v1 已有字段（rule/uiRequirement/uiInteraction/verdict/notes），因此阶段 0 实验可安全使用 v1 索引；businessBehavior 服务于未来投影与阶段 2 之后的校验。
 
 ## 7. 局部验证方案（R8，全量改造的前置闸门）
 
@@ -176,12 +225,16 @@ flowchart TD
 2. **信息不丢失**：仍然保留真正有价值的 UI 行为描述与实现差异（如白板财神高亮）。
 3. **可追溯**：能通过 Atom ID 追溯到原有代码证据，不丢失任何信息。
 
-三个检查点全部通过后，才进行第二阶段 Schema 的正式调整与全量重跑。
+三个检查点全部通过后，才进入阶段 1/2 的代码改造。
+
+### 7.2 验收范围边界（阶段 0 不等于 Schema 验收）
+
+阶段 0 使用的 v1 索引没有 businessBehavior/difference 字段，因此阶段 0 只验证三件事：旧证据能否转成策划可读语言、UI 行为是否保留、Atom ID 是否可追溯。**新 Schema 的结构与差异判定质量归阶段 2 验收**（含单阶段小样本真实查证，见执行计划 T2.6），不得以阶段 0 通过推断 difference 机制已验证。
 
 ## 8. 约束与非目标
 
 - **非目标**：不新增独立 `game-prd-reverse` Skill；不重构调度器；不修改 `1-scan-template.js`；不改变四子流程拆分与并发结构。
-- **保留约束**：现有补充版本、阶段规格、feature_index、stage_manifest 产物形态全部兼容；首跑产物只读，不被新版本覆盖（策划版走独立文件路径）。
+- **保留约束**：现有补充版本、阶段规格、feature_index、stage_manifest 产物形态全部兼容（只新增字段）；产物目录读写分离（R10）：首跑 2026-11-13 目录整体只读，新产物写 outputDir，策划版最终文件走独立路径 plannerPath。
 - **执行约束**：第二阶段查证成本极高（首跑 15 个 agent 中 14 个至少一次撞 1h 墙钟，后加固到 2h），改造期间禁止无谓全量重跑；实验与全量重跑均由用户手动触发。
 - **模型契约**：中文书写、无 Emoji、确定性装配优先于 LLM 转述（沿用现有 workflow 既定原则）。
 

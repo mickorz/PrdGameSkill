@@ -308,6 +308,7 @@
     <button class="mtab" data-view="requirements">需求覆盖</button>
     <button class="mtab" data-view="rules">规则覆盖</button>
     <button class="mtab" data-view="issues">问题明细</button>
+    <button class="mtab" data-view="unified" id="tab-unified" style="display:none">统一覆盖</button>
   </nav>
 
   <div id="view-overview">
@@ -335,6 +336,9 @@
 
   <!-- 规则覆盖视图（RTM 存在时渲染新矩阵；无 RTM 时回退显示历史文件级近似清单） -->
   <section class="card" id="view-rules" style="display:none"></section>
+
+  <!-- 统一覆盖视图（unified 存在时渲染，v4 阶段 8：同一 REQ 三维度覆盖） -->
+  <section class="card" id="view-unified" style="display:none"></section>
 
   <div id="view-issues" style="display:none">
   <!-- 完整问题清单 -->
@@ -401,17 +405,22 @@
   var secAnalysis = document.getElementById('sec-analysis');
   if (secAnalysis) document.getElementById('view-overview').appendChild(secAnalysis);
   // 主导航切换（需求/规则视图首次切入时懒渲染）
-  var viewRendered = { overview: true, requirements: false, rules: false, issues: true };
+  var viewRendered = { overview: true, requirements: false, rules: false, issues: true, unified: false };
+  var UNIFIED = DATA.unified || null;
+  if (UNIFIED) {
+    document.getElementById('tab-unified').style.display = '';
+  }
   document.getElementById('main-tabs').addEventListener('click', function (e) {
     var btn = e.target.closest('.mtab');
     if (!btn) return;
     var v = btn.getAttribute('data-view');
     Array.prototype.forEach.call(document.querySelectorAll('.mtab'), function (t) { t.classList.toggle('active', t === btn); });
-    ['overview', 'requirements', 'rules', 'issues'].forEach(function (name) {
+    ['overview', 'requirements', 'rules', 'issues', 'unified'].forEach(function (name) {
       document.getElementById('view-' + name).style.display = name === v ? '' : 'none';
     });
     if (v === 'requirements' && !viewRendered.requirements) { viewRendered.requirements = true; renderRequirementsView(); }
     if (v === 'rules' && !viewRendered.rules) { viewRendered.rules = true; renderRulesView(); }
+    if (v === 'unified' && !viewRendered.unified && UNIFIED) { viewRendered.unified = true; renderUnifiedView(); }
     window.scrollTo(0, 0);
   });
   var PRI_COLOR = { P0: '#DC5148', P1: '#E8A044', P2: '#4389D5', P3: '#94A3B8' };
@@ -976,6 +985,98 @@
     Array.prototype.forEach.call(document.querySelectorAll('#req-tbody tr'), function (tr) {
       tr.addEventListener('click', function () { openReqDrawer(tr.getAttribute('data-req')) })
     })
+  }
+
+  // 统一覆盖视图（v4 阶段 8）：同一 REQ 查看 game/ui/bug 三维度覆盖 + 未验证清单
+  var VERDICT_LABEL_U = { pass: '通过', partial: '部分', missing: '缺失', conflict: '冲突', incomplete: '不完整', unverified: '未验证', insufficient: '信息不足', na: '不适用', logic: '逻辑错误', ambiguous: '歧义' }
+  var VERDICT_COLOR_U = { pass: '#3E9B63', partial: '#E8A044', missing: '#DC5148', conflict: '#DC5148', incomplete: '#E8A044', unverified: '#94A3B8', insufficient: '#94A3B8', na: '#C4CCD6', logic: '#DC5148', ambiguous: '#E8A044' }
+  function vTagU(v) {
+    var label = VERDICT_LABEL_U[v] || v || '无关联'
+    var color = VERDICT_COLOR_U[v] || '#94A3B8'
+    return '<span class="pri-tag" style="background:' + color + '">' + esc(label) + '</span>'
+  }
+  function renderUnifiedView() {
+    var el = $('view-unified')
+    var st = UNIFIED.statistics
+    var reqs = UNIFIED.requirements
+    var unlinked = reqs.filter(function (r) { return !r.linked })
+    var bd = st.byDimension || {}
+    var kpis = [
+      ['需求总数', st.requirements.total],
+      ['已关联', st.requirements.linked],
+      ['未验证', unlinked.length],
+      ['game 关系', bd.game ? bd.game.total : 0],
+      ['ui 关系', bd.ui ? bd.ui.total : 0],
+      ['bug 关系', bd.bug ? bd.bug.total : 0]
+    ]
+    var html = ''
+    html += '<div class="section-title">统一覆盖<span class="sub">同一 REQ 查看三维度判定（extractionRunId ' + esc(st.extractionRunId || '未登记') + '）</span></div>'
+    html += '<div class="kpis">' + kpis.map(function (k) {
+      return '<div class="kpi"><div class="kpi-num">' + k[1] + '</div><div class="kpi-label">' + k[0] + '</div></div>'
+    }).join('') + '</div>'
+    html += '<div class="toolbar" id="unified-toolbar">'
+    html += '<label><input type="checkbox" id="uf-game" checked> game</label>&nbsp;&nbsp;'
+    html += '<label><input type="checkbox" id="uf-ui" checked> ui</label>&nbsp;&nbsp;'
+    html += '<label><input type="checkbox" id="uf-bug" checked> bug</label>&nbsp;&nbsp;&nbsp;&nbsp;'
+    html += '<label><input type="checkbox" id="uf-unlinked"> 只看未验证（无任何关联）</label>&nbsp;&nbsp;&nbsp;&nbsp;'
+    html += '<input type="text" id="uf-q" placeholder="按 REQ ID 或标题过滤" style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;width:200px">'
+    html += '</div>'
+    html += '<table class="cov"><thead><tr><th>REQ ID</th><th>标题</th><th>game</th><th>ui</th><th>bug</th></tr></thead><tbody id="unified-tbody"></tbody></table>'
+    el.innerHTML = html
+    function draw() {
+      var showGame = $('uf-game').checked, showUi = $('uf-ui').checked, showBug = $('uf-bug').checked
+      var onlyUnlinked = $('uf-unlinked').checked
+      var q = $('uf-q').value.trim().toLowerCase()
+      var rows = reqs.filter(function (r) {
+        if (onlyUnlinked && r.linked) return false
+        var any = (showGame && r.game.total > 0) || (showUi && r.ui.total > 0) || (showBug && r.bug.total > 0)
+        if (!onlyUnlinked && !any) return false
+        if (q && (r.requirementId.toLowerCase().indexOf(q) < 0 && String(r.title).toLowerCase().indexOf(q) < 0)) return false
+        return true
+      })
+      $('unified-tbody').innerHTML = rows.map(function (r) {
+        var g = showGame && r.game.total > 0 ? vTagU(r.game.worst) + ' ' + r.game.total + ' 条' : '<span style="color:var(--muted)">—</span>'
+        var u = showUi && r.ui.total > 0 ? '问题 ' + r.ui.total + ' 条' : '<span style="color:var(--muted)">—</span>'
+        var b = showBug && r.bug.total > 0 ? '缺陷 ' + r.bug.total + ' 条' : '<span style="color:var(--muted)">—</span>'
+        return '<tr class="hit" data-req="' + esc(r.requirementId) + '"><td>' + esc(r.requirementId) + '</td><td>' + esc(r.title) + '</td><td>' + g + '</td><td>' + u + '</td><td>' + b + '</td></tr>'
+      }).join('') || '<tr><td colspan="5" style="color:var(--muted)">无匹配需求点</td></tr>'
+      Array.prototype.forEach.call(document.querySelectorAll('#unified-tbody tr.hit'), function (tr) {
+        tr.addEventListener('click', function () { openUnifiedDrawer(tr.getAttribute('data-req')) })
+      })
+    }
+    ['uf-game', 'uf-ui', 'uf-bug', 'uf-unlinked'].forEach(function (id) { $(id).addEventListener('change', draw) })
+    $('uf-q').addEventListener('input', draw)
+    draw()
+  }
+  function openUnifiedDrawer(reqId) {
+    var r = null
+    for (var i = 0; i < UNIFIED.requirements.length; i++) { if (UNIFIED.requirements[i].requirementId === reqId) { r = UNIFIED.requirements[i]; break } }
+    if (!r) return
+    var body = ''
+    body += '<div class="drawer-title">' + esc(r.requirementId) + ' ' + esc(r.title) + '</div>'
+    body += '<div class="drawer-body">'
+    body += '<div class="section-title">game 规则覆盖（' + r.game.total + ' 条关系，最差判定 ' + (VERDICT_LABEL_U[r.game.worst] || '无') + '）</div>'
+    body += r.game.total
+      ? '<table class="mini-table"><thead><tr><th>规则</th><th>判定</th><th>证据</th></tr></thead><tbody>' + r.game.rules.map(function (x) {
+          return '<tr><td>' + esc(x.ruleId) + '</td><td>' + vTagU(x.verdict) + '</td><td>' + esc(x.evidence).slice(0, 200) + '</td></tr>'
+        }).join('') + '</tbody></table>'
+      : '<div style="color:var(--muted)">无 game 关系</div>'
+    body += '<div class="section-title">UI 问题关联（' + r.ui.issues.length + ' 条）</div>'
+    body += r.ui.issues.length
+      ? '<table class="mini-table"><thead><tr><th>问题</th><th>判定</th><th>证据</th></tr></thead><tbody>' + r.ui.issues.map(function (x) {
+          return '<tr><td>' + esc(x.id) + '</td><td>' + vTagU(x.verdict) + '</td><td>' + esc(x.evidence) + '</td></tr>'
+        }).join('') + '</tbody></table>'
+      : '<div style="color:var(--muted)">无 UI 问题关联</div>'
+    body += '<div class="section-title">Bug 需求关系（' + r.bug.bugs.length + ' 条）</div>'
+    body += r.bug.bugs.length
+      ? '<table class="mini-table"><thead><tr><th>缺陷</th><th>判定</th><th>依据</th></tr></thead><tbody>' + r.bug.bugs.map(function (x) {
+          return '<tr><td>' + esc(x.bugId) + '</td><td>' + vTagU(x.verdict) + '</td><td>' + esc(x.reason) + '</td></tr>'
+        }).join('') + '</tbody></table>'
+      : '<div style="color:var(--muted)">无 Bug 关系（未被任何历史缺陷检验）</div>'
+    body += '</div>'
+    var drawer = document.querySelector('.drawer')
+    drawer.querySelector('.drawer-body').innerHTML = body
+    drawer.classList.add('open')
   }
 
   // 规则覆盖视图（按业务模块折叠）

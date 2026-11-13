@@ -612,12 +612,69 @@ function buildRtmView(runDir) {
   };
 }
 
+// 统一 RTM 视图投影（v4 阶段 8）：读 rtm-merge 产物 rtm.json，按 REQ 聚合三维度 relations
+// 供 Dashboard「统一覆盖」Tab：同一 REQ 查看 game/ui/bug 覆盖与未验证清单
+function buildUnifiedView(unifiedDir) {
+  const rtmPath = path.join(unifiedDir, 'rtm.json');
+  if (!fs.existsSync(rtmPath)) {
+    throw new Error('统一 RTM 快照不存在: ' + rtmPath + '（先用 rtm-merge.mjs 生成，不用旧数据静默替代）');
+  }
+  const rtm = JSON.parse(fs.readFileSync(rtmPath, 'utf8'));
+  // 按 REQ 聚合 relations（分维度）
+  const grouped = new Map();
+  for (const rel of rtm.relations || []) {
+    if (!grouped.has(rel.requirementId)) grouped.set(rel.requirementId, { game: [], ui: [], bug: [] });
+    const g = grouped.get(rel.requirementId);
+    if (g[rel.dimension]) g[rel.dimension].push(rel);
+  }
+  // game 维度 REQ 覆盖态：取最差非 na 判定（missing > conflict > incomplete > unverified > partial > pass）
+  const WORST_ORDER = ['missing', 'conflict', 'incomplete', 'unverified', 'partial', 'pass'];
+  const worstGame = (rels) => {
+    const vs = rels.map((r) => r.verdict).filter((v) => v && v !== 'na');
+    for (const w of WORST_ORDER) if (vs.includes(w)) return w;
+    return vs.length ? 'na' : null;
+  };
+  const requirements = (rtm.requirements || []).map((r) => {
+    const g = grouped.get(r.requirementId) || { game: [], ui: [], bug: [] };
+    return {
+      requirementId: r.requirementId,
+      reqKey: r.reqKey,
+      title: r.title,
+      linked: g.game.length + g.ui.length + g.bug.length > 0,
+      game: {
+        worst: worstGame(g.game),
+        total: g.game.length,
+        rules: g.game.map((x) => ({ ruleId: x.targetId, verdict: x.verdict, evidence: x.evidence || '' })),
+      },
+      ui: {
+        total: g.ui.length,
+        issues: g.ui.map((x) => ({ id: x.targetId, verdict: x.verdict, evidence: (x.evidence || '').slice(0, 120) })),
+      },
+      bug: {
+        total: g.bug.length,
+        bugs: g.bug.map((x) => ({ bugId: x.targetId, verdict: x.verdict, reason: (x.evidence || '').slice(0, 120) })),
+      },
+    };
+  });
+  return {
+    statistics: {
+      requirements: rtm.stats.requirements,
+      byDimension: rtm.stats.byDimension,
+      extractionRunId: rtm.extractionRunId || null,
+      generatedAt: rtm.generatedAt,
+    },
+    requirements,
+  };
+}
+
 function main() {
   const argv = process.argv.slice(2);
   const rtmFlag = argv.indexOf('--rtm');
-  const positional = argv.filter((a, i) => a !== '--rtm' && argv[i - 1] !== '--rtm');
+  const unifiedFlag = argv.indexOf('--unified-rtm');
+  const positional = argv.filter((a, i) => a !== '--rtm' && argv[i - 1] !== '--rtm' && a !== '--unified-rtm' && argv[i - 1] !== '--unified-rtm');
   const [reportArg, outDirArg] = positional;
   const rtmRunDir = rtmFlag >= 0 ? argv[rtmFlag + 1] : null;
+  const unifiedDir = unifiedFlag >= 0 ? argv[unifiedFlag + 1] : null;
   const reportPath = path.resolve(reportArg || path.join(SKILL_ROOT, '..', '..', '..', 'examples', 'game-prd-check', 'report.md'));
   const outDir = path.resolve(outDirArg || path.dirname(reportPath));
 
@@ -626,6 +683,10 @@ function main() {
   // RTM 视图投影（--rtm <runDir>）：缺失产物直接报错，不用旧 coverage 静默替代
   if (rtmRunDir) {
     data.rtm = buildRtmView(rtmRunDir);
+  }
+  // 统一覆盖视图投影（--unified-rtm <dir>，v4 阶段 8）：读 rtm-merge 产物
+  if (unifiedDir) {
+    data.unified = buildUnifiedView(unifiedDir);
   }
   const errors = validateReport(data);
   if (errors.length) {

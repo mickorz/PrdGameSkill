@@ -33,9 +33,10 @@ fs.writeFileSync(gameDir + '/requirements-matrix.json', JSON.stringify({
     { requirementId: 'REQ-102', reqKey: 'a-2', ruleRefs: [{ ruleId: 'R01-002', status: 'unverified', evidence: '' }], issueIds: [] },
   ],
 }), 'utf8')
-fs.writeFileSync(gameDir + '/rule-catalog.json', JSON.stringify({ ruleCoverage: [
+// 真实产物 rule-catalog.json 为纯数组（v4 实测格式；曾因误读 ruleCoverage 字段致 rules 目录空）
+fs.writeFileSync(gameDir + '/rule-catalog.json', JSON.stringify([
   { ruleId: 'R01-001', file: 'rules/a.md' }, { ruleId: 'R01-002', file: 'rules/a.md' },
-] }), 'utf8')
+]), 'utf8')
 fs.writeFileSync(gameDir + '/manifest.json', JSON.stringify({ extractionRunId: 'ext-t-01' }), 'utf8')
 
 // ---------- mock ui 产物 ----------
@@ -114,5 +115,23 @@ assert.equal(r.code, 1); assert.match(r.out, /requirements 目录缺失或为空
 r = run('rtm-merge.mjs', [root + '/u3', '--requirements', snapDir])
 assert.equal(r.code, 1); assert.match(r.out, /至少传一个维度/)
 
+// 12. 包装格式 {ruleCoverage:[]} rule-catalog 兼容（旧 mock 格式），rules 目录同样非空
+{
+  const g2 = root + '/game-wrapped'
+  fs.mkdirSync(g2, { recursive: true })
+  fs.writeFileSync(g2 + '/requirements-matrix.json', JSON.stringify({
+    stats: {},
+    requirements: [{ requirementId: 'REQ-101', reqKey: 'a-1', ruleRefs: [{ ruleId: 'R01-001', status: 'pass', evidence: 'ok' }], issueIds: [] }],
+  }), 'utf8')
+  fs.writeFileSync(g2 + '/manifest.json', JSON.stringify({ extractionRunId: 'ext-t-01' }), 'utf8')
+  fs.writeFileSync(g2 + '/rule-catalog.json', JSON.stringify({ ruleCoverage: [{ ruleId: 'R01-001', file: 'rules/a.md' }] }), 'utf8')
+  const r2 = run('rtm-merge.mjs', [root + '/unified-wrapped', '--requirements', snapDir, '--game', g2])
+  assert.equal(r2.code, 0, '包装格式 rule-catalog 应合并成功: ' + r2.out)
+  const rtm2 = JSON.parse(fs.readFileSync(root + '/unified-wrapped/rtm.json', 'utf8'))
+  assert.equal(rtm2.rules.length, 1, '包装格式 rules 目录应 1 条')
+  assert.equal(rtm2.rules[0].ruleId, 'R01-001')
+  console.log('[成功] 包装格式 rule-catalog 兼容断言通过（rules 目录非空）')
+}
+
 fs.rmSync(root, { recursive: true, force: true })
-console.log('[成功] validate-rtm.example 11 场景全过（三维度合并/通过校验/悬空REQ拒绝/引用不闭合/坏枚举/failed带判定/pass无证据/统计不一致/维度错配/rule不闭合/空REQ目录/缺维度）')
+console.log('[成功] validate-rtm.example 12 场景全过（三维度合并/通过校验/悬空REQ拒绝/引用不闭合/坏枚举/failed带判定/pass无证据/统计不一致/维度错配/rule不闭合/空REQ目录/缺维度/包装格式兼容）')

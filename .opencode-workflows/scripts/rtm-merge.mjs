@@ -45,7 +45,9 @@ const warnings = []
 if (gameDir) {
   const matrix = readJson(path.join(gameDir, 'requirements-matrix.json'), 'game requirements-matrix.json')
   const ruleCat = readJson(path.join(gameDir, 'rule-catalog.json'), 'game rule-catalog.json')
-  for (const c of ruleCat.ruleCoverage || []) {
+  // rule-catalog.json 为纯数组（v4 真实产物）；兼容自检 mock 的 {ruleCoverage:[]} 包装
+  const ruleEntries = Array.isArray(ruleCat) ? ruleCat : (ruleCat.ruleCoverage || [])
+  for (const c of ruleEntries) {
     rules.push({ ruleId: c.ruleId, file: c.file, section: c.section || null, sourceType: c.sourceType || 'unknown' })
   }
   for (const req of matrix.requirements || []) {

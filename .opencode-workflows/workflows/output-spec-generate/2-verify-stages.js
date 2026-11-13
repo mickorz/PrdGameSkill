@@ -12,6 +12,23 @@
 //   加固：timeoutMs 3600000 -> 7200000（2x 裕度）；retries 1 -> 2（覆盖网关缓存错误与偶发超时）。
 //   效果结论待下次真实执行补充（本次为机制落地，未重跑验证）。
 //
+// v4 业务语义与差异 Schema（2026-11-14，备份 2-verify-stages.v3-org-20261114.js，需求 R4/R5，
+//   见 dev-docs/requirements/2026-11-14-outputspec策划需求视图与技术实现视图分离.md 6/6.1/6.4 节）：
+//   - 原子项 Schema 新增：businessBehavior{trigger,condition,action,result}（业务语义四元组，
+//     玩家语言）、difference（consistent/partial/conflict/unverified，与 verdict 语义分离：
+//     verdict=是否发现客户端实现证据，difference=实现与需求在已验证范围内的关系）、
+//     differenceDetail、verification{businessRuleVerified,unverifiedReason}；
+//     clientObserved 不进 Schema——校验代码从 verdict != not_found 派生后填入返回值。
+//   - stageVerifyPrompt 增加第三步业务语义与差异判定（差异判定规则见需求 6.1：
+//     部分证据不足以判定 = unverified 不等同 partial；conflict 必给 differenceDetail + 证据；
+//     禁止把 verdict=confirmed 直接写成 businessRuleVerified=true）。
+//   - 校验循环扩展：not_found ⇒ difference 兜底 unverified（缺省兜底不报错，兼容旧 journal 重放）；
+//     conflict ⇒ differenceDetail 与 evidence 非空；differenceStats 进返回值与 perStage。
+//   - 返回值顶层 schemaVersion: 2。
+//   - 警示：Schema 变更后不要用旧 run 的 resumeFromRunId 重放本子流程（旧 agent 输出缺新字段，
+//     差异判定会被兜底成 unverified 冒充已跑过；v1 数据新字段按「未经新 Schema 查证」处理，
+//     见需求 6.4，不补空串冒充已验证）。
+//
 // 由主 workflow 经显式路径调用（本目录不在注册表扫描范围）：
 //   await workflow({ scriptPath: './.opencode-workflows/workflows/output-spec-generate/2-verify-stages.js', label: '原子拆分与代码查证' }, { ...childArgs, scan })
 // args：
@@ -22,8 +39,9 @@
 //   analysisModel  分析类模型，默认 biangfeng-gateway/deepseek-v4.1-flash-official（传空串用会话默认）
 //
 // 返回（供主 workflow 内存链式传给子流程 3）：
-//   { stageCount, featureTotal, atomTotal, verdictStats, perStage, byStage }
+//   { schemaVersion, stageCount, featureTotal, atomTotal, verdictStats, differenceStats, perStage, byStage }
 //   byStage: [{ stageId, title, result }]，result 为该阶段完整查证结果 JSON
+//   （v4 起原子项含 businessBehavior/difference/differenceDetail/verification，verification.clientObserved 为派生值）
 
 export const meta = {
   id: 'output-spec-verify-stages',
@@ -134,10 +152,38 @@ const STAGE_EVIDENCE_SCHEMA = {
                 },
                 messages: { type: 'array', items: { type: 'string' }, description: '涉及协议消息名 MsgXxx' },
                 notes: { type: 'string', description: '与模板规则的差异或存疑点，无则空串' },
+                // v4 新增（R4/R5）：业务语义四元组与差异关系，全部玩家语言
+                businessBehavior: {
+                  type: 'object',
+                  description: '业务语义四元组（玩家语言，禁止技术词），无法从证据归纳的字段填空串',
+                  properties: {
+                    trigger: { type: 'string', description: '什么事件触发该行为，无则空串' },
+                    condition: { type: 'string', description: '什么条件下行为生效，无则空串' },
+                    action: { type: 'string', description: '客户端做什么，无则空串' },
+                    result: { type: 'string', description: '玩家看到什么结果，无则空串' },
+                  },
+                  required: ['trigger', 'condition', 'action', 'result'],
+                },
+                difference: {
+                  type: 'string',
+                  enum: ['consistent', 'partial', 'conflict', 'unverified'],
+                  description: '实际实现与需求的关系（与 verdict 语义分离，判定规则见需求 6.1）',
+                },
+                differenceDetail: { type: 'string', description: '差异说明：conflict 时必填（需求原文 vs 实际表现），其余无则空串' },
+                verification: {
+                  type: 'object',
+                  description: '业务规则验证结论（禁止从 verdict=confirmed 直接推导 businessRuleVerified=true）',
+                  properties: {
+                    businessRuleVerified: { type: 'boolean', description: '完整业务规则是否得到确认（含服务端行为可证性）' },
+                    unverifiedReason: { type: 'string', description: 'businessRuleVerified=false 时的原因，true 时空串' },
+                  },
+                  required: ['businessRuleVerified', 'unverifiedReason'],
+                },
               },
               required: [
                 'id', 'name', 'rule', 'uiRequirement', 'verdict',
                 'clientLogic', 'uiInteraction', 'evidence', 'messages', 'notes',
+                'businessBehavior', 'difference', 'differenceDetail', 'verification',
               ],
             },
           },
@@ -177,6 +223,19 @@ function stageVerifyPrompt(s) {
     '- messages：涉及协议消息名（MsgXxx，可从 GameGlcProtocol.ts 或调用处确认），无则空数组',
     '- notes：与模板规则的差异或存疑点，无则空串',
     '',
+    '第三步，业务语义与差异判定（每个原子项都要填，全部用玩家语言）：',
+    '- businessBehavior 业务语义四元组（trigger 什么事件触发 / condition 什么条件下生效 / action 客户端做什么 / result 玩家看到什么结果）：由证据归纳的业务语义，禁止出现类名、方法名、协议名、常量、文件路径等技术词；无法从证据归纳的字段填空串，不要编造。',
+    '- difference 实际实现与需求的关系（与 verdict 语义独立，verdict 只回答「是否发现客户端实现证据」）：',
+    '  - consistent：可观察范围内符合需求，且用于判定的每项要求均有充分证据',
+    '  - partial：同一原子需求中部分子要求已验证满足、其余子要求未验证（未证实不等于证实不符）',
+    '  - conflict：发现明确与需求矛盾的实现行为（例：需求「财神打出按普通白板展示」、实现「牌河中打出的白板财神仍高亮」）',
+    '  - unverified：没有足以判定需求符合性的证据（含只有间接证据、无法支撑判定的情况）',
+    '  判定注意：客户端只有部分证据（如仅前端按钮）不等于 partial——证据不足以判定需求符合性时归 unverified；verdict=not_found 时 difference 必为 unverified。',
+    '- differenceDetail：difference=conflict 时必填（描述需求原文 vs 实际表现，并指向证据）；其余无则空串。',
+    '- verification：',
+    '  - businessRuleVerified：完整业务规则是否得到确认（boolean）。verdict=confirmed 只证明「客户端存在实现证据」，禁止因此直接填 true；典型反例：客户端显示吃牌按钮（confirmed）但服务端吃牌优先级规则不可由客户端代码证实，此时填 false。',
+    '  - unverifiedReason：businessRuleVerified=false 时填原因（如「缺少服务端吃牌资格判定证据」），true 时填空串。',
+    '',
     '严禁编造：所有 file/location/excerpt 必须来自真实读到的文件内容；查不到就如实 not_found，不要硬凑证据。',
     '只输出结构化结果。',
   ].join('\n')
@@ -202,6 +261,8 @@ const byStage = []
 let atomTotal = 0
 let featureTotal = 0
 const verdictStats = { confirmed: 0, partial: 0, not_found: 0 }
+// v4 差异统计（T2.4）：difference 分布，conflict 优先原则（单值字段直接计数）
+const differenceStats = { consistent: 0, partial: 0, conflict: 0, unverified: 0 }
 for (let i = 0; i < stageSections.length; i++) {
   const s = stageSections[i]
   const r = stageResults[i]
@@ -218,6 +279,7 @@ for (let i = 0; i < stageSections.length; i++) {
   let c = 0
   let p = 0
   let n = 0
+  const dStats = { consistent: 0, partial: 0, conflict: 0, unverified: 0 }
   for (const fe of r.features) {
     if (!fpRe.test(fe.id || '')) throw new Error('阶段 ' + s.stageId + ' 功能点 ID 非法：' + fe.id)
     if (ids.has(fe.id)) throw new Error('阶段 ' + s.stageId + ' 功能点 ID 重复：' + fe.id)
@@ -238,10 +300,33 @@ for (let i = 0; i < stageSections.length; i++) {
       if (at.verdict === 'not_found' && Array.isArray(at.evidence) && at.evidence.length > 0) {
         throw new Error('原子项 ' + at.id + ' verdict=not_found 却带证据，自相矛盾')
       }
+      // v4 差异自洽校验与兜底（T2.4，兼容旧 journal 重放：缺失/非法按 unverified 兜底，不报错）
+      const DIFF_VALUES = ['consistent', 'partial', 'conflict', 'unverified']
+      if (!DIFF_VALUES.includes(at.difference)) {
+        at.difference = 'unverified'
+      }
+      if (at.verdict === 'not_found') {
+        at.difference = 'unverified'
+      }
+      if (at.difference === 'conflict') {
+        if (!at.differenceDetail) {
+          throw new Error('原子项 ' + at.id + ' difference=conflict 但 differenceDetail 为空（必须描述需求原文 vs 实际表现）')
+        }
+        if (!Array.isArray(at.evidence) || at.evidence.length === 0) {
+          throw new Error('原子项 ' + at.id + ' difference=conflict 但证据为空（conflict 必须携带证据）')
+        }
+      }
+      // v4 clientObserved 派生（T2.2：不进 Schema 减少输出负担，校验代码派生后填入返回值）
+      if (!at.verification || typeof at.verification !== 'object') {
+        at.verification = { businessRuleVerified: false, unverifiedReason: '查证结果缺 verification 字段（旧 Schema 数据兜底）' }
+      }
+      at.verification.clientObserved = at.verdict !== 'not_found'
       count++
       if (at.verdict === 'confirmed') c++
       else if (at.verdict === 'partial') p++
       else n++
+      // v4 差异统计（conflict 优先原则：difference 单值，直接按值计数）
+      dStats[at.difference] = (dStats[at.difference] || 0) + 1
     }
   }
   atomTotal += count
@@ -249,20 +334,33 @@ for (let i = 0; i < stageSections.length; i++) {
   verdictStats.confirmed += c
   verdictStats.partial += p
   verdictStats.not_found += n
-  perStage.push({ id: s.stageId, name: s.title, features: r.features.length, atoms: count, confirmed: c, partial: p, notFound: n })
+  for (const k of Object.keys(dStats)) differenceStats[k] += dStats[k]
+  perStage.push({
+    id: s.stageId,
+    name: s.title,
+    features: r.features.length,
+    atoms: count,
+    confirmed: c,
+    partial: p,
+    notFound: n,
+    difference: dStats,
+  })
   byStage.push({ stageId: s.stageId, title: s.title, result: r })
 }
 
 log(
   '原子拆分与查证完成：' + stageSections.length + ' 阶段 / ' + featureTotal + ' 功能点 / ' + atomTotal +
-    ' 原子项（confirmed ' + verdictStats.confirmed + ' / partial ' + verdictStats.partial + ' / not_found ' + verdictStats.not_found + '）'
+    ' 原子项（confirmed ' + verdictStats.confirmed + ' / partial ' + verdictStats.partial + ' / not_found ' + verdictStats.not_found + '）' +
+    '（difference：consistent ' + differenceStats.consistent + ' / partial ' + differenceStats.partial + ' / conflict ' + differenceStats.conflict + ' / unverified ' + differenceStats.unverified + '）'
 )
 
 return {
+  schemaVersion: 2,
   stageCount: stageSections.length,
   featureTotal: featureTotal,
   atomTotal: atomTotal,
   verdictStats: verdictStats,
+  differenceStats: differenceStats,
   perStage: perStage,
   byStage: byStage,
 }

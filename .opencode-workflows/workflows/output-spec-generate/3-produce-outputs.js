@@ -44,6 +44,9 @@
 //   plannerPath    策划版文档输出路径（v3 新增），默认 spec-workflow/output-spec/核心流程杭州麻将好友房AI-策划版.md
 //   skipPlanner    true 时不产出策划版（legacy 模式，行为等同 v2），默认 false
 //   plannerOnly    true 时只产出策划版（跳过技术文档/索引/补充版），默认 false；与 skipPlanner 互斥
+//   plannerInputDir planner-only 磁盘输入模式（v3.1/T4.3）：plannerOnly 且未传 verify 时，
+//                  从该目录读 sections.json（一个 echo agent 读回）+ 每阶段证据文件（agent 读投影）；
+//                  由主编排先跑 prepare-planner-doc-input.mjs 生成（证据文件只含业务字段，结构化隔离）
 //   sourceSpecDir  历史查证证据目录（planner-only 覆盖检查基准，v3 新增透传进 build-config），默认空
 //   leakAllowlist  泄漏检查白名单词数组（v3 新增透传进 build-config），默认 ['AI']
 //   date           产出日期 YYYY-MM-DD（脚本内禁止取当前时间），默认 2026-11-13
@@ -137,15 +140,59 @@ function splitDocParts(features, maxAtoms) {
 }
 
 // ============================================================
-// 上游输入校验（scan/verify 由主 workflow 内存传入）
+// 上游输入校验（scan/verify 由主 workflow 内存传入；
+// planner-only 磁盘输入模式：plannerOnly + plannerInputDir + 未传 verify 时，
+// sections.json 由一个 echo agent 读回构造 scan，证据文件由各阶段投影 agent 自读）
 // ============================================================
 
-const scan = A.scan
+const plannerInputDir = A.plannerInputDir || ''
+const fromDisk = plannerOnly && !A.verify && plannerInputDir !== ''
+
+let scan = A.scan || null
+let verify = A.verify || null
+
+if (fromDisk) {
+  const sectionsJsonPath = plannerInputDir + '/sections.json'
+  await check(
+    () => fileExists(sectionsJsonPath),
+    'planner-input sections.json 不存在（请先运行 prepare-planner-doc-input.mjs）：' + sectionsJsonPath
+  )
+  const secText = await agent(
+    [
+      '读取以下 JSON 文件的全部内容并原样返回（这是章节元数据，供程序解析）：' + sectionsJsonPath,
+      '',
+      '要求：',
+      '1. 使用 read 工具读取该文件。',
+      '2. 回复中只包含文件的 JSON 原文，不加代码围栏、不增删改任何字符、不做总结。',
+    ].join('\n'),
+    {
+      label: '读取章节元数据',
+      agentType: 'general',
+      timeoutMs: 900000,
+      retries: 2,
+      ...withModel({}),
+    }
+  )
+  try {
+    const parsed = JSON.parse(secText)
+    scan = {
+      templatePath: parsed.templatePath,
+      totalLines: parsed.totalLines,
+      sections: parsed.sections,
+      termsSection: parsed.termsSection || null,
+      stageSections: parsed.sections.filter((s) => s.kind === 'stage'),
+      stageCount: parsed.stageCount,
+    }
+  } catch (err) {
+    throw new Error('planner-input sections.json 读回解析失败（agent 返回非 JSON）：' + err.message)
+  }
+  verify = { byStage: [] }
+}
+
 if (!scan || !Array.isArray(scan.sections) || !Array.isArray(scan.stageSections) || scan.stageSections.length === 0) {
   throw new Error('缺少上游扫描结果 args.scan（含 sections/stageSections），请经主 workflow output-spec-generate 调度本子流程')
 }
-const verify = A.verify
-if (!verify || !Array.isArray(verify.byStage) || verify.byStage.length === 0) {
+if (!verify || !Array.isArray(verify.byStage)) {
   throw new Error('缺少上游查证结果 args.verify（含 byStage），请经主 workflow output-spec-generate 调度本子流程')
 }
 const sections = scan.sections
@@ -154,9 +201,11 @@ const byId = new Map()
 for (const item of verify.byStage) {
   byId.set(item.stageId, item.result)
 }
-for (const s of stageSections) {
-  if (!byId.has(s.stageId)) {
-    throw new Error('阶段 ' + s.stageId + ' 缺少查证结果（verify.byStage 未包含），上游数据不一致')
+if (!fromDisk) {
+  for (const s of stageSections) {
+    if (!byId.has(s.stageId)) {
+      throw new Error('阶段 ' + s.stageId + ' 缺少查证结果（verify.byStage 未包含），上游数据不一致')
+    }
   }
 }
 
@@ -502,21 +551,82 @@ if (!plannerOnly) {
   }
 }
 
+// v3.1 planner-only 磁盘输入模式 prompt（T4.3）：以阶段 0 实验定稿 Prompt 为蓝本
+// （experiment-planner-projection.js），agent 读证据文件（prepare-planner-doc-input.mjs
+// 产物，只含业务字段）自投影；目标为 planner-parts 分片
+function plannerPartPromptFromFile(sec) {
+  const evidencePath = plannerInputDir + '/planner-evidence_' + sec.stageId + '.json'
+  return [
+    '你是需求文档整理员，面向策划输出。任务：把一个游戏需求章节增强成「策划版」文档分片——原文规则全部保留，补充玩家可理解的界面表现与待确认差异。工作目录为项目根目录。',
+    '',
+    '本章节：' + sec.title + '（来源章节：' + (sec.sourceTitle || sec.title) + '）。',
+    '',
+    '第一步，读证据文件（唯一事实依据，read 工具）：' + evidencePath,
+    '该文件内含：章节标题（title）、来源章节（sourceTitle）、模板文件路径（templatePath）、模板章节行号（fromLine/toLine）、名词章节行号（termsFromLine/termsToLine）、瘦身原子项列表（atoms，每条含 id/name/rule/uiRequirement/uiInteraction/notes/verdict，businessBehavior 有则一并）。',
+    '',
+    '第二步，读模板章节原文：用 read 工具打开证据文件中的 templatePath，offset=fromLine，limit=toLine-fromLine+1（覆盖第 fromLine~toLine 行）；名词术语可另读 termsFromLine~termsToLine 行帮助理解。',
+    '',
+    '第三步，写目标分片文件（write 工具，UTF-8）：' + plannerPartPath(sec),
+    '',
+    '文档结构：',
+    '1. 分片直接以本章节原文开头（含章节标题行）；章节标题行（# 开头的行）必须逐字保留，不得增删原有标题层级、不得改动原语义；可修明显笔误但不改规则含义。阶段章节分片可在标题行后另起一行引语：> 来源：模板「' + (sec.sourceTitle || sec.title) + '」章节（策划版）。',
+    '2. 章节原文逐条保留：标题行与规则语句的顺序、语义不得删改。',
+    '3. 在每条规则语句（列表项/段落）之后补充缩进两个空格的子列表项（没有原子项对应的原文语句不补充，保留原样；一条原文语句对应多个原子项时合并成一条补充行）：',
+    '   - 该语句对应的原子项 verdict=confirmed/partial 且 uiInteraction 或 notes 或 businessBehavior 有内容：写「  - 界面表现：{玩家可理解的行为描述}（{原子项id}）」',
+    '   - 原子项 notes 描述了实现与需求不一致（如需求说按普通白板展示、实际牌河中仍高亮）：另起一条「  - 待确认：需求为「{原文规则}」，实际表现为「{实际行为}」（{原子项id}）」',
+    '   - 原子项 verdict=not_found：写「  - 待确认：客户端未查到对应实现（{原子项id}）」',
+    '   - 原子项 uiInteraction、notes、businessBehavior 均为空且 verdict=confirmed/partial：不硬凑补充行，只保留原文。',
+    '',
+    '转写硬规则（最重要）：',
+    '1. uiInteraction、notes、businessBehavior 是工程师写的查证记录，其中残留大量技术词，禁止原样复制进策划版：出现类名（如 GameJuDataCmd、GameData）、方法名（如 onShowZhuang、showDice）、协议名（MsgJuData、CMD_xxx、GP_xxx）、常量（C_Bank、KW_RESULT、POWER_ID_HU）、UI 组件名（box_hzmj_xxx）、文件路径（source-code/...、xxx.ts:31）时，必须转写成玩家能看见、能操作的行为描述（例：「BoxHzmjMah2DView.showDice」转写为「牌桌播放骰子动画」；「C_Bank 的 zhuang1~3 页」转写为「庄家标志按牢庄等级分三档点亮」）。',
+    '2. businessBehavior 四元组（触发 trigger/条件 condition/行为 action/结果 result）是业务语义的权威来源，界面表现行优先按它转写。',
+    '3. 无法转写成玩家行为的技术细节直接丢弃，不写进策划版；转写不得改变该行为的事实本身。',
+    '4. 没有证据支撑的规则宁可标注「待确认」，严禁为了让文档完整而编造业务规则或编造界面表现。',
+    '5. 每条补充行末尾用括号附原子项 id（AT-ST-Cxx-nnn 形式），供追溯。',
+    '6. 全文不得出现：类名、方法名、Msg/CMD/GP 前缀协议名、C_/KW_/ET_ 前缀常量、box_ 组件名、source-code 路径、任何 .ts/.xml 文件名与 file:line。',
+    '7. 中文书写，无 Emoji，不要用代码围栏包裹分片；直接逐条边写边落盘，不要先整理全部再写盘。',
+    '',
+    '写完只返回目标文件路径与一句话摘要，不要输出分片全文，不要执行 git 命令。',
+  ].join('\n')
+}
+
 // C2. 策划版章节分片（v3 新增第二套投影；skipPlanner=true 时不调度）
 //     stage 章节为写作任务（会话默认模型、timeoutMs 3600000、retries 2，T1.4）；
 //     intro/nouns 为机械复制（plannerCopyPartPrompt）
 if (!skipPlanner) {
+  // planner-only 磁盘输入模式：证据文件前置存在检查（fail fast，不浪费 agent）
+  if (fromDisk) {
+    for (const sec of sections) {
+      if (sec.kind === 'stage') {
+        await check(
+          () => fileExists(plannerInputDir + '/planner-evidence_' + sec.stageId + '.json'),
+          'planner-input 证据文件不存在：' + plannerInputDir + '/planner-evidence_' + sec.stageId + '.json'
+        )
+      }
+    }
+  }
   for (const sec of sections) {
     if (sec.kind === 'stage') {
-      const evidence = slimPlannerEvidence(byId.get(sec.stageId))
-      writeTasks.push(() =>
-        agent(plannerPartPrompt(sec, evidence), {
-          label: '策划版 ' + sec.stageId,
-          agentType: 'general',
-          timeoutMs: 3600000,
-          retries: 2,
-        })
-      )
+      if (fromDisk) {
+        writeTasks.push(() =>
+          agent(plannerPartPromptFromFile(sec), {
+            label: '策划版 ' + sec.stageId,
+            agentType: 'general',
+            timeoutMs: 3600000,
+            retries: 2,
+          })
+        )
+      } else {
+        const evidence = slimPlannerEvidence(byId.get(sec.stageId))
+        writeTasks.push(() =>
+          agent(plannerPartPrompt(sec, evidence), {
+            label: '策划版 ' + sec.stageId,
+            agentType: 'general',
+            timeoutMs: 3600000,
+            retries: 2,
+          })
+        )
+      }
     } else {
       writeTasks.push(() =>
         agent(plannerCopyPartPrompt(sec), {

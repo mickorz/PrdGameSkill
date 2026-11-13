@@ -95,12 +95,13 @@ function plannerOnlyReport(specDir, plannerPath, leakProblems, coverage, sourceI
   const lines = []
   lines.push('# 产出校验（output-spec-generate，planner-only 模式）')
   lines.push('')
-  lines.push('> 机械闸门：策划版泄漏正则扫描 / AT-ID 覆盖率（基准 trace_index.json）/ 乱码检查。本模式不重跑查证与技术文档装配，历史证据目录只读。')
+  lines.push('> 机械闸门：策划版泄漏正则扫描 / AT-ID 覆盖率（基准 trace_index.json，必查口径 required 条目）/ 乱码检查。本模式不重跑查证与技术文档装配，历史证据目录只读。')
   lines.push('')
   lines.push('- 策划版文档：' + plannerPath)
   if (coverage && coverage.coverage !== undefined) {
-    lines.push('- AT-ID 覆盖率：' + (coverage.coverage * 100).toFixed(1) + '%（基准 ' + coverage.problems.length + ' 项问题内含缺失清单）')
+    lines.push('- AT-ID 覆盖率：' + (coverage.coverage * 100).toFixed(1) + '%（必查口径：trace required 条目）')
   }
+  for (const n of coverage.notes || []) lines.push('- 提示：' + n)
   if (sourceIndex) {
     const feats = sourceIndex.features || []
     let atomTotal = 0

@@ -113,24 +113,33 @@ export function checkPlannerLeakage(plannerPath, allowlist) {
 // AT-ID 覆盖检查（R9）：以 trace_index.json 为基准，比对策划版文本中出现的 AT-ID 集合
 // 覆盖率非 100% 列缺失清单；策划版出现基准外的 AT-ID 同样列为问题
 // （导出供 build-output-spec.mjs planner-only 分支复用）
+// v2.1 口径（与策划版 Prompt「不硬凑」规则对齐）：分母只计 required=true 的条目
+// （uiInteraction 非空 / businessBehavior 四元组任一非空 / verdict=not_found——Prompt
+// 必然要求写补充行的原子）；required=false 的原子（纯知识规则，Prompt 规则不硬凑）
+// 实际缺失仅列提示行不计 fail，防漏写与防编造口径一致。
 export function checkAtomCoverage(plannerPath, traceIndexPath) {
   const problems = []
+  const notes = []
   if (!fs.existsSync(traceIndexPath)) {
     problems.push('trace_index.json 不存在（AT-ID 覆盖检查基准缺失）：' + traceIndexPath)
-    return { coverage: 0, missing: [], extra: [], problems: problems }
+    return { coverage: 0, missing: [], extra: [], problems: problems, notes: notes }
   }
   let trace
   try {
     trace = JSON.parse(fs.readFileSync(traceIndexPath, 'utf8'))
   } catch (err) {
     problems.push('trace_index.json 解析失败：' + err.message)
-    return { coverage: 0, missing: [], extra: [], problems: problems }
+    return { coverage: 0, missing: [], extra: [], problems: problems, notes: notes }
   }
-  const baseIds = (trace.entries || []).map((e) => e.atomId)
+  const entries = trace.entries || []
+  const baseIds = entries.map((e) => e.atomId)
   if (baseIds.length === 0) {
     problems.push('trace_index.json entries 为空（追溯索引生成异常）')
-    return { coverage: 0, missing: [], extra: [], problems: problems }
+    return { coverage: 0, missing: [], extra: [], problems: problems, notes: notes }
   }
+  // required 缺失（旧版 trace 无 required 字段时按全量必查，向后兼容）
+  const requiredIds = entries.filter((e) => e.required !== false).map((e) => e.atomId)
+  const optionalIds = entries.filter((e) => e.required === false).map((e) => e.atomId)
   const plannerText = fs.readFileSync(plannerPath, 'utf8')
   const found = new Set()
   // 原子项 ID 格式：AT-ST-Cxx-nnn（阶段 C 后 2 位、原子项 3 位，如 AT-ST-C01-001）
@@ -138,16 +147,20 @@ export function checkAtomCoverage(plannerPath, traceIndexPath) {
   let m
   while ((m = re.exec(plannerText)) !== null) found.add(m[0])
   const baseSet = new Set(baseIds)
-  const missing = baseIds.filter((id) => !found.has(id))
+  const missing = requiredIds.filter((id) => !found.has(id))
+  const optionalMissing = optionalIds.filter((id) => !found.has(id))
   const extra = Array.from(found).filter((id) => !baseSet.has(id))
   if (missing.length > 0) {
     problems.push('策划版 AT-ID 覆盖缺失 ' + missing.length + ' 个（AI 漏写补充内容）：' + missing.slice(0, 30).join('、') + (missing.length > 30 ? ' ...' : ''))
   }
+  if (optionalMissing.length > 0) {
+    notes.push('策划版未标注 AT-ID ' + optionalMissing.length + ' 个（无可写补充内容的原子，按「不硬凑」规则跳过，仅提示不计失败）：' + optionalMissing.slice(0, 30).join('、') + (optionalMissing.length > 30 ? ' ...' : ''))
+  }
   if (extra.length > 0) {
     problems.push('策划版出现基准外 AT-ID ' + extra.length + ' 个：' + extra.slice(0, 30).join('、') + (extra.length > 30 ? ' ...' : ''))
   }
-  const coverage = (baseIds.length - missing.length) / baseIds.length
-  return { coverage: coverage, missing: missing, extra: extra, problems: problems }
+  const coverage = requiredIds.length > 0 ? (requiredIds.length - missing.length) / requiredIds.length : 1
+  return { coverage: coverage, missing: missing, optionalMissing: optionalMissing, extra: extra, problems: problems, notes: notes }
 }
 
 export function verifyOutputSpec(specDir, supplementPath, templatePath, date, opts) {
@@ -281,12 +294,14 @@ export function verifyOutputSpec(specDir, supplementPath, templatePath, date, op
 
   // 维度 6（v2，opts 传入时）：策划版泄漏检查 + AT-ID 覆盖检查（R2/R6/R9）
   let plannerCoverage = null
+  let plannerNotes = []
   if (plannerPath && !skipPlanner) {
     const leak = checkPlannerLeakage(plannerPath, O.allowlist)
     for (const p of leak.problems) problems.push(p)
     const traceIndexPath = O.traceIndexPath || path.join(specDir, 'trace_index.json')
     const cov = checkAtomCoverage(plannerPath, traceIndexPath)
     for (const p of cov.problems) problems.push(p)
+    plannerNotes = cov.notes || []
     plannerCoverage = cov
   }
 
@@ -339,8 +354,9 @@ export function verifyOutputSpec(specDir, supplementPath, templatePath, date, op
   lines.push('- 全部产出无 U+FFFD 乱码、无分片标记残留')
   if (plannerPath && !skipPlanner) {
     if (plannerCoverage) {
-      lines.push('- 策划版文档 ' + plannerPath + '：泄漏正则零命中（白名单 ' + JSON.stringify(O.allowlist || []) + '），AT-ID 覆盖率 ' + (plannerCoverage.coverage * 100).toFixed(1) + '%')
+      lines.push('- 策划版文档 ' + plannerPath + '：泄漏正则零命中（白名单 ' + JSON.stringify(O.allowlist || []) + '），AT-ID 覆盖率 ' + (plannerCoverage.coverage * 100).toFixed(1) + '%（必查口径：trace required 条目）')
     }
+    for (const n of plannerNotes) lines.push('- 提示：' + n)
   }
   lines.push('')
   lines.push('| 阶段 | 原子项 | 已证实 | 部分证实 | 未找到 |')

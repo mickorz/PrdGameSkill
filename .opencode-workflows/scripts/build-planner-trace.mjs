@@ -14,8 +14,15 @@
 //   CLI 传中文路径有编码风险，正式链路经 build-output-spec.mjs（配置文件传参）调用。
 //
 // 条目结构（需求 6.3，不设 EV 编号：evidenceCount 仅作统计）：
-//   { atomId, sourceStage, sourceRule, plannerSection, plannerPart, evidenceCount, reviewStatus }
+//   { atomId, sourceStage, sourceRule, plannerSection, plannerPart, evidenceCount, required, reviewStatus }
 //   reviewStatus=pending 供人工抽查后翻转，仅作记录不作闸门。
+//   required（v3.1，口径对齐策划版 Prompt「不硬凑」规则）：uiInteraction 非空 ||
+//   businessBehavior 四元组任一非空 || verdict=not_found —— 即「策划版 Prompt 必然要求
+//   写补充行（界面表现/待确认）」的原子；覆盖闸门（checkAtomCoverage）只对 required=true
+//   的条目计分母。uiInteraction/notes/businessBehavior 全空的 confirmed/partial 原子
+//   （纯知识规则，如「万条筒各 36 张」）按 Prompt 规则不硬凑补充行，不进覆盖分母，
+//   实际缺失仅在报告提示（防漏写与防编造口径一致）。notes 不参与判定：v1 notes 多为
+//   技术查证记录（实现方式描述），转写硬规则禁止复制，不能作为必有补充行的依据。
 //
 // 退出码（CLI）：0 成功 / 1 失败（输入缺失 / 分片不齐 / JSON 解析失败）
 
@@ -65,6 +72,7 @@ export function buildPlannerTrace(scanPath, indexPath, plannerParts, outPath) {
 
   const entries = []
   const byStage = {}
+  let requiredTotal = 0
   for (const sec of stageSections) {
     const stageId = sec.stageId
     if (!stageId) return bad('stage 章节缺 stageId：' + sec.title)
@@ -74,6 +82,14 @@ export function buildPlannerTrace(scanPath, indexPath, plannerParts, outPath) {
     }
     const atoms = atomsByStage.get(stageId) || []
     for (const at of atoms) {
+      // required 判定（v3.1）：兼容 v1（snake_case）与 v2（camelCase）索引字段
+      const uiInteraction = at.ui_interaction || at.uiInteraction || ''
+      const bb = at.business_behavior || at.businessBehavior || {}
+      const bbNonEmpty =
+        (bb.trigger || bb.condition || bb.action || bb.result || '').length > 0
+      const required =
+        uiInteraction.trim().length > 0 || bbNonEmpty || at.verdict === 'not_found'
+      if (required) requiredTotal++
       entries.push({
         atomId: at.id,
         sourceStage: stageId,
@@ -81,6 +97,7 @@ export function buildPlannerTrace(scanPath, indexPath, plannerParts, outPath) {
         plannerSection: sec.sourceTitle || sec.title,
         plannerPart: partName,
         evidenceCount: (at.evidence || []).length,
+        required: required,
         reviewStatus: 'pending',
       })
     }
@@ -94,6 +111,7 @@ export function buildPlannerTrace(scanPath, indexPath, plannerParts, outPath) {
     indexPath: indexPath,
     indexSchemaVersion: index.schema_version || 1,
     entryCount: entries.length,
+    requiredCount: requiredTotal,
     entries: entries,
   }
   fs.mkdirSync(path.dirname(outPath), { recursive: true })
@@ -102,8 +120,11 @@ export function buildPlannerTrace(scanPath, indexPath, plannerParts, outPath) {
   const stageSummary = Object.keys(byStage)
     .map((k) => k + ':' + byStage[k])
     .join('、')
-  console.log('[成功] [追溯索引] ' + entries.length + ' 条 -> ' + outPath + '（' + stageSummary + '）')
-  return { ok: true, problems: [], entryCount: entries.length, byStage: byStage }
+  console.log(
+    '[成功] [追溯索引] ' + entries.length + ' 条（覆盖必查 ' + requiredTotal + '）-> ' + outPath +
+      '（' + stageSummary + '）'
+  )
+  return { ok: true, problems: [], entryCount: entries.length, requiredCount: requiredTotal, byStage: byStage }
 }
 
 const invokedDirectly =

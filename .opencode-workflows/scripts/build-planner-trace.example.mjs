@@ -9,6 +9,8 @@
 //   6. indexSchemaVersion 透传
 //   7. 输出文件内容断言（条目数、字段、reviewStatus=pending）
 //   8. 多阶段混合（intro/terms 不进条目）
+//   9. required 判定（v3.1：uiInteraction 非空 / businessBehavior 任一非空 / not_found -> true；全空 confirmed -> false）
+//  10. requiredCount 统计
 
 import fs from 'node:fs'
 import path from 'node:path'
@@ -62,8 +64,14 @@ function writeJson(p, obj) {
         stage_id: 'ST-C01',
         stage_name: '定庄',
         atoms: [
-          { id: 'AT-ST-C01-001', rule: '首局随机坐庄。', evidence: [{ file: 'a.ts', location: 'a.ts:1' }] },
+          // 用例 9：001 v2 字段 uiInteraction 非空 -> required；002 全空 confirmed -> not required；
+          // 003 not_found -> required；004 v1 字段 ui_interaction 非空 -> required（v1 兼容）；
+          // 005 businessBehavior 四元组非空 -> required
+          { id: 'AT-ST-C01-001', rule: '首局随机坐庄。', ui_interaction: '头像点亮庄家标志', evidence: [{ file: 'a.ts', location: 'a.ts:1' }] },
           { id: 'AT-ST-C01-002', rule: '三牢封顶。', evidence: [] },
+          { id: 'AT-ST-C01-003', rule: '连庄。', verdict: 'not_found', evidence: [] },
+          { id: 'AT-ST-C01-004', rule: '庄闲倍数固定。', ui_interaction: '倍数字样展示', evidence: [] },
+          { id: 'AT-ST-C01-005', rule: '庄家标志三档。', business_behavior: { trigger: '开局', condition: '', action: '', result: '' }, evidence: [] },
         ],
       },
       {
@@ -77,24 +85,28 @@ function writeJson(p, obj) {
   const parts = [path.join(TMP, 'part-03.md'), path.join(TMP, 'part-04.md')]
   const r = buildPlannerTrace(scanPath, indexPath, parts, outPath)
   assert('用例1 生成成功', r.ok === true)
-  assert('用例1 条目数 3', r.entryCount === 3)
-  assert('用例1 byStage 统计', r.byStage['ST-C01'] === 2 && r.byStage['ST-C02'] === 1)
+  assert('用例1 条目数 6', r.entryCount === 6)
+  assert('用例1 byStage 统计', r.byStage['ST-C01'] === 5 && r.byStage['ST-C02'] === 1)
+  assert('用例10 requiredCount 4', r.requiredCount === 4)
 
   const trace = JSON.parse(fs.readFileSync(outPath, 'utf8'))
-  assert('用例1 输出条目数一致', trace.entryCount === 3 && trace.entries.length === 3)
+  assert('用例1 输出条目数一致', trace.entryCount === 6 && trace.entries.length === 6)
+  assert('用例10 顶层 requiredCount', trace.requiredCount === 4)
   const e1 = trace.entries[0]
   assert(
     '用例2 section.no 映射 part-03.md',
     e1.plannerPart === 'part-03.md' && e1.plannerSection === '开局 > 定庄'
   )
-  assert('用例2 ST-C02 映射 part-04.md', trace.entries[2].plannerPart === 'part-04.md')
+  assert('用例2 ST-C02 映射 part-04.md', trace.entries[5].plannerPart === 'part-04.md')
   assert(
     '用例7 字段齐全 reviewStatus=pending',
     e1.atomId === 'AT-ST-C01-001' && e1.sourceStage === 'ST-C01' && e1.sourceRule === '首局随机坐庄。' && e1.reviewStatus === 'pending'
   )
-  assert('用例7 evidenceCount 统计', e1.evidenceCount === 1 && trace.entries[1].evidenceCount === 0 && trace.entries[2].evidenceCount === 2)
+  assert('用例7 evidenceCount 统计', e1.evidenceCount === 1 && trace.entries[1].evidenceCount === 0 && trace.entries[5].evidenceCount === 2)
   assert('用例6 indexSchemaVersion 透传', trace.indexSchemaVersion === 2)
   assert('用例8 intro/terms 不进条目', trace.entries.every((e) => e.sourceStage === 'ST-C01' || e.sourceStage === 'ST-C02'))
+  assert('用例9 required 判定（uiInteraction 非空/not_found/businessBehavior/v1 字段兼容）', trace.entries[0].required === true && trace.entries[1].required === false && trace.entries[2].required === true && trace.entries[3].required === true && trace.entries[4].required === true)
+  assert('用例9 全空 confirmed 不 required（含 ST-C02-001）', trace.entries[5].required === false)
 }
 
 // ---------- 用例 3：plannerParts 缺片 fail ----------

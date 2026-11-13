@@ -281,8 +281,9 @@ function setupV2(mode) {
           {
             id: 'FP-ST-C01-001', stage_id: 'ST-C01',
             atoms: [
+              // required 混合：002 有 ui_interaction（required）；001/003 无（optional，纯知识规则）
               { id: 'AT-ST-C01-001', rule: '首局随机坐庄。', evidence: [{ file: 'a.ts', location: 'a.ts:1' }] },
-              { id: 'AT-ST-C01-002', rule: '胡牌者坐庄。', evidence: [] },
+              { id: 'AT-ST-C01-002', rule: '胡牌者坐庄。', ui_interaction: '头像点亮庄家标志', evidence: [] },
             ],
           },
           {
@@ -355,11 +356,45 @@ function setupV2(mode) {
   assert.equal(fs.existsSync(specDir + '/trace_index.json'), true)
   assert.equal(fs.existsSync(specDir + '/feature_index.json'), false, 'planner-only 不装配 feature_index')
   assert.equal(fs.existsSync(specDir + '/stage_manifest.md'), false, 'planner-only 不装配 stage_manifest')
+  const trace = JSON.parse(fs.readFileSync(specDir + '/trace_index.json', 'utf8'))
+  assert.equal(trace.requiredCount, 1, 'required 判定：仅 AT-ST-C01-002 必查')
   const report = fs.readFileSync(specDir + '/runtime/spec_check/verify-report.md', 'utf8')
   assert.match(report, /planner-only 模式/)
   assert.match(report, /\*\*结论：放行。\*\*/)
   assert.match(report, /difference 分布/)
   assert.match(r.out, /\[成功\] \[planner-only 校验\] 泄漏零命中，AT-ID 覆盖 100%/)
+}
+
+// 场景 11.5（v2）：planner-only optional 原子缺失不 fail（required 口径，防漏写与防编造一致）
+{
+  const specDir = setupV2('planner-only')
+  // 重造策划版分片：只写 required 的 AT-ST-C01-002（optional 的 001/002-源 底分缺失）
+  fs.writeFileSync(specDir + '/runtime/planner-parts/part-01.md', '# 杭州麻将核心需求\n\n概述（策划版）。', 'utf8')
+  fs.writeFileSync(specDir + '/runtime/planner-parts/part-02.md', '## 名词\n\n- **面子**：一组顺子、刻子或杠。', 'utf8')
+  fs.writeFileSync(
+    specDir + '/runtime/planner-parts/part-03.md',
+    '## 开局\n\n### 定庄与轮庄\n\n- 胡牌者坐庄。\n  - 界面表现：头像点亮庄家标志（AT-ST-C01-002）。'
+  )
+  fs.writeFileSync(specDir + '/runtime/planner-parts/part-04.md', '## 算分\n\n- 底分为 1。')
+  const r = run([specDir + '/runtime/build-config.json'])
+  assert.equal(r.code, 0, '场景11.5 optional 缺失应放行：' + r.out)
+  const report = fs.readFileSync(specDir + '/runtime/spec_check/verify-report.md', 'utf8')
+  assert.match(report, /AT-ID 覆盖率：100\.0%/)
+  assert.match(report, /未标注 AT-ID 2 个/)
+  assert.match(report, /AT-ST-C01-001/)
+}
+
+// 场景 11.6（v2）：planner-only required 原子缺失 fail（覆盖闸门对必查口径仍严格）
+{
+  const specDir = setupV2('planner-only')
+  fs.writeFileSync(
+    specDir + '/runtime/planner-parts/part-03.md',
+    '## 开局\n\n### 定庄与轮庄\n\n- 胡牌者坐庄。\n  - 界面表现：头像点亮庄家标志。\n- 首局随机坐庄。（AT-ST-C01-001）'
+  )
+  const r = run([specDir + '/runtime/build-config.json'])
+  assert.equal(r.code, 1)
+  assert.match(r.out, /覆盖缺失 1 个/)
+  assert.match(r.out, /AT-ST-C01-002/)
 }
 
 // 场景 12（v2）：planner-only + 泄漏 → 失败

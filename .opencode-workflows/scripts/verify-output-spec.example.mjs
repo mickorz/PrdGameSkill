@@ -307,7 +307,7 @@ function setup() {
   assert.equal(r.hits.length, 0)
 }
 
-// 场景 13（v2）：checkAtomCoverage 缺失与基准外 AT-ID
+// 场景 13（v2）：checkAtomCoverage 缺失与基准外 AT-ID（required 口径）
 {
   const covRoot = root + '-v2-cov'
   fs.rmSync(covRoot, { recursive: true, force: true })
@@ -317,32 +317,60 @@ function setup() {
     tracePath,
     JSON.stringify({
       entries: [
-        { atomId: 'AT-ST-C01-001', sourceStage: 'ST-C01', plannerPart: 'part-03.md' },
-        { atomId: 'AT-ST-C01-002', sourceStage: 'ST-C01', plannerPart: 'part-03.md' },
-        { atomId: 'AT-ST-C02-001', sourceStage: 'ST-C02', plannerPart: 'part-04.md' },
+        { atomId: 'AT-ST-C01-001', sourceStage: 'ST-C01', plannerPart: 'part-03.md', required: true },
+        { atomId: 'AT-ST-C01-002', sourceStage: 'ST-C01', plannerPart: 'part-03.md', required: true },
+        { atomId: 'AT-ST-C02-001', sourceStage: 'ST-C02', plannerPart: 'part-04.md', required: false },
       ],
     }),
     'utf8'
   )
-  // 策划版缺 AT-ST-C02-001，多 AT-ST-C03-001
+  // 策划版缺 required 的 AT-ST-C01-002、缺 optional 的 AT-ST-C02-001，多 AT-ST-C03-001
   const plannerPath = covRoot + '/planner.md'
-  fs.writeFileSync(plannerPath, '内容含 AT-ST-C01-001 与 AT-ST-C01-002、AT-ST-C03-001。', 'utf8')
+  fs.writeFileSync(plannerPath, '内容含 AT-ST-C01-001 与 AT-ST-C03-001。', 'utf8')
   const r = checkAtomCoverage(plannerPath, tracePath)
-  assert.equal(r.coverage, 2 / 3)
-  assert.deepEqual(r.missing, ['AT-ST-C02-001'])
+  // required 分母 2：覆盖 1/2
+  assert.equal(r.coverage, 0.5)
+  assert.deepEqual(r.missing, ['AT-ST-C01-002'])
+  assert.deepEqual(r.optionalMissing, ['AT-ST-C02-001'])
   assert.deepEqual(r.extra, ['AT-ST-C03-001'])
-  assert.ok(r.problems.some((p) => p.includes('覆盖缺失 1 个') && p.includes('AT-ST-C02-001')))
+  assert.ok(r.problems.some((p) => p.includes('覆盖缺失 1 个') && p.includes('AT-ST-C01-002')))
   assert.ok(r.problems.some((p) => p.includes('基准外 AT-ID 1 个') && p.includes('AT-ST-C03-001')))
+  assert.ok((r.notes || []).some((n) => n.includes('未标注 AT-ID 1 个') && n.includes('AT-ST-C02-001')), 'optional 缺失进 notes 提示不计 fail')
 
-  // 全覆盖放行
-  fs.writeFileSync(plannerPath, '内容含 AT-ST-C01-001、AT-ST-C01-002、AT-ST-C02-001。', 'utf8')
+  // required 全覆盖 + optional 全缺 -> 放行（notes 提示）
+  fs.writeFileSync(plannerPath, '内容含 AT-ST-C01-001、AT-ST-C01-002。', 'utf8')
   const r2 = checkAtomCoverage(plannerPath, tracePath)
   assert.equal(r2.coverage, 1)
   assert.equal(r2.problems.length, 0)
+  assert.equal(r2.optionalMissing.length, 1)
+
+  // 全覆盖放行
+  fs.writeFileSync(plannerPath, '内容含 AT-ST-C01-001、AT-ST-C01-002、AT-ST-C02-001。', 'utf8')
+  const r3 = checkAtomCoverage(plannerPath, tracePath)
+  assert.equal(r3.coverage, 1)
+  assert.equal(r3.problems.length, 0)
+  assert.equal(r3.optionalMissing.length, 0)
+
+  // 旧版 trace（无 required 字段）向后兼容：全量必查
+  fs.writeFileSync(
+    tracePath,
+    JSON.stringify({
+      entries: [
+        { atomId: 'AT-ST-C01-001', sourceStage: 'ST-C01' },
+        { atomId: 'AT-ST-C01-002', sourceStage: 'ST-C01' },
+      ],
+    }),
+    'utf8'
+  )
+  fs.writeFileSync(plannerPath, '内容含 AT-ST-C01-001。', 'utf8')
+  const r4 = checkAtomCoverage(plannerPath, tracePath)
+  assert.equal(r4.coverage, 0.5)
+  assert.deepEqual(r4.missing, ['AT-ST-C01-002'])
+  assert.equal((r4.notes || []).length, 0)
 
   // 基准缺失
-  const r3 = checkAtomCoverage(plannerPath, covRoot + '/no-trace.json')
-  assert.ok(r3.problems[0].includes('trace_index.json 不存在'))
+  const r5 = checkAtomCoverage(plannerPath, covRoot + '/no-trace.json')
+  assert.ok(r5.problems[0].includes('trace_index.json 不存在'))
 }
 
 // 场景 14（v2）：verifyOutputSpec + opts 集成（泄漏 fail / 全放行 + report 覆盖率与 difference 段）

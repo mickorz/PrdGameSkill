@@ -1,0 +1,436 @@
+{
+ "stage": {
+  "id": "ST-C07",
+  "name": "自摸、放铳、抢杠胡",
+  "chapter": "行牌 > 自摸、放铳、抢杠胡",
+  "summary": "规定自摸在常规摸牌、杠后补牌、庄家起手第 14 张三种时机于出牌前成立，并规定放铳（仅三牢庄闲互点）与抢杠胡（同门槛、被抢者按放铳赔付）的成立条件与赔付归属；客户端以服务端胡权限驱动胡按钮，按 hu_type 区分自摸/放铳/抢杠表现。",
+  "terms": [
+   {
+    "term": "面子",
+    "definition": "一组顺子、刻子或杠。杠含 4 张，仍计 1 组面子。对子不是面子。已完成的吃、碰、明杠、暗杠都计入面子。",
+    "source": "模板名词章节（第 11 行）"
+   },
+   {
+    "term": "财神",
+    "definition": "白板固定为财神。只在胡牌判定时代替顺子、刻子或对子所缺的牌；吃、碰、杠必须用真实的非财神牌。",
+    "source": "模板名词章节（第 12 行）"
+   },
+   {
+    "term": "牢庄（三牢）",
+    "definition": "本期固定笃三老庄，每小局庄家都按三牢、8 倍计算。",
+    "source": "模板名词章节（第 13 行）"
+   },
+   {
+    "term": "放铳",
+    "definition": "打出的牌被他人合法胡走，胡牌者称为点炮胡；白板财神弃牌不能点炮胡。",
+    "source": "模板名词章节（第 19 行）"
+   },
+   {
+    "term": "平胡",
+    "definition": "四面子一将（4 组面子加 1 组对子）的基础番型，客户端番型表中倍数为 1x。",
+    "source": "source-code/client/Code/config/FanDefine.ts:15"
+   }
+  ],
+  "crossCutting": [
+   "胡权限统一由服务端 MsgPower 的 POWER_ID_HU 位驱动，客户端不校验庄闲关系与牌型，只按权限显示 KW_BTN_Hu（同屏配 KW_BTN_Guo/KW_BTN_Guo2 供选择过）。",
+   "hu_type 是客户端区分自摸/放铳/抢杠的唯一依据：HT_SELF 走自摸音效与 \"zimo\" 动作皮肤，HT_DISCARD/HT_ROBKONG 走点炮音效、\"hu\" 皮肤与 KW_Ani_DP 点炮动画。",
+   "点炮胡的桌面表现为：移除放铳者河牌最后一张，并把胡张拼到胡牌者手牌末尾，同时用 df_from 记录胡牌来源座位。",
+   "结算桌面标识 ResultTableSign 已定义 点炮/吃胡/自摸 页（HuIndex.xml、ResultItem.xml C_HuType），但本抽取范围内只有重连恢复路径派发 onShowResultTableSign 且未携带 sign，正常结算未设置桌面胡牌标识。",
+   "抢杠胡在客户端无独立 UI 分支，按点炮路径复用（hu_type=HT_ROBKONG 与 HT_DISCARD 同 skin），结算行归入\"吃胡\"页；被抢后需把加杠组还原为碰组（PlayerCardsData.revertRobbedKong），但该函数在本抽取范围内未见调用点。",
+   "结算流水不输出\"自摸/点炮/抢杠胡\"文字：赢家流水只拼番型文案，输家类型（被自摸/放炮/被抢杠）流水被显式跳过。"
+  ]
+ },
+ "features": [
+  {
+   "id": "FP-ST-C07-001",
+   "name": "自摸成立时机与牌型",
+   "description": "自摸在常规摸牌、杠后补牌、庄家起手第 14 张三种时机，于出牌前完成；常规成牌结构为 4 组面子加 1 组对子。",
+   "scope": "仅自摸胡牌路径的时机与牌型结构；不含财神替代判定、不含摊与承包结算。",
+   "coordination": "服务端授予 POWER_ID_HU 时下发 MsgPower（含 hu_mah/hu_point/hu_type），客户端据此显示胡按钮并在点击时以当前 askid 发 MsgHuC；胡牌后由 MsgResultHu 的 hu_items 驱动动画与结算。",
+   "atoms": [
+    {
+     "id": "AT-ST-C07-001",
+     "name": "常规摸牌后出牌前自摸",
+     "rule": "常规摸牌后在出牌前胡牌（自摸）。",
+     "uiRequirement": "自己回合显示胡按钮，按钮内含胡张与胡牌倍数。",
+     "verdict": "confirmed",
+     "clientLogic": "GameTakeCmd 处理 MsgTake 时把桌面状态置为 MAH_STATE_TAKE 并记录摸牌；随后 MsgPower 到达，客户端按 POWER_ID_HU 位显示胡按钮（胡张取 power.hu_mah、倍数取 power.hu_point）；点击后 GameController.sendHu 携带 askid 发 MsgHuC。",
+     "uiInteraction": "KW_BTN_Hu 显隐由权限位控制，KW_Ani 皮肤按 hu_type 切换（自摸为 zimo），按钮以 Spine 动效与高亮呈现；胡张与\"N倍\"文字同步刷新。",
+     "messages": [
+      "MsgPower",
+      "MsgHuC",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts:63"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:583"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1183"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1094"
+      }
+     ],
+     "notes": "模板\"常规摸牌\"未限定张数来源；客户端不做摸牌后胡牌合法性判断，完全依赖服务端胡权限。"
+    },
+    {
+     "id": "AT-ST-C07-002",
+     "name": "杠后补牌自摸",
+     "rule": "杠后补牌，在出牌前胡牌（杠后补牌自摸）。",
+     "uiRequirement": "杠后补牌自摸播放杠开类番型与音效表现。",
+     "verdict": "partial",
+     "clientLogic": "GameKongCmd 按 comb.flag 区分明杠/暗杠/补杠并播放对应杠动画；杠后补牌走通用 MsgTake 路径；杠上开花作为番型由服务端下发 fan_ids，客户端仅按番型选动画与音效，无独立的杠后补牌自摸判定。",
+     "uiInteraction": "杠上开花命中时播放 KW_Ani_Hu_Type 的 gangkai 文字动效，并播放 hu_7_gangkai 音效；默认无番型时按自摸播 zimo 动效。",
+     "messages": [
+      "MsgKongS",
+      "MsgPower",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:58"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:26"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1075"
+      },
+      {
+       "file": "source-code/client/Code/config/GameSoundConfig.ts",
+       "location": "source-code/client/Code/config/GameSoundConfig.ts:431"
+      }
+     ],
+     "notes": "客户端无\"杠后补牌必须自摸\"的规则实现，仅以杠上开花番型表现；杠上开花属自摸变体（hu_type 仍为 HT_SELF）。"
+    },
+    {
+     "id": "AT-ST-C07-003",
+     "name": "庄家起手第 14 张自摸",
+     "rule": "庄家起手第 14 张，在出牌前胡牌（起手自摸）。",
+     "uiRequirement": "起手等待阶段不显示听牌/操作提示，可直接胡牌。",
+     "verdict": "partial",
+     "clientLogic": "发牌由 GameTakeFirstCmd 置为 MAH_STATE_TAKEFIRST；重连场景表把 kHzmjStateFirstWait(503) 映射到场景动作命令，说明存在\"首摸后动作等待\"阶段；但客户端无\"庄家起手第 14 张可胡\"的专门判定，仍由 MsgPower 授予胡权限。",
+     "uiInteraction": "首出阶段由 GamePowerCmd 显示庄/闲首出提示并隐藏骰子；获胡权限后照常显示胡按钮。",
+     "messages": [
+      "MsgTakeFirst",
+      "MsgPower",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/protocol/GameGlcProtocol.ts",
+       "location": "source-code/client/Code/protocol/GameGlcProtocol.ts:78"
+      },
+      {
+       "file": "source-code/client/Code/controller/gameController.ts",
+       "location": "source-code/client/Code/controller/gameController.ts:50"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTakeFirstCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTakeFirstCmd.ts:32"
+      }
+     ],
+     "notes": "客户端只维护首摸等待状态与首出提示，起手胡的判定与放行完全在服务端；未找到针对\"庄家第 14 张\"的独立分支。"
+    },
+    {
+     "id": "AT-ST-C07-004",
+     "name": "自摸常规牌型结构",
+     "rule": "自摸的常规结构是 4 组面子加 1 组对子。",
+     "uiRequirement": "结算展示手牌与副露组合（面子+将）。",
+     "verdict": "partial",
+     "clientLogic": "客户端不计算手牌是否面子+对子，只按服务端下发的 hu_items/player_hands 渲染副露组合与手牌；番型表以\"平胡（四面子一将）\"标识该结构，无结构校验逻辑。",
+     "uiInteraction": "结算行按 Comb 模式渲染副露槽位并把单放组移到最后，或按 Hand 模式渲染手牌与 KW_Mah_Hu 胡张；无番型时按 pinghu 动效展示。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:16"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:176"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1062"
+      }
+     ],
+     "notes": "客户端无成牌结构校验（4 面子 + 1 对子）实现，牌型合法性依赖服务端；\"平胡\"注释是唯一对结构的文字映射。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C07-002",
+   "name": "放铳资格（三牢庄闲）",
+   "description": "本期固定庄闲放铳：当局为三牢、出牌者与胡牌者一边庄一边闲且牌型合法时才能点炮胡；庄家打出的牌只有闲家可胡，闲家打出的牌只有庄家可胡。",
+   "scope": "仅点炮胡的资格判定与身份关系；不含吃碰杠、不含摊与承包。",
+   "coordination": "客户端不参与资格判定，仅按 MsgPower 的 POWER_ID_HU/POWER_ID_CANCEL 显示胡与过按钮，结算按 MsgResultHu.hu_items 的 hu_type 与 df_from 渲染放铳关系。",
+   "atoms": [
+    {
+     "id": "AT-ST-C07-005",
+     "name": "本期固定庄闲放铳",
+     "rule": "放铳本期固定为庄闲放铳（不开放其他派系）。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端没有庄闲放铳的开关或房间配置项：MsgGameConfig 仅包含 must_bao_tou_with_cai、enable_three_tan_bao、round_id、simple_mode 等字段，与\"固定开启、不可配置\"一致。",
+     "uiInteraction": "",
+     "messages": [
+      "MsgGameConfig"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/lib/proto_game_hzmj.d.ts",
+       "location": "source-code/client/Code/lib/proto_game_hzmj.d.ts:3985"
+      },
+      {
+       "file": "source-code/client/Code/lib/proto_game_hzmj.d.ts",
+       "location": "source-code/client/Code/lib/proto_game_hzmj.d.ts:3988"
+      }
+     ],
+     "notes": "以\"配置项缺失\"作为间接证据；客户端也没有庄闲放铳的规则说明文案（MatchTipConfig 只有财神/爆头/承包/牢庄倍数等提示）。"
+    },
+    {
+     "id": "AT-ST-C07-006",
+     "name": "三牢是点炮前提",
+     "rule": "当局是三牢，点炮胡才成立（庄闲倍数 8 倍）。",
+     "uiRequirement": "胡按钮显示本次胡牌倍数。",
+     "verdict": "partial",
+     "clientLogic": "客户端保存 bankerLevel（1=平庄/2=二牢/3=三牢）并提供 getZhuangXianMult 计算 1<<level（三牢=8）；但该倍数不参与点炮资格判定，胡按钮上的倍数是服务端 hu_point 直接下发。",
+     "uiInteraction": "KW_BTN_Hu 内 KW_HuPaiBeiShu 文本显示\"{hu_point}倍\"，封顶标记固定隐藏。",
+     "messages": [
+      "MsgPower",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:1664"
+      },
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:1665"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:666"
+      }
+     ],
+     "notes": "getZhuangXianMult 在本抽取范围内无调用点，倍数展示依赖服务端 hu_point；客户端不校验\"是否三牢\"。"
+    },
+    {
+     "id": "AT-ST-C07-007",
+     "name": "庄闲相对且牌型合法",
+     "rule": "出牌者与胡牌者正好一边是庄、一边是闲，同时牌型合法，才能点炮胡。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "客户端不做庄/闲身份与牌型合法性校验，胡按钮仅由服务端 POWER_ID_HU 决定，实际拦截在服务端。"
+    },
+    {
+     "id": "AT-ST-C07-008",
+     "name": "庄家弃牌仅闲家可胡",
+     "rule": "庄家打出的牌只有闲家可胡。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "未找到客户端对出牌者身份与胡牌者身份的过滤实现；权限由服务端下发。"
+    },
+    {
+     "id": "AT-ST-C07-009",
+     "name": "闲家弃牌仅庄家可胡",
+     "rule": "闲家打出的牌只有庄家可胡。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "同上，客户端无闲家之间禁点炮的本地校验或提示。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C07-003",
+   "name": "放铳排他性赔付与自摸兜底",
+   "description": "未形成庄闲关系时只能自摸；形成点炮关系时只由放铳者赔付。",
+   "scope": "点炮的赔付归属与无点炮关系时的替代路径；不含承包代赔、不含番型倍数计算。",
+   "coordination": "赔付金额由服务端计算并写入 MsgResultHu.win_losts 与 extra_score，客户端只按流水类型与得失分渲染；放铳者座位以 C_HuType 点炮页标识。",
+   "atoms": [
+    {
+     "id": "AT-ST-C07-010",
+     "name": "无庄闲关系只能自摸",
+     "rule": "未形成庄闲放铳关系时只能自摸。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端胡入口完全由服务端权限决定：只有 POWER_ID_HU 置位才显示胡按钮，否则自己回合只保留出牌操作；因此\"不能点炮\"时自然退化为仅能自摸。",
+     "uiInteraction": "胡/过按钮按权限位显隐，未获胡权限时不出现胡按钮（吃碰杠按各自权限位显示）。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:555"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:557"
+      }
+     ],
+     "notes": "属于权限驱动的间接证据：客户端没有\"庄闲关系不成立则禁点炮\"的判定，只表现为服务端不发胡权限。"
+    },
+    {
+     "id": "AT-ST-C07-011",
+     "name": "点炮只由放铳者赔付",
+     "rule": "点炮胡只由放铳者赔付。",
+     "uiRequirement": "结算中放铳者行标识为点炮，流水显示其支出。",
+     "verdict": "partial",
+     "clientLogic": "客户端不计算赔付，只渲染服务端 win_losts 与 extra_score；流水类型把点炮胡(K_LT_DIAN_PAO)与放炮(K_LT_FANG_PAO，负分)成对处理，结算行对被胡座位判定为放铳者时把 C_HuType 置为\"点炮\"页。",
+     "uiInteraction": "结算行胡牌类型页：胡牌者按 HT_SELF 显示自摸、其余显示吃胡；非胡牌座位若被某胡牌项的 df_from 指向则显示\"点炮\"标识。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:555"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:736"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:120"
+      }
+     ],
+     "notes": "赔付是服务端结果，客户端仅呈现；且流水正文只拼番型文案并跳过输家类型，放铳者流水不出现\"放炮/点炮\"字样，仅靠负分与点炮标识体现。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C07-004",
+   "name": "抢杠胡资格与赔付",
+   "description": "抢杠胡与放铳同门槛（只有三牢的庄闲之间可以抢），所加的第 4 张须使响应者合法胡牌；只由被抢的加杠者按放铳赔付，其他人不付。",
+   "scope": "加杠被抢的资格、桌面还原与赔付归属；不含杠分（明杠/暗杠/补杠豆分）结算。",
+   "coordination": "响应者在加杠后由服务端 MsgPower 授予胡权限（hu_type=HT_ROBKONG），客户端复用点炮表现；胡牌后按 MsgResultHu.hu_items 还原杠组并按流水类型渲染赔付。",
+   "atoms": [
+    {
+     "id": "AT-ST-C07-012",
+     "name": "抢杠与放铳同门槛",
+     "rule": "抢杠胡与放铳相同，只有三牢的庄闲之间可以抢。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端把抢杠胡作为 hu_type=HT_ROBKONG 处理，并在动画皮肤、点炮判定、结算胡牌类型上都与点炮(HT_DISCARD)同分支，说明表现层按\"与放铳相同\"处理；但\"三牢庄闲\"的门槛在客户端无校验。",
+     "uiInteraction": "抢杠胡与点炮共用胡按钮的 \"hu\" 动作皮肤并播放点炮动画，无独立\"抢杠\"按钮或字效。",
+     "messages": [
+      "MsgPower",
+      "MsgKongS",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/BoxMahDefine.ts",
+       "location": "source-code/client/Code/config/BoxMahDefine.ts:897"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:671"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:339"
+      }
+     ],
+     "notes": "客户端无三牢/庄闲校验，仅复用点炮分支；抢杠也没有独立的操作窗口，依赖服务端下发胡权限。"
+    },
+    {
+     "id": "AT-ST-C07-013",
+     "name": "被抢的第 4 张须合法成胡",
+     "rule": "所加的第 4 张须使响应者合法胡牌。",
+     "uiRequirement": "被抢张作为胡张展示，加杠组还原为碰组。",
+     "verdict": "partial",
+     "clientLogic": "PlayerCardsData 提供 revertRobbedKong：把被抢张从摸牌/手牌移除，并把补杠组标志改回碰（CMF_PONG）；胡张经 MsgHuItem.dan_fang 下发后在桌面拼入胡牌者手牌。合法性判断在服务端，客户端只做还原与展示。",
+     "uiInteraction": "桌面把被抢的第 4 张拼到胡牌者手牌末位并打胡牌高亮，杠者副露从 4 张杠退回 3 张碰。",
+     "messages": [
+      "MsgPower",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/data/PlayerCardsData.ts",
+       "location": "source-code/client/Code/data/PlayerCardsData.ts:444"
+      },
+      {
+       "file": "source-code/client/Code/data/PlayerCardsData.ts",
+       "location": "source-code/client/Code/data/PlayerCardsData.ts:465"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:984"
+      }
+     ],
+     "notes": "revertRobbedKong 为 public 方法但在本抽取范围内未见调用点（可能在未抽取的 common_game 公共层）；客户端无\"第 4 张是否成胡\"的本地判定。"
+    },
+    {
+     "id": "AT-ST-C07-014",
+     "name": "被抢者按放铳单一赔付",
+     "rule": "只由被抢的加杠者按放铳赔付。",
+     "uiRequirement": "结算中被抢者按点炮标识，赢家按非自摸标识。",
+     "verdict": "partial",
+     "clientLogic": "流水类型表定义抢杠胡(K_LT_QIANG_GANG)/被抢杠(K_LT_BEI_QIANG_GANG)成对，客户端在胡牌流水归集中把抢杠与点炮并列处理；结算行按 hu_type!==HT_SELF 判为吃胡/点炮页。赔付金额完全取服务端结果。",
+     "uiInteraction": "结算行胡牌类型只区分 不参与胡牌/点炮/吃胡/自摸 四页，抢杠赢家显示\"吃胡\"，被抢者显示\"点炮\"；无\"抢杠\"独立标识。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:557"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:119"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:731"
+      }
+     ],
+     "notes": "客户端流水注释含\"被抢者同时触发全烧\"，与本期模板\"只由被抢者按放铳赔付、其他人不付\"口径不一致（疑似来自其他玩法/旧版），需与结算口径对齐确认。"
+    },
+    {
+     "id": "AT-ST-C07-015",
+     "name": "抢杠其他人不付",
+     "rule": "抢杠胡除被抢的加杠者外，其他人不付。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "客户端不做赔付归属校验，只透传服务端 win_losts/extra_score；虽然输家流水类型（被自摸/放炮/被抢杠）在文案层被跳过，但无法据此证明第三方不付，故按未找到处理。"
+    }
+   ]
+  }
+ ]
+}

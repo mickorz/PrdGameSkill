@@ -1,0 +1,27 @@
+{
+ "specDir": "spec-workflow/output-spec/2026-11-13/1-spec",
+ "supplementPath": "spec-workflow/output-spec/核心流程杭州麻将好友房AI-补充版本.md",
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "date": "2026-11-13",
+ "sourceDesc": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md（需求模板）+ source-code/client/Code + source-code/client/Fgui（客户端代码证据）",
+ "expectedStageCount": 15,
+ "supplementParts": [
+  "spec-workflow/output-spec/2026-11-13/1-spec/runtime/supplement-parts/part-01.md",
+  "spec-workflow/output-spec/2026-11-13/1-spec/runtime/supplement-parts/part-02.md",
+  "spec-workflow/output-spec/2026-11-13/1-spec/runtime/supplement-parts/part-03.md",
+  "spec-workflow/output-spec/2026-11-13/1-spec/runtime/supplement-parts/part-04.md",
+  "spec-workflow/output-spec/2026-11-13/1-spec/runtime/supplement-parts/part-05.md",
+  "spec-workflow/output-spec/2026-11-13/1-spec/runtime/supplement-parts/part-06.md",
+  "spec-workflow/output-spec/2026-11-13/1-spec/runtime/supplement-parts/part-07.md",
+  "spec-workflow/output-spec/2026-11-13/1-spec/runtime/supplement-parts/part-08.md",
+  "spec-workflow/output-spec/2026-11-13/1-spec/runtime/supplement-parts/part-09.md",
+  "spec-workflow/output-spec/2026-11-13/1-spec/runtime/supplement-parts/part-10.md",
+  "spec-workflow/output-spec/2026-11-13/1-spec/runtime/supplement-parts/part-11.md",
+  "spec-workflow/output-spec/2026-11-13/1-spec/runtime/supplement-parts/part-12.md",
+  "spec-workflow/output-spec/2026-11-13/1-spec/runtime/supplement-parts/part-13.md",
+  "spec-workflow/output-spec/2026-11-13/1-spec/runtime/supplement-parts/part-14.md",
+  "spec-workflow/output-spec/2026-11-13/1-spec/runtime/supplement-parts/part-15.md",
+  "spec-workflow/output-spec/2026-11-13/1-spec/runtime/supplement-parts/part-16.md",
+  "spec-workflow/output-spec/2026-11-13/1-spec/runtime/supplement-parts/part-17.md"
+ ]
+}

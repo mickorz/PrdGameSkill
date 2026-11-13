@@ -1,0 +1,1582 @@
+{
+ "stage": {
+  "id": "ST-C15",
+  "name": "结算",
+  "chapter": "结算",
+  "summary": "一局胡牌或黄庄后停止行牌并收敛桌面，先亮四家手牌与「对局结束/黄庄」标记，再按序播番型字效、刷新累计积分与飘分，最后弹出以本家置顶的小结算，逐行展示手牌结构、净得分、番型与承包标记，并支持继续游戏或返回大厅。",
+  "terms": [
+   {
+    "term": "财神",
+    "definition": "白板固定为财神，只在胡牌判定时代替顺子、刻子或对子所缺的牌；吃、碰、杠不能使用财神。",
+    "source": "模板名词章节（第12行）"
+   },
+   {
+    "term": "牢庄",
+    "definition": "本期固定笃三老庄，每小局庄家都按三牢、8 倍计算，小结算庄家行对应「庄×3」。",
+    "source": "模板名词章节（第13行）"
+   },
+   {
+    "term": "摊",
+    "definition": "A 吃进 B 打出的牌，A 对 B 记 1 摊，两个方向分开计；碰、直杠、加杠、暗杠不计摊，每小局重新累计。",
+    "source": "模板名词章节（第14行）"
+   },
+   {
+    "term": "承包",
+    "definition": "庄家与闲家之间某一方向有效摊达到条件后，承包方在自摸结算时代赔；反承包是原被承包方自摸时原承包方按加倍规则赔付。",
+    "source": "模板名词章节（第15行）"
+   },
+   {
+    "term": "放铳",
+    "definition": "打出的牌被他人合法胡走；胡牌者称为点炮胡，白板财神弃牌不能点炮胡。",
+    "source": "模板名词章节（第19行）"
+   },
+   {
+    "term": "流局",
+    "definition": "牌墙剩 21 张时当前玩家再摸 1 张剩 20 张，先完成本次摸打和弃牌响应，无人胡牌时在下一次应摸牌前判黄庄。",
+    "source": "模板名词章节（第20行）"
+   }
+  ],
+  "crossCutting": [
+   "结算渲染全部由服务端 MsgResultHu 下发字段驱动（win_losts、hu_items、player_hands、fan_ids、bao_settles、player_score），客户端不本地计算输赢分。",
+   "小结算走公共壳 BoxRoomMahResultNewView（common_game 模块，本仓库代码快照未包含），杭州麻将只提供 KW_MID_COMP 中间区与 KW_LEFT_BOTTOM 财神区，标题、底部按钮、长按看桌由基类实现。",
+   "桌面结算表现集中在 box_hzmj_tipAni 视图（KW_GameEnd、KW_Ani_CPG_*、KW_Ani_DP_*、KW_ResultScore*），按 SC_PLAYER_LOCAL_SEAT_MAP 做人数到节点的映射。",
+   "座位一律以本地座位索引运算，服务端座位通过 TableData.seatToLocal/localToSeat 双向换算。",
+   "结算与总结算分离：CMD_GAME_RESULT 处理小结算 ResultHu，CMD_GAME_TOTAL_RESULT 处理 BoxScoreNotify 大结算。",
+   "表现时序混用动画回调与固定定时器（小结算固定 setTimeout 3 秒），与飘分完成不严格同步。"
+  ]
+ },
+ "features": [
+  {
+   "id": "FP-ST-C15-001",
+   "name": "结算触发与胡张认定",
+   "description": "胡牌确认后进入结算，客户端接收 MsgResultHu 并按胡牌类型确定胡张与放铳来源，作为后续亮牌与展示的基础。",
+   "scope": "覆盖胡牌确认到结算数据落库这一段，不含黄庄分支与各端界面表现。",
+   "coordination": "GameResultHuCmd 接收 MsgResultHu 后依次落库、亮牌、更新飘分数据、播动画并延迟打开小结算。",
+   "atoms": [
+    {
+     "id": "AT-ST-C15-001",
+     "name": "胡牌确认后停止行牌",
+     "rule": "胡牌确认后停止行牌。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "GameResultHuCmd 收到 MsgResultHu 后立刻派发 onCloseOperate 与 onHidePutCardUi 关闭操作区，本家胡牌时把出牌步进置为 false。",
+     "uiInteraction": "操作按钮控制器切到空态，手牌不可再出牌。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:241"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:185"
+      }
+     ],
+     "notes": "停行牌由服务端下发结算消息触发，客户端无本地胡牌确认流程。"
+    },
+    {
+     "id": "AT-ST-C15-002",
+     "name": "每小局只结算一次",
+     "rule": "胡牌确认后停止行牌，每小局只结算一次。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [],
+     "notes": "GameResultHuCmd 与 ResultCmd 均未做幂等或次数校验，完全依赖服务端每局只下发一次 MsgResultHu；重复下发会重复打开小结算。"
+    },
+    {
+     "id": "AT-ST-C15-003",
+     "name": "自摸的胡张",
+     "rule": "自摸的胡张是本次摸入或补入的牌。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "结算亮牌时以 PlayerCardsData.moCard 作为胡张传给桌面胡牌表现，桌面把胡张拼到本家手牌末尾展示。",
+     "uiInteraction": "胡张在本家手牌末位亮出并参与胡牌落地表现。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:250"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:984"
+      }
+     ],
+     "notes": "客户端未区分「摸入」与「补入」，统一取 moCard。"
+    },
+    {
+     "id": "AT-ST-C15-004",
+     "name": "点炮胡的胡张",
+     "rule": "点炮胡的胡张是弃牌。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "桌面胡牌表现中，若放铳座位河牌最后一张等于胡张，则把该弃牌从牌河移除，说明胡张取自弃牌。",
+     "uiInteraction": "放铳方牌河最后一张被移入胡牌手牌。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:997"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:998"
+      }
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C15-005",
+     "name": "抢杠胡的胡张",
+     "rule": "抢杠胡的胡张是被抢的第 4 张。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端把点炮、点杠花、抢杠胡统一按放铳类型处理，用协议 df_from 作放铳方、dan_fang 作胡张，没有针对「第 4 张」的独立判断。",
+     "uiInteraction": "抢杠胡与点炮共用点炮表现与胡张展示。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:339"
+      },
+      {
+       "file": "source-code/client/Code/data/PlayerCardsData.ts",
+       "location": "source-code/client/Code/data/PlayerCardsData.ts:284"
+      }
+     ],
+     "notes": "「被抢的第 4 张」由服务端保证，客户端无校验或日志；协议无加杠牌专字段。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C15-002",
+   "name": "终局桌面收敛",
+   "description": "结算时关闭各端操作入口、亮出四家手牌，并在桌面中央给出对局结束标记，同时保留终局牌河、财神与余牌数。",
+   "scope": "桌面牌面与操作区，不含番型字效、飘分与小结算面板。",
+   "coordination": "GameResultHuCmd 负责关闭操作区、写入亮牌数据与派发结束类型；BoxHzmjMah2DView、BoxHzmjMainView、BoxHzmjTipAniView 分担具体表现。",
+   "atoms": [
+    {
+     "id": "AT-ST-C15-006",
+     "name": "停止操作按钮",
+     "rule": "各端停止操作按钮。",
+     "uiRequirement": "各端停止操作按钮。",
+     "verdict": "confirmed",
+     "clientLogic": "收到 onCloseOperate 后把 KW_Handler 的按钮状态控制器置空，并关闭更多选择、复盘操作与出牌权限。",
+     "uiInteraction": "吃碰杠胡过等操作按钮全部隐藏，手牌不可出；本家胡牌时解除压暗。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:494"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:497"
+      }
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C15-007",
+     "name": "停止胡牌预览",
+     "rule": "各端停止胡牌预览。",
+     "uiRequirement": "各端停止胡牌预览。",
+     "verdict": "confirmed",
+     "clientLogic": "本家胡牌时结算流程直接隐藏听牌/胡牌预览界面并清空听牌信息；收到游戏结束还会关闭听牌按钮。",
+     "uiInteraction": "听牌预览面板关闭，听牌按钮隐藏。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:258"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:446"
+      }
+     ],
+     "notes": "关闭听牌按钮的第二条路径由 MsgEndGame 触发，而非 MsgResultHu。"
+    },
+    {
+     "id": "AT-ST-C15-008",
+     "name": "停止放大弃牌",
+     "rule": "各端停止操作按钮、胡牌预览和放大弃牌。",
+     "uiRequirement": "停止放大弃牌。",
+     "verdict": "confirmed",
+     "clientLogic": "结算流程派发 onHidePutCardUi，出牌放大节点统一置为不可见。",
+     "uiInteraction": "桌面放大弃牌图立即消失。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:242"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1061"
+      }
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C15-009",
+     "name": "方位盘停止倒计时",
+     "rule": "各端停止操作按钮、胡牌预览和放大弃牌，方位盘停止倒计时。",
+     "uiRequirement": "方位盘停止倒计时。",
+     "verdict": "partial",
+     "clientLogic": "收到 onGameEnd 时调用 setClockHide，停止倒计时计时器并清空方位盘数字。",
+     "uiInteraction": "方位盘中央倒计时数字清空，倒计时灯隐藏。",
+     "messages": [
+      "MsgEndGame"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:390"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:721"
+      }
+     ],
+     "notes": "由 MsgEndGame（GameEndCmd 派发 onGameEnd）触发，不在 MsgResultHu 处理链内；若服务端先发结算后发结束，倒计时会在结算期间继续显示。"
+    },
+    {
+     "id": "AT-ST-C15-010",
+     "name": "亮出四家手牌",
+     "rule": "在原牌桌亮出四家手牌。",
+     "uiRequirement": "在原牌桌亮出四家手牌。",
+     "verdict": "confirmed",
+     "clientLogic": "先用 player_hands 覆盖各座手牌与副露，再由 playHuEnd 遍历全部座位把手牌状态置为亮面，胡牌家把胡张拼进手牌。",
+     "uiInteraction": "四家手牌在牌桌上翻开，本家手牌缩小 0.8 倍让位。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:109"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:1059"
+      }
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C15-011",
+     "name": "桌面中央显示「对局结束」",
+     "rule": "桌面中央显示「对局结束」。",
+     "uiRequirement": "桌面中央显示「对局结束」。",
+     "verdict": "confirmed",
+     "clientLogic": "结算消息 end_type 不为 NONE 时派发 onShowGameEndType，动画视图把 KW_GameEnd 的 C_GameEnd 控制器切到对应页。",
+     "uiInteraction": "桌面中央（667,302）出现结束标记图，1 秒后自动复位。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:84"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1186"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml:3"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml:69"
+      }
+     ],
+     "notes": "「对局结束」文案是共享包 hzta2330 的图片资源（C_GameEnd page 1=hu），仓库内无可读文本；且 onShowGameEndType 在 1 秒后把 C_GameEnd 复位为 0，与「番型字效期间仍在」不完全一致。"
+    },
+    {
+     "id": "AT-ST-C15-012",
+     "name": "保留终局牌河",
+     "rule": "保留终局牌河。",
+     "uiRequirement": "保留终局牌河。",
+     "verdict": "confirmed",
+     "clientLogic": "结算流程只覆盖手牌与副露，不清理牌河；桌面仅在下一局 onResetUI 时统一清空四方位手牌、河牌、胡牌与副露。",
+     "uiInteraction": "结算与黄庄期间四家河牌保持终局状态，继续游戏后才清空。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:528"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:525"
+      }
+     ],
+     "notes": "依据为结算链路中无清河牌调用、清空仅发生在下一局 onResetUI。"
+    },
+    {
+     "id": "AT-ST-C15-013",
+     "name": "保留财神与余牌数",
+     "rule": "保留终局牌河、财神和余牌数。",
+     "uiRequirement": "保留财神和余牌数。",
+     "verdict": "confirmed",
+     "clientLogic": "财神与剩余张数由桌面侧栏组件 KW_LEFT_MAHS / KW_RIGHT_MAHS 常驻显示，结算期间不重置，只有下一局 onResetUI 才隐藏。",
+     "uiInteraction": "桌面左侧财神牌与右侧剩余张数在终局继续可见。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:546"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:353"
+      }
+     ],
+     "notes": "余牌数不随结算协议重算，取最后一次牌墙更新的数值。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C15-003",
+   "name": "番型字效与点炮标记",
+   "description": "在对局结束标记仍在时，于胡牌者方位播放番型字效，并在放铳方位给出点炮表现。",
+   "scope": "桌面动画层，不含小结算内的番型文案。",
+   "coordination": "GameResultHuCmd 计算胡牌类型与放铳座位后派发 onMsgPlayHuNew / onMsgHuDianPaoAni，由 BoxHzmjTipAniView 按座位节点播放 Spine。",
+   "atoms": [
+    {
+     "id": "AT-ST-C15-014",
+     "name": "胡牌者方位播放番型字效",
+     "rule": "「对局结束」仍在时，胡牌者方位播放番型字效。",
+     "uiRequirement": "「对局结束」仍在时，胡牌者方位播放番型字效。",
+     "verdict": "confirmed",
+     "clientLogic": "结算按胡牌座位逐个派发 onMsgPlayHuNew，动画视图取该座位 KW_Ani_CPG 节点，按番型选 skin 播放文字或动效类字效。",
+     "uiInteraction": "胡牌者方位（KW_Ani_CPG_0~3）播放番型 Spine，基础番走文字节点、组合番走动效节点。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:283"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:941"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml:8"
+      }
+     ],
+     "notes": "字效与「对局结束」标记并不同步：标记 1 秒后复位，字效按 Spine 时长播放。"
+    },
+    {
+     "id": "AT-ST-C15-015",
+     "name": "点炮胡在放铳方位显示「点炮」",
+     "rule": "点炮胡和抢杠胡同时在放铳方位显示「点炮」。",
+     "uiRequirement": "点炮胡和抢杠胡同时在放铳方位显示「点炮」。",
+     "verdict": "confirmed",
+     "clientLogic": "结算判断为放铳类型且存在 df_from 时派发点炮动画，动画视图取放铳座位对应的 KW_Ani_DP 节点播放 dianpao skin。",
+     "uiInteraction": "放铳方方位播放「点炮」Spine；一炮多响播 yipaoduoxiang。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:266"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:881"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml:32"
+      }
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C15-016",
+     "name": "抢杠胡的放铳者为加杠者",
+     "rule": "抢杠胡的放铳者是加杠者。",
+     "uiRequirement": "抢杠胡同时在放铳方位显示「点炮」，放铳者是加杠者。",
+     "verdict": "partial",
+     "clientLogic": "抢杠胡被并入放铳类型，放铳方位直接取协议的 df_from；加杠者身份由服务端给出，客户端无校验或专门字段。",
+     "uiInteraction": "抢杠胡在 df_from 座位播放点炮表现。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:339"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:171"
+      }
+     ],
+     "notes": "客户端无法自证「加杠者」，只能信任 df_from；若服务端下发错误座位，表现会错位。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C15-004",
+   "name": "累计积分与飘分",
+   "description": "番型字效结束后刷新头像积分并做座位飘分动画，按得分为 0 过滤，正负分用不同字效，淡出后才打开小结算。",
+   "scope": "桌面头像积分与飘分动画，不含小结算行内得分。",
+   "coordination": "GameResultHuCmd 先写 player.sr 再播字效，字效回调触发 onShowResultScore，TipAniView 按座位逐个飘分。",
+   "atoms": [
+    {
+     "id": "AT-ST-C15-017",
+     "name": "先刷新头像旁累计积分",
+     "rule": "先刷新头像旁的累计积分。",
+     "uiRequirement": "先刷新头像旁的累计积分。",
+     "verdict": "confirmed",
+     "clientLogic": "结算先把 player_score.scores 写入各座 player.sr，再播动画；玩家视图收到 onUpdateScore 后刷新头像旁分数，独立协议 MsgPlayerScore 也走同一入口。",
+     "uiInteraction": "头像旁累计积分在字效/飘分前更新，正分为金黄色。",
+     "messages": [
+      "MsgResultHu",
+      "MsgPlayerScore"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:88"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:231"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerView.ts:514"
+      }
+     ],
+     "notes": "写数据在播动画之前，但玩家视图真正刷新分数发生在 onUpdateScore 派发时（飘分阶段也会派发一次），顺序上不能保证在字效之前完成。"
+    },
+    {
+     "id": "AT-ST-C15-018",
+     "name": "番型字效退场后飘分",
+     "rule": "番型字效退场后，只在本局得分不为 0 的座位内侧飘分。",
+     "uiRequirement": "番型字效退场后飘分。",
+     "verdict": "confirmed",
+     "clientLogic": "第一个座位番型动画完成回调里触发 onShowResultScore，动画视图遍历桌面飘分数据逐座位播放飘分动画。",
+     "uiInteraction": "番型字效结束后，各座位同时出现飘分数字。",
+     "messages": [
+      "MsgResultHu",
+      "MsgEndWait"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:288"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:276"
+      }
+     ],
+     "notes": "只以第一个座位（i===0）的动画完成作为触发点，多胡时后面的字效可能仍在播放中就开始飘分。"
+    },
+    {
+     "id": "AT-ST-C15-019",
+     "name": "只飘非 0 得分座位",
+     "rule": "只在本局得分不为 0 的座位内侧飘分。",
+     "uiRequirement": "只在本局得分不为 0 的座位内侧飘分。",
+     "verdict": "confirmed",
+     "clientLogic": "写桌面飘分数据时 score 为 0 的座位直接跳过，飘分阶段只对存在飘分数据的座位播放；无座位时立即结束本阶段。",
+     "uiInteraction": "0 分座位不出现飘分数字。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:206"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:704"
+      }
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C15-020",
+     "name": "飘分正分金黄色",
+     "rule": "正分金黄色。",
+     "uiRequirement": "正分金黄色。",
+     "verdict": "partial",
+     "clientLogic": "飘分数字 score>=0 时使用 fnt_win 位图字体，颜色由字体图集决定，代码未设置文本颜色。",
+     "uiInteraction": "正飘分以金色数字字效滑入并淡出。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:567"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/ResultScoreCom.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/ResultScoreCom.xml:13"
+      }
+     ],
+     "notes": "组件默认文本色为 #ffffff，金黄色应来自 fnt_win 图集；仓库内无法验证具体色值，需美术资源确认。"
+    },
+    {
+     "id": "AT-ST-C15-021",
+     "name": "飘分负分浅蓝灰带减号",
+     "rule": "负分浅蓝灰色并带减号。",
+     "uiRequirement": "负分浅蓝灰色并带减号。",
+     "verdict": "partial",
+     "clientLogic": "飘分数字 score<0 时切换 fnt_lose 位图字体，负号由字体图集的减号字模提供。",
+     "uiInteraction": "负飘分以浅蓝灰色数字带减号滑入并淡出。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:570"
+      }
+     ],
+     "notes": "浅蓝灰为 fnt_lose 图集颜色，代码无可读色值；减号字模存在于 box_hzmj_result/fnt/lose 目录。"
+    },
+    {
+     "id": "AT-ST-C15-022",
+     "name": "飘分淡出后短暂保留终局牌桌再开小结算",
+     "rule": "飘分淡出后短暂保留终局牌桌，再打开小结算。",
+     "uiRequirement": "飘分淡出后短暂保留终局牌桌，再打开小结算。",
+     "verdict": "confirmed",
+     "clientLogic": "飘分节点自身在 time=29 开始 Alpha 淡出；结算命令用固定 3 秒延时执行 CMD_GAME_RESULT 打开小结算，不依赖飘分回调。",
+     "uiInteraction": "飘分淡出后终局牌桌短暂停留，随后小结算覆盖。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/ShowResultScore.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/ShowResultScore.xml:10"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:306"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:309"
+      }
+     ],
+     "notes": "3 秒为写死常量，与飘分实际播放时长无联动；低端机或慢速模式可能提前/滞后。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C15-005",
+   "name": "黄庄结算",
+   "description": "无人胡牌时按黄庄分支收敛桌面：亮牌、显示黄庄、保留牌河财神与余牌数 20、不飘分，并打开标题为「黄庄」的小结算。",
+   "scope": "仅流局（EndType.ET_DRAWN）分支，共用结算消息。",
+   "coordination": "MsgResultHu 的 end_type=ET_DRAWN 驱动同一套结算链路，飘分因数据全 0 自然跳过。",
+   "atoms": [
+    {
+     "id": "AT-ST-C15-023",
+     "name": "黄庄亮出四家手牌",
+     "rule": "黄庄：亮出四家手牌。",
+     "uiRequirement": "黄庄：亮出四家手牌。",
+     "verdict": "confirmed",
+     "clientLogic": "亮牌逻辑 playHuEnd 无条件遍历全部座位并置为亮面，不区分胡牌与流局。",
+     "uiInteraction": "黄庄时四家手牌同样翻开在牌桌上。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:1047"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:303"
+      }
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C15-024",
+     "name": "黄庄中央显示「黄庄」",
+     "rule": "桌面中央显示「黄庄」。",
+     "uiRequirement": "桌面中央显示「黄庄」。",
+     "verdict": "confirmed",
+     "clientLogic": "end_type=ET_DRAWN 派发 onShowGameEndType，C_GameEnd 切到 drawn 页，KW_GameEnd 使用该页对应图片。",
+     "uiInteraction": "桌面中央显示黄庄标记图（与胡牌结束使用不同图片）。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1186"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml:70"
+      },
+      {
+       "file": "source-code/client/Code/config/GameDefine.ts",
+       "location": "source-code/client/Code/config/GameDefine.ts:441"
+      }
+     ],
+     "notes": "「黄庄」文案为图片资源（page 2 drawn，取共享包 gnpghe 图），仓库内无可读文本。"
+    },
+    {
+     "id": "AT-ST-C15-025",
+     "name": "黄庄保留牌河财神与余牌数 20",
+     "rule": "黄庄：保留终局牌河、财神和余牌数 20。",
+     "uiRequirement": "保留终局牌河、财神和余牌数 20。",
+     "verdict": "partial",
+     "clientLogic": "牌河、财神、余牌数沿用桌面常驻显示，结算流程不清空；余牌数取最后一次牌墙刷新值，结算不写死 20。",
+     "uiInteraction": "黄庄时右侧仍显示剩余的 20 张，左侧仍显示本局财神。",
+     "messages": [
+      "MsgResultHu",
+      "MsgWallMah"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/helperCmd/ResultCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/helperCmd/ResultCmd.ts:67"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:546"
+      }
+     ],
+     "notes": "20 的正确性依赖服务端牌墙消息时序；小结算入参带了 remaining_wall_cards，但好友房中间区未使用该字段。"
+    },
+    {
+     "id": "AT-ST-C15-026",
+     "name": "黄庄不飘分",
+     "rule": "不飘分。四家本局都是 0。",
+     "uiRequirement": "不飘分。",
+     "verdict": "confirmed",
+     "clientLogic": "飘分数据写入时跳过所有 score=0 的座位，飘分阶段总数为 0 时立即走完成分支，不发任何飘分动画。",
+     "uiInteraction": "黄庄不出现飘分数字，直接进入小结算流程。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:206"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:649"
+      }
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C15-027",
+     "name": "黄庄小结算标题",
+     "rule": "随后打开小结算，标题为「黄庄」。",
+     "uiRequirement": "小结算标题为「黄庄」。",
+     "verdict": "partial",
+     "clientLogic": "组装小结算数据时 end_type=ET_DRAWN 时把 selfWinLost 置为 2（流局），交由公共壳按此渲染标题。",
+     "uiInteraction": "小结算标题显示黄庄。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/util/BoxHzmjResultUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjResultUtil.ts:37"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjResultUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjResultUtil.ts:38"
+      }
+     ],
+     "notes": "标题渲染在 BoxRoomMahResultNewView（common_game 未包含），本仓库只能确认传给壳的流局标记。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C15-006",
+   "name": "小结算层级与主题",
+   "description": "小结算覆盖在终局牌桌之上，按本家视角排列四行并高亮本家行，按本端净得分或黄庄切换标题主题。",
+   "scope": "小结算整体层级、行顺序与标题主题，不含行内牌面细节。",
+   "coordination": "BoxHzmjResultView 继承公共结算壳，BoxHzmjResultMid 渲染中间四行，BoxHzmjResultUtil 计算本家输赢与主题入参。",
+   "atoms": [
+    {
+     "id": "AT-ST-C15-028",
+     "name": "小结算盖在终局牌桌上",
+     "rule": "小结算盖在终局牌桌上。",
+     "uiRequirement": "小结算盖在终局牌桌上。",
+     "verdict": "confirmed",
+     "clientLogic": "小结算视图使用公共结算壳，排序层为 Result，高于牌桌主视图的 Main 层，从而覆盖终局牌桌。",
+     "uiInteraction": "小结算面板整体压在牌桌上方，牌桌仍在背后可见。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjResultView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjResultView.ts:39"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:129"
+      }
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C15-029",
+     "name": "本家第一行与相对方位顺序",
+     "rule": "各端以本家为第一行，向下依次为下家、对家、上家。",
+     "uiRequirement": "各端以本家为第一行，向下依次为下家、对家、上家。",
+     "verdict": "partial",
+     "clientLogic": "中间区列表按玩家列表顺序渲染，每行方位文案由本地座位计算：本家、下家、对家、上家（多人时按座位号推导）。",
+     "uiInteraction": "行首竖排显示 本家/下家/对家/上家。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:965"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:976"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/BoxHzmjResultMid.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_result/BoxHzmjResultMid.xml:4"
+      }
+     ],
+     "notes": "「本家第一行」依赖 TableData.getAllPlayers() 的返回顺序（common_game 未包含），代码中没有显式排序把本家提到首位。"
+    },
+    {
+     "id": "AT-ST-C15-030",
+     "name": "本家行置顶并高亮",
+     "rule": "本家行置顶并高亮。",
+     "uiRequirement": "本家行置顶并高亮。",
+     "verdict": "partial",
+     "clientLogic": "本家行打开 C_IsSelf 页、显示金币角标、按输赢切换行底图与分隔线，实现高亮；置顶未在行内代码中实现。",
+     "uiInteraction": "本家行背景切换为高亮底图，带金币图标与专属赢/输底图。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:367"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:369"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml:26"
+      }
+     ],
+     "notes": "高亮已确认（C_IsSelf + KW_ICON_GOLD + C_WinLost 底图），置顶仅能依赖列表顺序推断。"
+    },
+    {
+     "id": "AT-ST-C15-031",
+     "name": "按净得分切换主题",
+     "rule": "胡牌局按本端本局净得分切换主题：大于或等于 0 为「恭喜获胜」，小于 0 为「遗憾失败」。",
+     "uiRequirement": "胡牌局按本端本局净得分切换主题：大于或等于 0 为「恭喜获胜」，小于 0 为「遗憾失败」。",
+     "verdict": "partial",
+     "clientLogic": "组装结算数据时按本家 win_losts 分数计算 selfWinLost（>=0 记 0，<0 记 1），交给公共壳决定标题主题。",
+     "uiInteraction": "小结算标题随本家净得分切换获胜/失败主题。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/util/BoxHzmjResultUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjResultUtil.ts:36"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjResultView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjResultView.ts:50"
+      }
+     ],
+     "notes": "标题文案与判定均在公共壳内，本仓库只确认传给壳的 0/1/2 主题入参。"
+    },
+    {
+     "id": "AT-ST-C15-032",
+     "name": "黄庄四端标题都是「黄庄」",
+     "rule": "黄庄四端都是「黄庄」。",
+     "uiRequirement": "黄庄四端都是「黄庄」。",
+     "verdict": "partial",
+     "clientLogic": "四端收到的 end_type 都是 ET_DRAWN，各自把小结算主题入参置为流局值 2，因此标题一致。",
+     "uiInteraction": "四端小结算标题都显示黄庄。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/util/BoxHzmjResultUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjResultUtil.ts:37"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/helperCmd/ResultCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/helperCmd/ResultCmd.ts:65"
+      }
+     ],
+     "notes": "四端一致性由服务端 end_type 保证；标题渲染仍在公共壳内。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C15-007",
+   "name": "结算行内容（左中右结构）",
+   "description": "小结算每行左侧座位头像昵称、中间碰杠区与手牌、庄家档位、杠牌叠放与胡张标记等牌面结构。",
+   "scope": "单行 ResultItem 的结构与牌面渲染，不含得分数值与番型文案。",
+   "coordination": "BoxHzmjResultMid 逐行解析 hu_items / player_hands，按 Comb 与 Hand 两种模式渲染副露与手牌，并驱动 ResultItem 各控制器。",
+   "atoms": [
+    {
+     "id": "AT-ST-C15-033",
+     "name": "左侧座位、头像与昵称",
+     "rule": "每行左侧为座位、头像和昵称。",
+     "uiRequirement": "每行左侧为座位、头像和昵称。",
+     "verdict": "confirmed",
+     "clientLogic": "每行写入竖排方位文案、昵称，并使用头像组件展示玩家头像，点击头像可打开用户信息弹窗。",
+     "uiInteraction": "行左显示 本家/下家/对家/上家 竖排文字与头像、昵称，头像可点击。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:150"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:306"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml:30"
+      }
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C15-034",
+     "name": "庄家行显示「庄×3」",
+     "rule": "庄家行显示「庄×3」。",
+     "uiRequirement": "庄家行显示「庄×3」。",
+     "verdict": "confirmed",
+     "clientLogic": "庄家行按连庄次数设置 C_IsBank 页（1/2/3 对应庄、庄×2、庄×3），数据取 GameData.getLianZhuangCount()，与桌面头像 C_Bank 同源。",
+     "uiInteraction": "庄家行头像位置显示庄/庄×2/庄×3 图标。",
+     "messages": [
+      "MsgResultHu",
+      "MsgJuData"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:402"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/helperCmd/ResultCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/helperCmd/ResultCmd.ts:61"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml:10"
+      }
+     ],
+     "notes": "「庄×3」要求 lian_zhuang 下发抖三档；代码注释说明不能用 ResultHu 覆盖后的 banker_level，需与桌面头像同源。"
+    },
+    {
+     "id": "AT-ST-C15-035",
+     "name": "中间从左到右为碰杠区和手牌",
+     "rule": "中间从左到右是碰杠区和手牌。",
+     "uiRequirement": "中间从左到右是碰杠区和手牌。",
+     "verdict": "confirmed",
+     "clientLogic": "渲染时先按 C_ShowComp 页展示 KW_Comp0~7 副露，再渲染 KW_Mah_List / KW_Mah_Hu 手牌，最后由 n10 水平布局组统一重排；副露宽度改变会重建行布局。",
+     "uiInteraction": "行内左侧依次排开碰杠组，右侧接连续手牌。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:527"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml:68"
+      }
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C15-036",
+     "name": "杠的第 4 张垒在上方",
+     "rule": "杠的第 4 张垒在上方。",
+     "uiRequirement": "杠的第 4 张垒在上方。",
+     "verdict": "confirmed",
+     "clientLogic": "杠组切换 comboSefl 的 4mah 页，第 4 张牌节点 mah3 单独放在上方一行。",
+     "uiInteraction": "杠牌展示为下方 3 张、上方叠 1 张。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:557"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/component/comboSefl.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_result/component/comboSefl.xml:21"
+      }
+     ],
+     "notes": "mah0~2 的 y 为 20，mah3 的 y 为 5，形成上方叠放。"
+    },
+    {
+     "id": "AT-ST-C15-037",
+     "name": "暗杠顶张正面",
+     "rule": "暗杠顶张正面。",
+     "uiRequirement": "暗杠顶张正面。",
+     "verdict": "partial",
+     "clientLogic": "暗杠组打开 C_IsAnGan 页，前 3 张牌状态置为暗面（C_IsAnGan=1 且 i<3 时 state=1），第 4 张用非暗状态渲染牌面。",
+     "uiInteraction": "暗杠显示 3 张暗牌 + 1 张正面牌。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:583"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/component/mahHandSelf.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_result/component/mahHandSelf.xml:3"
+      }
+     ],
+     "notes": "第 4 张使用 state=3，该页在 mahHandSelf 中未具名（既非 Down 也非 Stand/Up），正面的具体视觉需以包内控制器页为准。"
+    },
+    {
+     "id": "AT-ST-C15-038",
+     "name": "胡牌者手牌按胡牌组合分组",
+     "rule": "胡牌者其余手牌按胡牌组合分组。",
+     "uiRequirement": "胡牌者其余手牌按胡牌组合分组。",
+     "verdict": "confirmed",
+     "clientLogic": "解析亮牌时优先用 hu_items，若胡项带 combs 则按 Comb 模式逐组渲染，并把含胡张的非吃碰杠组挪到最后一组。",
+     "uiInteraction": "胡牌家手牌按顺子/刻子/对子等分组间距展示。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:249"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:175"
+      }
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C15-039",
+     "name": "未胡牌者连续摆放",
+     "rule": "未胡牌者连续摆放。",
+     "uiRequirement": "未胡牌者连续摆放。",
+     "verdict": "confirmed",
+     "clientLogic": "未胡座位走 Hand 模式，取 player_hands 的手牌写入 KW_Mah_List 连续列表，不下发胡项分组。",
+     "uiInteraction": "未胡家手牌一张接一张连续排开。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:273"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:276"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:677"
+      }
+     ],
+     "notes": "未胡家若带副露仍会先渲染副露组，其余手牌连续摆放。"
+    },
+    {
+     "id": "AT-ST-C15-040",
+     "name": "胡入那张标绿色「胡」",
+     "rule": "胡入的那一张在所属组合内标绿色「胡」。",
+     "uiRequirement": "胡入的那一张在所属组合内标绿色「胡」。",
+     "verdict": "confirmed",
+     "clientLogic": "在所属组合内定位胡张下标，打开该牌节点的 C_Hu 页显示「胡」角标；同值多张时取最后一张。",
+     "uiInteraction": "胡张牌角上出现绿色「胡」图标。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:588"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/component/mahHandSelf.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_result/component/mahHandSelf.xml:30"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:573"
+      }
+     ],
+     "notes": "绿色由 ico_hu.png 美术资源决定。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C15-008",
+   "name": "结算净得分展示",
+   "description": "小结算行右侧展示本局净得分，正分带加号、0 显示 0、负分带减号，并用不同字效区分。",
+   "scope": "行内 KW_Score 数值与字效，不含版式其他元素。",
+   "coordination": "BoxHzmjResultMid 按 win_losts 取该座 score，用 dealBigNumEx 缩写后写入 KW_Score 并切换 win/lose 字体。",
+   "atoms": [
+    {
+     "id": "AT-ST-C15-041",
+     "name": "右侧为本局净得分",
+     "rule": "右侧为本局净得分。",
+     "uiRequirement": "右侧为本局净得分。",
+     "verdict": "confirmed",
+     "clientLogic": "按服务端座位在 win_losts 中取本局分数，经大数缩写后写入行右侧 KW_Score 文本。",
+     "uiInteraction": "每行最右侧显示本局净得分数字。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml:75"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:152"
+      }
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C15-042",
+     "name": "正分带加号",
+     "rule": "正分带加号。",
+     "uiRequirement": "正分带加号。",
+     "verdict": "confirmed",
+     "clientLogic": "分数大于 0 时在文本前拼接「+」。",
+     "uiInteraction": "正分显示为 +N。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:365"
+      }
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C15-043",
+     "name": "0 分显示「0」",
+     "rule": "0 分显示「0」。",
+     "uiRequirement": "0 分显示「0」。",
+     "verdict": "confirmed",
+     "clientLogic": "分数为 0 时不加任何符号，直接写入缩写后的数值字符串。",
+     "uiInteraction": "0 分行显示 0。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:364"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:365"
+      }
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C15-044",
+     "name": "负分带减号",
+     "rule": "负分带减号。",
+     "uiRequirement": "负分带减号。",
+     "verdict": "partial",
+     "clientLogic": "负分直接把带负号的数字交给大数缩写函数，并切换到 lose 位图字体，减号由字体图集提供。",
+     "uiInteraction": "负分显示为 -N，使用失败字效。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:366"
+      }
+     ],
+     "notes": "dealBigNumEx（kiwi 库）实现不在仓库内，减号来自数值格式化；lose 字集目录中存在「-」字模。"
+    },
+    {
+     "id": "AT-ST-C15-045",
+     "name": "赢家牌组上方写番型名称",
+     "rule": "赢家牌组上方写实际命中的番型名称。",
+     "uiRequirement": "赢家牌组上方写实际命中的番型名称。",
+     "verdict": "confirmed",
+     "clientLogic": "按座位过滤流水文案，无流水时用 hu_items.fan_ids 生成番型文案，写入牌组上方的 KW_Flow，并打开 C_LiuShui 页。",
+     "uiInteraction": "赢家手牌组正上方显示一行番型文案，可点击展开完整流水。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml:72"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:759"
+      }
+     ],
+     "notes": ""
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C15-009",
+   "name": "番型名称与胡牌方式",
+   "description": "番型名称按命中组合拼接，特定番型直接写全名；行最右标记胡牌方式，赔付者标点炮。",
+   "scope": "行内番型文案与胡牌方式角标，不含承包标记。",
+   "coordination": "FanDefine 提供番型名称与组合文案；BoxHzmjResultMid 控制 C_HuType 页展示胡牌/点炮身份。",
+   "atoms": [
+    {
+     "id": "AT-ST-C15-046",
+     "name": "同时命中多组都写上",
+     "rule": "同时命中多组时都写上，例如「七对」「杠飘」。",
+     "uiRequirement": "同时命中多组时都写上。",
+     "verdict": "confirmed",
+     "clientLogic": "番型文案按命中分组拼装：单番直接取名称，组合番用「组合名（非 1 侧明细）」形式，多片段以「，」连接。",
+     "uiInteraction": "KW_Flow 一行内展示全部命中番型。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:766"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:467"
+      }
+     ],
+     "notes": "组合番不是并列两个独立项，而是「杠飘（二连杠，双财飘）」形式；与模板示例「七对」「杠飘」并列写法不完全一致。"
+    },
+    {
+     "id": "AT-ST-C15-047",
+     "name": "特定番型直接写全名",
+     "rule": "双财飘、双豪华七对、二连杠直接写全名。",
+     "uiRequirement": "双财飘、双豪华七对、二连杠直接写全名。",
+     "verdict": "confirmed",
+     "clientLogic": "番型名称表内置「双财飘」「双豪华七对」「二连杠」等全名，组合展开时直接取该名称。",
+     "uiInteraction": "对应番型在牌组上方显示完整名称，不缩写档位。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:77"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:85"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:80"
+      }
+     ],
+     "notes": "组合番（杠飘/七客）仍会带括号明细，全名是否单独出现取决于命中的 fan_ids 组合。"
+    },
+    {
+     "id": "AT-ST-C15-048",
+     "name": "最右侧标胡牌方式",
+     "rule": "最右侧标胡牌方式：自摸、点炮胡或抢杠胡。",
+     "uiRequirement": "最右侧标胡牌方式：自摸、点炮胡或抢杠胡。",
+     "verdict": "partial",
+     "clientLogic": "胡牌家按 hu_type 是否为自摸切 C_HuType 页（自摸=3，其余=2），胡牌方式角标放在行最右的竖向组里。",
+     "uiInteraction": "行最右侧显示自摸/吃胡角标。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:731"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml:94"
+      }
+     ],
+     "notes": "C_HuType 只有点炮/吃胡/自摸三页，抢杠胡被并入点炮页，没有独立「抢杠胡」文案。"
+    },
+    {
+     "id": "AT-ST-C15-049",
+     "name": "点炮胡与抢杠胡赔付者标「点炮」",
+     "rule": "点炮胡、抢杠胡的赔付者标「点炮」。",
+     "uiRequirement": "点炮胡、抢杠胡的赔付者标「点炮」。",
+     "verdict": "confirmed",
+     "clientLogic": "非自摸的胡项中，若 df_from 等于当前行座位，则把该行 C_HuType 置为点炮页。",
+     "uiInteraction": "放铳者行右侧显示点炮角标。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:734"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:736"
+      }
+     ],
+     "notes": ""
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C15-010",
+   "name": "承包与反承包标记",
+   "description": "按 bao_settles 关系在赢家与赔付者行展示承包/反承包与三摊承包标记，链式承包同时出现两种标记且番型只写一次。",
+   "scope": "小结算行角标与赢家流水文案，不含结算金额计算。",
+   "coordination": "BoxHzmjResultMid 用 relation 决定 C_ChengBao 页；BoxHzmjFlowUtil 把「承包/反承包」写进赢家流水；匹配场额外在桌面 KW_RESULT 显示「三摊承包」。",
+   "atoms": [
+    {
+     "id": "AT-ST-C15-050",
+     "name": "三摊承包：赢家标「承包」，赔付者得分右侧标「三摊承包」",
+     "rule": "三摊承包：赢家标黄色「承包」，赔付者得分右侧标「三摊承包」。",
+     "uiRequirement": "赢家标黄色「承包」，赔付者得分右侧标「三摊承包」。",
+     "verdict": "partial",
+     "clientLogic": "好友房小结算只在承包方（from_seat）行挂 C_ChengBao=1 角标（图标文案「承包」，位于得分右侧），赢家行不挂承包角标；匹配场额外在桌面按座位显示「三摊承包」文字。",
+     "uiInteraction": "赔付者行得分右侧出现承包角标；该行桌面 KW_RESULT 显示「三摊承包」。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:212"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml:90"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1750"
+      }
+     ],
+     "notes": "与模板差异：角标挂在承包方（赔付者）而非赢家，图标文案是「承包」；「三摊承包」文案只在匹配场桌面出现，好友房小结算行内没有该文案。"
+    },
+    {
+     "id": "AT-ST-C15-051",
+     "name": "反承包：赢家与赔付者都标「反承包」",
+     "rule": "反承包：赢家标「反承包」，赔付者标「反承包」。",
+     "uiRequirement": "赢家标「反承包」，赔付者标「反承包」。",
+     "verdict": "partial",
+     "clientLogic": "relation=2 时给 from_seat（承包方）行挂 C_ChengBao=2 角标，赢家流水追加「反承包」文案；赢家行本身不挂角标。",
+     "uiInteraction": "承包方行得分右侧显示反承包角标，赢家牌组上方流水出现「反承包」。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:209"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml:17"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:445"
+      }
+     ],
+     "notes": "两端都标的规则只实现为「赔付者角标 + 赢家流水文案」，赢家行无角标。"
+    },
+    {
+     "id": "AT-ST-C15-052",
+     "name": "链式承包双标且番型只写一次",
+     "rule": "链式承包：赢家同时标「承包」和「反承包」，番型只写一次。",
+     "uiRequirement": "赢家同时标「承包」和「反承包」，番型只写一次。",
+     "verdict": "partial",
+     "clientLogic": "赢家流水先写一次番型文案，再按 bao_settles 逐条追加「承包」「反承包」项，最终以「，」连接为一行；赢家行不挂两种角标。",
+     "uiInteraction": "赢家牌组上方一行流水同时出现番型与「承包」「反承包」。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:377"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:444"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:766"
+      }
+     ],
+     "notes": "双标实现为流水文案拼接，不是两个角标；番型确实只写一次。"
+    },
+    {
+     "id": "AT-ST-C15-053",
+     "name": "链式承包赔付方分别标三摊承包与反承包",
+     "rule": "链式承包：付 S 的一方标「三摊承包」，付 2 × S 的一方标「反承包」。",
+     "uiRequirement": "付 S 的一方标「三摊承包」，付 2 × S 的一方标「反承包」。",
+     "verdict": "partial",
+     "clientLogic": "客户端按 bao_settles.relation 区分文案（1→三摊承包，2→反承包），不区分 S 与 2×S 的倍数关系；金额仅用于汇总各座承包分。",
+     "uiInteraction": "匹配场桌面按座位显示三摊承包或反承包，好友房结算行使用承包/反承包角标。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1750"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:456"
+      }
+     ],
+     "notes": "S 与 2×S 的区分由 relation 间接体现，客户端未按金额倍数做二次校验；两个文案不出现在同一套界面（桌面文字 vs 行角标）。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C15-011",
+   "name": "财神展示与长按查看牌桌",
+   "description": "小结算左下展示本局财神正面，右下提供长按查看牌桌入口，按本家视角临时收起小结算并高亮财神。",
+   "scope": "小结算左下财神区与右下滑动/长按交互。",
+   "coordination": "BoxHzmjResultView 负责长按事件的派发/恢复，BoxHzmjResultLeft 渲染财神，BoxHzmjMah2DView 负责终局牌桌的财神高亮。",
+   "atoms": [
+    {
+     "id": "AT-ST-C15-054",
+     "name": "左下展示本局财神正面",
+     "rule": "左下展示本局财神正面，即白板。",
+     "uiRequirement": "左下展示本局财神正面，即白板。",
+     "verdict": "confirmed",
+     "clientLogic": "小结算左下角组件取 GameData.jokerMah，以正面状态渲染该牌并施加红色财神色；无财神时整块隐藏。",
+     "uiInteraction": "左下显示财神牌图与财神牌位，财神数字为红色。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultLeft.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultLeft.ts:37"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultLeft.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultLeft.ts:39"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/BoxHzmjResultLeft.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_result/BoxHzmjResultLeft.xml:4"
+      }
+     ],
+     "notes": "代码按 jokerMah 渲染（当前配置为白板），未硬编码牌值。"
+    },
+    {
+     "id": "AT-ST-C15-055",
+     "name": "长按查看牌桌",
+     "rule": "右下为「长按查看牌桌」：在底部栏扣除中央主按钮后的区域按住 500 毫秒，临时收起小结算，按本家视角查看终局牌桌；松手恢复同一张小结算。",
+     "uiRequirement": "右下为「长按查看牌桌」：按住 500 毫秒临时收起小结算查看终局牌桌，松手恢复同一张小结算。",
+     "verdict": "partial",
+     "clientLogic": "游戏侧在公共壳的按压回调里派发 onResultShowTable / onResultHideTable：显示时高亮桌上财神，恢复时清除高亮并保留同一份结算数据。",
+     "uiInteraction": "按住期间小结算收起、终局牌桌可见且财神高亮；松手恢复原小结算。",
+     "messages": [],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjResultView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjResultView.ts:99"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:1155"
+      },
+      {
+       "file": "source-code/client/Code/config/FguiViewDefine.ts",
+       "location": "source-code/client/Code/config/FguiViewDefine.ts:358"
+      }
+     ],
+     "notes": "500 毫秒长按判定、底部栏扣除中央按钮的区域计算、小结算收起/恢复均在公共壳 BoxRoomMahResultNewView（common_game 未包含），本仓库只见回调与事件。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C15-012",
+   "name": "继续游戏与返回大厅",
+   "description": "非末局底部中央为继续游戏，点击后清理上一局牌面并置本家为已准备，四人准备自动开下一局；第 8 局按钮为返回大厅退出房间。",
+   "scope": "小结算底部按钮行为与下一局衔接，不含小结算内容渲染。",
+   "coordination": "公共壳渲染底部按钮，游戏侧通过 onResetUI 清牌、通过准备回包刷新「已准备」标记，开局由服务端裁决。",
+   "atoms": [
+    {
+     "id": "AT-ST-C15-056",
+     "name": "非末局底部中央为【继续游戏】",
+     "rule": "非末局底部中央为【继续游戏】。",
+     "uiRequirement": "非末局底部中央为【继续游戏】。",
+     "verdict": "partial",
+     "clientLogic": "配置中保留了「小结算继续游戏（KW_BTN_GOON，非最后一局）」事件定义，但 BoxHzmjResultView 的 onContinueResult 实现被整体注释，游戏侧没有继续游戏的点击处理。",
+     "uiInteraction": "底部中央按钮由公共壳渲染并显示继续游戏文案。",
+     "messages": [],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FguiViewDefine.ts",
+       "location": "source-code/client/Code/config/FguiViewDefine.ts:364"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjResultView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjResultView.ts:119"
+      }
+     ],
+     "notes": "按钮创建、文案与点击回调在公共壳内；游戏侧 onResultContinue 派发已被注释，事件定义实际无监听者。"
+    },
+    {
+     "id": "AT-ST-C15-057",
+     "name": "点击后收起小结算并清理上局牌面",
+     "rule": "点击后本端收起小结算，清除上一局手牌、碰杠区和牌河，保留座位和累计积分，本家显示「已准备」。",
+     "uiRequirement": "收起小结算，清除上一局手牌、碰杠区和牌河，保留座位和累计积分，本家显示「已准备」。",
+     "verdict": "partial",
+     "clientLogic": "准备成功后派发 onResetUI 清空四方位手牌/河牌/胡牌/副露并隐藏侧栏财神与余牌数，同时给本家头像显示准备标记；座位与累计积分不清。",
+     "uiInteraction": "小结算关闭后牌桌清空，本家头像出现「已准备」标记，积分保留。",
+     "messages": [
+      "MsgEndWait"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/gameController.ts",
+       "location": "source-code/client/Code/controller/gameController.ts:180"
+      },
+      {
+       "file": "source-code/client/Code/controller/gameController.ts",
+       "location": "source-code/client/Code/controller/gameController.ts:181"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerView.ts:563"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:528"
+      }
+     ],
+     "notes": "清理与「已准备」是由准备回包（playerReadyBack）驱动，不是由【继续游戏】点击直接触发；onResetUI 不会清 TableData 里的座位与 sr。"
+    },
+    {
+     "id": "AT-ST-C15-058",
+     "name": "四人均准备后自动开下一小局",
+     "rule": "四人均准备后自动开下一小局。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端只上报自身准备并在收到开局消息时重置界面与玩家状态；四人齐备后的开局判定由服务端完成。",
+     "uiInteraction": "四人准备后自动进入下一小局，界面按开局消息重置。",
+     "messages": [
+      "MsgStartGame"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/gameController.ts",
+       "location": "source-code/client/Code/controller/gameController.ts:181"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerView.ts:222"
+      },
+      {
+       "file": "source-code/client/Code/protocol/GameGlcProtocol.ts",
+       "location": "source-code/client/Code/protocol/GameGlcProtocol.ts:106"
+      }
+     ],
+     "notes": "人数齐备判定与开局时机不在客户端代码内。"
+    },
+    {
+     "id": "AT-ST-C15-059",
+     "name": "第 8 局按钮为【返回大厅】",
+     "rule": "第 8 局按钮为【返回大厅】，点击后退出房间。",
+     "uiRequirement": "第 8 局按钮为【返回大厅】，点击后退出房间。",
+     "verdict": "partial",
+     "clientLogic": "公共壳收到总结算事件后按 C_IsLastRound 切换末局按钮，但仓库内未找到「返回大厅」文案或退出房间的游戏侧实现。",
+     "uiInteraction": "末局时底部中央按钮切换为离场类按钮（基类注释称为「查看总结算」）。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjResultView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjResultView.ts:147"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjResultView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjResultView.ts:149"
+      }
+     ],
+     "notes": "基类注释为「查看总结算」，与模板「返回大厅并退出房间」不一致；退出房间行为不在本仓库快照内。"
+    }
+   ]
+  }
+ ]
+}

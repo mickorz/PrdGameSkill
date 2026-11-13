@@ -1,0 +1,307 @@
+{
+ "stage": {
+  "id": "ST-C01",
+  "name": "定庄与轮庄",
+  "chapter": "开局 > 定庄与轮庄",
+  "summary": "确定首局庄家，并按有人胡牌由胡牌者接庄、流局原庄连庄的规则轮庄；庄家固定按三牢、庄闲倍数 8 倍结算，三牢不再增加。",
+  "terms": [
+   {
+    "term": "庄家",
+    "definition": "每小局一名庄家，庄家先出牌，其余玩家为闲家。",
+    "source": "模板 第7行（杭州麻将核心需求开篇）"
+   },
+   {
+    "term": "连庄",
+    "definition": "庄家自己胡牌时继续坐庄；流局时原庄也继续坐庄，下一小局仍为同一庄家。",
+    "source": "模板 第27~28行（开局 > 定庄与轮庄）"
+   },
+   {
+    "term": "牢庄",
+    "definition": "本期固定笃三老庄，每小局庄家都按三牢、8 倍计算。",
+    "source": "模板 名词章节 第13行"
+   },
+   {
+    "term": "庄闲倍数",
+    "definition": "首庄、新庄、连庄都是三牢，庄闲倍数固定 8 倍，三牢不再增加。",
+    "source": "模板 第29行（开局 > 定庄与轮庄）"
+   }
+  ],
+  "crossCutting": [
+   "庄家展示统一走 GameEventBoxHzmj.onShowZhuang 事件：玩家头像 C_Bank 档位、匹配房头像、断线重连恢复（RecoverGameSceneCmd._recoverZhuang）、结算行 C_IsBank 各自消费同一状态，新增轮庄表现需同时接入这些入口。",
+   "牢庄等级 GameData.bankerLevel 存在多个写入源：MsgJuData.banker_level、MsgBankerLevelUp.banker_level、MsgResultHu.banker_level、MsgRelinkOnAction.banker_level；ResultCmd 另用 getLianZhuangCount 快照，等级与连庄次数两字段同源但语义不同。",
+   "复盘回放中升庄广播 MsgBankerLevelUp 不单独成步，需并入最近掷骰步逐条播放（gameController._mergeXsmjBankerLevelUp），轮庄/升庄动画与骰子动画串行。",
+   "GameData.simpleMode 为真时抑制升庄扫光动画（BoxHzmjPlayerView._showXsmjZhuang 传入 sweep && !GameData.simpleMode）。",
+   "定庄后桌面方位盘以庄家座位为东风（BoxHzmjMah2DView.onMsgDeskCentBg）；首出阶段非庄家显示 C_Zhang 的“庄”提示横幅（GamePowerCmd._updateFirstPlayTips）。"
+  ]
+ },
+ "features": [
+  {
+   "id": "FP-ST-C01-001",
+   "name": "首局定庄与庄家先定",
+   "description": "首局从四名玩家中产生庄家，且在掷骰、发牌之前庄家已确定，客户端据此展示庄家标志与方位盘。",
+   "scope": "仅覆盖首局庄家产生时机与客户端接收/展示；随机算法本身在服务端，客户端不参与。",
+   "coordination": "服务端下发 MsgJuData（zhuang/first_zhuang/banker_level），客户端 GameJuDataCmd 落库后派发 onShowZhuang 与 onShowDeskCentBg，随后才进入骰子、发牌阶段。",
+   "atoms": [
+    {
+     "id": "AT-ST-C01-001",
+     "name": "首局随机坐庄",
+     "rule": "首局四名玩家中随机坐庄。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端不做随机定庄：GameJuDataCmd 将 MsgJuData.zhuang 转本地座位写入 GameData.setZhuangSeat/setZhuangSever，作为本局庄家唯一来源。",
+     "uiInteraction": "局数据到达后立即派发 onShowZhuang，玩家头像庄标志按等级点亮（杭州麻将走 C_Bank 的 zhuang1~3 页）。",
+     "messages": [
+      "MsgJuData"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameJuDataCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameJuDataCmd.ts:31"
+      },
+      {
+       "file": "source-code/client/Code/lib/proto_game_hzmj.d.ts",
+       "location": "source-code/client/Code/lib/proto_game_hzmj.d.ts:3693"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerView.ts:806"
+      }
+     ],
+     "notes": "客户端无随机定庄逻辑，首庄完全由服务端 zhuang 决定；MsgJuData.first_zhuang 字段在客户端未被消费，无法从客户端验证“随机”过程。"
+    },
+    {
+     "id": "AT-ST-C01-002",
+     "name": "掷骰发牌前庄家已确定",
+     "rule": "掷骰、发牌前已经确定庄家。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "协议状态枚举把“定庄”(GAME_STATE_BANKER) 排在“骰子”(GAME_STATE_CHIP) 与“发牌”(GAME_STATE_TAKE_FIRST) 之前；庄家在 MsgJuData 阶段即写入数据层并展示，骰子由后续独立命令 CMD_THROW_CHIP 处理。",
+     "uiInteraction": "庄家标志在局数据阶段点亮，骰子动画随后在牌桌上播放（BoxHzmjMah2DView.showDice），两者无数据依赖。",
+     "messages": [
+      "MsgJuData",
+      "MsgThrowChip"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/protocol/GameGlcProtocol.ts",
+       "location": "source-code/client/Code/protocol/GameGlcProtocol.ts:16"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameJuDataCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameJuDataCmd.ts:51"
+      },
+      {
+       "file": "source-code/client/Code/controller/gameController.ts",
+       "location": "source-code/client/Code/controller/gameController.ts:65"
+      }
+     ],
+     "notes": "证据为协议阶段枚举与命令分发顺序，属间接证据；未找到客户端显式“先定庄再掷骰”的时序校验代码。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C01-002",
+   "name": "胡牌轮庄与连庄",
+   "description": "一小局结束有人胡牌时，下一小局由胡牌者坐庄；若庄家本人胡牌即为连庄，仍由原庄继续。",
+   "scope": "覆盖胡牌结果到下局庄家的传递与连庄次数展示；下局庄家的推导在服务端完成。",
+   "coordination": "MsgResultHu 记录本局胡牌座位与牢庄档位，下局由新 MsgJuData.zhuang 生效；连庄次数经 MsgJuData.banker_level/lian_zhuang 下发，供头像庄标志与结算行档位使用。",
+   "atoms": [
+    {
+     "id": "AT-ST-C01-003",
+     "name": "胡牌者接任下局庄家",
+     "rule": "有人胡牌时，下一小局由胡牌者坐庄。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "GameResultHuCmd 解析 hu_items.hu_seat 得到胡牌座位用于本局结算表现；下局庄家不在客户端推导，直接采用下一条 MsgJuData.zhuang 覆盖 GameData 的庄家座位。",
+     "uiInteraction": "本局结算行按 data.banker 标记庄家并显示庄标志；下局开局由 onShowZhuang 重新点亮新庄家头像、清除上一家庄标志。",
+     "messages": [
+      "MsgResultHu",
+      "MsgJuData"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:158"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameJuDataCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameJuDataCmd.ts:31"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:399"
+      }
+     ],
+     "notes": "客户端没有“胡牌者→下局庄家”的判定代码，正确性依赖服务端 MsgJuData.zhuang；客户端无法单独验证该规则。"
+    },
+    {
+     "id": "AT-ST-C01-004",
+     "name": "庄家自胡为连庄",
+     "rule": "庄家自己胡牌为连庄。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "连庄次数由服务端下发：GameJuDataCmd 用 MsgJuData.banker_level 写入 setLianZhuangCount；升庄广播 MsgBankerLevelUp 亦更新该值与 bankerLevel。客户端无“庄家胡牌即连庄”的本地判定。",
+     "uiInteraction": "结算行按 lianZhuang 选择 C_IsBank 的 1/2/3 档庄标志；结算流水含“连庄”独立流水项，由服务端 win_losts/flow 下发。",
+     "messages": [
+      "MsgJuData",
+      "MsgBankerLevelUp",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:1451"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameJuDataCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameJuDataCmd.ts:34"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:648"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:401"
+      }
+     ],
+     "notes": "连庄次数与牢庄等级共用 MsgJuData.banker_level 写入，ResultCmd 另取 getLianZhuangCount 作为结算快照，两字段语义需服务端保证一致。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C01-003",
+   "name": "流局原庄连庄",
+   "description": "一小局流局时，原庄家继续坐庄，不换庄。",
+   "scope": "覆盖流局协议的接收与流局结算表现；连庄结果由服务端在下局 MsgJuData 中体现。",
+   "coordination": "服务端下发 MsgDrawn（GP_DRAWN）与 MsgResultHu（end_type=ET_DRAWN），客户端仅做展示与状态还原，下局庄家仍以 MsgJuData.zhuang 为准。",
+   "atoms": [
+    {
+     "id": "AT-ST-C01-005",
+     "name": "流局不换庄",
+     "rule": "流局时原庄连庄。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "协议层定义 GP_DRAWN→MsgDrawn 并映射到 CmdNames.CMD_DRAWN，但未找到对应命令实现类；流局结算实际由 GameResultHuCmd（CMD_RESULT_HU）承载，按 end_type=ET_DRAWN 出结算表现。客户端无“流局→原庄连庄”的本地判定。",
+     "uiInteraction": "结算界面按 end_type===ET_DRAWN 切换 C_Line/C_WinLost 的输/平样式；下局原庄家标志由 onShowZhuang 按服务端下发座位重新点亮。",
+     "messages": [
+      "MsgDrawn",
+      "MsgResultHu",
+      "MsgJuData"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/protocol/GameGlcProtocol.ts",
+       "location": "source-code/client/Code/protocol/GameGlcProtocol.ts:114"
+      },
+      {
+       "file": "source-code/client/Code/controller/gameController.ts",
+       "location": "source-code/client/Code/controller/gameController.ts:74"
+      },
+      {
+       "file": "source-code/client/Code/config/GameDefine.ts",
+       "location": "source-code/client/Code/config/GameDefine.ts:441"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:371"
+      }
+     ],
+     "notes": "CmdNames.CMD_DRAWN 仅出现在协议映射与常量定义中，仓库内无 @RegisterCmd(CMD_DRAWN) 的命令类，流局是否为独立下行或并入 MsgResultHu 存疑，需与服务端确认。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C01-004",
+   "name": "三牢与庄闲倍数",
+   "description": "首庄、新庄、连庄统一按三牢计，庄闲倍数固定 8 倍且三牢封顶不再增加。",
+   "scope": "覆盖牢庄等级的数据来源、庄标志档位显示与倍数展示；倍数计算以服务端结算为准。",
+   "coordination": "牢庄等级经 MsgJuData.banker_level、升庄广播 MsgBankerLevelUp、MsgResultHu.banker_level 与重连 MsgRelinkOnAction.banker_level 下发，客户端仅缓存并按档位显示。",
+   "atoms": [
+    {
+     "id": "AT-ST-C01-006",
+     "name": "首庄新庄连庄均为三牢",
+     "rule": "首庄、新庄、连庄都是三牢。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "GameData 维护牢庄等级 _bankerLevel（注释 1=一牢/平庄、2=二牢、3=三牢），GameJuDataCmd 从局数据 banker_level 推导赋值，未在客户端强制固定为 3 牢。",
+     "uiInteraction": "玩家头像按等级切换 C_Bank 的 zhuang1/zhuang2/zhuang3 三档庄图；萧山好友房分支改用 XsmjZhuangComp 数字标志。",
+     "messages": [
+      "MsgJuData",
+      "MsgBankerLevelUp"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:1593"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameJuDataCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameJuDataCmd.ts:35"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_player/component/PlayerPanel.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_player/component/PlayerPanel.xml:8"
+      }
+     ],
+     "notes": "客户端保留 1~3 档通用模型，无“恒为三牢”的强制逻辑；升庄广播 MsgBankerLevelUp 仍可改变档位，三牢是否由服务端配置固定需确认。"
+    },
+    {
+     "id": "AT-ST-C01-007",
+     "name": "庄闲倍数固定8倍",
+     "rule": "庄闲倍数固定 8 倍。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "GameData 提供 getZhuangXianMult（1<<bankerLevel，3 牢即 8 倍）但全仓无调用；实际倍数取自服务端结算 win_losts.mult，番型解析明确不乘牢庄/承包。",
+     "uiInteraction": "结算行与流水显示服务端下发的分数与倍数；头像庄标志在萧山分支显示 x2/x3 数字，杭州麻将走三档庄图。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:1664"
+      },
+      {
+       "file": "source-code/client/Code/util/XsmjHuFanResolver.ts",
+       "location": "source-code/client/Code/util/XsmjHuFanResolver.ts:31"
+      },
+      {
+       "file": "source-code/client/Code/config/MatchTipConfig.ts",
+       "location": "source-code/client/Code/config/MatchTipConfig.ts:24"
+      }
+     ],
+     "notes": "客户端 TIPS 文案“平庄2倍、二牢4倍、三牢8倍”为递增档位，与模板“固定 8 倍”表述不一致；游戏内倍数实际由服务端结算数据决定，客户端无法验证固定 8 倍。"
+    },
+    {
+     "id": "AT-ST-C01-008",
+     "name": "三牢不再增加",
+     "rule": "三牢不再增加。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "未找到显式倍数封顶代码；GameData.bankerLevel 可被服务端任意赋值，仅展示层对档位做了 3 档上限处理。",
+     "uiInteraction": "匹配房头像设置庄档位时 bankIdx>3 归 3；PlayerPanel 与 ResultItem 的庄标志控制器均只有 1/2/3 三档，无更高档位资源。",
+     "messages": [
+      "MsgBankerLevelUp",
+      "MsgJuData"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerMatchView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerMatchView.ts:225"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_player/component/PlayerPanel.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_player/component/PlayerPanel.xml:8"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml:10"
+      }
+     ],
+     "notes": "仅有 UI 档位上限 3 的间接证据；BoxHzmjPlayerView 的杭州麻将分支直接 selectedIndex=zhuangnumber，无 clamp，若服务端下发 >3 会显示异常页。"
+    }
+   ]
+  }
+ ]
+}

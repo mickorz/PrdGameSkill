@@ -1,0 +1,694 @@
+{
+ "stage": {
+  "id": "ST-C12",
+  "name": "三摊承包",
+  "chapter": "三摊承包",
+  "summary": "三摊承包阶段规定：只按吃牌记摊，两个方向分别计算；庄家与闲家之间可成立承包，两名闲家之间同一方向最多 2 摊，满 2 摊后不再给【吃】；某一方向满 3 摊时记录承包并播放三摊落地；自摸、点炮、抢杠分别按承包、反承包、链式规则改写实际赔付金额（模板原文称“分”，含义为分数）。",
+  "terms": [
+   {
+    "term": "摊",
+    "definition": "A 吃进 B 打出的牌，A 对 B 记 1 摊；两个方向分开计；碰、直杠、加杠、暗杠不计摊；每小局重新累计。",
+    "source": "模板名词章节 第14行"
+   },
+   {
+    "term": "承包",
+    "definition": "庄家与闲家之间，某一方向的有效摊达到成立条件后，承包方在自摸结算时代赔。",
+    "source": "模板名词章节 第15行"
+   },
+   {
+    "term": "反承包",
+    "definition": "同一关系下，原被承包方自摸时，原承包方按加倍规则赔付。",
+    "source": "模板名词章节 第15行"
+   },
+   {
+    "term": "三摊落地",
+    "definition": "某一方向计到第 3 摊成立承包时的桌面动效，模板要求四端播放。",
+    "source": "模板三摊承包 第136行；source-code/client/Code/layer/BoxHzmjTipAniView.ts:1649"
+   },
+   {
+    "term": "链式",
+    "definition": "A 对 B 成立、同时 C 对 A 成立，A 自摸时 B 付 S、C 付 2×S，A 实收 3×S，第四家 0 分。",
+    "source": "模板三摊承包 第144行"
+   }
+  ],
+  "crossCutting": [
+   "摊计数与承包判定全部由服务端计算：客户端只消费 MsgTanUpdate(1282) 的 tan_items 与 MsgResultHu(1286) 的 bao_settles，桌面阶段不展示摊数或承包角标（BoxHzmjTipAniView.ts:1790-1796）。",
+   "GameData.updateTanItems 采用整体替换语义（GameData.ts:1670-1671），而服务端约定为单条增量下发，若按增量下发会丢失历史摊项，需与协议语义对齐。",
+   "三摊落地动画受简洁模式（GameData.simpleMode）和复盘模式抑制，且为纯表现层，不参与任何逻辑（BoxHzmjTipAniView.ts:1656-1658）。",
+   "结算承包角标 C_ChengBao 每座位只有一个索引（0 不变 / 1 承包 / 2 反承包），同一座位存在多条承包关系时仅按数组顺序显示首条（BoxHzmjResultMid.ts:206-216）。",
+   "结算流水中的“承包/反承包”文案只挂到赢家座位（to_seat），付款方仅通过 from_seat 角标与 win_lost 总分体现（BoxHzmjFlowUtil.ts:416-447）。",
+   "断线重连通过 MsgRelinkOnAction.tan_items 恢复摊数据，不走 MsgTanUpdate（SceneActionCmd.ts:63-66）。",
+   "匹配场额外在牌桌结算展示“三摊承包/反承包”文本，好友房无此文本，仅靠结算角标与流水文案（BoxHzmjTipAniView.ts:1707-1751）。"
+  ]
+ },
+ "features": [
+  {
+   "id": "FP-ST-C12-001",
+   "name": "摊的计量与方向",
+   "description": "只统计吃牌：A 吃 B 的牌，A 对 B 加 1 摊；同一对玩家的两个方向分别累计。",
+   "scope": "包含摊的产生来源、计数主体与方向维度；不包含闲闲 2 摊上限（见 FP-ST-C12-002）与承包结算（见 FP-ST-C12-004）。",
+   "coordination": "服务端在吃牌成立时写有向摊数并通过 MsgTanUpdate 广播；客户端只存储与展示，不本地计数。",
+   "atoms": [
+    {
+     "id": "AT-ST-C12-001",
+     "name": "只统计吃牌",
+     "rule": "只统计吃牌。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端不在本地统计摊：吃牌由 GameChowCmd 处理副露、手牌扣减与动作动画，摊数完全由服务端 MsgTanUpdate 下发后整体写入 GameData._tanItems。",
+     "uiInteraction": "吃牌时在吃牌方播放 TYPE_CHOW 动作动效；桌面无摊数展示。",
+     "messages": [
+      "MsgChowS",
+      "MsgTanUpdate"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts:43"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts:20"
+      },
+      {
+       "file": "source-code/client/Code/config/MatchTipConfig.ts",
+       "location": "source-code/client/Code/config/MatchTipConfig.ts:23"
+      }
+     ],
+     "notes": "客户端规则提示文案把摊写成“吃碰三摊”（MatchTipConfig.ts:23/40/47），与模板“只统计吃牌”冲突；客户端无本地摊统计，无法在端上验证碰/杠不计摊。"
+    },
+    {
+     "id": "AT-ST-C12-002",
+     "name": "吃牌即加 1 摊",
+     "rule": "A 吃 B 的牌，A 对 B 加 1 摊。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端以有向摊项（from_seat 被吃方 → to_seat 吃牌方，tan_count）存储服务端下发结果，自身不执行 +1 计算。",
+     "uiInteraction": "",
+     "messages": [
+      "MsgTanUpdate"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts:15"
+      },
+      {
+       "file": "source-code/client/Code/lib/proto_game_hzmj.d.ts",
+       "location": "source-code/client/Code/lib/proto_game_hzmj.d.ts:3785"
+      },
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:1670"
+      }
+     ],
+     "notes": "计数由服务端完成，客户端只看到最终 tan_count，无法校验每次吃牌是否只加 1。"
+    },
+    {
+     "id": "AT-ST-C12-003",
+     "name": "两个方向分开计",
+     "rule": "两个方向分开计。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "TanItem 以 from_seat/to_seat 有向对表达摊数，同一对玩家的两个方向各自独立成项；结算角标同样按 from_seat 单向判定。",
+     "uiInteraction": "结算行承包角标只挂在 from_seat（承包方）所在座位。",
+     "messages": [
+      "MsgTanUpdate",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/lib/proto_game_hzmj.d.ts",
+       "location": "source-code/client/Code/lib/proto_game_hzmj.d.ts:3787"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:212"
+      }
+     ],
+     "notes": ""
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C12-002",
+   "name": "承包参与方与闲闲摊数上限",
+   "description": "只有庄家与闲家之间可承包；两名闲家之间同一方向最多 2 摊，满 2 摊后不再给【吃】；与飘财无关。",
+   "scope": "包含参与方资格、闲闲上限与吃牌权限；不包含 3 摊成立后的结算改写。",
+   "coordination": "资格与上限判定在服务端，客户端按 MsgPower 权限位渲染【吃】按钮，不自行判断。",
+   "atoms": [
+    {
+     "id": "AT-ST-C12-004",
+     "name": "只有庄闲之间能承包",
+     "rule": "只有庄家和闲家之间能承包。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端不做庄闲过滤，结算时直接遍历 bao_settles 并按 from_seat 挂角标；是否庄闲由服务端筛选。",
+     "uiInteraction": "",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:206"
+      },
+      {
+       "file": "source-code/client/Code/lib/proto_game_hzmj.d.ts",
+       "location": "source-code/client/Code/lib/proto_game_hzmj.d.ts:5222"
+      }
+     ],
+     "notes": "端上无庄闲判断分支，无法验证“庄闲之间”限制，只能依赖服务端 bao_settles 已正确过滤。"
+    },
+    {
+     "id": "AT-ST-C12-005",
+     "name": "闲闲同方向最多 2 摊",
+     "rule": "两名闲家之间，同一方向最多 2 摊，吃一成立就加 1。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端无本地 2 摊上限判断；吃牌权限来自 MsgPower，客户端只按权限位渲染按钮。",
+     "uiInteraction": "【吃】按钮显隐由 POWER_ID_CHOW 位决定。",
+     "messages": [
+      "MsgPower",
+      "MsgTanUpdate"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:552"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePowerCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePowerCmd.ts:71"
+      }
+     ],
+     "notes": "上限判定在服务端；端上即便 tan_count=2 也照常显示服务端下发的【吃】。"
+    },
+    {
+     "id": "AT-ST-C12-006",
+     "name": "满 2 摊不给【吃】",
+     "rule": "已经有 2 摊时，再吃这一家的牌不成立，不给出【吃】。",
+     "uiRequirement": "已有 2 摊时不给玩家显示【吃】按钮。",
+     "verdict": "partial",
+     "clientLogic": "客户端没有基于摊数过滤【吃】的逻辑，只按 MsgPower 的 CHOW 位显示/隐藏 KW_BTN_Chi。",
+     "uiInteraction": "服务端不下发 CHOW 位时，吃按钮不显示。",
+     "messages": [
+      "MsgPower",
+      "MsgTanUpdate"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:578"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:549"
+      }
+     ],
+     "notes": "“不给出【吃】”完全依赖服务端权限位；服务端误发 CHOW 时客户端不会兜底拦截。"
+    },
+    {
+     "id": "AT-ST-C12-007",
+     "name": "与飘财无关",
+     "rule": "与飘财无关。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "摊与飘是两条独立链路：MsgTanUpdate 写 GameData._tanItems，MsgPiao 写 GameData._piaoCounts，互不读取。",
+     "uiInteraction": "飘计数走 onPiaoState 播飘动作；摊更新不触发任何飘表现。",
+     "messages": [
+      "MsgPiao",
+      "MsgTanUpdate"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePiaoCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePiaoCmd.ts:21"
+      },
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:1600"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts:21"
+      }
+     ],
+     "notes": "仅从消息与数据链路看两者独立，客户端没有任何“飘影响摊”的判断。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C12-003",
+   "name": "三摊成立与落地表现",
+   "description": "某一方向计到第 3 摊时记承包，四端播放三摊落地，可与吃牌字效同时显示，当场不出角标且提示期间不打断获权玩家。",
+   "scope": "包含第 3 摊的触发与桌面表现；承包金额改写见后续功能点。",
+   "coordination": "服务端在摊数达 3 时写承包关系并广播 MsgTanUpdate；客户端据 tan_count 触发动效。",
+   "atoms": [
+    {
+     "id": "AT-ST-C12-008",
+     "name": "第 3 摊记承包",
+     "rule": "某一方向计到第 3 摊时记承包。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "GameTanUpdateCmd 遍历下发摊项，tan_count === 3 时派发 onSanTanLuoDi 事件触发落地动画；承包关系字段 bao_relation 在客户端未被读取使用。",
+     "uiInteraction": "达到 3 摊时播放三摊落地 Spine（受简洁模式/复盘抑制）。",
+     "messages": [
+      "MsgTanUpdate"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts:24"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1654"
+      }
+     ],
+     "notes": "客户端只把 tan_count===3 当触发条件，未消费 bao_relation（0/1/2），“记承包”本身无法在端上核对；若下发的是单条增量且 tan_count 非 3，则不会触发。"
+    },
+    {
+     "id": "AT-ST-C12-009",
+     "name": "四端播放三摊落地",
+     "rule": "四端播放「三摊落地」。",
+     "uiRequirement": "三摊落地在四个座位方向都要播放。",
+     "verdict": "partial",
+     "clientLogic": "onSanTanLuoDi 计算了 localSeat（toSeat 的本地座位）但未使用，只把固定中央节点 KW_Ani_Stld 置可见并播放 spine，播完隐藏。",
+     "uiInteraction": "三摊落地 Spine 在屏幕中央单点播放，非四端；simpleMode 或复盘模式直接跳过。",
+     "messages": [
+      "MsgTanUpdate"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1660"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml:118"
+      }
+     ],
+     "notes": "实现为中央单节点动效，与模板“四端播放”不一致；代码注释写“动画播在此座位”，但 localSeat 未参与定位，疑似遗漏。"
+    },
+    {
+     "id": "AT-ST-C12-010",
+     "name": "可与吃牌字效同时显示",
+     "rule": "可与吃牌字效同时显示。",
+     "uiRequirement": "三摊落地可与吃牌字效同时显示，不互相顶替。",
+     "verdict": "confirmed",
+     "clientLogic": "三摊落地由 MsgTanUpdate 独立驱动，吃牌字效由 CPG 动画节点驱动，两者互不关闭。",
+     "uiInteraction": "KW_Ani_Stld 与 KW_Ani_CPG_0 至 KW_Ani_CPG_3 为并列节点，可同时可见。",
+     "messages": [
+      "MsgTanUpdate",
+      "MsgChowS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1662"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml:8"
+      }
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C12-011",
+     "name": "当场不出承包角标",
+     "rule": "不等到结算，当时没有承包角标。",
+     "uiRequirement": "三摊成立当场不显示承包角标，只到结算才出。",
+     "verdict": "confirmed",
+     "clientLogic": "onTanUpdate 只打日志，不刷新任何桌面 UI；承包角标 C_ChengBao 只存在于小结算 ResultItem，由 bao_settles 驱动。",
+     "uiInteraction": "桌面阶段无摊数/承包角标；结算行才出现承包或反承包角标。",
+     "messages": [
+      "MsgTanUpdate",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1790"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:195"
+      }
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C12-012",
+     "name": "提示期间不打断获权玩家",
+     "rule": "提示期间，获权玩家可以继续提牌、出牌。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "三摊落地播放期间没有任何输入锁或禁用逻辑，动画结束回调只隐藏节点。",
+     "uiInteraction": "提示为纯表现层 Spine，不遮挡操作区，也不压暗按钮。",
+     "messages": [
+      "MsgTanUpdate"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1654"
+      }
+     ],
+     "notes": "客户端“不阻塞”是默认行为，没有显式放行代码；另外存在吃碰杠按钮时直接出牌会被 canPlayMahCheck 拦下要求先点“过”（BoxHzmjMainView.ts:1445-1460），若提示发生在响应窗口内，端上表现可能与“可继续出牌”不符，需确认场景。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C12-004",
+   "name": "自摸结算的承包与反承包",
+   "description": "自摸只结算胡牌方参与的承包对；摊方胡由对方付三家合计 S，被摊方胡由摊方付 2S，双向满 3 摊只取 2 倍不叠加。",
+   "scope": "包含参与方筛选、承包与反承包金额口径、双向满摊优先级；不包含点炮/抢杠改写（见 FP-ST-C12-005）。",
+   "coordination": "服务端判定并下发 bao_settles；客户端只做角标与流水展示，不自算金额。",
+   "atoms": [
+    {
+     "id": "AT-ST-C12-013",
+     "name": "只结算胡牌方参与的承包对",
+     "rule": "自摸只结算胡牌方自己参与的承包对。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端不筛选参与方，直接把 bao_settles 全部渲染，涉及哪些座位完全取决于服务端下发条目。",
+     "uiInteraction": "每座位最多一个承包角标；赢家流水追加承包文案。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:206"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:427"
+      }
+     ],
+     "notes": "端上无“只结算胡牌方参与的对”判断，第三方之间的承包对若被下发也会照常显示。"
+    },
+    {
+     "id": "AT-ST-C12-014",
+     "name": "摊方胡由对方付合计",
+     "rule": "摊方胡，对方付三家输分合计。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "结算按 BaoSettleItem.relation=1 在 from_seat（付款方）挂承包角标，金额取服务端 score；客户端不计算合计。",
+     "uiInteraction": "结算行显示 tip_chengbao 角标，赢家行流水文案为“承包”。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:212"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:432"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml:92"
+      }
+     ],
+     "notes": "金额与“三家合计”口径完全由服务端 score 决定，客户端无自算；好友房只有角标与流水文案，匹配场另有“三摊承包”文本（仅 isMatchRoom）。"
+    },
+    {
+     "id": "AT-ST-C12-015",
+     "name": "反承包付 2 倍",
+     "rule": "被摊方胡，摊方付该合计的 2 倍。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "relation=2 时同一 from_seat 显示反承包角标，流水文案为“反承包”，金额取服务端 score（已含 2 倍）。",
+     "uiInteraction": "显示 tip_fanchengbao 角标与“反承包”流水文案。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:212"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:429"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml:17"
+      }
+     ],
+     "notes": "2 倍由服务端算好，客户端不做倍率校验。"
+    },
+    {
+     "id": "AT-ST-C12-016",
+     "name": "双向满 3 摊只取 2 倍",
+     "rule": "双向都满 3 摊时只按倒承包的 2 倍，不两笔叠加。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "无本地优先级判断；结算角标为单控制器单索引，只显示首个匹配关系。",
+     "uiInteraction": "同一座位只出现一个角标（承包或反承包），不会同时显示两个。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:207"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml:17"
+      }
+     ],
+     "notes": "UI 天然只显示一条关系，无法证明“优先取 2 倍”；若服务端同时下发 1 和 2，客户端按数组顺序取第一条，存在显示错误风险。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C12-005",
+   "name": "点炮与抢杠的承包改写",
+   "description": "点炮只在放铳者本人是承包对方时改写，基数为原点炮分；抢杠胡不替换杠牌者赔付，承包额叠加。",
+   "scope": "包含付款人范围与叠加口径；金额倍数计算在服务端，客户端只做展示。",
+   "coordination": "服务端改写付款表并下发 bao_settles 与 win_lost；客户端按条目渲染，不按胡型分支。",
+   "atoms": [
+    {
+     "id": "AT-ST-C12-017",
+     "name": "点炮只改写放铳者",
+     "rule": "点炮只在放铳者本人是承包对方时改写。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端结算展示不区分自摸与点炮，统一按 bao_settles 的 from_seat 挂角标、按 win_lost 显示分数。",
+     "uiInteraction": "点炮与自摸使用同一套承包角标与流水展示。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:195"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:66"
+      }
+     ],
+     "notes": "端上没有任何“放铳者是否承包对方”的判断，改写范围无法在客户端验证。"
+    },
+    {
+     "id": "AT-ST-C12-018",
+     "name": "点炮基数为原点炮分",
+     "rule": "基数是原来那一笔点炮分，不是三家之和。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [],
+     "notes": "客户端不参与金额计算，只展示服务端 score；未找到点炮基数相关的任何端上逻辑。"
+    },
+    {
+     "id": "AT-ST-C12-019",
+     "name": "他人承包关系不赔",
+     "rule": "别人的承包关系不赔，放铳者仍按原点炮付。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [],
+     "notes": "客户端无“他人承包关系”过滤逻辑；付款结果完全取自 win_lost，无法在端上体现该规则。"
+    },
+    {
+     "id": "AT-ST-C12-020",
+     "name": "抢杠承包额叠加",
+     "rule": "抢杠胡不替换杠牌者的赔付，承包额再叠加。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "流水拼装时先把承包分从赢家 win_lost 总分中剔除再生成胡分条目，随后单独追加承包流水，形成“胡分 + 承包分”叠加展示。",
+     "uiInteraction": "赢家流水同时出现番型文案与“承包/反承包”文案。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:373"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:47"
+      }
+     ],
+     "notes": "该叠加处理是流水展示口径，未针对抢杠胡单独分支；抢杠场景叠加是否正确仍取决于服务端 win_lost 与 bao_settles 的一致性。"
+    },
+    {
+     "id": "AT-ST-C12-021",
+     "name": "杠牌者兼承包方两笔都付",
+     "rule": "杠牌者若同时是承包方，两笔都付。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "同一座位可同时有胡分流水与承包流水；扣分总额只体现在 win_lost 一个数上，客户端不拆分。",
+     "uiInteraction": "该座位结算行只显示一个承包角标与合并后的得分。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:373"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:152"
+      }
+     ],
+     "notes": "两笔是否都付无法从结算行得分拆分核对，需依赖服务端明细。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C12-006",
+   "name": "承包、反承包与链式的赔付口径",
+   "description": "承包由被吃方付 S，反承包由原承包方付 2S，链式下多条关系同时结算且赢家实收叠加。",
+   "scope": "包含结算明细结构、承包/反承包方向与链式多条并存；不包含点炮/抢杠改写与数值示例。",
+   "coordination": "全部条目由服务端生成，客户端逐条渲染角标与流水。",
+   "atoms": [
+    {
+     "id": "AT-ST-C12-022",
+     "name": "承包定义与两家 0 分",
+     "rule": "承包：A 对 B 已成立，A 自摸。B 支付三家原应赔分的合计 S，另外两家本局 0 分。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "BaoSettleItem 的 from_seat/to_seat/score 直接映射到结算行角标与赢家流水，S 由服务端给出。",
+     "uiInteraction": "from_seat 行显示承包角标，赢家行流水显示“承包”金额。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/lib/proto_game_hzmj.d.ts",
+       "location": "source-code/client/Code/lib/proto_game_hzmj.d.ts:5222"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:443"
+      }
+     ],
+     "notes": "“另外两家 0 分”体现为 win_lost 为 0，客户端不校验。"
+    },
+    {
+     "id": "AT-ST-C12-023",
+     "name": "反承包定义",
+     "rule": "反承包：同一关系下 B 自摸。A 支付 2 × S。S 是 B 这次自摸原本向三家应收的合计。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "relation=2 映射为 tip_fanchengbao 角标与“反承包”流水，扣分数值取服务端 score。",
+     "uiInteraction": "反承包角标与“反承包”流水文案。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:212"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:429"
+      }
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C12-024",
+     "name": "链式多条承包并存",
+     "rule": "链式：A 对 B 成立，同时 C 对 A 成立，A 自摸。B 付 S，C 付 2 × S，A 实收 3 × S，第四家 0 分。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "流水对 bao_settles 每条关系都生成一条记录并挂到赢家（优先 to_seat，缺省挂所有赢家），多条可同时存在；角标按 from_seat 各自显示。",
+     "uiInteraction": "赢家流水可同时出现“承包”和“反承包”两行，付款两家各挂对应角标。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:434"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:212"
+      }
+     ],
+     "notes": "若同一座位同时是某关系的 from_seat 与另一关系的 to_seat，角标只显示一条（单控制器），需确认是否会出现该组合。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C12-007",
+   "name": "结算数值示例",
+   "description": "模板给出的两组数值示例，用于校验承包/反承包金额口径。",
+   "scope": "仅为验收用例，不引入新规则。",
+   "coordination": "客户端不参与计算，示例只能作为服务端验收依据。",
+   "atoms": [
+    {
+     "id": "AT-ST-C12-025",
+     "name": "示例：庄家自摸承包 24 与链式 48",
+     "rule": "例：庄家平胡自摸，三名闲家各应赔 8，S = 24。承包方付 24。若同时存在上家对庄家的承包，上家再付 48，庄家得 72。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [],
+     "notes": "客户端无对应计算或校验代码，金额全部来自服务端；未找到端上示例用例（BoxHzmjTestView 的“三摊”按钮为测试造数入口，不含金额校验）。"
+    },
+    {
+     "id": "AT-ST-C12-026",
+     "name": "示例：反承包付 20",
+     "rule": "例：庄家对闲家成立承包，闲家平胡自摸，三家原应赔 8、1、1。庄家按反承包付 20。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [],
+     "notes": "客户端不计算 2×S，无法在端上复现该数值；服务端若下发 20，UI 原样显示。"
+    }
+   ]
+  }
+ ]
+}

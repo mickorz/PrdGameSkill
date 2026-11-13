@@ -1,0 +1,407 @@
+{
+ "stage": {
+  "id": "ST-C06",
+  "name": "杠后补牌",
+  "chapter": "行牌 > 杠后补牌",
+  "summary": "每次杠成立后从牌墙尾部补 1 张并使余牌减 1；杠前与连续杠前均须牌墙不少于 21 张，剩 20 张及以下时在下一次摸牌前黄庄；补牌可自摸，不胡则继续杠或打出 1 张，杠链按杠 +1、按吃碰与出牌条件归零。",
+  "terms": [
+   {
+    "term": "杠链",
+    "definition": "杠后连续杠的累计次数：明杠、暗杠、加杠各 +1；吃、碰、打出非财神，或打出财神但打出后不再敲响则归零。",
+    "source": "模板 行牌 > 杠后补牌（第 75 行）"
+   },
+   {
+    "term": "流局",
+    "definition": "牌墙剩 21 张时当前玩家再摸 1 张、剩 20 张；先完成本次摸打与弃牌响应，无人胡牌时在下一次应摸牌前判黄庄，不是剩 20 张立刻结束。",
+    "source": "模板 名词（第 20 行）"
+   },
+   {
+    "term": "财神",
+    "definition": "白板固定为财神，只在胡牌判定时代替顺子、刻子或对子所缺的牌；吃、碰、杠必须用真实的非财神牌。",
+    "source": "模板 名词（第 12 行）"
+   }
+  ],
+  "crossCutting": [
+   "重连补数据阶段（justUpdateData）只写数据缓存、不播动画：GameKongCmd、GameTakeCmd、GameWallMahCmd 均在 execute 开头判断后提前 return。",
+   "抓牌方向与张数完全由服务端 MsgTake.dir / tcnt 决定，GameData 维护正向 asc 与反向 desc 两套牌墙索引；MsgJuData.is_kong_take_asc 仅有协议声明，客户端代码未读取。",
+   "桌面剩余张数统一由 GameCommonUIEventDefine.onUpdateMahCnt 驱动，GameTakeCmd、GameWallMahCmd、RecoverWallCmd、RecoverGameSceneCmd 均派发，BoxHzmjMahRightComp 与 BoxHzmjMah2DView 消费并刷新 KW_RIGHT_MAHS。",
+   "三类杠在 UI 层共用同一套 gang Spine 皮肤，仅用音效区分：GANG（明杠）、AN_GANG（暗杠）、BU_GANG（补杠）。",
+   "MsgDrawn（GP_DRAWN）已在协议映射表登记到 CMD_DRAWN，但 Code 中未找到对应命令实现类；实际流局表现由 MsgResultHu 的 end_type=ET_DRAWN 承担。"
+  ]
+ },
+ "features": [
+  {
+   "id": "FP-ST-C06-001",
+   "name": "杠后补牌与牌墙余量",
+   "description": "杠成立后从牌墙尾部补 1 张并扣减余牌；杠前牌墙须不少于 21 张；剩余 20 张及以下时在下一次摸牌前黄庄（流局）。",
+   "scope": "包含补牌取牌方向与张数、余牌计数与展示、21 张杠门槛、20 张黄庄；不包含杠成立判定、抢杠胡与结算番型。",
+   "coordination": "服务端判定杠成立、牌墙余量与流局时机并以 MsgKongS、MsgTake、MsgPower 驱动；客户端只按消息参数取牌、刷新余牌数与操作按钮，不做本地规则判定。",
+   "atoms": [
+    {
+     "id": "AT-ST-C06-001",
+     "name": "杠后从牌墙尾部补 1 张",
+     "rule": "每次杠从牌墙尾部补 1 张。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端不自判取牌方向：GameTakeCmd 收到 MsgTake 后调用 GameData.takeWalls(data.dir, data.tcnt)；dir=2 走反向抓牌分支，从 desc 索引（牌墙尾部）逐张取牌，并把被取走的墙位 missWallAll 交给 setTakeMah 播放摸牌。",
+     "uiInteraction": "摸牌表现由 BoxHzmjMah2DView 的 setTakeMah 处理：自己走 setSelfTakeMah 与 showSpecialMah，其他座位调用 hands[localSeat].moMah 摆牌；随后刷新剩余张数。",
+     "messages": [
+      "MsgTake"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts:90"
+      },
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:729-731"
+      },
+      {
+       "file": "source-code/client/Code/lib/proto_game_hzmj.d.ts",
+       "location": "source-code/client/Code/lib/proto_game_hzmj.d.ts:1127"
+      },
+      {
+       "file": "source-code/client/Code/lib/proto_game_hzmj.d.ts",
+       "location": "source-code/client/Code/lib/proto_game_hzmj.d.ts:1130"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:804"
+      }
+     ],
+     "notes": "模板要求固定从牌墙尾部补 1 张；客户端只按服务端 dir/tcnt 取牌，未见针对杠补牌的固定尾部或 tcnt=1 校验。MsgJuData.is_kong_take_asc 在客户端仅协议声明，未参与取牌方向选择。"
+    },
+    {
+     "id": "AT-ST-C06-002",
+     "name": "补牌后余牌减 1",
+     "rule": "补牌后余牌减 1。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "GameData.takeWalls 按本次抓取张数扣减 _wallLeftNum；GameTakeCmd 抓牌后派发 onUpdateMahCnt(GameData.getLeftCard())，驱动剩余张数展示刷新。",
+     "uiInteraction": "右侧剩余张数组件（KW_RIGHT_MAHS / BoxHzmjMahRightComp）把 title 设为剩余张数并显示；BoxHzmjMah2DView 在绑定完成后也会补刷该数值。",
+     "messages": [
+      "MsgTake"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:738"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts:289"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjMahRightComp.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjMahRightComp.ts:27-28"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:353"
+      }
+     ],
+     "notes": "扣减张数取服务端下发的 tcnt，客户端不区分杠补牌与普通摸牌，也不自行推导余牌。"
+    },
+    {
+     "id": "AT-ST-C06-003",
+     "name": "牌墙少于 21 张不能杠",
+     "rule": "牌墙少于 21 张不能杠。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端不做 21 张牌墙校验：杠按钮是否出现只取服务端 MsgPower 的 POWER_ID_KONG 位；点击后由 GameController.sendKong 组装 MsgKongC 上送，未找到任何本地余量门槛代码。",
+     "uiInteraction": "杠按钮 KW_BTN_Gang.visible 由 showGang 控制，按钮态切到 C_BtnState 的“碰杠胡”页；多个可选杠时再切到“选择多杠”页展示 KW_GangGrps 列表。",
+     "messages": [
+      "MsgPower",
+      "MsgKongC"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:554"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:580"
+      },
+      {
+       "file": "source-code/client/Code/config/BoxMahDefine.ts",
+       "location": "source-code/client/Code/config/BoxMahDefine.ts:208"
+      },
+      {
+       "file": "source-code/client/Code/controller/gameController.ts",
+       "location": "source-code/client/Code/controller/gameController.ts:540-541"
+      }
+     ],
+     "notes": "21 张门槛只在服务端生效，客户端找不到阈值常量或余量判断；按钮可用性完全可由服务端 power 关断。"
+    },
+    {
+     "id": "AT-ST-C06-004",
+     "name": "剩 20 张及以下下一次摸牌前黄庄",
+     "rule": "剩 20 张及以下时，下一次摸牌前黄庄。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端无本地黄庄/流局时机判定。流局落在结算链路：MsgResultHu 的 end_type=ET_DRAWN 时小结算按流局处理（自己行记为输/平），协议层另有 MsgDrawn 与 GP_DRAWN→CMD_DRAWN 映射，但未找到 CMD_DRAWN 的命令实现类。",
+     "uiInteraction": "小结算按流局展示输赢行；房间提示文案含“剩余20张牌前无人胡牌则流局”；tipAni 包内有 txt_liuju.png 流局字效资源。",
+     "messages": [
+      "MsgDrawn",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/MatchTipConfig.ts",
+       "location": "source-code/client/Code/config/MatchTipConfig.ts:39"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjResultUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjResultUtil.ts:37-38"
+      },
+      {
+       "file": "source-code/client/Code/config/GameDefine.ts",
+       "location": "source-code/client/Code/config/GameDefine.ts:441"
+      },
+      {
+       "file": "source-code/client/Code/protocol/GameGlcProtocol.ts",
+       "location": "source-code/client/Code/protocol/GameGlcProtocol.ts:285"
+      },
+      {
+       "file": "source-code/client/Code/controller/gameController.ts",
+       "location": "source-code/client/Code/controller/gameController.ts:74"
+      }
+     ],
+     "notes": "MsgDrawn 已登记映射但 Code 中无 CMD_DRAWN 处理器，实际流局表现走 MsgResultHu；20 张时点与“下一次摸牌前”的时序判断客户端不实现。tipAni 包存在 txt_liuju.png 资源但 Code 未检索到引用。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C06-002",
+   "name": "连续杠与补牌后行动",
+   "description": "补牌后仍可继续杠，每次重新检查牌墙不少于 21 张；补牌可以自摸，不胡则可继续杠或打出 1 张进入正常出牌。",
+   "scope": "包含连续杠的可选性、二次余量校验、补牌后自摸与出牌分支；不包含胡牌判定本身与杠上开花倍数计算。",
+   "coordination": "服务端在每次杠后重新判定牌墙并下发 MsgTake 与 MsgPower；客户端按 power 位同时/分别呈现杠、胡、出牌能力，选择结果通过 MsgKongC、MsgHuC、MsgPlayC 上送。",
+   "atoms": [
+    {
+     "id": "AT-ST-C06-005",
+     "name": "杠后可以继续杠",
+     "rule": "杠后可以继续杠。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "每次 MsgKongS 都走同一条 GameKongCmd：置 MAH_STATE_KONG、更新副露、清除复盘权限并关闭操作栏；代码中无已杠次数记录，也无禁止再次杠的分支，后续动作完全由下一条服务端消息驱动。",
+     "uiInteraction": "杠成功后收起吃碰杠胡操作区（onCloseOperate、onHidePutCardUi），并播放碰杠 Spine 动画；下一轮 power 若仍含 POWER_ID_KONG 再次显示杠按钮，多杠时展示 KW_GangGrps 选择列表。",
+     "messages": [
+      "MsgKongS",
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:33"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:46-47"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:605-607"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:639-642"
+      }
+     ],
+     "notes": "客户端没有“杠后状态”或连续杠计数，是否可再杠只看服务端下一次 power；无法据客户端代码验证“每次杠后都允许再杠”的规则成立条件。"
+    },
+    {
+     "id": "AT-ST-C06-006",
+     "name": "每次继续杠重新检查牌墙不少于 21 张",
+     "rule": "每次重新检查牌墙不少于 21 张。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "未找到 21 张阈值常量、二次校验或相关提示；与 AT-ST-C06-003 同一门槛，客户端完全依赖服务端 power 下发，无重复校验实现。"
+    },
+    {
+     "id": "AT-ST-C06-007",
+     "name": "补牌可以自摸",
+     "rule": "补牌可以自摸。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "补牌后若服务端 MsgPower 带 POWER_ID_HU，客户端显示胡按钮并可 sendHu 上送 MsgHuC；胡按钮动画按 hu_type 选皮肤，非点炮/抢杠（即 HT_SELF 自摸）用 zimo 皮肤。番型侧另有杠上开花 2406（杠牌后自摸 2 倍）定义。",
+     "uiInteraction": "胡按钮 KW_BTN_Hu 显示并带光效，胡牌动画区分自摸 zimo 与点炮/抢杠 hu；番型结算可命中“杠上开花”名称。",
+     "messages": [
+      "MsgPower",
+      "MsgHuC"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:665"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:675"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:555"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:25-26"
+      }
+     ],
+     "notes": "胡判定完全依赖服务端 power，客户端不自验补牌后能否自摸；补牌后与常规摸牌后的胡按钮走同一套逻辑。"
+    },
+    {
+     "id": "AT-ST-C06-008",
+     "name": "补牌不胡可继续杠",
+     "rule": "不胡则继续杠。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端不区分“补牌后”与普通回合：胡按钮与杠按钮可同时由 power 位置亮，玩家点杠则 GameData.getKongCombInfo 取组合后 sendKong 上送，点胡则 sendHu；没有“必须放弃胡才能杠”的本地约束。",
+     "uiInteraction": "碰杠胡页同时显示杠与胡按钮，多杠时进入“选择多杠”页；选择后收起操作区等待服务端回应。",
+     "messages": [
+      "MsgPower",
+      "MsgKongC"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:583"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1149-1154"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:580"
+      }
+     ],
+     "notes": "“不胡则继续杠”由服务端在补牌后继续下发 KONG 权限实现，客户端只做按钮呈现；胡杠并存时由玩家自选，无额外确认流程。"
+    },
+    {
+     "id": "AT-ST-C06-009",
+     "name": "补牌不胡可打出 1 张",
+     "rule": "不胡则打出 1 张。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "补牌后 power 含 POWER_ID_PLAY 时 canPutCard 置真，手牌可点击；点击经 canPlayMahCheck 校验（禁打、可听牌单击拦截、有吃碰杠胡按钮须先过）后由 onPlayMah 调 sendPlay 发送 MsgPlayC，服务端回 MsgPlayS 播落牌。",
+     "uiInteraction": "手牌可点出牌；存在杠/胡按钮且未点“过”时弹提示“点‘过’才能出牌”；与摸牌无关的杠（_isGangOffMoCard）不置灰、可直接出牌。",
+     "messages": [
+      "MsgPower",
+      "MsgPlayC",
+      "MsgPlayS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:536"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:556"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1482"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1455"
+      }
+     ],
+     "notes": "模板为“不胡则继续杠或打出 1 张”，客户端多一步：存在杠/胡按钮时点手牌会被拦下并要求先点“过”（与摸牌无关的杠除外），符合全局“无托管、不自动过”的设计。"
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C06-003",
+   "name": "杠链计数与归零",
+   "description": "明杠、暗杠、加杠都使杠链加 1；吃、碰、打出非财神，或打出财神但打出后不再敲响，杠链归零。",
+   "scope": "包含三类杠对杠链的累加、以及吃/碰/出牌各路径的归零条件；不包含杠链对应的杠开/豪杠番型倍数计算。",
+   "coordination": "杠链由服务端按座位维护并用于番型判定，客户端不持有杠链状态，仅在杠动作时区分三类杠、在结算时按服务端 fan_ids 渲染连杠档位番名。",
+   "atoms": [
+    {
+     "id": "AT-ST-C06-010",
+     "name": "明杠暗杠加杠均使杠链加 1",
+     "rule": "明杠、暗杠、加杠都使杠链加 1。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端不维护杠链计数字段：GameKongCmd 仅按 MsgKongS 的 comb.flag 区分 CMF_MKONG / CMF_CKONG / CMF_TKONG 并映射为三种动作类型；结算侧按服务端 fan_ids 渲染 2406~2409 连杠档位番名。",
+     "uiInteraction": "三类杠共用 gang Spine 皮肤，音效分别播 GANG（明杠）、AN_GANG（暗杠）、BU_GANG（补杠）；连杠档位最终以结算番名（杠上开花/二连杠/三连杠/四连杠）体现。",
+     "messages": [
+      "MsgKongS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:50-59"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:509-511"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:27-28"
+      }
+     ],
+     "notes": "杠链 +1 属服务端状态，客户端无计数与展示；仅能通过结算连杠番名间接观察杠链长度，无法据客户端验证三类杠各自的加 1 行为。"
+    },
+    {
+     "id": "AT-ST-C06-011",
+     "name": "吃使杠链归零",
+     "rule": "吃，杠链归零。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "客户端无杠链字段可清零；GameChowCmd 只做副露 setCombo、桌面出牌移除与听牌视图刷新，归零逻辑不在客户端。"
+    },
+    {
+     "id": "AT-ST-C06-012",
+     "name": "碰使杠链归零",
+     "rule": "碰，杠链归零。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "GamePungCmd 与吃同构，仅更新副露数据、播碰音效并刷新听牌视图；未见任何杠链复位实现。"
+    },
+    {
+     "id": "AT-ST-C06-013",
+     "name": "打出非财神使杠链归零",
+     "rule": "打出非财神，杠链归零。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "GamePlayCmd 只记录 lastCard、清复盘权限、刷新听牌与操作区，不接触杠链状态；客户端无法验证该归零条件。"
+    },
+    {
+     "id": "AT-ST-C06-014",
+     "name": "打出财神但未敲响使杠链归零",
+     "rule": "打出财神但打出后不再敲响，杠链归零。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "客户端只有飘计数链路（MsgPiao / GamePiaoCmd 写 GameData.updatePiaoState），未见“敲响”判定、飘等级(piao_level)或杠链状态，无法验证“未敲响则断杠链”。"
+    }
+   ]
+  }
+ ]
+}

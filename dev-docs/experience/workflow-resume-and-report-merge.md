@@ -31,6 +31,8 @@ function priorityIndex(p) {
 
 **预防**：凡是被 journal 回放的写文件 agent，其产物不可假设仍然存在；校验只放在最终交付物上。
 
+**2026-11-13 复现确认（output-spec-generate）**：`build-output-spec.mjs` 步骤 1 合并补充版后 `unlinkSync` 删分片；上次续跑装配已把 supplement-parts 分片删掉，本次修复补齐 ST-C11 后重跑完整 build 在步骤 1 就「分片缺失」fail-fast，且 `verify-report.md` 停留在上一次装配写的旧内容（误导排查方向为「ST-C11 文档仍缺失」）。修复：跳过步骤 1，直接调 `assemble-output-spec-index.mjs` + `verify-output-spec.mjs` 两个模块（两者都有可导入函数与独立 CLI）完成装配校验。**通用教训：构建器内含「删中间产物」动作时，重跑要么整体幂等（缺分片且终产物在即跳过合并），要么提供跳过步骤的入口；排查装配失败时先看命令 stderr，报告文件可能是陈旧快照。**
+
 ## 3. PowerShell 5.1 合并写入 BOM
 
 **问题现象**：`Get-Content ... | Set-Content -Encoding UTF8` 合并后文件头多出 3 字节 BOM（EF BB BF），部分解析器与 diff 视为异常。

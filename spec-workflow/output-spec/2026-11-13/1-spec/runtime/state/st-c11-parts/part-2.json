@@ -1,0 +1,609 @@
+{
+ "stage": {
+  "id": "ST-C11",
+  "name": "出牌与响应",
+  "chapter": "行牌 > 出牌与响应",
+  "summary": "规定出牌权归属与出牌前置拦截、弃牌被吃碰杠胡的裁决回收、操作按钮与响应倒计时、过与放弃语义、手牌压暗规则、多组吃/杠选择面板、听牌爆头飘标记、碰杠区牌组与杠标记展示，以及动作字效与胡牌结束表现。",
+  "terms": [
+   {
+    "term": "财神",
+    "definition": "白板固定为财神。只在胡牌判定时代替顺子、刻子或对子所缺的牌；吃、碰、杠必须用真实的非财神牌。",
+    "source": "模板名词章节 第12行"
+   },
+   {
+    "term": "面子",
+    "definition": "一组顺子、刻子或杠。杠含 4 张，仍计 1 组面子。对子不是面子。已完成的吃、碰、明杠、暗杠都计入面子。",
+    "source": "模板名词章节 第11行"
+   },
+   {
+    "term": "爆头",
+    "definition": "摸牌前为 4 组面子加 1 张财神。下一张摸到任意牌，都与这张财神组成对子后自摸。只能自摸。",
+    "source": "模板名词章节 第16行"
+   },
+   {
+    "term": "飘",
+    "definition": "自己出牌阶段打出一张财神，即飘财 1 次。连续打出财神则累加，打出普通牌清零。每小局从 0 次起算。",
+    "source": "模板名词章节 第18行"
+   },
+   {
+    "term": "放铳",
+    "definition": "打出的牌被他人合法胡走。胡牌者称为点炮胡。白板财神弃牌不能点炮胡。",
+    "source": "模板名词章节 第19行"
+   }
+  ],
+  "crossCutting": [
+   "权限位统一驱动界面：服务端 MsgPower 的 POWER_ID_* 位掩码（PLAY/CHOW/PONG/KONG/HU/CANCEL_C/CANCEL_S）同时决定按钮显隐、手牌压暗和能否出牌，客户端无本地优先级判定（source-code/client/Code/layer/BoxHzmjMainView.ts:549）。",
+   "所有行牌命令都带 justUpdateData 分支：断线重连补数据时只写数据缓存，不播动画、不弹提示（source-code/client/Code/controller/cmd/gameCmd/GamePlayCmd.ts:33）。",
+   "倒计时统一由服务端下发的剩余秒数驱动，客户端用 CountdownTime 本地递减，归零只把数字置为「00」，不禁用任何按钮（source-code/client/Code/layer/BoxHzmjMah2DView.ts:674）。",
+   "两套灰度来源会互相覆盖：权限压暗（吃碰杠候选亮牌）与禁手/禁打灰（MsgPlayLmts）分别刷新，点过之后先清权限灰再按禁手重压（source-code/client/Code/layer/BoxHzmjMainView.ts:1262）。",
+   "字效按座位单节点复用，新动作直接改写同一节点的 skin 与 url，因此连续杠时新字效天然覆盖上一段（source-code/client/Code/layer/BoxHzmjTipAniView.ts:524）。"
+  ]
+ },
+ "features": [
+  {
+   "id": "FP-ST-C11-005",
+   "name": "操作按钮与响应倒计时",
+   "description": "有操作资格者在本家手牌上方看到本次可做的按钮与蓝色【过】，胡牌按钮左侧显示胡牌张与预览倍数，倒计时归零后按钮仍可点。",
+   "scope": "覆盖 Handler 组件布局、按钮显隐、胡牌张与倍数、倒计时表现；按钮美术颜色由资源包决定。",
+   "coordination": "MsgPower → setPower → _getPowerShowState 决定显隐 → _updateHuPower 填胡牌张/倍数 → GamePowerCmd 派发 setClock 驱动倒计时。",
+   "atoms": [
+    {
+     "id": "AT-ST-C11-012",
+     "name": "按钮出现在本家手牌上方区域",
+     "rule": "有操作资格的玩家在自己手牌右上方看到对应按钮和【过】。",
+     "uiRequirement": "在自己手牌右上方看到对应按钮和【过】。",
+     "verdict": "partial",
+     "clientLogic": "每位玩家各有一组 KW_BTN_PGs_N 按钮容器，本家为 KW_BTN_PGs_0，仅本家有吃/碰/杠/胡/过/取消按钮，其他座位容器默认不可见。",
+     "uiInteraction": "本家手牌上沿偏右出现按钮组，其他玩家只播字效不显示按钮。",
+     "evidence": [
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:70",
+       "excerpt": "<group id=\"n121_t3qe\" name=\"KW_BTN_PGs_0\" xy=\"353,420\" size=\"890,171\" visible=\"false\" advanced=\"true\" layout=\"hz\" colGap=\"35\" excludeInvisibles=\"true\">"
+      }
+     ],
+     "messages": [
+      "MsgPower"
+     ],
+     "notes": "布局为手牌上方居中偏右，非严格「右上方」；按钮坐标随分辨率自适应。"
+    },
+    {
+     "id": "AT-ST-C11-013",
+     "name": "按钮顺序与只显示可做项",
+     "rule": "按钮从左到右为【吃】【碰】【杠】【胡】，蓝色【过】固定在最右，只显示本次可做的项。",
+     "uiRequirement": "从左到右为【吃】【碰】【杠】【胡】，蓝色【过】固定在最右。",
+     "verdict": "confirmed",
+     "clientLogic": "setPower 按 power 位分别为 Chi/Peng/Gang/Hu/Guo/Guo2 设 visible，只显示本次可做的项；Handler 中同组按水平顺序布局。",
+     "uiInteraction": "按钮自左向右依次为吃(1250)、碰(1440)、杠(1630)、胡(1820)、过(2338)、过2(2528)，隐藏项不占位。",
+     "evidence": [
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:21",
+       "excerpt": "<component id=\"n84_gv5d\" name=\"KW_BTN_Guo\" src=\"yngk6m\" fileName=\"component/EffectBtn.xml\" xy=\"2338,400\" group=\"n52_ev1d\">"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:578",
+       "excerpt": "this.view.KW_Main.KW_Handler.KW_BTN_Chi.visible = powerState.showChi;"
+      }
+     ],
+     "messages": [
+      "MsgPower"
+     ],
+     "notes": "【过】为蓝色属美术资源定义，代码只设 skinName=\"guo\"，无颜色常量可查。"
+    },
+    {
+     "id": "AT-ST-C11-014",
+     "name": "胡按钮左侧显示胡牌张与预览倍数",
+     "rule": "【胡】或【自摸】左侧显示胡牌张和预览倍数。",
+     "uiRequirement": "【胡】或【自摸】左侧显示胡牌张和预览倍数。",
+     "verdict": "confirmed",
+     "clientLogic": "_updateHuPower 用 PowerData.hu_mah 填胡牌张牌面、hu_point 拼「N倍」写到倍数文本；胡牌张与倍数节点在按钮左侧。",
+     "uiInteraction": "胡按钮左侧显示一张牌面与「N倍」文本，封顶标记默认隐藏。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:664",
+       "excerpt": "this.view.KW_Main.KW_Handler.KW_BTN_Hu.KW_HuPai.KW_Value.url = BoxMahDefine.MahValueImg[PowerData.hu_mah];"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/HuActionBtn.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/HuActionBtn.xml:6",
+       "excerpt": "<component id=\"n102_h28n\" name=\"KW_HuPai\" src=\"h28nc4\" fileName=\"component/mahHandSelfEx.xml\" pkg=\"9xio0lb1\" xy=\"54,17\" scale=\"0.72,0.72\"/>"
+      }
+     ],
+     "messages": [
+      "MsgPower"
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C11-015",
+     "name": "统一响应倒计时归零仍可点",
+     "rule": "各端使用同一个响应倒计时，归零后按钮仍可点。",
+     "uiRequirement": "各端使用同一个响应倒计时，归零后按钮仍可点。",
+     "verdict": "partial",
+     "clientLogic": "倒计时数值取自服务端下发权限时的剩余秒数，客户端本地递减显示；归零分支只把数字写成「00」并停表，不禁用按钮也不收起按钮。",
+     "uiInteraction": "桌面中央倒计时归零显示「00」，按钮保持可点，客户端无超时自动过或自动出牌。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePowerCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePowerCmd.ts:83",
+       "excerpt": "this.dispatch(GameEventBoxHzmj.setClock, localSeat, clockInfo);"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:711",
+       "excerpt": "clockStr.text = \"00\";"
+      }
+     ],
+     "messages": [
+      "MsgPower",
+      "MsgWaitInfos"
+     ],
+     "notes": "「各端同一个倒计时」由服务端统一剩余秒数间接保证，代码无跨端时钟同步实现；归零可点为「未禁用」的推断。"
+    },
+    {
+     "id": "AT-ST-C11-034",
+     "name": "胡与自摸按钮文案区分",
+     "rule": "点炮、抢杠的按钮文案是「胡」，自摸是「自摸」。",
+     "uiRequirement": "点炮、抢杠的按钮文案是「胡」，自摸是「自摸」。",
+     "verdict": "confirmed",
+     "clientLogic": "_getHuActionSkinName 按 hu_type 选皮肤：HT_DISCARD、HT_ROBKONG 用 \"hu\"，其余用 \"zimo\"。",
+     "uiInteraction": "胡牌按钮上播放「胡」或「自摸」字效 skin。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:670",
+       "excerpt": "private _getHuActionSkinName(huType: HuType): string {\n        if (huType == HuType.HT_DISCARD || huType == HuType.HT_ROBKONG) {\n            return \"hu\";\n        }\n\n        return \"zimo\";"
+      },
+      {
+       "file": "source-code/client/Code/config/GameDefine.ts",
+       "location": "source-code/client/Code/config/GameDefine.ts:427",
+       "excerpt": "HT_DISCARD,"
+      }
+     ],
+     "messages": [
+      "MsgPower"
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C11-035",
+     "name": "没有独立抢杠按钮",
+     "rule": "没有单独的抢杠按钮。",
+     "uiRequirement": "没有单独的抢杠按钮。",
+     "verdict": "partial",
+     "clientLogic": "按钮容器只有 Chi/Peng/Gang/Hu/Guo/Guo2/Cancel/Bao_Ting，抢杠胡复用同一个【胡】按钮并通过 hu_type 区分文案。",
+     "uiInteraction": "界面不存在抢杠专用按钮。",
+     "evidence": [
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:15",
+       "excerpt": "<component id=\"n82_gv5d\" name=\"KW_BTN_Hu\" src=\"gv5d6l\" fileName=\"component/HuActionBtn.xml\" xy=\"1820,400\" group=\"n52_ev1d\">"
+      }
+     ],
+     "messages": [
+      "MsgPower"
+     ],
+     "notes": "以「按钮清单中不存在抢杠节点」为证据，属结构性确认。"
+    },
+    {
+     "id": "AT-ST-C11-036",
+     "name": "过与过2同一文案",
+     "rule": "过和过2都显示「过」。",
+     "uiRequirement": "过和过2都显示「过」。",
+     "verdict": "confirmed",
+     "clientLogic": "initSkin 把 KW_BTN_Guo 与 KW_BTN_Guo2 的 KW_Ani.skinName 都设为 \"guo\"。",
+     "uiInteraction": "两个按钮外观完全一致，均显示「过」。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:319",
+       "excerpt": "this.view.KW_Main.KW_Handler.KW_BTN_Guo.KW_Ani.skinName = \"guo\";\n        this.view.KW_Main.KW_Handler.KW_BTN_Guo2.KW_Ani.skinName = \"guo\";"
+      }
+     ],
+     "messages": [
+      "MsgPower"
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C11-037",
+     "name": "过上行与过2本地不上行",
+     "rule": "过上行放弃；过2只在本地收起按钮并清掉本次压暗，再按禁手重新压暗，不上行。",
+     "uiRequirement": "过2只在本地收起按钮并清掉本次压暗，再按禁手重新压暗，不上行。",
+     "verdict": "confirmed",
+     "clientLogic": "onBtnGuo 调 sendCancel 上行；onBtnGuo2 注释标明「CANCEL_C：本地取消操作按钮，无需回包」，只切按钮态、收起面板并 _clearPowerHandGray（先清权限灰再按禁手重压）。",
+     "uiInteraction": "过2 点下按钮组收起、手牌恢复常态/禁手灰，服务端无请求。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1245",
+       "excerpt": "/**过2（CANCEL_C：本地取消操作按钮，无需回包；暗杠/碰吃等同回合场景） */"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1262",
+       "excerpt": "private _clearPowerHandGray(): void {\n        this.onClearGray();\n        this.onPlayLmtsUpdate();\n    }"
+      }
+     ],
+     "messages": [
+      "MsgPower",
+      "MsgCancel"
+     ],
+     "notes": ""
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C11-006",
+   "name": "手牌压暗规则",
+   "description": "能胡时整手正常亮度；不能胡时只亮参与当前吃/碰/直杠（或合法杠）的牌，其余压暗，且压暗只在本家本端显示。",
+   "scope": "覆盖 setPower 的 _updatePowerGray / _collectPowerBrightMahs / _setHandGrayExceptGroup；不含禁手灰（MsgPlayLmts）。",
+   "coordination": "MsgPower → setPower → _getPowerShowState → _updatePowerGray → 手牌 setGrayValues。",
+   "atoms": [
+    {
+     "id": "AT-ST-C11-016",
+     "name": "能胡时整手正常亮度",
+     "rule": "能胡时整手保持正常亮度。",
+     "uiRequirement": "整手保持正常亮度。",
+     "verdict": "confirmed",
+     "clientLogic": "_updatePowerGray 在 powerState.showHu 为真时直接 onClearGray，清空灰度并恢复全部牌可触摸。",
+     "uiInteraction": "手牌不压暗，全部牌面正常亮度。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:718",
+       "excerpt": "if ((!powerState.showPeng && !powerState.showGang && !powerState.showChi) || powerState.showHu) {\n            this.onClearGray();"
+      }
+     ],
+     "messages": [
+      "MsgPower"
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C11-017",
+     "name": "不能胡时只亮参与吃碰直杠的牌",
+     "rule": "不能胡时，只有参与当前吃、碰、直杠的牌保持亮度，其余压暗。压暗只在该玩家本端显示。",
+     "uiRequirement": "只有参与当前吃、碰、直杠的牌保持亮度，其余压暗。压暗只在该玩家本端显示。",
+     "verdict": "confirmed",
+     "clientLogic": "_collectPowerBrightMahs 汇总 CHOW 的全组牌值与 PONG/MKONG/CKONG/TKONG 的牌值，_setHandGrayExceptGroup 把这些牌之外的牌值置灰；其他座位在 GamePowerCmd 中直接 onClearGray。",
+     "uiInteraction": "本家参与操作的牌面正常，其余手牌变灰（MahColor.gray）；别家手牌不受影响。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:752",
+       "excerpt": "if (powerState.showChi && comb.flag === BoxMahDefine.CombType.CMF_CHOW) {\n                for (const mah of comb.mahs ?? []) {\n                    pushUnique(mah);"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:783",
+       "excerpt": "this._selfHand.setGrayValues(grayValues);"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePowerCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePowerCmd.ts:102",
+       "excerpt": "this.dispatch(GameEventBoxHzmj.onClearGray);"
+      }
+     ],
+     "messages": [
+      "MsgPower"
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C11-018",
+     "name": "摸入或补入的牌成杠时亮参与杠的牌",
+     "rule": "本次新摸入或补入的牌能组成暗杠或加杠，且同次无胡时，参与任一合法杠的手牌保持亮度，其余压暗。",
+     "uiRequirement": "参与任一合法杠的手牌保持亮度，其余压暗。",
+     "verdict": "confirmed",
+     "clientLogic": "_collectPowerBrightMahs 的杠分支把每个杠组合的 mahs[0] 加入亮牌值，_setHandGrayExceptGroup 保留该牌值全部张数亮起；走该分支的前提是 showHu 为假。",
+     "uiInteraction": "杠牌对应的四张同值手牌保持亮度，其他手牌压暗。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:757",
+       "excerpt": "if (powerState.showGang && this._isGangComb(comb.flag)) {\n                pushUnique(comb.mahs?.[0] ?? 0);\n            }"
+      }
+     ],
+     "messages": [
+      "MsgPower"
+     ],
+     "notes": "亮牌粒度为牌值而非具体槽位，同值多张会一起亮。"
+    },
+    {
+     "id": "AT-ST-C11-019",
+     "name": "杠组全为原有牌时保持当前亮度",
+     "rule": "可杠组只由原有的牌组成时，手牌保持当前亮度。",
+     "uiRequirement": "手牌保持当前亮度。",
+     "verdict": "confirmed",
+     "clientLogic": "_isGangOffMoCard 命中（摸牌位牌不参与任何杠）时 _updatePowerGray 早退 onClearGray 并清 selectChiCb，不做任何压暗。",
+     "uiInteraction": "手牌保持原有亮度，不吃碰杠候选压暗。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:713",
+       "excerpt": "if (this._isGangOffMoCard) {\n            this.onClearGray();\n            this._selfHand.selectChiCb = null;\n            return;\n        }"
+      }
+     ],
+     "messages": [
+      "MsgPower"
+     ],
+     "notes": ""
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C11-007",
+   "name": "多吃组合选择面板",
+   "description": "点【吃】后在手牌上方展开可选顺子，每组三张正面，点选一组即提交，点【取消】等同上行过。",
+   "scope": "覆盖 onBtnChi/showChooseChi/showMoreChiComb/_getChowMahRows 与 KW_GangGrps 动态选项池；牌面排序与取消按钮位置见 notes。",
+   "coordination": "点击【吃】 → 组合数 >1 时 showChooseChi → 动态创建 ChooseGang 选项 → 点击回调 onBtnChooseChi → sendChow。",
+   "atoms": [
+    {
+     "id": "AT-ST-C11-023",
+     "name": "展开可选顺子每组三张正面",
+     "rule": "多种吃法：点【吃】后，在手牌上方展开可选顺子，每组三张正面、按牌面从小到大，右侧为【取消】。",
+     "uiRequirement": "在手牌上方展开可选顺子，每组三张正面、按牌面从小到大，右侧为【取消】。",
+     "verdict": "partial",
+     "clientLogic": "showMoreChiComb 在 KW_GangGrps 内动态创建 ChooseGang 选项并补足三张牌槽，_fillChiChooseMahs 逐槽填牌面；组合顺序直接用服务端 comb.mahs，未在本地按牌面排序；【取消】是独立按钮节点，不在选项池内。",
+     "uiInteraction": "手牌上方横向排布多组三张顺子，选项外另有【取消】按钮。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:865",
+       "excerpt": "showMoreChiComb(mahs: number[][], callback: () => void): void {"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1031",
+       "excerpt": "private _getChowMahRows(): number[][] {\n        const rows: number[][] = [];"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:30",
+       "excerpt": "<component id=\"n123_prng\" name=\"KW_BTN_Cancel\" src=\"yngk6m\" fileName=\"component/EffectBtn.xml\" xy=\"1250,400\" group=\"n52_ev1d\">"
+      }
+     ],
+     "messages": [
+      "MsgPower",
+      "MsgChowC"
+     ],
+     "notes": "差异一：注释写「排序后展示完整顺子」，实际 _getChowMahRows 仅 slice 服务端数组，无排序。差异二：XML 中【取消】x=1250 位于选项池 KW_GangGrps(x=1590, pivot=1,0) 左侧，与模板「右侧为取消」不一致。"
+    },
+    {
+     "id": "AT-ST-C11-024",
+     "name": "原吃过退场手牌恢复常态亮度",
+     "rule": "原【吃】【过】退场，手牌恢复常态亮度。",
+     "uiRequirement": "原【吃】【过】退场，手牌恢复常态亮度。",
+     "verdict": "confirmed",
+     "clientLogic": "showChooseChi(true) 把 C_BtnState 切到「选择多杠」页并清空手牌灰度；吃/过按钮只在「碰杠胡」页显示，因此退场。",
+     "uiInteraction": "吃、过按钮消失，改为候选顺子与【取消】，手牌回到常态亮度。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1119",
+       "excerpt": "this._selfHand.setGrayValues({});"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:31",
+       "excerpt": "<gearDisplay controller=\"C_BtnState\" pages=\"5,12\"/>"
+      }
+     ],
+     "messages": [
+      "MsgPower"
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C11-025",
+     "name": "倒计时归零后面板仍可操作",
+     "rule": "倒计时归零后面板仍可操作。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "倒计时归零只停表并显示「00」，选择面板的 touchable 与点击回调不受时间限制，客户端无超时收起逻辑。",
+     "uiInteraction": "倒计时为「00」时顺子选项与【取消】仍可点。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:710",
+       "excerpt": "} else if (time == 0) {\n            clockStr.text = \"00\";"
+      }
+     ],
+     "messages": [
+      "MsgPower"
+     ],
+     "notes": "属「无超时禁用逻辑」的反向确认。"
+    },
+    {
+     "id": "AT-ST-C11-026",
+     "name": "取消放弃本次弃牌全部操作",
+     "rule": "点【取消】等于放弃自己对这张弃牌的全部操作，包括同时存在的胡。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "onBtnCancel 收起吃/杠面板后调用 onBtnGuo，统一上行 MsgCancel，等于放弃本次弃牌的全部操作（含胡）。",
+     "uiInteraction": "面板收起、按钮退场。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1177",
+       "excerpt": "this.onBtnGuo();"
+      }
+     ],
+     "messages": [
+      "MsgCancel"
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C11-027",
+     "name": "选中一组即提交",
+     "rule": "选中一组即提交。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "选项点击回调把当前索引写入 _chooseComb，转成 _chooseChi 后调用 onBtnChooseChi，取 GameData.getChowCombInfo 并 sendChow 提交。",
+     "uiInteraction": "点一组顺子立即提交，面板与按钮收起。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1113",
+       "excerpt": "this.showMoreChiComb(this._getChowMahRows(), () => {\n                this._chooseChi = this._chooseComb;\n                this.onBtnChooseChi();\n            });"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1102",
+       "excerpt": "GameController.instance.sendChow(comb);"
+      }
+     ],
+     "messages": [
+      "MsgChowC"
+     ],
+     "notes": ""
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C11-008",
+   "name": "多杠组合选择面板",
+   "description": "点【杠】收起杠/过并横向排列暗杠加杠候选，点一张候选只提交对应组，只有一组时直接提交，取消等同放弃本次行牌机会全部操作。",
+   "scope": "覆盖 onBtnGang/showChooseGang/showMoreGang 与 KW_GangGrpList；候选排序与取消位置见 notes。",
+   "coordination": "点击【杠】 → 组合数 >1 时 showChooseGang → showMoreGang 填列表 → 点击项 → onBtnChooseGang → sendKong。",
+   "atoms": [
+    {
+     "id": "AT-ST-C11-028",
+     "name": "点杠收起杠过并横向排列候选",
+     "rule": "多种暗杠或加杠：点【杠】后收起【杠】【过】，横向排列候选牌，最右为【取消】。",
+     "uiRequirement": "收起【杠】【过】，横向排列候选牌，最右为【取消】。",
+     "verdict": "partial",
+     "clientLogic": "showChooseGang 切到「选择多杠」页使杠/过按钮退场，showMoreGang 用 KW_GangGrpList 横向列表渲染候选牌并绑定点击；列表 align=right 贴右排布，【取消】为独立按钮。",
+     "uiInteraction": "候选牌横向排列，另有【取消】按钮。",
+     "evidence": [
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/GangGrps.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/GangGrps.xml:4",
+       "excerpt": "<list id=\"n95_lkxi\" name=\"KW_GangGrpList\" xy=\"16,12\" size=\"317,121\" layout=\"row\" colGap=\"8\" defaultItem=\"ui://hzmn2330lkxi85\" align=\"right\" vAlign=\"middle\" autoClearItems=\"true\">"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1170",
+       "excerpt": "this.view.KW_Main.KW_Handler.C_BtnState.selectedIndex = bShow ? BtnState.SELECT_GANG : BtnState.EMPTY;"
+      }
+     ],
+     "messages": [
+      "MsgPower",
+      "MsgKongC"
+     ],
+     "notes": "【取消】坐标 x=1250 在候选区域左端，与模板「最右为取消」不一致。"
+    },
+    {
+     "id": "AT-ST-C11-029",
+     "name": "暗杠加杠混排排序规则",
+     "rule": "暗杠与加杠混排，顺序为万、条、筒、东、南、西、北、中、发、白，同花色按点数升序。",
+     "uiRequirement": "顺序为万、条、筒、东、南、西、北、中、发、白，同花色按点数升序。",
+     "verdict": "not_found",
+     "clientLogic": "showMoreGang 直接按 MsgPower.combs 顺序渲染，客户端未做花色/点数排序。",
+     "uiInteraction": "",
+     "evidence": [],
+     "messages": [
+      "MsgPower"
+     ],
+     "notes": "候选顺序完全依赖服务端 combs 顺序，未找到本地排序实现；若需保证模板顺序需服务端排序。"
+    },
+    {
+     "id": "AT-ST-C11-030",
+     "name": "倒计时归零后仍可选择",
+     "rule": "倒计时归零后仍可选择。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "倒计时归零仅停表显示「00」，候选列表保持 touchable，无超时关闭逻辑。",
+     "uiInteraction": "「00」状态下候选项仍可点。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:710",
+       "excerpt": "} else if (time == 0) {"
+      }
+     ],
+     "messages": [
+      "MsgPower"
+     ],
+     "notes": "同 AT-ST-C11-025，属反向确认。"
+    },
+    {
+     "id": "AT-ST-C11-031",
+     "name": "取消放弃本次行牌机会全部操作",
+     "rule": "点【取消】等于放弃本次行牌机会里的全部操作，包括同时存在的自摸。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "onBtnCancel 关闭杠面板后调用 onBtnGuo 上行 MsgCancel，放弃本次全部操作。",
+     "uiInteraction": "面板收起、按钮退场。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1176",
+       "excerpt": "this.showChooseGang(false);\n        this.onBtnGuo();"
+      }
+     ],
+     "messages": [
+      "MsgCancel"
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C11-032",
+     "name": "点一张候选只提交对应组",
+     "rule": "点一张候选牌只提交对应的一组。",
+     "uiInteraction": "点某张候选即提交该组杠并收起面板。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "列表 CLICK_ITEM 回调把点击索引写入 _chooseGang 后调用 onBtnChooseGang，取 GameData.getKongCombInfo(_chooseGang) 精确提交该组。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:851",
+       "excerpt": "this._chooseGang = grp.KW_GangGrpList.getChildIndex(e);\n                this.onBtnChooseGang();"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1150",
+       "excerpt": "const comb = GameData.getKongCombInfo(this._chooseGang);"
+      }
+     ],
+     "messages": [
+      "MsgKongC"
+     ],
+     "notes": ""
+    },
+    {
+     "id": "AT-ST-C11-033",
+     "name": "只有一组时点杠直接提交",
+     "rule": "只有 1 组时，点【杠】直接提交。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "onBtnGang 在 _chooseGangLength > 1 时才展开候选面板，否则直接 onBtnChooseGang 提交第 0 组。",
+     "uiInteraction": "单击【杠】立即生效，不出现候选面板。",
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1140",
+       "excerpt": "onBtnGang(): void {\n        if (this._chooseGangLength > 1) {\n            this.showChooseGang(true);\n            return;\n        }\n        this.onBtnChooseGang();"
+      }
+     ],
+     "messages": [
+      "MsgKongC"
+     ],
+     "notes": ""
+    }
+   ]
+  }
+ ],
+ "partNo": 2,
+ "partTotal": 3,
+ "featureRange": [
+  5,
+  8
+ ]
+}

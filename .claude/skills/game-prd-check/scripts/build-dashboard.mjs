@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 // build-dashboard.mjs
 // 作用：解析 game-prd-check 生成的 report.md -> report.json（含校验）-> 注入模板生成离线单文件 dashboard HTML
-// 用法：node build-dashboard.mjs [report.md路径] [输出目录]
+// 用法：node build-dashboard.mjs [report.md路径] [输出目录] [--rtm <game run快照目录>] [--unified-rtm <统一RTM目录>]
+//   --rtm          读 run 快照（requirements-matrix.json + rule-catalog.json）渲染需求/规则覆盖 Tab
+//   --unified-rtm  读 rtm-merge 产物 rtm.json 渲染第 5 Tab「统一覆盖」（按 REQ 聚合三维度判定；缺 rtm.json 直接报错不静默替代）
 //       默认：<skill根>/../../../../examples/game-prd-check/report.md 与同名输出目录
 // 格式：自适应三种报告格式——
 //   skill 版：清单第二列为类型英文枚举（MISSING 等），详情块 `- 类型：`，45 条全有详情

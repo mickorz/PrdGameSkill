@@ -1,0 +1,3200 @@
+{
+ "generatedBy": "build-planner-trace.mjs（机械生成，不经 LLM 归纳）",
+ "scanPath": "spec-workflow\\output-spec\\2026-11-14\\1-spec\\runtime\\state\\scan.json",
+ "indexPath": "spec-workflow\\output-spec\\2026-11-14\\1-spec\\feature_index.json",
+ "indexSchemaVersion": 2,
+ "entryCount": 319,
+ "requiredCount": 319,
+ "entries": [
+  {
+   "atomId": "AT-ST-C01-001",
+   "sourceStage": "ST-C01",
+   "sourceRule": "首局四名玩家中随机坐庄。",
+   "plannerSection": "开局 > 定庄与轮庄",
+   "plannerPart": "part-03.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C01-002",
+   "sourceStage": "ST-C01",
+   "sourceRule": "掷骰、发牌前已经确定庄家。",
+   "plannerSection": "开局 > 定庄与轮庄",
+   "plannerPart": "part-03.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C01-003",
+   "sourceStage": "ST-C01",
+   "sourceRule": "有人胡牌时，下一小局由胡牌者坐庄。",
+   "plannerSection": "开局 > 定庄与轮庄",
+   "plannerPart": "part-03.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C01-004",
+   "sourceStage": "ST-C01",
+   "sourceRule": "庄家自己胡牌为连庄。",
+   "plannerSection": "开局 > 定庄与轮庄",
+   "plannerPart": "part-03.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C01-005",
+   "sourceStage": "ST-C01",
+   "sourceRule": "流局时原庄连庄。",
+   "plannerSection": "开局 > 定庄与轮庄",
+   "plannerPart": "part-03.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C01-006",
+   "sourceStage": "ST-C01",
+   "sourceRule": "首庄、新庄、连庄都是三牢。",
+   "plannerSection": "开局 > 定庄与轮庄",
+   "plannerPart": "part-03.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C01-007",
+   "sourceStage": "ST-C01",
+   "sourceRule": "庄闲倍数固定 8 倍。",
+   "plannerSection": "开局 > 定庄与轮庄",
+   "plannerPart": "part-03.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C01-008",
+   "sourceStage": "ST-C01",
+   "sourceRule": "三牢不再增加。",
+   "plannerSection": "开局 > 定庄与轮庄",
+   "plannerPart": "part-03.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C02-001",
+   "sourceStage": "ST-C02",
+   "sourceRule": "136 张牌中，万、条、筒三门数牌各 36 张（每门 9 种牌值，每种 4 张）。",
+   "plannerSection": "开局 > 财神与牌组",
+   "plannerPart": "part-04.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C02-002",
+   "sourceStage": "ST-C02",
+   "sourceRule": "136 张牌中，东南西北四张风牌共 16 张（4 种，每种 4 张）。",
+   "plannerSection": "开局 > 财神与牌组",
+   "plannerPart": "part-04.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C02-003",
+   "sourceStage": "ST-C02",
+   "sourceRule": "136 张牌中，中、发、白三张箭牌共 12 张（3 种，每种 4 张）。",
+   "plannerSection": "开局 > 财神与牌组",
+   "plannerPart": "part-04.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C02-004",
+   "sourceStage": "ST-C02",
+   "sourceRule": "白板固定为财神，即本局财神牌值就是白板。",
+   "plannerSection": "开局 > 财神与牌组",
+   "plannerPart": "part-04.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C02-005",
+   "sourceStage": "ST-C02",
+   "sourceRule": "牌组中的四张白板全部都是财神，没有“某一张才算法财神”的区分。",
+   "plannerSection": "开局 > 财神与牌组",
+   "plannerPart": "part-04.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C02-006",
+   "sourceStage": "ST-C02",
+   "sourceRule": "轮到自己出牌时可以打出财神，与普通牌一样作为弃牌打出。",
+   "plannerSection": "开局 > 财神与牌组",
+   "plannerPart": "part-04.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C02-007",
+   "sourceStage": "ST-C02",
+   "sourceRule": "打出财神没有前置状态限制，不要求玩家当前已经处于爆头状态。",
+   "plannerSection": "开局 > 财神与牌组",
+   "plannerPart": "part-04.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C02-008",
+   "sourceStage": "ST-C02",
+   "sourceRule": "财神打出后按普通白板的形态留在牌河，不再作为财神参与后续牌局。",
+   "plannerSection": "开局 > 财神与牌组",
+   "plannerPart": "part-04.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C02-009",
+   "sourceStage": "ST-C02",
+   "sourceRule": "其他玩家不能吃打出的白板财神。",
+   "plannerSection": "开局 > 财神与牌组",
+   "plannerPart": "part-04.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C02-010",
+   "sourceStage": "ST-C02",
+   "sourceRule": "其他玩家不能碰打出的白板财神。",
+   "plannerSection": "开局 > 财神与牌组",
+   "plannerPart": "part-04.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C02-011",
+   "sourceStage": "ST-C02",
+   "sourceRule": "其他玩家不能杠打出的白板财神。",
+   "plannerSection": "开局 > 财神与牌组",
+   "plannerPart": "part-04.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C02-012",
+   "sourceStage": "ST-C02",
+   "sourceRule": "打出的白板财神不能被其他玩家用来点炮胡，即它不作为点炮牌。",
+   "plannerSection": "开局 > 财神与牌组",
+   "plannerPart": "part-04.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C03-001",
+   "sourceStage": "ST-C03",
+   "sourceRule": "从牌墙头部、庄家起、按逆时针发牌。",
+   "plannerSection": "开局 > 发牌",
+   "plannerPart": "part-05.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C03-002",
+   "sourceStage": "ST-C03",
+   "sourceRule": "每人 4 张，发 3 轮，各 12 张。",
+   "plannerSection": "开局 > 发牌",
+   "plannerPart": "part-05.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C03-003",
+   "sourceStage": "ST-C03",
+   "sourceRule": "再每人 1 张，各 13 张。",
+   "plannerSection": "开局 > 发牌",
+   "plannerPart": "part-05.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C03-004",
+   "sourceStage": "ST-C03",
+   "sourceRule": "再给庄家 1 张。庄家 14 张，三名闲家各 13 张。",
+   "plannerSection": "开局 > 发牌",
+   "plannerPart": "part-05.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C03-005",
+   "sourceStage": "ST-C03",
+   "sourceRule": "共发出 53 张。",
+   "plannerSection": "开局 > 发牌",
+   "plannerPart": "part-05.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C03-006",
+   "sourceStage": "ST-C03",
+   "sourceRule": "余 83 张。",
+   "plannerSection": "开局 > 发牌",
+   "plannerPart": "part-05.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C03-007",
+   "sourceStage": "ST-C03",
+   "sourceRule": "庄家用这 14 张直接进入首轮。",
+   "plannerSection": "开局 > 发牌",
+   "plannerPart": "part-05.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C03-008",
+   "sourceStage": "ST-C03",
+   "sourceRule": "庄家不再摸牌。",
+   "plannerSection": "开局 > 发牌",
+   "plannerPart": "part-05.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C03-009",
+   "sourceStage": "ST-C03",
+   "sourceRule": "理牌后若已满足自摸，立即给出【自摸】。",
+   "plannerSection": "开局 > 发牌",
+   "plannerPart": "part-05.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C03-010",
+   "sourceStage": "ST-C03",
+   "sourceRule": "同时给出【过】。",
+   "plannerSection": "开局 > 发牌",
+   "plannerPart": "part-05.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C03-011",
+   "sourceStage": "ST-C03",
+   "sourceRule": "爆头按其余 13 张判断。",
+   "plannerSection": "开局 > 发牌",
+   "plannerPart": "part-05.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C03-012",
+   "sourceStage": "ST-C03",
+   "sourceRule": "七客按其余 13 张判断。",
+   "plannerSection": "开局 > 发牌",
+   "plannerPart": "part-05.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C04-001",
+   "sourceStage": "ST-C04",
+   "sourceRule": "对同一张弃牌，可响应操作的优先级为：点炮胡最高，碰与直杠次之，吃最低。",
+   "plannerSection": "行牌 > 操作优先级",
+   "plannerPart": "part-06.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C04-002",
+   "sourceStage": "ST-C04",
+   "sourceRule": "碰与直杠属于同一优先级，彼此不分先后高低。",
+   "plannerSection": "行牌 > 操作优先级",
+   "plannerPart": "part-06.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C04-003",
+   "sourceStage": "ST-C04",
+   "sourceRule": "多名玩家同时能对同一张弃牌碰或直杠时，不区分是碰还是直杠，按座位号小的先裁决。",
+   "plannerSection": "行牌 > 操作优先级",
+   "plannerPart": "part-06.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C04-004",
+   "sourceStage": "ST-C04",
+   "sourceRule": "碰与直杠的可操作权限只下发给当前确实能成立、且在可成立者中座位号最小的那一家。",
+   "plannerSection": "行牌 > 操作优先级",
+   "plannerPart": "part-06.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C04-005",
+   "sourceStage": "ST-C04",
+   "sourceRule": "多名玩家对同一张弃牌都能胡时，每一家都会收到胡的操作提示。",
+   "plannerSection": "行牌 > 操作优先级",
+   "plannerPart": "part-06.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C04-006",
+   "sourceStage": "ST-C04",
+   "sourceRule": "多人可胡时，若距离出牌者更近的一家胡牌成立，更远一家的胡不再成立。",
+   "plannerSection": "行牌 > 操作优先级",
+   "plannerPart": "part-06.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C04-007",
+   "sourceStage": "ST-C04",
+   "sourceRule": "更近的一家选择放弃后，更远一家的胡仍然可以成立。",
+   "plannerSection": "行牌 > 操作优先级",
+   "plannerPart": "part-06.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C04-008",
+   "sourceStage": "ST-C04",
+   "sourceRule": "同一张弃牌只允许一人胡牌，不出现一炮多响。",
+   "plannerSection": "行牌 > 操作优先级",
+   "plannerPart": "part-06.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C04-009",
+   "sourceStage": "ST-C04",
+   "sourceRule": "多人可胡时，从出牌者起沿逆时针方向，距离最近的可胡者优先。",
+   "plannerSection": "行牌 > 操作优先级",
+   "plannerPart": "part-06.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C04-010",
+   "sourceStage": "ST-C04",
+   "sourceRule": "距离最近的可胡者放弃后，胡牌资格顺延给下一位可胡者。",
+   "plannerSection": "行牌 > 操作优先级",
+   "plannerPart": "part-06.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C04-011",
+   "sourceStage": "ST-C04",
+   "sourceRule": "低优先级操作先提交时不会立即执行，需先等待全部更高优先级的玩家手动放弃后才执行。",
+   "plannerSection": "行牌 > 操作优先级",
+   "plannerPart": "part-06.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C04-012",
+   "sourceStage": "ST-C04",
+   "sourceRule": "更高优先级的操作一旦成立，其他玩家的响应一律取消。",
+   "plannerSection": "行牌 > 操作优先级",
+   "plannerPart": "part-06.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C04-013",
+   "sourceStage": "ST-C04",
+   "sourceRule": "吃牌只能使用上家（本家逆时针方向上一家）刚打出的牌。",
+   "plannerSection": "行牌 > 操作优先级",
+   "plannerPart": "part-06.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-001",
+   "sourceStage": "ST-C05",
+   "sourceRule": "风牌、箭牌不能做顺子，不能吃。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-002",
+   "sourceStage": "ST-C05",
+   "sourceRule": "风牌、箭牌不是财神时可以碰、杠。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-003",
+   "sourceStage": "ST-C05",
+   "sourceRule": "上家刚打出的 1 张非财神，与手中 2 张非财神组成同花色连续顺子。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-004",
+   "sourceStage": "ST-C05",
+   "sourceRule": "多种合法组合时选 1 组。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-005",
+   "sourceStage": "ST-C05",
+   "sourceRule": "吃成功后不摸牌，进入出牌。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-006",
+   "sourceStage": "ST-C05",
+   "sourceRule": "吃成立的当前回合可以加杠或暗杠。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-007",
+   "sourceStage": "ST-C05",
+   "sourceRule": "任意他人刚打出的 1 张非财神，与手中 2 张相同非财神组成刻子。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-008",
+   "sourceStage": "ST-C05",
+   "sourceRule": "手中有 3 张也只用 2 张。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-009",
+   "sourceStage": "ST-C05",
+   "sourceRule": "碰成功后不摸牌，进入出牌。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-010",
+   "sourceStage": "ST-C05",
+   "sourceRule": "碰成立的当前回合可以加杠或暗杠。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-011",
+   "sourceStage": "ST-C05",
+   "sourceRule": "他人刚打出的 1 张非财神，与手中 3 张相同非财神。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-012",
+   "sourceStage": "ST-C05",
+   "sourceRule": "直杠按优先级裁决后成立。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-013",
+   "sourceStage": "ST-C05",
+   "sourceRule": "直杠成立后从牌墙尾部补牌。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-014",
+   "sourceStage": "ST-C05",
+   "sourceRule": "出牌阶段，已碰出的刻子手里有第 4 张非财神。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-015",
+   "sourceStage": "ST-C05",
+   "sourceRule": "加杠先征求抢杠胡；有人抢杠胡则加杠不成立、不补牌。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-016",
+   "sourceStage": "ST-C05",
+   "sourceRule": "无人胡再完成加杠并补牌。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-017",
+   "sourceStage": "ST-C05",
+   "sourceRule": "出牌阶段手中 4 张相同非财神，完成后补牌。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-018",
+   "sourceStage": "ST-C05",
+   "sourceRule": "暗杠下层 3 张牌背、顶张正面，四家都能认出牌面。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-019",
+   "sourceStage": "ST-C05",
+   "sourceRule": "暗杠放在碰杠区，但不计副露。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-020",
+   "sourceStage": "ST-C05",
+   "sourceRule": "吃或碰刚成立的当前回合，同样可以加杠、暗杠。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-021",
+   "sourceStage": "ST-C05",
+   "sourceRule": "四张相同就可以杠。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-022",
+   "sourceStage": "ST-C05",
+   "sourceRule": "杠完这条就不再按七对结算。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-023",
+   "sourceStage": "ST-C05",
+   "sourceRule": "受尚未解除的飘财限制时，不能吃。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-024",
+   "sourceStage": "ST-C05",
+   "sourceRule": "受尚未解除的飘财限制时，不能碰。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-025",
+   "sourceStage": "ST-C05",
+   "sourceRule": "受尚未解除的飘财限制时，不能直杠。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-026",
+   "sourceStage": "ST-C05",
+   "sourceRule": "受尚未解除的飘财限制时，不能加杠。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-027",
+   "sourceStage": "ST-C05",
+   "sourceRule": "受尚未解除的飘财限制时，仍可暗杠。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C05-028",
+   "sourceStage": "ST-C05",
+   "sourceRule": "暗杠后只能打尾墩刚补进的那一张。",
+   "plannerSection": "行牌 > 吃、碰、杠",
+   "plannerPart": "part-07.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C06-001",
+   "sourceStage": "ST-C06",
+   "sourceRule": "每次杠从牌墙尾部补 1 张。",
+   "plannerSection": "行牌 > 杠后补牌",
+   "plannerPart": "part-08.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C06-002",
+   "sourceStage": "ST-C06",
+   "sourceRule": "杠补牌后牌墙余牌减 1。",
+   "plannerSection": "行牌 > 杠后补牌",
+   "plannerPart": "part-08.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C06-003",
+   "sourceStage": "ST-C06",
+   "sourceRule": "牌墙少于 21 张不能杠。",
+   "plannerSection": "行牌 > 杠后补牌",
+   "plannerPart": "part-08.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C06-004",
+   "sourceStage": "ST-C06",
+   "sourceRule": "剩 20 张及以下时，下一次摸牌前黄庄。",
+   "plannerSection": "行牌 > 杠后补牌",
+   "plannerPart": "part-08.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C06-005",
+   "sourceStage": "ST-C06",
+   "sourceRule": "杠后可以继续杠。",
+   "plannerSection": "行牌 > 杠后补牌",
+   "plannerPart": "part-08.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C06-006",
+   "sourceStage": "ST-C06",
+   "sourceRule": "杠后继续杠时，每次重新检查牌墙不少于 21 张。",
+   "plannerSection": "行牌 > 杠后补牌",
+   "plannerPart": "part-08.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C06-007",
+   "sourceStage": "ST-C06",
+   "sourceRule": "补牌可以自摸。",
+   "plannerSection": "行牌 > 杠后补牌",
+   "plannerPart": "part-08.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C06-008",
+   "sourceStage": "ST-C06",
+   "sourceRule": "补牌后不胡则继续杠或打出 1 张。",
+   "plannerSection": "行牌 > 杠后补牌",
+   "plannerPart": "part-08.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C06-009",
+   "sourceStage": "ST-C06",
+   "sourceRule": "明杠使杠链加 1。",
+   "plannerSection": "行牌 > 杠后补牌",
+   "plannerPart": "part-08.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C06-010",
+   "sourceStage": "ST-C06",
+   "sourceRule": "暗杠使杠链加 1。",
+   "plannerSection": "行牌 > 杠后补牌",
+   "plannerPart": "part-08.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C06-011",
+   "sourceStage": "ST-C06",
+   "sourceRule": "加杠使杠链加 1。",
+   "plannerSection": "行牌 > 杠后补牌",
+   "plannerPart": "part-08.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C06-012",
+   "sourceStage": "ST-C06",
+   "sourceRule": "吃、碰使杠链归零。",
+   "plannerSection": "行牌 > 杠后补牌",
+   "plannerPart": "part-08.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C06-013",
+   "sourceStage": "ST-C06",
+   "sourceRule": "打出非财神牌使杠链归零。",
+   "plannerSection": "行牌 > 杠后补牌",
+   "plannerPart": "part-08.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C06-014",
+   "sourceStage": "ST-C06",
+   "sourceRule": "打出财神但打出后不再敲响，杠链归零。",
+   "plannerSection": "行牌 > 杠后补牌",
+   "plannerPart": "part-08.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C07-001",
+   "sourceStage": "ST-C07",
+   "sourceRule": "常规摸牌后在出牌前胡牌（自摸）。",
+   "plannerSection": "行牌 > 自摸、放铳、抢杠胡",
+   "plannerPart": "part-09.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C07-002",
+   "sourceStage": "ST-C07",
+   "sourceRule": "杠后补牌后在出牌前胡牌（自摸）。",
+   "plannerSection": "行牌 > 自摸、放铳、抢杠胡",
+   "plannerPart": "part-09.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C07-003",
+   "sourceStage": "ST-C07",
+   "sourceRule": "庄家起手的第 14 张牌，在出牌前胡牌（自摸）。",
+   "plannerSection": "行牌 > 自摸、放铳、抢杠胡",
+   "plannerPart": "part-09.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C07-004",
+   "sourceStage": "ST-C07",
+   "sourceRule": "自摸的常规结构是 4 组面子加 1 组对子。",
+   "plannerSection": "行牌 > 自摸、放铳、抢杠胡",
+   "plannerPart": "part-09.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C07-005",
+   "sourceStage": "ST-C07",
+   "sourceRule": "本期固定采用庄闲放铳。",
+   "plannerSection": "行牌 > 自摸、放铳、抢杠胡",
+   "plannerPart": "part-09.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C07-006",
+   "sourceStage": "ST-C07",
+   "sourceRule": "当局是三牢时，点炮胡才成立。",
+   "plannerSection": "行牌 > 自摸、放铳、抢杠胡",
+   "plannerPart": "part-09.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C07-007",
+   "sourceStage": "ST-C07",
+   "sourceRule": "出牌者与胡牌者正好一边是庄、一边是闲，同时牌型合法，才能点炮胡。",
+   "plannerSection": "行牌 > 自摸、放铳、抢杠胡",
+   "plannerPart": "part-09.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C07-008",
+   "sourceStage": "ST-C07",
+   "sourceRule": "庄家打出的牌只有闲家可胡。",
+   "plannerSection": "行牌 > 自摸、放铳、抢杠胡",
+   "plannerPart": "part-09.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C07-009",
+   "sourceStage": "ST-C07",
+   "sourceRule": "闲家打出的牌只有庄家可胡。",
+   "plannerSection": "行牌 > 自摸、放铳、抢杠胡",
+   "plannerPart": "part-09.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C07-010",
+   "sourceStage": "ST-C07",
+   "sourceRule": "未形成庄闲关系时只能自摸。",
+   "plannerSection": "行牌 > 自摸、放铳、抢杠胡",
+   "plannerPart": "part-09.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C07-011",
+   "sourceStage": "ST-C07",
+   "sourceRule": "点炮胡只由放铳者赔付。",
+   "plannerSection": "行牌 > 自摸、放铳、抢杠胡",
+   "plannerPart": "part-09.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C07-012",
+   "sourceStage": "ST-C07",
+   "sourceRule": "与放铳相同，只有三牢的庄闲之间可以抢杠胡。",
+   "plannerSection": "行牌 > 自摸、放铳、抢杠胡",
+   "plannerPart": "part-09.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C07-013",
+   "sourceStage": "ST-C07",
+   "sourceRule": "所加的第 4 张牌须使响应者合法胡牌。",
+   "plannerSection": "行牌 > 自摸、放铳、抢杠胡",
+   "plannerPart": "part-09.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C07-014",
+   "sourceStage": "ST-C07",
+   "sourceRule": "只由被抢的加杠者按放铳赔付。",
+   "plannerSection": "行牌 > 自摸、放铳、抢杠胡",
+   "plannerPart": "part-09.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C07-015",
+   "sourceStage": "ST-C07",
+   "sourceRule": "抢杠胡只由被抢的加杠者赔付，其他人不付。",
+   "plannerSection": "行牌 > 自摸、放铳、抢杠胡",
+   "plannerPart": "part-09.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C08-001",
+   "sourceStage": "ST-C08",
+   "sourceRule": "全场同时只有一个飘财窗口。",
+   "plannerSection": "行牌 > 飘财",
+   "plannerPart": "part-10.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C08-002",
+   "sourceStage": "ST-C08",
+   "sourceRule": "打出财神的玩家成为所有者，限制另外三家。",
+   "plannerSection": "行牌 > 飘财",
+   "plannerPart": "part-10.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C08-003",
+   "sourceStage": "ST-C08",
+   "sourceRule": "之后再有人打出财神，窗口直接换到这个人，不叠加。",
+   "plannerSection": "行牌 > 飘财",
+   "plannerPart": "part-10.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C08-004",
+   "sourceStage": "ST-C08",
+   "sourceRule": "受限玩家若被逼打出刚摸到的财神，窗口就转到他身上。",
+   "plannerSection": "行牌 > 飘财",
+   "plannerPart": "part-10.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C08-005",
+   "sourceStage": "ST-C08",
+   "sourceRule": "受限时可以胡牌和暗杠。",
+   "plannerSection": "行牌 > 飘财",
+   "plannerPart": "part-10.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C08-006",
+   "sourceStage": "ST-C08",
+   "sourceRule": "受限时不能吃、碰、直杠、加杠。",
+   "plannerSection": "行牌 > 飘财",
+   "plannerPart": "part-10.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C08-007",
+   "sourceStage": "ST-C08",
+   "sourceRule": "受限时只能打刚摸进或最新补进的那一张。",
+   "plannerSection": "行牌 > 飘财",
+   "plannerPart": "part-10.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C08-008",
+   "sourceStage": "ST-C08",
+   "sourceRule": "其余手牌压暗，只在自己界面显示。",
+   "plannerSection": "行牌 > 飘财",
+   "plannerPart": "part-10.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C08-009",
+   "sourceStage": "ST-C08",
+   "sourceRule": "这份限制盖过吃碰禁手。",
+   "plannerSection": "行牌 > 飘财",
+   "plannerPart": "part-10.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C08-010",
+   "sourceStage": "ST-C08",
+   "sourceRule": "所有者自己下一次出牌时先关掉窗口。",
+   "plannerSection": "行牌 > 飘财",
+   "plannerPart": "part-10.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C08-011",
+   "sourceStage": "ST-C08",
+   "sourceRule": "这张若又是财神，立刻重开。",
+   "plannerSection": "行牌 > 飘财",
+   "plannerPart": "part-10.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C08-012",
+   "sourceStage": "ST-C08",
+   "sourceRule": "飘档只在打出财神、且打出后手牌仍然敲响时加 1。",
+   "plannerSection": "行牌 > 飘财",
+   "plannerPart": "part-10.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C08-013",
+   "sourceStage": "ST-C08",
+   "sourceRule": "没敲响就打财神，飘档和杠链都归零。",
+   "plannerSection": "行牌 > 飘财",
+   "plannerPart": "part-10.md",
+   "evidenceCount": 1,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C08-014",
+   "sourceStage": "ST-C08",
+   "sourceRule": "打出普通牌同样归零。",
+   "plannerSection": "行牌 > 飘财",
+   "plannerPart": "part-10.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C08-015",
+   "sourceStage": "ST-C08",
+   "sourceRule": "各家飘档独立。",
+   "plannerSection": "行牌 > 飘财",
+   "plannerPart": "part-10.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C08-016",
+   "sourceStage": "ST-C08",
+   "sourceRule": "吃、碰、杠不清飘档。",
+   "plannerSection": "行牌 > 飘财",
+   "plannerPart": "part-10.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C08-017",
+   "sourceStage": "ST-C08",
+   "sourceRule": "吃和碰会清杠链。",
+   "plannerSection": "行牌 > 飘财",
+   "plannerPart": "part-10.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C08-018",
+   "sourceStage": "ST-C08",
+   "sourceRule": "飘次数本局累加，小局重置时清掉。",
+   "plannerSection": "行牌 > 飘财",
+   "plannerPart": "part-10.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C08-019",
+   "sourceStage": "ST-C08",
+   "sourceRule": "次数大于 0 时，在该座位碰杠位播放「飘」字。",
+   "plannerSection": "行牌 > 飘财",
+   "plannerPart": "part-10.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C08-020",
+   "sourceStage": "ST-C08",
+   "sourceRule": "没有常驻标签。",
+   "plannerSection": "行牌 > 飘财",
+   "plannerPart": "part-10.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C09-001",
+   "sourceStage": "ST-C09",
+   "sourceRule": "杠上开花 / 二连杠 / 三连杠 / 四连杠分别对应自摸时杠链为 1 / 2 / 3 / 4 及以上。",
+   "plannerSection": "行牌 > 杠开、杠飘、飘杠",
+   "plannerPart": "part-11.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C09-002",
+   "sourceStage": "ST-C09",
+   "sourceRule": "杠链 1 / 2 / 3 / 4 及以上对应倍数 2 / 4 / 8 / 16。",
+   "plannerSection": "行牌 > 杠开、杠飘、飘杠",
+   "plannerPart": "part-11.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C09-003",
+   "sourceStage": "ST-C09",
+   "sourceRule": "杠开成立的前提是自摸（自摸且杠链为 N）。",
+   "plannerSection": "行牌 > 杠开、杠飘、飘杠",
+   "plannerPart": "part-11.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C09-004",
+   "sourceStage": "ST-C09",
+   "sourceRule": "四连杠及以上都记 16 倍（不再随杠链继续升档）。",
+   "plannerSection": "行牌 > 杠开、杠飘、飘杠",
+   "plannerPart": "part-11.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C09-005",
+   "sourceStage": "ST-C09",
+   "sourceRule": "杠链已断后再胡，不是杠开。",
+   "plannerSection": "行牌 > 杠开、杠飘、飘杠",
+   "plannerPart": "part-11.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C09-006",
+   "sourceStage": "ST-C09",
+   "sourceRule": "杠飘、飘杠只在同时命中杠上开花和财飘时拆出。",
+   "plannerSection": "行牌 > 杠开、杠飘、飘杠",
+   "plannerPart": "part-11.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C09-007",
+   "sourceStage": "ST-C09",
+   "sourceRule": "杠飘、飘杠倍数为 8。",
+   "plannerSection": "行牌 > 杠开、杠飘、飘杠",
+   "plannerPart": "part-11.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C09-008",
+   "sourceStage": "ST-C09",
+   "sourceRule": "杠飘、飘杠倍数为 8，再乘上基础番。",
+   "plannerSection": "行牌 > 杠开、杠飘、飘杠",
+   "plannerPart": "part-11.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C09-009",
+   "sourceStage": "ST-C09",
+   "sourceRule": "杠发生时飘档已经大于 0，记飘杠。",
+   "plannerSection": "行牌 > 杠开、杠飘、飘杠",
+   "plannerPart": "part-11.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C09-010",
+   "sourceStage": "ST-C09",
+   "sourceRule": "杠发生时飘档未大于 0（即 0），记杠飘。",
+   "plannerSection": "行牌 > 杠开、杠飘、飘杠",
+   "plannerPart": "part-11.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C09-011",
+   "sourceStage": "ST-C09",
+   "sourceRule": "二连杠、双财飘及更高档不拆，仍按各组连乘。",
+   "plannerSection": "行牌 > 杠开、杠飘、飘杠",
+   "plannerPart": "part-11.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C09-012",
+   "sourceStage": "ST-C09",
+   "sourceRule": "没有单独的杠爆、七客。",
+   "plannerSection": "行牌 > 杠开、杠飘、飘杠",
+   "plannerPart": "part-11.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C10-001",
+   "sourceStage": "ST-C10",
+   "sourceRule": "用间隔一张的两张吃中间张：只禁被吃的那一张。用 1、3 吃 2，禁打 2。",
+   "plannerSection": "行牌 > 吃碰禁手",
+   "plannerPart": "part-12.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C10-002",
+   "sourceStage": "ST-C10",
+   "sourceRule": "用相邻两张吃一端：禁打这两张在 1 至 9 内两端能接成顺子的牌。用 2、3 吃 1 或吃 4，都禁 1 和 4。",
+   "plannerSection": "行牌 > 吃碰禁手",
+   "plannerPart": "part-12.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C10-003",
+   "sourceStage": "ST-C10",
+   "sourceRule": "用 1、2 吃 3，只禁 3。",
+   "plannerSection": "行牌 > 吃碰禁手",
+   "plannerPart": "part-12.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C10-004",
+   "sourceStage": "ST-C10",
+   "sourceRule": "手上两张相差 1 时，禁吃进的那张和另一侧延伸的那张。",
+   "plannerSection": "行牌 > 吃碰禁手",
+   "plannerPart": "part-12.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C10-005",
+   "sourceStage": "ST-C10",
+   "sourceRule": "1、9 外侧不是牌，实际只禁吃进的一张。",
+   "plannerSection": "行牌 > 吃碰禁手",
+   "plannerPart": "part-12.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C10-006",
+   "sourceStage": "ST-C10",
+   "sourceRule": "相差不是 1 时，只禁吃进的那张。",
+   "plannerSection": "行牌 > 吃碰禁手",
+   "plannerPart": "part-12.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C10-007",
+   "sourceStage": "ST-C10",
+   "sourceRule": "吃或碰成立后，同牌面的手牌全部禁打，直到本次限制解除。",
+   "plannerSection": "行牌 > 吃碰禁手",
+   "plannerPart": "part-12.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C10-008",
+   "sourceStage": "ST-C10",
+   "sourceRule": "碰成立后，禁打与被碰牌相同的牌。",
+   "plannerSection": "行牌 > 吃碰禁手",
+   "plannerPart": "part-12.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C10-009",
+   "sourceStage": "ST-C10",
+   "sourceRule": "只按最终选定的一组写禁张。",
+   "plannerSection": "行牌 > 吃碰禁手",
+   "plannerPart": "part-12.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C10-010",
+   "sourceStage": "ST-C10",
+   "sourceRule": "禁张不含财神，吃完仍可打财神。",
+   "plannerSection": "行牌 > 吃碰禁手",
+   "plannerPart": "part-12.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C10-011",
+   "sourceStage": "ST-C10",
+   "sourceRule": "吃完后剩余手牌全部落在禁张里的吃法不能吃。",
+   "plannerSection": "行牌 > 吃碰禁手",
+   "plannerPart": "part-12.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C10-012",
+   "sourceStage": "ST-C10",
+   "sourceRule": "本家提示「吃禁手规则生效中」。",
+   "plannerSection": "行牌 > 吃碰禁手",
+   "plannerPart": "part-12.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C10-013",
+   "sourceStage": "ST-C10",
+   "sourceRule": "禁打牌压暗，牌面仍可辨认。",
+   "plannerSection": "行牌 > 吃碰禁手",
+   "plannerPart": "part-12.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C10-014",
+   "sourceStage": "ST-C10",
+   "sourceRule": "禁打牌压暗只在本家界面显示。",
+   "plannerSection": "行牌 > 吃碰禁手",
+   "plannerPart": "part-12.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C10-015",
+   "sourceStage": "ST-C10",
+   "sourceRule": "其他家只看到牌背。",
+   "plannerSection": "行牌 > 吃碰禁手",
+   "plannerPart": "part-12.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C10-016",
+   "sourceStage": "ST-C10",
+   "sourceRule": "这些牌仍能提起，也能横滑出虚影。",
+   "plannerSection": "行牌 > 吃碰禁手",
+   "plannerPart": "part-12.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C10-017",
+   "sourceStage": "ST-C10",
+   "sourceRule": "单击、双击或松手打出时弹出「该牌被禁打」。",
+   "plannerSection": "行牌 > 吃碰禁手",
+   "plannerPart": "part-12.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C10-018",
+   "sourceStage": "ST-C10",
+   "sourceRule": "牌不进牌河。",
+   "plannerSection": "行牌 > 吃碰禁手",
+   "plannerPart": "part-12.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C10-019",
+   "sourceStage": "ST-C10",
+   "sourceRule": "打出一张合法牌后，服务端清空禁张。",
+   "plannerSection": "行牌 > 吃碰禁手",
+   "plannerPart": "part-12.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C10-020",
+   "sourceStage": "ST-C10",
+   "sourceRule": "同一回合再杠不清空。",
+   "plannerSection": "行牌 > 吃碰禁手",
+   "plannerPart": "part-12.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C10-021",
+   "sourceStage": "ST-C10",
+   "sourceRule": "补进的牌若牌值仍在禁张里，也不能打。",
+   "plannerSection": "行牌 > 吃碰禁手",
+   "plannerPart": "part-12.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-001",
+   "sourceStage": "ST-C11",
+   "sourceRule": "只有当前拿到出牌权、且目标牌可打的玩家能出牌。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-002",
+   "sourceStage": "ST-C11",
+   "sourceRule": "等待他人响应时不能出牌。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-003",
+   "sourceStage": "ST-C11",
+   "sourceRule": "正在选择组合时不能出牌。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-004",
+   "sourceStage": "ST-C11",
+   "sourceRule": "杠后尚未补牌或本小局已经结束时，不能出牌。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-005",
+   "sourceStage": "ST-C11",
+   "sourceRule": "本小局已经结束时，不能出牌。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-006",
+   "sourceStage": "ST-C11",
+   "sourceRule": "弃牌可被吃、碰、直杠或点炮胡时，先裁决。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-007",
+   "sourceStage": "ST-C11",
+   "sourceRule": "成立后各端从牌河取走该牌。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-008",
+   "sourceStage": "ST-C11",
+   "sourceRule": "并清除它的浮标和放大显示。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-009",
+   "sourceStage": "ST-C11",
+   "sourceRule": "全部放弃则牌留在牌河，再轮到下家摸牌。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-010",
+   "sourceStage": "ST-C11",
+   "sourceRule": "【自摸】还在，或本次杠提示必须先过时，双击或滑动出牌会被拦住。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-011",
+   "sourceStage": "ST-C11",
+   "sourceRule": "只在本家显示「点“过”才能出牌」。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 1,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-012",
+   "sourceStage": "ST-C11",
+   "sourceRule": "须先点【过】。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-013",
+   "sourceStage": "ST-C11",
+   "sourceRule": "例外：可杠的只是摸牌或补牌之前已经拿在手里的暗杠，可以直接出牌。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-014",
+   "sourceStage": "ST-C11",
+   "sourceRule": "碰之后又能杠的，仍须先过。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-015",
+   "sourceStage": "ST-C11",
+   "sourceRule": "点【过】只放弃这一次提示，收起本次按钮和预览。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-016",
+   "sourceStage": "ST-C11",
+   "sourceRule": "之后别人再打出相同牌，按新弃牌重新判断。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 1,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-017",
+   "sourceStage": "ST-C11",
+   "sourceRule": "放弃杠后，同一次操作机会内不再出现【杠】；下一次拿到操作机会再判断。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-018",
+   "sourceStage": "ST-C11",
+   "sourceRule": "有操作资格的玩家在自己手牌右上方看到对应按钮和【过】。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-019",
+   "sourceStage": "ST-C11",
+   "sourceRule": "按钮从左到右为【吃】【碰】【杠】【胡】，蓝色【过】固定在最右，只显示本次可做的项。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-020",
+   "sourceStage": "ST-C11",
+   "sourceRule": "【胡】或【自摸】左侧显示胡牌张和预览倍数。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-021",
+   "sourceStage": "ST-C11",
+   "sourceRule": "各端使用同一个响应倒计时，归零后按钮仍可点。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-022",
+   "sourceStage": "ST-C11",
+   "sourceRule": "能胡时整手保持正常亮度。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-023",
+   "sourceStage": "ST-C11",
+   "sourceRule": "不能胡时，只有参与当前吃、碰、直杠的牌保持亮度，其余压暗。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-024",
+   "sourceStage": "ST-C11",
+   "sourceRule": "压暗只在该玩家本端显示。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-025",
+   "sourceStage": "ST-C11",
+   "sourceRule": "本次新摸入或补入的牌能组成暗杠或加杠，且同次无胡时，参与任一合法杠的手牌保持亮度，其余压暗。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-026",
+   "sourceStage": "ST-C11",
+   "sourceRule": "可杠组只由原有的牌组成时，手牌保持当前亮度。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 1,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-027",
+   "sourceStage": "ST-C11",
+   "sourceRule": "较低优先级先提交时，本端收起自己的按钮并等待。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-028",
+   "sourceStage": "ST-C11",
+   "sourceRule": "更高优先级成立后，结束等待并取消该请求。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-029",
+   "sourceStage": "ST-C11",
+   "sourceRule": "更高优先级都放弃后，再执行已经提交的较低优先级请求。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-030",
+   "sourceStage": "ST-C11",
+   "sourceRule": "点【吃】后，在手牌上方展开可选顺子。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-031",
+   "sourceStage": "ST-C11",
+   "sourceRule": "每组三张正面、按牌面从小到大。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-032",
+   "sourceStage": "ST-C11",
+   "sourceRule": "右侧为【取消】。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-033",
+   "sourceStage": "ST-C11",
+   "sourceRule": "原【吃】【过】退场，手牌恢复常态亮度。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-034",
+   "sourceStage": "ST-C11",
+   "sourceRule": "倒计时归零后面板仍可操作。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 1,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-035",
+   "sourceStage": "ST-C11",
+   "sourceRule": "点【取消】等于放弃自己对这张弃牌的全部操作，包括同时存在的胡。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 1,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-036",
+   "sourceStage": "ST-C11",
+   "sourceRule": "选中一组即提交。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-037",
+   "sourceStage": "ST-C11",
+   "sourceRule": "点【杠】后收起【杠】【过】，横向排列候选牌，最右为【取消】。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-038",
+   "sourceStage": "ST-C11",
+   "sourceRule": "暗杠与加杠混排，顺序为万、条、筒、东、南、西、北、中、发、白，同花色按点数升序。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-039",
+   "sourceStage": "ST-C11",
+   "sourceRule": "倒计时归零后仍可选择。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 1,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-040",
+   "sourceStage": "ST-C11",
+   "sourceRule": "点【取消】等于放弃本次行牌机会里的全部操作，包括同时存在的自摸。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 1,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-041",
+   "sourceStage": "ST-C11",
+   "sourceRule": "点一张候选牌只提交对应的一组。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-042",
+   "sourceStage": "ST-C11",
+   "sourceRule": "只有 1 组时，点【杠】直接提交。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-043",
+   "sourceStage": "ST-C11",
+   "sourceRule": "点炮、抢杠的按钮文案是「胡」，自摸是「自摸」。没有单独的抢杠按钮。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-044",
+   "sourceStage": "ST-C11",
+   "sourceRule": "过和过2都显示「过」。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-045",
+   "sourceStage": "ST-C11",
+   "sourceRule": "过上行放弃。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-046",
+   "sourceStage": "ST-C11",
+   "sourceRule": "过2只在本地收起按钮并清掉本次压暗，再按禁手重新压暗，不上行。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-047",
+   "sourceStage": "ST-C11",
+   "sourceRule": "多组吃、杠的取消等于上行过。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 1,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-048",
+   "sourceStage": "ST-C11",
+   "sourceRule": "有杠、没有胡，且所有可杠牌都不是刚摸的那张时，手牌不压暗，不点过也能出牌。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-049",
+   "sourceStage": "ST-C11",
+   "sourceRule": "打出后听任意一张时，听牌详情固定为「爆头2番」「摸任意一张可胡」。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-050",
+   "sourceStage": "ST-C11",
+   "sourceRule": "候选牌是财神时听牌标为飘，否则为爆。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-051",
+   "sourceStage": "ST-C11",
+   "sourceRule": "同一手只要有一张这样，其余可听牌只留箭头。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-052",
+   "sourceStage": "ST-C11",
+   "sourceRule": "吃成立后，碰杠区新增一组正面顺子，按点数从小到大摆放。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-053",
+   "sourceStage": "ST-C11",
+   "sourceRule": "以吃牌者视角，来源箭头「←」叠在吃到的那张牌上。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-054",
+   "sourceStage": "ST-C11",
+   "sourceRule": "碰成立后，碰牌组三张都正面展示。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-055",
+   "sourceStage": "ST-C11",
+   "sourceRule": "以来源视角，箭头叠在中间一张：上家←、对家↑、下家→。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-056",
+   "sourceStage": "ST-C11",
+   "sourceRule": "吃、碰、直杠、暗杠的新牌组按成立顺序从左往右追加。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-057",
+   "sourceStage": "ST-C11",
+   "sourceRule": "直杠用来源箭头，加杠标记为【补】，暗杠用手掌标记。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-058",
+   "sourceStage": "ST-C11",
+   "sourceRule": "标记都叠在杠牌组最上方居中的第 4 张。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-059",
+   "sourceStage": "ST-C11",
+   "sourceRule": "直杠、暗杠在碰杠区新增一组；加杠补入原碰牌组，沿用原位置。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-060",
+   "sourceStage": "ST-C11",
+   "sourceRule": "补牌落入最右分隔位，可与「杠」字同时出现。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-061",
+   "sourceStage": "ST-C11",
+   "sourceRule": "连续杠时，新的「杠」字覆盖仍在播放的上一个。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-062",
+   "sourceStage": "ST-C11",
+   "sourceRule": "吃、碰、杠、胡成立时，在操作者对应方位播放对应字效。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-063",
+   "sourceStage": "ST-C11",
+   "sourceRule": "自摸确认后显示「对局结束」并亮出各家手牌。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-064",
+   "sourceStage": "ST-C11",
+   "sourceRule": "胡牌张单独摆在胡牌者手牌右侧。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-065",
+   "sourceStage": "ST-C11",
+   "sourceRule": "点炮胡、抢杠胡同样显示「对局结束」和亮牌。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-066",
+   "sourceStage": "ST-C11",
+   "sourceRule": "胡牌张在胡牌者手牌尾端，带浅绿描边和来源箭头。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-067",
+   "sourceStage": "ST-C11",
+   "sourceRule": "赢家方位显示番型，放铳者方位显示「点炮」。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C11-068",
+   "sourceStage": "ST-C11",
+   "sourceRule": "随后按座位飘分，正分黄色，负分灰色。",
+   "plannerSection": "行牌 > 出牌与响应",
+   "plannerPart": "part-13.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-001",
+   "sourceStage": "ST-C12",
+   "sourceRule": "只统计吃牌。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-002",
+   "sourceStage": "ST-C12",
+   "sourceRule": "A 吃 B 的牌，A 对 B 加 1 摊。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-003",
+   "sourceStage": "ST-C12",
+   "sourceRule": "两个方向分开计。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-004",
+   "sourceStage": "ST-C12",
+   "sourceRule": "与飘财无关。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-005",
+   "sourceStage": "ST-C12",
+   "sourceRule": "只有庄家和闲家之间能承包。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-006",
+   "sourceStage": "ST-C12",
+   "sourceRule": "两名闲家之间，同一方向最多 2 摊，吃一成立就加 1。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-007",
+   "sourceStage": "ST-C12",
+   "sourceRule": "已经有 2 摊时，再吃这一家的牌不成立，不给出【吃】。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-008",
+   "sourceStage": "ST-C12",
+   "sourceRule": "某一方向计到第 3 摊时记承包。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-009",
+   "sourceStage": "ST-C12",
+   "sourceRule": "四端播放「三摊落地」，可与吃牌字效同时显示。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-010",
+   "sourceStage": "ST-C12",
+   "sourceRule": "不等到结算，当时没有承包角标。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-011",
+   "sourceStage": "ST-C12",
+   "sourceRule": "提示期间，获权玩家可以继续提牌、出牌。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-012",
+   "sourceStage": "ST-C12",
+   "sourceRule": "自摸只结算胡牌方自己参与的承包对。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-013",
+   "sourceStage": "ST-C12",
+   "sourceRule": "摊方胡，对方付三家输分合计。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-014",
+   "sourceStage": "ST-C12",
+   "sourceRule": "被摊方胡，摊方付该合计的 2 倍。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-015",
+   "sourceStage": "ST-C12",
+   "sourceRule": "双向都满 3 摊时只按倒承包的 2 倍，不两笔叠加。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-016",
+   "sourceStage": "ST-C12",
+   "sourceRule": "承包：A 对 B 已成立，A 自摸。B 支付三家原应赔分的合计 S，另外两家本局 0 分。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-017",
+   "sourceStage": "ST-C12",
+   "sourceRule": "反承包：同一关系下 B 自摸。A 支付 2 × S。S 是 B 这次自摸原本向三家应收的合计。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-018",
+   "sourceStage": "ST-C12",
+   "sourceRule": "链式：A 对 B 成立，同时 C 对 A 成立，A 自摸。B 付 S，C 付 2 × S，A 实收 3 × S，第四家 0 分。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-019",
+   "sourceStage": "ST-C12",
+   "sourceRule": "点炮只在放铳者本人是承包对方时改写，基数是原来那一笔点炮分，不是三家之和。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-020",
+   "sourceStage": "ST-C12",
+   "sourceRule": "别人的承包关系不赔，放铳者仍按原点炮付。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-021",
+   "sourceStage": "ST-C12",
+   "sourceRule": "抢杠胡不替换杠牌者的赔付，承包额再叠加。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-022",
+   "sourceStage": "ST-C12",
+   "sourceRule": "杠牌者若同时是承包方，两笔都付。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-023",
+   "sourceStage": "ST-C12",
+   "sourceRule": "例：庄家平胡自摸，三名闲家各应赔 8，S = 24。承包方付 24。若同时存在上家对庄家的承包，上家再付 48，庄家得 72。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C12-024",
+   "sourceStage": "ST-C12",
+   "sourceRule": "例：庄家对闲家成立承包，闲家平胡自摸，三家原应赔 8、1、1。庄家按反承包付 20。",
+   "plannerSection": "三摊承包",
+   "plannerPart": "part-14.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C13-001",
+   "sourceStage": "ST-C13",
+   "sourceRule": "原应赔分 = 底分 × 番型倍数 × 这一笔的庄闲倍数。",
+   "plannerSection": "算分",
+   "plannerPart": "part-15.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C13-002",
+   "sourceStage": "ST-C13",
+   "sourceRule": "底分为 1。",
+   "plannerSection": "算分",
+   "plannerPart": "part-15.md",
+   "evidenceCount": 1,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C13-003",
+   "sourceStage": "ST-C13",
+   "sourceRule": "赢家和这一笔的赔付者有一方是庄家，庄闲倍数为 8；两边都是闲家，为 1。",
+   "plannerSection": "算分",
+   "plannerPart": "part-15.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C13-004",
+   "sourceStage": "ST-C13",
+   "sourceRule": "番型倍数取三组连乘后的结果。",
+   "plannerSection": "算分",
+   "plannerPart": "part-15.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C13-005",
+   "sourceStage": "ST-C13",
+   "sourceRule": "杠飘、飘杠的 8 倍已经替换掉杠上开花和财飘，再乘基础番。",
+   "plannerSection": "算分",
+   "plannerPart": "part-15.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C13-006",
+   "sourceStage": "ST-C13",
+   "sourceRule": "无封顶。",
+   "plannerSection": "算分",
+   "plannerPart": "part-15.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C13-007",
+   "sourceStage": "ST-C13",
+   "sourceRule": "自摸：三家各算一笔。",
+   "plannerSection": "算分",
+   "plannerPart": "part-15.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C13-008",
+   "sourceStage": "ST-C13",
+   "sourceRule": "庄家自摸，三笔都乘 8。",
+   "plannerSection": "算分",
+   "plannerPart": "part-15.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C13-009",
+   "sourceStage": "ST-C13",
+   "sourceRule": "闲家自摸，庄家那一笔乘 8，另两名闲家各乘 1。",
+   "plannerSection": "算分",
+   "plannerPart": "part-15.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C13-010",
+   "sourceStage": "ST-C13",
+   "sourceRule": "没有承包时，各付各的，赢家收合计。",
+   "plannerSection": "算分",
+   "plannerPart": "part-15.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C13-011",
+   "sourceStage": "ST-C13",
+   "sourceRule": "点炮胡、抢杠胡：没有承包时只算赢家和赔付者一笔，这一笔按庄闲 8 倍，另两家 0 分。",
+   "plannerSection": "算分",
+   "plannerPart": "part-15.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C13-012",
+   "sourceStage": "ST-C13",
+   "sourceRule": "有承包时按上一节改写。",
+   "plannerSection": "算分",
+   "plannerPart": "part-15.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C13-013",
+   "sourceStage": "ST-C13",
+   "sourceRule": "承包：自摸先算出三笔再求和为 S，然后按上一节改写出实际赔付。",
+   "plannerSection": "算分",
+   "plannerPart": "part-15.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C13-014",
+   "sourceStage": "ST-C13",
+   "sourceRule": "黄庄：四家本局都是 0。",
+   "plannerSection": "算分",
+   "plannerPart": "part-15.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C13-015",
+   "sourceStage": "ST-C13",
+   "sourceRule": "闲家以 2 倍番型自摸：庄家付 16，两名闲家各付 2，赢家得 20。",
+   "plannerSection": "算分",
+   "plannerPart": "part-15.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C13-016",
+   "sourceStage": "ST-C13",
+   "sourceRule": "平胡点炮：赢家 +8，放铳者 −8，另两家 0。",
+   "plannerSection": "算分",
+   "plannerPart": "part-15.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C13-017",
+   "sourceStage": "ST-C13",
+   "sourceRule": "本场积分从 0 起，每小局加上实际净得分。赢家加实收，赔付者扣实付。",
+   "plannerSection": "算分",
+   "plannerPart": "part-15.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-001",
+   "sourceStage": "ST-C14",
+   "sourceRule": "先确认牌型，再确认这次是自摸、点炮胡还是抢杠胡。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-002",
+   "sourceStage": "ST-C14",
+   "sourceRule": "番型分三组，组内只取最高一档。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-003",
+   "sourceStage": "ST-C14",
+   "sourceRule": "组间连乘，最终倍数为三组最高档相乘。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-004",
+   "sourceStage": "ST-C14",
+   "sourceRule": "点炮和抢杠不算爆头、财飘、杠开、十风。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-005",
+   "sourceStage": "ST-C14",
+   "sourceRule": "平胡：4 组面子加 1 对。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-006",
+   "sourceStage": "ST-C14",
+   "sourceRule": "财神可参与面子或对子。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-007",
+   "sourceStage": "ST-C14",
+   "sourceRule": "平胡倍数为 1。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-008",
+   "sourceStage": "ST-C14",
+   "sourceRule": "七对：14 张组成 7 对，且手里至少有 1 张财神。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-009",
+   "sourceStage": "ST-C14",
+   "sourceRule": "七对 / 豪华 / 双豪华 / 三豪华，倍数 2 / 4 / 8 / 16。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-010",
+   "sourceStage": "ST-C14",
+   "sourceRule": "某种非财神牌面有 4 张实牌，计 1 组豪华。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-011",
+   "sourceStage": "ST-C14",
+   "sourceRule": "白板不计豪华。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-012",
+   "sourceStage": "ST-C14",
+   "sourceRule": "清七对：同样是 7 对，但手里没有财神。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-013",
+   "sourceStage": "ST-C14",
+   "sourceRule": "清七对 / 豪华 / 双豪华 / 三豪华，倍数 4 / 8 / 16 / 32。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-014",
+   "sourceStage": "ST-C14",
+   "sourceRule": "杠开：自摸，杠链为 1 / 2 / 3 / 4 及以上。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-015",
+   "sourceStage": "ST-C14",
+   "sourceRule": "杠开档位为杠上开花 / 二连杠 / 三连杠 / 四连杠，对应杠链为 1 / 2 / 3 / 4 及以上。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-016",
+   "sourceStage": "ST-C14",
+   "sourceRule": "杠上开花 / 二连杠 / 三连杠 / 四连杠的倍数为 2 / 4 / 8 / 16。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-017",
+   "sourceStage": "ST-C14",
+   "sourceRule": "爆头：自摸，飘档为 0，单放与财神成将。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-018",
+   "sourceStage": "ST-C14",
+   "sourceRule": "爆头倍数为 2。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 2,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-019",
+   "sourceStage": "ST-C14",
+   "sourceRule": "听任意牌时，改看进张前是否敲响。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-020",
+   "sourceStage": "ST-C14",
+   "sourceRule": "财飘：自摸，飘档正好为 1 / 2 / 3 及以上，且单放与财神成将。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-021",
+   "sourceStage": "ST-C14",
+   "sourceRule": "财飘 / 双财飘 / 三财飘，倍数 4 / 8 / 16；3 档及以上都是三财飘。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-022",
+   "sourceStage": "ST-C14",
+   "sourceRule": "同时命中杠上开花和财飘时，去掉这两条，改记杠飘或飘杠。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-023",
+   "sourceStage": "ST-C14",
+   "sourceRule": "杠飘或飘杠倍数 8，再乘基础番；平胡加这一档是 8 倍，七对加这一档是 16 倍。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-024",
+   "sourceStage": "ST-C14",
+   "sourceRule": "十风：从第一张出牌起连续打字牌。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-025",
+   "sourceStage": "ST-C14",
+   "sourceRule": "中途打出非字牌，或吃、碰、杠，本局作废，不能再重新累计。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 0,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-026",
+   "sourceStage": "ST-C14",
+   "sourceRule": "满 10 张后任意自摸都能胡，不要求成牌。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-027",
+   "sourceStage": "ST-C14",
+   "sourceRule": "只记十风，不与平胡、杠开、财飘、七对相乘。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-028",
+   "sourceStage": "ST-C14",
+   "sourceRule": "10 张为 2 倍，每多一张再乘 2。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-029",
+   "sourceStage": "ST-C14",
+   "sourceRule": "财神牌面染红，可点击，没有角标。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C14-030",
+   "sourceStage": "ST-C14",
+   "sourceRule": "打出后牌河仍是原牌面，只保留这层红色。",
+   "plannerSection": "番型",
+   "plannerPart": "part-16.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-001",
+   "sourceStage": "ST-C15",
+   "sourceRule": "胡牌确认后停止行牌，每小局只结算一次。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-002",
+   "sourceStage": "ST-C15",
+   "sourceRule": "自摸的胡张是本次摸入或补入的牌，点炮胡的胡张是弃牌，抢杠胡的胡张是被抢的第 4 张。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-003",
+   "sourceStage": "ST-C15",
+   "sourceRule": "各端停止操作按钮、胡牌预览和放大弃牌。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-004",
+   "sourceStage": "ST-C15",
+   "sourceRule": "方位盘停止倒计时。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-005",
+   "sourceStage": "ST-C15",
+   "sourceRule": "在原牌桌亮出四家手牌，桌面中央显示「对局结束」。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-006",
+   "sourceStage": "ST-C15",
+   "sourceRule": "黄庄：亮出四家手牌，桌面中央显示「黄庄」，保留终局牌河、财神和余牌数 20。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-007",
+   "sourceStage": "ST-C15",
+   "sourceRule": "「对局结束」仍在时，胡牌者方位播放番型字效。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-008",
+   "sourceStage": "ST-C15",
+   "sourceRule": "点炮胡和抢杠胡同时在放铳方位显示「点炮」，抢杠胡的放铳者是加杠者。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-009",
+   "sourceStage": "ST-C15",
+   "sourceRule": "先刷新头像旁的累计积分。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-010",
+   "sourceStage": "ST-C15",
+   "sourceRule": "番型字效退场后，只在本局得分不为 0 的座位内侧飘分。正分金黄色，负分浅蓝灰色并带减号。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-011",
+   "sourceStage": "ST-C15",
+   "sourceRule": "飘分淡出后短暂保留终局牌桌，再打开小结算。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-012",
+   "sourceStage": "ST-C15",
+   "sourceRule": "小结算盖在终局牌桌上。各端以本家为第一行，向下依次为下家、对家、上家。本家行置顶并高亮。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-013",
+   "sourceStage": "ST-C15",
+   "sourceRule": "胡牌局按本端本局净得分切换主题：大于或等于 0 为「恭喜获胜」，小于 0 为「遗憾失败」。黄庄四端都是「黄庄」。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-014",
+   "sourceStage": "ST-C15",
+   "sourceRule": "每行左侧为座位、头像和昵称。庄家行显示「庄×3」。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-015",
+   "sourceStage": "ST-C15",
+   "sourceRule": "中间从左到右是碰杠区和手牌，杠的第 4 张垒在上方，暗杠顶张正面。胡牌者其余手牌按胡牌组合分组，未胡牌者连续摆放。胡入的那一张在所属组合内标绿色「胡」。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-016",
+   "sourceStage": "ST-C15",
+   "sourceRule": "右侧为本局净得分。正分带加号，0 分显示「0」，负分带减号。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-017",
+   "sourceStage": "ST-C15",
+   "sourceRule": "赢家牌组上方写实际命中的番型名称。同时命中多组时都写上，例如「七对」「杠飘」。双财飘、双豪华七对、二连杠直接写全名。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-018",
+   "sourceStage": "ST-C15",
+   "sourceRule": "最右侧标胡牌方式：自摸、点炮胡或抢杠胡。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-019",
+   "sourceStage": "ST-C15",
+   "sourceRule": "点炮胡、抢杠胡的赔付者标「点炮」。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 1,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-020",
+   "sourceStage": "ST-C15",
+   "sourceRule": "三摊承包：赢家标黄色「承包」，赔付者得分右侧标「三摊承包」。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-021",
+   "sourceStage": "ST-C15",
+   "sourceRule": "反承包：赢家标「反承包」，赔付者标「反承包」。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-022",
+   "sourceStage": "ST-C15",
+   "sourceRule": "链式承包：赢家同时标「承包」和「反承包」，番型只写一次；付 S 的一方标「三摊承包」，付 2 × S 的一方标「反承包」。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 4,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-023",
+   "sourceStage": "ST-C15",
+   "sourceRule": "左下展示本局财神正面，即白板。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-024",
+   "sourceStage": "ST-C15",
+   "sourceRule": "右下为「长按查看牌桌」：在底部栏扣除中央主按钮后的区域按住 500 毫秒，临时收起小结算，按本家视角查看终局牌桌；松手恢复同一张小结算。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 3,
+   "required": true,
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-025",
+   "sourceStage": "ST-C15",
+   "sourceRule": "非末局底部中央为【继续游戏】。点击后本端收起小结算，清除上一局手牌、碰杠区和牌河，保留座位和累计积分，本家显示「已准备」。四人均准备后自动开下一小局。第 8 局按钮为【返回大厅】，点击后退出房间。",
+   "plannerSection": "结算",
+   "plannerPart": "part-17.md",
+   "evidenceCount": 5,
+   "required": true,
+   "reviewStatus": "pending"
+  }
+ ]
+}

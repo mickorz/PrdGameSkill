@@ -1,0 +1,812 @@
+{
+ "stage": {
+  "id": "ST-C10",
+  "name": "吃碰禁手",
+  "chapter": "行牌 > 吃碰禁手",
+  "summary": "吃或碰成立后按牌型推导出禁打牌集合，只在本家界面把禁打牌压暗并拦截出牌；吃后剩余手牌全落在禁张内的吃法不被授予并提示，合法出牌后禁张由服务端清空。",
+  "terms": [
+   {
+    "term": "财神",
+    "definition": "白板固定为财神，只在胡牌判定时代替顺子、刻子或对子所缺的牌；吃、碰、杠必须用真实的非财神牌",
+    "source": "模板 名词 第12行"
+   },
+   {
+    "term": "吃",
+    "definition": "吃牌只用上家刚打出的牌与自己的手牌组成顺子",
+    "source": "模板 开局 第7行"
+   },
+   {
+    "term": "禁张",
+    "definition": "吃或碰成立后本家不可打出的牌值集合，由服务端计算下发；对应手牌在本家界面压暗并在出牌前拦截",
+    "source": "模板 行牌 > 吃碰禁手 第105-107行；代码 source-code/client/Code/data/GameData.ts:1603"
+   },
+   {
+    "term": "单放",
+    "definition": "摸到的牌单独放在手牌末位；出牌限制区分手牌与单放，摸牌位是否禁打由服务端判定",
+    "source": "source-code/client/Code/data/GameData.ts:1605；source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts:117-130"
+   }
+  ],
+  "crossCutting": [
+   "禁张集合由服务端计算，客户端只消费出牌限制下发结果并按 hands/dang_fang 置灰，不参与禁张推导（controller/cmd/gameCmd/GamePlayLmtsCmd.ts:31-45）。",
+   "出牌限制数据必须先于权限数据到达，重连时随摸打循环快照恢复，否则手牌灰化不刷新（controller/cmd/sceneCmd/SceneActionCmd.ts:33-34、81-84）。",
+   "手牌灰化有两套来源：吃碰杠权限置灰与禁打置灰；清除权限灰后需再按禁打名单刷一次，避免禁打灰被冲掉（layer/BoxHzmjMainView.ts:1262-1277）。",
+   "简洁模式下会抑制包括「吃禁手规则生效中」在内的规则类文字提示（layer/BoxHzmjTipAniView.ts:850-854）。",
+   "所有出牌手势在统一出牌前校验里拦截禁打牌，命中后本地中止、不发送出牌请求（layer/BoxHzmjMainView.ts:1429-1435、1470-1480）。"
+  ]
+ },
+ "features": [
+  {
+   "id": "FP-ST-C10-001",
+   "name": "吃牌禁张推导规则",
+   "description": "吃牌成立后按手牌与吃进牌的相对位置推导禁打牌：坎张只禁被吃那张，两面吃一端禁两端可接成顺子的牌，并对 1、9 边界与相差张数分别收窄。",
+   "scope": "只覆盖吃牌组合的禁张推导；不含碰、最终选定组合、财神豁免与解除时机。",
+   "coordination": "服务端负责计算禁张并经出牌限制下发，客户端只按下发名单置灰与拦截，本功能点规则在客户端无独立实现。",
+   "atoms": [
+    {
+     "id": "AT-ST-C10-001",
+     "name": "坎张吃中间只禁被吃牌",
+     "rule": "用间隔一张的两张吃中间张：只禁被吃的那一张。用 1、3 吃 2，禁打 2。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "客户端不参与禁张推导，禁张经出牌限制下发后由手牌组件置灰（controller/cmd/gameCmd/GamePlayLmtsCmd.ts:31-45），本条计算逻辑不在客户端代码中。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端不计算禁张，服务端禁张推导逻辑不在本仓库客户端代码中",
+      "clientObserved": false
+     }
+    },
+    {
+     "id": "AT-ST-C10-002",
+     "name": "两面吃一端禁两端延伸张",
+     "rule": "用相邻两张吃一端：禁打这两张在 1 至 9 内两端能接成顺子的牌。用 2、3 吃 1 或吃 4，都禁 1 和 4。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "与 AT-ST-C10-004 为同一规则的不同表述；客户端只消费服务端下发的禁打名单。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端不计算禁张，服务端禁张推导逻辑不在本仓库客户端代码中",
+      "clientObserved": false
+     }
+    },
+    {
+     "id": "AT-ST-C10-003",
+     "name": "1、2 吃 3 的边界收窄",
+     "rule": "用 1、2 吃 3，只禁 3。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "边界收窄由服务端计算，客户端无对应分支。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端不计算禁张，服务端禁张推导逻辑不在本仓库客户端代码中",
+      "clientObserved": false
+     }
+    },
+    {
+     "id": "AT-ST-C10-004",
+     "name": "相差 1 禁吃进张与另一侧延伸张",
+     "rule": "手上两张相差 1 时，禁吃进的那张和另一侧延伸的那张。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "客户端无禁张推导实现，仅接收最终禁打名单。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端不计算禁张，服务端禁张推导逻辑不在本仓库客户端代码中",
+      "clientObserved": false
+     }
+    },
+    {
+     "id": "AT-ST-C10-005",
+     "name": "1、9 外侧无牌只禁吃进张",
+     "rule": "1、9 外侧不是牌，实际只禁吃进的一张。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "边界处理由服务端计算，客户端无对应实现。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端不计算禁张，服务端禁张推导逻辑不在本仓库客户端代码中",
+      "clientObserved": false
+     }
+    },
+    {
+     "id": "AT-ST-C10-006",
+     "name": "相差不为 1 只禁吃进张",
+     "rule": "相差不是 1 时，只禁吃进的那张。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "客户端无禁张推导实现，仅接收最终禁打名单。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端不计算禁张，服务端禁张推导逻辑不在本仓库客户端代码中",
+      "clientObserved": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C10-002",
+   "name": "碰牌禁张与禁打生效范围",
+   "description": "吃或碰成立后本家同牌面手牌全部禁打，直到限制解除；碰后禁打与被碰牌相同的牌；多吃只按最终选定的一组写禁张；禁张不含财神。",
+   "scope": "覆盖禁张的生效对象、有效期、组合选择与财神例外；不含禁张的具体推导算法与解除时机判定。",
+   "coordination": "服务端生成并维护禁打名单，客户端缓存名单、置灰同牌值手牌并在出牌前拦截。",
+   "atoms": [
+    {
+     "id": "AT-ST-C10-007",
+     "name": "吃碰成立后同牌面手牌全部禁打直到解除",
+     "rule": "吃或碰成立后，同牌面的手牌全部禁打，直到本次限制解除。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "收到出牌限制后缓存禁打牌值，自己拥有出牌权时遍历手牌按牌值比对置灰并禁止点击；收到空限制时清除缓存。",
+     "uiInteraction": "与禁打牌值相同的所有手牌压暗且不可点击，点击出牌弹出「该牌被禁打」。",
+     "messages": [
+      "MsgPlayLmts"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePlayLmtsCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePlayLmtsCmd.ts:45"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts:105"
+      },
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:1800"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1432"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1433"
+      }
+     ],
+     "notes": "「同牌面全部禁打」按牌值匹配，“同牌面”多张同值手牌会一起置灰；禁张集合与解除时机均由服务端决定。",
+     "businessBehavior": {
+      "trigger": "本家吃或碰成立",
+      "condition": "系统判定这手牌存在禁打牌",
+      "action": "把这些牌压暗并拦截出牌，直到限制解除",
+      "result": "玩家手里相同的牌都变暗，点它出牌会提示「该牌被禁打」"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "禁张集合与解除时机由服务端决定，客户端仅按下发名单置灰与拦截",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C10-008",
+     "name": "碰成立后禁打与被碰牌相同的牌",
+     "rule": "碰成立后，禁打与被碰牌相同的牌。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端仅有通用的禁打名单处理，把名单内牌值的手牌置灰并禁止出牌，未见碰专属的禁张写入判断。",
+     "uiInteraction": "与被碰牌相同牌值的手牌压暗、点击出牌被拦截并提示「该牌被禁打」。",
+     "messages": [
+      "MsgPlayLmts"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePlayLmtsCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePlayLmtsCmd.ts:33"
+      },
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:1738"
+      }
+     ],
+     "notes": "碰后禁张的生成在服务端，客户端只有通用名单消费路径。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "本家有与被碰牌相同的牌且该牌值出现在禁打名单里",
+      "action": "把同牌值的手牌压暗并禁止打出",
+      "result": "玩家不能打出与被碰牌相同的牌"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "碰后禁张由服务端写入，客户端只有通用名单处理，无碰专属判定证据",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C10-009",
+     "name": "只按最终选定的一组写禁张",
+     "rule": "只按最终选定的一组写禁张。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "存在多组吃法时展示顺子选项池，玩家选定后只把选中的一组吃法上报，服务端据此计算禁张。",
+     "uiInteraction": "弹出多组顺子供玩家选择，选定后其余选项收起，操作区回到空状态。",
+     "messages": [
+      "MsgChowC"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1098"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1102"
+      },
+      {
+       "file": "source-code/client/Code/controller/gameController.ts",
+       "location": "source-code/client/Code/controller/gameController.ts:498"
+      }
+     ],
+     "notes": "客户端只上报一组吃法，禁张是否只按该组写入由服务端决定。",
+     "businessBehavior": {
+      "trigger": "本家获得吃牌机会且有多组可选吃法",
+      "condition": "存在两组以上可吃的顺子组合",
+      "action": "先展示多组顺子让玩家挑一组，只把选中的那组作为本次吃牌",
+      "result": "玩家先看到多组顺子选项，选定后只有选中的那组吃法生效"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端只上报选中的一组吃法，禁张仍由服务端按该组计算，无法由客户端证实",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C10-010",
+     "name": "禁张不含财神仍可打财神",
+     "rule": "禁张不含财神，吃完仍可打财神。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端按服务端下发的禁打名单逐张比对牌值置灰，未对财神牌做豁免判断；财神着色说明中灰色优先于财神红色。",
+     "uiInteraction": "若禁打名单中含财神牌值，财神手牌同样会被压暗；界面没有额外的财神豁免表现。",
+     "messages": [
+      "MsgPlayLmts"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts:64"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts:105"
+      },
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:1800"
+      }
+     ],
+     "notes": "客户端没有独立的财神豁免分支，财神是否可打完全取决于服务端下发的禁打名单。",
+     "businessBehavior": {
+      "trigger": "吃牌成立后系统下发禁打名单",
+      "condition": "名单中出现某个牌值",
+      "action": "界面按名单逐张比对置灰，不区分该牌是否为财神",
+      "result": "若名单含财神，财神也会被压暗，界面没有额外的财神豁免表现"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "财神是否进入禁张名单由服务端决定，客户端没有财神豁免判定",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C10-003",
+   "name": "吃后无牌可打的拦截与提示",
+   "description": "吃完后若剩余手牌全部落在禁张里，该吃法不被授予，并在本家界面提示「吃禁手规则生效中」。",
+   "scope": "覆盖吃法被禁手拦下时的本家提示与授予结果；不含具体禁张推导。",
+   "coordination": "服务端过滤吃法并下发通知，客户端只负责展示提示文字。",
+   "atoms": [
+    {
+     "id": "AT-ST-C10-011",
+     "name": "剩余手牌全在禁张内的吃法不能吃",
+     "rule": "吃完后剩余手牌全部落在禁张里的吃法不能吃。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "吃选项完全按服务端下发的吃组合展示，客户端不做吃法过滤；被拦下的吃法由服务端不授予，客户端接收专属通知。",
+     "uiInteraction": "不出现该吃法的吃牌选项，同时显示一行规则提示文字。",
+     "messages": [
+      "MsgNotifyInfo"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/GameDefine.ts",
+       "location": "source-code/client/Code/config/GameDefine.ts:469"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameNotifyInfoCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameNotifyInfoCmd.ts:58"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1020"
+      }
+     ],
+     "notes": "客户端不自行过滤吃法，吃牌选项全部来自服务端下发的组合。",
+     "businessBehavior": {
+      "trigger": "本家存在可吃组合",
+      "condition": "吃完后手里剩下的牌全部落在禁张里",
+      "action": "系统不授予这个吃法，并在本家界面给出一行提示",
+      "result": "玩家看不到这个吃法的选项，只看到「吃禁手规则生效中」"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "吃法是否被授予由服务端过滤，客户端只负责展示与提示",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C10-012",
+     "name": "本家提示吃禁手规则生效中",
+     "rule": "本家提示「吃禁手规则生效中」。",
+     "uiRequirement": "本家提示「吃禁手规则生效中」",
+     "verdict": "confirmed",
+     "clientLogic": "收到吃禁手专属通知后，仅当通知座位是本家时派发文字提示事件，界面显示提示文字并在约 1.3 秒后自动隐藏。",
+     "uiInteraction": "本家界面出现「吃禁手规则生效中」文字提示，短暂显示后消失；复盘与简洁模式下不显示。",
+     "messages": [
+      "MsgNotifyInfo"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameNotifyInfoCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameNotifyInfoCmd.ts:59"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:857"
+      },
+      {
+       "file": "source-code/client/Code/config/GameDefine.ts",
+       "location": "source-code/client/Code/config/GameDefine.ts:470"
+      }
+     ],
+     "notes": "提示只在通知座位为本家时展示，满足「本家提示」的范围要求。",
+     "businessBehavior": {
+      "trigger": "本家想吃的组合会让剩余手牌全部变成禁打牌",
+      "condition": "本家是这次吃牌的玩家",
+      "action": "在界面显示一行文字提示并短暂保留",
+      "result": "本家看到「吃禁手规则生效中」，随后自动消失"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C10-004",
+   "name": "禁打牌的本家显示与可辨认性",
+   "description": "禁打牌在本家界面压暗但牌面仍可辨认，只在本家界面显示，其他家只看到牌背；禁打牌仍可提起并横滑出虚影。",
+   "scope": "覆盖禁打牌的视觉呈现、显示范围与可操作性；不含点击出牌后的拦截反馈。",
+   "coordination": "客户端只在本地玩家手牌组件上应用禁打灰化，其他座位手牌保持牌背显示。",
+   "atoms": [
+    {
+     "id": "AT-ST-C10-013",
+     "name": "禁打牌压暗牌面仍可辨认",
+     "rule": "禁打牌压暗，牌面仍可辨认。",
+     "uiRequirement": "禁打牌压暗，牌面仍可辨认",
+     "verdict": "confirmed",
+     "clientLogic": "按禁打名单逐张比较手牌牌值，命中后把该手牌着色为灰色；未命中的牌恢复普通或财神配色。",
+     "uiInteraction": "被禁打的手牌整体变暗，仍显示原牌面图案。",
+     "messages": [
+      "MsgPlayLmts"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts:110"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts:112"
+      }
+     ],
+     "notes": "灰化是平台牌面组件的着色能力，压暗后是否仍可辨认需实机确认。",
+     "businessBehavior": {
+      "trigger": "本家手里出现禁打牌",
+      "condition": "该牌牌值在系统下发的禁打名单内",
+      "action": "把这张手牌的配色压暗成灰色",
+      "result": "玩家看到该牌明显变暗但仍能认出是原来的牌"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "压暗后的牌面是否仍可辨认需实机确认，灰化由平台牌面组件实现",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C10-014",
+     "name": "禁打标记只在本家界面显示",
+     "rule": "禁打牌压暗只在本家界面显示。",
+     "uiRequirement": "只在本家界面显示",
+     "verdict": "confirmed",
+     "clientLogic": "出牌限制只在本家座位时写缓存并派发界面刷新，手牌灰化只作用于本家手牌组件；受限制座位不是本家时缓存不生效。",
+     "uiInteraction": "只有本家手牌出现压暗效果，其他玩家界面没有任何禁打标记。",
+     "messages": [
+      "MsgPlayLmts"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePlayLmtsCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePlayLmtsCmd.ts:46"
+      },
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:1780"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1277"
+      }
+     ],
+     "notes": "",
+     "businessBehavior": {
+      "trigger": "本家吃或碰后系统判定存在禁打牌",
+      "condition": "只有本家持有这些禁打牌",
+      "action": "只把本家手里的这些牌压暗并禁止打出",
+      "result": "只有本家看到被压暗的禁打牌，其他玩家界面没有变化"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C10-015",
+     "name": "其他家只看到牌背",
+     "rule": "其他家只看到牌背。",
+     "uiRequirement": "其他家只看到牌背",
+     "verdict": "confirmed",
+     "clientLogic": "对家、上家、下家的手牌统一用牌背资源构建手牌组件，仅本家手牌组件挂虚影节点并参与禁打灰化。",
+     "uiInteraction": "其他三个座位的手牌始终显示为牌背，看不到牌面，也没有压暗效果。",
+     "messages": [
+      "MsgPlayLmts"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:114"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:137"
+      }
+     ],
+     "notes": "其他座位手牌使用独立牌背资源，禁打灰化只作用于本家手牌组件。",
+     "businessBehavior": {
+      "trigger": "其他玩家查看正在进行的对局",
+      "condition": "除本家外的玩家手牌处于背面状态",
+      "action": "只用牌背展示其他玩家手牌",
+      "result": "其他玩家只看到牌背，看不到牌面与禁打标记"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C10-016",
+     "name": "禁打牌仍能提起并横滑出虚影",
+     "rule": "这些牌仍能提起，也能横滑出虚影。",
+     "uiRequirement": "这些牌仍能提起，也能横滑出虚影",
+     "verdict": "partial",
+     "clientLogic": "禁打灰化时把对应手牌项的触摸属性置为不可触摸；本家手牌组件在构建时接入了虚影节点用于横滑表现。",
+     "uiInteraction": "禁打牌显示为压暗状态；能否提起与横滑出虚影取决于手牌基类的命中判定，本仓库无法直接观察。",
+     "messages": [
+      "MsgPlayLmts"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts:108"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:139"
+      }
+     ],
+     "notes": "禁打灰化的同时把牌项触摸属性置为 false，与「仍能提起」存在存疑；手牌触摸与横滑虚影由外部手牌基类与 game_mah 包实现，不在本仓库。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "手牌触摸与横滑虚影由外部手牌基类实现，本仓库无法确认禁打牌仍可提起",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C10-005",
+   "name": "禁打牌出牌拦截反馈",
+   "description": "玩家对禁打牌进行出牌操作时弹出「该牌被禁打」，牌不进牌河。",
+   "scope": "覆盖出牌前的禁打校验与拦截反馈；不含服务端出牌校验。",
+   "coordination": "客户端在所有出牌手势统一校验点拦截禁打牌，命中即在本地中止，不发送出牌请求。",
+   "atoms": [
+    {
+     "id": "AT-ST-C10-017",
+     "name": "对禁打牌出牌弹出该牌被禁打",
+     "rule": "单击、双击或松手打出时弹出「该牌被禁打」。",
+     "uiRequirement": "单击、双击或松手打出时弹出「该牌被禁打」",
+     "verdict": "confirmed",
+     "clientLogic": "手牌组件的出牌前校验与出牌回调都先判断该牌能否打出，命中禁打则派发文字提示事件并中止本次出牌，提示统一由提示视图展示。",
+     "uiInteraction": "弹出「该牌被禁打」文字提示，约 1.3 秒后消失，手牌保留原位。",
+     "messages": [],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1432"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1473"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:339"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:856"
+      }
+     ],
+     "notes": "三种出牌手势由手牌基类统一走同一个出牌前校验与出牌回调，未按手势分别处理。",
+     "businessBehavior": {
+      "trigger": "玩家尝试打出被禁打的牌（点击、双击或滑出后松手）",
+      "condition": "该牌牌值在禁打名单内",
+      "action": "拦下这次出牌并短暂显示文字提示",
+      "result": "玩家看到「该牌被禁打」，这张牌还留在手里"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C10-018",
+     "name": "禁打牌不进牌河",
+     "rule": "牌不进牌河。",
+     "uiRequirement": "牌不进牌河",
+     "verdict": "confirmed",
+     "clientLogic": "出牌回调在通过禁打校验之前不会把牌加入牌河也不会发送出牌请求；被拦下后重新按手牌数据还原手牌并恢复禁打灰化。",
+     "uiInteraction": "牌河不出现这张牌，手牌回到原位并保持压暗状态。",
+     "messages": [],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1479"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1481"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1482"
+      }
+     ],
+     "notes": "落河与出牌请求都在禁打校验之后执行，拦截时提前返回。",
+     "businessBehavior": {
+      "trigger": "玩家尝试打出被禁打的牌",
+      "condition": "出牌前校验发现该牌被禁打",
+      "action": "在把牌送进牌河之前中止出牌",
+      "result": "牌河不出现这张牌，手牌保持原样"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C10-006",
+   "name": "禁张解除与补牌限制",
+   "description": "打出一张合法牌后由服务端清空禁张，同一回合再杠不清空，补进的牌若仍在禁张里也不能打。",
+   "scope": "覆盖禁张的清除时机与补进牌的禁打判定；不含禁张生成规则。",
+   "coordination": "客户端不本地清除禁张，只按服务端空名单解除；摸进的牌走单独的单放禁打字段。",
+   "atoms": [
+    {
+     "id": "AT-ST-C10-019",
+     "name": "合法出牌后服务端清空禁张",
+     "rule": "打出一张合法牌后，服务端清空禁张。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "出牌处理不本地清空禁打名单，明确由服务端空名单或新名单维护；收到空名单时清空缓存并在自己有出牌权时触发界面刷新。",
+     "uiInteraction": "下一手本家手牌恢复正常配色，不再有压暗的禁打牌。",
+     "messages": [
+      "MsgPlayS",
+      "MsgPlayLmts"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePlayCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePlayCmd.ts:72"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePlayLmtsCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePlayLmtsCmd.ts:37"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePlayLmtsCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePlayLmtsCmd.ts:38"
+      }
+     ],
+     "notes": "清空完全依赖服务端下发，客户端出牌后不自行清除；收到空名单时界面刷新入口在无限制时直接返回，实际解除灰化依赖手牌重建或清除灰化事件。",
+     "businessBehavior": {
+      "trigger": "本家打出一张合法的牌",
+      "condition": "这手牌的禁打限制已不再需要",
+      "action": "系统清空禁打名单，界面收到清空结果后解除压暗",
+      "result": "下一手手牌恢复正常颜色，不再有禁打牌"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "清空时机由服务端触发，客户端只在下发空名单后解除压暗，无法证实服务端在合法出牌后清空",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C10-020",
+     "name": "同一回合再杠不清空禁张",
+     "rule": "同一回合再杠不清空。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "杠牌处理只做副露与动画更新，没有触发出牌限制清空；出牌限制只在收到服务端名单时变化。",
+     "uiInteraction": "杠牌后禁打灰化保持原样，直到服务端下发新的出牌限制。",
+     "messages": [
+      "MsgKongS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:34"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePlayCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePlayCmd.ts:72"
+      }
+     ],
+     "notes": "客户端杠处理未涉及禁张，属于「不清空」的被动一致，缺少杠后禁张保留的直接可观测证据。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端杠处理未涉及禁张，无法证实同一回合再杠后禁张保留",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C10-021",
+     "name": "补进的牌仍在禁张内不能打",
+     "rule": "补进的牌若牌值仍在禁张里，也不能打。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "摸牌位的牌单独按单放禁打值判断：末张摸牌命中单放禁打值时置灰且不可点，其余手牌按禁打名单判断；补进的牌由摸牌逻辑写入摸牌位。",
+     "uiInteraction": "摸进的牌若命中禁打值会被压暗，点击出牌被拦下并提示「该牌被禁打」。",
+     "messages": [
+      "MsgTake",
+      "MsgPlayLmts"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts:102"
+      },
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:1796"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts:73"
+      }
+     ],
+     "notes": "摸牌位的禁打只认单放禁打值，禁打名单 hands 不作用于摸牌位；补进的牌是否被拦完全取决于服务端是否按单放字段下发。",
+     "businessBehavior": {
+      "trigger": "本家摸进或补进一张牌",
+      "condition": "这张牌的牌值与系统给出的单放禁打牌值相同",
+      "action": "把这张摸进的牌压暗并在出牌时拦下",
+      "result": "玩家无法打出这张刚摸进的牌，点了会提示「该牌被禁打」"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "补进牌是否落在摸牌位并由服务端按单放字段下发禁打，未验证",
+      "clientObserved": true
+     }
+    }
+   ]
+  }
+ ]
+}

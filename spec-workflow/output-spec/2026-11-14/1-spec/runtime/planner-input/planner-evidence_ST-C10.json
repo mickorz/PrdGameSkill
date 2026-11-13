@@ -1,0 +1,211 @@
+{
+ "stageId": "ST-C10",
+ "title": "吃碰禁手",
+ "sourceTitle": "行牌 > 吃碰禁手",
+ "fromLine": 97,
+ "toLine": 109,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 22,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C10-001",
+   "name": "吃碰成立后同牌面手牌全部禁打",
+   "rule": "吃或碰成立后，同牌面的手牌全部禁打。",
+   "uiRequirement": "",
+   "uiInteraction": "被禁牌以灰色显示并置为不可点击。",
+   "notes": "客户端不判断吃/碰来源，禁打集合完全来自服务端；hands 只作用于手牌位，新摸入的单放牌需 dang_fang 命中才禁打。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C10-002",
+   "name": "禁打持续到本次限制解除",
+   "rule": "禁打状态持续到本次限制解除为止。",
+   "uiRequirement": "",
+   "uiInteraction": "每次进入本家出牌阶段都会重新把禁张牌压暗。",
+   "notes": "客户端以服务端空包作为解除信号，本身不判断回合边界。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C10-003",
+   "name": "合法出牌后服务端清空禁张",
+   "rule": "打出一张合法牌后，服务端清空禁张。",
+   "uiRequirement": "",
+   "uiInteraction": "本家出牌后手牌灰态立即恢复常色。",
+   "notes": "客户端出牌后先清视觉灰、数据等空包，若服务端未下发空包会出现数据仍在但界面不灰的短暂不一致。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C10-004",
+   "name": "同一回合再杠不清空禁张",
+   "rule": "同一回合内再杠不清空禁张。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "证据为负向：杠处理器内不存在清空 playLimit 的调用，属间接证明。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C10-005",
+   "name": "补进牌仍在禁张内不能打",
+   "rule": "补进的牌若牌值仍在禁张里，也不能打。",
+   "uiRequirement": "",
+   "uiInteraction": "补进的牌只有在 dang_fang 命中时才被压暗并不可点击。",
+   "notes": "若服务端只把该牌值写入 hands 而未写 dang_fang，客户端会放行补进牌，与模板「仍在禁张里也不能打」存在差异；需服务端保证补牌值落到 dang_fang。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C10-006",
+   "name": "坎张吃中间只禁被吃的那张",
+   "rule": "用间隔一张的两张吃中间张时，只禁被吃的那一张；用 1、3 吃 2，禁打 2。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端无任何坎张吃禁张计算代码，禁张集合完全由服务端计算后下发 hands。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C10-007",
+   "name": "相邻两张吃一端禁两端可接顺的牌",
+   "rule": "用相邻两张吃一端时，禁打这两张在 1 至 9 内两端能接成顺子的牌。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端不做顺子延伸推演，禁张范围由服务端计算。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C10-008",
+   "name": "2、3 吃 1 或吃 4 都禁 1 和 4",
+   "rule": "用 2、3 吃 1 或吃 4，都禁 1 和 4。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "示例规则属服务端禁张算法，客户端仅按下发的 hands 值灰化，无对应判定。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C10-009",
+   "name": "1、2 吃 3 只禁 3",
+   "rule": "用 1、2 吃 3，只禁 3。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "同上，1/9 外侧边界收敛在服务端完成。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C10-010",
+   "name": "相差 1 时禁吃进张与另一侧延伸张",
+   "rule": "手上两张相差 1 时，禁吃进的那张和另一侧延伸的那张。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端无对应计算，仅展示服务端下发的禁张。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C10-011",
+   "name": "1、9 外侧不是牌只禁一张",
+   "rule": "1、9 外侧不是牌，实际只禁吃进的一张。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "边界判断在服务端，客户端无牌山边界推演代码。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C10-012",
+   "name": "相差不为 1 只禁吃进张",
+   "rule": "相差不是 1 时，只禁吃进的那张。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端无对应计算，仅消费 hands 列表。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C10-013",
+   "name": "只按最终选定的一组写禁张",
+   "rule": "只按最终选定的一组写禁张。",
+   "uiRequirement": "",
+   "uiInteraction": "存在多组吃法时显示 ChooseGang 组合选择池，点击某一组才提交。",
+   "notes": "客户端只保证提交单组吃组合；禁张按该组计算仍在服务端，客户端无回写逻辑。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C10-014",
+   "name": "碰后禁打与被碰牌相同的牌",
+   "rule": "碰成立后，禁打与被碰牌相同的牌。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "GamePungCmd 只处理副露落账与动画，无任何禁张计算；碰禁张由服务端写入出牌黑名单后经 MsgPlayLmts 下发。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C10-015",
+   "name": "全部落禁张的吃法不能吃",
+   "rule": "吃完后剩余手牌全部落在禁张里的吃法不能吃。",
+   "uiRequirement": "",
+   "uiInteraction": "吃法被拦截时【吃】按钮与组合池不出现。",
+   "notes": "客户端无过滤实现，属服务端授权结果驱动的间接证据。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C10-016",
+   "name": "本家提示吃禁手规则生效中",
+   "rule": "该吃法被拦截时，本家提示「吃禁手规则生效中」。",
+   "uiRequirement": "本家界面弹出「吃禁手规则生效中」提示文本。",
+   "uiInteraction": "本家界面中部显示文字提示 1.3 秒后自动收起；简洁模式与复盘模式下不显示。",
+   "notes": "提示只对本家（localSeat === SELF_LOCAL_SEAT）生效；文本复用了通用 toast 组件。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C10-017",
+   "name": "禁张不含财神仍可打财神",
+   "rule": "禁张不含财神，吃完仍可打财神。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端 applyPlayLmtsGray 无财神排除分支，会按牌值灰化任意牌（含财神），实际依赖服务端不下发财神值；财神颜色由 setJokerColorValues 单独维护，若被禁则会被 gray 覆盖。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C10-018",
+   "name": "禁打牌压暗牌面仍可辨认",
+   "rule": "禁打牌压暗，牌面仍可辨认。",
+   "uiRequirement": "禁打牌以压暗（置灰）样式显示，牌面内容仍可辨认。",
+   "uiInteraction": "禁张手牌整体呈灰色，图案与数字仍可见。",
+   "notes": "压暗为直接改牌面色，不使用额外遮罩，因此牌面保持可辨认。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C10-019",
+   "name": "禁打压暗只在本家界面显示",
+   "rule": "禁打压暗只在本家界面显示，其他家只看到牌背。",
+   "uiRequirement": "禁张灰态仅在本家手牌区显示，他家不呈现该效果。",
+   "uiInteraction": "他家手牌保持牌背显示，无灰化差异。",
+   "notes": "服务端也只按重连座位自身视角下发 play_lmts，客户端再叠加座位过滤，双重保证只本家可见。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C10-020",
+   "name": "禁打牌仍可提起与横滑出虚影",
+   "rule": "禁打牌仍能提起，也能横滑出虚影。",
+   "uiRequirement": "禁打牌允许提牌与横向滑动拖出虚影。",
+   "uiInteraction": "禁打牌无触摸响应，无法提起，也无法横滑出虚影。",
+   "notes": "与模板不一致：现存实现把禁打牌置为不可触摸（注释亦写「禁打不可点由 PlayLmts 维护」），因此无法提起/横滑，需要产品确认是否改回可提起仅是禁止出牌。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C10-021",
+   "name": "出牌禁打牌弹出该牌被禁打",
+   "rule": "单击、双击或松手打出禁打牌时弹出「该牌被禁打」。",
+   "uiRequirement": "本家尝试打出禁打牌时弹出「该牌被禁打」提示。",
+   "uiInteraction": "本家界面显示「该牌被禁打」文字提示 1.3 秒。",
+   "notes": "提示走通用 toast，简洁模式下会被抑制；因禁打牌 touchable=false，实际操作中单击/双击路径可能到不了校验，提示主要出现在拖拽松手路径。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C10-022",
+   "name": "禁打牌不进入牌河",
+   "rule": "被禁打的牌牌不进牌河。",
+   "uiRequirement": "禁打牌被打出时牌不落入牌河。",
+   "uiInteraction": "手牌回弹复位，牌河与出牌放大区均无该牌。",
+   "notes": "拦截发生在本地，未发送 MsgPlayC，因此服务端也不会落牌；不依赖服务端拒绝。",
+   "verdict": "confirmed"
+  }
+ ]
+}

@@ -1,0 +1,1334 @@
+{
+ "stage": {
+  "id": "ST-C14",
+  "name": "番型",
+  "chapter": "番型",
+  "summary": "定义胡牌番型的判定顺序、三组互斥取高再连乘的倍数结构、各档番型的成立条件与倍数，以及财神牌面与牌河的红染表现。",
+  "terms": [
+   {
+    "term": "面子",
+    "definition": "一组顺子、刻子或杠。杠含 4 张，仍计 1 组面子。对子不是面子。已完成的吃、碰、明杠、暗杠都计入面子。",
+    "source": "模板名词章节 第11行"
+   },
+   {
+    "term": "财神",
+    "definition": "白板固定为财神。只在胡牌判定时代替顺子、刻子或对子所缺的牌。吃、碰、杠必须用真实的非财神牌，不能用财神牌，也不能用财神去代替所缺的牌。",
+    "source": "模板名词章节 第12行"
+   },
+   {
+    "term": "爆头",
+    "definition": "摸牌前为 4 组面子加 1 张财神。下一张摸到任意牌，都与这张财神组成对子后自摸。只能自摸。",
+    "source": "模板名词章节 第16行"
+   },
+   {
+    "term": "七客",
+    "definition": "七对爆头。摸牌前没有吃、碰、杠，手牌为 6 组对子加 1 张财神。结算不单列这一项，按七对和爆头两组连乘。",
+    "source": "模板名词章节 第17行"
+   },
+   {
+    "term": "飘",
+    "definition": "自己出牌阶段打出一张财神，即飘财 1 次。连续打出财神则累加，打出普通牌清零。每小局从 0 次起算。",
+    "source": "模板名词章节 第18行"
+   },
+   {
+    "term": "放铳",
+    "definition": "打出的牌被他人合法胡走。胡牌者称为点炮胡。白板财神弃牌不能点炮胡。",
+    "source": "模板名词章节 第19行"
+   },
+   {
+    "term": "番型三组",
+    "definition": "番型分三组（基础、杠开、财神），组内只取最高一档，组间连乘。",
+    "source": "模板 番型 第165行"
+   },
+   {
+    "term": "财神牌面",
+    "definition": "财神牌面染红，可点击，没有角标。打出后牌河仍是原牌面，只保留这层红色。",
+    "source": "模板 番型 第180行"
+   }
+  ],
+  "crossCutting": [
+   "番型的成立判定与最终倍数由服务端下发（hu_items 的 fan_ids、fan_point 与 fan_details），客户端只做名称映射、字效资源选择、音效选择与倍数文案展示，未实现任何判番或倍数计算。",
+   "同一份 fan_ids 被多处共用解析：字效（BoxHzmjTipAniView）、音效（GameSoundConfig）、流水与桌面文案（FanDefine 的 formatHzmjWinnerFanFlowText / formatHzmjMatchResultFanLines），组合番统一归并为杠飘、杠爆、七客。",
+   "财神红染是全局牌值映射（GameData.jokerMah），手牌、牌河、副露、胡牌列表、放大出牌、听牌面板均复用同一条 {@code #ffc4c4} 染色链路，同牌高亮优先于红染。",
+   "胡牌按钮的倍数文本取服务端 hu_point，听牌面板的倍数取服务端 point 并按房间封顶值做 min 截断，客户端不做封顶外计算。",
+   "客户端代码里同时存在杭州与萧山两套番型表现：公共番型走 FanDefine，萧山独有扩展走 XsmjFanConfig 与 XsmjHuFanResolver，萧山倍率表不可直接当作杭州倍率证据。"
+  ]
+ },
+ "features": [
+  {
+   "id": "FP-ST-C14-001",
+   "name": "番型判定结构与胡牌方式",
+   "description": "结算时先确定牌型，再区分自摸、点炮胡与抢杠胡；番型按基础（含七对）、杠开、财神三组归类，组内取最高档，组间连乘。",
+   "scope": "只覆盖判定顺序、分组取高与组间连乘的结构；不含各档番型的具体成立条件与倍数，也不含结算分数改写与承包。",
+   "coordination": "客户端只消费服务端下发的番型列表与胡牌类型，做表现层映射，不参与判番。",
+   "atoms": [
+    {
+     "id": "AT-ST-C14-001",
+     "name": "先确认牌型再确认胡牌方式",
+     "rule": "先确认牌型，再确认这次是自摸、点炮胡还是抢杠胡。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "结算时同时读取服务端下发的番型列表与胡牌类型：番型列表用于选番型字效与音效，胡牌类型用于判断是否自摸并选择动作皮肤；客户端不做判定顺序运算。",
+     "uiInteraction": "胡牌按钮按胡牌类型切换自摸/胡两种动作皮肤；胡牌者方位播放番型字效，点炮时由放铳方位另播点炮字效。",
+     "messages": [
+      "MsgResultHu",
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:929"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:164"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:181"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:671"
+      }
+     ],
+     "notes": "客户端只消费判定结果，未见“先牌型、后胡牌方式”的判定流程代码。",
+     "businessBehavior": {
+      "trigger": "有人胡牌并进入结算",
+      "condition": "结算明细中存在该座位的胡牌记录",
+      "action": "同时取出牌型结果与胡牌方式，分别驱动番型字效和自摸或点炮表现",
+      "result": "胡牌者方位出现番型字效，点炮或抢杠时放铳方位出现点炮字效"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "判番顺序与胡牌方式判定均在服务端，客户端无判番实现可证",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C14-002",
+     "name": "番型分三组且组内只取最高一档",
+     "rule": "番型分三组，组内只取最高一档。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "番型 ID 表按基础（含七对）、杠开、财神三组归类；播字效时用动画优先级表在全部命中的番型里取最高一档作为主番型。",
+     "uiInteraction": "同一手牌只播一个主番型字效；杠飘、杠爆、七客这类组合另走组合字效节点。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:12"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:282"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1034"
+      }
+     ],
+     "notes": "三组互斥只在注释层声明；客户端按动画优先级而非分组取高，没有分组倍率计算。",
+     "businessBehavior": {
+      "trigger": "一组手牌同时命中多个番型",
+      "condition": "服务端返回的番型列表里有多条记录",
+      "action": "按既定优先级只挑一档作为主番型用于播放",
+      "result": "玩家只看到一段主番型字效，不会把所有命中番型逐条播完"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "三组的划分与组内取高由服务端计算，客户端只按动画优先级挑主番型",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C14-003",
+     "name": "组间连乘得出总倍数",
+     "rule": "组间连乘，最终倍数为三组最高档相乘。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端不重算连乘，直接展示服务端下发的总倍数：胡牌按钮显示胡牌倍数，结算流水行与听牌面板显示服务端点数。",
+     "uiInteraction": "胡牌按钮显示“N倍”；结算流水行显示“N倍”；听牌面板每张听牌显示服务端下发的倍数并按房间封顶值截断。",
+     "messages": [
+      "MsgPower",
+      "MsgResultHu",
+      "MsgWaitInfos"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:12"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:666"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:772"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTingPaiView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTingPaiView.ts:141"
+      }
+     ],
+     "notes": "客户端只做展示，没有三组连乘的运算实现。",
+     "businessBehavior": {
+      "trigger": "胡牌成立或查看听牌",
+      "condition": "服务端已算出该次胡牌的总倍数",
+      "action": "把总倍数原样写进胡牌按钮、结算流水和听牌列表",
+      "result": "玩家看到该次胡牌对应的总倍数数字"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "连乘由服务端计算，客户端仅展示总倍数",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C14-004",
+     "name": "点炮与抢杠不计爆头等番型",
+     "rule": "点炮和抢杠不算爆头、财飘、杠开、十风。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端只在表现层区分自摸与点炮/抢杠（动作皮肤、点炮字效、番型音效），未见对番型列表做剔除或改判的逻辑。",
+     "uiInteraction": "点炮或抢杠时胡牌按钮用“胡”皮肤而非“自摸”皮肤，放铳方位播放点炮字效。",
+     "messages": [
+      "MsgResultHu",
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:929"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:339"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:892"
+      }
+     ],
+     "notes": "需求要求点炮与抢杠剔除爆头、财飘、杠开、十风，客户端没有对应过滤逻辑，番型组合完全由服务端 fan_ids 决定。",
+     "businessBehavior": {
+      "trigger": "别人打出的牌被胡走，或加杠的第四张被抢",
+      "condition": "胡牌方式是点炮或抢杠而不是自摸",
+      "action": "按非自摸方式选择胡牌动作与点炮表现",
+      "result": "玩家看到胡牌方位不是自摸表现，放铳方位出现点炮字效"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "点炮与抢杠下的番型剔除规则在服务端，客户端无剔除实现可证",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C14-002",
+   "name": "平胡",
+   "description": "基础组最低一档平胡：4 组面子加 1 对即可成立，财神可参与面子或对子，倍数为 1。",
+   "scope": "只覆盖平胡自身的成立条件与倍数；其他番型命中时按组内取高替换平胡，不在本功能点内。",
+   "coordination": "平胡同时作为番型兜底名称，番型列表为空或缺失时统一显示平胡。",
+   "atoms": [
+    {
+     "id": "AT-ST-C14-005",
+     "name": "平胡为四组面子加一对",
+     "rule": "平胡：4 组面子加 1 对。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端只定义平胡番型 ID 与名称，并在番型列表为空时按平胡兜底命名；不判定面子与将的成型。",
+     "uiInteraction": "番型列表缺失或全部为平胡时，桌面结算文案显示“平胡”。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:15"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:274"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:516"
+      }
+     ],
+     "notes": "成型判定在服务端，客户端只有番型名称与兜底文案。",
+     "businessBehavior": {
+      "trigger": "一手牌按四组面子加一对胡牌",
+      "condition": "该手牌没有命中更高的番型",
+      "action": "按最低档番型命名并展示",
+      "result": "玩家在结算中看到“平胡”"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "面子与将的成型判定在服务端，客户端无判胡计算",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C14-006",
+     "name": "财神可参与面子或对子",
+     "rule": "财神可参与面子或对子。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "副露与顺子展示时把财神按缺口推断替代牌值插入，胡牌组合标志里定义了“财神面（组）”与“财神将”；实际成型判定不在客户端。",
+     "uiInteraction": "副露与顺子按牌值升序摆放，财神被插到它所补的缺口位置。",
+     "messages": [],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/BoxMahDefine.ts",
+       "location": "source-code/client/Code/config/BoxMahDefine.ts:434"
+      },
+      {
+       "file": "source-code/client/Code/config/GameDefine.ts",
+       "location": "source-code/client/Code/config/GameDefine.ts:253"
+      },
+      {
+       "file": "source-code/client/Code/config/GameDefine.ts",
+       "location": "source-code/client/Code/config/GameDefine.ts:255"
+      }
+     ],
+     "notes": "财神面与财神将标志只做定义，仓库内未见引用；展示插位逻辑仅解决摆放顺序。",
+     "businessBehavior": {
+      "trigger": "副露或胡牌组合里含财神",
+      "condition": "财神被用来补顺子或充当对子",
+      "action": "按缺口把财神摆到对应位置展示",
+      "result": "玩家看到的组合牌序里，财神出现在它替代的那张牌的位置"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "财神能否参与面子或对子由服务端判胡决定，客户端只有摆放展示",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C14-007",
+     "name": "平胡倍数为1",
+     "rule": "平胡倍数为 1。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "番型表标注平胡 1 倍；实际展示的倍数取服务端下发的点数。",
+     "uiInteraction": "胡牌按钮与结算流水按服务端点数显示“N倍”。",
+     "messages": [
+      "MsgPower",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:15"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:666"
+      }
+     ],
+     "notes": "客户端只在注释中记录平胡为 1 倍，不参与计算。",
+     "businessBehavior": {
+      "trigger": "平胡成立",
+      "condition": "该手牌未命中更高番型",
+      "action": "按服务端给的点数展示倍数",
+      "result": "玩家看到平胡对应的 1 倍"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "倍数由服务端下发，客户端未校验平胡是否恒为 1 倍",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C14-003",
+   "name": "带财七对",
+   "description": "14 张组成 7 对且手里至少 1 张财神的七对档位，含豪华、双豪华、三豪华，豪华按非财神牌面四张实牌计组，白板不计豪华。",
+   "scope": "不含没有财神时的清七对；不含七对与爆头或财飘叠加后的七客称作法。",
+   "coordination": "七对系与爆头或财飘同时命中时，客户端统一改名为七客并按组合字效播放；倍率仍取服务端结果。",
+   "atoms": [
+    {
+     "id": "AT-ST-C14-008",
+     "name": "带财七对成立条件",
+     "rule": "七对：14 张组成 7 对，且手里至少有 1 张财神。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端有七对与各豪华档位的番型 ID 与名称，并把七对系叠加爆头或财飘时改名为七客；未见“至少一张财神”的判定。",
+     "uiInteraction": "结算文案显示七对、豪华七对、双豪华七对、三豪华七对，叠加爆头时显示七客系名称。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:34"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:83"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:420"
+      }
+     ],
+     "notes": "客户端只按服务端番型 ID 映射名称，未判断手里是否有财神。",
+     "businessBehavior": {
+      "trigger": "一手牌做成七对",
+      "condition": "手里带财神并按七对胡牌",
+      "action": "按命中的七对档位命名并播放对应字效",
+      "result": "玩家在结算中看到七对或七客系番型名"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "七对的成型与“至少一张财神”条件在服务端判定，客户端无对应校验",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C14-009",
+     "name": "带财七对档位倍数",
+     "rule": "七对 / 豪华 / 双豪华 / 三豪华，倍数 2 / 4 / 8 / 16。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "四个档位分别有番型 ID、名称与字效皮肤；倍数只在注释中标注，展示取服务端倍数。",
+     "uiInteraction": "四档七对分别播不同的番型字效（七对、豪华、双豪华、三豪华），七客档位另用 hhqk、2hhqk、3hhqk 等皮肤。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:35"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:39"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1143"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:104"
+      }
+     ],
+     "notes": "倍数文案在客户端仅为注释，实际倍率来自服务端。",
+     "businessBehavior": {
+      "trigger": "带财七对胡牌并命中豪华档位",
+      "condition": "某个非财神牌面凑成四张实牌越多，档位越高",
+      "action": "按档位播放对应字效并显示服务端给的倍数",
+      "result": "玩家看到豪华级数递增，倍数随之增加"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "豪华计数与档位倍数由服务端计算，客户端只做档位展示",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C14-010",
+     "name": "豪华按非财神牌面四张实牌计一组",
+     "rule": "某种非财神牌面有 4 张实牌，计 1 组豪华。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端只有豪华、双豪华、三豪华三档名称与档位字效，没有按四张实牌统计豪华组数的逻辑。",
+     "uiInteraction": "命中的豪华档位在结算文案与字效中体现。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:36"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:437"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:441"
+      }
+     ],
+     "notes": "四张实牌的统计规则不可由客户端代码证实。",
+     "businessBehavior": {
+      "trigger": "七对手里出现四张相同的非财神牌",
+      "condition": "该牌面四张都是真实牌",
+      "action": "按豪华级数命名与播放字效",
+      "result": "玩家看到豪华、双豪华或三豪华的番型名"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "豪华组数的统计在服务端，客户端无统计代码",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C14-011",
+     "name": "白板不计豪华",
+     "rule": "白板不计豪华。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "仓库内只找到白板作为财神牌值常量，未见豪华组数统计，也未见把白板排除在豪华之外的逻辑。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "未找到豪华统计与白板排除的客户端实现证据",
+      "clientObserved": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C14-004",
+   "name": "清七对",
+   "description": "手里没有财神时的七对档位，含豪华、双豪华、三豪华，倍数为 4 / 8 / 16 / 32。",
+   "scope": "只覆盖无财七对的成立条件与档位倍数；带财七对见上一功能点。",
+   "coordination": "清七对四档在字效、名称、动画优先级上与带财七对分开维护。",
+   "atoms": [
+    {
+     "id": "AT-ST-C14-012",
+     "name": "清七对为七对且手里没有财神",
+     "rule": "清七对：同样是 7 对，但手里没有财神。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端定义清七对及三档豪华清七对的番型 ID 与名称，未见“手里没有财神”的判定。",
+     "uiInteraction": "清七对四档各有独立字效皮肤（qqd、hhqqd、2hhqqd、3hhqqd）。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:41"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:87"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1151"
+      }
+     ],
+     "notes": "“没有财神”这一条件只在注释中体现，客户端不做校验。",
+     "businessBehavior": {
+      "trigger": "一手七对牌型不包含财神",
+      "condition": "七对成型且手里无财神",
+      "action": "按清七对档位命名并播放对应字效",
+      "result": "玩家看到清七对或豪华清七对名称"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "无财神条件由服务端判定，客户端没有校验实现",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C14-013",
+     "name": "清七对档位倍数",
+     "rule": "清七对 / 豪华 / 双豪华 / 三豪华，倍数 4 / 8 / 16 / 32。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "四档清七对的 ID、名称与字效齐全；倍数值只写在注释里，展示取服务端倍数。",
+     "uiInteraction": "清七对四档分别播不同字效，结算文案显示对应档位名称。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:41"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:47"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:89"
+      }
+     ],
+     "notes": "倍率不作为客户端计算依据；萧山倍率表对清七对给出的是另一套数值，不能当杭州证据。",
+     "businessBehavior": {
+      "trigger": "无财七对胡牌并命中豪华档位",
+      "condition": "四张实牌的组数越多档位越高",
+      "action": "按档位播放字效并显示服务端倍数",
+      "result": "玩家看到清七对档位名与对应倍数"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "档位与倍数由服务端计算，客户端只做展示",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C14-005",
+   "name": "杠开",
+   "description": "自摸且杠链为 1 至 4 及以上的杠上开花、二连杠、三连杠、四连杠，倍数为 2 / 4 / 8 / 16。",
+   "scope": "只覆盖杠开自身的成立条件与档位；杠开与财飘叠加时的杠飘/飘杠归入后续功能点。",
+   "coordination": "客户端另有一处杠开提示检测，用于操作阶段的听牌提示，与结算番型判定相互独立。",
+   "atoms": [
+    {
+     "id": "AT-ST-C14-014",
+     "name": "杠开须为自摸",
+     "rule": "杠开：自摸，杠链为 1 / 2 / 3 / 4 及以上。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端有杠开提示检测：手牌张数模 3 余 2、存在听牌、手里恰有一组可杠牌时提示可杠开；结算时按是否自摸选择动作皮肤。",
+     "uiInteraction": "摸牌后若满足杠开条件给出杠开相关提示；胡牌按钮按自摸显示“自摸”动作而非“胡”。",
+     "messages": [
+      "MsgResultHu",
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:25"
+      },
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:411"
+      },
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:418"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:929"
+      }
+     ],
+     "notes": "杠开提示只覆盖“手里正好有一组可杠”的情形，判定口径比结算规则窄。",
+     "businessBehavior": {
+      "trigger": "杠牌之后摸进一张能胡的牌",
+      "condition": "这次胡牌是自摸而不是点炮或抢杠",
+      "action": "按自摸方式展示胡牌表现并映射杠开番型",
+      "result": "玩家看到自摸形态的胡牌与杠开类番型字效"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "杠链与自摸条件的结算判定在服务端，客户端只有操作阶段的提示检测",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C14-015",
+     "name": "杠开档位对应杠链数量",
+     "rule": "杠开档位为杠上开花 / 二连杠 / 三连杠 / 四连杠，对应杠链为 1 / 2 / 3 / 4 及以上。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "客户端为杠链 1 至 4 分别定义四个番型 ID 与名称，并提供把番型 ID 换算成档位序号的函数，档位用于组合文案与字效选择。",
+     "uiInteraction": "四个档位分别播 gk、2lgk、3lgk、4lgk 字效；组合成杠飘时按档位拼出“杠飘（二连杠）”这类文案。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:28"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:296"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1135"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:80"
+      }
+     ],
+     "notes": "档位体系与表现为客户端实现；杠链如何累计由服务端决定。",
+     "businessBehavior": {
+      "trigger": "杠开胡牌，且连续开杠的次数不同",
+      "condition": "服务端返回的番型标明是第几连杠",
+      "action": "按连杠次数选择对应字效与文案",
+      "result": "玩家看到杠上开花、二连杠、三连杠或四连杠"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "杠链计数与自摸条件在服务端，客户端只实现档位展示",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C14-016",
+     "name": "杠开档位倍数",
+     "rule": "杠上开花 / 二连杠 / 三连杠 / 四连杠的倍数为 2 / 4 / 8 / 16。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "番型表在注释中标注四档倍数；实际展示取服务端下发的点数。",
+     "uiInteraction": "胡牌按钮与结算流水按服务端点数显示倍数。",
+     "messages": [
+      "MsgPower",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:26"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:31"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:666"
+      }
+     ],
+     "notes": "四档倍数只存在于注释，客户端不参与计算。",
+     "businessBehavior": {
+      "trigger": "杠开胡牌",
+      "condition": "命中某一档连杠",
+      "action": "按服务端点数展示倍数",
+      "result": "玩家看到与连杠档位对应的倍数"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "倍数由服务端计算下发，客户端无校验",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C14-006",
+   "name": "爆头",
+   "description": "自摸且飘档为 0、单放与财神成将时的爆头，倍数 2；听任意牌时改看进张前是否敲响。",
+   "scope": "只覆盖飘档为 0 的爆头；飘档 1 及以上归入财飘功能点。",
+   "coordination": "爆头与七对叠加时客户端改称七客，与七对系共用一套组合表现。",
+   "atoms": [
+    {
+     "id": "AT-ST-C14-017",
+     "name": "爆头成立条件",
+     "rule": "爆头：自摸，飘档为 0，单放与财神成将。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "番型表把爆头描述为自摸加财神对且无飘；客户端另有万能听（任意牌）识别与财神将标志定义，但没有飘档与单放的结算判定。",
+     "uiInteraction": "万能听时在该张牌上显示爆的听牌标签，听牌面板对任意牌显示“胡”。",
+     "messages": [
+      "MsgResultHu",
+      "MsgPower",
+      "MsgWaitInfos"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:17"
+      },
+      {
+       "file": "source-code/client/Code/config/BoxMahDefine.ts",
+       "location": "source-code/client/Code/config/BoxMahDefine.ts:883"
+      },
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:1987"
+      },
+      {
+       "file": "source-code/client/Code/config/GameDefine.ts",
+       "location": "source-code/client/Code/config/GameDefine.ts:254"
+      }
+     ],
+     "notes": "客户端只有爆头听牌识别，没有“飘档为 0”与“单放与财神成将”的成牌校验。",
+     "businessBehavior": {
+      "trigger": "手里剩一张财神且其他牌已成四组面子",
+      "condition": "这次是自摸，且本次没有飘",
+      "action": "按爆头档位命名并播放对应字效",
+      "result": "玩家看到爆头番型名与爆头字效"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "飘档与单放判定在服务端，客户端只有万能听识别",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C14-018",
+     "name": "爆头倍数",
+     "rule": "爆头倍数为 2。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "番型表标注爆头 2 倍；实际展示取服务端点数。",
+     "uiInteraction": "胡牌按钮与结算流水显示服务端给的倍数。",
+     "messages": [
+      "MsgPower",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:17"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:666"
+      }
+     ],
+     "notes": "倍数值只在注释中体现，不参与客户端计算。",
+     "businessBehavior": {
+      "trigger": "爆头胡牌",
+      "condition": "命中爆头番型",
+      "action": "按服务端点数展示倍数",
+      "result": "玩家看到爆头对应的倍数"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "倍数由服务端下发，客户端无校验",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C14-019",
+     "name": "听任意牌时改看进张前是否敲响",
+     "rule": "听任意牌时，改看进张前是否敲响。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端识别万能听（任意牌），但不是按“敲响”判断：打出财神且听任意牌标记为飘，其余万能听标记为爆；代码中未见敲响这一概念。",
+     "uiInteraction": "打出某张牌后若构成万能听，在该牌上显示爆或飘的听牌标签；听牌面板对任意牌显示“胡”。",
+     "messages": [
+      "MsgWaitInfos"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts:193"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTingPaiView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTingPaiView.ts:41"
+      },
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:1987"
+      }
+     ],
+     "notes": "需求中的“敲响”在客户端代码中无对应概念，只有任意牌听牌识别；爆与飘的区分仅按打出的牌是否为财神。",
+     "businessBehavior": {
+      "trigger": "打出一张牌后听任意牌",
+      "condition": "该次听牌可胡任意一张牌",
+      "action": "按打出的是否为财神分别标记为飘或爆",
+      "result": "玩家看到该张牌上出现爆或飘的听牌标签"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端没有“敲响”这一判定，无法证实需求语义",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C14-007",
+   "name": "财飘",
+   "description": "自摸且飘档为 1 及以上、单放与财神成将时的财飘、双财飘、三财飘，倍数 4 / 8 / 16，3 档及以上统一算三财飘。",
+   "scope": "只覆盖飘档 1 及以上的财飘档位；飘档 0 的爆头见上一功能点。",
+   "coordination": "飘计数由服务端单独下发，客户端只做飘状态存储与飘动作表现，再按番型档位映射字效。",
+   "atoms": [
+    {
+     "id": "AT-ST-C14-020",
+     "name": "财飘成立条件",
+     "rule": "财飘：自摸，飘档正好为 1 / 2 / 3 及以上，且单放与财神成将。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端接收飘计数消息并写入各座位飘状态，另把打出财神后听任意牌标为飘；番型表把财飘描述为自摸加财神对加飘档。",
+     "uiInteraction": "有人飘时在该座位播 piao 动作字效；打出财神构成万能听时在牌上显示飘标签。",
+     "messages": [
+      "MsgPiao",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:19"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePiaoCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePiaoCmd.ts:21"
+      },
+      {
+       "file": "source-code/client/Code/config/BoxMahDefine.ts",
+       "location": "source-code/client/Code/config/BoxMahDefine.ts:885"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1680"
+      }
+     ],
+     "notes": "客户端只存飘计数并做表现，财飘的成立与自摸条件不在客户端判定。",
+     "businessBehavior": {
+      "trigger": "出牌阶段有一方打出财神",
+      "condition": "该次飘在胡牌前仍然有效",
+      "action": "给该座位播飘的动作与计数，结算时按财飘档位命名",
+      "result": "玩家看到飘的字效，胡牌时看到财飘类番型"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "飘档计算与财飘成立判定在服务端，客户端仅存储飘计数并做表现",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C14-021",
+     "name": "财飘档位与3档以上归并",
+     "rule": "财飘 / 双财飘 / 三财飘，倍数 4 / 8 / 16；3 档及以上都是三财飘。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "客户端为三档财飘分别定义番型 ID 与名称，并提供把番型 ID 换算成飘档序号的函数，第 3 档作为封顶档使用。",
+     "uiInteraction": "三档分别播 cp、2cp、3cp 字效，文案显示财飘、双财飘、三财飘。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:23"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:311"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1129"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:78"
+      }
+     ],
+     "notes": "“3 档及以上都是三财飘”在客户端表现为只有一个三财飘档位，无更高档位。",
+     "businessBehavior": {
+      "trigger": "带飘胡牌",
+      "condition": "服务端判定本次飘档为 1、2 或 3 及以上",
+      "action": "按飘档选择对应档位名与字效",
+      "result": "玩家看到财飘、双财飘或三财飘"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "飘档计数在服务端，客户端只把档位映射为名称与字效；4/8/16 倍数由服务端给出",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C14-008",
+   "name": "杠飘与飘杠",
+   "description": "同时命中杠上开花和财飘时去掉这两条，改记杠飘或飘杠，倍数 8，再乘基础番。",
+   "scope": "只覆盖杠开与财飘叠加的组合档；杠爆（杠开加爆头）与七客不在本功能点范围内。",
+   "coordination": "组合番在三类出口共用同一套解析：番型字效、番型音效、结算与桌面文案。",
+   "atoms": [
+    {
+     "id": "AT-ST-C14-022",
+     "name": "杠开与财飘同时命中时合并为杠飘或飘杠",
+     "rule": "同时命中杠上开花和财飘时，去掉这两条，改记杠飘或飘杠。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "客户端有组合解析：同时出现杠开系与财飘系，或直接收到杠飘、飘杠组合番型时，归并为杠飘或飘杠，文案只写组合名并附非 1 档的明细。",
+     "uiInteraction": "组合字效播 gp 或 pg；赢家流水文案与桌面结算文案写成杠飘或飘杠，不再并列显示杠上开花与财飘。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:257"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:365"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:368"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1101"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:52"
+      }
+     ],
+     "notes": "客户端能识别组合并为展示合并，但服务端到底下发组合番型 ID 还是两条拆分番型会产生两种文案路径：拆分时客户端一律默认叫杠飘（代码注释说明番型顺序不可靠）。",
+     "businessBehavior": {
+      "trigger": "一次胡牌同时是杠上开花又是财飘",
+      "condition": "服务端番型里同时含杠开与财飘，或直接下发组合番型",
+      "action": "把两条合并成一条组合番型用于字效与文案",
+      "result": "玩家看到杠飘或飘杠，而不是分别看到杠上开花与财飘"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "是否“去掉这两条”取决于服务端下发的番型组合，客户端只能按收到的番型合并展示",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C14-023",
+     "name": "杠飘组合倍数为8并再乘基础番",
+     "rule": "杠飘或飘杠倍数 8，再乘基础番；平胡加这一档是 8 倍，七对加这一档是 16 倍。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "番型表标注杠飘与飘杠均为 8 倍，并附组合文案示例；最终倍数取服务端下发的总点数，客户端不做 8 乘基础番的运算。",
+     "uiInteraction": "胡牌按钮与结算流水按服务端点数显示倍数，桌面文案显示“杠飘（二连杠，双财飘）”这类组合明细。",
+     "messages": [
+      "MsgPower",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:52"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:351"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:389"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:666"
+      }
+     ],
+     "notes": "8 倍与“再乘基础番”只写在注释与文案示例中，客户端不做连乘计算。",
+     "businessBehavior": {
+      "trigger": "杠开与财飘叠加胡牌",
+      "condition": "该次胡牌命中杠飘或飘杠组合",
+      "action": "按服务端点数展示组合倍数，文案保留组合与明细",
+      "result": "玩家看到组合番型的倍数，平胡底是 8 倍、七对底是 16 倍"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "组合倍数与基础番连乘由服务端计算，客户端只做展示",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C14-009",
+   "name": "十风",
+   "description": "从第一张出牌起连续打字牌的独占番型：10 张为 2 倍，每多一张再乘 2；中途打非字牌或吃碰杠则作废；满 10 张后任意自摸都能胡，不与其它番型相乘。",
+   "scope": "只覆盖十风自身的累计、作废、成胡与倍率；不含十风与其它番型叠加的异常口径。",
+   "coordination": "客户端把十风当独占番型处理，并针对十风亮牌走牌河、胡牌明细不能当剩余手牌用做了专门注释。",
+   "atoms": [
+    {
+     "id": "AT-ST-C14-024",
+     "name": "从第一张出牌起连续打字牌",
+     "rule": "十风：从第一张出牌起连续打字牌。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "仓库内只找到十风番型 ID、名称与字效皮肤，未见从第一张出牌起累计字牌张数的逻辑；字牌判定函数存在但全仓无调用点。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "未找到连续打出字牌的累计实现证据",
+      "clientObserved": false
+     }
+    },
+    {
+     "id": "AT-ST-C14-025",
+     "name": "十风中途作废不可重算",
+     "rule": "中途打出非字牌，或吃、碰、杠，本局作废，不能再重新累计。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "未见十风累计的作废与不可重算逻辑，也未见相关提示文案。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "未找到十风作废规则的客户端实现证据",
+      "clientObserved": false
+     }
+    },
+    {
+     "id": "AT-ST-C14-026",
+     "name": "满10张后任意自摸都能胡",
+     "rule": "满 10 张后任意自摸都能胡，不要求成牌。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端把十风当独占番型识别，并在代码注释中说明十风亮牌走牌河、胡牌明细里的手牌与组合不能当剩余手牌使用；未见“不要求成牌”的判定。",
+     "uiInteraction": "十风播放专属番型字效（sf），结算亮牌按十风特例处理。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:49"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:176"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1160"
+      }
+     ],
+     "notes": "“任意自摸都能胡、不要求成牌”不可由客户端证实，客户端只有十风番型识别与亮牌特例处理。",
+     "businessBehavior": {
+      "trigger": "连续打出 10 张以上字牌后自摸",
+      "condition": "累计未被打断",
+      "action": "按十风番型播放专属字效并处理亮牌",
+      "result": "玩家看到十风番型字效"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "免成牌判胡与任意自摸条件在服务端，客户端无判定实现",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C14-027",
+     "name": "十风只记自身不与其它番型相乘",
+     "rule": "只记十风，不与平胡、杠开、财飘、七对相乘。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端把十风标注为独占番型，并在萧山侧的独占番名单中列入十风，独占番直接按服务端单条结果展示，不做叠加拆分。",
+     "uiInteraction": "十风单独播一段字效，不与其它番型拼组合文案。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:49"
+      },
+      {
+       "file": "source-code/client/Code/config/XsmjFanConfig.ts",
+       "location": "source-code/client/Code/config/XsmjFanConfig.ts:36"
+      },
+      {
+       "file": "source-code/client/Code/config/XsmjFanConfig.ts",
+       "location": "source-code/client/Code/config/XsmjFanConfig.ts:38"
+      }
+     ],
+     "notes": "独占番名单挂在萧山配置里，杭州侧只有注释声明独占；是否真的不与其它番型相乘由服务端保证。",
+     "businessBehavior": {
+      "trigger": "十风成立并自摸胡牌",
+      "condition": "本次胡牌被判定为十风",
+      "action": "只按十风单条番型播放表现",
+      "result": "玩家只看到十风，不会同时看到平胡或七对叠加"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "是否剔除其它番型由服务端番型列表决定，客户端无剔除逻辑",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C14-028",
+     "name": "十风倍率递增",
+     "rule": "10 张为 2 倍，每多一张再乘 2。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "番型表注释记录十风 2 倍起、每多一张翻倍的口径；客户端不计算，展示取服务端点数。",
+     "uiInteraction": "胡牌按钮与结算流水显示服务端给的倍数。",
+     "messages": [
+      "MsgPower",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:49"
+      },
+      {
+       "file": "source-code/client/Code/config/XsmjFanConfig.ts",
+       "location": "source-code/client/Code/config/XsmjFanConfig.ts:23"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:666"
+      }
+     ],
+     "notes": "唯一带具体数值的倍率表是萧山表，把十风记为 4，与杭州 2 倍起步口径不同；该表仅在萧山玩法生效，杭州倍率取服务端，不能据此判杭州实现有误。",
+     "businessBehavior": {
+      "trigger": "十风胡牌",
+      "condition": "连续字牌张数超过 10 张",
+      "action": "按服务端点数展示倍数",
+      "result": "玩家看到每多一张字牌倍数翻一倍"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "倍率由服务端计算下发，客户端只在注释记录口径",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C14-010",
+   "name": "财神牌面表现",
+   "description": "财神牌面染红、可点击、没有角标；打出后牌河仍是原牌面，只保留这层红色。",
+   "scope": "只覆盖财神在手牌、牌河、副露、胡牌列表中的颜色与角标表现，不含财神能否打出与禁手规则。",
+   "coordination": "财神染色是全牌桌共用的牌值映射，任何一处牌列表展示都会复用同一条染色链路。",
+   "atoms": [
+    {
+     "id": "AT-ST-C14-029",
+     "name": "财神牌面染红可点击无角标",
+     "rule": "财神牌面染红，可点击，没有角标。",
+     "uiRequirement": "财神牌面染红，可点击，没有角标。",
+     "verdict": "confirmed",
+     "clientLogic": "客户端按本局财神牌值维护全局染色映射，手牌刷新时把财神牌值交给牌组件染色，同时清空癞子标记与角标标记，牌的可点性由禁打数据单独维护、不被染色流程改动。",
+     "uiInteraction": "手牌中的财神显示为红色牌面，没有角标；未被禁打的财神仍可点击出牌。",
+     "messages": [
+      "MsgJoker",
+      "MsgPlayLmts"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:52"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts:68"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts:70"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts:73"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjMahColorUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjMahColorUtil.ts:29"
+      }
+     ],
+     "notes": "“可点击”最终受服务端禁打数据约束（财飘回合等场景会禁打部分牌），客户端没有对财神单独放行。",
+     "businessBehavior": {
+      "trigger": "本局确定财神牌后展示手牌",
+      "condition": "某张牌的值等于本局财神牌值",
+      "action": "把这张牌刷成红色并清掉角标",
+      "result": "玩家看到红色的财神牌，牌上没有任何角标，未禁打时可正常点出"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "染色与无角标已验证，但“可点击”受服务端下发的禁打数据约束，客户端未单独对财神做点击验证",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C14-030",
+     "name": "打出的财神在牌河保留原牌面只留红色",
+     "rule": "打出后牌河仍是原牌面，只保留这层红色。",
+     "uiRequirement": "打出后牌河仍是原牌面，只保留这层红色。",
+     "verdict": "confirmed",
+     "clientLogic": "出牌后刷新对应座位牌河时，重新把牌河、胡牌列表、副露整体刷一遍财神色；染色只改颜色标记，不改牌面资源。",
+     "uiInteraction": "牌河里打出的财神显示原来的白板牌面，仅叠加一层红色；同牌处于高亮状态时不覆盖高亮色。",
+     "messages": [
+      "MsgPlayS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:1093"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:1130"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjMahColorUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjMahColorUtil.ts:51"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjMahColorUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjMahColorUtil.ts:29"
+      }
+     ],
+     "notes": "染色逻辑在同牌高亮（绿/蓝）时会让位，需求只约束牌面与红色，不涉及高亮优先级。",
+     "businessBehavior": {
+      "trigger": "有一方打出财神",
+      "condition": "打出的牌值等于本局财神牌值",
+      "action": "把这张牌放进牌河并只刷红色",
+      "result": "玩家在牌河看到白板原牌面，颜色是红色"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    }
+   ]
+  }
+ ]
+}

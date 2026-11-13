@@ -1,0 +1,103 @@
+{
+ "stageId": "ST-C03",
+ "title": "发牌",
+ "sourceTitle": "开局 > 发牌",
+ "fromLine": 37,
+ "toLine": 46,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 10,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C03-001",
+   "name": "从牌墙头部取牌",
+   "rule": "发牌从牌墙头部开始取牌。",
+   "uiRequirement": "",
+   "uiInteraction": "牌墙按索引逐张置空隐藏，剩余张数 via onUpdateMahCnt 同步刷新。",
+   "notes": "代码以“正向/asc 索引”表达牌墙起点，未显式命名“头部”；发牌阶段本身不扣墙，扣减发生在首条 flag=0 的抓牌。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C03-002",
+   "name": "庄家为发牌起点",
+   "rule": "发牌从庄家起始。",
+   "uiRequirement": "",
+   "uiInteraction": "庄家标识由 onShowZhuang 展示（属定庄阶段表现，非发牌逻辑）。",
+   "notes": "无“从庄家起”的顺序计算，顺序完全由服务端逐座位下发；客户端发牌动画循环按本地座位索引 0..playCnt-1 播放，与庄家起点无关。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C03-003",
+   "name": "逆时针逐座发牌",
+   "rule": "发牌按逆时针方向依次进行。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "未找到逆时针/顺时针方向相关实现；座位映射 SC_PLAYER_LOCAL_SEAT_MAP 仅做本地座位到 UI 下标映射，不表达发牌方向。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C03-004",
+   "name": "每人4张发3轮共12张",
+   "rule": "每人每次发4张，共发3轮，各得12张。",
+   "uiRequirement": "",
+   "uiInteraction": "每个座位手牌整批出现（takeFirst），自身座位先随机乱序展示再进入理牌。",
+   "notes": "未见“每人4张×3轮”的分轮节奏实现，本工程内 takeFirst 只接收整手牌；仅保留发牌节奏常量 Time_TakeFirstOneMah=0.25 且未被本工程引用。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C03-005",
+   "name": "再每人1张至13张",
+   "rule": "三轮之后每人再发1张，各得13张。",
+   "uiRequirement": "",
+   "uiInteraction": "手牌区最多平铺13张，第14张进入单放位。",
+   "notes": "13张未在发牌处理中显式校验，来自服务端 hands 与常量推算。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C03-006",
+   "name": "庄家补1张至14张",
+   "rule": "最后再给庄家1张，庄家14张，三名闲家各13张。",
+   "uiRequirement": "",
+   "uiInteraction": "庄家14张全部平铺展示，无单放摸牌位。",
+   "notes": "客户端不区分庄家/闲家张数，也不校验 hands 长度，14与13均依赖服务端下发；庄家额外1张无专门分支处理。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C03-007",
+   "name": "合计53张余83张",
+   "rule": "共发出53张牌，牌墙剩余83张。",
+   "uiRequirement": "",
+   "uiInteraction": "右上角剩余张数组件显示 getLeftCard() 数值。",
+   "notes": "代码未写死53/83；发牌阶段(MsgTakeFirst)不扣墙，首条 flag=0 抓牌时一次性扣53且未单独扣本次摸到的1张，剩余数可能出现1张偏差，需与服务端确认。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C03-008",
+   "name": "庄家14张直接首轮不再摸牌",
+   "rule": "庄家用这14张直接进入首轮，不再摸牌。",
+   "uiRequirement": "",
+   "uiInteraction": "发牌动画结束自动理牌，不播摸牌动画；首出阶段弹出庄/闲提示 KW_ZhuangTips。",
+   "notes": "无“庄家跳过摸牌”的显式分支，属于发牌即给全手牌、理牌后直接要权限的隐含实现；首出判定依赖剩余张数而非座位。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C03-009",
+   "name": "理牌后立即给自摸与过",
+   "rule": "理牌后若已满足自摸，立即给出【自摸】【过】。",
+   "uiRequirement": "理牌后若已满足自摸，立即给出【自摸】【过】。",
+   "uiInteraction": "胡按钮 KW_BTN_Hu 播放 zimo 动画并显示胡牌牌面与倍数，过按钮 KW_BTN_Guo 同时出现；胡牌结果标识 HuIndex 含“自摸”页。",
+   "notes": "按钮文案为“胡”而非“自摸”，自摸仅通过 zimo 动效皮与结算标识体现；“立即”取决于服务端 MsgPower 时机，客户端无额外延时控制。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C03-010",
+   "name": "爆头七客按13张判断",
+   "rule": "爆头、七客按其余13张判断。",
+   "uiRequirement": "",
+   "uiInteraction": "听牌面板切换到爆头页（C_BaoTou/KW_BaoTou）并显示“胡”。",
+   "notes": "客户端不按“其余13张”做本地判定，判定在服务端；代码中亦未见发牌后自动计算爆头/七客的逻辑，七客仅为结算番型命名。",
+   "verdict": "partial"
+  }
+ ]
+}

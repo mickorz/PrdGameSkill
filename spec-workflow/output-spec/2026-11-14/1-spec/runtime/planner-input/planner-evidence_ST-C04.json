@@ -1,0 +1,130 @@
+{
+ "stageId": "ST-C04",
+ "title": "操作优先级",
+ "sourceTitle": "行牌 > 操作优先级",
+ "fromLine": 47,
+ "toLine": 57,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 13,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C04-001",
+   "name": "响应优先级：点炮胡 > 碰/直杠 > 吃",
+   "rule": "对同一张弃牌：点炮胡 > 碰 / 直杠 > 吃。",
+   "uiRequirement": "",
+   "uiInteraction": "操作区“碰杠胡”页同屏可同时显示吃、碰、杠、胡按钮（布局从左到右为吃、碰、杠、胡），按钮带 spine 光效；胡按钮额外显示所胡牌面与倍数文字（如 128倍）。",
+   "notes": "优先级完全由服务端裁决，客户端无本地排序或比较代码；按钮物理排列顺序为吃→碰→杠→胡，与优先级方向相反，不应误读为优先级顺序。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C04-002",
+   "name": "碰与直杠同级",
+   "rule": "碰与直杠同级，同时能碰和直杠时不区分先后。",
+   "uiRequirement": "",
+   "uiInteraction": "碰按钮与杠按钮可同时可点；杠存在多组组合时展开多杠单牌列表（KW_GangGrps），选中后发送对应 comb。",
+   "notes": "客户端没有“同级”的显式逻辑，只表现为碰、杠按钮可同时展示；实际裁决先后由服务端决定，且客户端把暗杠/补杠也统一按杠权限位处理（共用一个 POWER_ID_KONG 与杠组合列表），无法区分直杠与加杠/暗杠的优先级语义。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C04-003",
+   "name": "同级时座位号小者先裁决",
+   "rule": "同时能碰和直杠时不区分先后，按座位号小的先裁决。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "全仓未找到按座位号比较/排序做响应裁决的逻辑（现有 sort 仅用于牌值、听牌列表、战绩排序），该规则应在服务端实现，需确认服务端是否按 seat 升序裁决。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C04-004",
+   "name": "碰/直杠只下发给一家",
+   "rule": "碰、直杠只发给当前能成立、且座位号最小的那一家。",
+   "uiRequirement": "",
+   "uiInteraction": "收到自己座位权限包的客户端弹出操作按钮；其他客户端操作区被关闭（C_BtnState 置空白页），并清灰手牌。",
+   "notes": "客户端只被动接受“发给谁”的结果，没有“选择座位号最小的能成立者”的判断；同一时刻只有一个 _curPower，若服务端对多个座位先后下发权限，客户端会覆盖前一次。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C04-005",
+   "name": "多人可胡时每家都收到胡",
+   "rule": "多人可胡时每家都收到胡。",
+   "uiRequirement": "每个可胡玩家的客户端都要出现胡的响应入口。",
+   "uiInteraction": "胡按钮显示所胡牌面与倍数，并按 hu_type 切换 hu/zimo 皮；每个玩家在自己客户端独立看到胡按钮与“过”按钮。",
+   "notes": "仓内未找到 @RegisterCmd(CmdNames.CMD_HU_EX) 的处理类（GameResultHuCmd 注释提到原 GameHuExCmd 逻辑已被复用替代），GP_HU_EX 只在重连补数据路径被转发，因此运行期“每家都收到胡”的客户端表现证据不完整，实际依赖 MsgResultHu 的 hu_items。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C04-006",
+   "name": "近者胡则远者不成立",
+   "rule": "近者胡则远者不成立。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端无“出牌者起逆时针距离”的计算，也无远近判定；仅被动接收服务端结算的 hu_items，需服务端保证近者胡后不下发远者胡权。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C04-007",
+   "name": "近者放弃后远者仍可胡",
+   "rule": "近者放弃后远者仍可胡。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端放弃只上行 MsgCancel(seat, askid, flag)，是否把胡权顺延给远者并重新下发 MsgPower 完全由服务端决定，仓内无顺延逻辑。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C04-008",
+   "name": "只允许一人胡，不一炮多响",
+   "rule": "只允许一人胡，不一炮多响。",
+   "uiRequirement": "",
+   "uiInteraction": "牌桌点炮动画节点按类型播放 dianpao 或 yipaoduoxiang spine 动画。",
+   "notes": "客户端保留一炮多响动画与 duo_xiang 标记，与本模板“不一炮多响”冲突；实现上依赖服务端只下发一条 hu_items，客户端无兜底限制。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C04-009",
+   "name": "从出牌者起逆时针最近可胡者优先",
+   "rule": "多人可胡时，从出牌者起按逆时针，最近的可胡者优先。",
+   "uiRequirement": "",
+   "uiInteraction": "胡牌标识节点 KW_Hu_Index_n 按 hu_idx 对应的 C_HuType 页展示（胡牌类型的桌面角标）。",
+   "notes": "hu_idx 只用于胡牌标识/结算展示，未参与响应阶段顺位裁决；逆时针与“最近”判定在客户端缺失。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C04-010",
+   "name": "最近可胡者放弃后顺延",
+   "rule": "放弃后顺延。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端放弃只发 MsgCancel，无顺延状态机；若服务端把胡权顺延给下一家，客户端只会收到新的 MsgPower 再展示胡按钮，属于服务端驱动。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C04-011",
+   "name": "低优先级先提交需等高优先级放弃",
+   "rule": "低优先级先提交时，先等全部更高优先级的玩家手动放弃，再执行。",
+   "uiRequirement": "",
+   "uiInteraction": "提交后 KW_Handler.C_BtnState 立即切到空白页、清除手牌置灰与选吃回调，界面上不再显示等待态。",
+   "notes": "客户端无“等待更高优先级放弃中”的界面或超时处理；模板强调无托管（倒计时结束仍等待手动操作），客户端现有托管/自动胡入口需按玩法屏蔽，否则会破坏该等待语义。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C04-012",
+   "name": "更高优先级成立后其余响应取消",
+   "rule": "更高优先级一旦成立，其余响应取消。",
+   "uiRequirement": "",
+   "uiInteraction": "操作区 C_BtnState 置空白页、隐藏吃/碰/杠/胡/过按钮，隐藏多吃多杠选择池，并恢复手牌可点状态（已胡则保持）。",
+   "notes": "取消行为对任意生效动作无条件执行，没有“高优先级”判定，属服务端裁决后的表现层收尾；被取消方不会收到单独“取消”消息，只会在下一次 MsgPower 到来时刷新按钮。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C04-013",
+   "name": "吃只能吃上家",
+   "rule": "吃只能吃上家。",
+   "uiRequirement": "",
+   "uiInteraction": "吃按钮存在多组组合时展开多吃牌面选择池（完整三张顺子）并显示取消按钮，选定后发送吃请求。",
+   "notes": "客户端有本地座位关系枚举（PLAYER_3=上家），但未用于吃牌合法性判断，也没有对“最近出牌者”的归属校验；合法性完全依赖服务端不下发非上家的吃组合。",
+   "verdict": "partial"
+  }
+ ]
+}

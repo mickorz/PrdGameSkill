@@ -1,0 +1,112 @@
+{
+ "stageId": "ST-C02",
+ "title": "财神与牌组",
+ "sourceTitle": "开局 > 财神与牌组",
+ "fromLine": 31,
+ "toLine": 36,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 11,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C02-001",
+   "name": "整副牌共 136 张",
+   "rule": "136 张：万、条、筒各 36 张，东南西北 16 张，中发白 12 张。",
+   "uiRequirement": "",
+   "uiInteraction": "长按桌面可弹出记牌器（BoxHzmjJpqView），展示各牌剩余张数。",
+   "notes": "客户端运行期牌墙总数以服务端 wall_left 为准，136 只是初始化默认值；BoxMahDefine.MahValues 仍保留 8 张花牌(97-104)，但记牌器初始化不含花牌。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C02-002",
+   "name": "万、条、筒各 36 张",
+   "rule": "万、条、筒各 36 张。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "代码以“9 个牌值 ×4 张”表达 36 张，未出现 36 的常量。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C02-003",
+   "name": "东南西北共 16 张",
+   "rule": "东南西北 16 张。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C02-004",
+   "name": "中发白共 12 张",
+   "rule": "中发白 12 张。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C02-005",
+   "name": "白板固定为财神",
+   "rule": "白板固定为财神。",
+   "uiRequirement": "",
+   "uiInteraction": "手牌、牌河、副露、胡牌列表中的财神牌统一染财神色 #ffc4c4（可点击、无角标）；桌面财神位（KW_LEFT_MAHS/BoxHzmjMahLeftComp）展示财神牌面。",
+   "notes": "客户端同时存在白板财神与翻财神两种模式（MatchTipConfig 亦写“杭州麻将支持白板财神和翻财神两种模式”），财神非硬编码白板；模板只描述白板固定，需确认是否限定财神模式。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C02-006",
+   "name": "四张白板都视为财神",
+   "rule": "四张白板都是财神。",
+   "uiRequirement": "",
+   "uiInteraction": "财神色按牌值统一上色，四张白板出现在手牌、牌河、副露、胡牌列表时都会染红。",
+   "notes": "客户端无“白板共 4 张且全为财神”的显式数量校验，是按牌值等价实现。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C02-007",
+   "name": "自己出牌回合可打出财神",
+   "rule": "轮到自己出牌时可以打出财神。",
+   "uiRequirement": "",
+   "uiInteraction": "财神手牌可点击（财神色注释明确“可点击、无角标”）；打出后座位播飘 Spine 动画（skin=piao），打出财神时播放财神专属播报音。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C02-008",
+   "name": "打出财神不要求已爆头",
+   "rule": "打出财神不要求已经爆头。",
+   "uiRequirement": "",
+   "uiInteraction": "无爆头相关出牌提示；若服务端拦截财飘出牌，通过 MsgNotifyInfo 弹“有财必拷响规则生效中”。",
+   "notes": "“无需爆头”在客户端表现为无该门槛（无正向实现），是否存在爆头限制由服务端判定；财飘回合的出牌限制走 PlayLmts/NotifyInfo。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C02-009",
+   "name": "打出后作为白板留在牌河",
+   "rule": "打出后按普通白板留在牌河。",
+   "uiRequirement": "打出后按普通白板留在牌河",
+   "uiInteraction": "牌落河后立即调用 _applyJokerColorToTable，牌河里的财神仍被染财神色，因此显示为红色高亮的白板，而非完全普通的白板。",
+   "notes": "牌面为白板图，但客户端对牌河中的财神继续保留财神红色高亮，与“按普通白板”的表现存在差异，需确认是否取消牌河财神色。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C02-010",
+   "name": "他人不能吃碰杠财神弃牌",
+   "rule": "其他人不能吃、碰、杠（打出的财神）。",
+   "uiRequirement": "",
+   "uiInteraction": "吃碰杠按钮是否出现由服务端 MsgPower 权限位决定，客户端不做过滤；副露展示层按 isJoker 做财神插位排序。",
+   "notes": "客户端无该限制的实现证据，属服务端判定；副露展示用 isJoker 做财神插位排序（BoxMahDefine.sortCombDisplayMahs），易被误读为财神可参与吃碰杠。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C02-011",
+   "name": "财神弃牌不能点炮胡",
+   "rule": "也不能用它（打出的财神）点炮胡。",
+   "uiRequirement": "",
+   "uiInteraction": "点炮胡播 HuAniType.DIAN_PAO 动画；服务端不下发胡权限时无胡按钮。",
+   "notes": "“财神弃牌不能点炮胡”在客户端无本地实现，只能依赖服务端不下发胡权限；客户端胡牌流程对弃牌牌值不做任何判断。",
+   "verdict": "partial"
+  }
+ ]
+}

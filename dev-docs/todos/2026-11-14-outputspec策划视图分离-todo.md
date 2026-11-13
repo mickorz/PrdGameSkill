@@ -1,8 +1,8 @@
-# TODO：outputspec 策划视图分离（阶段 0~4 完成，阶段 5 进行中）
+# TODO：outputspec 策划视图分离（全部完成）
 
 - 日期：2026-11-14
 - 来源：`dev-docs/planning/2026-11-14-outputspec策划视图分离执行计划.md`（任务编号 T0.x~T5.x 均指向该计划；需求 R1~R10 见 `dev-docs/requirements/2026-11-14-outputspec策划需求视图与技术实现视图分离.md`）
-- 状态：阶段 0~4 全部完成（含验收与 commit）；阶段 5 进行中
+- 状态：阶段 0~5 全部完成（含验收与 commit）；复盘见 `dev-docs/progress-result/output-spec-generate-演进报告-v3.md`
 - 变更记录：按用户指令（2026-11-14），T0.3/T2.6/T5.1/T5.2 原人工评审闸门改为自动 AI 评审与自动触发，workflow 运行由 agent 自行触发
 
 ## 阶段 0：策划版 Prompt 对照实验（完成，commit 3138866 附产物）
@@ -56,16 +56,18 @@
 | T4.5 冲突检查 | 完成 | 三重 fail fast（specDir=sourceSpecDir / outputDir=sourceSpecDir / specDir 已含 feature_index 或 stage_manifest；分片残留允许） |
 | 验收 | 完成 | 三模式传参路径与冲突分支代码走查；真实行为归阶段 5 |
 
-## 阶段 5：全量重跑与收尾（进行中）
+## 阶段 5：全量重跑与收尾（完成）
 
-- [x] T5.1a planner-only 全链路真实跑（run-mwf9hupm-6，19 agent 预期：sections 读取 1 + 复制 2 + 策划版写作 15 + 构建配置 1）——运行中
-- [ ] T5.1a 验收：2026-11-13 目录零改动核对 + 策划版文档泄漏/覆盖率验收
-- [ ] T5.1b outputMode=all 全量重跑（T5.1a 完成后启动，两者写同一 outputDir 不可并行；查证 15 阶段 + 双投影 + 装配）
-- [ ] T5.2 AI 验收收口：verify-report 全部通过；ST-C01/05/02 三章节逐行 AI 复核（R8 三检查点）；conflict 逐条 AI 复核；difference_stats 分布合理性；策划版泄漏/覆盖率核查
-- [ ] T5.3 文档收尾：执行进度.md 里程碑更新；演进报告 v3；experience 回填；todo 文档终态；commit push
+| 任务 | 状态 | 结果 |
+|------|------|------|
+| T5.1a planner-only 全链路真实跑 | 完成 | run-mwf9hupm-6（19 agent，2235s/165348 tok）全部成功；首跑装配覆盖 fail（4 个纯知识原子 optional）→ required 口径修复（a2dd1fb）→ build 幂等重跑放行：泄漏零命中、必查覆盖 100%（339/339）、optional 4 列提示 |
+| T5.1a 验收 | 完成 | 2026-11-13 目录零改动（两次核对）；策划版约 89KB / 15 阶段 |
+| T5.1b all 全量重跑 | 完成 | run-mwfb5d3r-7（86/88 agent，8627s/806078 tok）：查证 15/15 零失败（L3 生效）；产出闸门 2 agent 未写盘 → journal 证据 one-shot 补跑（run-mwfgnueu-8 + run-mwfh8aby-9）+ 分片 merge ×3 + 机械问题修正（骨架占位字面量 ×8、AT-ID 缩写 ×1）→ 幂等 build 放行：15 阶段/93 功能/319 原子、difference 65/64/2/188 全标注、trace 必查覆盖 100% |
+| T5.2 AI 验收收口 | 完成 | run-mwfhvdzp-11（3 agent，525.2s/26228 tok）：conflict 2/2 逐条成立；三章节复核 ST-C01 通过、ST-C02/C05 4 处残留已修；策划版补跑章节 3 处失真/幻觉已修；build 复跑 exit 0 |
+| T5.3 文档收尾 | 完成 | 演进报告 v3 回填（15 占位符 + 问题清单 5 项）；执行进度.md 里程碑更新；experience 回填（L1 坑实锤/骨架占位字面量/AT-ID 缩写）；todo 终态；commit push |
 
 ## 优先级与提交计划
 
-1. ~~阶段 0 闸门~~ → ~~阶段 1/2~~ → ~~阶段 3~~ → ~~阶段 4~~（均已提交：3138866 / 47e2ea1 / a9bae82 / 51fe06c）
-2. 当前：T5.1a 等待 run-mwf9hupm-6 完成 → 验收 → T5.1b all 全量重跑 → T5.2 AI 验收 → T5.3 文档收尾
-3. 每阶段完成即 commit + push（提交信息见计划第 13 节）
+1. ~~阶段 0~~ → ~~阶段 1/2~~ → ~~阶段 3~~ → ~~阶段 4~~ → ~~阶段 5~~（全部提交：3138866 / 47e2ea1 / a9bae82 / 51fe06c / b424bd4 / a2dd1fb / 本次收尾）
+2. 全部完成：产出目录 `spec-workflow/output-spec/2026-11-14/1-spec`（15 阶段/93 功能点/319 原子项）+ 补充版（131532 字节）+ 策划版（89913 字节）；复盘见演进报告 v3
+3. 后续迭代入口：遗留 L7（待确认口径统一）+ 骨架占位去字面化 + AT-ID 完整形式硬约束（见演进报告 v3 第 5 节）

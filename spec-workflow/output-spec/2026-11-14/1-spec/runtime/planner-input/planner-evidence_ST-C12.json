@@ -1,0 +1,247 @@
+{
+ "stageId": "ST-C12",
+ "title": "三摊承包",
+ "sourceTitle": "三摊承包",
+ "fromLine": 131,
+ "toLine": 148,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 26,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C12-001",
+   "name": "只统计吃牌",
+   "rule": "只统计吃牌。",
+   "uiRequirement": "",
+   "uiInteraction": "吃牌时在吃牌方播放 TYPE_CHOW 动作动效；桌面无摊数展示。",
+   "notes": "客户端规则提示文案把摊写成“吃碰三摊”（MatchTipConfig.ts:23/40/47），与模板“只统计吃牌”冲突；客户端无本地摊统计，无法在端上验证碰/杠不计摊。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C12-002",
+   "name": "吃牌即加 1 摊",
+   "rule": "A 吃 B 的牌，A 对 B 加 1 摊。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "计数由服务端完成，客户端只看到最终 tan_count，无法校验每次吃牌是否只加 1。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C12-003",
+   "name": "两个方向分开计",
+   "rule": "两个方向分开计。",
+   "uiRequirement": "",
+   "uiInteraction": "结算行承包角标只挂在 from_seat（承包方）所在座位。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C12-004",
+   "name": "只有庄闲之间能承包",
+   "rule": "只有庄家和闲家之间能承包。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "端上无庄闲判断分支，无法验证“庄闲之间”限制，只能依赖服务端 bao_settles 已正确过滤。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C12-005",
+   "name": "闲闲同方向最多 2 摊",
+   "rule": "两名闲家之间，同一方向最多 2 摊，吃一成立就加 1。",
+   "uiRequirement": "",
+   "uiInteraction": "【吃】按钮显隐由 POWER_ID_CHOW 位决定。",
+   "notes": "上限判定在服务端；端上即便 tan_count=2 也照常显示服务端下发的【吃】。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C12-006",
+   "name": "满 2 摊不给【吃】",
+   "rule": "已经有 2 摊时，再吃这一家的牌不成立，不给出【吃】。",
+   "uiRequirement": "已有 2 摊时不给玩家显示【吃】按钮。",
+   "uiInteraction": "服务端不下发 CHOW 位时，吃按钮不显示。",
+   "notes": "“不给出【吃】”完全依赖服务端权限位；服务端误发 CHOW 时客户端不会兜底拦截。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C12-007",
+   "name": "与飘财无关",
+   "rule": "与飘财无关。",
+   "uiRequirement": "",
+   "uiInteraction": "飘计数走 onPiaoState 播飘动作；摊更新不触发任何飘表现。",
+   "notes": "仅从消息与数据链路看两者独立，客户端没有任何“飘影响摊”的判断。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C12-008",
+   "name": "第 3 摊记承包",
+   "rule": "某一方向计到第 3 摊时记承包。",
+   "uiRequirement": "",
+   "uiInteraction": "达到 3 摊时播放三摊落地 Spine（受简洁模式/复盘抑制）。",
+   "notes": "客户端只把 tan_count===3 当触发条件，未消费 bao_relation（0/1/2），“记承包”本身无法在端上核对；若下发的是单条增量且 tan_count 非 3，则不会触发。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C12-009",
+   "name": "四端播放三摊落地",
+   "rule": "四端播放「三摊落地」。",
+   "uiRequirement": "三摊落地在四个座位方向都要播放。",
+   "uiInteraction": "三摊落地 Spine 在屏幕中央单点播放，非四端；simpleMode 或复盘模式直接跳过。",
+   "notes": "实现为中央单节点动效，与模板“四端播放”不一致；代码注释写“动画播在此座位”，但 localSeat 未参与定位，疑似遗漏。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C12-010",
+   "name": "可与吃牌字效同时显示",
+   "rule": "可与吃牌字效同时显示。",
+   "uiRequirement": "三摊落地可与吃牌字效同时显示，不互相顶替。",
+   "uiInteraction": "KW_Ani_Stld 与 KW_Ani_CPG_0 至 KW_Ani_CPG_3 为并列节点，可同时可见。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C12-011",
+   "name": "当场不出承包角标",
+   "rule": "不等到结算，当时没有承包角标。",
+   "uiRequirement": "三摊成立当场不显示承包角标，只到结算才出。",
+   "uiInteraction": "桌面阶段无摊数/承包角标；结算行才出现承包或反承包角标。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C12-012",
+   "name": "提示期间不打断获权玩家",
+   "rule": "提示期间，获权玩家可以继续提牌、出牌。",
+   "uiRequirement": "",
+   "uiInteraction": "提示为纯表现层 Spine，不遮挡操作区，也不压暗按钮。",
+   "notes": "客户端“不阻塞”是默认行为，没有显式放行代码；另外存在吃碰杠按钮时直接出牌会被 canPlayMahCheck 拦下要求先点“过”（BoxHzmjMainView.ts:1445-1460），若提示发生在响应窗口内，端上表现可能与“可继续出牌”不符，需确认场景。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C12-013",
+   "name": "只结算胡牌方参与的承包对",
+   "rule": "自摸只结算胡牌方自己参与的承包对。",
+   "uiRequirement": "",
+   "uiInteraction": "每座位最多一个承包角标；赢家流水追加承包文案。",
+   "notes": "端上无“只结算胡牌方参与的对”判断，第三方之间的承包对若被下发也会照常显示。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C12-014",
+   "name": "摊方胡由对方付合计",
+   "rule": "摊方胡，对方付三家输分合计。",
+   "uiRequirement": "",
+   "uiInteraction": "结算行显示 tip_chengbao 角标，赢家行流水文案为“承包”。",
+   "notes": "金额与“三家合计”口径完全由服务端 score 决定，客户端无自算；好友房只有角标与流水文案，匹配场另有“三摊承包”文本（仅 isMatchRoom）。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C12-015",
+   "name": "反承包付 2 倍",
+   "rule": "被摊方胡，摊方付该合计的 2 倍。",
+   "uiRequirement": "",
+   "uiInteraction": "显示 tip_fanchengbao 角标与“反承包”流水文案。",
+   "notes": "2 倍由服务端算好，客户端不做倍率校验。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C12-016",
+   "name": "双向满 3 摊只取 2 倍",
+   "rule": "双向都满 3 摊时只按倒承包的 2 倍，不两笔叠加。",
+   "uiRequirement": "",
+   "uiInteraction": "同一座位只出现一个角标（承包或反承包），不会同时显示两个。",
+   "notes": "UI 天然只显示一条关系，无法证明“优先取 2 倍”；若服务端同时下发 1 和 2，客户端按数组顺序取第一条，存在显示错误风险。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C12-017",
+   "name": "点炮只改写放铳者",
+   "rule": "点炮只在放铳者本人是承包对方时改写。",
+   "uiRequirement": "",
+   "uiInteraction": "点炮与自摸使用同一套承包角标与流水展示。",
+   "notes": "端上没有任何“放铳者是否承包对方”的判断，改写范围无法在客户端验证。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C12-018",
+   "name": "点炮基数为原点炮分",
+   "rule": "基数是原来那一笔点炮分，不是三家之和。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端不参与金额计算，只展示服务端 score；未找到点炮基数相关的任何端上逻辑。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C12-019",
+   "name": "他人承包关系不赔",
+   "rule": "别人的承包关系不赔，放铳者仍按原点炮付。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端无“他人承包关系”过滤逻辑；付款结果完全取自 win_lost，无法在端上体现该规则。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C12-020",
+   "name": "抢杠承包额叠加",
+   "rule": "抢杠胡不替换杠牌者的赔付，承包额再叠加。",
+   "uiRequirement": "",
+   "uiInteraction": "赢家流水同时出现番型文案与“承包/反承包”文案。",
+   "notes": "该叠加处理是流水展示口径，未针对抢杠胡单独分支；抢杠场景叠加是否正确仍取决于服务端 win_lost 与 bao_settles 的一致性。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C12-021",
+   "name": "杠牌者兼承包方两笔都付",
+   "rule": "杠牌者若同时是承包方，两笔都付。",
+   "uiRequirement": "",
+   "uiInteraction": "该座位结算行只显示一个承包角标与合并后的得分。",
+   "notes": "两笔是否都付无法从结算行得分拆分核对，需依赖服务端明细。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C12-022",
+   "name": "承包定义与两家 0 分",
+   "rule": "承包：A 对 B 已成立，A 自摸。B 支付三家原应赔分的合计 S，另外两家本局 0 分。",
+   "uiRequirement": "",
+   "uiInteraction": "from_seat 行显示承包角标，赢家行流水显示“承包”金额。",
+   "notes": "“另外两家 0 分”体现为 win_lost 为 0，客户端不校验。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C12-023",
+   "name": "反承包定义",
+   "rule": "反承包：同一关系下 B 自摸。A 支付 2 × S。S 是 B 这次自摸原本向三家应收的合计。",
+   "uiRequirement": "",
+   "uiInteraction": "反承包角标与“反承包”流水文案。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C12-024",
+   "name": "链式多条承包并存",
+   "rule": "链式：A 对 B 成立，同时 C 对 A 成立，A 自摸。B 付 S，C 付 2 × S，A 实收 3 × S，第四家 0 分。",
+   "uiRequirement": "",
+   "uiInteraction": "赢家流水可同时出现“承包”和“反承包”两行，付款两家各挂对应角标。",
+   "notes": "若同一座位同时是某关系的 from_seat 与另一关系的 to_seat，角标只显示一条（单控制器），需确认是否会出现该组合。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C12-025",
+   "name": "示例：庄家自摸承包 24 与链式 48",
+   "rule": "例：庄家平胡自摸，三名闲家各应赔 8，S = 24。承包方付 24。若同时存在上家对庄家的承包，上家再付 48，庄家得 72。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端无对应计算或校验代码，金额全部来自服务端；未找到端上示例用例（BoxHzmjTestView 的“三摊”按钮为测试造数入口，不含金额校验）。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C12-026",
+   "name": "示例：反承包付 20",
+   "rule": "例：庄家对闲家成立承包，闲家平胡自摸，三家原应赔 8、1、1。庄家按反承包付 20。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端不计算 2×S，无法在端上复现该数值；服务端若下发 20，UI 原样显示。",
+   "verdict": "not_found"
+  }
+ ]
+}

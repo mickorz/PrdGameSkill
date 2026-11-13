@@ -1,0 +1,292 @@
+{
+ "stageId": "ST-C05",
+ "title": "吃、碰、杠",
+ "sourceTitle": "行牌 > 吃、碰、杠",
+ "fromLine": 59,
+ "toLine": 69,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 31,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C05-001",
+   "name": "风牌箭牌不能做顺子、不能吃",
+   "rule": "风牌、箭牌不能做顺子，不能吃。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端没有吃牌合法性校验，风/箭不能吃完全依赖服务端不下发 CMF_CHOW 组合；代码中的顺子限制只在摸牌凑牌光效里。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-002",
+   "name": "风箭牌非财神时可碰、可杠",
+   "rule": "风牌、箭牌不是财神时可以碰、杠。",
+   "uiRequirement": "",
+   "uiInteraction": "满足权限位时 KW_BTN_Peng / KW_BTN_Gang 显示并按 hz 布局排布。",
+   "notes": "无显式风箭牌判断，属间接证据：客户端对碰杠组合不区分牌的花色。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-003",
+   "name": "吃碰杠只能使用真实非财神牌",
+   "rule": "吃、碰、杠必须用真实的非财神牌，不能用财神牌，也不能用财神去代替所缺的牌。",
+   "uiRequirement": "",
+   "uiInteraction": "副露中财神牌按 isJokerMah 上色，杠组财神靠左显示。",
+   "notes": "该规则未在客户端落地为校验；财神相关的客户端代码只服务于展示排序。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-004",
+   "name": "吃只取上家刚打出的 1 张牌",
+   "rule": "吃：上家刚打出的 1 张牌参与组成顺子，只能用上家的弃牌。",
+   "uiRequirement": "",
+   "uiInteraction": "副露区显示来源箭头（comboSefl/comboLeft/comboRight 的 n4、comboOpposite 的 n5）指向吃进的那张牌。",
+   "notes": "客户端不校验进张是否来自上家，只按 from_seat 绘制箭头；是否上家由服务端保证。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-005",
+   "name": "吃的进张必须是非财神",
+   "rule": "吃所取的 1 张非财神牌，不能是财神，也不能用财神替牌。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "无直接实现证据，只能说明客户端不做该判断。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-006",
+   "name": "吃须与手中 2 张组成同花色连续顺子",
+   "rule": "吃进的 1 张非财神与手中 2 张非财神组成同花色连续顺子。",
+   "uiRequirement": "",
+   "uiInteraction": "多吃选项池中每项展示完整顺子三张牌，组内从左到右按牌值升序。",
+   "notes": "牌型合法性（同花色、连续）完全由服务端判定并下发。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-007",
+   "name": "多种合法组合时选择 1 组",
+   "rule": "吃的多种合法组合时选 1 组。",
+   "uiRequirement": "多种合法组合时需让玩家从中选择 1 组。",
+   "uiInteraction": "吃按钮 → 切换到“选择多杠”页签（C_BtnState index 5），右侧弹出多吃选项池，每项带高亮底框与完整三张牌；取消按钮（KW_BTN_Cancel）回到吃按钮状态。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C05-008",
+   "name": "吃成功后不摸牌直接进入出牌",
+   "rule": "吃成功后不摸牌，进入出牌。",
+   "uiRequirement": "",
+   "uiInteraction": "吃动画播放后收起吃碰杠按钮与出牌大牌显示；下一次出牌权限到达后手牌可点出。",
+   "notes": "“不摸牌”是服务端不下发 MsgTake 的结果，客户端没有显式断言或校验。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-009",
+   "name": "吃成立的当前回合可以加杠或暗杠",
+   "rule": "吃成功后，当前回合可以加杠或暗杠。",
+   "uiRequirement": "",
+   "uiInteraction": "杠/过按钮与手牌可出状态并存；未点过时直接出牌会提示“点‘过’才能出牌”。",
+   "notes": "客户端没有“吃后当回合”的状态机显式限制，完全依赖同一条 MsgPower 的位与组合。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-010",
+   "name": "碰取任意他人刚打出的 1 张非财神",
+   "rule": "碰：任意他人刚打出的 1 张非财神牌参与组成刻子。",
+   "uiRequirement": "",
+   "uiInteraction": "副露区新增碰组并绘制来源箭头指向进张。",
+   "notes": "“任意他人”“非财神”均为服务端保证，客户端无对应判断代码。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-011",
+   "name": "与手中 2 张相同非财神组成刻子",
+   "rule": "碰出的牌与手中 2 张相同的非财神牌组成刻子。",
+   "uiRequirement": "",
+   "uiInteraction": "副露区以 3 张并把形式显示，财神牌按牌值上色。",
+   "notes": "组合的“相同牌”由服务端给出，客户端按 mahs 原样落地。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-012",
+   "name": "手中有 3 张也只用 2 张",
+   "rule": "碰时手中有 3 张相同牌，也只消耗其中 2 张。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C05-013",
+   "name": "碰成功后不摸牌进入出牌",
+   "rule": "碰成功后不摸牌，进入出牌。",
+   "uiRequirement": "",
+   "uiInteraction": "播放碰字效与音效后收起按钮，随后进入可出牌状态。",
+   "notes": "同吃：不摸牌由服务端不下发 MsgTake 决定。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-014",
+   "name": "碰成立的当前回合可以加杠或暗杠",
+   "rule": "碰成功后，当前回合可以加杠或暗杠。",
+   "uiRequirement": "",
+   "uiInteraction": "杠按钮出现并高亮，可与出牌并存（杠与摸牌无关时不置灰手牌）。",
+   "notes": "",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-015",
+   "name": "他人打出的 1 张加手中 3 张相同牌",
+   "rule": "直杠：他人刚打出的 1 张非财神，与手中 3 张相同非财神组成杠。",
+   "uiRequirement": "",
+   "uiInteraction": "播放明杠字效（gang skin + GANG 音效）并在副露区以 4 张形式落地。",
+   "notes": "客户端不校验“手中 3 张相同”，杠组合完全来自服务端。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-016",
+   "name": "多响应时按优先级裁决",
+   "rule": "多人同时可响应时按优先级裁决后确定杠的成立。",
+   "uiRequirement": "",
+   "uiInteraction": "吃碰杠胡按钮可同时显示，玩家必须先点过才能出牌。",
+   "notes": "“按优先级裁决”属服务端逻辑，客户端只能间接证明其不做本地裁决。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-017",
+   "name": "杠后从牌墙尾部补牌",
+   "rule": "直杠成立后从牌墙尾部补牌。",
+   "uiRequirement": "",
+   "uiInteraction": "按方向播摸牌动画并隐藏对应牌墙槽位，更新剩余牌数。",
+   "notes": "客户端不区分“普通摸牌”和“杠后补牌”，仅按服务端 dir 播放；尾部补牌的具体方向由服务端下发。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-018",
+   "name": "出牌阶段已碰刻子有第 4 张非财神可加杠",
+   "rule": "加杠：出牌阶段，已碰出的刻子手里有第 4 张非财神。",
+   "uiRequirement": "",
+   "uiInteraction": "副露区原碰组原地补成 4 张杠，播放补杠字效与 BU_GANG 音效。",
+   "notes": "是否存在加杠机会由服务端在 combs 中下发 CMF_TKONG，客户端不本地扫描手牌与副露。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-019",
+   "name": "加杠前先征求抢杠胡",
+   "rule": "加杠先征求抢杠胡。",
+   "uiRequirement": "",
+   "uiInteraction": "抢杠胡时胡按钮播放 hu 皮肤（非自摸/自摸皮肤），结算按点炮类处理。",
+   "notes": "客户端没有“征求抢杠”的弹窗或状态机，只在结果侧区分抢杠胡类型。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-020",
+   "name": "有人抢杠胡则加杠不成立、不补牌",
+   "rule": "有人抢杠胡则加杠不成立、不补牌。",
+   "uiRequirement": "",
+   "uiInteraction": "被抢杠后杠组回退为碰组；胡牌者播放点炮类胡牌动画。",
+   "notes": "revertRobbedKong 在本仓库内没有任何调用点，属于已定义未接线的能力；实际回滚是否发生由服务端是否下发 MsgKongS 决定，存在接线缺失风险。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-021",
+   "name": "无人胡则完成加杠并补牌",
+   "rule": "无人抢杠胡时完成加杠并补牌。",
+   "uiRequirement": "",
+   "uiInteraction": "副露升级为 4 张杠，播放补杠音效，随后播放补牌动画并刷新剩余牌数。",
+   "notes": "“无人胡才补牌”由服务端时序保证，客户端无相应判断。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-022",
+   "name": "出牌阶段手中 4 张相同非财神可暗杠",
+   "rule": "暗杠：出牌阶段手中 4 张相同非财神。",
+   "uiRequirement": "",
+   "uiInteraction": "杠按钮显示并高亮，暗杠时手牌不置灰（杠与摸牌无关场景），播放 AN_GANG 音效。",
+   "notes": "客户端无手牌扫描逻辑，暗杠可用性完全由服务端 combs 决定。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-023",
+   "name": "暗杠完成后补牌",
+   "rule": "暗杠完成后补牌。",
+   "uiRequirement": "",
+   "uiInteraction": "杠完成动画后播放补牌动画，刷新剩余牌数与摸牌位。",
+   "notes": "客户端不区分杠后补牌与普通摸牌，无法从代码确认“补牌”语义。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-024",
+   "name": "暗杠 3 张牌背加顶张正面，四家可见",
+   "rule": "暗杠下层 3 张牌背、顶张正面，四家都能认出牌面。",
+   "uiRequirement": "暗杠下层 3 张牌背、顶张正面，四家都能认出牌面。",
+   "uiInteraction": "副露组件切到 4mah 页并启用 C_IsAnGan，前 3 张牌背、最后 1 张正面且带牌值。",
+   "notes": "仅在结算副露渲染中有直接证据；桌面进行中的暗杠表现位于外部 common_game 模块。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-025",
+   "name": "暗杠放在碰杠区但不计副露",
+   "rule": "暗杠放在碰杠区，但不计副露。",
+   "uiRequirement": "",
+   "uiInteraction": "碰杠区新增一组 4 张暗杠；结算副露槽位按 combs.length 计入该组。",
+   "notes": "“放在碰杠区”已确认；“不计副露”在客户端只体现为摊计数由服务端下发，且结算副露列表实际把暗杠计为 1 组（C_ShowComp 按 combs.length），与模板描述存在口径差异，需确认“副露”是否指摊。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-026",
+   "name": "吃或碰刚成立当回合同样可以加杠、暗杠",
+   "rule": "吃或碰刚成立的当前回合，同样可以加杠、暗杠。",
+   "uiRequirement": "",
+   "uiInteraction": "吃过/碰过之后仍可出现杠按钮；杠与摸牌无关时手牌不置灰、可直接出牌。",
+   "notes": "客户端没有“吃碰当回合”的显式白名单，只有 power 位驱动，因此无法从代码确认回合边界。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-027",
+   "name": "四张相同就可以杠",
+   "rule": "四张相同就可以杠。",
+   "uiRequirement": "",
+   "uiInteraction": "杠按钮在多个可杠组合时进入“选择多杠”页签，右侧列出可杠牌值列表，点击某项直接发送对应组合。",
+   "notes": "杠的合法性（四张相同）由服务端给组合，客户端只按组合数量做交互分流。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-028",
+   "name": "杠完后不再按七对结算",
+   "rule": "四张相同就可以杠，杠完这条就不再按七对结算。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "番型由服务端 MsgHuItem.fan_ids 下发，客户端 FanDefine 只做番型名称、倍数与动画映射（含 K_FTG_HZMJ_QI_DUI 七对系列），没有任何“杠后剔除七对”的判定代码。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C05-029",
+   "name": "飘财限制未解除时不能吃、碰、直杠、加杠",
+   "rule": "受尚未解除的飘财限制时，不能吃、碰、直杠、加杠。",
+   "uiRequirement": "",
+   "uiInteraction": "飘动画播放与飘计数提示；被限制时对应按钮不出现。",
+   "notes": "客户端有 getPiaoCount 但没有任何吃碰杠判定消费它，属间接证据。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-030",
+   "name": "飘财限制下仍可暗杠",
+   "rule": "受飘财限制时仍可暗杠。",
+   "uiRequirement": "",
+   "uiInteraction": "暗杠时播放 AN_GANG 音效与暗杠动画，不与飘动画互斥。",
+   "notes": "无飘限制相关判断，需服务端保证仍下发暗杠权限。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C05-031",
+   "name": "暗杠后只能打尾墩刚补进的那一张",
+   "rule": "暗杠后只能打尾墩刚补进的那一张。",
+   "uiRequirement": "",
+   "uiInteraction": "被禁手牌置灰、不可拾起；点击被禁牌提示“该牌被禁打”。",
+   "notes": "客户端没有“暗杠 → 只能打补进那张”的绑定逻辑，只有通用的禁打手牌/禁单放机制；该限制是否由暗杠触发需服务端在 MsgPlayLmts 中下发。",
+   "verdict": "partial"
+  }
+ ]
+}

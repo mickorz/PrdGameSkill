@@ -1,0 +1,449 @@
+{
+ "stage": {
+  "id": "ST-C01",
+  "name": "定庄与轮庄",
+  "chapter": "开局 > 定庄与轮庄",
+  "summary": "开局阶段确定每小局的庄家：首局由系统随机指定，之后由胡牌者接庄、庄家自摸或流局则连庄；牢庄固定三牢、庄闲按 8 倍结算，客户端只负责按系统给出的庄家与档位刷新庄家标记和结算显示。",
+  "terms": [
+   {
+    "term": "庄家",
+    "definition": "每小局一名庄家，庄家先出牌，其余为闲家。",
+    "source": "模板 第7行（玩法概述）"
+   },
+   {
+    "term": "闲家",
+    "definition": "除庄家外的三名玩家，吃牌只用上家刚打出的牌。",
+    "source": "模板 第7行（玩法概述）"
+   },
+   {
+    "term": "牢庄",
+    "definition": "本期固定笃三老庄，每小局庄家都按三牢、8 倍计算。",
+    "source": "模板 名词章节 第13行"
+   },
+   {
+    "term": "连庄",
+    "definition": "庄家继续坐庄，结算时单列「连庄」流水项，连庄局数加分。",
+    "source": "模板 第27-28行；代码 source-code/client/Code/config/FanDefine.ts:572"
+   },
+   {
+    "term": "流局",
+    "definition": "牌墙剩 21 张时当前玩家再摸 1 张剩 20 张，先完成本次摸打和弃牌响应，无人胡牌时在下一次应摸牌前判黄庄。",
+    "source": "模板 名词章节 第20行"
+   },
+   {
+    "term": "定庄",
+    "definition": "开局先确定本小局庄家的环节，流程上位于掷骰与发牌之前。",
+    "source": "代码 source-code/client/Code/protocol/GameGlcProtocol.ts:16"
+   }
+  ],
+  "crossCutting": [
+   "庄家标记统一由头像组件的庄标志控制器按档位页显示（1/2/3 档对应不同庄字图标），局数据、升庄广播、断线重连三处都会派发同一庄家刷新事件。",
+   "牢庄档位与连庄次数在客户端共用同一份数据（局数据里的牢庄档位被写入连庄次数字段），结算庄标志实际反映牢庄档位而不是真实连庄局数。",
+   "萧山好友房复用同一套包厢界面，庄标志改用数字 xN 组件并在升庄时播放扫光；杭州好友房走三档庄字图标，等级提升时才播放加庄动画。",
+   "掷骰与发牌在定庄之后播放，断线重连时骰子、手牌、庄家标记在同一初始帧静态还原。",
+   "流局协议已定义并接入消息分发，但仓库内未见本地注册的流局命令实现，流局结算表现通过结算消息的结束类型分支处理。"
+  ]
+ },
+ "features": [
+  {
+   "id": "FP-ST-C01-001",
+   "name": "首局定庄与定庄时机",
+   "description": "首局由系统从四名玩家中指定庄家，并在掷骰、发牌之前完成定庄；客户端只接收庄家座位并刷新庄家标记。",
+   "scope": "覆盖首局的定庄来源与定庄时机；不覆盖非首局的轮庄、连庄与牢庄档位（属后续功能点）。",
+   "coordination": "局数据到达后写入庄家座位并触发头像庄标记刷新；断线重连按同一事件静态还原庄家，掷骰与手牌在之后呈现。",
+   "atoms": [
+    {
+     "id": "AT-ST-C01-001",
+     "name": "首局随机坐庄",
+     "rule": "首局四名玩家中随机坐庄。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "局数据到达后把服务端下发的庄家座位转成本地座位保存，并触发庄家标记刷新；客户端不参与随机抽取，也没有候选玩家筛选逻辑。",
+     "uiInteraction": "庄家玩家头像左上角出现「庄」字标记，头像庄标志控制器切到对应档位页。",
+     "messages": [
+      "MsgJuData"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameJuDataCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameJuDataCmd.ts:31-33"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerView.ts:808"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_player/component/PlayerPanel.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_player/component/PlayerPanel.xml:8"
+      },
+      {
+       "file": "source-code/client/Code/lib/proto_game_hzmj.d.ts",
+       "location": "source-code/client/Code/lib/proto_game_hzmj.d.ts:3684-3685"
+      }
+     ],
+     "notes": "客户端未使用局数据里的首局庄座位字段 first_zhuang，只用当前庄座位 zhuang；随机抽取方式没有任何客户端代码可证。",
+     "businessBehavior": {
+      "trigger": "一小局开始前决定本局由谁坐庄",
+      "condition": "整场第一小局、四名玩家都已入座",
+      "action": "游戏把系统选中的庄家记下来，并在这名玩家头像旁挂上庄家标记",
+      "result": "玩家看到其中一名玩家头像出现「庄」字标记"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "随机抽取庄家的规则在客户端不可证，客户端只按服务端下发的庄家座位展示",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C01-002",
+     "name": "掷骰、发牌前确定庄家",
+     "rule": "掷骰、发牌前已经确定庄家。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "协议状态枚举把定庄排在骰子、发牌之前；断线重连在发牌初始帧依次还原牌墙、骰子、手牌、庄家标记，未见客户端对消息到达顺序做校验或强制。",
+     "uiInteraction": "正常开局时庄家标记随局数据刷新；断线重连进入发牌帧时骰子、四家手牌与庄家标记同时呈现。",
+     "messages": [
+      "MsgJuData",
+      "MsgThrowChip",
+      "MsgStartGame"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/protocol/GameGlcProtocol.ts",
+       "location": "source-code/client/Code/protocol/GameGlcProtocol.ts:15-19"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/RecoverGameSceneCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/RecoverGameSceneCmd.ts:33"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/RecoverGameSceneCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/RecoverGameSceneCmd.ts:35-38"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameJuDataCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameJuDataCmd.ts:51"
+      }
+     ],
+     "notes": "状态枚举顺序只代表流程定义；运行时先定庄再掷骰发牌由服务端保证，客户端未做时序校验，断线帧中三者同时出现。",
+     "businessBehavior": {
+      "trigger": "一局刚开始、骰子还没掷出",
+      "condition": "本局庄家已经确定",
+      "action": "游戏先标出庄家，再播放掷骰与发牌",
+      "result": "玩家在骰子和手牌出现之前就能看到庄家标记；断线回来时骰子、手牌、庄家标记同时出现"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "缺少消息到达顺序与服务端定庄时机的直接证据，状态枚举顺序不足以证实运行时行为",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C01-002",
+   "name": "胡牌轮庄与连庄",
+   "description": "有人胡牌后，下一小局由胡牌者坐庄；庄家自己胡牌时继续坐庄并记为连庄，结算单列连庄流水。",
+   "scope": "覆盖胡牌结束后的接庄与庄家自摸连庄的表现；不覆盖流局连庄与牢庄档位。",
+   "coordination": "下一小局仍由局数据下发庄家座位并刷新头像标记；结算阶段按庄家座位显示庄标志，并按流水类型展示连庄条目。",
+   "atoms": [
+    {
+     "id": "AT-ST-C01-003",
+     "name": "胡牌者接庄",
+     "rule": "有人胡牌时，下一小局由胡牌者坐庄。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "下一小局由局数据重新下发庄家座位，客户端转成本地座位后刷新庄家标记；不判断上一局谁胡牌，也没有胡牌者与庄家的映射逻辑。",
+     "uiInteraction": "新一局开局时庄家标记移到上一局胡牌者头像上；结算界面也按庄家座位给对应行显示庄标志。",
+     "messages": [
+      "MsgJuData",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameJuDataCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameJuDataCmd.ts:31-33"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerView.ts:808"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:402"
+      }
+     ],
+     "notes": "客户端无「胡牌者等于下一局庄家」的推导逻辑，完全依赖服务端下发的庄家座位。",
+     "businessBehavior": {
+      "trigger": "上一小局有人胡牌、进入下一小局",
+      "condition": "上一小局以胡牌结束",
+      "action": "游戏按系统给出的庄家，更新四家头像上的庄家标记",
+      "result": "玩家看到上一局胡牌的人头像上出现庄家标记"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端未实现胡牌者接庄的判定，只有展示证据，缺少服务端轮庄规则证据",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C01-004",
+     "name": "庄家自摸连庄",
+     "rule": "庄家自己胡牌为连庄。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端保存服务端下发的牢庄档位并据此显示庄标志，结算阶段按流水类型展示「连庄」条目；不判断胡牌者是否为庄家。",
+     "uiInteraction": "结算流水出现「连庄」条目；庄家头像与结算行的庄标志保持档位图标不消失。",
+     "messages": [
+      "MsgJuData",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:572-573"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:648"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:228-230"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:62-64"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/helperCmd/ResultCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/helperCmd/ResultCmd.ts:57-61"
+      }
+     ],
+     "notes": "局数据处理把牢庄档位同时写入连庄次数（GameJuDataCmd:34），局数据的 lian_zhuang 字段从未被使用；连庄次数与牢庄档位混用，结算庄标志实际显示牢庄档位。",
+     "businessBehavior": {
+      "trigger": "庄家自己胡牌结束本小局",
+      "condition": "胡牌的人正是本局庄家",
+      "action": "游戏不移动庄家标记，并在结算里列出连庄",
+      "result": "玩家看到庄家标记仍在原庄家头上，结算流水出现「连庄」"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "连庄判定与连庄次数由服务端计算，客户端只展示连庄流水与庄档位，缺少判定证据",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C01-003",
+   "name": "流局连庄",
+   "description": "流局时原庄继续坐庄，下一小局庄家不变。",
+   "scope": "覆盖流局结束时的结算表现与下一局庄家的沿用；不覆盖流局判定、牌墙剩余计算与流局赔付。",
+   "coordination": "流局消息与结算消息的结束类型共同标识本局结束，下一小局庄家仍取自局数据。",
+   "atoms": [
+    {
+     "id": "AT-ST-C01-005",
+     "name": "流局原庄连庄",
+     "rule": "流局时原庄连庄。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "流局消息已定义并映射到流局命令，但仓库内未找到该命令的本地实现；流局在结算层按结束类型区分显示，流局行按输/平处理，未见原庄连庄相关逻辑。",
+     "uiInteraction": "结算界面流局行按输/平样式显示，不展示胡牌信息。",
+     "messages": [
+      "MsgDrawn",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/protocol/GameGlcProtocol.ts",
+       "location": "source-code/client/Code/protocol/GameGlcProtocol.ts:114"
+      },
+      {
+       "file": "source-code/client/Code/controller/gameController.ts",
+       "location": "source-code/client/Code/controller/gameController.ts:74"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/CmdDefine.ts",
+       "location": "source-code/client/Code/controller/cmd/CmdDefine.ts:34"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:371"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjResultUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjResultUtil.ts:37-39"
+      }
+     ],
+     "notes": "本地未找到注册的流局命令类，实际处理可能在仓库外的公共模块；未发现原庄连庄相关的客户端处理。",
+     "businessBehavior": {
+      "trigger": "本小局打到无人胡牌结束",
+      "condition": "牌墙剩余不足、本局判流局",
+      "action": "游戏按流局展示本局结算画面",
+      "result": "玩家看到本局以流局结算，没有胡牌方"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "缺少流局判定与下一局庄家沿用的客户端证据，流局命令在本地无实现",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C01-004",
+   "name": "三牢牢庄档位与8倍庄闲倍数",
+   "description": "首庄、新庄、连庄都按三牢计算，庄闲倍数固定 8 倍，三牢封顶不再增加。",
+   "scope": "覆盖牢庄档位的存储、头像与结算显示以及庄闲倍数换算；不覆盖具体分数结算、番型与承包赔付计算。",
+   "coordination": "局数据与结算消息下发牢庄档位，客户端按档位显示庄标志并换算庄闲倍数；升庄广播单独驱动加庄表现。",
+   "atoms": [
+    {
+     "id": "AT-ST-C01-006",
+     "name": "首庄新庄连庄都是三牢",
+     "rule": "首庄、新庄、连庄都是三牢。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端保存局数据与结算消息下发的牢庄档位（1/2/3），并把它作为庄标志档位显示；没有把档位固定赋值为三牢的逻辑，升庄广播会直接采用新档位。",
+     "uiInteraction": "庄家头像庄字标记按档位切换不同图标（1/2/3 档），升庄时播放加庄动画并刷新档位。",
+     "messages": [
+      "MsgJuData",
+      "MsgResultHu",
+      "MsgBankerLevelUp"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:1593-1594"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameJuDataCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameJuDataCmd.ts:34-36"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameBankerLevelUpCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameBankerLevelUpCmd.ts:23-24"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:117-119"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_player/component/PlayerPanel.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_player/component/PlayerPanel.xml:8"
+      }
+     ],
+     "notes": "客户端按服务端下发档位显示，未强制三牢；非萧山房也会接收升庄广播并派发加庄表现（GameBankerLevelUpCmd:31-32），档位最终取值依赖服务端。",
+     "businessBehavior": {
+      "trigger": "一小局确定庄家",
+      "condition": "首庄、换庄后的新庄或连庄",
+      "action": "游戏记下系统给出的牢庄档位，并按档位在庄家标记上显示对应图标",
+      "result": "玩家看到庄家标记显示当前牢庄档位图标"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端未固定三牢，档位取值完全依赖服务端下发，缺少服务端档位取值证据",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C01-007",
+     "name": "庄闲倍数固定8倍",
+     "rule": "庄闲倍数固定 8 倍。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端提供按牢庄档位换算庄闲倍数的能力（1 档 2 倍、2 档 4 倍、3 档 8 倍），但未见调用；结算分数直接采用服务端下发的得失分，未单独展示倍数。",
+     "uiInteraction": "结算界面直接显示各家得分，没有单列「8倍」倍数文案。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:1661-1666"
+      },
+      {
+       "file": "source-code/client/Code/interface/BoxHzmjResultTypes.ts",
+       "location": "source-code/client/Code/interface/BoxHzmjResultTypes.ts:11"
+      },
+      {
+       "file": "source-code/client/Code/config/MatchTipConfig.ts",
+       "location": "source-code/client/Code/config/MatchTipConfig.ts:24"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjResultUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjResultUtil.ts:10-11"
+      }
+     ],
+     "notes": "庄闲倍数由档位左移计算（1 档 2 倍、2 档 4 倍、3 档 8 倍），并非固定 8 倍；匹配提示文案还写有平庄 2 倍、二牢 4 倍、三牢 8 倍的递增说明，但该文案只在匹配场展示，好友房不走匹配提示。",
+     "businessBehavior": {
+      "trigger": "本小局结算庄家与闲家的输赢",
+      "condition": "本局存在庄家与三名闲家",
+      "action": "游戏按牢庄档位换算庄闲倍数，分数直接采用系统算好的结果",
+      "result": "玩家看到按庄闲关系算出的分数，界面不单独显示固定8倍"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "结算分数与倍数由服务端计算，客户端倍数换算能力未被调用，无法证实固定8倍",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C01-008",
+     "name": "三牢封顶不再增加",
+     "rule": "三牢不再增加。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "庄字图标与结算庄标志只提供三档页面，结算显示处把档位钳制到 0~3；数字庄标志组件对档位只做下限保护，没有上限封顶，直接显示系统下发的档位。",
+     "uiInteraction": "杭州房头像庄字图标最多显示三档；萧山数字庄标志按档位显示 xN，档位更大时也不截断。",
+     "messages": [
+      "MsgBankerLevelUp",
+      "MsgJuData"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_player/component/PlayerPanel.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_player/component/PlayerPanel.xml:8"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml:12"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:402"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/XsmjZhuangComp.ts",
+       "location": "source-code/client/Code/layer/comp/XsmjZhuangComp.ts:30-32"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/XsmjZhuangComp.ts",
+       "location": "source-code/client/Code/layer/comp/XsmjZhuangComp.ts:75"
+      }
+     ],
+     "notes": "杭州房靠图标页数天然限制在三档，结算处再钳制到 3；数字庄标志无上限，若服务端下发超过三牢会显示 x4 及以上，客户端未做封顶拦截。",
+     "businessBehavior": {
+      "trigger": "庄家连续坐庄、档位继续变化",
+      "condition": "庄家再次连庄",
+      "action": "游戏直接显示系统给出的档位，图标最多三档，数字标记不封顶",
+      "result": "玩家看到庄家标记档位跟着系统数值变化，没有出现超过三牢被拦下的表现"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端未实现三牢封顶的业务控制，只有图标页与结算显示的 0~3 约束，档位上限由服务端决定",
+      "clientObserved": true
+     }
+    }
+   ]
+  }
+ ]
+}

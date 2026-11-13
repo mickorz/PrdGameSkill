@@ -1,0 +1,560 @@
+{
+ "stage": {
+  "id": "ST-C04",
+  "name": "操作优先级",
+  "chapter": "行牌 > 操作优先级",
+  "summary": "规定同一张弃牌上胡、碰、直杠、吃的响应优先级、同级的座位裁决、多人可胡时只放一人胡与逆时针就近顺延、低优先级提交后等待高优先级放弃，以及吃牌只能吃上家。",
+  "terms": [
+   {
+    "term": "上家",
+    "definition": "本家逆时针方向的上一家，吃牌只用上家刚打出的牌。",
+    "source": "模板 行牌 引言（第7行）"
+   },
+   {
+    "term": "放铳/点炮胡",
+    "definition": "打出的牌被他人合法胡走，胡牌者称为点炮胡。",
+    "source": "模板 名词 章节（第19行）"
+   },
+   {
+    "term": "直杠",
+    "definition": "用他人打出的牌开杠，模板中与碰并列为同级响应操作，优先于吃。",
+    "source": "模板 行牌 > 操作优先级（第53行）"
+   }
+  ],
+  "crossCutting": [
+   "所有操作按钮的可见性完全由服务端权限消息的权限位决定，客户端只做位判断、不做优先级裁决（source-code/client/Code/controller/cmd/gameCmd/GamePowerCmd.ts:50-57、source-code/client/Code/layer/BoxHzmjMainView.ts:549-560）。",
+   "权限消息带 askid；客户端出牌、过、胡、吃、碰、杠的回包都原样带回同一轮 askid，作为一次响应请求的序号标识（source-code/client/Code/controller/gameController.ts:424-542）。",
+   "「过」分两档：需发回服务端的过，以及只在本地收起按钮的过2（source-code/client/Code/config/BoxMahDefine.ts:202-203）。",
+   "权限倒计时按座位驱动方位盘闪烁，取消托管时按剩余时间刷新倒计时显示（source-code/client/Code/layer/BoxHzmjMah2DView.ts:609-659、source-code/client/Code/layer/BoxHzmjMainView.ts:1591-1600）。",
+   "中局胡牌与结算统一走 MsgResultHu；MsgHuEx 虽映射到 CMD_HU_EX，但工程内没有注册该命令的处理类（source-code/client/Code/controller/gameController.ts:77、source-code/client/Code/controller/cmd/CmdDefine.ts:52）。",
+   "常规对局中收到非自己座位的权限只收起操作面板，不展示他人碰、杠、胡按钮；仅复盘模式按座位逐家还原操作按钮（source-code/client/Code/layer/BoxHzmjMainView.ts:528-531、source-code/client/Code/layer/BoxHzmjMainView.ts:792-810）。"
+  ]
+ },
+ "features": [
+  {
+   "id": "FP-ST-C04-001",
+   "name": "弃牌响应优先级与同级座位裁决",
+   "description": "同一张弃牌上多种操作同时可成立时，按 点炮胡 > 碰/直杠 > 吃 的固定次序处理；碰与直杠同级，同时能成立时不区分先后，按座位号小的先裁决；碰与直杠的权限只下发给当前能成立且座位号最小的那一家。",
+   "scope": "只覆盖对同一张弃牌的响应操作（胡、碰、直杠、吃），不涉及自摸、补杠、抢杠等自家回合或非弃牌触发的操作。",
+   "coordination": "服务端逐一计算各家可成立的响应，通过按座位下发的权限消息告知；客户端只按权限位点亮按钮并回传选择，最终执行次序由服务端裁决后广播。",
+   "atoms": [
+    {
+     "id": "AT-ST-C04-001",
+     "name": "同一弃牌的响应优先级次序",
+     "rule": "对同一张弃牌，可响应操作的优先级为：点炮胡最高，碰与直杠次之，吃最低。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端不计算优先级，只按服务端权限位分别置显胡、碰、杠、吃按钮；同一轮权限可同时打开多个按钮，界面不体现先后关系。",
+     "uiInteraction": "操作面板切到「碰杠胡」页，吃、碰、杠、胡按钮同屏按水平排布自左向右显示，按钮带闪烁高亮动效；胡按钮额外显示所胡牌面与倍数。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:3"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:9"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:555"
+      },
+      {
+       "file": "source-code/client/Code/config/BoxMahDefine.ts",
+       "location": "source-code/client/Code/config/BoxMahDefine.ts:207"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:666"
+      }
+     ],
+     "notes": "客户端只呈现服务端给出的可操作集合，未实现优先级比较；吃、碰、杠、胡按钮同屏并列，不存在按优先级压制低优先级按钮的表现。",
+     "businessBehavior": {
+      "trigger": "别人打出一张牌后，轮到自己决定要不要响应",
+      "condition": "系统判定自己对这张弃牌可以胡、可以碰、可以杠或可以吃",
+      "action": "客户端把能做的操作按钮一起亮出来，等玩家点其中一个",
+      "result": "玩家看到胡、碰、杠、吃按钮同时出现，胡按钮上还显示所胡的牌和倍数"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "缺少服务端对同一张弃牌按 胡>碰/直杠>吃 裁决的证据；客户端仅按权限位展示按钮。",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C04-002",
+     "name": "碰与直杠同级",
+     "rule": "碰与直杠属于同一优先级，彼此不分先后高低。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "碰与杠共用同一操作面板页与同一权限消息；杠按钮不区分明杠、暗杠、补杠，按钮层未设优先级。",
+     "uiInteraction": "碰按钮与杠按钮在「碰杠胡」页同级并列显示，各自独立高亮；有多个杠可选时展开多杠选择列表。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:12"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:654"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:580"
+      }
+     ],
+     "notes": "客户端把明杠、暗杠、补杠合并为同一个「杠」按钮，未单独区分直杠；未见碰与杠之间的先后裁决逻辑。",
+     "businessBehavior": {
+      "trigger": "别人打出的牌自己既能碰又能杠",
+      "condition": "系统同时下发碰与杠的可操作权限",
+      "action": "客户端同时亮出碰和杠两个按钮，等玩家自己选",
+      "result": "玩家看到碰、杠两个按钮并列，点哪个都立即把选择报上去"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "缺少服务端对碰与直杠同级、不区分先后的裁决证据。",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C04-003",
+     "name": "碰与直杠并存时座位号小者先裁决",
+     "rule": "多名玩家同时能对同一张弃牌碰或直杠时，不区分是碰还是直杠，按座位号小的先裁决。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "客户端按座位接收权限消息，但工程内未发现座位号比较或最小座位优先的判定代码。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端无座位号比较逻辑，也缺少服务端裁决证据。",
+      "clientObserved": false
+     }
+    },
+    {
+     "id": "AT-ST-C04-004",
+     "name": "碰与直杠只发给能成立且座位最小的一家",
+     "rule": "碰与直杠的可操作权限只下发给当前确实能成立、且在可成立者中座位号最小的那一家。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "权限消息按座位下发，客户端换算成本地座位后只为收到该条消息的那一家渲染操作按钮；非本家的权限在常规对局中只触发收起操作面板，不展示他人碰、杠按钮。",
+     "uiInteraction": "只有轮到自己那一条权限消息才会弹出碰或杠按钮；他人可操作时不出现其按钮，复盘模式例外，按座位逐家还原。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePowerCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePowerCmd.ts:53"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:529"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:795"
+      }
+     ],
+     "notes": "客户端结构上「一条权限消息只服务一个座位」，但该座位是否就是能成立者中座位号最小者由服务端决定，客户端无任何校验。",
+     "businessBehavior": {
+      "trigger": "有人打出一张牌",
+      "condition": "系统判定某一家能碰或能杠这张牌",
+      "action": "客户端只给那一家弹出碰或杠按钮，其他三家界面不出现这些按钮",
+      "result": "能操作的那一家看到碰或杠按钮，其余玩家看不到"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "缺少服务端「只发给能成立且座位号最小那一家」的判定证据。",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C04-002",
+   "name": "多人可胡的唯一性与远近顺位",
+   "description": "多人可同时胡同一张弃牌时每家都会收到胡提示，但整张牌只允许一人胡、不出现一炮多响；以出牌者为起点按逆时针就近优先，近者胡则远者作废，近者放弃则顺延给下一位可胡者。",
+   "scope": "覆盖由弃牌触发的胡牌（点炮胡、抢杠等），不含自摸胡。",
+   "coordination": "各家收到胡权限后各自表态胡或过，由服务端按逆时针距离裁决唯一胡家；客户端按最终结算数据亮牌并播放对应动效。",
+   "atoms": [
+    {
+     "id": "AT-ST-C04-005",
+     "name": "多人可胡时每家都收到胡",
+     "rule": "多名玩家对同一张弃牌都能胡时，每一家都会收到胡的操作提示。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "胡的资格同样以权限位按座位下发，客户端据胡权限位显示胡按钮；接口层保留了「是否等待并发」标记，说明存在多人同时待胡的协议结构。",
+     "uiInteraction": "收到胡权限的那一家出现带所胡牌面与倍数的胡按钮，并带高亮闪烁动效。",
+     "messages": [
+      "MsgPower",
+      "MsgHuC"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:555"
+      },
+      {
+       "file": "source-code/client/Code/interface/GameInterface.ts",
+       "location": "source-code/client/Code/interface/GameInterface.ts:15"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:664"
+      }
+     ],
+     "notes": "协议接口保留并发等待标记，但工程内未见「多家同时收到胡提示」的界面处理；非本家的胡按钮在常规对局中不展示。",
+     "businessBehavior": {
+      "trigger": "有人打出一张牌",
+      "condition": "系统判定不止一家能胡这张牌",
+      "action": "客户端给每个能胡的玩家各弹一个胡按钮",
+      "result": "能胡的玩家各自看到自己的胡按钮，几家同时都可点胡，不立刻分出胜负"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "缺少服务端向多家同时下发胡权限的证据，客户端只有单座位胡按钮渲染与协议字段。",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C04-006",
+     "name": "近者胡则远者不成立",
+     "rule": "多人可胡时，若距离出牌者更近的一家胡牌成立，更远一家的胡不再成立。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "客户端未按座位远近做胡牌资格剔除，胡牌结果完全依据服务端结算数据。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端无远近资格剔除逻辑，缺少服务端裁决证据。",
+      "clientObserved": false
+     }
+    },
+    {
+     "id": "AT-ST-C04-007",
+     "name": "近者放弃后远者仍可胡",
+     "rule": "更近的一家选择放弃后，更远一家的胡仍然可以成立。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "玩家点「过」时客户端把放弃请求（带同一轮 askid）发给服务端并收起操作面板，之后是否轮到更远一家由服务端重新下发权限。",
+     "uiInteraction": "点「过」后胡、碰按钮收起，手牌恢复可操作；放弃有需回包与仅本地收起两种按钮。",
+     "messages": [
+      "MsgCancel"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/gameController.ts",
+       "location": "source-code/client/Code/controller/gameController.ts:462"
+      },
+      {
+       "file": "source-code/client/Code/interface/GameInterface.ts",
+       "location": "source-code/client/Code/interface/GameInterface.ts:15"
+      }
+     ],
+     "notes": "只证实放弃的上报链路与并发等待字段，未见「顺延给下一位可胡者」的客户端表现。",
+     "businessBehavior": {
+      "trigger": "自己可以胡却选择不胡，点了过",
+      "condition": "自己当前处于可胡的响应状态",
+      "action": "客户端把放弃结果报给服务端并收起胡按钮",
+      "result": "玩家点过之后胡按钮消失，要等新的权限或结算结果才知道最终谁胡"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "缺少服务端顺延给下一位可胡者的判定证据。",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C04-008",
+     "name": "只允许一人胡、不一炮多响",
+     "rule": "同一张弃牌只允许一人胡牌，不出现一炮多响。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "中局胡牌与结算按服务端胡牌明细处理；客户端以胡牌项条数大于一判定为一炮多响并播放对应动效，未在客户端做只允许一人胡的过滤。",
+     "uiInteraction": "结算时若收到多条胡牌项，在放炮方位置播放「一炮多响」字效动画；只有一条时播放「点炮」动画。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:144"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:323"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:889"
+      },
+      {
+       "file": "source-code/client/Code/config/BoxMahDefine.ts",
+       "location": "source-code/client/Code/config/BoxMahDefine.ts:236"
+      }
+     ],
+     "notes": "客户端保留了一炮多响的展示分支（胡牌项大于一条即播放多响动效），属于对旧规则的兼容路径；禁止多响只能由服务端保证，客户端不做限制。",
+     "businessBehavior": {
+      "trigger": "一张弃牌打完、结算下发",
+      "condition": "服务端把这张牌产生的所有胡牌项一起发下来",
+      "action": "客户端按胡牌项条数逐个亮牌，条数大于一条时按一炮多响播放动效",
+      "result": "只有一个胡家时玩家看到点炮动效；若出现多家胡则看到一炮多响动效"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端未实现单胡限制且保留一炮多响展示分支，无服务端只允许一人胡的证据。",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C04-009",
+     "name": "从出牌者起逆时针最近的可胡者优先",
+     "rule": "多人可胡时，从出牌者起沿逆时针方向，距离最近的可胡者优先。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "客户端未按出牌者逆时针距离排序胡牌优先级，座位换算仅用于界面方位显示。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端无逆时针就近排序逻辑，缺少服务端证据。",
+      "clientObserved": false
+     }
+    },
+    {
+     "id": "AT-ST-C04-010",
+     "name": "放弃后顺延",
+     "rule": "距离最近的可胡者放弃后，胡牌资格顺延给下一位可胡者。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "玩家放弃后客户端上报过牌请求并收起操作面板，不本地决定谁胡；续位由服务端重新下发权限或直接下发结算。",
+     "uiInteraction": "点「过」后操作按钮收起、手牌恢复可点；需回包的过会发请求，仅本地收起的过2 不发请求。",
+     "messages": [
+      "MsgCancel"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1237"
+      },
+      {
+       "file": "source-code/client/Code/config/BoxMahDefine.ts",
+       "location": "source-code/client/Code/config/BoxMahDefine.ts:203"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1246"
+      }
+     ],
+     "notes": "只证实放弃的上报与界面收起，未见顺延到下一家的客户端表现。",
+     "businessBehavior": {
+      "trigger": "玩家在可胡或可碰时不操作，点了过",
+      "condition": "自己当前持有可响应的权限",
+      "action": "客户端把放弃结果报给服务端并收起按钮",
+      "result": "玩家点过后按钮消失，界面回到等待状态，等下一轮权限或结算结果"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "缺少服务端按顺延规则重新下发胡权限的证据。",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C04-003",
+   "name": "低优先级提交等待与高优先级成立取消",
+   "description": "低优先级操作先提交时不会立即执行，需要等全部更高优先级玩家手动放弃后才执行；更高优先级的响应一旦成立，其余玩家的响应全部取消。",
+   "scope": "覆盖玩家已提交但尚未裁决的吃、碰、杠等响应，不覆盖自己回合的摸牌打牌。",
+   "coordination": "客户端把玩家的选择原样上报并收起面板，执行时点与取消由服务端按权限顺序推进；动作成立后广播各端，客户端据此关闭操作面板。",
+   "atoms": [
+    {
+     "id": "AT-ST-C04-011",
+     "name": "低优先级先提交时等待高优先级放弃",
+     "rule": "低优先级操作先提交时不会立即执行，需先等待全部更高优先级的玩家手动放弃后才执行。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "点吃、碰、杠、胡后客户端只发送请求并收起面板，不本地执行动作；副露表现要等服务端动作广播到达后才出现。",
+     "uiInteraction": "点击吃、碰、杠后按钮收起、手牌置灰恢复；真正的副露摆放要等服务端广播回来才出现。",
+     "messages": [
+      "MsgChowC",
+      "MsgPungC",
+      "MsgChowS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1102"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1133"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1104"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts:48"
+      }
+     ],
+     "notes": "客户端没有「等待更高优先级玩家放弃」的排队提示或等待态界面，只是不在本地执行；是否等待由服务端控制。",
+     "businessBehavior": {
+      "trigger": "玩家点了一个优先级较低的操作，且比别人先提交",
+      "condition": "还有优先级更高的玩家没有表态",
+      "action": "客户端只把这次操作报上去并收起面板，不在本地先变牌",
+      "result": "玩家点了吃或碰后不会马上看到副露摆出，要等服务端确认后才出现"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "等待更高优先级玩家放弃的排队逻辑在服务端，客户端仅表现为不本地执行。",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C04-012",
+     "name": "高优先级成立后其余响应取消",
+     "rule": "更高优先级的操作一旦成立，其他玩家的响应一律取消。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "收到吃、碰、杠、胡等动作成立的服务端广播后，客户端统一派发关闭操作事件，把操作面板复位、清空多选列表并撤销可出牌状态。",
+     "uiInteraction": "他人的吃、碰、杠、胡一旦成立，自己面板上的吃碰杠胡按钮立即消失，手牌恢复为不可直接出牌状态；同时播放对应的动作动画。",
+     "messages": [
+      "MsgChowS",
+      "MsgPungS",
+      "MsgKongS",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts:44"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePungCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePungCmd.ts:44"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:46"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:241"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:494"
+      }
+     ],
+     "notes": "客户端是在收到动作成立广播后才收起面板，属于结果侧表现；已提交的低优先级请求是否被服务端丢弃无法由客户端证实。",
+     "businessBehavior": {
+      "trigger": "有玩家完成了吃、碰、杠或胡",
+      "condition": "自己原本还有待表态的响应按钮",
+      "action": "客户端关闭自己的操作面板并撤销可出牌状态",
+      "result": "玩家看到自己的吃碰杠胡按钮瞬间消失，桌面改播对方的动作动画"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端仅表现为收到成立广播后收起面板，是否真正丢弃已提交的低优先级响应由服务端决定。",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C04-004",
+   "name": "吃牌来源限制",
+   "description": "吃只能使用上家打出的牌，不能吃其他家打出的牌。",
+   "scope": "仅限吃副露的来源限制，碰与杠不受上家限制。",
+   "coordination": "服务端只在上家弃牌且能组成顺子时下发吃权限与吃组合，客户端按组合展示并上报。",
+   "atoms": [
+    {
+     "id": "AT-ST-C04-013",
+     "name": "吃只能吃上家",
+     "rule": "吃牌只能使用上家（本家逆时针方向上一家）刚打出的牌。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "吃牌组合由服务端在权限消息中下发，客户端只按组合展示与上报；副露记录时按组合的进牌来源座位把进张从该家牌河移除，代码内未见来源必须是上家的校验。",
+     "uiInteraction": "可吃时出现吃按钮；存在多种吃法时弹出三张一组的吃法选择列表，选中后立即上报。",
+     "messages": [
+      "MsgPower",
+      "MsgChowC"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1088"
+      },
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:779"
+      },
+      {
+       "file": "source-code/client/Code/data/PlayerCardsData.ts",
+       "location": "source-code/client/Code/data/PlayerCardsData.ts:87"
+      }
+     ],
+     "notes": "客户端完全信任服务端下发的吃组合，本地无「来源必须是上家」的座位关系校验；上家限制只能由服务端保证。",
+     "businessBehavior": {
+      "trigger": "上家打出一张牌",
+      "condition": "系统判定自己可以吃这张牌",
+      "action": "客户端亮出吃按钮，玩家选中一种吃法后上报",
+      "result": "玩家看到吃按钮和可选吃法，点了之后自己的副露里出现这组顺子，进牌从出牌的那家牌河里消失"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端未校验吃牌来源必须为上家，缺少服务端吃牌资格判定证据。",
+      "clientObserved": true
+     }
+    }
+   ]
+  }
+ ]
+}

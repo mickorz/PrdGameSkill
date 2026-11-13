@@ -1,0 +1,763 @@
+{
+ "stage": {
+  "id": "ST-C13",
+  "name": "算分",
+  "chapter": "算分",
+  "summary": "规定单笔应赔分等于底分1乘番型倍数、再乘庄闲倍数（庄家相关为8倍、闲闲为1倍）、无封顶，并分别定义自摸、点炮抢杠、承包改写与黄庄四种结算形态，最终把每小局净得分累加为本场积分。",
+  "terms": [
+   {
+    "term": "原应赔分",
+    "definition": "底分 × 番型倍数 × 这一笔的庄闲倍数；底分为1，无封顶。",
+    "source": "模板名词章节 行152"
+   },
+   {
+    "term": "底分",
+    "definition": "固定为1，作为每笔赔分的基础值。",
+    "source": "模板名词章节 行152"
+   },
+   {
+    "term": "庄闲倍数",
+    "definition": "赢家与这一笔的赔付者有一方是庄家为8倍，两边都是闲家为1倍。",
+    "source": "模板名词章节 行152"
+   },
+   {
+    "term": "番型倍数",
+    "definition": "三组互斥番型（基础/七对组、杠开组、财神组）各取最高档后连乘得到的总倍数。",
+    "source": "模板名词章节 行152 与 source-code/client/Code/config/FanDefine.ts:12"
+   },
+   {
+    "term": "牢庄",
+    "definition": "本期固定笃三老庄，每小局庄家都按三牢、8倍计算。",
+    "source": "模板名词章节 行13"
+   },
+   {
+    "term": "承包",
+    "definition": "庄家与闲家之间某方向有效摊达到条件后，承包方在自摸结算时代赔。",
+    "source": "模板名词章节 行15 与 source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:196"
+   },
+   {
+    "term": "反承包",
+    "definition": "同一承包关系下，原被承包方自摸时，原承包方按加倍规则赔付。",
+    "source": "模板名词章节 行15 与 source-code/client/Code/util/BoxHzmjFlowUtil.ts:432"
+   },
+   {
+    "term": "黄庄",
+    "definition": "无人胡牌时本局结束，四家本局得分都是0（即流局）。",
+    "source": "模板名词章节 行20 与 行157"
+   },
+   {
+    "term": "本场积分",
+    "definition": "从0起算，每小局加上实际净得分；赢家加实收，赔付者扣实付。",
+    "source": "模板名词章节 行161"
+   },
+   {
+    "term": "无封顶",
+    "definition": "倍数与输赢不设上限，界面在房间未配置封顶时显示“无封顶”。",
+    "source": "模板名词章节 行152 与 source-code/client/Code/layer/BoxHzmjTingPaiView.ts:96"
+   }
+  ],
+  "crossCutting": [
+   "全部分数、倍数、封顶/破产状态、承包关系均由服务端 MsgResultHu 下发，客户端没有任何本地算分逻辑，只做展示与排版。",
+   "同一份每局输赢数据被三处消费：桌面飘分动画、小结算面板逐行分数、以及玩家头像上的本场积分。",
+   "流水文案（番型名、承包/反承包）由客户端按番型 ID 与承包结算列表拼装；好友房不显示倍数，只有匹配场才在流水后追加“N倍”。",
+   "结算流程时序：胡牌动画播完后固定延迟 3 秒打开小结算，小结算展示后再延迟 2 秒弹出总战绩。",
+   "某对玩家吃碰累计达到3摊时播放“三摊落地”动画，简洁模式下抑制该动画。",
+   "黄庄（流局）时流水为空、不播桌面飘分，结算行按“输/平局”样式（暗色底）显示。"
+  ]
+ },
+ "features": [
+  {
+   "id": "FP-ST-C13-001",
+   "name": "单笔应赔分构成",
+   "description": "定义每一笔赔付金额由底分、番型倍数、庄闲倍数三者相乘得到，并明确底分取值与庄闲倍数的判定方式。",
+   "scope": "只覆盖单笔金额的构成要素，不涉及自摸/点炮等结算形态，也不涉及承包改写。",
+   "coordination": "由服务端算好后随胡牌结算下发，客户端读取每家净分显示。",
+   "atoms": [
+    {
+     "id": "AT-ST-C13-001",
+     "name": "原应赔分公式",
+     "rule": "原应赔分 = 底分 × 番型倍数 × 这一笔的庄闲倍数。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "结算分数直接取服务端下发的每局输赢结果，客户端只保存和显示；工程内虽定义了一个庄闲倍数换算方法（按牢庄档位左移），但结算路径没有任何乘算调用。",
+     "uiInteraction": "小结算每一行显示该家本局分数，正数前加“+”，正分用赢家数字字体、负分用输家数字字体。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "GameResultHuCmd.ts:202"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "BoxHzmjResultMid.ts:365"
+      },
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "GameData.ts:1665"
+      }
+     ],
+     "notes": "客户端无算分实现；庄闲倍数换算方法定义后未在结算中调用，公式正确性无法由客户端证实。",
+     "businessBehavior": {
+      "trigger": "一小局结束、产生输赢时",
+      "condition": "本局发生了赔付（有人赢分）",
+      "action": "读取每家本局分数并显示在结算行",
+      "result": "玩家看到自己和其余三家各自加减了多少分"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "缺少服务端算分实现证据，客户端仅展示结果，无法验证公式",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C13-002",
+     "name": "底分取值",
+     "rule": "底分为 1。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "底分来自房间配置/开局数据，仅被格式化为界面文案展示，未参与任何结算乘算。",
+     "uiInteraction": "房间信息区域显示“底分:N”文案（由底分更新事件刷新）。",
+     "messages": [],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjBackView.ts",
+       "location": "BoxHzmjBackView.ts:87"
+      }
+     ],
+     "notes": "只证明客户端会展示房间底分，未证明好友房底分恒为1，也未参与结算。",
+     "businessBehavior": {
+      "trigger": "进入房间或开局刷新房间信息时",
+      "condition": "房间数据带有底分",
+      "action": "把底分数值写成“底分:N”文案",
+      "result": "玩家在房间信息处看到底分数值"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端只展示底分，无法确认取值恒为1及其在乘算中的使用",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C13-003",
+     "name": "庄闲倍数 8 或 1",
+     "rule": "赢家和这一笔的赔付者有一方是庄家，庄闲倍数为 8；两边都是闲家，为 1。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端保存服务端下发的牢庄等级，并提供一个按牢庄等级换算庄闲倍数的方法（1牢=2、2牢=4、3牢=8），但结算不做乘算；结算行只负责标出谁是庄家及牢庄档位。",
+     "uiInteraction": "结算行头像下方显示庄家角标（1庄/2庄/3庄），庄家行才有该角标。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "GameResultHuCmd.ts:118"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "BoxHzmjResultMid.ts:402"
+      },
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "GameData.ts:1665"
+      }
+     ],
+     "notes": "只证实庄家标识与倍数映射存在，未证实“有一方是庄则这笔为8倍”的判定在结算中生效。",
+     "businessBehavior": {
+      "trigger": "一小局结算时",
+      "condition": "某一家是本局庄家",
+      "action": "在该家结算行标出庄家与牢庄档位",
+      "result": "玩家看出哪位是庄、这局是几庄，从而知道庄闲赔付更重"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端只做庄家标识与倍数档位展示，赔付倍数的实际乘算在服务端，缺少证据",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C13-002",
+   "name": "番型倍数与封顶",
+   "description": "规定番型倍数的取值方式（三组连乘）、杠飘飘杠组合的倍数替换关系，以及本玩法无封顶。",
+   "scope": "覆盖番型倍数的构成与上限设置，不涉及单人赔付分配。",
+   "coordination": "番型 ID 与总倍数由服务端下发，客户端据此显示番型名称与配置文案。",
+   "atoms": [
+    {
+     "id": "AT-ST-C13-004",
+     "name": "番型倍数三组连乘",
+     "rule": "番型倍数取三组连乘后的结果。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端配置注明番型分为基础/七对组、杠开组、财神组三组互斥、最终倍数三组最高档连乘，并另有一份单项倍率表但注明只用于动画比较、实际总倍率始终取服务端下发的数值；结算界面不显示倍数、也不做连乘。",
+     "uiInteraction": "结算流水只显示番型名称；好友房不显示倍数，匹配场才在流水后追加“N倍”。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "FanDefine.ts:12"
+      },
+      {
+       "file": "source-code/client/Code/config/XsmjFanConfig.ts",
+       "location": "XsmjFanConfig.ts:4"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "BoxHzmjResultMid.ts:765"
+      }
+     ],
+     "notes": "服务端下发的番型明细（番型ID与倍数）被存入数据层，但结算界面未使用，无法核对“三组连乘”的结果。",
+     "businessBehavior": {
+      "trigger": "胡牌结算需要展示番型时",
+      "condition": "本局胡牌带有番型",
+      "action": "按番型列表显示番型名称（好友房不带倍数）",
+      "result": "玩家看到自己胡牌的番型名称，但看不到具体倍数"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端不做番型连乘，番型明细未在界面使用，无法验证三组连乘结果",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C13-005",
+     "name": "杠飘飘杠替换关系",
+     "rule": "杠飘、飘杠的 8 倍已经替换掉杠上开花和财飘，再乘基础番。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端番型表把杠飘（先杠后飘）与飘杠（先飘后杠）都定义为 8 倍组合番，并在组合动效解析中把它们当作“杠开系×财飘系”的组合项处理；不做“替换后乘基础番”的运算。",
+     "uiInteraction": "结算流水显示“杠飘”或“飘杠”组合名，不显示替换关系，也不显示乘算过程。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "FanDefine.ts:51"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "FanDefine.ts:53"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "FanDefine.ts:134"
+      },
+      {
+       "file": "source-code/client/Code/config/XsmjFanConfig.ts",
+       "location": "XsmjFanConfig.ts:24"
+      }
+     ],
+     "notes": "已证实杠飘/飘杠按8倍组合番处理，但“替换杠上开花与财飘后再乘基础番”的运算无法从客户端证实。",
+     "businessBehavior": {
+      "trigger": "胡牌同时满足先杠后飘或先飘后杠",
+      "condition": "杠开与财飘先后发生",
+      "action": "按组合番型显示“杠飘/飘杠”",
+      "result": "玩家看到组合番型名称，感到倍数比单独的杠开或财飘更高"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端只识别组合番型与单项倍率，替换与再乘基础番的结算在服务端，无法验证",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C13-006",
+     "name": "无封顶",
+     "rule": "无封顶。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端从房间规则/开局数据读封顶倍数，为0或-1时把听牌面板文案写成“无封顶”，否则写成“封顶N倍”，并在听牌提示里按封顶值压缩显示的番数；结算行还保留了封顶/破产角标分支，由服务端状态决定是否显示。",
+     "uiInteraction": "听牌面板显示“无封顶”文案；若房间配置了封顶则显示“封顶N倍”，听牌番数会被压到封顶值；结算行可显示封顶或破产角标。",
+     "messages": [
+      "MsgStartGame",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTingPaiView.ts",
+       "location": "BoxHzmjTingPaiView.ts:96"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTingPaiView.ts",
+       "location": "BoxHzmjTingPaiView.ts:139"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "BoxHzmjResultMid.ts:383"
+      }
+     ],
+     "notes": "界面仍有封顶/破产角标逻辑，说明存在封顶表现的通用路径；未证实好友房下发的封顶值为0。",
+     "businessBehavior": {
+      "trigger": "打开听牌提示或查看房间规则时",
+      "condition": "房间没有配置封顶倍数",
+      "action": "把封顶文案写成“无封顶”",
+      "result": "玩家看到规则提示为无封顶，番数与输赢不设上限"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "无法确认好友房实际下发的封顶值为空，且结算保留了封顶角标分支",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C13-003",
+   "name": "自摸结算",
+   "description": "规定自摸时三家各算一笔，并按庄家/闲家身份决定每一笔的庄闲倍数，无承包时各付各的、赢家收合计。",
+   "scope": "覆盖自摸形态的赔付分配，不含承包代赔改写。",
+   "coordination": "服务端下发每家净分，客户端逐座位显示桌面飘分与结算行分数。",
+   "atoms": [
+    {
+     "id": "AT-ST-C13-007",
+     "name": "自摸三家各算一笔",
+     "rule": "自摸：三家各算一笔。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "结算按服务端下发的每家输赢逐座位写入桌面飘分数据，并为每个有分的座位各播一次数值动画；客户端不区分这三笔的来源与倍数。",
+     "uiInteraction": "桌面每个座位头上飘出本人分数（正分用赢家数字字体、负分用输家数字字体），小结算每行显示各自分数。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "GameResultHuCmd.ts:199"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "BoxHzmjTipAniView.ts:702"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "BoxHzmjTipAniView.ts:563"
+      }
+     ],
+     "notes": "逐座位显示能看出三家分别付了多少，但无法看出三笔的独立计算过程。",
+     "businessBehavior": {
+      "trigger": "有人自摸胡牌结算时",
+      "condition": "本局为自摸胡",
+      "action": "在三个输家头顶和结算行分别显示各自要付的分数",
+      "result": "玩家看到除赢家外三家都扣分，赢家一次收到三家之和"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端只显示每家净分，三笔是否分别独立计算由服务端决定，缺少证据",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C13-008",
+     "name": "庄家自摸三笔乘8",
+     "rule": "庄家自摸，三笔都乘 8。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端在结算行能给庄家打上牢庄档位角标，并能读取每笔赔分结果，但不做倍数判定与乘算，也不展示单笔倍数来源。",
+     "uiInteraction": "庄家行显示庄家角标；桌面飘分只显示最终金额，不显示“×8”标记。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "GameResultHuCmd.ts:209"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "BoxHzmjResultMid.ts:402"
+      }
+     ],
+     "notes": "客户端把每家分作为一个整体显示，无法判断三笔是否都乘了8倍。",
+     "businessBehavior": {
+      "trigger": "庄家自摸胡牌时",
+      "condition": "胡牌者是本局庄家",
+      "action": "在庄家行标出庄家档位并显示三家赔付金额",
+      "result": "玩家看到三家输家都扣分、庄家一次收三家之和"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端不做倍数乘算，无法验证三笔都按8倍计算",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C13-009",
+     "name": "闲家自摸的差异倍数",
+     "rule": "闲家自摸，庄家那一笔乘 8，另两名闲家各乘 1。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "结算按服务端下发的每家分数分别显示，客户端不判断谁是庄、不换算倍数；只能看出庄家那一笔明显大于另两名闲家。",
+     "uiInteraction": "四个座位各自飘出/显示自己的分数，金额大小不同，但界面不标注哪一笔按8倍。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "BoxHzmjTipAniView.ts:702"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "BoxHzmjResultMid.ts:365"
+      }
+     ],
+     "notes": "金额差异只能间接体现庄家多付，无法说明“庄家那笔×8、闲家各×1”的规则。",
+     "businessBehavior": {
+      "trigger": "闲家自摸胡牌时",
+      "condition": "胡牌者是闲家",
+      "action": "分别显示庄家与两名闲家各自要付的分数",
+      "result": "玩家看到庄家扣得最多，另两名闲家只扣很少"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端仅显示金额差异，倍数分配由服务端计算，无法验证",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C13-010",
+     "name": "无承包时各付各的赢家收合计",
+     "rule": "没有承包时，各付各的，赢家收合计。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "结算行按座位显示各自净分，赢家行显示的是汇总后的一个总数，各输家行显示各自被扣的金额；客户端不做求和校验。",
+     "uiInteraction": "赢家结算行只有一个总分数字，输家各自一行负数，没有逐笔来源明细。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "BoxHzmjResultMid.ts:152"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "BoxHzmjFlowUtil.ts:468"
+      }
+     ],
+     "notes": "界面呈现“每家一行、赢家一个总分”，但各付各的与合计是否正确无法由客户端验证。",
+     "businessBehavior": {
+      "trigger": "无承包关系的胡牌结算时",
+      "condition": "本局没有成立承包关系",
+      "action": "在赢家行显示一个合计总分，在输家行各显示自己的扣分",
+      "result": "玩家看到赢家一次收齐三家之和，输家各扣自己那部分"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端不参与求和，仅显示服务端给出的总分",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C13-004",
+   "name": "点炮胡与抢杠胡结算",
+   "description": "规定点炮胡、抢杠胡在没有承包时只算赢家与赔付者一笔并按庄闲8倍，另两家为0；有承包时按承包规则改写。",
+   "scope": "覆盖点炮、抢杠两种非自摸胡的赔付范围，承包改写部分只做承接说明。",
+   "coordination": "客户端按胡牌类型与点炮来源显示胡牌类型角标，分数仍取服务端下发。",
+   "atoms": [
+    {
+     "id": "AT-ST-C13-011",
+     "name": "只算一笔，按8倍，另两家0",
+     "rule": "点炮胡、抢杠胡：没有承包时只算赢家和赔付者一笔，这一笔按庄闲 8 倍，另两家 0 分。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "结算按胡牌类型区分：自摸行显示“自摸”，非自摸的胡家行显示“吃胡”，被点炮的一家（点炮来源命中自身）显示“点炮”；抢杠与点炮在判定与动效层被归为同一类非自摸胡；未参与的座位没有输赢记录，按0分显示。",
+     "uiInteraction": "结算行右上角按胡牌类型显示图标（不参与胡牌/点炮/吃胡/自摸）；桌面播放点炮动效；未参与的座位显示0分且不飘分。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "BoxHzmjResultMid.ts:731"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "BoxHzmjResultMid.ts:734"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "GameResultHuCmd.ts:339"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml",
+       "location": "ResultItem.xml:5"
+      }
+     ],
+     "notes": "能看出只有两方有分、另两家为0、且区分点炮与胡家；但“这一笔按庄闲8倍”无客户端证据；抢杠在结算行不单独标注。",
+     "businessBehavior": {
+      "trigger": "打出牌被他人胡走或被抢杠胡时",
+      "condition": "本局为点炮胡或抢杠胡，且没有承包关系",
+      "action": "给胡家和放铳者各显示一正一负的分数，其余两家显示0分",
+      "result": "玩家看到只有点炮的人扣分、胡牌的人加同样多分，另两家不变"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端只证实赔付范围与点炮标识，缺少8倍倍数的计算证据",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C13-012",
+     "name": "有承包时按承包规则改写",
+     "rule": "有承包时按上一节改写。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "结算读取承包结算列表中的承包/反承包关系，只在承包方所在行显示角标，并在赢家流水后追加“承包/反承包”加分数；赢家实际净分仍直接取服务端下发值。",
+     "uiInteraction": "承包方结算行显示承包或反承包角标图标；赢家流水新增“承包/反承包 +N分”项，可点击展开完整流水气泡。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "BoxHzmjResultMid.ts:196"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "BoxHzmjFlowUtil.ts:432"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "BoxHzmjFlowUtil.ts:445"
+      }
+     ],
+     "notes": "只证实承包角标与承包流水展示，点炮场景下承包如何改写赔付金额无法从客户端验证。",
+     "businessBehavior": {
+      "trigger": "点炮胡或抢杠胡且存在承包关系时",
+      "condition": "某方向摊数达到承包成立条件",
+      "action": "在承包方行打角标，并在赢家流水加一条承包分",
+      "result": "玩家看到谁承包了、赢家总分里有一笔来自承包"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "承包改写金额由服务端计算，客户端仅展示角标与流水",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C13-005",
+   "name": "承包结算改写",
+   "description": "规定承包时自摸先算出三笔再求和为S，然后按承包规则改写出实际赔付。",
+   "scope": "只覆盖自摸场景下的承包代赔改写，不含点炮场景。",
+   "coordination": "服务端下发改写后的净分与承包结算明细，客户端分别展示承包分与番型分。",
+   "atoms": [
+    {
+     "id": "AT-ST-C13-013",
+     "name": "先求和再改写",
+     "rule": "承包：自摸先算出三笔再求和为 S，然后按上一节改写出实际赔付。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端把承包结算明细汇总到具体座位，并在兜底流水里从赢家总净分中扣掉承包分，得出番型部分的分数；三笔求和与改写运算本身不做。",
+     "uiInteraction": "赢家流水把承包分单列成一项，结算行总分仍是改写后的净分；输家行显示各自实际扣除金额。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "BoxHzmjFlowUtil.ts:429"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "BoxHzmjFlowUtil.ts:443"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "BoxHzmjResultMid.ts:153"
+      }
+     ],
+     "notes": "可见承包分与番型分分离展示，但“三笔求和后再改写”的过程无客户端证据。",
+     "businessBehavior": {
+      "trigger": "自摸胡牌且承包关系成立时",
+      "condition": "承包方需代赔的那部分成立",
+      "action": "把承包分从赢家总分里单独拆出来显示",
+      "result": "玩家看到赢家总分中有一笔由承包方代赔，输家看到实际扣款变化"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "缺少服务端三笔求和与改写算法证据，客户端只做金额拆开展示",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C13-006",
+   "name": "黄庄结算",
+   "description": "规定黄庄（流局无人胡牌）时四家本局得分都是0。",
+   "scope": "只覆盖黄庄这一种结束类型，不含其他结束方式。",
+   "coordination": "客户端按结束类型判断是否显示输赢流水与飘分。",
+   "atoms": [
+    {
+     "id": "AT-ST-C13-014",
+     "name": "黄庄四家为0",
+     "rule": "黄庄：四家本局都是 0。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "流局时结算流水直接返回空；结算行的分数取不到对应记录时按0显示；桌面飘分遇到0分座位直接跳过，不播数值动画。",
+     "uiInteraction": "黄庄结算每行显示0分、不飘分；自己所在行按“输/平局”暗色底样式显示。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "BoxHzmjFlowUtil.ts:29"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "BoxHzmjResultMid.ts:371"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "GameResultHuCmd.ts:206"
+      }
+     ],
+     "notes": "界面在流局时呈现0分与无飘分，但若服务端下发了非0分数，客户端会照样显示，因此“四家都是0”无法仅凭客户端确认。",
+     "businessBehavior": {
+      "trigger": "本局打成黄庄（无人胡牌）时",
+      "condition": "结束类型为流局",
+      "action": "不生成输赢流水、不播桌面飘分，四行分数显示0",
+      "result": "玩家看到四家本局都是0分，本场累计分不变"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端不强制四家为0，实际数值取决于服务端下发",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C13-007",
+   "name": "算分示例校验",
+   "description": "用两个具体算例固定结算结果，用于校验算分实现是否正确。",
+   "scope": "仅作为算分结果的示例校验，不新增规则。",
+   "coordination": "示例应可与结算界面显示的各家分数逐项比对。",
+   "atoms": [
+    {
+     "id": "AT-ST-C13-015",
+     "name": "闲家2倍自摸示例",
+     "rule": "闲家以 2 倍番型自摸：庄家付 16，两名闲家各付 2，赢家得 20。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "客户端无算分或示例校验代码，结算界面只显示服务端给出的金额，无法复现16/2/2/20。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端没有算分逻辑，无法用界面核对示例数值",
+      "clientObserved": false
+     }
+    },
+    {
+     "id": "AT-ST-C13-016",
+     "name": "平胡点炮示例",
+     "rule": "平胡点炮：赢家 +8，放铳者 −8，另两家 0。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "结算界面只按服务端金额显示点炮双方与两家的0分，没有8分这一固定值的计算或校验依据。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端无算分与示例校验逻辑，无法确认平胡点炮恒为±8",
+      "clientObserved": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C13-008",
+   "name": "本场积分累计",
+   "description": "规定本场积分从0起算，每小局加上实际净得分，赢家加实收、赔付者扣实付。",
+   "scope": "覆盖跨小局的积分累计与展示，不含单局内部分配。",
+   "coordination": "服务端下发累计分，客户端刷新头像分数并弹总战绩。",
+   "atoms": [
+    {
+     "id": "AT-ST-C13-017",
+     "name": "每小局累加实际净得分",
+     "rule": "本场积分从 0 起，每小局加上实际净得分。赢家加实收，赔付者扣实付。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "本场累计分直接用服务端下发的每家累计分数覆盖写入玩家数据，玩家头像按该值刷新；客户端不做加总，也不负责起始归零。",
+     "uiInteraction": "玩家头像旁分数在每小局结算后刷新；小结算面板只显示本局分数，不显示本场累计；小结算后再延迟弹出总战绩界面。",
+     "messages": [
+      "MsgResultHu",
+      "MsgPlayerScore"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "GameResultHuCmd.ts:230"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePlayerScoreCmd.ts",
+       "location": "GamePlayerScoreCmd.ts:31"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerView.ts",
+       "location": "BoxHzmjPlayerView.ts:514"
+      }
+     ],
+     "notes": "只能证实累计分会覆盖刷新到头像；从0起算与“赢家加实收、赔付者扣实付”的累加规则在服务端。总战绩面板属公共模块，源码不在本工程内。",
+     "businessBehavior": {
+      "trigger": "每小局结算完成后",
+      "condition": "服务端下发最新的本场累计分",
+      "action": "用新累计分刷新四家头像上的分数",
+      "result": "玩家看到自己的本场累计分随每局增加或减少"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端只接收并显示累计分，从0起算与逐局累加的实际算法无法验证",
+      "clientObserved": true
+     }
+    }
+   ]
+  }
+ ]
+}

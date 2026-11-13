@@ -1,0 +1,938 @@
+{
+ "stage": {
+  "id": "ST-C12",
+  "name": "三摊承包",
+  "chapter": "三摊承包",
+  "summary": "按吃牌累计方向性摊数，庄闲间达到条件即成立承包，在自摸、点炮、抢杠结算中改写赔付，并在第 3 摊时播放三摊落地提示。",
+  "terms": [
+   {
+    "term": "摊",
+    "definition": "A 吃进 B 打出的牌，A 对 B 记 1 摊。两个方向分开计。碰、直杠、加杠、暗杠不计摊。每小局重新累计。",
+    "source": "模板名词章节 第 14 行"
+   },
+   {
+    "term": "承包",
+    "definition": "庄家与闲家之间，某一方向的有效摊达到成立条件后，承包方在自摸结算时代赔。反承包是同一关系下，原被承包方自摸时，原承包方按加倍规则赔付。",
+    "source": "模板名词章节 第 15 行"
+   },
+   {
+    "term": "飘",
+    "definition": "自己出牌阶段打出一张财神，即飘财 1 次。连续打出财神则累加，打出普通牌清零。每小局从 0 次起算。",
+    "source": "模板名词章节 第 18 行"
+   },
+   {
+    "term": "财神",
+    "definition": "白板固定为财神。只在胡牌判定时代替顺子、刻子或对子所缺的牌。吃、碰、杠必须用真实的非财神牌。",
+    "source": "模板名词章节 第 12 行"
+   }
+  ],
+  "crossCutting": [
+   "摊计数与承包关系统一由系统下发：摊更新消息广播摊列表，结算消息携带承包记录；客户端不做摊数累计、不做吃牌资格判定，仅缓存摊列表供提示与结算使用。",
+   "三摊落地动效是单个居中 Spine 节点，并非按四个座位各播一份；简洁模式与复盘模式下不播放，代码注释称「动画播在座位」但实现未按座位定位。",
+   "重连时通过重连快照里的摊信息恢复摊列表，回放模式不重播三摊落地动效。",
+   "小结算的承包角标只挂在出承包方座位行；承包/反承包文案只追加到赢家行，且结算流水气泡只显示文案标题，不显示承包金额。",
+   "对局配置中存在三摊承包使能字段，但客户端未读取该开关，是否下发摊信息完全由系统决定。"
+  ]
+ },
+ "features": [
+  {
+   "id": "FP-ST-C12-001",
+   "name": "摊计数规则",
+   "description": "定义吃牌产生的方向性摊数：只统计吃牌，A 吃 B 的牌则 A 对 B 加 1 摊，两个方向分开计，与飘财无关。",
+   "scope": "只覆盖摊数如何产生与统计，不含承包成立后的赔付。",
+   "coordination": "系统在每次吃牌后累计摊数并随摊更新广播；客户端仅缓存摊列表与触发提示，不自行累计。",
+   "atoms": [
+    {
+     "id": "AT-ST-C12-001",
+     "name": "只统计吃牌",
+     "rule": "只统计吃牌。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端不累计摊数，收到摊列表后整表覆盖存入数据层，只用于驱动提示与结算展示。",
+     "uiInteraction": "对局桌面没有摊计数展示；摊更新事件仅写调试日志。",
+     "messages": [
+      "MsgTanUpdate"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts:9"
+      },
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:1596"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1793"
+      }
+     ],
+     "notes": "匹配场提示文案写有「A给B吃碰三摊后B胡牌则A承包」「吃碰三摊要注意」，与「只统计吃牌」表述不一致；客户端无摊计数逻辑，是否只计吃牌取决于系统。",
+     "businessBehavior": {
+      "trigger": "一名玩家吃进另一名玩家打出的牌时",
+      "condition": "只有吃牌进入摊数统计",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端不含摊数统计逻辑，无法证实只计吃牌；匹配场提示文案还写有「吃碰三摊」。",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C12-002",
+     "name": "吃牌即对出牌者加一摊",
+     "rule": "A 吃 B 的牌，A 对 B 加 1 摊。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "摊信息按「被吃方—吃方」成对携带摊数存储，提示按该对座位触发。",
+     "uiInteraction": "该对摊数达到 3 时播放三摊落地动效。",
+     "messages": [
+      "MsgTanUpdate"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts:26"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1651"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTestView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTestView.ts:948"
+      }
+     ],
+     "notes": "摊数按成对座位记录的方向语义有证据；每次吃牌 +1 的累计在系统侧完成，客户端只接收结果。",
+     "businessBehavior": {
+      "trigger": "一名玩家吃进另一名玩家打出的牌",
+      "condition": "",
+      "action": "记录这一对玩家之间的摊数",
+      "result": ""
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "方向关系已验证，但每次吃牌 +1 的累计由系统完成，缺少累计实现证据。",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C12-003",
+     "name": "两个方向分开计",
+     "rule": "两个方向分开计。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "摊信息以玩家对为单位列成列表存储，同一玩家可同时存在多条不同对手的记录。",
+     "uiInteraction": "",
+     "messages": [
+      "MsgTanUpdate"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:1597"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTestView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTestView.ts:947"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTestView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTestView.ts:949"
+      }
+     ],
+     "notes": "数据结构按玩家对分别存放，可支持两方向独立记录；两方向是否互不影响由系统判定。",
+     "businessBehavior": {
+      "trigger": "同一对玩家之间发生吃牌",
+      "condition": "",
+      "action": "分别记录这一对玩家两个方向的摊数",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端仅按玩家对存储摊数，无法证实两个方向的摊数分别独立累计。",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C12-004",
+     "name": "摊计数与飘财无关",
+     "rule": "与飘财无关。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "摊信息与飘计数分别存储，分别由摊更新与飘消息驱动，互不读取。",
+     "uiInteraction": "飘状态更新走独立的碰杠类动效与计数提示，不改变摊提示表现。",
+     "messages": [
+      "MsgTanUpdate",
+      "MsgPiao"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:1600"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1673"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts:21"
+      }
+     ],
+     "notes": "客户端摊与飘两套数据完全分离，无联动代码；结算时两者是否互相影响无法从客户端证实。",
+     "businessBehavior": {
+      "trigger": "玩家打出财神形成飘",
+      "condition": "",
+      "action": "记录并播放飘状态变化，不修改摊数",
+      "result": "玩家看到飘状态变化的动效与提示"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端摊与飘字段相互独立，但不能证明结算时摊与飘互不影响。",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C12-002",
+   "name": "承包成立与吃牌限制",
+   "description": "限定承包只在庄家与闲家之间成立；两名闲家同一方向最多 2 摊，达到 2 摊后再吃该家的牌不成立且不给出【吃】。",
+   "scope": "覆盖承包资格与吃牌限制，不含第 3 摊提示与赔付。",
+   "coordination": "资格与限制由系统在权限下发时体现，客户端「吃」按钮跟随吃权限显隐。",
+   "atoms": [
+    {
+     "id": "AT-ST-C12-005",
+     "name": "仅庄闲之间可承包",
+     "rule": "只有庄家和闲家之间能承包。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "客户端未见区分庄家与闲家的承包判定；摊信息与承包关系直接接收后展示，无本地校验。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端无庄闲承包资格判定实现，缺少系统侧资格判定证据。",
+      "clientObserved": false
+     }
+    },
+    {
+     "id": "AT-ST-C12-006",
+     "name": "闲闲同方向最多两摊",
+     "rule": "两名闲家之间，同一方向最多 2 摊，吃一成立就加 1。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端不判断吃牌双方的庄闲身份与已有摊数，「吃」按钮显隐完全跟随系统下发的吃权限。",
+     "uiInteraction": "有吃权限时显示「吃」按钮并高亮可吃组合手牌；无权限不显示。",
+     "messages": [
+      "MsgPower",
+      "MsgTanUpdate"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:552"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:578"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:752"
+      }
+     ],
+     "notes": "闲闲身份与 2 摊上限的判断不在客户端，客户端只消费吃权限位。",
+     "businessBehavior": {
+      "trigger": "一名玩家吃进另一名玩家打出的牌",
+      "condition": "这两名玩家之间同一方向的摊数尚未达到上限",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端仅按权限位显示吃按钮，未实现闲闲 2 摊上限判断，缺少系统侧吃牌资格证据。",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C12-007",
+     "name": "满两摊后不给出吃",
+     "rule": "已经有 2 摊时，再吃这一家的牌不成立，不给出【吃】。",
+     "uiRequirement": "不给出【吃】",
+     "verdict": "partial",
+     "clientLogic": "「吃」按钮显隐只看系统下发的吃权限，客户端没有按摊数拦截吃的代码。",
+     "uiInteraction": "没有吃权限时「吃」按钮不出现，手牌不出现可吃组合高亮。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:552"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:578"
+      }
+     ],
+     "notes": "「不给出吃」由系统不下发吃权限实现，客户端无本地拦截，也没有摊数与吃按钮的联动代码。",
+     "businessBehavior": {
+      "trigger": "玩家试图吃进已累计 2 摊的同一家打出的牌",
+      "condition": "该方向摊数已达 2",
+      "action": "按系统给的权限决定是否显示「吃」",
+      "result": "没有吃权限时不出现「吃」按钮"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端无按摊数拦截吃的逻辑，2 摊上限完全依赖系统权限下发，缺少判定证据。",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C12-003",
+   "name": "三摊落地提示",
+   "description": "某方向计到第 3 摊即记承包并播放三摊落地提示，提示可与吃牌字效同屏、不阻塞摸打，且当时不出现承包角标。",
+   "scope": "覆盖提示时机、表现与不阻塞要求，不含赔付金额。",
+   "coordination": "客户端在摊更新时检测第 3 摊触发居中动效，承包角标延后到小结算。",
+   "atoms": [
+    {
+     "id": "AT-ST-C12-008",
+     "name": "第三摊记承包",
+     "rule": "某一方向计到第 3 摊时记承包。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "收到摊列表后逐条检查摊数，摊数为 3 时派发「三摊落地」事件并通知界面。",
+     "uiInteraction": "达到 3 摊时播放三摊落地动效。",
+     "messages": [
+      "MsgTanUpdate"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts:24"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts:25"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1650"
+      }
+     ],
+     "notes": "客户端以摊数等于 3 作为触发条件，未使用承包关系字段；承包记账本身不在客户端。",
+     "businessBehavior": {
+      "trigger": "某一方向的摊数被更新",
+      "condition": "该方向摊数达到 3",
+      "action": "播放三摊落地动效",
+      "result": "玩家看到三摊落地动效"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端仅以摊数 3 触发提示，承包是否成立由系统记录，无承包记账证据。",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C12-009",
+     "name": "四端播放三摊落地且可与吃牌字效同屏",
+     "rule": "四端播放「三摊落地」，可与吃牌字效同时显示。",
+     "uiRequirement": "四端播放「三摊落地」，可与吃牌字效同时显示。",
+     "verdict": "confirmed",
+     "clientLogic": "摊更新命令派发落地事件后，界面层播放独立的三摊落地 Spine 动效；吃牌动效在另一组按座位区分的节点上播放，二者互不抢占。",
+     "uiInteraction": "屏幕中央播放三摊落地动效，可与吃牌字效同时出现；简洁模式下不播放。",
+     "messages": [
+      "MsgTanUpdate"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1662"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml:118"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:498"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/CmdDefine.ts",
+       "location": "source-code/client/Code/controller/cmd/CmdDefine.ts:100"
+      }
+     ],
+     "notes": "落地动效是单个居中节点，代码注释称「动画播在该座位」但实现未按座位定位；消息为广播下发，同一份客户端代码在四端都会播放，但「四端」若指四个方位则不符；简洁模式下会被抑制。",
+     "businessBehavior": {
+      "trigger": "某一方向摊数达到 3",
+      "condition": "非复盘模式且未开启简洁模式",
+      "action": "在屏幕中央播放三摊落地动效",
+      "result": "玩家看到居中的三摊落地动效，可与吃牌字效同时出现"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "无法从单个客户端证实四端同时播放，且简洁模式会抑制该动效；动效也未按四个方位分别播放。",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C12-010",
+     "name": "当时不出现承包角标",
+     "rule": "不等到结算，当时没有承包角标。",
+     "uiRequirement": "当时没有承包角标",
+     "verdict": "confirmed",
+     "clientLogic": "对局中不渲染摊数或承包角标；承包角标只在小结算行内按承包关系设置。",
+     "uiInteraction": "对局桌面无承包角标；小结算在出承包方座位行显示「承包」或「反承包」图标。",
+     "messages": [
+      "MsgTanUpdate",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1793"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:196"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml:17"
+      }
+     ],
+     "notes": "桌面完全没有摊数与承包标识，角标只在小结算出现，符合「当时没有承包角标」。",
+     "businessBehavior": {
+      "trigger": "小结算展示座位行",
+      "condition": "该座位存在有效的承包或反承包关系",
+      "action": "在结算行显示承包或反承包角标",
+      "result": "玩家只在小结算看到承包方角标，对局中看不到"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C12-011",
+     "name": "提示期间可继续摸打",
+     "rule": "提示期间，获权玩家可以继续提牌、出牌。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "三摊落地动效为不可点击的展示节点，播放时不加输入锁，也没有暂停或排队等待逻辑。",
+     "uiInteraction": "动效只覆盖显示层，玩家仍可继续点选并操作出牌与响应按钮。",
+     "messages": [
+      "MsgTanUpdate"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1663"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml:118"
+      },
+      {
+       "file": "source-code/client/Code/config/FguiViewDefine.ts",
+       "location": "source-code/client/Code/config/FguiViewDefine.ts:404"
+      }
+     ],
+     "notes": "客户端无输入锁与流程阻塞代码；是否在动效期间继续下发摸牌/出牌权限由系统决定。",
+     "businessBehavior": {
+      "trigger": "三摊落地动效播放期间",
+      "condition": "玩家已获得出牌或摸牌权限",
+      "action": "不冻结操作",
+      "result": "玩家可以继续操作手牌"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端不阻塞操作已验证，但缺少系统在提示期间继续下发的摸牌/出牌权限证据。",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C12-004",
+   "name": "自摸承包与反承包结算",
+   "description": "自摸时只结算胡牌方参与的承包对：承包方代付三家合计，被承包方自摸时承包方按 2 倍反承包赔付，双向满 3 摊只取倒承包 2 倍，并覆盖承包、反承包、链式三种形态。",
+   "scope": "覆盖自摸场景的承包、反承包、链式赔付，不含点炮与抢杠。",
+   "coordination": "客户端展示系统下发的承包记录：出承包方座位打角标、赢家行追加承包文案。",
+   "atoms": [
+    {
+     "id": "AT-ST-C12-012",
+     "name": "自摸只结算胡牌方参与的承包对",
+     "rule": "自摸只结算胡牌方自己参与的承包对。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "结算按系统下发的承包列表展示，承包文案只追加到胡牌座位，非胡牌座位不追加承包文案。",
+     "uiInteraction": "结算流水中承包文案只出现在赢家行，承包角标挂在出承包方座位行。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:444"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1746"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:212"
+      }
+     ],
+     "notes": "客户端不对承包列表做「只保留胡牌方参与项」的过滤，是否只结算胡牌方参与的承包对由系统决定。",
+     "businessBehavior": {
+      "trigger": "本局有人自摸胡牌进入结算",
+      "condition": "存在与胡牌方相关的承包关系",
+      "action": "按系统给的承包列表展示承包文案与角标",
+      "result": "玩家在结算看到胡牌方的承包文案与承包方角标"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "承包结算项由系统下发，客户端无「只结算胡牌方参与承包对」的筛选逻辑。",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C12-013",
+     "name": "承包方代付三家合计",
+     "rule": "摊方胡，对方付三家输分合计。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "承包记录携带付款方、收款方与分值，客户端在小结算给付款方打角标、给收款方追加承包文案。",
+     "uiInteraction": "出承包方行显示承包角标；赢家行流水出现「承包」文案。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:445"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:206"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml:91"
+      }
+     ],
+     "notes": "承包金额与「三家合计」的计算在系统侧；结算流水气泡只显示文案标题，不显示承包金额。",
+     "businessBehavior": {
+      "trigger": "摊方自摸胡牌",
+      "condition": "该方向已成立承包",
+      "action": "在结算给承包方打角标、给胡牌方追加承包文案",
+      "result": "玩家看到承包方角标与胡牌方的承包字样"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端只展示系统下发的承包记录，未实现三家输分合计的金额计算。",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C12-014",
+     "name": "被摊方胡按两倍反承包",
+     "rule": "被摊方胡，摊方付该合计的 2 倍。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "承包关系值为 2 时客户端按「反承包」展示，关系值为 1 时按「承包」展示。",
+     "uiInteraction": "结算行角标切到反承包图标，文案显示「反承包」。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:432"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:9"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml:20"
+      }
+     ],
+     "notes": "客户端只负责按关系值显示反承包名称与图标，2 倍金额由系统下发；流水文案不带金额。",
+     "businessBehavior": {
+      "trigger": "被承包方自摸胡牌",
+      "condition": "同一承包关系仍存在",
+      "action": "在结算把该关系标记为反承包",
+      "result": "玩家看到反承包角标或文案"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "反承包金额由系统下发，客户端无 2 倍计算逻辑。",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C12-015",
+     "name": "双向满三摊只取倒承包两倍",
+     "rule": "双向都满 3 摊时只按倒承包的 2 倍，不两笔叠加。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "结算逐条处理承包记录，客户端不做双向合并去重；按座位汇总时同一座位多条记录会被累加。",
+     "uiInteraction": "同一座位只显示一个承包角标，取第一条有效关系。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:467"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:212"
+      }
+     ],
+     "notes": "客户端无「双向满 3 摊只取倒承包 2 倍」的合并规则：若系统下发两条记录，角标只取首条、汇总会累加，可能不符合该规则；是否只下发单条由系统决定。",
+     "businessBehavior": {
+      "trigger": "同一对玩家的两个方向都达到 3 摊后结算",
+      "condition": "",
+      "action": "按收到的承包记录逐条展示",
+      "result": "玩家可能看到承包与反承包两类标识"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端不实现双向合并去重，完全依赖系统下发单条倒承包记录。",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C12-016",
+     "name": "承包形态定义",
+     "rule": "承包：A 对 B 已成立，A 自摸。B 支付三家原应赔分的合计 S，另外两家本局 0 分。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端按承包记录在出承包方座位打角标、在赢家流水追加「承包」文案。",
+     "uiInteraction": "承包方行显示承包图标；赢家行流水显示「承包」。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:195"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:48"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:373"
+      }
+     ],
+     "notes": "「B 付 S、另外两家 0 分」与金额合计在系统侧计算；客户端展示层把承包分从赢家兜底流水里扣除后单独展示名称。",
+     "businessBehavior": {
+      "trigger": "A 自摸胡牌",
+      "condition": "A 对 B 已成立承包",
+      "action": "在结算把 B 标为承包方、把承包文案挂到 A",
+      "result": "玩家看到 B 行的承包角标与 A 行的承包文案"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "赔付金额与另外两家 0 分由系统计算，客户端仅展示。",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C12-017",
+     "name": "反承包形态定义",
+     "rule": "反承包：同一关系下 B 自摸。A 支付 2 × S。S 是 B 这次自摸原本向三家应收的合计。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "关系值为 2 时按「反承包」展示，匹配场结算文案也按关系值输出「反承包」。",
+     "uiInteraction": "结算行显示反承包图标与「反承包」文字。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:429"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1750"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml:92"
+      }
+     ],
+     "notes": "反承包标识与文案有完整展示链路；2 倍金额与合计 S 由系统下发，客户端不计算。",
+     "businessBehavior": {
+      "trigger": "同一承包关系下被承包方自摸",
+      "condition": "该关系有效",
+      "action": "在结算把付款方标记为反承包",
+      "result": "玩家看到反承包角标或文案"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "反承包 2 倍金额由系统计算下发，客户端无计算证据。",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C12-018",
+     "name": "链式承包",
+     "rule": "链式：A 对 B 成立，同时 C 对 A 成立，A 自摸。B 付 S，C 付 2 × S，A 实收 3 × S，第四家 0 分。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "结算遍历承包列表，每条记录都可追加到赢家流水，同一赢家可累计多条承包记录。",
+     "uiInteraction": "赢家流水可同时出现多条承包相关文案，各付款方行分别显示角标。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:427"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:468"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:207"
+      }
+     ],
+     "notes": "客户端不校验链式关系与倍数，多条记录的名称与归属完全按系统下发渲染。",
+     "businessBehavior": {
+      "trigger": "存在两条相连的承包关系且被承包方自摸",
+      "condition": "",
+      "action": "分别展示两条承包记录",
+      "result": "玩家在同一赢家行看到多条承包文案、相关座位出现角标"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "链式赔付金额由系统计算，客户端无链路与倍数校验。",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C12-005",
+   "name": "点炮与抢杠承包",
+   "description": "点炮仅在放铳者本人是承包对方时改写，基数为该笔点炮分；他人承包不赔；抢杠胡不替换杠牌者赔付，承包额另行叠加。",
+   "scope": "覆盖点炮与抢杠场景的承包改写与叠加规则。",
+   "coordination": "客户端结算区分点炮、抢杠与自摸类型，但赔付改写与叠加由系统完成，客户端只并列展示。",
+   "atoms": [
+    {
+     "id": "AT-ST-C12-019",
+     "name": "点炮仅改写放铳者本人的承包",
+     "rule": "点炮只在放铳者本人是承包对方时改写，基数是原来那一笔点炮分，不是三家之和。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "客户端结算可区分点炮、吃胡与自摸类型，但未见点炮场景下改造承包赔付基数的逻辑；承包记录原样展示。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端无点炮承包赔付改写逻辑，缺少系统侧点炮结算证据。",
+      "clientObserved": false
+     }
+    },
+    {
+     "id": "AT-ST-C12-020",
+     "name": "他人承包不赔",
+     "rule": "别人的承包关系不赔，放铳者仍按原点炮付。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "客户端对承包记录只做展示，没有「放铳者是否为承包对方」的判定代码。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端无放铳者与承包方关系判定，缺少系统侧赔付证据。",
+      "clientObserved": false
+     }
+    },
+    {
+     "id": "AT-ST-C12-021",
+     "name": "抢杠胡承包额叠加",
+     "rule": "抢杠胡不替换杠牌者的赔付，承包额再叠加。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "结算流水对抢杠胡有独立类型文案，承包记录作为独立流水追加，二者互不覆盖。",
+     "uiInteraction": "结算流水可同时出现抢杠胡文案与承包文案。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:119"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:47"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:339"
+      }
+     ],
+     "notes": "客户端只是并列展示抢杠与承包两类流水，未实现「不替换杠牌者赔付、承包额叠加」的金额处理。",
+     "businessBehavior": {
+      "trigger": "抢杠胡成立并结算",
+      "condition": "存在承包关系",
+      "action": "分别展示抢杠与承包两类流水",
+      "result": "玩家在结算同时看到抢杠与承包字样"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "叠加金额由系统计算，客户端只并列展示两类流水。",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C12-022",
+     "name": "杠牌者同时是承包方两笔都付",
+     "rule": "杠牌者若同时是承包方，两笔都付。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "客户端未见「杠牌者同时为承包方」的识别或两笔并列赔付处理。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端无杠牌者与承包方身份叠加判定，缺少系统侧赔付证据。",
+      "clientObserved": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C12-006",
+   "name": "承包算分示例",
+   "description": "以两个示例固定承包与反承包的金额口径：庄家自摸三家各 8 时承包方付 24；反承包按 8、1、1 合计的 2 倍付 20。",
+   "scope": "仅作口径示例，不含新规则。",
+   "coordination": "示例金额全部由系统计算，客户端不参与任何承包分计算。",
+   "atoms": [
+    {
+     "id": "AT-ST-C12-023",
+     "name": "庄家自摸承包算分示例",
+     "rule": "例：庄家平胡自摸，三名闲家各应赔 8，S = 24。承包方付 24。若同时存在上家对庄家的承包，上家再付 48，庄家得 72。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "客户端不做分数计算，示例中的 S、付款额与实收金额无法在客户端验证，只体现在系统下发的座位总分。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端不参与承包金额计算，缺少系统侧算分证据。",
+      "clientObserved": false
+     }
+    },
+    {
+     "id": "AT-ST-C12-024",
+     "name": "反承包算分示例",
+     "rule": "例：庄家对闲家成立承包，闲家平胡自摸，三家原应赔 8、1、1。庄家按反承包付 20。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "反承包金额由系统计算下发，客户端只显示反承包标识与座位总分，无法验证 20 这个金额口径。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端不参与反承包金额计算，缺少系统侧算分证据。",
+      "clientObserved": false
+     }
+    }
+   ]
+  }
+ ]
+}

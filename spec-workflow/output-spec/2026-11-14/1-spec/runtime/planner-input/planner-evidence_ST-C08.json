@@ -1,0 +1,175 @@
+{
+ "stageId": "ST-C08",
+ "title": "飘财",
+ "sourceTitle": "行牌 > 飘财",
+ "fromLine": 83,
+ "toLine": 90,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 18,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C08-001",
+   "name": "全场唯一飘财窗口",
+   "rule": "全场同时只有一个飘财窗口。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端未找到窗口状态：MsgPiao 仅含 seat 与 piao_count，GameData 只有按座位的 _piaoCounts。唯一单点状态 _playLimitSeat 是 MsgPlayLmts 的出牌限制目标座位，语义为受限方而非窗口所有者，不足以证明全场唯一窗口。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C08-002",
+   "name": "所有者限制另外三家",
+   "rule": "打出财神的玩家成为所有者，限制另外三家。",
+   "uiRequirement": "",
+   "uiInteraction": "仅对本地受限玩家做手牌禁打灰化与点击拦截，其它三家界面无所有者标识。",
+   "notes": "客户端只接收到「禁打结果」，没有任何字段说明该限制由哪位玩家打出财神所引起，所有者与受限三家的对应关系不可在客户端查证。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C08-003",
+   "name": "窗口换人不叠加",
+   "rule": "之后再有人打出财神，窗口直接换到这个人，不叠加。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端无窗口迁移逻辑；收到 MsgPiao 时只把该座位的 piao_count 覆盖写入 _piaoCounts，窗口换人完全依赖服务端重新下发 MsgPlayLmts/MsgPiao。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C08-004",
+   "name": "受限者被逼打出财神时窗口转移",
+   "rule": "受限玩家若被逼打出刚摸到的财神，窗口就转到他身上。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "未找到按「受限方被迫打出财神」触发窗口转移的客户端处理；客户端不区分该张财神是主动打出还是被迫打出。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C08-005",
+   "name": "受限时可胡牌与暗杠",
+   "rule": "受限时可以胡牌和暗杠。",
+   "uiRequirement": "",
+   "uiInteraction": "受限时是否出现胡/杠按钮取决于服务端权限位，客户端不做额外过滤或置灰。",
+   "notes": "胡与暗杠的可行性由服务端权限位表达，客户端只能验证「胡/杠按钮由服务端决定」，无法验证是暗杠而非明杠、加杠。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C08-006",
+   "name": "受限时禁止吃碰直杠加杠",
+   "rule": "受限时不能吃、碰、直杠、加杠。",
+   "uiRequirement": "",
+   "uiInteraction": "受限时服务端若不下发对应权限位，吃/碰/杠按钮即整体隐藏，客户端没有独立的禁用态表现。",
+   "notes": "协议只用一个 POWER_ID_KONG 位表示所有杠，客户端无法区分「允许暗杠、禁止直杠/加杠」的细分语义，暗杠可行性由服务端具体候选列表（combs）体现。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C08-007",
+   "name": "只能打刚摸进或最新补进的那一张",
+   "rule": "只能打刚摸进或最新补进的那一张。",
+   "uiRequirement": "",
+   "uiInteraction": "打出被禁的牌时 toast「该牌被禁打」；权限被拦截时 toast「有财必拷响规则生效中」。",
+   "notes": "客户端把「只能打摸牌位」表达为「其余手牌全部禁打」，即由服务端把其它牌值全部塞进 hands；客户端没有「只允许打摸牌」的正向白名单字段，也无从区分是飘财限制还是吃碰禁手造成。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C08-008",
+   "name": "其余手牌压暗且仅本地可见",
+   "rule": "其余手牌压暗，只在自己界面显示。",
+   "uiRequirement": "其余手牌压暗，只在自己界面显示。",
+   "uiInteraction": "被禁的手牌显示为灰色且不可点击；摸牌位（末张）与手牌的判断以 GameData 的 moCard 为准，避免吃碰后末张被误判为单放。",
+   "notes": "模板的「压暗」在客户端实现为禁打灰化（MahColor.gray）而非牌背翻转；`只在自己界面显示`在客户端体现为限制只对本地座位生效，其它玩家手牌本就不可见，无法进一步区分。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C08-009",
+   "name": "飘财限制优先于吃碰禁手",
+   "rule": "这份限制盖过吃碰禁手。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端只有一套 MsgPlayLmts hands/dang_fang 通道，飘财限制与吃碰禁手共用，未找到任何优先级比较或来源标记；「盖过」只能由服务端合并计算后下发体现。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C08-010",
+   "name": "所有者出牌前关闭窗口",
+   "rule": "所有者自己下一次出牌时先关掉窗口。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端无窗口实体与关闭时机逻辑；仅在收到 piao_count<=0 的 MsgPiao 时提前 return 不播动画，属被动表现。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C08-011",
+   "name": "再打财神立刻重开窗口",
+   "rule": "这张若又是财神，立刻重开。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "未找到出牌后判定「是否重开窗口」的客户端逻辑，重开完全依赖服务端再次下发 MsgPiao 与新的 MsgPlayLmts。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C08-012",
+   "name": "打出财神且仍敲响才加 1",
+   "rule": "飘档只在打出财神、且打出后手牌仍然敲响时加 1。",
+   "uiRequirement": "",
+   "uiInteraction": "计数增加时触发对应座位碰杠位的「飘」字动效；无计数数值展示。",
+   "notes": "客户端拿到的是已算好的 piao_count，没有加 1 的本地计算，也无「敲响」状态字段（全文无敲/拷响状态实现），加算条件无法在客户端独立验证。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C08-013",
+   "name": "未敲响打财神双归零",
+   "rule": "没敲响就打财神，飘档和杠链都归零。",
+   "uiRequirement": "",
+   "uiInteraction": "归零时不播放任何「飘」字动效，也无提示。",
+   "notes": "模板要求飘档与杠链同时归零，客户端只有 _piaoCounts 一个计数，全文检索无 gangChain/杠链 实现，杠链归零无法查证。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C08-014",
+   "name": "打出普通牌归零",
+   "rule": "打出普通牌同样归零。",
+   "uiRequirement": "",
+   "uiInteraction": "计数归零后不再出现「飘」字动效，界面无清零提示。",
+   "notes": "客户端无出牌牌型判定与本地清零触发，是否「打出普通牌」由服务端判断后下发 0。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C08-015",
+   "name": "各家飘档独立",
+   "rule": "各家飘档独立。",
+   "uiRequirement": "",
+   "uiInteraction": "飘字动效按座位独立播放（seatToLocal 后取该座位的碰杠动画节点），界面无汇总展示。",
+   "notes": "计数按座位独立存储已确认；但 getPiaoCount 除定义外无调用点，说明该计数当前只服务于表现层。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C08-016",
+   "name": "吃碰杠不清飘档且吃碰清杠链",
+   "rule": "吃、碰、杠不清飘档，吃和碰会清杠链。",
+   "uiRequirement": "",
+   "uiInteraction": "吃碰杠动效（chi/peng/gang skin）播放时不改变飘计数展示。",
+   "notes": "「不清飘档」为代码缺失型证据（吃碰杠命令均不触碰 _piaoCounts）；「吃和碰会清杠链」因客户端无杠链数据完全无法查证。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C08-017",
+   "name": "飘次数本局累加、小局重置清零",
+   "rule": "飘次数本局累加，小局重置时清掉。",
+   "uiRequirement": "",
+   "uiInteraction": "小局重置后各座位飘计数归零，碰杠位不再有飘字动效。",
+   "notes": "断线重连也走 onResetUI（gameSceneBack 派发）会把飘计数清零；MsgRelinkOnAction 已定义 piao_counts 字段，但 GameData.recoverPiaoState 无任何调用点，重连后飘计数会丢失，需确认是否为预期。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C08-018",
+   "name": "碰杠位播放飘字且无常驻标签",
+   "rule": "次数大于 0 时，在该座位碰杠位播放「飘」字，没有常驻标签。",
+   "uiRequirement": "次数大于 0 时，在该座位碰杠位播放「飘」字，没有常驻标签。",
+   "uiInteraction": "在对应座位碰杠位播放一次「飘」字 Spine 动画（skin=piao），动画结束即隐藏，界面无数字或常驻飘标签。",
+   "notes": "Paixing_wz03.json 的 skin 列表中确认存在 piao skin；在 Fgui 各包 XML 中检索不到 piao/飘 相关常驻标签组件，与「没有常驻标签」一致。动效只在 piaoCount>0 时播放，归零事件不播动画。",
+   "verdict": "confirmed"
+  }
+ ]
+}

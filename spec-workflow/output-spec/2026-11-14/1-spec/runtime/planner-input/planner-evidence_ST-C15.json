@@ -1,0 +1,544 @@
+{
+ "stageId": "ST-C15",
+ "title": "结算",
+ "sourceTitle": "结算",
+ "fromLine": 182,
+ "toLine": 199,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 59,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C15-001",
+   "name": "胡牌确认后停止行牌",
+   "rule": "胡牌确认后停止行牌。",
+   "uiRequirement": "",
+   "uiInteraction": "操作按钮控制器切到空态，手牌不可再出牌。",
+   "notes": "停行牌由服务端下发结算消息触发，客户端无本地胡牌确认流程。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-002",
+   "name": "每小局只结算一次",
+   "rule": "胡牌确认后停止行牌，每小局只结算一次。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "GameResultHuCmd 与 ResultCmd 均未做幂等或次数校验，完全依赖服务端每局只下发一次 MsgResultHu；重复下发会重复打开小结算。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C15-003",
+   "name": "自摸的胡张",
+   "rule": "自摸的胡张是本次摸入或补入的牌。",
+   "uiRequirement": "",
+   "uiInteraction": "胡张在本家手牌末位亮出并参与胡牌落地表现。",
+   "notes": "客户端未区分「摸入」与「补入」，统一取 moCard。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-004",
+   "name": "点炮胡的胡张",
+   "rule": "点炮胡的胡张是弃牌。",
+   "uiRequirement": "",
+   "uiInteraction": "放铳方牌河最后一张被移入胡牌手牌。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-005",
+   "name": "抢杠胡的胡张",
+   "rule": "抢杠胡的胡张是被抢的第 4 张。",
+   "uiRequirement": "",
+   "uiInteraction": "抢杠胡与点炮共用点炮表现与胡张展示。",
+   "notes": "「被抢的第 4 张」由服务端保证，客户端无校验或日志；协议无加杠牌专字段。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C15-006",
+   "name": "停止操作按钮",
+   "rule": "各端停止操作按钮。",
+   "uiRequirement": "各端停止操作按钮。",
+   "uiInteraction": "吃碰杠胡过等操作按钮全部隐藏，手牌不可出；本家胡牌时解除压暗。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-007",
+   "name": "停止胡牌预览",
+   "rule": "各端停止胡牌预览。",
+   "uiRequirement": "各端停止胡牌预览。",
+   "uiInteraction": "听牌预览面板关闭，听牌按钮隐藏。",
+   "notes": "关闭听牌按钮的第二条路径由 MsgEndGame 触发，而非 MsgResultHu。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-008",
+   "name": "停止放大弃牌",
+   "rule": "各端停止操作按钮、胡牌预览和放大弃牌。",
+   "uiRequirement": "停止放大弃牌。",
+   "uiInteraction": "桌面放大弃牌图立即消失。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-009",
+   "name": "方位盘停止倒计时",
+   "rule": "各端停止操作按钮、胡牌预览和放大弃牌，方位盘停止倒计时。",
+   "uiRequirement": "方位盘停止倒计时。",
+   "uiInteraction": "方位盘中央倒计时数字清空，倒计时灯隐藏。",
+   "notes": "由 MsgEndGame（GameEndCmd 派发 onGameEnd）触发，不在 MsgResultHu 处理链内；若服务端先发结算后发结束，倒计时会在结算期间继续显示。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C15-010",
+   "name": "亮出四家手牌",
+   "rule": "在原牌桌亮出四家手牌。",
+   "uiRequirement": "在原牌桌亮出四家手牌。",
+   "uiInteraction": "四家手牌在牌桌上翻开，本家手牌缩小 0.8 倍让位。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-011",
+   "name": "桌面中央显示「对局结束」",
+   "rule": "桌面中央显示「对局结束」。",
+   "uiRequirement": "桌面中央显示「对局结束」。",
+   "uiInteraction": "桌面中央（667,302）出现结束标记图，1 秒后自动复位。",
+   "notes": "「对局结束」文案是共享包 hzta2330 的图片资源（C_GameEnd page 1=hu），仓库内无可读文本；且 onShowGameEndType 在 1 秒后把 C_GameEnd 复位为 0，与「番型字效期间仍在」不完全一致。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-012",
+   "name": "保留终局牌河",
+   "rule": "保留终局牌河。",
+   "uiRequirement": "保留终局牌河。",
+   "uiInteraction": "结算与黄庄期间四家河牌保持终局状态，继续游戏后才清空。",
+   "notes": "依据为结算链路中无清河牌调用、清空仅发生在下一局 onResetUI。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-013",
+   "name": "保留财神与余牌数",
+   "rule": "保留终局牌河、财神和余牌数。",
+   "uiRequirement": "保留财神和余牌数。",
+   "uiInteraction": "桌面左侧财神牌与右侧剩余张数在终局继续可见。",
+   "notes": "余牌数不随结算协议重算，取最后一次牌墙更新的数值。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-014",
+   "name": "胡牌者方位播放番型字效",
+   "rule": "「对局结束」仍在时，胡牌者方位播放番型字效。",
+   "uiRequirement": "「对局结束」仍在时，胡牌者方位播放番型字效。",
+   "uiInteraction": "胡牌者方位（KW_Ani_CPG_0~3）播放番型 Spine，基础番走文字节点、组合番走动效节点。",
+   "notes": "字效与「对局结束」标记并不同步：标记 1 秒后复位，字效按 Spine 时长播放。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-015",
+   "name": "点炮胡在放铳方位显示「点炮」",
+   "rule": "点炮胡和抢杠胡同时在放铳方位显示「点炮」。",
+   "uiRequirement": "点炮胡和抢杠胡同时在放铳方位显示「点炮」。",
+   "uiInteraction": "放铳方方位播放「点炮」Spine；一炮多响播 yipaoduoxiang。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-016",
+   "name": "抢杠胡的放铳者为加杠者",
+   "rule": "抢杠胡的放铳者是加杠者。",
+   "uiRequirement": "抢杠胡同时在放铳方位显示「点炮」，放铳者是加杠者。",
+   "uiInteraction": "抢杠胡在 df_from 座位播放点炮表现。",
+   "notes": "客户端无法自证「加杠者」，只能信任 df_from；若服务端下发错误座位，表现会错位。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C15-017",
+   "name": "先刷新头像旁累计积分",
+   "rule": "先刷新头像旁的累计积分。",
+   "uiRequirement": "先刷新头像旁的累计积分。",
+   "uiInteraction": "头像旁累计积分在字效/飘分前更新，正分为金黄色。",
+   "notes": "写数据在播动画之前，但玩家视图真正刷新分数发生在 onUpdateScore 派发时（飘分阶段也会派发一次），顺序上不能保证在字效之前完成。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-018",
+   "name": "番型字效退场后飘分",
+   "rule": "番型字效退场后，只在本局得分不为 0 的座位内侧飘分。",
+   "uiRequirement": "番型字效退场后飘分。",
+   "uiInteraction": "番型字效结束后，各座位同时出现飘分数字。",
+   "notes": "只以第一个座位（i===0）的动画完成作为触发点，多胡时后面的字效可能仍在播放中就开始飘分。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-019",
+   "name": "只飘非 0 得分座位",
+   "rule": "只在本局得分不为 0 的座位内侧飘分。",
+   "uiRequirement": "只在本局得分不为 0 的座位内侧飘分。",
+   "uiInteraction": "0 分座位不出现飘分数字。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-020",
+   "name": "飘分正分金黄色",
+   "rule": "正分金黄色。",
+   "uiRequirement": "正分金黄色。",
+   "uiInteraction": "正飘分以金色数字字效滑入并淡出。",
+   "notes": "组件默认文本色为 #ffffff，金黄色应来自 fnt_win 图集；仓库内无法验证具体色值，需美术资源确认。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C15-021",
+   "name": "飘分负分浅蓝灰带减号",
+   "rule": "负分浅蓝灰色并带减号。",
+   "uiRequirement": "负分浅蓝灰色并带减号。",
+   "uiInteraction": "负飘分以浅蓝灰色数字带减号滑入并淡出。",
+   "notes": "浅蓝灰为 fnt_lose 图集颜色，代码无可读色值；减号字模存在于 box_hzmj_result/fnt/lose 目录。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C15-022",
+   "name": "飘分淡出后短暂保留终局牌桌再开小结算",
+   "rule": "飘分淡出后短暂保留终局牌桌，再打开小结算。",
+   "uiRequirement": "飘分淡出后短暂保留终局牌桌，再打开小结算。",
+   "uiInteraction": "飘分淡出后终局牌桌短暂停留，随后小结算覆盖。",
+   "notes": "3 秒为写死常量，与飘分实际播放时长无联动；低端机或慢速模式可能提前/滞后。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-023",
+   "name": "黄庄亮出四家手牌",
+   "rule": "黄庄：亮出四家手牌。",
+   "uiRequirement": "黄庄：亮出四家手牌。",
+   "uiInteraction": "黄庄时四家手牌同样翻开在牌桌上。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-024",
+   "name": "黄庄中央显示「黄庄」",
+   "rule": "桌面中央显示「黄庄」。",
+   "uiRequirement": "桌面中央显示「黄庄」。",
+   "uiInteraction": "桌面中央显示黄庄标记图（与胡牌结束使用不同图片）。",
+   "notes": "「黄庄」文案为图片资源（page 2 drawn，取共享包 gnpghe 图），仓库内无可读文本。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-025",
+   "name": "黄庄保留牌河财神与余牌数 20",
+   "rule": "黄庄：保留终局牌河、财神和余牌数 20。",
+   "uiRequirement": "保留终局牌河、财神和余牌数 20。",
+   "uiInteraction": "黄庄时右侧仍显示剩余的 20 张，左侧仍显示本局财神。",
+   "notes": "20 的正确性依赖服务端牌墙消息时序；小结算入参带了 remaining_wall_cards，但好友房中间区未使用该字段。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C15-026",
+   "name": "黄庄不飘分",
+   "rule": "不飘分。四家本局都是 0。",
+   "uiRequirement": "不飘分。",
+   "uiInteraction": "黄庄不出现飘分数字，直接进入小结算流程。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-027",
+   "name": "黄庄小结算标题",
+   "rule": "随后打开小结算，标题为「黄庄」。",
+   "uiRequirement": "小结算标题为「黄庄」。",
+   "uiInteraction": "小结算标题显示黄庄。",
+   "notes": "标题渲染在 BoxRoomMahResultNewView（common_game 未包含），本仓库只能确认传给壳的流局标记。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C15-028",
+   "name": "小结算盖在终局牌桌上",
+   "rule": "小结算盖在终局牌桌上。",
+   "uiRequirement": "小结算盖在终局牌桌上。",
+   "uiInteraction": "小结算面板整体压在牌桌上方，牌桌仍在背后可见。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-029",
+   "name": "本家第一行与相对方位顺序",
+   "rule": "各端以本家为第一行，向下依次为下家、对家、上家。",
+   "uiRequirement": "各端以本家为第一行，向下依次为下家、对家、上家。",
+   "uiInteraction": "行首竖排显示 本家/下家/对家/上家。",
+   "notes": "「本家第一行」依赖 TableData.getAllPlayers() 的返回顺序（common_game 未包含），代码中没有显式排序把本家提到首位。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C15-030",
+   "name": "本家行置顶并高亮",
+   "rule": "本家行置顶并高亮。",
+   "uiRequirement": "本家行置顶并高亮。",
+   "uiInteraction": "本家行背景切换为高亮底图，带金币图标与专属赢/输底图。",
+   "notes": "高亮已确认（C_IsSelf + KW_ICON_GOLD + C_WinLost 底图），置顶仅能依赖列表顺序推断。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C15-031",
+   "name": "按净得分切换主题",
+   "rule": "胡牌局按本端本局净得分切换主题：大于或等于 0 为「恭喜获胜」，小于 0 为「遗憾失败」。",
+   "uiRequirement": "胡牌局按本端本局净得分切换主题：大于或等于 0 为「恭喜获胜」，小于 0 为「遗憾失败」。",
+   "uiInteraction": "小结算标题随本家净得分切换获胜/失败主题。",
+   "notes": "标题文案与判定均在公共壳内，本仓库只确认传给壳的 0/1/2 主题入参。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C15-032",
+   "name": "黄庄四端标题都是「黄庄」",
+   "rule": "黄庄四端都是「黄庄」。",
+   "uiRequirement": "黄庄四端都是「黄庄」。",
+   "uiInteraction": "四端小结算标题都显示黄庄。",
+   "notes": "四端一致性由服务端 end_type 保证；标题渲染仍在公共壳内。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C15-033",
+   "name": "左侧座位、头像与昵称",
+   "rule": "每行左侧为座位、头像和昵称。",
+   "uiRequirement": "每行左侧为座位、头像和昵称。",
+   "uiInteraction": "行左显示 本家/下家/对家/上家 竖排文字与头像、昵称，头像可点击。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-034",
+   "name": "庄家行显示「庄×3」",
+   "rule": "庄家行显示「庄×3」。",
+   "uiRequirement": "庄家行显示「庄×3」。",
+   "uiInteraction": "庄家行头像位置显示庄/庄×2/庄×3 图标。",
+   "notes": "「庄×3」要求 lian_zhuang 下发抖三档；代码注释说明不能用 ResultHu 覆盖后的 banker_level，需与桌面头像同源。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-035",
+   "name": "中间从左到右为碰杠区和手牌",
+   "rule": "中间从左到右是碰杠区和手牌。",
+   "uiRequirement": "中间从左到右是碰杠区和手牌。",
+   "uiInteraction": "行内左侧依次排开碰杠组，右侧接连续手牌。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-036",
+   "name": "杠的第 4 张垒在上方",
+   "rule": "杠的第 4 张垒在上方。",
+   "uiRequirement": "杠的第 4 张垒在上方。",
+   "uiInteraction": "杠牌展示为下方 3 张、上方叠 1 张。",
+   "notes": "mah0~2 的 y 为 20，mah3 的 y 为 5，形成上方叠放。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-037",
+   "name": "暗杠顶张正面",
+   "rule": "暗杠顶张正面。",
+   "uiRequirement": "暗杠顶张正面。",
+   "uiInteraction": "暗杠显示 3 张暗牌 + 1 张正面牌。",
+   "notes": "第 4 张使用 state=3，该页在 mahHandSelf 中未具名（既非 Down 也非 Stand/Up），正面的具体视觉需以包内控制器页为准。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C15-038",
+   "name": "胡牌者手牌按胡牌组合分组",
+   "rule": "胡牌者其余手牌按胡牌组合分组。",
+   "uiRequirement": "胡牌者其余手牌按胡牌组合分组。",
+   "uiInteraction": "胡牌家手牌按顺子/刻子/对子等分组间距展示。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-039",
+   "name": "未胡牌者连续摆放",
+   "rule": "未胡牌者连续摆放。",
+   "uiRequirement": "未胡牌者连续摆放。",
+   "uiInteraction": "未胡家手牌一张接一张连续排开。",
+   "notes": "未胡家若带副露仍会先渲染副露组，其余手牌连续摆放。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-040",
+   "name": "胡入那张标绿色「胡」",
+   "rule": "胡入的那一张在所属组合内标绿色「胡」。",
+   "uiRequirement": "胡入的那一张在所属组合内标绿色「胡」。",
+   "uiInteraction": "胡张牌角上出现绿色「胡」图标。",
+   "notes": "绿色由 ico_hu.png 美术资源决定。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-041",
+   "name": "右侧为本局净得分",
+   "rule": "右侧为本局净得分。",
+   "uiRequirement": "右侧为本局净得分。",
+   "uiInteraction": "每行最右侧显示本局净得分数字。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-042",
+   "name": "正分带加号",
+   "rule": "正分带加号。",
+   "uiRequirement": "正分带加号。",
+   "uiInteraction": "正分显示为 +N。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-043",
+   "name": "0 分显示「0」",
+   "rule": "0 分显示「0」。",
+   "uiRequirement": "0 分显示「0」。",
+   "uiInteraction": "0 分行显示 0。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-044",
+   "name": "负分带减号",
+   "rule": "负分带减号。",
+   "uiRequirement": "负分带减号。",
+   "uiInteraction": "负分显示为 -N，使用失败字效。",
+   "notes": "dealBigNumEx（kiwi 库）实现不在仓库内，减号来自数值格式化；lose 字集目录中存在「-」字模。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C15-045",
+   "name": "赢家牌组上方写番型名称",
+   "rule": "赢家牌组上方写实际命中的番型名称。",
+   "uiRequirement": "赢家牌组上方写实际命中的番型名称。",
+   "uiInteraction": "赢家手牌组正上方显示一行番型文案，可点击展开完整流水。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-046",
+   "name": "同时命中多组都写上",
+   "rule": "同时命中多组时都写上，例如「七对」「杠飘」。",
+   "uiRequirement": "同时命中多组时都写上。",
+   "uiInteraction": "KW_Flow 一行内展示全部命中番型。",
+   "notes": "组合番不是并列两个独立项，而是「杠飘（二连杠，双财飘）」形式；与模板示例「七对」「杠飘」并列写法不完全一致。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-047",
+   "name": "特定番型直接写全名",
+   "rule": "双财飘、双豪华七对、二连杠直接写全名。",
+   "uiRequirement": "双财飘、双豪华七对、二连杠直接写全名。",
+   "uiInteraction": "对应番型在牌组上方显示完整名称，不缩写档位。",
+   "notes": "组合番（杠飘/七客）仍会带括号明细，全名是否单独出现取决于命中的 fan_ids 组合。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-048",
+   "name": "最右侧标胡牌方式",
+   "rule": "最右侧标胡牌方式：自摸、点炮胡或抢杠胡。",
+   "uiRequirement": "最右侧标胡牌方式：自摸、点炮胡或抢杠胡。",
+   "uiInteraction": "行最右侧显示自摸/吃胡角标。",
+   "notes": "C_HuType 只有点炮/吃胡/自摸三页，抢杠胡被并入点炮页，没有独立「抢杠胡」文案。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C15-049",
+   "name": "点炮胡与抢杠胡赔付者标「点炮」",
+   "rule": "点炮胡、抢杠胡的赔付者标「点炮」。",
+   "uiRequirement": "点炮胡、抢杠胡的赔付者标「点炮」。",
+   "uiInteraction": "放铳者行右侧显示点炮角标。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-050",
+   "name": "三摊承包：赢家标「承包」，赔付者得分右侧标「三摊承包」",
+   "rule": "三摊承包：赢家标黄色「承包」，赔付者得分右侧标「三摊承包」。",
+   "uiRequirement": "赢家标黄色「承包」，赔付者得分右侧标「三摊承包」。",
+   "uiInteraction": "赔付者行得分右侧出现承包角标；该行桌面 KW_RESULT 显示「三摊承包」。",
+   "notes": "与模板差异：角标挂在承包方（赔付者）而非赢家，图标文案是「承包」；「三摊承包」文案只在匹配场桌面出现，好友房小结算行内没有该文案。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C15-051",
+   "name": "反承包：赢家与赔付者都标「反承包」",
+   "rule": "反承包：赢家标「反承包」，赔付者标「反承包」。",
+   "uiRequirement": "赢家标「反承包」，赔付者标「反承包」。",
+   "uiInteraction": "承包方行得分右侧显示反承包角标，赢家牌组上方流水出现「反承包」。",
+   "notes": "两端都标的规则只实现为「赔付者角标 + 赢家流水文案」，赢家行无角标。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C15-052",
+   "name": "链式承包双标且番型只写一次",
+   "rule": "链式承包：赢家同时标「承包」和「反承包」，番型只写一次。",
+   "uiRequirement": "赢家同时标「承包」和「反承包」，番型只写一次。",
+   "uiInteraction": "赢家牌组上方一行流水同时出现番型与「承包」「反承包」。",
+   "notes": "双标实现为流水文案拼接，不是两个角标；番型确实只写一次。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C15-053",
+   "name": "链式承包赔付方分别标三摊承包与反承包",
+   "rule": "链式承包：付 S 的一方标「三摊承包」，付 2 × S 的一方标「反承包」。",
+   "uiRequirement": "付 S 的一方标「三摊承包」，付 2 × S 的一方标「反承包」。",
+   "uiInteraction": "匹配场桌面按座位显示三摊承包或反承包，好友房结算行使用承包/反承包角标。",
+   "notes": "S 与 2×S 的区分由 relation 间接体现，客户端未按金额倍数做二次校验；两个文案不出现在同一套界面（桌面文字 vs 行角标）。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C15-054",
+   "name": "左下展示本局财神正面",
+   "rule": "左下展示本局财神正面，即白板。",
+   "uiRequirement": "左下展示本局财神正面，即白板。",
+   "uiInteraction": "左下显示财神牌图与财神牌位，财神数字为红色。",
+   "notes": "代码按 jokerMah 渲染（当前配置为白板），未硬编码牌值。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C15-055",
+   "name": "长按查看牌桌",
+   "rule": "右下为「长按查看牌桌」：在底部栏扣除中央主按钮后的区域按住 500 毫秒，临时收起小结算，按本家视角查看终局牌桌；松手恢复同一张小结算。",
+   "uiRequirement": "右下为「长按查看牌桌」：按住 500 毫秒临时收起小结算查看终局牌桌，松手恢复同一张小结算。",
+   "uiInteraction": "按住期间小结算收起、终局牌桌可见且财神高亮；松手恢复原小结算。",
+   "notes": "500 毫秒长按判定、底部栏扣除中央按钮的区域计算、小结算收起/恢复均在公共壳 BoxRoomMahResultNewView（common_game 未包含），本仓库只见回调与事件。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C15-056",
+   "name": "非末局底部中央为【继续游戏】",
+   "rule": "非末局底部中央为【继续游戏】。",
+   "uiRequirement": "非末局底部中央为【继续游戏】。",
+   "uiInteraction": "底部中央按钮由公共壳渲染并显示继续游戏文案。",
+   "notes": "按钮创建、文案与点击回调在公共壳内；游戏侧 onResultContinue 派发已被注释，事件定义实际无监听者。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C15-057",
+   "name": "点击后收起小结算并清理上局牌面",
+   "rule": "点击后本端收起小结算，清除上一局手牌、碰杠区和牌河，保留座位和累计积分，本家显示「已准备」。",
+   "uiRequirement": "收起小结算，清除上一局手牌、碰杠区和牌河，保留座位和累计积分，本家显示「已准备」。",
+   "uiInteraction": "小结算关闭后牌桌清空，本家头像出现「已准备」标记，积分保留。",
+   "notes": "清理与「已准备」是由准备回包（playerReadyBack）驱动，不是由【继续游戏】点击直接触发；onResetUI 不会清 TableData 里的座位与 sr。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C15-058",
+   "name": "四人均准备后自动开下一小局",
+   "rule": "四人均准备后自动开下一小局。",
+   "uiRequirement": "",
+   "uiInteraction": "四人准备后自动进入下一小局，界面按开局消息重置。",
+   "notes": "人数齐备判定与开局时机不在客户端代码内。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C15-059",
+   "name": "第 8 局按钮为【返回大厅】",
+   "rule": "第 8 局按钮为【返回大厅】，点击后退出房间。",
+   "uiRequirement": "第 8 局按钮为【返回大厅】，点击后退出房间。",
+   "uiInteraction": "末局时底部中央按钮切换为离场类按钮（基类注释称为「查看总结算」）。",
+   "notes": "基类注释为「查看总结算」，与模板「返回大厅并退出房间」不一致；退出房间行为不在本仓库快照内。",
+   "verdict": "partial"
+  }
+ ]
+}

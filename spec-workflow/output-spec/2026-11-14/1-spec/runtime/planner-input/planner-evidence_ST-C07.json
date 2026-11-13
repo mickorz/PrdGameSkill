@@ -1,0 +1,148 @@
+{
+ "stageId": "ST-C07",
+ "title": "自摸、放铳、抢杠胡",
+ "sourceTitle": "行牌 > 自摸、放铳、抢杠胡",
+ "fromLine": 77,
+ "toLine": 81,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 15,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C07-001",
+   "name": "常规摸牌后出牌前自摸",
+   "rule": "常规摸牌后在出牌前胡牌（自摸）。",
+   "uiRequirement": "自己回合显示胡按钮，按钮内含胡张与胡牌倍数。",
+   "uiInteraction": "KW_BTN_Hu 显隐由权限位控制，KW_Ani 皮肤按 hu_type 切换（自摸为 zimo），按钮以 Spine 动效与高亮呈现；胡张与\"N倍\"文字同步刷新。",
+   "notes": "模板\"常规摸牌\"未限定张数来源；客户端不做摸牌后胡牌合法性判断，完全依赖服务端胡权限。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C07-002",
+   "name": "杠后补牌自摸",
+   "rule": "杠后补牌，在出牌前胡牌（杠后补牌自摸）。",
+   "uiRequirement": "杠后补牌自摸播放杠开类番型与音效表现。",
+   "uiInteraction": "杠上开花命中时播放 KW_Ani_Hu_Type 的 gangkai 文字动效，并播放 hu_7_gangkai 音效；默认无番型时按自摸播 zimo 动效。",
+   "notes": "客户端无\"杠后补牌必须自摸\"的规则实现，仅以杠上开花番型表现；杠上开花属自摸变体（hu_type 仍为 HT_SELF）。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C07-003",
+   "name": "庄家起手第 14 张自摸",
+   "rule": "庄家起手第 14 张，在出牌前胡牌（起手自摸）。",
+   "uiRequirement": "起手等待阶段不显示听牌/操作提示，可直接胡牌。",
+   "uiInteraction": "首出阶段由 GamePowerCmd 显示庄/闲首出提示并隐藏骰子；获胡权限后照常显示胡按钮。",
+   "notes": "客户端只维护首摸等待状态与首出提示，起手胡的判定与放行完全在服务端；未找到针对\"庄家第 14 张\"的独立分支。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C07-004",
+   "name": "自摸常规牌型结构",
+   "rule": "自摸的常规结构是 4 组面子加 1 组对子。",
+   "uiRequirement": "结算展示手牌与副露组合（面子+将）。",
+   "uiInteraction": "结算行按 Comb 模式渲染副露槽位并把单放组移到最后，或按 Hand 模式渲染手牌与 KW_Mah_Hu 胡张；无番型时按 pinghu 动效展示。",
+   "notes": "客户端无成牌结构校验（4 面子 + 1 对子）实现，牌型合法性依赖服务端；\"平胡\"注释是唯一对结构的文字映射。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C07-005",
+   "name": "本期固定庄闲放铳",
+   "rule": "放铳本期固定为庄闲放铳（不开放其他派系）。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "以\"配置项缺失\"作为间接证据；客户端也没有庄闲放铳的规则说明文案（MatchTipConfig 只有财神/爆头/承包/牢庄倍数等提示）。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C07-006",
+   "name": "三牢是点炮前提",
+   "rule": "当局是三牢，点炮胡才成立（庄闲倍数 8 倍）。",
+   "uiRequirement": "胡按钮显示本次胡牌倍数。",
+   "uiInteraction": "KW_BTN_Hu 内 KW_HuPaiBeiShu 文本显示\"{hu_point}倍\"，封顶标记固定隐藏。",
+   "notes": "getZhuangXianMult 在本抽取范围内无调用点，倍数展示依赖服务端 hu_point；客户端不校验\"是否三牢\"。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C07-007",
+   "name": "庄闲相对且牌型合法",
+   "rule": "出牌者与胡牌者正好一边是庄、一边是闲，同时牌型合法，才能点炮胡。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端不做庄/闲身份与牌型合法性校验，胡按钮仅由服务端 POWER_ID_HU 决定，实际拦截在服务端。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C07-008",
+   "name": "庄家弃牌仅闲家可胡",
+   "rule": "庄家打出的牌只有闲家可胡。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "未找到客户端对出牌者身份与胡牌者身份的过滤实现；权限由服务端下发。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C07-009",
+   "name": "闲家弃牌仅庄家可胡",
+   "rule": "闲家打出的牌只有庄家可胡。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "同上，客户端无闲家之间禁点炮的本地校验或提示。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C07-010",
+   "name": "无庄闲关系只能自摸",
+   "rule": "未形成庄闲放铳关系时只能自摸。",
+   "uiRequirement": "",
+   "uiInteraction": "胡/过按钮按权限位显隐，未获胡权限时不出现胡按钮（吃碰杠按各自权限位显示）。",
+   "notes": "属于权限驱动的间接证据：客户端没有\"庄闲关系不成立则禁点炮\"的判定，只表现为服务端不发胡权限。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C07-011",
+   "name": "点炮只由放铳者赔付",
+   "rule": "点炮胡只由放铳者赔付。",
+   "uiRequirement": "结算中放铳者行标识为点炮，流水显示其支出。",
+   "uiInteraction": "结算行胡牌类型页：胡牌者按 HT_SELF 显示自摸、其余显示吃胡；非胡牌座位若被某胡牌项的 df_from 指向则显示\"点炮\"标识。",
+   "notes": "赔付是服务端结果，客户端仅呈现；且流水正文只拼番型文案并跳过输家类型，放铳者流水不出现\"放炮/点炮\"字样，仅靠负分与点炮标识体现。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C07-012",
+   "name": "抢杠与放铳同门槛",
+   "rule": "抢杠胡与放铳相同，只有三牢的庄闲之间可以抢。",
+   "uiRequirement": "",
+   "uiInteraction": "抢杠胡与点炮共用胡按钮的 \"hu\" 动作皮肤并播放点炮动画，无独立\"抢杠\"按钮或字效。",
+   "notes": "客户端无三牢/庄闲校验，仅复用点炮分支；抢杠也没有独立的操作窗口，依赖服务端下发胡权限。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C07-013",
+   "name": "被抢的第 4 张须合法成胡",
+   "rule": "所加的第 4 张须使响应者合法胡牌。",
+   "uiRequirement": "被抢张作为胡张展示，加杠组还原为碰组。",
+   "uiInteraction": "桌面把被抢的第 4 张拼到胡牌者手牌末位并打胡牌高亮，杠者副露从 4 张杠退回 3 张碰。",
+   "notes": "revertRobbedKong 为 public 方法但在本抽取范围内未见调用点（可能在未抽取的 common_game 公共层）；客户端无\"第 4 张是否成胡\"的本地判定。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C07-014",
+   "name": "被抢者按放铳单一赔付",
+   "rule": "只由被抢的加杠者按放铳赔付。",
+   "uiRequirement": "结算中被抢者按点炮标识，赢家按非自摸标识。",
+   "uiInteraction": "结算行胡牌类型只区分 不参与胡牌/点炮/吃胡/自摸 四页，抢杠赢家显示\"吃胡\"，被抢者显示\"点炮\"；无\"抢杠\"独立标识。",
+   "notes": "客户端流水注释含\"被抢者同时触发全烧\"，与本期模板\"只由被抢者按放铳赔付、其他人不付\"口径不一致（疑似来自其他玩法/旧版），需与结算口径对齐确认。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C07-015",
+   "name": "抢杠其他人不付",
+   "rule": "抢杠胡除被抢的加杠者外，其他人不付。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端不做赔付归属校验，只透传服务端 win_losts/extra_score；虽然输家流水类型（被自摸/放炮/被抢杠）在文案层被跳过，但无法据此证明第三方不付，故按未找到处理。",
+   "verdict": "not_found"
+  }
+ ]
+}

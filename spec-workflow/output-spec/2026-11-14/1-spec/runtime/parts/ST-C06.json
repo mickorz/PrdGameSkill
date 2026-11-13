@@ -1,0 +1,598 @@
+{
+ "stage": {
+  "id": "ST-C06",
+  "name": "杠后补牌",
+  "chapter": "行牌 > 杠后补牌",
+  "summary": "杠成立后从牌墙尾部补抓 1 张并扣减余牌，牌墙不足 21 张不得杠、摸牌前余 20 张及以下判黄庄；杠后可续杠或自摸，不胡则继续杠或打出 1 张，杠链随杠累加、被吃碰或打牌打断归零。",
+  "terms": [
+   {
+    "term": "面子",
+    "definition": "一组顺子、刻子或杠；杠含 4 张仍计 1 组面子，对子不是面子。已完成的吃、碰、明杠、暗杠都计入面子。",
+    "source": "模板 名词（第 11 行）"
+   },
+   {
+    "term": "财神",
+    "definition": "白板固定为财神，只在胡牌判定时代替顺子、刻子或对子所缺的牌；吃、碰、杠必须用真实非财神牌，不能用财神代替。",
+    "source": "模板 名词（第 12 行）"
+   },
+   {
+    "term": "流局",
+    "definition": "牌墙剩 21 张时当前玩家再摸 1 张后剩 20 张，先完成本次摸打与弃牌响应；无人胡牌时在下一次应摸牌前判黄庄，不是剩 20 张立刻结束。",
+    "source": "模板 名词（第 20 行）"
+   },
+   {
+    "term": "杠链",
+    "definition": "玩家连续开杠的次数。明杠、暗杠、加杠各使杠链加 1；吃、碰、打出非财神、打出财神但打出后不再敲响都使杠链归零；杠链长度决定杠上开花/二连杠/三连杠/四连杠档位。",
+    "source": "模板 行牌 > 杠后补牌（第 75 行）；代码 source-code/client/Code/config/FanDefine.ts:25-32"
+   },
+   {
+    "term": "加杠（补杠）",
+    "definition": "已碰的刻子再加第 4 张形成的杠；客户端把它作为独立的补杠类型做动作动画与副露渲染。",
+    "source": "代码 source-code/client/Code/config/BoxMahDefine.ts:220；source-code/client/Code/layer/BoxHzmjMah2DView.ts:907-913"
+   }
+  ],
+  "crossCutting": [
+   "行牌资格（杠、出牌、胡）全部由服务端权限下发，客户端只按权限位显示按钮与置灰手牌，不做牌墙余量门槛、杠链计数等规则判定（source-code/client/Code/layer/BoxHzmjMainView.ts:549-560；source-code/client/Code/controller/cmd/gameCmd/GamePowerCmd.ts:50-57）。",
+   "重连补数据模式下行牌命令只更新缓存不播动画，杠、抓牌、出牌三类命令均遵守该约定（source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:24-27,42-44；GameTakeCmd.ts:39-51）。",
+   "牌墙剩余张数在发牌、抓牌、重连恢复时统一广播刷新，牌墙右侧组件以数字标题展示剩余张数（GameTakeCmd.ts:289；source-code/client/Code/layer/comp/BoxHzmjMahRightComp.ts:26-34）。",
+   "杠动作按明杠/暗杠/补杠三型分别播不同动作音效与副露渲染，补杠走单独的补杠渲染通道（GameKongCmd.ts:49-73；BoxHzmjMah2DView.ts:890-913）。"
+  ]
+ },
+ "features": [
+  {
+   "id": "FP-ST-C06-001",
+   "name": "杠后补牌与牌墙余量",
+   "description": "杠成立后从牌墙尾部补抓 1 张并扣减牌墙余量；牌墙不足 21 张不得杠；摸牌前剩 20 张及以下判黄庄。",
+   "scope": "包含补牌的取牌方向与张数、余牌扣减与剩余张数展示、杠前牌墙余量门槛、流局判定时机；不包含杠的成立判定与杠链计数（见后两个功能点）。",
+   "coordination": "服务端下发杠结果与补牌抓牌结果，客户端按抓牌通知里的方向与张数取牌并刷新牌墙剩余张数；杠资格与流局时机均不由客户端判断。",
+   "atoms": [
+    {
+     "id": "AT-ST-C06-001",
+     "name": "杠后从牌墙尾部补 1 张",
+     "rule": "每次杠从牌墙尾部补 1 张。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "杠后补牌没有独立事件，统一由抓牌通知驱动：抓牌命令使用通知中的方向与张数调用牌墙取牌，牌墙取牌方法区分正向抓牌与反向（尾部）抓牌两个分支，反向分支从尾部索引逐张取牌。",
+     "uiInteraction": "取到的牌插入该家手牌并亮出，非自己时按手牌计数更新；同时刷新牌墙剩余张数。",
+     "messages": [
+      "MsgTake",
+      "MsgKongS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts:88-91"
+      },
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:723-726"
+      },
+      {
+       "file": "source-code/client/Code/lib/proto_game_hzmj.d.ts",
+       "location": "source-code/client/Code/lib/proto_game_hzmj.d.ts:1151-1155"
+      }
+     ],
+     "notes": "客户端既不判断补几张，也不决定从牌头还是牌尾取，完全按服务端下发的方向与张数执行；协议里另有 is_kong_take_asc 字段但客户端未使用，无法从客户端证明杠后固定走尾部。",
+     "businessBehavior": {
+      "trigger": "任一玩家开杠",
+      "condition": "服务端把这次补牌作为一次抓牌通知下发，且方向为从牌墙尾部取牌",
+      "action": "从牌墙尾部取一张牌放入开杠玩家手牌并亮出这张牌",
+      "result": "开杠玩家手牌多出一张牌，牌墙剩余数字随之刷新"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端只按服务端下发的抓牌方向与张数取牌，缺少杠后必定从尾部补 1 张的判定证据",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C06-002",
+     "name": "补牌后牌墙余牌减 1",
+     "rule": "杠补牌后牌墙余牌减 1。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "牌墙取牌方法按本次取牌张数扣减剩余张数；抓牌命令随后广播牌墙剩余张数，牌墙右侧组件把新数值写入标题文本。",
+     "uiInteraction": "牌墙右侧数字在每次抓牌与补牌后刷新，重连恢复时也按剩余张数重刷；牌墙显示受对局内牌墙开关控制。",
+     "messages": [
+      "MsgTake",
+      "MsgWallMah"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:738"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts:289"
+      },
+      {
+       "file": "source-code/client/Code/layer/comp/BoxHzmjMahRightComp.ts",
+       "location": "source-code/client/Code/layer/comp/BoxHzmjMahRightComp.ts:26-28"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameWallMahCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameWallMahCmd.ts:43-44"
+      }
+     ],
+     "notes": "扣减量等于服务端下发的取牌张数，客户端没有固定减 1 的常量；补牌恰好 1 张由服务端保证。",
+     "businessBehavior": {
+      "trigger": "任一玩家抓牌或杠后补牌",
+      "condition": "收到抓牌通知",
+      "action": "按取牌张数扣减牌墙余数并刷新牌墙数字",
+      "result": "牌墙剩余张数数字变小"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "余牌按下发张数扣减并展示已确认，但杠后补牌固定扣减 1 张由服务端决定，客户端无该张数常量",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C06-003",
+     "name": "牌墙少于 21 张不能杠",
+     "rule": "牌墙少于 21 张不能杠。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "客户端没有 21 张门槛判断，也没有因余牌不足而隐藏或置灰杠按钮的逻辑；杠按钮仅由服务端下发的杠权限位控制，可杠牌组也全部来自权限数据。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端无牌墙少于 21 张禁止杠的判断，杠资格完全来自服务端权限下发",
+      "clientObserved": false
+     }
+    },
+    {
+     "id": "AT-ST-C06-004",
+     "name": "剩 20 张及以下时下一次摸牌前黄庄",
+     "rule": "剩 20 张及以下时，下一次摸牌前黄庄。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端不判断黄庄时机，只在收到流局结局时按流局类型处理：小结算把自己标记为流局状态，结算流水不生成赢家明细。",
+     "uiInteraction": "匹配界面提示文案出现「剩余20张牌前无人胡牌则流局」；小结算按流局展示自己的输赢状态；提示动画包内打包了流局文字图。",
+     "messages": [
+      "MsgDrawn",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/MatchTipConfig.ts",
+       "location": "source-code/client/Code/config/MatchTipConfig.ts:39"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjResultUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjResultUtil.ts:35-39"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:29-31"
+      },
+      {
+       "file": "source-code/client/Code/protocol/GameGlcProtocol.ts",
+       "location": "source-code/client/Code/protocol/GameGlcProtocol.ts:114"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_tipAni/package.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_tipAni/package.xml:79"
+      }
+     ],
+     "notes": "客户端只展示流局结果与提示文案，没有「剩 20 张后先完成本次摸打与弃牌响应、下一次摸牌前才判黄庄」的时序逻辑；流局文字图仅在包内声明，未检索到代码引用。",
+     "businessBehavior": {
+      "trigger": "牌墙剩 20 张及以下且本次摸打与弃牌响应结束后仍无人胡牌",
+      "condition": "轮到下一次摸牌之前",
+      "action": "结束本小局并按流局展示结算",
+      "result": "玩家看到流局结算，自己的输赢按流局显示"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "流局时机与牌墙阈值由服务端决定，客户端只呈现流局结果与提示文案",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C06-002",
+   "name": "杠后连续行牌",
+   "description": "杠后仍可继续杠（每次重新校验牌墙），补的牌可以自摸，不胡则继续杠或打出一张牌。",
+   "scope": "包含续杠入口、补牌自摸的胡按钮与自摸字效、不胡后的单张出牌；不包含番型倍数与赔付结算。",
+   "coordination": "服务端在杠后重新下发权限，客户端据权限位展示杠/胡/出牌按钮，并把玩家选择回发给服务端。",
+   "atoms": [
+    {
+     "id": "AT-ST-C06-005",
+     "name": "杠后可以继续杠",
+     "rule": "杠后可以继续杠。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端不记录本回合是否已杠过，每次收到权限都按服务端给的可杠牌组重建可杠列表并据此显示杠按钮；杠后再次收到杠权限时照常给出杠入口，选中后发送杠请求。",
+     "uiInteraction": "杠按钮按权限显示并循环发光；存在多个可杠选项时弹出可杠牌列表供点选，选中后收起操作区并置灰手牌。",
+     "messages": [
+      "MsgPower",
+      "MsgKongC"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:601-611"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1140-1154"
+      },
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:881-884"
+      }
+     ],
+     "notes": "客户端无条件按服务端权限展示杠按钮，没有「本回合不能再杠」的本地限制；但也没有主动判断杠后能否再杠，能否续杠取决于服务端是否再次下发杠权限。",
+     "businessBehavior": {
+      "trigger": "玩家开杠后轮到其继续行牌",
+      "condition": "服务端再次下发可杠权限",
+      "action": "重新列出可杠的牌并显示杠按钮",
+      "result": "玩家可以再次点杠继续开杠"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "续杠资格由服务端判定并下发，客户端只被动展示杠按钮",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C06-006",
+     "name": "每次续杠重新检查牌墙不少于 21 张",
+     "rule": "杠后继续杠时，每次重新检查牌墙不少于 21 张。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "客户端没有任何牌墙余量检查；可杠选项完全来自服务端权限下发的可杠牌组，余牌数字只用于展示。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端无续杠前牌墙余量检查逻辑",
+      "clientObserved": false
+     }
+    },
+    {
+     "id": "AT-ST-C06-007",
+     "name": "补牌可以自摸",
+     "rule": "补牌可以自摸。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "胡按钮按权限显示，胡牌类型为自摸时把胡按钮动画切成自摸字效，点胡后发送胡请求；胡牌类型枚举区分自摸、点炮、抢杠。杠后自摸另有专属番型字效。",
+     "uiInteraction": "胡按钮展示本次胡的牌与倍数，字效按胡牌类型切换（自摸显示自摸样式，点炮与抢杠显示胡样式）并循环发光；杠后自摸播放杠上开花字效。",
+     "messages": [
+      "MsgPower",
+      "MsgHuC",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:663-666"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:670-675"
+      },
+      {
+       "file": "source-code/client/Code/config/GameDefine.ts",
+       "location": "source-code/client/Code/config/GameDefine.ts:421-431"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:25-26"
+      }
+     ],
+     "notes": "客户端只按服务端给的胡牌类型展示，不区分这张牌是否来自杠后补牌；杠后自摸的识别依赖服务端下发的番型。",
+     "businessBehavior": {
+      "trigger": "杠后补的牌摸到手",
+      "condition": "这张牌使手牌成立胡牌且服务端下发胡权限",
+      "action": "显示胡按钮并切换为自摸字效，玩家点击后提交胡",
+      "result": "玩家看到自摸样式的胡按钮与胡牌倍数，结算显示杠上开花类番型"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "自摸资格与杠后自摸番型判定在服务端，客户端只展示胡按钮与字效",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C06-008",
+     "name": "不胡则继续杠或打出 1 张",
+     "rule": "补牌后不胡则继续杠或打出 1 张。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "自己摸牌后客户端开启出牌任务与听牌按钮检查；点击手牌即按单张出牌发送出牌请求，同时保留杠入口供选择继续杠。",
+     "uiInteraction": "点手牌出牌后收起操作区并清灰；杠按钮仍按权限显示，玩家可选择杠而非出牌。",
+     "messages": [
+      "MsgPlayC",
+      "MsgKongC"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1481-1482"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts:290-294"
+      }
+     ],
+     "notes": "客户端每次只允许打出一张，出牌后立即收起操作区；「不胡」这一前提没有客户端判断，取决于服务端是否下发胡权限。",
+     "businessBehavior": {
+      "trigger": "杠后补牌完成且玩家没有胡牌",
+      "condition": "玩家处于自己的出牌阶段",
+      "action": "玩家点一张手牌打出，或改点杠继续开杠",
+      "result": "打出的牌进入牌河且本回合结束，或桌上再多一组杠"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "单张出牌行为已确认，但「不胡」前提与续杠资格由服务端权限决定，客户端无判定证据",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C06-003",
+   "name": "杠链计数与归零",
+   "description": "明杠、暗杠、加杠各使杠链加 1；吃、碰、打出非财神、打出财神但打出后不再敲响均使杠链归零，最终体现为杠开后自摸的连杠档位番型。",
+   "scope": "包含三种杠对杠链的累加与三类打断的归零；不包含杠开番型倍数计算与赔付。",
+   "coordination": "杠链计数与归零全部在服务端维护，客户端只展示服务端下发的番型结果与飘状态。",
+   "atoms": [
+    {
+     "id": "AT-ST-C06-009",
+     "name": "明杠使杠链加 1",
+     "rule": "明杠使杠链加 1。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端不维护杠链计数。收到明杠消息时按杠类型播明杠动作动画与明杠音效、清理出牌操作区并把杠组作为副露渲染；杠链的实际效果只体现在杠后自摸时服务端下发的番型上。",
+     "uiInteraction": "明杠播放明杠动作动画与明杠音效，桌面新增一组杠副露；杠后自摸按番型显示杠上开花/二连杠/三连杠/四连杠字效。",
+     "messages": [
+      "MsgKongS",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:51-52"
+      },
+      {
+       "file": "source-code/client/Code/config/FanDefine.ts",
+       "location": "source-code/client/Code/config/FanDefine.ts:25-29"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1132-1135"
+      }
+     ],
+     "notes": "客户端没有杠链数值或计数显示；连杠档位只以番型字效出现，档位由服务端下发的番型决定，无法证明客户端把明杠计入杠链。",
+     "businessBehavior": {
+      "trigger": "玩家明杠",
+      "condition": "杠成立并进入杠后行牌",
+      "action": "播放明杠动作与音效、摆放杠副露并转入补牌",
+      "result": "玩家看到明杠动画与杠副露，若杠后自摸则看到杠上开花及以上连杠字效"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "杠链计数在服务端，客户端仅展示杠后自摸的番型字效",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C06-010",
+     "name": "暗杠使杠链加 1",
+     "rule": "暗杠使杠链加 1。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端不维护杠链计数。收到暗杠消息时按暗杠类型播暗杠动作与暗杠音效，并把暗杠按原有牌序作为副露渲染（牌背按原位）；杠链效果同样只体现在杠后自摸的番型上。",
+     "uiInteraction": "暗杠播放暗杠动作动画与暗杠音效，桌面新增一组暗杠副露；杠后自摸显示杠开系档位字效。",
+     "messages": [
+      "MsgKongS",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:54-55"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:509-512"
+      },
+      {
+       "file": "source-code/client/Code/config/BoxMahDefine.ts",
+       "location": "source-code/client/Code/config/BoxMahDefine.ts:804-809"
+      }
+     ],
+     "notes": "暗杠与明杠在客户端只区分动画、音效与副露牌序，均不产生杠链计数；杠链含暗杠的标记在客户端也不存在。",
+     "businessBehavior": {
+      "trigger": "玩家暗杠",
+      "condition": "暗杠成立并进入杠后行牌",
+      "action": "播放暗杠动作与音效、按原序摆放暗杠副露并转入补牌",
+      "result": "玩家看到暗杠动画与暗杠副露，杠后自摸时看到杠开系字效"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "杠链计数在服务端，客户端仅有暗杠动画与副露展示",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C06-011",
+     "name": "加杠使杠链加 1",
+     "rule": "加杠使杠链加 1。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端不维护杠链计数。收到补杠消息时按补杠类型播补杠动作与补杠音效，并走独立的补杠渲染通道把第 4 张加到已有碰组上；杠链效果只体现在杠后自摸番型。",
+     "uiInteraction": "补杠播放补杠动作动画与补杠音效，已碰组的副露被替换为杠组；杠后自摸显示杠开系档位字效。",
+     "messages": [
+      "MsgKongS",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:57-58"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:63-65"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:907-910"
+      }
+     ],
+     "notes": "补杠在客户端是独立渲染分支，但没有杠链计数；也不区分补杠是否被抢杠成功后的杠链回退。",
+     "businessBehavior": {
+      "trigger": "玩家把已碰的刻子补成杠",
+      "condition": "补杠成立并进入杠后行牌",
+      "action": "播放补杠动作与音效、把碰组替换为杠组并转入补牌",
+      "result": "玩家看到补杠动画与杠副露，杠后自摸时看到杠开系字效"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "杠链计数在服务端，客户端仅有补杠渲染与动画",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C06-012",
+     "name": "吃或碰使杠链归零",
+     "rule": "吃、碰使杠链归零。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端吃牌与碰牌处理只做副露渲染、动作动画与操作区关闭，没有任何杠链计数或连杠档位重置逻辑。",
+     "uiInteraction": "吃/碰分别播放对应动作动画与音效，桌面新增副露组，操作区收起。",
+     "messages": [
+      "MsgPungS",
+      "MsgChowS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePungCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePungCmd.ts:43"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts:43"
+      }
+     ],
+     "notes": "找到的只是吃/碰的副露与动画处理，未见任何杠链状态被清零或连杠档位被重置的客户端逻辑；杠链归零由服务端完成。",
+     "businessBehavior": {
+      "trigger": "玩家吃牌或碰牌",
+      "condition": "吃/碰成立",
+      "action": "播放吃/碰动作并摆放副露，本回合操作区收起",
+      "result": "玩家看到吃/碰动画与副露，之后的杠后自摸不再享有连杠档位（该结果只体现为结算番型不同）"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端无杠链概念，吃碰是否清零杠链只能由服务端证实",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C06-013",
+     "name": "打出非财神使杠链归零",
+     "rule": "打出非财神牌使杠链归零。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端出牌处理只更新牌河与手牌、刷新听牌提示并收起操作区，不区分财神与非财神的杠链效果，也没有杠链清零逻辑。",
+     "uiInteraction": "出牌播放出牌动画与出牌音效，牌进入牌河，本回合操作区关闭。",
+     "messages": [
+      "MsgPlayS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePlayCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePlayCmd.ts:67"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePlayCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePlayCmd.ts:89-96"
+      }
+     ],
+     "notes": "客户端出牌处理不区分财神与非财神的杠链影响；只找到出牌表现本身，未见杠链归零实现。",
+     "businessBehavior": {
+      "trigger": "玩家打出一张非财神牌",
+      "condition": "该牌被打出到牌河",
+      "action": "播放出牌表现并结束本回合",
+      "result": "玩家看到牌进牌河，后续自摸不再享有连杠档位（只体现为结算番型不同）"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端不维护杠链，打出非财神是否清零只能由服务端证实",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C06-014",
+     "name": "打出财神后不再敲响使杠链归零",
+     "rule": "打出财神但打出后不再敲响，杠链归零。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端对打出财神只有飘状态处理：收到飘状态通知后更新该座位的飘计数并重绘飘表现；客户端没有敲响判定，也没有杠链计数或清零逻辑。",
+     "uiInteraction": "打出财神后播放飘的动作字效，飘计数按服务端下发值刷新。",
+     "messages": [
+      "MsgPiao",
+      "MsgPlayS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePiaoCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePiaoCmd.ts:21-24"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1675-1680"
+      }
+     ],
+     "notes": "客户端完全没有「敲响」这一概念，飘计数与杠链是两套状态；无法从客户端判断打出财神后是否仍敲响以及杠链是否被清零。",
+     "businessBehavior": {
+      "trigger": "玩家打出一张财神",
+      "condition": "服务端判定打出后手牌不再满足敲响",
+      "action": "更新该玩家的飘状态并播飘表现，杠链状态由服务端处理",
+      "result": "玩家看到飘字效与飘次数变化，后续自摸按无连杠档位结算"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "敲响判定与杠链清零均在服务端，客户端只处理飘状态展示",
+      "clientObserved": true
+     }
+    }
+   ]
+  }
+ ]
+}

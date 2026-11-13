@@ -1,0 +1,1200 @@
+{
+ "stage": {
+  "id": "ST-C05",
+  "name": "吃、碰、杠",
+  "chapter": "行牌 > 吃、碰、杠",
+  "summary": "规定吃、碰、直杠、加杠、暗杠的成立条件、执行结果与补牌方式，并约束吃碰后同回合杠、杠与七对结算、飘财限制等边界规则。",
+  "terms": [
+   {
+    "term": "财神",
+    "definition": "白板固定为财神，只在胡牌判定时代替所缺的牌；吃、碰、杠必须用真实非财神牌",
+    "source": "模板名词章节"
+   },
+   {
+    "term": "面子",
+    "definition": "一组顺子、刻子或杠；杠含 4 张仍计 1 组面子，对子不是面子",
+    "source": "模板名词章节"
+   },
+   {
+    "term": "摊",
+    "definition": "A 吃进 B 打出的牌记 1 摊，两个方向分开计；碰、直杠、加杠、暗杠不计摊，每小局重新累计",
+    "source": "模板名词章节"
+   },
+   {
+    "term": "飘",
+    "definition": "自己出牌阶段打出一张财神即飘财 1 次，连续打出财神累加，打出普通牌清零",
+    "source": "模板名词章节"
+   },
+   {
+    "term": "碰杠区（副露区）",
+    "definition": "客户端在每位玩家座位旁单独渲染吃、碰、杠组合牌的区域，并带进牌来源箭头",
+    "source": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:115"
+   }
+  ],
+  "crossCutting": [
+   "吃碰杠按钮与选项完全由服务端下发的操作权限位驱动，客户端不做吃碰杠资格裁决（source-code/client/Code/layer/BoxHzmjMainView.ts:549-585）",
+   "出现吃碰杠权限时，相关手牌保持高亮、其余手牌置灰，提示玩家哪些牌可参与组合（source-code/client/Code/layer/BoxHzmjMainView.ts:712-762）",
+   "存在吃碰杠胡按钮且未点“过”时，客户端禁止直接出牌并弹提示“点‘过’才能出牌”；与摸牌无关的杠除外（source-code/client/Code/layer/BoxHzmjMainView.ts:1445-1460）",
+   "吃碰杠成立时按座位播放对应称呼的动效与音效，暗杠、补杠复用杠皮肤与杠音效（source-code/client/Code/layer/BoxHzmjTipAniView.ts:483-536）",
+   "多吃与多杠共用同一选项池区域，二者互斥显示；吃选项每组展示完整三张牌（source-code/client/Code/layer/BoxHzmjMainView.ts:830-912）",
+   "副露区按四家座位分别渲染，吃碰后按实���进牌槽位刷新来源箭头（source-code/client/Code/layer/BoxHzmjMah2DView.ts:915-949）",
+   "吃禁手、只碰不吃、守庄禁碰杠等限制通过通知消息以 toast 呈现，客户端不自行拦截（source-code/client/Code/controller/cmd/gameCmd/GameNotifyInfoCmd.ts:48-69）",
+   "摊计数与三摊提示完全按服务端消息刷新，客户端不区分暗杠是否计摊（source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts:21-31）",
+   "杠分展示事件已定义但代码中未被使用（source-code/client/Code/config/FguiViewDefine.ts:209）"
+  ]
+ },
+ "features": [
+  {
+   "id": "FP-ST-C05-001",
+   "name": "牌张与花色限制",
+   "description": "约束哪些牌能做顺子、哪些牌可以参与碰与杠，涉及风牌、箭牌的适用边界。",
+   "scope": "只覆盖风牌、箭牌在吃碰杠中的可用性；财神能否参与由后续各功能点分别约束。",
+   "coordination": "客户端不校验牌张适用性，实际可用性由服务端下发的操作权限与组合决定；客户端负责把服务端给出的组合渲染到副露区。",
+   "atoms": [
+    {
+     "id": "AT-ST-C05-001",
+     "name": "风牌箭牌不能吃",
+     "rule": "风牌、箭牌不能做顺子，不能吃。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "吃牌组合完全由服务端下发，客户端不做花色与连续性校验，只按组合牌面排序并渲染；仅摸牌凑顺动画限定万、条、筒。",
+     "uiInteraction": "吃按钮与吃选项只按服务端给出的组合展示，客户端不额外过滤风牌、箭牌。",
+     "messages": [
+      "MsgPower",
+      "MsgChowS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts:34"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts:224"
+      }
+     ],
+     "notes": "未发现客户端对吃牌组合的花色校验，风牌、箭牌能否吃由服务端权限与组合决定。",
+     "businessBehavior": {
+      "trigger": "别家打出牌后轮到自己响应",
+      "condition": "",
+      "action": "客户端直接采用服务端给出的吃牌组合，不自行判断花色是否可吃",
+      "result": "玩家看到的是服务端允许的吃牌组合"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "缺少客户端对吃牌组合合法性（花色、连续性）的判定证据，规则实际由服务端裁决",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C05-002",
+     "name": "风牌箭牌可作碰杠",
+     "rule": "风牌、箭牌不是财神时可以碰、杠。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "碰、杠组合按服务端下发的组合渲染，客户端不按花色过滤；展示层对组合牌只做牌值排序与财神插位，不区分万条筒与风箭。",
+     "uiInteraction": "风牌、箭牌的碰杠组合可在副露区正常显示，牌面资源表包含东南西北中发白。",
+     "messages": [
+      "MsgPower",
+      "MsgPungS",
+      "MsgKongS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/data/PlayerCardsData.ts",
+       "location": "source-code/client/Code/data/PlayerCardsData.ts:819"
+      },
+      {
+       "file": "source-code/client/Code/config/BoxMahDefine.ts",
+       "location": "source-code/client/Code/config/BoxMahDefine.ts:180"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePungCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePungCmd.ts:34"
+      }
+     ],
+     "notes": "客户端不校验牌张花色是否为风、箭；财神能否参与碰杠同样由服务端组合决定。",
+     "businessBehavior": {
+      "trigger": "别家打出牌后轮到自己响应",
+      "condition": "",
+      "action": "客户端按服务端组合把风牌、箭牌渲染成碰或杠",
+      "result": "玩家看到风牌、箭牌形成的刻子或杠显示在副露区"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "缺少客户端对碰杠牌张花色与财神判定的校验证据",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C05-002",
+   "name": "吃",
+   "description": "吃牌的成立条件、多组合选择、吃后不摸牌与同回合可杠。",
+   "scope": "只覆盖吃牌本身；吃后加杠、暗杠的资格与执行细节见加杠/暗杠功能点。",
+   "coordination": "吃组合由服务端随操作权限一起下发，客户端负责选项展示、发送选择、生成副露与进牌箭头。",
+   "atoms": [
+    {
+     "id": "AT-ST-C05-003",
+     "name": "吃牌成立条件",
+     "rule": "上家刚打出的 1 张非财神，与手中 2 张非财神组成同花色连续顺子。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "收到吃牌消息后按服务端组合生成副露：从出牌者牌河移除最后一张进牌，手牌扣两张，副露区新增一组三张顺子，并按进牌实际槽位刷新来源箭头。",
+     "uiInteraction": "副露区新增一组顺子，来源箭头指向被吃进的那张牌所在槽位。",
+     "messages": [
+      "MsgPower",
+      "MsgChowS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts:34"
+      },
+      {
+       "file": "source-code/client/Code/data/PlayerCardsData.ts",
+       "location": "source-code/client/Code/data/PlayerCardsData.ts:91"
+      },
+      {
+       "file": "source-code/client/Code/data/PlayerCardsData.ts",
+       "location": "source-code/client/Code/data/PlayerCardsData.ts:789"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:938"
+      }
+     ],
+     "notes": "客户端不校验是否上家打出、是否非财神；进牌来源只用于箭头指向与牌河移除。",
+     "businessBehavior": {
+      "trigger": "上家打出一张牌后自己获得吃牌权限",
+      "condition": "服务端下发由进张与两张手牌组成的顺子组合",
+      "action": "客户端把进张从牌河取走、手牌扣两张并在副露区生成三张顺子",
+      "result": "玩家看到自己副露多出一组顺子，箭头指向被吃的那张牌"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "上家限制与非财神限制均在服务端，客户端只有组合展示证据",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C05-004",
+     "name": "多组吃法选一组",
+     "rule": "多种合法组合时选 1 组。",
+     "uiRequirement": "多种合法组合时展示多组备选供玩家选择一组。",
+     "verdict": "confirmed",
+     "clientLogic": "吃牌组合数量大于 1 时，点击吃按钮进入选择态，展示每组完整三张的选项池；点选某组后按该组索引取出组合并发送吃牌请求，只发送一组。",
+     "uiInteraction": "点击吃按钮弹出多吃选项池，每组并列展示完整三张牌并支持换行；同时出现取消按钮，点选一组立即发送吃牌并收起选项。",
+     "messages": [
+      "MsgPower",
+      "MsgChowC"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1089"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1113"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1098"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/ChooseGang.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/ChooseGang.xml:5"
+      }
+     ],
+     "notes": "选项池复用多杠组件 ChooseGang，并按三张牌槽位动态补足牌面。",
+     "businessBehavior": {
+      "trigger": "吃牌权限包含多组合法组合时点击吃",
+      "condition": "可吃组合数量大于 1",
+      "action": "客户端列出每组三张供选择，点选后只发送这一组",
+      "result": "玩家看到多组三张顺子备选，点选一组即完成吃牌"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端证实了多组选项的选择交互，但服务端是否一次下发全部合法吃法未在客户端证实",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C05-005",
+     "name": "吃后不摸牌进入出牌",
+     "rule": "吃成功后不摸牌，进入出牌。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "吃牌消息处理只更新副露与手牌、收起操作按钮，不触发抓牌流程；出牌能力由随后下发的操作权限中的出牌位开启。",
+     "uiInteraction": "吃完牌后操作按钮收起，手牌进入可出牌状态；此时待出末张按普通手牌布局，不占摸牌单放位。",
+     "messages": [
+      "MsgChowS",
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts:44"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts:79"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:536"
+      }
+     ],
+     "notes": "客户端不主动摸牌；进入出牌依赖服务端随后下发的出牌权限。",
+     "businessBehavior": {
+      "trigger": "吃牌成立",
+      "condition": "",
+      "action": "客户端不发起摸牌，收起响应按钮并按出牌权限开放出牌",
+      "result": "玩家吃完后手牌保持在待出状态，可以直接选牌打出"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "“不摸牌”已验证，但“进入出牌”由服务端出牌权限驱动，客户端只能证明未发起摸牌",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C05-006",
+     "name": "吃后同回合可加杠暗杠",
+     "rule": "吃成立的当前回合可以加杠或暗杠。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "同一回合若操作权限同时给出杠位，客户端会显示杠按钮并按组合类型列出暗杠/加杠选项；与摸牌无关的杠不置灰手牌且不必先点过。",
+     "uiInteraction": "吃完后仍出现杠按钮，点杠弹出可杠牌列表，选中即发送杠；对应手牌保持可点击。",
+     "messages": [
+      "MsgPower",
+      "MsgKongC"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:554"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:609"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:136"
+      }
+     ],
+     "notes": "客户端无法识别“吃碰后同回合”这一场景，完全依赖服务端在同回合给出杠权限。",
+     "businessBehavior": {
+      "trigger": "刚吃完牌的同一回合",
+      "condition": "服务端同时下发杠权限",
+      "action": "客户端显示杠按钮并列出可杠牌",
+      "result": "玩家吃完后还能看到杠按钮并直接杠"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "同回合是否给杠由服务端决定，客户端只按权限位展示",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C05-003",
+   "name": "碰",
+   "description": "碰牌的成立条件、手中三张只出两张、碰后不摸牌与同回合可杠。",
+   "scope": "只覆盖碰牌本身；加杠、暗杠资格见对应功能点。",
+   "coordination": "碰组合由服务端下发，客户端做副露生成、手牌扣两张与进牌箭头刷新。",
+   "atoms": [
+    {
+     "id": "AT-ST-C05-007",
+     "name": "碰牌成立条件",
+     "rule": "任意他人刚打出的 1 张非财神，与手中 2 张相同非财神组成刻子。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "收到碰牌消息后按服务端组合生成副露：从出牌者牌河移除最后一张进牌，手牌扣两张，副露区新增一组三张刻子。",
+     "uiInteraction": "副露区新增一组刻子，并刷新进牌来源箭头。",
+     "messages": [
+      "MsgPower",
+      "MsgPungS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePungCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePungCmd.ts:34"
+      },
+      {
+       "file": "source-code/client/Code/data/PlayerCardsData.ts",
+       "location": "source-code/client/Code/data/PlayerCardsData.ts:789"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:895"
+      }
+     ],
+     "notes": "客户端不校验打出者、是否“刚打出”以及是否非财神。",
+     "businessBehavior": {
+      "trigger": "任意别家打出一张牌后自己获得碰牌权限",
+      "condition": "服务端下发由进张与两张手牌组成的刻子组合",
+      "action": "客户端把进张从牌河取走、手牌扣两张并生成三张刻子",
+      "result": "玩家看到副露多出一组刻子"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "碰牌资格与非财神限制均在服务端，客户端只有组合展示证据",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C05-008",
+     "name": "碰只消耗两张手牌",
+     "rule": "手中有 3 张也只用 2 张。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "碰牌扣牌固定取组合中的两张；组合数据结构会先剔除进牌，因此手牌只减两张，第三张留在手中，其他座位的记牌器也只加两张。",
+     "uiInteraction": "碰后副露显示三张，自己的手牌只少两张，手里仍剩一张同牌。",
+     "messages": [
+      "MsgPungS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePungCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePungCmd.ts:36"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePungCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePungCmd.ts:37"
+      },
+      {
+       "file": "source-code/client/Code/data/PlayerCardsData.ts",
+       "location": "source-code/client/Code/data/PlayerCardsData.ts:786"
+      }
+     ],
+     "notes": "",
+     "businessBehavior": {
+      "trigger": "碰牌成立",
+      "condition": "手上有三张相同牌",
+      "action": "客户端只从手牌扣掉两张",
+      "result": "玩家碰后手里仍剩一张同样的牌，副露显示三张"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C05-009",
+     "name": "碰后不摸牌进入出牌",
+     "rule": "碰成功后不摸牌，进入出牌。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "碰牌消息处理只更新副露与手牌并收起操作按钮，不触发抓牌流程；出牌能力由随后下发的操作权限中的出牌位开启。",
+     "uiInteraction": "碰完牌后操作按钮收起，手牌进入可出牌状态，待出末张不占摸牌单放位。",
+     "messages": [
+      "MsgPungS",
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePungCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePungCmd.ts:44"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts:119"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:536"
+      }
+     ],
+     "notes": "客户端不主动摸牌；进入出牌依赖服务端随后下发的出牌权限。",
+     "businessBehavior": {
+      "trigger": "碰牌成立",
+      "condition": "",
+      "action": "客户端不发起摸牌，收起响应按钮并按出牌权限开放出牌",
+      "result": "玩家碰完后手牌保持在待出状态，可以直接选牌打出"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "“不摸牌”已验证，“进入出牌”由服务端出牌权限驱动",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C05-010",
+     "name": "碰后同回合可加杠暗杠",
+     "rule": "碰成立的当前回合可以加杠或暗杠。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "同一回合若操作权限同时给出杠位，客户端显示杠按钮并按组合类型列出暗杠/加杠选项；与摸牌无关的杠不置灰手牌。",
+     "uiInteraction": "碰完后同一回合仍出现杠按钮与可杠牌列表。",
+     "messages": [
+      "MsgPower",
+      "MsgKongC"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:554"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:697"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:650"
+      }
+     ],
+     "notes": "客户端无碰后同回合的特殊分支，只按服务端权限位显示杠。",
+     "businessBehavior": {
+      "trigger": "刚碰完牌的同一回合",
+      "condition": "服务端同时下发杠权限",
+      "action": "客户端显示杠按钮并列出可杠牌",
+      "result": "玩家碰完后还能看到杠按钮并直接杠"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "同回合是否给杠由服务端决定，客户端只按权限位展示",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C05-004",
+   "name": "直杠",
+   "description": "直杠的成立条件、优先级裁决与补牌来源。",
+   "scope": "只覆盖他人打出牌的明杠；加杠、暗杠见对应功能点。",
+   "coordination": "直杠由服务端裁决后下发，客户端做四张副露生成、手牌扣三张、动效与补牌动画。",
+   "atoms": [
+    {
+     "id": "AT-ST-C05-011",
+     "name": "直杠成立条件",
+     "rule": "他人刚打出的 1 张非财神，与手中 3 张相同非财神。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "收到明杠消息后生成四张副露，清空出牌放大展示，手牌扣三张（四张组合剔除进牌），并播放明杠动效与杠音效。",
+     "uiInteraction": "副露区出现一组四张明杠，播放杠动画与杠音效，其他座位记牌器同步减少。",
+     "messages": [
+      "MsgPower",
+      "MsgKongS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:37"
+      },
+      {
+       "file": "source-code/client/Code/data/PlayerCardsData.ts",
+       "location": "source-code/client/Code/data/PlayerCardsData.ts:789"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:504"
+      }
+     ],
+     "notes": "客户端不校验进张来源与是否非财神。",
+     "businessBehavior": {
+      "trigger": "别家打出的牌与手中三张相同",
+      "condition": "服务端下发明杠权限与四张组合",
+      "action": "客户端把进张从牌河取走、手牌扣三张并生成四张杠",
+      "result": "玩家看到一组四张明杠并听到杠音效"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "明杠成立条件由服务端裁决，客户端只有组合展示与扣牌证据",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C05-012",
+     "name": "直杠优先级裁决",
+     "rule": "直杠按优先级裁决后成立。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [],
+     "notes": "客户端没有杠与胡的优先级比较逻辑，只接收服务端最终裁决后的权限与结果消息。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端不存在优先级裁决逻辑，该规则完全在服务端",
+      "clientObserved": false
+     }
+    },
+    {
+     "id": "AT-ST-C05-013",
+     "name": "杠后从牌墙尾部补牌",
+     "rule": "直杠成立后从牌墙尾部补牌。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "杠本身不发起摸牌；补牌由服务端下发抓牌消息，客户端按消息中的抓牌方向让牌墙对应位置的牌消失并播放摸牌动画，方向为反向时从牌墙另一端取牌。",
+     "uiInteraction": "杠后牌墙从另一端少一张，玩家补进一张牌并播放摸牌动画。",
+     "messages": [
+      "MsgTake"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:687"
+      },
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:723"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts:45"
+      }
+     ],
+     "notes": "客户端无法证明“杠后补牌一定走反向/牌尾”，抓牌方向由服务端下发。",
+     "businessBehavior": {
+      "trigger": "杠成立后",
+      "condition": "服务端下发抓牌消息并指定反向抓牌",
+      "action": "客户端按方向让牌墙另一端的牌消失并播放摸牌",
+      "result": "玩家看到杠后从牌墙另一头补进一张牌"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "补牌方向来自服务端消息，客户端只按方向播放动画",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C05-005",
+   "name": "加杠",
+   "description": "已碰刻子持有第 4 张时的加杠、抢杠胡征求与完成后的补牌。",
+   "scope": "只覆盖已碰出的刻子升级为杠；不覆盖暗杠。",
+   "coordination": "加杠由服务端先征求抢杠胡，客户端在收到补杠消息时把原碰原位升级为杠，收到抓牌消息时补牌。",
+   "atoms": [
+    {
+     "id": "AT-ST-C05-014",
+     "name": "加杠成立条件",
+     "rule": "出牌阶段，已碰出的刻子手里有第 4 张非财神。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "收到补杠消息后在已有副露中查找同牌值的碰组合，把该组原位替换为杠（不新增副露组），手牌扣一张，并重算该组相关的听牌信息。",
+     "uiInteraction": "原来位于副露区的碰变成四张的杠，副露组数不变。",
+     "messages": [
+      "MsgPower",
+      "MsgKongS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/data/PlayerCardsData.ts",
+       "location": "source-code/client/Code/data/PlayerCardsData.ts:99"
+      },
+      {
+       "file": "source-code/client/Code/data/PlayerCardsData.ts",
+       "location": "source-code/client/Code/data/PlayerCardsData.ts:106"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:64"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:910"
+      }
+     ],
+     "notes": "“出牌阶段”与“手里有第 4 张”由服务端权限体现，客户端只做碰升级为杠的展示。",
+     "businessBehavior": {
+      "trigger": "自己出牌阶段，已碰出一组且手里有第 4 张",
+      "condition": "服务端给出补杠权限",
+      "action": "客户端把原碰在原位升级为四张杠并扣掉一张手牌",
+      "result": "玩家看到原来的碰变成杠，副露组数不变"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "补杠资格（出牌阶段、持有第 4 张）由服务端判定，客户端只验证了碰升级为杠的展示",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C05-015",
+     "name": "加杠先征求抢杠胡",
+     "rule": "加杠先征求抢杠胡；有人抢杠胡则加杠不成立、不补牌。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端有抢杠胡类型与“抢杠/被抢杠”文案，胡牌结果按抢杠胡走点炮式展示；另存在把补杠副露拆回碰的本地回滚函数，但当前代码中未被调用。",
+     "uiInteraction": "抢杠胡时胡牌动效按点炮式播放，结算流水显示“抢杠胡/被抢杠”。",
+     "messages": [
+      "MsgKongS",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/GameDefine.ts",
+       "location": "source-code/client/Code/config/GameDefine.ts:149"
+      },
+      {
+       "file": "source-code/client/Code/data/PlayerCardsData.ts",
+       "location": "source-code/client/Code/data/PlayerCardsData.ts:444"
+      },
+      {
+       "file": "source-code/client/Code/util/BoxHzmjFlowUtil.ts",
+       "location": "source-code/client/Code/util/BoxHzmjFlowUtil.ts:119"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:671"
+      }
+     ],
+     "notes": "未发现“加杠前先征求抢杠胡”的交互流程；抢杠胡依赖服务端直接下发胡牌结果，本地拆回碰函数未被调用。",
+     "businessBehavior": {
+      "trigger": "玩家点加杠后其他玩家可以胡这张牌",
+      "condition": "有人抢杠胡",
+      "action": "客户端等待服务端裁定，按抢杠胡展示胡牌结果",
+      "result": "玩家看到抢杠胡胡牌，原加杠没有成立"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "缺少“先征求抢杠胡”的客户端流程与“抢杠胡则不补牌”的证据",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C05-016",
+     "name": "无人抢杠后完成加杠补牌",
+     "rule": "无人胡再完成加杠并补牌。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "无人抢杠时由服务端下发补杠消息，客户端完成碰升级为杠；随后的补牌同样由服务端下发抓牌消息，客户端只播动画。",
+     "uiInteraction": "碰变杠后从牌墙补进一张牌。",
+     "messages": [
+      "MsgKongS",
+      "MsgTake"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:63"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts:288"
+      }
+     ],
+     "notes": "客户端不判断是否“无人胡”，只按服务端消息执行。",
+     "businessBehavior": {
+      "trigger": "加杠无人抢杠胡",
+      "condition": "服务端下发补杠与抓牌消息",
+      "action": "客户端完成碰升级并执行补牌动画",
+      "result": "玩家看到杠成立并补进一张牌"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "是否有人抢杠胡由服务端判定，客户端仅执行补杠与补牌消息",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C05-006",
+   "name": "暗杠",
+   "description": "手中四张相同时的暗杠成立、补牌、牌面展示与副露区归属。",
+   "scope": "只覆盖自己的暗杠；不含吃碰后同回合暗杠的资格判定。",
+   "coordination": "暗杠由服务端给出杠权限，客户端做四张副露生成、动效、扣四张手牌与补牌动画。",
+   "atoms": [
+    {
+     "id": "AT-ST-C05-017",
+     "name": "暗杠成立与补牌",
+     "rule": "出牌阶段手中 4 张相同非财神，完成后补牌。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "收到暗杠消息后手牌扣四张、副露区新增一组暗杠，并按暗杠类型播放暗杠动效与暗杠音效；补牌由随后的抓牌消息驱动。",
+     "uiInteraction": "副露区出现一组暗杠，播放暗杠动效与暗杠音效，随后补进一张牌。",
+     "messages": [
+      "MsgPower",
+      "MsgKongS",
+      "MsgTake"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:55"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:509"
+      },
+      {
+       "file": "source-code/client/Code/data/PlayerCardsData.ts",
+       "location": "source-code/client/Code/data/PlayerCardsData.ts:789"
+      }
+     ],
+     "notes": "“出牌阶段”与“非财神”由服务端约束，客户端只做扣四张与展示。",
+     "businessBehavior": {
+      "trigger": "自己出牌阶段手里有四张相同牌",
+      "condition": "服务端给出暗杠权限",
+      "action": "客户端手牌扣四张、副露区加一组暗杠，随后按服务端消息补牌",
+      "result": "玩家看到一组暗杠并补进一张牌"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "暗杠资格（出牌阶段、非财神）与补牌由服务端决定，客户端只验证了扣牌与展示",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C05-018",
+     "name": "暗杠正反面展示",
+     "rule": "暗杠下层 3 张牌背、顶张正面，四家都能认出牌面。",
+     "uiRequirement": "暗杠下层 3 张牌背、顶张正面，四家都能认出牌面。",
+     "verdict": "partial",
+     "clientLogic": "杠组合按原始顺序展示，注释明确暗杠牌背按原位处理；组合区在切换牌背皮肤时会统一刷新牌背。",
+     "uiInteraction": "暗杠在副露区显示为一组牌，底层为牌背、最上一张为正面。",
+     "messages": [
+      "MsgKongS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/config/BoxMahDefine.ts",
+       "location": "source-code/client/Code/config/BoxMahDefine.ts:799"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:1293"
+      }
+     ],
+     "notes": "具体牌背与顶张的渲染由公共麻将组合组件完成，组件源码不在本仓库，无法直接核对“3 张牌背 + 1 张正面”。",
+     "businessBehavior": {
+      "trigger": "暗杠成立",
+      "condition": "",
+      "action": "客户端在副露区按原始顺序摆放四张，底层用牌背、顶张用正面",
+      "result": "玩家和其他三家都能看到暗杠牌面，但底层三张仍是盖着的"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "缺少暗杠正反面渲染的直接实现证据，渲染逻辑在公共组件内",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C05-019",
+     "name": "暗杠放在碰杠区不计副露",
+     "rule": "暗杠放在碰杠区，但不计副露。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "暗杠与其他杠一样加入座位旁的组合牌区；“是否计副露/摊”完全按服务端下发的摊数据刷新，客户端不自行累计。",
+     "uiInteraction": "暗杠显示在碰杠区；摊计数与三摊提示按服务端消息刷新。",
+     "messages": [
+      "MsgKongS",
+      "MsgTanUpdate"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:72"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts:21"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts:27"
+      }
+     ],
+     "notes": "客户端不区分暗杠是否计摊，只展示服务端摊计数。",
+     "businessBehavior": {
+      "trigger": "暗杠成立",
+      "condition": "",
+      "action": "客户端把暗杠放进座位旁的碰杠区，摊计数按服务端消息展示",
+      "result": "玩家看到暗杠显示在碰杠区，三摊计数不受暗杠影响"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "摊/副露计数完全由服务端下发，客户端无“暗杠不计副露”的判定证据",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C05-007",
+   "name": "吃碰同回合杠与七对限制",
+   "description": "吃或碰刚成立的回合仍可加杠、暗杠；四张相同即可杠；杠后不再按七对结算。",
+   "scope": "第一句与吃、碰两条中的同义句重复，按第 68 行原文单独列出以便追溯。",
+   "coordination": "客户端对同回合并无特殊分支，仍按服务端权限显示杠；七对是否成立由服务端番型下发，客户端只展示结算结果。",
+   "atoms": [
+    {
+     "id": "AT-ST-C05-020",
+     "name": "吃碰当回合可加杠暗杠",
+     "rule": "吃或碰刚成立的当前回合，同样可以加杠、暗杠。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "与吃、碰条目共用同一机制：同一回合操作权限给出杠位即显示杠按钮并列出可杠牌，与摸牌无关的杠不置灰手牌且不必先点过。",
+     "uiInteraction": "吃碰后同一回合出现杠按钮与多杠选项，相关手牌保持可点击。",
+     "messages": [
+      "MsgPower",
+      "MsgKongC"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1445"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:701"
+      }
+     ],
+     "notes": "该句与吃、碰两条中的同义句重复，客户端无独立实现。",
+     "businessBehavior": {
+      "trigger": "刚吃或碰完的同一回合",
+      "condition": "服务端同回合给出杠权限",
+      "action": "客户端显示杠按钮并允许选择暗杠或加杠",
+      "result": "玩家在同回合仍能杠"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "同回合是否给杠由服务端决定，客户端无独立实现可证",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C05-021",
+     "name": "四张相同即可杠",
+     "rule": "四张相同就可以杠。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端按服务端给出的杠组合收集可杠牌值，暗杠、明杠、补杠统一进入可杠列表；多个可杠项时展示多杠列表供选择。",
+     "uiInteraction": "出现杠按钮时按可杠牌值展示单张或列表，点选某项即发送杠。",
+     "messages": [
+      "MsgPower",
+      "MsgKongC"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:639"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:835"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/GangGrps.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/GangGrps.xml:4"
+      }
+     ],
+     "notes": "客户端不判断“四张相同”，也不校验是否为非财神，可杠项完全来自服务端组合。",
+     "businessBehavior": {
+      "trigger": "自己回合出现可杠牌",
+      "condition": "服务端给出杠权限与对应组合",
+      "action": "客户端把每个杠组合列成一个可杠项，多时展示列表",
+      "result": "玩家看到杠按钮和可选的可杠牌"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "“四张相同即可杠”的判定在服务端，客户端只渲染服务端给出的可杠组合",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C05-022",
+     "name": "杠后不再按七对结算",
+     "rule": "杠完这条就不再按七对结算。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [],
+     "notes": "客户端结算只按服务端下发的番型与组合展示，没有“杠后不判七对”的逻辑。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端不存在杠与七对互斥的判定或校验逻辑，该规则完全在服务端",
+      "clientObserved": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C05-008",
+   "name": "飘财限制",
+   "description": "受尚未解除的飘财限制时，吃、碰、直杠、加杠被禁止，仍可暗杠；暗杠后只能打刚补进的那张牌。",
+   "scope": "只覆盖飘财限制下的操作可用性与暗杠后出牌范围；不覆盖飘的计数与番型结算。",
+   "coordination": "客户端只记录飘计数并播放飘动效，操作可用性完全由此轮操作权限位与杠组合决定；出牌范围由出牌限制消息的禁打列表实现。",
+   "atoms": [
+    {
+     "id": "AT-ST-C05-023",
+     "name": "飘财限制下不能吃",
+     "rule": "受尚未解除的飘财限制时，不能吃。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "吃按钮是否出现完全由服务端操作权限的吃位决定；客户端只记录飘计数并驱动飘动效，没有基于飘状态隐藏吃按钮的逻辑。",
+     "uiInteraction": "飘计数增加时播放飘动效；吃按钮是否可见取决于服务端权限位。",
+     "messages": [
+      "MsgPiao",
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePiaoCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePiaoCmd.ts:21"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1680"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:552"
+      }
+     ],
+     "notes": "无飘状态到吃权限的本地映射，规则只能通过服务端不下发吃位实现。",
+     "businessBehavior": {
+      "trigger": "自己处于飘财限制中，别家打出可吃的牌",
+      "condition": "服务端未给出吃牌权限",
+      "action": "客户端不显示吃按钮",
+      "result": "玩家看不到吃牌选项"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "飘状态与吃权限无客户端关联逻辑，规则由服务端不下发吃位实现",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C05-024",
+     "name": "飘财限制下不能碰",
+     "rule": "受尚未解除的飘财限制时，不能碰。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "碰按钮是否出现由服务端操作权限的碰位决定；客户端没有根据飘状态屏蔽碰按钮的逻辑。",
+     "uiInteraction": "飘财限制期间若服务端不给碰位，则碰按钮不出现。",
+     "messages": [
+      "MsgPiao",
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:553"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:579"
+      }
+     ],
+     "notes": "客户端不读飘计数来拦截碰。",
+     "businessBehavior": {
+      "trigger": "自己处于飘财限制中，别家打出可碰的牌",
+      "condition": "服务端未给出碰牌权限",
+      "action": "客户端不显示碰按钮",
+      "result": "玩家看不到碰牌选项"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "飘状态与碰权限无客户端关联逻辑，规则由服务端不下发碰位实现",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C05-025",
+     "name": "飘财限制下不能直杠",
+     "rule": "受尚未解除的飘财限制时，不能直杠。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "杠按钮由服务端操作权限的杠位统一控制，可杠项按组合类型收集；客户端不按飘状态过滤明杠。",
+     "uiInteraction": "飘财限制期间若服务端不给杠位或只给暗杠组合，则杠按钮不出现或只列暗杠。",
+     "messages": [
+      "MsgPiao",
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:639"
+      },
+      {
+       "file": "source-code/client/Code/config/BoxMahDefine.ts",
+       "location": "source-code/client/Code/config/BoxMahDefine.ts:208"
+      }
+     ],
+     "notes": "明杠与暗杠共用一个杠位，客户端无法按权限位区分，只能通过服务端下发的杠组合类型区分。",
+     "businessBehavior": {
+      "trigger": "自己处于飘财限制中，别家打出可直杠的牌",
+      "condition": "服务端不给直杠组合或整体不给杠位",
+      "action": "客户端不显示直杠选项",
+      "result": "玩家看不到直杠（明杠）选项"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端无飘状态过滤明杠的逻辑，明杠/暗杠共用同一权限位，规则由服务端组合裁剪实现",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C05-026",
+     "name": "飘财限制下不能加杠",
+     "rule": "受尚未解除的飘财限制时，不能加杠。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "加杠入口与其他杠共用杠按钮和可杠列表，客户端不按飘状态过滤补杠类型。",
+     "uiInteraction": "飘财限制期间若服务端不给补杠组合，则玩家看不到加杠选项。",
+     "messages": [
+      "MsgPiao",
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:652"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:611"
+      }
+     ],
+     "notes": "客户端不读飘计数来拦截补杠。",
+     "businessBehavior": {
+      "trigger": "自己处于飘财限制中，且已碰出一组、手里有第 4 张",
+      "condition": "服务端不给补杠组合",
+      "action": "客户端不显示加杠选项",
+      "result": "玩家看不到加杠（补杠）选项"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "客户端无飘状态过滤补杠的逻辑，规则由服务端组合裁剪实现",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C05-027",
+     "name": "飘财限制下仍可暗杠",
+     "rule": "受尚未解除的飘财限制时，仍可暗杠。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "可杠列表按服务端下发的杠组合类型生成，暗杠与明杠/补杠共用同一个入口；若服务端只给暗杠组合，客户端只列出暗杠项。",
+     "uiInteraction": "飘财限制期间仍可能出现杠按钮，点开只列出可暗杠的牌。",
+     "messages": [
+      "MsgPiao",
+      "MsgPower",
+      "MsgKongC"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:636"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:654"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:55"
+      }
+     ],
+     "notes": "客户端不判断飘状态，能否暗杠取决于服务端是否下发暗杠组合。",
+     "businessBehavior": {
+      "trigger": "自己处于飘财限制中且手里有四张相同牌",
+      "condition": "服务端仍下发暗杠组合",
+      "action": "客户端保留杠按钮并只列出暗杠项",
+      "result": "玩家在飘财限制期间仍能选择暗杠"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "暗杠是否在飘财限制下仍开放由服务端组合决定，客户端无对应判定",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C05-028",
+     "name": "暗杠后只能打补进的牌",
+     "rule": "暗杠后只能打尾墩刚补进的那一张。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "客户端按出牌限制消息区分禁打手牌与禁打单放，被禁的牌置灰且不可点击；点击被禁的牌会提示“该牌被禁打”。",
+     "uiInteraction": "暗杠补牌后若服务端下发禁打列表，只有刚补进的那张可点，其余置灰。",
+     "messages": [
+      "MsgPlayLmts",
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePlayLmtsCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePlayLmtsCmd.ts:33"
+      },
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:1799"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1432"
+      }
+     ],
+     "notes": "客户端只有通用的禁打手牌/禁打单放机制，无法证明该限制就是“暗杠后只能打补进牌”。",
+     "businessBehavior": {
+      "trigger": "暗杠后补进一张牌并进入出牌",
+      "condition": "服务端下发禁打手牌列表",
+      "action": "客户端把被禁的牌置灰并拦截点击",
+      "result": "玩家只能打刚补进的那张牌，其他牌点了提示禁打"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "禁打范围由服务端出牌限制消息下发，客户端只执行置灰与拦截",
+      "clientObserved": true
+     }
+    }
+   ]
+  }
+ ]
+}

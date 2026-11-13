@@ -1,0 +1,121 @@
+{
+ "stageId": "ST-C09",
+ "title": "杠开、杠飘、飘杠",
+ "sourceTitle": "行牌 > 杠开、杠飘、飘杠",
+ "fromLine": 92,
+ "toLine": 95,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 12,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C09-001",
+   "name": "杠开以自摸为成立前提",
+   "rule": "杠上开花、二连杠、三连杠、四连杠均要求「自摸」成立（自摸且杠链为 1/2/3/4 及以上）。",
+   "uiRequirement": "",
+   "uiInteraction": "自摸时播自摸音效，点炮/抢杠时播点炮音效；不改变番型字效节点。",
+   "notes": "客户端只用 hu_type 推断表现，不校验杠链；自摸与杠链的组合判定在服务端。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C09-002",
+   "name": "杠上开花（杠链 1）2 倍",
+   "rule": "杠上开花：自摸且杠链为 1，倍数 2。",
+   "uiRequirement": "",
+   "uiInteraction": "2406 走文字类节点 KW_Ani_Hu_Type（Paixing_wz01）skin=gangkai；好友房结算文案「杠上开花」，匹配场第二行简写「杠开」；音效 hu_7_gangkai。",
+   "notes": "好友房小结算直接输出番型名「杠上开花」；匹配场两行文案把 2406 简写为「杠开」。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C09-003",
+   "name": "二连杠（杠链 2）4 倍",
+   "rule": "二连杠：自摸且杠链为 2，倍数 4。",
+   "uiRequirement": "",
+   "uiInteraction": "2407 走动效节点 KW_Ani_Hu skin=2lgk；结算文案「二连杠」；音效 hu_8_2gangkai。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C09-004",
+   "name": "三连杠（杠链 3）8 倍",
+   "rule": "三连杠：自摸且杠链为 3，倍数 8。",
+   "uiRequirement": "",
+   "uiInteraction": "2408 走 KW_Ani_Hu skin=3lgk；结算文案「三连杠」；音效 hu_9_3gangkai。",
+   "notes": "",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C09-005",
+   "name": "四连杠及以上（杠链 4+）16 倍",
+   "rule": "四连杠：自摸且杠链为 4 及以上，倍数 16；四连杠及以上都记 16 倍。",
+   "uiRequirement": "",
+   "uiInteraction": "2409 走 KW_Ani_Hu skin=4lgk；结算文案「四连杠」；音效 hu_10_4gangkai。",
+   "notes": "客户端最大档位止于四连杠，5 连及以上无独立档位；「四连杠及以上」的归一由服务端完成，客户端只收到 2409。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C09-006",
+   "name": "杠链已断后再胡不算杠开",
+   "rule": "杠链已断后再胡，不是杠开。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端无杠链数据（Code 中检索 gang_chain、gangChain 均无结果），断链判定在服务端；断链后服务端不再下发 2406-2409，客户端无从单独校验。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C09-007",
+   "name": "仅在杠上开花与财飘同时命中时拆出",
+   "rule": "杠飘、飘杠只在同时命中杠上开花和财飘时拆出。",
+   "uiRequirement": "",
+   "uiInteraction": "命中组合时胡牌走 KW_Ani_Hu 组合 skin（gp/pg），优先于单番节点；结算文案直接写「杠飘」或「飘杠」。",
+   "notes": "客户端组合判定比模板宽：任意杠开档 × 任意财飘档都会命中 GANG_PIAO 表现，而模板只在杠上开花（2406）与财飘（2403）基础档拆出。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C09-008",
+   "name": "杠飘/飘杠固定 8 倍",
+   "rule": "杠飘、飘杠的倍数为 8。",
+   "uiRequirement": "",
+   "uiInteraction": "结算不单独显示 8 倍，只输出番型名与得分；匹配场才在流水后追加总倍数。",
+   "notes": "8 倍为客户端侧注释/动画比较用值，客户端不重算倍数。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C09-009",
+   "name": "8 倍再乘基础番",
+   "rule": "杠飘、飘杠的 8 倍需再乘上基础番（最终倍数 = 基础番 × 8）。",
+   "uiRequirement": "",
+   "uiInteraction": "好友房小结算只展示番型文案与输赢分，不展示连乘过程与分项倍数。",
+   "notes": "连乘在服务端完成，客户端仅消费 fan_point；匹配场才用 win_lost.mult 追加「N倍」。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C09-010",
+   "name": "按杠时飘档是否大于 0 区分飘杠/杠飘",
+   "rule": "杠发生时飘档已经大于 0，记飘杠；否则记杠飘。",
+   "uiRequirement": "",
+   "uiInteraction": "2419 走 skin=gp（杠飘）、2420 走 skin=pg（飘杠）；对应音效 hu_20_gangpiao 与 hu_21_piaogang。",
+   "notes": "客户端仅做表现层区分；飘档先后由服务端记录为 piao_before_gang 并决定下发 2419 还是 2420，客户端无对应字段。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C09-011",
+   "name": "二连杠、双财飘及更高档不拆，仍按各组连乘",
+   "rule": "二连杠、双财飘及更高档不拆，仍按各组连乘。",
+   "uiRequirement": "",
+   "uiInteraction": "高档组合仍播 gp/pg 组合动效与组合音效，结算文案为「杠飘（二连杠，双财飘）」。",
+   "notes": "表现层把高档组合统一归入「杠飘/飘杠」，与模板「高档不拆、按各组连乘」的分档命名不一致；番点仍以服务端 fan_point 为准，好友房不展示分项倍数。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C09-012",
+   "name": "没有单独的杠爆、七客",
+   "rule": "没有单独的杠爆、七客（不单列这两种番型）。",
+   "uiRequirement": "",
+   "uiInteraction": "若服务端下发杠开×爆头，客户端播 KW_Ani_Hu skin=gb 与音效 hu_11_gangbao；七对系×爆头/财飘则显示七客/豪华七客文案并走 qk/hhqk 等 skin。",
+   "notes": "番型 ID 层确实没有独立杠爆/七客，符合模板；但客户端仍保留杠爆/七客的组合动效与命名，若服务端按连乘只下发基础番则不会触发，属待确认的遗留表现。",
+   "verdict": "partial"
+  }
+ ]
+}

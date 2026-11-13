@@ -1,0 +1,2533 @@
+{
+ "stage": {
+  "id": "ST-C11",
+  "name": "出牌与响应",
+  "chapter": "行牌 > 出牌与响应",
+  "summary": "定义谁可以出牌、弃牌被响应后的牌河回收与显示、必须先过再出牌的拦截、过与过2的差异、操作按钮区与手牌压暗、多优先级等待、多种吃与杠的选择面板，以及吃碰杠胡的副露与字效结算表现。",
+  "terms": [
+   {
+    "term": "面子",
+    "definition": "一组顺子、刻子或杠。杠含 4 张，仍计 1 组面子。对子不是面子。已完成的吃、碰、明杠、暗杠都计入面子。",
+    "source": "模板名词章节（第 11 行）"
+   },
+   {
+    "term": "财神",
+    "definition": "白板固定为财神。只在胡牌判定时代替顺子、刻子或对子所缺的牌。吃、碰、杠必须用真实的非财神牌。",
+    "source": "模板名词章节（第 12 行）"
+   },
+   {
+    "term": "上家",
+    "definition": "上家为本家逆时针方向的上一家，吃牌只用上家刚打出的牌。",
+    "source": "模板名词章节（第 7 行）"
+   },
+   {
+    "term": "爆头",
+    "definition": "摸牌前为 4 组面子加 1 张财神。下一张摸到任意牌，都与这张财神组成对子后自摸。只能自摸。",
+    "source": "模板名词章节（第 16 行）"
+   },
+   {
+    "term": "飘",
+    "definition": "自己出牌阶段打出一张财神，即飘财 1 次。连续打出财神则累加，打出普通牌清零。",
+    "source": "模板名词章节（第 18 行）"
+   },
+   {
+    "term": "放铳",
+    "definition": "打出的牌被他人合法胡走。胡牌者称为点炮胡。白板财神弃牌不能点炮胡。",
+    "source": "模板名词章节（第 19 行）"
+   }
+  ],
+  "crossCutting": [
+   "可操作项位图统一驱动按钮显隐、本家手牌可出状态与压暗范围；非本家权限到达时直接关闭本家操作区。",
+   "所有下行指令都支持“仅更新数据”模式，重连与复盘补数据时只落数据、不播动画。",
+   "响应倒计时统一由时钟服务提供，四个座位共用中央倒计时区域，归零显示 00 且不触发任何自动操作。",
+   "副露数据统一做展示牌序（吃/碰升序、杠保持原序）与来源座位方向换算，箭头按进牌实际所在槽位定位。",
+   "复盘模式走另一套按座位渲染的操作按钮路径，与本家单人操作区互斥。"
+  ]
+ },
+ "features": [
+  {
+   "id": "FP-ST-C11-001",
+   "name": "出牌资格与出牌拦截",
+   "description": "界定谁能出牌，以及在等待他人响应、正在选择组合、杠后未补牌、小局结束等状态下禁止出牌。",
+   "scope": "覆盖本家出牌入口、手牌可触性与禁打校验；不含服务端对出牌权的最终裁决。",
+   "coordination": "服务端下发的可操作项决定本家手牌可否出牌，出牌前再做禁打校验，非本家权限到达即关闭本家操作区。",
+   "atoms": [
+    {
+     "id": "AT-ST-C11-001",
+     "name": "出牌权与可打牌双条件",
+     "rule": "只有当前拿到出牌权、且目标牌可打的玩家能出牌。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "收到可操作项后按出牌位设置本家手牌可出状态；出牌前再校验该牌是否被禁打，禁用牌拦截并把手牌拉回。",
+     "uiInteraction": "无出牌权时手牌不可出；点到禁打牌弹出“该牌被禁打”提示并回退手牌显示。",
+     "messages": [
+      "MsgPower",
+      "MsgPlayC"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:536"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:556"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1432"
+      },
+      {
+       "file": "source-code/client/Code/data/GameData.ts",
+       "location": "source-code/client/Code/data/GameData.ts:1789"
+      }
+     ],
+     "notes": "客户端只做本地拦截，服务端仍会校验出牌权与禁打。",
+     "businessBehavior": {
+      "trigger": "轮到自己操作或点击手牌准备打出",
+      "condition": "系统给出出牌资格，且这张牌没有被列为禁打",
+      "action": "允许打出该牌并上送出牌请求",
+      "result": "牌落入牌河；不满足条件时提示“该牌被禁打”且手牌复原"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "缺少服务端对出牌权与禁打的最终校验证据，客户端仅本地拦截",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-002",
+     "name": "等待他人响应时不能出牌",
+     "rule": "等待他人响应时不能出牌。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "非本家收到可操作项时，直接关闭本家操作区，本家手牌退出可出状态。",
+     "uiInteraction": "本家操作按钮收起，手牌不再响应出牌点击。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:528"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:497"
+      }
+     ],
+     "notes": "非本家手牌本身不做灰化处理，只关闭本家操作区。",
+     "businessBehavior": {
+      "trigger": "其他玩家获得可操作资格（如等待他人响应）",
+      "condition": "当前可操作的人不是自己",
+      "action": "收起本家操作按钮并关闭本家出牌入口",
+      "result": "自己无法点牌出牌，界面回到等待状态"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-003",
+     "name": "选择组合过程中不能出牌",
+     "rule": "正在选择组合时不能出牌。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "进入吃/杠选择面板时切换操作区页签并清空选牌回调，选择面板接管操作区；未见显式关闭出牌入口的代码。",
+     "uiInteraction": "操作区切换为选择面板，原吃/碰/杠/胡按钮退出显示。",
+     "messages": [],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1124"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1118"
+      }
+     ],
+     "notes": "仅能确认选择面板接管操作区；吃选择场景依赖此时不具备出牌位，未找到选择期间的独立出牌禁用判断。",
+     "businessBehavior": {
+      "trigger": "自己点击吃或杠并出现多组候选",
+      "condition": "候选选择面板已经展开",
+      "action": "操作区切换为选择面板并停止手牌选牌回调",
+      "result": "玩家只能从候选中选择或取消，无法直接打出牌"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "未找到选择组合期间显式禁用出牌的判定代码",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-004",
+     "name": "杠后尚未补牌不能出牌",
+     "rule": "杠后尚未补牌或本小局已经结束时，不能出牌。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "提交杠请求后立即关闭本家出牌入口，杠成立消息到达时再次关闭操作区，直到下一次摸牌后重新获得可操作项。",
+     "uiInteraction": "杠成功后操作按钮与手牌出牌入口收起，等待补牌。",
+     "messages": [
+      "MsgKongC",
+      "MsgKongS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1155"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:46"
+      }
+     ],
+     "notes": "补牌后由新的可操作项重新打开出牌入口。",
+     "businessBehavior": {
+      "trigger": "自己完成杠牌",
+      "condition": "杠已成立但还没有补牌",
+      "action": "关闭出牌入口并等待补牌",
+      "result": "牌桌上暂时不能出牌，补牌后才恢复可操作"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-005",
+     "name": "小局结束后不能出牌",
+     "rule": "本小局已经结束时，不能出牌。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "胡牌/流局结算处理时关闭操作区，本家手牌退出可出状态；结束游戏消息到达时也收起听牌相关按钮。",
+     "uiInteraction": "操作按钮全部收起，手牌不再响应出牌点击。",
+     "messages": [
+      "MsgResultHu",
+      "MsgEndGame"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:241"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameEndCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameEndCmd.ts:33"
+      }
+     ],
+     "notes": "",
+     "businessBehavior": {
+      "trigger": "本小局胡牌或流局结算",
+      "condition": "该小局已经结束",
+      "action": "关闭操作区并停止手牌出牌响应",
+      "result": "玩家不能再操作牌局，界面进入结算流程"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C11-002",
+   "name": "弃牌裁决与牌河回收",
+   "description": "弃牌被他家响应时的先后裁决，以及裁决成立或全部放弃后牌河与显示的收尾表现。",
+   "scope": "覆盖客户端对裁决结果的牌河回收与显示清理；裁决优先级本身由服务端完成。",
+   "coordination": "吃/碰/杠/胡消息到达后统一移走来源牌河的最后一张并清理放大牌显示。",
+   "atoms": [
+    {
+     "id": "AT-ST-C11-006",
+     "name": "弃牌可被响应时先裁决",
+     "rule": "弃牌可被吃、碰、直杠或点炮胡时，先裁决。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "客户端只接收裁决结果消息，未找到任何本地裁决顺序实现。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "缺少服务端吃碰杠胡裁决顺序的客户端可证证据",
+      "clientObserved": false
+     }
+    },
+    {
+     "id": "AT-ST-C11-007",
+     "name": "成立后各端从牌河取走该牌",
+     "rule": "成立后各端从牌河取走该牌。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "吃/碰/杠成立时把组合中的进牌从来源玩家的牌河弹出，并同步移除桌面牌河最后一张；胡牌成立时同样移除放铳者牌河最后一张。",
+     "uiInteraction": "牌河中被响应的那张牌消失，牌面并入副露或胡牌。",
+     "messages": [
+      "MsgChowS",
+      "MsgPungS",
+      "MsgKongS",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/data/PlayerCardsData.ts",
+       "location": "source-code/client/Code/data/PlayerCardsData.ts:92"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:893"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:997"
+      }
+     ],
+     "notes": "牌河数据与桌面牌河节点两边同时移除，保证重连前后一致。",
+     "businessBehavior": {
+      "trigger": "吃、碰、杠或点炮胡成立",
+      "condition": "响应的是牌河中最后打出的那张牌",
+      "action": "把这张牌从来源玩家的牌河移走并并入获得方的组牌",
+      "result": "牌河里不再显示被响应的那张牌"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-008",
+     "name": "清除被响应牌的浮标与放大显示",
+     "rule": "并清除它的浮标和放大显示。",
+     "uiRequirement": "清除浮标和放大显示。",
+     "verdict": "partial",
+     "clientLogic": "吃/碰/杠/胡消息到达时统一隐藏其他玩家出牌的放大牌面。",
+     "uiInteraction": "被响应牌的放大牌卡消失；指向最后打出牌的浮标由牌桌组件负责。",
+     "messages": [
+      "MsgChowS",
+      "MsgPungS",
+      "MsgKongS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts:42"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePungCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePungCmd.ts:42"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1059"
+      }
+     ],
+     "notes": "放大牌面已证；“浮标”应为指向最后打出牌的箭头，其隐藏/复位由平台牌桌组件处理，本仓库无对应代码。",
+     "businessBehavior": {
+      "trigger": "吃、碰、杠或胡成立",
+      "condition": "该牌此前以放大牌面或浮标形式突出显示",
+      "action": "关闭放大牌面显示",
+      "result": "牌桌上的大牌提示消失，只保留正常牌河或副露展示"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "浮标清除由平台牌桌组件实现，本仓库缺少可证代码",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-009",
+     "name": "全部放弃时牌留牌河并轮下家",
+     "rule": "全部放弃则牌留在牌河，再轮到下家摸牌。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "未找到“全部放弃”后的牌河保留与轮转处理代码，仅能确认点击过不会清理牌河。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "牌河保留与轮转由服务端驱动，客户端无对应判定代码",
+      "clientObserved": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C11-003",
+   "name": "需先点过才能出牌",
+   "description": "在自摸或必须先过的杠提示存在时拦截出牌，并定义可杠牌与刚摸牌无关时的例外。",
+   "scope": "覆盖本家出牌拦截与提示；不含服务端对过手胡/过手碰的资格判定。",
+   "coordination": "出牌入口统一检查当前可操作项与杠牌是否涉及刚摸牌，再决定是否弹出必须先过提示。",
+   "atoms": [
+    {
+     "id": "AT-ST-C11-010",
+     "name": "存在自摸或杠提示时拦截出牌",
+     "rule": "【自摸】还在，或本次杠提示必须先过时，双击或滑动出牌会被拦住。",
+     "uiRequirement": "无",
+     "verdict": "confirmed",
+     "clientLogic": "出牌前检查当前可操作项是否含胡、杠、碰、吃，且操作区仍处于吃碰杠胡页签，则直接拦截本次出牌。",
+     "uiInteraction": "双击或滑动出的牌被拦下，手牌回到原位。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1447"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1453"
+      }
+     ],
+     "notes": "拦截放在出牌前统一校验里，对单击、双击、滑动都生效。",
+     "businessBehavior": {
+      "trigger": "自己拖出或双击手牌准备出牌",
+      "condition": "当前仍有自摸或吃碰杠提示未处理",
+      "action": "拦下这次出牌",
+      "result": "牌没有打出去，操作区保持提示状态"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-011",
+     "name": "提示只在本家显示",
+     "rule": "只在本家显示「点“过”才能出牌」。",
+     "uiRequirement": "只在本家显示「点“过”才能出牌」。",
+     "verdict": "confirmed",
+     "clientLogic": "拦截出牌时只向本家弹出通用提示框，文案为点“过”才能出牌。",
+     "uiInteraction": "本家屏幕中部弹出提示条，3 秒后消失；其他玩家不显示。",
+     "messages": [],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1454"
+      }
+     ],
+     "notes": "提示通过本家出牌校验触发，天然只在本家出现。",
+     "businessBehavior": {
+      "trigger": "本家在被拦截的情况下出牌",
+      "condition": "当前仍有未处理的操作提示",
+      "action": "弹出一次性提示",
+      "result": "本家看到“点“过”才能出牌”，其他玩家看不到"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-012",
+     "name": "须先点过才能继续出牌",
+     "rule": "须先点【过】。",
+     "uiRequirement": "须先点【过】。",
+     "verdict": "confirmed",
+     "clientLogic": "点击过后上送放弃请求并退出吃碰杠胡页签，操作区关闭后才允许再次出牌。",
+     "uiInteraction": "点【过】后按钮收起，手牌恢复可按压。",
+     "messages": [
+      "MsgCancel"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1236"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1453"
+      }
+     ],
+     "notes": "除点过外，提交吃/碰/杠/胡或取消也会退出提示页签，同样解除拦截。",
+     "businessBehavior": {
+      "trigger": "本家点击过",
+      "condition": "当前还有自摸或吃碰杠提示",
+      "action": "上送放弃并关闭提示操作区",
+      "result": "按钮收起，手牌重新可以打出"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-013",
+     "name": "只杠手中暗杠可直接出牌",
+     "rule": "例外：可杠的只是摸牌或补牌之前已经拿在手里的暗杠，可以直接出牌。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "若存在杠提示但无胡提示，且所有可杠组合的牌值都不等于刚摸的牌，则标记为与摸牌无关的杠，不压暗手牌且不要求点过。",
+     "uiInteraction": "手牌保持正常亮度，可直接打出。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:697"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:701"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:713"
+      }
+     ],
+     "notes": "判定口径为“所有可杠组合牌值都不等于刚摸牌”，与“摸牌/补牌前已在手”等价。",
+     "businessBehavior": {
+      "trigger": "摸牌后系统给出杠提示",
+      "condition": "本次没有胡提示，且可杠的牌都不是刚摸进来的那张",
+      "action": "不压暗手牌，也不要求先过",
+      "result": "玩家可以直接把牌打出去，同时杠按钮仍在"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-014",
+     "name": "碰后又能杠仍须先过",
+     "rule": "碰之后又能杠的，仍须先过。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "碰后手牌没有刚摸牌（摸牌值为 0），与摸牌无关的杠判定不成立，因此仍走必须先过的分支。",
+     "uiInteraction": "手牌参与杠的牌保持亮度、其余压暗，出牌前需先点过。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:695"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:696"
+      }
+     ],
+     "notes": "该场景通过“碰后无摸牌”的守卫间接实现，未找到针对碰后加杠的专门分支。",
+     "businessBehavior": {
+      "trigger": "碰完之后手牌又出现可杠组合",
+      "condition": "此时手上没有刚摸进来的牌",
+      "action": "按必须先过处理，压暗除杠牌外的手牌",
+      "result": "玩家必须先点过才能出牌，杠提示仍然保留"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C11-004",
+   "name": "点过的生效范围",
+   "description": "点过只放弃当次提示；后续同一张牌重新判断，放弃杠后本次机会内不再出现杠。",
+   "scope": "覆盖点过后的本地界面收尾与后续提示判定；跨回合的资格重算由服务端负责。",
+   "coordination": "点过时上送放弃请求并清空本地选择与压暗状态，等待服务端重新下发可操作项。",
+   "atoms": [
+    {
+     "id": "AT-ST-C11-015",
+     "name": "点过只放弃本次并收起按钮预览",
+     "rule": "点【过】只放弃这一次提示，收起本次按钮和预览。",
+     "uiRequirement": "收起本次按钮和预览。",
+     "verdict": "confirmed",
+     "clientLogic": "点过时上送放弃请求、退出吃碰杠胡页签、隐藏多吃/多杠面板并清空选牌回调与压暗。",
+     "uiInteraction": "操作按钮与候选面板收起，手牌恢复常态。",
+     "messages": [
+      "MsgCancel"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1237"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1239"
+      }
+     ],
+     "notes": "按钮与候选面板收起已证；“预览”未见显式清除逻辑。",
+     "businessBehavior": {
+      "trigger": "玩家点击过",
+      "condition": "当前存在一次操作提示",
+      "action": "上送放弃并收起本次按钮与候选面板",
+      "result": "界面回到无提示状态，等待下一次操作机会"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "未找到点过时清除“预览”的显式实现",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-016",
+     "name": "同一张牌按新弃牌重新判断",
+     "rule": "之后别人再打出相同牌，按新弃牌重新判断。",
+     "uiRequirement": "",
+     "verdict": "partial",
+     "clientLogic": "点过后本地不保留本次提示状态，仅清空选择与压暗，后续是否再次提示完全由新的可操作项决定。",
+     "uiInteraction": "下次同牌出现时按钮按新可操作项重新显示。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1240"
+      }
+     ],
+     "notes": "本地无“已过张”缓存，重新判定依赖服务端重新下发可操作项。",
+     "businessBehavior": {
+      "trigger": "放弃后别人又打出同样的牌",
+      "condition": "该牌再次成为可响应弃牌",
+      "action": "本地不沿用上次结果，按新的可操作项重新展示",
+      "result": "玩家会重新看到可响应按钮"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "重新判定由服务端完成，客户端仅有不缓存的间接证据",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-017",
+     "name": "放弃杠后本次机会内不再出现杠",
+     "rule": "放弃杠后，同一次操作机会内不再出现【杠】；下一次拿到操作机会再判断。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "客户端点过后只是关闭操作区，若服务端再次下发杠提示仍会显示，未找到本地抑制逻辑。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "缺少服务端或客户端的本次机会内抑制杠提示的证据",
+      "clientObserved": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C11-005",
+   "name": "操作按钮区",
+   "description": "有操作资格时在本家手牌右上方展示可做项按钮与过，按固定顺序排列，并展示胡牌张与预览倍数。",
+   "scope": "覆盖按钮区结构、顺序与内容；不含按钮美术颜色验证。",
+   "coordination": "可操作项位图决定每个按钮显隐，操作组横向排布在屏幕右侧靠本家手牌上方。",
+   "atoms": [
+    {
+     "id": "AT-ST-C11-018",
+     "name": "资格玩家看到按钮与过",
+     "rule": "有操作资格的玩家在自己手牌右上方看到对应按钮和【过】。",
+     "uiRequirement": "在自己手牌右上方看到对应按钮和【过】。",
+     "verdict": "confirmed",
+     "clientLogic": "本家收到可操作项时按位显示吃、碰、杠、胡、过按钮，其他玩家到达时关闭本家操作区。",
+     "uiInteraction": "按钮组出现在屏幕右侧靠本家手牌上方，按右侧对齐排布。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:33"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:35"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:577"
+      }
+     ],
+     "notes": "",
+     "businessBehavior": {
+      "trigger": "本家获得可操作资格",
+      "condition": "可操作项中至少包含吃、碰、杠、胡或过之一",
+      "action": "在本家手牌上方展开操作按钮组",
+      "result": "玩家看到本次可做的按钮和过按钮"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-019",
+     "name": "按钮顺序与只显示可做项",
+     "rule": "按钮从左到右为【吃】【碰】【杠】【胡】，蓝色【过】固定在最右，只显示本次可做的项。",
+     "uiRequirement": "从左到右为【吃】【碰】【杠】【胡】，蓝色【过】固定在最右，只显示本次可做的项。",
+     "verdict": "confirmed",
+     "clientLogic": "按可操作项位逐个设置吃、碰、杠、胡、过按钮显隐，按钮在同一横向组内右对齐排列。",
+     "uiInteraction": "按钮按吃、碰、杠、胡、过从左到右出现，未具备的项不显示。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:6"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:15"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:21"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:578"
+      }
+     ],
+     "notes": "过与过2使用同一皮肤，二者并存时最右为过2；“蓝色”仅能从皮肤名 guo 推断，未验证颜色。",
+     "businessBehavior": {
+      "trigger": "本家获得可操作资格",
+      "condition": "本次只具备部分操作项",
+      "action": "按固定顺序显示可做项按钮，并把过放在最右",
+      "result": "玩家看到的按钮顺序固定，做不了的项不出现"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "按钮顺序与显隐已验证，但“过为蓝色”无法从代码或界面定义确认",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-020",
+     "name": "胡按钮左侧胡牌张与倍数",
+     "rule": "【胡】或【自摸】左侧显示胡牌张和预览倍数。",
+     "uiRequirement": "【胡】或【自摸】左侧显示胡牌张和预览倍数。",
+     "verdict": "confirmed",
+     "clientLogic": "具备胡权限时把胡牌张图片与倍数文案写入胡按钮内的左侧节点，并按胡牌类型切换胡或自摸皮肤。",
+     "uiInteraction": "胡按钮左边显示具体胡牌张与“N倍”文本。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:664"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:666"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/HuActionBtn.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/HuActionBtn.xml:6"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/HuActionBtn.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/HuActionBtn.xml:7"
+      }
+     ],
+     "notes": "胡牌张与倍数节点在按钮内左侧（x 小于按钮动作节点），倍数取服务端下发值。",
+     "businessBehavior": {
+      "trigger": "本家获得胡牌资格",
+      "condition": "可操作项中包含胡",
+      "action": "在胡按钮左侧填入胡的那张牌和倍数",
+      "result": "玩家看到“某张牌 + N倍”的预览"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-021",
+     "name": "统一响应倒计时且归零仍可点",
+     "rule": "各端使用同一个响应倒计时，归零后按钮仍可点。",
+     "uiRequirement": "各端使用同一个响应倒计时，归零后按钮仍可点。",
+     "verdict": "partial",
+     "clientLogic": "可操作项到达时按统一时钟值启动座位倒计时显示，倒计时结束仅把数字置为 00，不对按钮做禁用处理。",
+     "uiInteraction": "中央倒计时统一显示秒数，最后 3 秒换字体并播提示音，归零显示 00。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePowerCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePowerCmd.ts:78"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:696"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:710"
+      }
+     ],
+     "notes": "倒计时来源统一；“归零后按钮仍可点”属于没有任何禁止逻辑的反向结论，缺少正向代码证据。",
+     "businessBehavior": {
+      "trigger": "有玩家获得可操作资格",
+      "condition": "该次操作带有响应时限",
+      "action": "所有端显示同一个倒计时并在到点后显示 00",
+      "result": "玩家看到统一读秒；到点后按钮没有被锁，仍然可以点"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "仅能确认倒计时统一显示，归零后按钮可点缺少正向实现证据",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C11-006",
+   "name": "手牌压暗",
+   "description": "按能否胡、参与哪些吃碰杠来区分手牌亮度，并对与摸牌无关的杠保持原亮度。",
+   "scope": "覆盖本家手牌的置灰与恢复；压暗仅本端生效。",
+   "coordination": "可操作项与候选组合共同决定哪些牌值保持亮度，其余牌值统一置灰。",
+   "atoms": [
+    {
+     "id": "AT-ST-C11-022",
+     "name": "能胡时整手正常亮度",
+     "rule": "能胡时整手保持正常亮度。",
+     "uiRequirement": "能胡时整手保持正常亮度。",
+     "verdict": "confirmed",
+     "clientLogic": "可操作项含胡时直接清除手牌压暗并恢复可按压。",
+     "uiInteraction": "所有手牌正常显示、可点。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:718"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1628"
+      }
+     ],
+     "notes": "",
+     "businessBehavior": {
+      "trigger": "本家获得胡牌资格",
+      "condition": "当前可以胡牌",
+      "action": "清除手牌压暗",
+      "result": "整手牌保持正常亮度"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-023",
+     "name": "不能胡时只亮参与组牌的牌",
+     "rule": "不能胡时，只有参与当前吃、碰、直杠的牌保持亮度，其余压暗。",
+     "uiRequirement": "只有参与当前吃、碰、直杠的牌保持亮度，其余压暗。",
+     "verdict": "confirmed",
+     "clientLogic": "按候选组合收集吃/碰/杠涉及的牌值，把这些牌值以外的牌统一置灰。",
+     "uiInteraction": "参与组牌的牌亮起，其余手牌变灰。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:748"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:775"
+      }
+     ],
+     "notes": "吃、碰、杠同时存在时合并所有相关牌值，而不是只取第一个候选。",
+     "businessBehavior": {
+      "trigger": "本家获得吃、碰或杠资格但不能胡",
+      "condition": "存在至少一组可执行的组牌",
+      "action": "保留组牌相关手牌亮度，其余置灰",
+      "result": "玩家一眼能看出哪几张牌参与吃碰杠"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-024",
+     "name": "压暗只在本端显示",
+     "rule": "压暗只在该玩家本端显示。",
+     "uiRequirement": "压暗只在该玩家本端显示。",
+     "verdict": "confirmed",
+     "clientLogic": "置灰只作用于本家手牌控件；其他玩家获得操作资格时直接关闭本家操作区，不对其他座位手牌做置灰。",
+     "uiInteraction": "只有自己的手牌出现灰态，他人手牌外观不变。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:772"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:528"
+      }
+     ],
+     "notes": "",
+     "businessBehavior": {
+      "trigger": "本家获得不能胡的吃碰杠提示",
+      "condition": "压暗规则生效",
+      "action": "只对自己手牌做灰态处理",
+      "result": "只有本家看到压暗，其他玩家手牌显示不变"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-025",
+     "name": "新摸补牌可杠且无胡时按压暗规则",
+     "rule": "本次新摸入或补入的牌能组成暗杠或加杠，且同次无胡时，参与任一合法杠的手牌保持亮度，其余压暗。",
+     "uiRequirement": "参与任一合法杠的手牌保持亮度，其余压暗。",
+     "verdict": "confirmed",
+     "clientLogic": "有杠提示且无胡、且杠涉及刚摸牌时，按所有合法杠收集牌值保留亮度，其余置灰。",
+     "uiInteraction": "杠相关手牌亮、其余灰，需先点过才能出牌。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:694"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:757"
+      }
+     ],
+     "notes": "与“可杠组只由原有牌组成”的判定共用同一分支。",
+     "businessBehavior": {
+      "trigger": "摸牌后出现暗杠或加杠提示",
+      "condition": "本次没有胡提示，且杠用到了刚摸进来的牌",
+      "action": "保留所有合法杠相关手牌亮度，其余置灰",
+      "result": "玩家看到只有能杠的牌亮着，需先点过"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-026",
+     "name": "可杠组只用原有牌时保持当前亮度",
+     "rule": "可杠组只由原有的牌组成时，手牌保持当前亮度。",
+     "uiRequirement": "手牌保持当前亮度。",
+     "verdict": "confirmed",
+     "clientLogic": "判定为与摸牌无关的杠时跳过压暗分支，直接清除灰态。",
+     "uiInteraction": "手牌维持原亮度，不出现压暗。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:713"
+      }
+     ],
+     "notes": "",
+     "businessBehavior": {
+      "trigger": "出现杠提示",
+      "condition": "可杠的牌都是之前就在手里的",
+      "action": "不改变手牌亮度",
+      "result": "手牌看起来和平时一样，不会被压暗"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C11-007",
+   "name": "多优先级请求的等待与让位",
+   "description": "较低优先级先提交时的本地收起与等待，以及更高优先级成立或全部放弃后的后续处理。",
+   "scope": "覆盖客户端提交后的界面状态；优先级裁决与已提交请求的执行由服务端负责。",
+   "coordination": "提交任一响应后立即关闭本家操作区，等待服务端裁决结果。",
+   "atoms": [
+    {
+     "id": "AT-ST-C11-027",
+     "name": "低优先级先提交时收起按钮并等待",
+     "rule": "较低优先级先提交时，本端收起自己的按钮并等待。",
+     "uiRequirement": "本端收起自己的按钮并等待。",
+     "verdict": "confirmed",
+     "clientLogic": "提交吃、碰、杠、胡后立即把操作区切回空白页签，本家不再显示可点按钮。",
+     "uiInteraction": "按钮收起，界面进入等待他人裁决的状态。",
+     "messages": [
+      "MsgChowC",
+      "MsgPungC",
+      "MsgKongC",
+      "MsgHuC"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1103"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1134"
+      }
+     ],
+     "notes": "“等待”无专门界面状态，仅表现为操作区关闭。",
+     "businessBehavior": {
+      "trigger": "自己在别人出牌后先提交吃、碰、杠或胡",
+      "condition": "该响应优先级可能低于其他玩家",
+      "action": "立刻收起本家按钮",
+      "result": "玩家只能等待裁决结果，无法继续操作"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "缺少服务端优先级裁决与等待态回执的客户端可证证据",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-028",
+     "name": "更高优先级成立后取消已提交请求",
+     "rule": "更高优先级成立后，结束等待并取消该请求。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "客户端没有本地“已提交请求”的缓存与取消动作，结果完全依赖服务端下发。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "缺少服务端取消低优先级请求的证据，客户端无对应实现",
+      "clientObserved": false
+     }
+    },
+    {
+     "id": "AT-ST-C11-029",
+     "name": "高优先级都放弃后执行已提交请求",
+     "rule": "更高优先级都放弃后，再执行已经提交的较低优先级请求。",
+     "uiRequirement": "",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "未找到任何本地延迟执行或恢复已提交请求的逻辑。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "请求的执行时机完全由服务端决定，客户端无实现证据",
+      "clientObserved": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C11-008",
+   "name": "多种吃的选择面板",
+   "description": "多家可吃或多种吃法时的候选顺子面板、取消语义与提交方式。",
+   "scope": "覆盖候选面板展示、亮度恢复、取消与提交；倒计时到点后的可操作性未证。",
+   "coordination": "点吃时若存在多组吃法则展开候选面板，选择即提交，取消则按放弃上行。",
+   "atoms": [
+    {
+     "id": "AT-ST-C11-030",
+     "name": "点吃展开可选顺子",
+     "rule": "点【吃】后，在手牌上方展开可选顺子。",
+     "uiRequirement": "在手牌上方展开可选顺子。",
+     "verdict": "confirmed",
+     "clientLogic": "吃组合多于一组时打开候选面板，按每组完整顺子动态生成选项。",
+     "uiInteraction": "操作区出现多组顺子候选项。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1089"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:865"
+      }
+     ],
+     "notes": "候选面板挂在操作组内；相对手牌的具体上下位置未在本仓库界面定义中验证。",
+     "businessBehavior": {
+      "trigger": "自己点击吃",
+      "condition": "可吃的顺子不止一种",
+      "action": "展开多组候选顺子供选择",
+      "result": "玩家看到多组可吃的顺子"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "展开已证实，面板相对手牌的上下位置缺少界面证据",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-031",
+     "name": "每组三张正面且从小到大",
+     "rule": "每组三张正面、按牌面从小到大。",
+     "uiRequirement": "每组三张正面、按牌面从小到大。",
+     "verdict": "confirmed",
+     "clientLogic": "每个选项固定填充三个牌槽，逐张设置牌面图与牌背状态。",
+     "uiInteraction": "候选项显示三张正面牌。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:944"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:953"
+      }
+     ],
+     "notes": "三张展示已证；牌序直接取服务端候选牌序，客户端未在此处做升序排序。",
+     "businessBehavior": {
+      "trigger": "吃候选面板展开",
+      "condition": "每种吃法有三张牌",
+      "action": "三张牌正面展示",
+      "result": "玩家看到完整的三张顺子"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "“按牌面从小到大”未在客户端排序，依赖服务端下发顺序",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-032",
+     "name": "面板右侧为取消",
+     "rule": "右侧为【取消】。",
+     "uiRequirement": "右侧为【取消】。",
+     "verdict": "confirmed",
+     "clientLogic": "取消按钮与候选面板同属操作组，候选面板之后放置取消，取消在该页签可见。",
+     "uiInteraction": "候选面板右侧出现取消按钮。",
+     "messages": [],
+     "evidence": [
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:30"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:31"
+      }
+     ],
+     "notes": "取消是操作组内最后一个子节点，组内横向布局右对齐。",
+     "businessBehavior": {
+      "trigger": "候选面板展开",
+      "condition": "存在多组可选",
+      "action": "在候选右侧提供取消按钮",
+      "result": "玩家可以一键取消本次选择"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-033",
+     "name": "吃过按钮退场且手牌恢复亮度",
+     "rule": "原【吃】【过】退场，手牌恢复常态亮度。",
+     "uiRequirement": "原【吃】【过】退场，手牌恢复常态亮度。",
+     "verdict": "confirmed",
+     "clientLogic": "打开候选面板时切换操作区页签，使吃、过按钮不再显示，同时清空手牌置灰。",
+     "uiInteraction": "吃、过按钮消失，手牌恢复常态。",
+     "messages": [],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1119"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:7"
+      }
+     ],
+     "notes": "吃、过按钮仅在吃碰杠胡页签显示，切到选择页签即隐藏。",
+     "businessBehavior": {
+      "trigger": "打开吃候选面板",
+      "condition": "多组吃法",
+      "action": "隐藏吃和过按钮并清除手牌压暗",
+      "result": "玩家看到候选面板和正常亮度的手牌"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-034",
+     "name": "倒计时归零后仍可选择",
+     "rule": "倒计时归零后面板仍可操作。",
+     "uiRequirement": "倒计时归零后面板仍可操作。",
+     "verdict": "partial",
+     "clientLogic": "候选面板的点击回调不绑定倒计时，倒计时结束只改变中央读秒显示。",
+     "uiInteraction": "读秒到 00 时候选牌仍可点。",
+     "messages": [],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:907"
+      }
+     ],
+     "notes": "属于无禁用的反向结论，缺少正向代码证据。",
+     "businessBehavior": {
+      "trigger": "候选面板打开且倒计时归零",
+      "condition": "玩家仍在选择",
+      "action": "面板保持可点击",
+      "result": "读秒归零后玩家仍能选中候选牌"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "面板未绑定倒计时只能说明没有禁用代码，缺少正向验证",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-035",
+     "name": "吃面板取消放弃全部操作",
+     "rule": "点【取消】等于放弃自己对这张弃牌的全部操作，包括同时存在的胡。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "取消时同时关闭吃与杠面板并执行点过逻辑，上送放弃请求。",
+     "uiInteraction": "面板收起，本次所有可用操作一并作废。",
+     "messages": [
+      "MsgCancel"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1174"
+      }
+     ],
+     "notes": "取消复用了过按钮的上行放弃逻辑。",
+     "businessBehavior": {
+      "trigger": "玩家在吃候选面板点击取消",
+      "condition": "本次对这张弃牌还存在其他可用操作",
+      "action": "关闭面板并上送放弃",
+      "result": "本次吃、碰、胡等操作全部作废"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-036",
+     "name": "选中一组即提交",
+     "rule": "选中一组即提交。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "点击某个候选选项记录其下标，并立即上送该组吃牌组合并关闭操作区。",
+     "uiInteraction": "点击候选项后立即发出吃牌，面板消失。",
+     "messages": [
+      "MsgChowC"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:158"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1113"
+      }
+     ],
+     "notes": "",
+     "businessBehavior": {
+      "trigger": "玩家点击某一组候选顺子",
+      "condition": "候选面板处于展开状态",
+      "action": "按所选组提交吃牌",
+      "result": "牌立刻被吃进并生成副露，面板关闭"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C11-009",
+   "name": "多种暗杠与加杠的选择面板",
+   "description": "多家可杠或多种杠法时的候选牌面板、取消语义、单张提交与单组直提。",
+   "scope": "覆盖候选面板展示与提交逻辑；候选排序与倒计时到点可操作性未证。",
+   "coordination": "点杠时若存在多组杠法展开候选，选择即提交对应一组，取消按放弃上行。",
+   "atoms": [
+    {
+     "id": "AT-ST-C11-037",
+     "name": "点杠收起杠过并横向排列候选",
+     "rule": "点【杠】后收起【杠】【过】，横向排列候选牌，最右为【取消】。",
+     "uiRequirement": "收起【杠】【过】，横向排列候选牌，最右为【取消】。",
+     "verdict": "confirmed",
+     "clientLogic": "杠组合多于一组时打开候选列表，把可杠牌值逐张填入横向列表，并切到选择页签隐藏杠、过按钮。",
+     "uiInteraction": "杠、过按钮消失，出现横向候选牌列表与取消按钮。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1141"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/GangGrps.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/GangGrps.xml:4"
+      }
+     ],
+     "notes": "",
+     "businessBehavior": {
+      "trigger": "自己点击杠",
+      "condition": "可杠的组合不止一组",
+      "action": "展开横向候选牌列表并收起杠、过按钮",
+      "result": "玩家看到多张候选牌和右侧取消按钮"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-038",
+     "name": "暗杠加杠混排与花色点数顺序",
+     "rule": "暗杠与加杠混排，顺序为万、条、筒、东、南、西、北、中、发、白，同花色按点数升序。",
+     "uiRequirement": "暗杠与加杠混排，顺序为万、条、筒、东、南、西、北、中、发、白，同花色按点数升序。",
+     "verdict": "confirmed",
+     "clientLogic": "候选牌从服务端下发的杠组合中按顺序取首张牌生成列表，暗杠与加杠共用同一列表。",
+     "uiInteraction": "候选牌混排展示，顺序沿用下发顺序。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:639"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:844"
+      }
+     ],
+     "notes": "混排已证；未见按万条筒与点数排序的本地逻辑，顺序取决于服务端组合顺序。",
+     "businessBehavior": {
+      "trigger": "多种杠法候选展开",
+      "condition": "同时存在暗杠与加杠",
+      "action": "把两类候选放在同一横向列表",
+      "result": "玩家看到一组混排候选牌"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "未找到按花色与点数排序的实现，顺序依赖服务端",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-039",
+     "name": "倒计时归零后仍可选择",
+     "rule": "倒计时归零后仍可选择。",
+     "uiRequirement": "倒计时归零后仍可选择。",
+     "verdict": "partial",
+     "clientLogic": "候选列表点击回调不绑定倒计时，读秒归零只更新中央数字。",
+     "uiInteraction": "读秒为 00 时仍可点候选牌。",
+     "messages": [],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:848"
+      }
+     ],
+     "notes": "无禁用代码属反向结论。",
+     "businessBehavior": {
+      "trigger": "杠候选列表打开且倒计时归零",
+      "condition": "玩家尚未选择",
+      "action": "列表保持可点击",
+      "result": "读秒归零后仍能选中候选牌"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "只有“未绑定倒计时”的间接证据，缺少正向验证",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-040",
+     "name": "杠面板取消放弃全部操作",
+     "rule": "点【取消】等于放弃本次行牌机会里的全部操作，包括同时存在的自摸。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "取消时关闭杠与吃面板并执行点过逻辑，上送放弃请求。",
+     "uiInteraction": "候选面板关闭，本次可行操作全部作废。",
+     "messages": [
+      "MsgCancel"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1176"
+      }
+     ],
+     "notes": "",
+     "businessBehavior": {
+      "trigger": "玩家在杠候选面板点击取消",
+      "condition": "本次还存在自摸等其他可用操作",
+      "action": "关闭面板并上送放弃",
+      "result": "本次杠、自摸等操作全部作废"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-041",
+     "name": "点一张候选只提交对应一组",
+     "rule": "点一张候选牌只提交对应的一组。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "点击候选记录下标，按该下标取出对应杠组合后上送。",
+     "uiInteraction": "点击哪张候选就只执行那一组杠。",
+     "messages": [
+      "MsgKongC"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:851"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1150"
+      }
+     ],
+     "notes": "",
+     "businessBehavior": {
+      "trigger": "玩家点击某张候选牌",
+      "condition": "候选面板展开且存在多组杠法",
+      "action": "取出该张牌对应的一组杠并提交",
+      "result": "只执行所点的那一组杠"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-042",
+     "name": "只有一组时点杠直接提交",
+     "rule": "只有 1 组时，点【杠】直接提交。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "杠组合只有一组时不展开候选，直接按第一组上送杠请求。",
+     "uiInteraction": "点杠后不弹候选面板，直接完成杠。",
+     "messages": [
+      "MsgKongC"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1141"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1145"
+      }
+     ],
+     "notes": "",
+     "businessBehavior": {
+      "trigger": "玩家点击杠",
+      "condition": "当前只有一组可杠的牌",
+      "action": "不展开候选直接提交",
+      "result": "立刻完成杠，不出现候选面板"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C11-010",
+   "name": "按钮文案与过、过2的差异",
+   "description": "胡、自摸按钮的文案区分，过与过2的显示与上行差异，以及多组取消等同上行过。",
+   "scope": "覆盖按钮表现与上行行为；不含服务端对放弃后资格重算的验证。",
+   "coordination": "胡与自摸通过不同皮肤呈现，过上行、过2只本地收起，取消统一复用过的上行逻辑。",
+   "atoms": [
+    {
+     "id": "AT-ST-C11-043",
+     "name": "胡与自摸文案且无抢杠按钮",
+     "rule": "点炮、抢杠的按钮文案是「胡」，自摸是「自摸」。没有单独的抢杠按钮。",
+     "uiRequirement": "点炮、抢杠的按钮文案是「胡」，自摸是「自摸」。没有单独的抢杠按钮。",
+     "verdict": "confirmed",
+     "clientLogic": "按胡牌类型选择按钮皮肤：点炮与抢杠用胡皮肤，其余（含自摸）用自摸皮肤；界面只定义了一个胡按钮。",
+     "uiInteraction": "点炮与抢杠时按钮显示胡，自摸时显示自摸。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:671"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:15"
+      }
+     ],
+     "notes": "文案由动画皮肤（hu/zimo）呈现，不是文本控件；界面只有单个胡按钮，无抢杠按钮。",
+     "businessBehavior": {
+      "trigger": "本家获得胡牌资格",
+      "condition": "胡的来源是点炮、抢杠或自摸",
+      "action": "按来源切换按钮皮肤",
+      "result": "点炮和抢杠时看到胡，自摸时看到自摸"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-044",
+     "name": "过与过2都显示过",
+     "rule": "过和过2都显示「过」。",
+     "uiRequirement": "过和过2都显示「过」。",
+     "verdict": "confirmed",
+     "clientLogic": "初始化时把过与过2两个按钮的动作皮肤都设为过。",
+     "uiInteraction": "两个按钮外观一致，都显示过。",
+     "messages": [],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:319"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:320"
+      }
+     ],
+     "notes": "两个按钮是独立控件，皮肤相同。",
+     "businessBehavior": {
+      "trigger": "本家出现放弃类按钮",
+      "condition": "可操作项包含过或过2",
+      "action": "用同一个过外观渲染按钮",
+      "result": "玩家看到的都是过，无法从外观区分"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-045",
+     "name": "过上行放弃",
+     "rule": "过上行放弃。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "点过时带当前操作序号上送放弃请求，然后关闭本家操作区。",
+     "uiInteraction": "点过后按钮收起，放弃结果由服务端确认。",
+     "messages": [
+      "MsgCancel"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1237"
+      },
+      {
+       "file": "source-code/client/Code/controller/gameController.ts",
+       "location": "source-code/client/Code/controller/gameController.ts:461"
+      }
+     ],
+     "notes": "",
+     "businessBehavior": {
+      "trigger": "玩家点击过",
+      "condition": "当前存在一次操作提示",
+      "action": "把放弃结果提交给服务端并关闭操作区",
+      "result": "其他玩家的响应可以继续推进"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-046",
+     "name": "过2只本地收起并重置压暗",
+     "rule": "过2只在本地收起按钮并清掉本次压暗，再按禁手重新压暗，不上行。",
+     "uiRequirement": "只在本地收起按钮并清掉本次压暗，再按禁手重新压暗。",
+     "verdict": "confirmed",
+     "clientLogic": "点过2不发上行消息，只关闭操作区、清空选择并清除压暗，随后按禁打配置重新上手牌灰态。",
+     "uiInteraction": "按钮收起，手牌先恢复亮度再按禁手规则重新置灰。",
+     "messages": [
+      "MsgPlayLmts"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1246"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1262"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1277"
+      }
+     ],
+     "notes": "常量注释里“过1/过2”的编号与界面上的过/过2 相反，但“需发回服务端/无需回包”的语义与实现一致。",
+     "businessBehavior": {
+      "trigger": "玩家点击过2",
+      "condition": "本次提示允许本地取消",
+      "action": "只在本地关闭按钮并恢复手牌亮度",
+      "result": "界面收起但没有向服务端提交放弃，禁手牌仍保持灰色"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-047",
+     "name": "多组吃杠取消等同上行过",
+     "rule": "多组吃、杠的取消等于上行过。",
+     "uiRequirement": "",
+     "verdict": "confirmed",
+     "clientLogic": "候选面板取消时统一调用过的处理，包含上送放弃。",
+     "uiInteraction": "取消后按钮收起，并完成一次上行放弃。",
+     "messages": [
+      "MsgCancel"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1174"
+      }
+     ],
+     "notes": "",
+     "businessBehavior": {
+      "trigger": "玩家在多组吃或杠的候选面板点击取消",
+      "condition": "候选面板处于展开状态",
+      "action": "关闭面板并提交放弃",
+      "result": "本次操作机会结束，等同于点过"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C11-011",
+   "name": "与摸牌无关的杠提示下的出牌豁免",
+   "description": "存在杠但无胡、且可杠牌都不是刚摸牌时，手牌不压暗且不点过也能出牌。",
+   "scope": "覆盖亮度与出牌拦截；不含服务端杠资格校验。",
+   "coordination": "该豁免同时作用于手牌压暗与出牌拦截两处判定。",
+   "atoms": [
+    {
+     "id": "AT-ST-C11-048",
+     "name": "无关杠时不压暗且可直接出牌",
+     "rule": "有杠、没有胡，且所有可杠牌都不是刚摸的那张时，手牌不压暗，不点过也能出牌。",
+     "uiRequirement": "手牌不压暗，不点过也能出牌。",
+     "verdict": "confirmed",
+     "clientLogic": "识别与摸牌无关的杠后，跳过压暗并在出牌拦截判定中放行，不弹必须先过提示。",
+     "uiInteraction": "手牌保持正常亮度，可直接打出。",
+     "messages": [
+      "MsgPower"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:692"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:713"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMainView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMainView.ts:1453"
+      }
+     ],
+     "notes": "与暗杠例外共用同一判定标记。",
+     "businessBehavior": {
+      "trigger": "摸牌后出现杠提示",
+      "condition": "没有胡提示，且可杠的牌都不是刚摸进来的那张",
+      "action": "不压暗手牌，也不拦截出牌",
+      "result": "玩家可以直接打牌，不需要先点过"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C11-012",
+   "name": "听牌详情与箭头标注",
+   "description": "打出后听任意一张时的固定详情文案，以及财神候选标飘、其余标爆与箭头收敛。",
+   "scope": "覆盖听牌弹窗与手牌箭头标注；不含听牌张数统计口径。",
+   "coordination": "听牌数据到达后同时刷新弹窗详情与手牌箭头样式。",
+   "atoms": [
+    {
+     "id": "AT-ST-C11-049",
+     "name": "万能听的固定详情文案",
+     "rule": "打出后听任意一张时，听牌详情固定为「爆头2番」「摸任意一张可胡」。",
+     "uiRequirement": "听牌详情固定为「爆头2番」「摸任意一张可胡」。",
+     "verdict": "confirmed",
+     "clientLogic": "听牌数据含任意牌哨兵时切换到爆头展示页，隐藏牌组列表并固定显示两句详情。",
+     "uiInteraction": "弹窗显示爆头2番与摸任意一张可胡两行固定文案，胡张数显示为胡。",
+     "messages": [
+      "MsgWaitInfos"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTingPaiView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTingPaiView.ts:49"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_tingPai/component/TingCard.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_tingPai/component/TingCard.xml:24"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_tingPai/component/TingCard.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_tingPai/component/TingCard.xml:27"
+      }
+     ],
+     "notes": "两句文案为组件内固定文本，仅在爆头状态下显示。",
+     "businessBehavior": {
+      "trigger": "自己打出一张牌后可以听任意牌",
+      "condition": "听牌数据里出现任意牌",
+      "action": "打开听牌详情并按爆头样式展示",
+      "result": "玩家看到爆头2番和摸任意一张可胡"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-050",
+     "name": "财神候选标飘否则标爆",
+     "rule": "候选牌是财神时听牌标为飘，否则为爆。",
+     "uiRequirement": "候选牌是财神时听牌标为飘，否则为爆。",
+     "verdict": "confirmed",
+     "clientLogic": "判断某张手牌打出后是否万能听，若是则按该牌是否为财神在牌面上打飘或爆标记。",
+     "uiInteraction": "手牌出现飘或爆的听牌标记。",
+     "messages": [
+      "MsgWaitInfos"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts:192"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts:193"
+      }
+     ],
+     "notes": "",
+     "businessBehavior": {
+      "trigger": "自己某张手牌打出后能听任意牌",
+      "condition": "该张牌是财神或不是财神",
+      "action": "在牌面上打飘或爆的听牌标记",
+      "result": "玩家看到财神牌标飘、其他牌标爆"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-051",
+     "name": "存在爆飘时其余只留箭头",
+     "rule": "同一手只要有一张这样，其余可听牌只留箭头。",
+     "uiRequirement": "同一手只要有一张这样，其余可听牌只留箭头。",
+     "verdict": "confirmed",
+     "clientLogic": "先扫描是否存在万能听，若有则把其余可听牌的标注降为普通箭头样式。",
+     "uiInteraction": "只有爆或飘的牌带特殊标注，其余可听牌仅显示箭头。",
+     "messages": [
+      "MsgWaitInfos"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts:176"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts:200"
+      }
+     ],
+     "notes": "",
+     "businessBehavior": {
+      "trigger": "同一手牌中存在打出后可听任意牌的张",
+      "condition": "该手牌还有其他可听牌张",
+      "action": "把其余可听牌降为普通箭头",
+      "result": "玩家只看到爆或飘的特殊标注，其余只有箭头"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C11-013",
+   "name": "吃碰副露展示",
+   "description": "吃、碰成立后副露组的正面展示、牌序、来源箭头位置与新增顺序。",
+   "scope": "覆盖副露数据生成、牌序与箭头定位；牌面渲染组件来自平台包。",
+   "coordination": "吃碰消息到达后生成副露数据、从牌河收牌并把箭头指到进牌实际槽位。",
+   "atoms": [
+    {
+     "id": "AT-ST-C11-052",
+     "name": "吃成立新增正面顺子且升序",
+     "rule": "吃成立后，碰杠区新增一组正面顺子，按点数从小到大摆放。",
+     "uiRequirement": "新增一组正面顺子，按点数从小到大摆放。",
+     "verdict": "confirmed",
+     "clientLogic": "吃消息生成副露数据并按牌值升序构造展示牌序，然后追加到该玩家副露区。",
+     "uiInteraction": "碰杠区出现一组三张正面顺子。",
+     "messages": [
+      "MsgChowS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:895"
+      },
+      {
+       "file": "source-code/client/Code/config/BoxMahDefine.ts",
+       "location": "source-code/client/Code/config/BoxMahDefine.ts:819"
+      },
+      {
+       "file": "source-code/client/Code/config/BoxMahDefine.ts",
+       "location": "source-code/client/Code/config/BoxMahDefine.ts:458"
+      }
+     ],
+     "notes": "展示牌序由组合数据统一升序生成，杠不参与升序。",
+     "businessBehavior": {
+      "trigger": "吃成立",
+      "condition": "该玩家还没有这组顺子",
+      "action": "生成一组顺子并从小到大排好放进副露区",
+      "result": "玩家看到一组正面顺子按点数从小到大排列"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-053",
+     "name": "吃牌来源箭头叠在进牌上",
+     "rule": "以吃牌者视角，来源箭头「←」叠在吃到的那张牌上。",
+     "uiRequirement": "来源箭头「←」叠在吃到的那张牌上。",
+     "verdict": "confirmed",
+     "clientLogic": "副露生成后按进牌在展示牌序中的实际槽位移动来源箭头，无法定位时回落到中间张。",
+     "uiInteraction": "箭头叠加在吃到的那张牌上。",
+     "messages": [
+      "MsgChowS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:938"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:947"
+      }
+     ],
+     "notes": "箭头图形本身由平台副露组件提供，本仓库负责定位到实际进牌槽位。",
+     "businessBehavior": {
+      "trigger": "吃成立并生成副露",
+      "condition": "进牌在顺子中有确定位置",
+      "action": "把来源箭头移动到那张牌上方",
+      "result": "箭头叠在吃到的那张牌上"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-054",
+     "name": "碰成立三张正面展示",
+     "rule": "碰成立后，碰牌组三张都正面展示。",
+     "uiRequirement": "碰牌组三张都正面展示。",
+     "verdict": "confirmed",
+     "clientLogic": "碰消息生成三张刻子副露数据并追加到副露区，牌面按真实牌值展示。",
+     "uiInteraction": "碰牌组三张牌正面可见。",
+     "messages": [
+      "MsgPungS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GamePungCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GamePungCmd.ts:34"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:892"
+      }
+     ],
+     "notes": "副露牌面渲染由平台副露组件完成，本仓库只生成数据与展示牌序。",
+     "businessBehavior": {
+      "trigger": "碰成立",
+      "condition": "该玩家完成一次碰",
+      "action": "生成三张同牌副露并放进副露区",
+      "result": "玩家看到三张正面朝上的碰牌"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-055",
+     "name": "碰的箭头叠在中间一张",
+     "rule": "以来源视角，箭头叠在中间一张：上家←、对家↑、下家→。",
+     "uiRequirement": "箭头叠在中间一张：上家←、对家↑、下家→。",
+     "verdict": "confirmed",
+     "clientLogic": "碰牌进牌位于展示序中间时箭头回落到中间张；来源方向由来源座位换算后决定。",
+     "uiInteraction": "碰牌组中间那张牌上出现方向箭头。",
+     "messages": [
+      "MsgPungS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:960"
+      },
+      {
+       "file": "source-code/client/Code/data/PlayerCardsData.ts",
+       "location": "source-code/client/Code/data/PlayerCardsData.ts:152"
+      }
+     ],
+     "notes": "方向箭头图形与朝向由平台副露组件按来源座位选择，本仓库只做座位换算与槽位定位。",
+     "businessBehavior": {
+      "trigger": "碰成立",
+      "condition": "该碰有明确的来源玩家",
+      "action": "把箭头放到三张牌的中间一张",
+      "result": "玩家看到中间那张牌上带上家、对家或下家方向的箭头"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-056",
+     "name": "新副露组按成立顺序从左往右追加",
+     "rule": "吃、碰、直杠、暗杠的新牌组按成立顺序从左往右追加。",
+     "uiRequirement": "按成立顺序从左往右追加。",
+     "verdict": "confirmed",
+     "clientLogic": "每次成立都把新副露追加到该玩家副露列表末尾，数据层保持成立先后顺序。",
+     "uiInteraction": "新副露出现在已有副露之后。",
+     "messages": [
+      "MsgChowS",
+      "MsgPungS",
+      "MsgKongS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:895"
+      },
+      {
+       "file": "source-code/client/Code/data/PlayerCardsData.ts",
+       "location": "source-code/client/Code/data/PlayerCardsData.ts:134"
+      }
+     ],
+     "notes": "追加顺序已证；左右方向由平台副露组件排布，本仓库未定义。",
+     "businessBehavior": {
+      "trigger": "吃、碰、直杠或暗杠成立",
+      "condition": "该玩家已有其他副露",
+      "action": "把新组追加到已有副露之后",
+      "result": "玩家看到新的组牌出现在后面，顺序与成立先后一致"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "追加顺序已验证，但左右排布方向由平台组件决定，缺少界面证据",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C11-014",
+   "name": "杠的副露标记",
+   "description": "直杠、加杠、暗杠的标记形式、标记位置、加杠沿用原组以及补牌与连续杠的表现。",
+   "scope": "覆盖杠副露的数据分支与字效复用；标记图形与分隔位由平台渲染。",
+   "coordination": "按杠类型区分新增一组或补入原碰牌组，并复用同一座位字效节点播放杠。",
+   "atoms": [
+    {
+     "id": "AT-ST-C11-057",
+     "name": "直杠箭头、加杠补、暗杠手掌",
+     "rule": "直杠用来源箭头，加杠标记为【补】，暗杠用手掌标记。",
+     "uiRequirement": "直杠用来源箭头，加杠标记为【补】，暗杠用手掌标记。",
+     "verdict": "partial",
+     "clientLogic": "按杠组合类型分派：明杠、暗杠走新增副露，补杠走补入原碰牌组，并分别播放对应动作。",
+     "uiInteraction": "三类杠在副露上呈现不同标记。",
+     "messages": [
+      "MsgKongS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:50"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:63"
+      }
+     ],
+     "notes": "杠类型区分已证；补与手掌标记图形由平台副露组件绘制，本仓库无对应资源或代码。",
+     "businessBehavior": {
+      "trigger": "杠成立",
+      "condition": "杠属于直杠、加杠或暗杠",
+      "action": "按杠类型生成不同标记的副露",
+      "result": "直杠带来源箭头、加杠显示补、暗杠显示手掌"
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "标记图形由平台副露组件渲染，本仓库缺少可证代码",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-058",
+     "name": "标记叠在杠组第4张",
+     "rule": "标记都叠在杠牌组最上方居中的第 4 张。",
+     "uiRequirement": "标记都叠在杠牌组最上方居中的第 4 张。",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "本仓库未定义杠组第四张与标记的叠放关系，推理应由平台副露组件处理。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "缺少杠组第四张与标记叠放位置的实现证据",
+      "clientObserved": false
+     }
+    },
+    {
+     "id": "AT-ST-C11-059",
+     "name": "直杠暗杠新增、加杠沿用原位置",
+     "rule": "直杠、暗杠在碰杠区新增一组；加杠补入原碰牌组，沿用原位置。",
+     "uiRequirement": "直杠、暗杠在碰杠区新增一组；加杠补入原碰牌组，沿用原位置。",
+     "verdict": "confirmed",
+     "clientLogic": "补杠时找到同牌值的原碰牌组，用新组合替换该位置；其余杠类型直接追加新组。",
+     "uiInteraction": "加杠后原碰牌组就地变为杠组，不新增位置。",
+     "messages": [
+      "MsgKongS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/data/PlayerCardsData.ts",
+       "location": "source-code/client/Code/data/PlayerCardsData.ts:106"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:910"
+      }
+     ],
+     "notes": "",
+     "businessBehavior": {
+      "trigger": "杠成立",
+      "condition": "杠是直杠、暗杠或加杠",
+      "action": "直杠暗杠新增一组，加杠替换原碰牌组",
+      "result": "玩家看到加杠后原来的碰牌变成杠牌，位置不变"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-060",
+     "name": "补牌落入最右分隔位与杠字叠加",
+     "rule": "补牌落入最右分隔位，可与「杠」字同时出现。",
+     "uiRequirement": "补牌落入最右分隔位，可与「杠」字同时出现。",
+     "verdict": "not_found",
+     "clientLogic": "",
+     "uiInteraction": "",
+     "messages": [],
+     "evidence": [],
+     "notes": "未找到补牌在手牌最右分隔位的放置逻辑，也未找到与杠字叠加的处理。",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "",
+      "result": ""
+     },
+     "difference": "unverified",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "补牌分隔位与杠字叠加由平台渲染，本仓库无实现证据",
+      "clientObserved": false
+     }
+    },
+    {
+     "id": "AT-ST-C11-061",
+     "name": "连续杠新杠字覆盖旧字",
+     "rule": "连续杠时，新的「杠」字覆盖仍在播放的上一个。",
+     "uiRequirement": "新的「杠」字覆盖仍在播放的上一个。",
+     "verdict": "confirmed",
+     "clientLogic": "每个座位只有一个杠字效节点，新一次杠直接复用该节点重置皮肤并重新播放。",
+     "uiInteraction": "新的杠字立即顶替上一个仍在播放的杠字。",
+     "messages": [
+      "MsgKongS"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:486"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:524"
+      }
+     ],
+     "notes": "未显式停止上一段动画，靠复用同一节点自然覆盖。",
+     "businessBehavior": {
+      "trigger": "同一玩家连续完成杠",
+      "condition": "上一个杠字还在播放",
+      "action": "用同一个字效位置重新播放",
+      "result": "玩家只看到最新一次的杠字"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C11-015",
+   "name": "字效与结束亮牌",
+   "description": "吃碰杠胡的方位字效，以及小局结束后的对局结束提示、亮牌、番型与飘分表现。",
+   "scope": "覆盖字效、亮牌、胡牌张位置与飘分显示；描边颜色与新牌位置细节未全证。",
+   "coordination": "动作消息驱动座位字效，结算消息驱动亮牌、番型与飘分。",
+   "atoms": [
+    {
+     "id": "AT-ST-C11-062",
+     "name": "吃碰杠胡在操作者方位播字效",
+     "rule": "吃、碰、杠、胡成立时，在操作者对应方位播放对应字效。",
+     "uiRequirement": "在操作者对应方位播放对应字效。",
+     "verdict": "confirmed",
+     "clientLogic": "吃、碰、杠按操作者座位取对应字效节点并按类型切换皮肤播放；胡按座位播放番型动画。",
+     "uiInteraction": "操作者所在方位弹出吃/碰/杠/胡字效。",
+     "messages": [
+      "MsgChowS",
+      "MsgPungS",
+      "MsgKongS",
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts:43"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:484"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml:44"
+      }
+     ],
+     "notes": "胡的字效由番型动画节点承担，其余三类由碰杠字效节点承担。",
+     "businessBehavior": {
+      "trigger": "吃、碰、杠或胡成立",
+      "condition": "有明确的操作者座位",
+      "action": "在该座位方位播放对应字效",
+      "result": "玩家在操作者那一侧看到吃、碰、杠或胡的大字"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-063",
+     "name": "自摸确认后对局结束并亮牌",
+     "rule": "自摸确认后显示「对局结束」并亮出各家手牌。",
+     "uiRequirement": "显示「对局结束」并亮出各家手牌。",
+     "verdict": "confirmed",
+     "clientLogic": "结算消息到达时按结束类型切到对局结束页，并把所有玩家手牌翻到正面。",
+     "uiInteraction": "屏幕中央出现对局结束提示，四家手牌同时亮出。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:84"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:1186"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:1059"
+      },
+      {
+       "file": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml",
+       "location": "source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml:3"
+      }
+     ],
+     "notes": "",
+     "businessBehavior": {
+      "trigger": "自摸胡牌确认",
+      "condition": "本小局以胡牌结束",
+      "action": "显示对局结束并翻开所有手牌",
+      "result": "玩家看到对局结束字样和四家亮出的手牌"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-064",
+     "name": "自摸胡牌张单列在右侧",
+     "rule": "胡牌张单独摆在胡牌者手牌右侧。",
+     "uiRequirement": "胡牌张单独摆在胡牌者手牌右侧。",
+     "verdict": "partial",
+     "clientLogic": "摊牌时把胡牌张拼接在手牌末尾一并展示，并把本家手牌整体缩小。",
+     "uiInteraction": "胡牌张出现在手牌最右侧。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:984"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:1057"
+      }
+     ],
+     "notes": "实现为拼接到手牌末尾，未见与手牌之间留出间隔的单列摆放。",
+     "businessBehavior": {
+      "trigger": "自摸胡牌进入摊牌",
+      "condition": "胡牌者需要展示胡牌张",
+      "action": "把胡牌张放到手牌最后",
+      "result": "玩家看到胡牌张在手牌最右侧"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "只验证了尾端拼接，未见“单独摆放”的分隔实现",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-065",
+     "name": "点炮抢杠胡同样结束并亮牌",
+     "rule": "点炮胡、抢杠胡同样显示「对局结束」和亮牌。",
+     "uiRequirement": "显示「对局结束」和亮牌。",
+     "verdict": "confirmed",
+     "clientLogic": "结束类型为胡牌时统一走对局结束与全桌亮牌流程，不区分自摸或点炮。",
+     "uiInteraction": "点炮或抢杠胡后同样出现对局结束并亮出各家手牌。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:83"
+      },
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:303"
+      }
+     ],
+     "notes": "",
+     "businessBehavior": {
+      "trigger": "点炮胡或抢杠胡成立",
+      "condition": "本小局以胡牌结束",
+      "action": "按胡牌结束流程展示并亮牌",
+      "result": "玩家同样看到对局结束与四家手牌"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-066",
+     "name": "胡牌张尾端带描边与来源箭头",
+     "rule": "胡牌张在胡牌者手牌尾端，带浅绿描边和来源箭头。",
+     "uiRequirement": "胡牌张在胡牌者手牌尾端，带浅绿描边和来源箭头。",
+     "verdict": "confirmed",
+     "clientLogic": "胡牌张拼在手牌末尾，并按胡牌来源座位设置手牌的方向箭头来源。",
+     "uiInteraction": "尾端胡牌张上方出现来源方向箭头。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:987"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjMah2DView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjMah2DView.ts:1062"
+      }
+     ],
+     "notes": "尾端与来源箭头已证；浅绿描边依赖牌面组件状态，未验证颜色。",
+     "businessBehavior": {
+      "trigger": "点炮或抢杠胡摊牌",
+      "condition": "胡牌张来自其他玩家",
+      "action": "把胡牌张放在手牌最后并标出方向",
+      "result": "玩家看到尾端那张胡牌带来源箭头"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "尾端与来源箭头已验证，浅绿描边颜色未验证",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-067",
+     "name": "赢家显示番型放铳者显示点炮",
+     "rule": "赢家方位显示番型，放铳者方位显示「点炮」。",
+     "uiRequirement": "赢家方位显示番型，放铳者方位显示「点炮」。",
+     "verdict": "confirmed",
+     "clientLogic": "胡牌方按番型在本人方位播番型动画，放铳方按点炮或一炮多响类型在放铳者方位播点炮动画。",
+     "uiInteraction": "赢家一侧显示番型字效，放铳者一侧显示点炮字效。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:266"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:891"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:966"
+      }
+     ],
+     "notes": "",
+     "businessBehavior": {
+      "trigger": "胡牌结算",
+      "condition": "胡牌有明确来源玩家",
+      "action": "在赢家方位播番型，在放铳方方位播点炮",
+      "result": "玩家看到赢家一侧番型字、放铳者一侧点炮字"
+     },
+     "difference": "consistent",
+     "verification": {
+      "businessRuleVerified": true,
+      "unverifiedReason": "",
+      "clientObserved": true
+     }
+    },
+    {
+     "id": "AT-ST-C11-068",
+     "name": "按座位飘分正黄负灰",
+     "rule": "随后按座位飘分，正分黄色，负分灰色。",
+     "uiRequirement": "按座位飘分，正分黄色，负分灰色。",
+     "verdict": "confirmed",
+     "clientLogic": "番型动画完成后按座位逐个显示得失分，并按分数正负选择胜利或失败字体。",
+     "uiInteraction": "各座位依次飘出分数，正分与负分使用不同字体表现。",
+     "messages": [
+      "MsgResultHu"
+     ],
+     "evidence": [
+      {
+       "file": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts",
+       "location": "source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:276"
+      },
+      {
+       "file": "source-code/client/Code/layer/BoxHzmjTipAniView.ts",
+       "location": "source-code/client/Code/layer/BoxHzmjTipAniView.ts:567"
+      }
+     ],
+     "notes": "代码仅按正负切换 fnt_win/fnt_lose 字体，黄/灰颜色由字体资源决定。",
+     "businessBehavior": {
+      "trigger": "胡牌番型展示完成",
+      "condition": "本局存在输赢分",
+      "action": "按座位依次飘出每个人的分数",
+      "result": "玩家看到正分与负分以不同颜色飘出"
+     },
+     "difference": "partial",
+     "verification": {
+      "businessRuleVerified": false,
+      "unverifiedReason": "正负字体切换已证，但黄/灰颜色由字体资源决定，缺少颜色证据",
+      "clientObserved": true
+     }
+    }
+   ]
+  }
+ ]
+}

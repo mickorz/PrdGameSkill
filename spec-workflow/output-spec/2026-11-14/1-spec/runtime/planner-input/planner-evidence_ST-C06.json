@@ -1,0 +1,139 @@
+{
+ "stageId": "ST-C06",
+ "title": "杠后补牌",
+ "sourceTitle": "行牌 > 杠后补牌",
+ "fromLine": 71,
+ "toLine": 75,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 14,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C06-001",
+   "name": "杠后从牌墙尾部补 1 张",
+   "rule": "每次杠从牌墙尾部补 1 张。",
+   "uiRequirement": "",
+   "uiInteraction": "摸牌表现由 BoxHzmjMah2DView 的 setTakeMah 处理：自己走 setSelfTakeMah 与 showSpecialMah，其他座位调用 hands[localSeat].moMah 摆牌；随后刷新剩余张数。",
+   "notes": "模板要求固定从牌墙尾部补 1 张；客户端只按服务端 dir/tcnt 取牌，未见针对杠补牌的固定尾部或 tcnt=1 校验。MsgJuData.is_kong_take_asc 在客户端仅协议声明，未参与取牌方向选择。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C06-002",
+   "name": "补牌后余牌减 1",
+   "rule": "补牌后余牌减 1。",
+   "uiRequirement": "",
+   "uiInteraction": "右侧剩余张数组件（KW_RIGHT_MAHS / BoxHzmjMahRightComp）把 title 设为剩余张数并显示；BoxHzmjMah2DView 在绑定完成后也会补刷该数值。",
+   "notes": "扣减张数取服务端下发的 tcnt，客户端不区分杠补牌与普通摸牌，也不自行推导余牌。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C06-003",
+   "name": "牌墙少于 21 张不能杠",
+   "rule": "牌墙少于 21 张不能杠。",
+   "uiRequirement": "",
+   "uiInteraction": "杠按钮 KW_BTN_Gang.visible 由 showGang 控制，按钮态切到 C_BtnState 的“碰杠胡”页；多个可选杠时再切到“选择多杠”页展示 KW_GangGrps 列表。",
+   "notes": "21 张门槛只在服务端生效，客户端找不到阈值常量或余量判断；按钮可用性完全可由服务端 power 关断。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C06-004",
+   "name": "剩 20 张及以下下一次摸牌前黄庄",
+   "rule": "剩 20 张及以下时，下一次摸牌前黄庄。",
+   "uiRequirement": "",
+   "uiInteraction": "小结算按流局展示输赢行；房间提示文案含“剩余20张牌前无人胡牌则流局”；tipAni 包内有 txt_liuju.png 流局字效资源。",
+   "notes": "MsgDrawn 已登记映射但 Code 中无 CMD_DRAWN 处理器，实际流局表现走 MsgResultHu；20 张时点与“下一次摸牌前”的时序判断客户端不实现。tipAni 包存在 txt_liuju.png 资源但 Code 未检索到引用。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C06-005",
+   "name": "杠后可以继续杠",
+   "rule": "杠后可以继续杠。",
+   "uiRequirement": "",
+   "uiInteraction": "杠成功后收起吃碰杠胡操作区（onCloseOperate、onHidePutCardUi），并播放碰杠 Spine 动画；下一轮 power 若仍含 POWER_ID_KONG 再次显示杠按钮，多杠时展示 KW_GangGrps 选择列表。",
+   "notes": "客户端没有“杠后状态”或连续杠计数，是否可再杠只看服务端下一次 power；无法据客户端代码验证“每次杠后都允许再杠”的规则成立条件。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C06-006",
+   "name": "每次继续杠重新检查牌墙不少于 21 张",
+   "rule": "每次重新检查牌墙不少于 21 张。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "未找到 21 张阈值常量、二次校验或相关提示；与 AT-ST-C06-003 同一门槛，客户端完全依赖服务端 power 下发，无重复校验实现。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C06-007",
+   "name": "补牌可以自摸",
+   "rule": "补牌可以自摸。",
+   "uiRequirement": "",
+   "uiInteraction": "胡按钮 KW_BTN_Hu 显示并带光效，胡牌动画区分自摸 zimo 与点炮/抢杠 hu；番型结算可命中“杠上开花”名称。",
+   "notes": "胡判定完全依赖服务端 power，客户端不自验补牌后能否自摸；补牌后与常规摸牌后的胡按钮走同一套逻辑。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C06-008",
+   "name": "补牌不胡可继续杠",
+   "rule": "不胡则继续杠。",
+   "uiRequirement": "",
+   "uiInteraction": "碰杠胡页同时显示杠与胡按钮，多杠时进入“选择多杠”页；选择后收起操作区等待服务端回应。",
+   "notes": "“不胡则继续杠”由服务端在补牌后继续下发 KONG 权限实现，客户端只做按钮呈现；胡杠并存时由玩家自选，无额外确认流程。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C06-009",
+   "name": "补牌不胡可打出 1 张",
+   "rule": "不胡则打出 1 张。",
+   "uiRequirement": "",
+   "uiInteraction": "手牌可点出牌；存在杠/胡按钮且未点“过”时弹提示“点‘过’才能出牌”；与摸牌无关的杠（_isGangOffMoCard）不置灰、可直接出牌。",
+   "notes": "模板为“不胡则继续杠或打出 1 张”，客户端多一步：存在杠/胡按钮时点手牌会被拦下并要求先点“过”（与摸牌无关的杠除外），符合全局“无托管、不自动过”的设计。",
+   "verdict": "confirmed"
+  },
+  {
+   "id": "AT-ST-C06-010",
+   "name": "明杠暗杠加杠均使杠链加 1",
+   "rule": "明杠、暗杠、加杠都使杠链加 1。",
+   "uiRequirement": "",
+   "uiInteraction": "三类杠共用 gang Spine 皮肤，音效分别播 GANG（明杠）、AN_GANG（暗杠）、BU_GANG（补杠）；连杠档位最终以结算番名（杠上开花/二连杠/三连杠/四连杠）体现。",
+   "notes": "杠链 +1 属服务端状态，客户端无计数与展示；仅能通过结算连杠番名间接观察杠链长度，无法据客户端验证三类杠各自的加 1 行为。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C06-011",
+   "name": "吃使杠链归零",
+   "rule": "吃，杠链归零。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端无杠链字段可清零；GameChowCmd 只做副露 setCombo、桌面出牌移除与听牌视图刷新，归零逻辑不在客户端。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C06-012",
+   "name": "碰使杠链归零",
+   "rule": "碰，杠链归零。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "GamePungCmd 与吃同构，仅更新副露数据、播碰音效并刷新听牌视图；未见任何杠链复位实现。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C06-013",
+   "name": "打出非财神使杠链归零",
+   "rule": "打出非财神，杠链归零。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "GamePlayCmd 只记录 lastCard、清复盘权限、刷新听牌与操作区，不接触杠链状态；客户端无法验证该归零条件。",
+   "verdict": "not_found"
+  },
+  {
+   "id": "AT-ST-C06-014",
+   "name": "打出财神但未敲响使杠链归零",
+   "rule": "打出财神但打出后不再敲响，杠链归零。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端只有飘计数链路（MsgPiao / GamePiaoCmd 写 GameData.updatePiaoState），未见“敲响”判定、飘等级(piao_level)或杠链状态，无法验证“未敲响则断杠链”。",
+   "verdict": "not_found"
+  }
+ ]
+}

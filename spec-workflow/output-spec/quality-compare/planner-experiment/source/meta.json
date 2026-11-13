@@ -1,0 +1,32 @@
+{
+ "generatedBy": "prepare-planner-experiment.mjs",
+ "sourceSpecDir": "spec-workflow/output-spec/2026-11-13/1-spec",
+ "indexSchemaVersion": "v1（旧 Schema：无 businessBehavior/difference，2026-11-13 首跑）",
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "stages": [
+  {
+   "stageId": "ST-C01",
+   "title": "定庄与轮庄",
+   "fromLine": 22,
+   "toLine": 30,
+   "atomCount": 8,
+   "evidenceFile": "source/planner-evidence_ST-C01.json"
+  },
+  {
+   "stageId": "ST-C05",
+   "title": "吃、碰、杠",
+   "fromLine": 59,
+   "toLine": 69,
+   "atomCount": 31,
+   "evidenceFile": "source/planner-evidence_ST-C05.json"
+  },
+  {
+   "stageId": "ST-C02",
+   "title": "财神与牌组",
+   "fromLine": 31,
+   "toLine": 36,
+   "atomCount": 11,
+   "evidenceFile": "source/planner-evidence_ST-C02.json"
+  }
+ ]
+}

@@ -60,16 +60,35 @@
 
 > 需求 R8。**不重跑阶段 2**，用磁盘上已有的 scan.json + feature_index.json 构造子流程 3 的输入，只对 3 个目标阶段跑新 Prompt。
 
-### T0.1 实验脚本
+### T0.1 实验脚本（已实现，2026-11-14）
 
-- **新增** `.opencode-workflows/workflows/output-spec-generate/experiment-planner-projection.js`（显式 scriptPath 调用，不入注册表，同目录惯例）。
-- 脚本逻辑：
-  1. args：`sourceSpecDir`（只读，历史证据目录，默认 `spec-workflow/output-spec/2026-11-13/1-spec`）、`stages`（默认 `['ST-C01','ST-C05','ST-C02']`）、`outDir`（可写，默认 `spec-workflow/output-spec/quality-compare/planner-experiment`）。
-  2. `read` scan.json → 取 `sections`/`stageSections`/`termsSection`，按 stages 过滤（**实现前先人工核对该文件字段与 1-scan-template 返回值的一致性，不一致时在脚本内适配**）。
-  3. `read` feature_index.json → 按 stage_id 过滤 features，**snake_case 转 camelCase**（ui_requirement→uiRequirement、client_logic→clientLogic、ui_interaction→uiInteraction；evidence 无 excerpt 不影响——策划版写作只需 slimEvidence 同款字段），构造 `verify = { byStage: [...] }`。
-  4. 每个目标阶段：`agent(plannerPromptDraft(...))` 写 `outDir/策划版_ST-Cxx.md`（写作任务，会话默认模型，timeoutMs 3600000，retries 2）；intro/nouns 对照分片复用 `copyPartPrompt` 逻辑（实验可比性）。
-  5. 返回产物路径清单。
-- **验收**：3 份策划版章节分片落盘；脚本附一句注释说明 snake_case 转换来源。
+**前置核对结论（三项，实现前发现并已适配）**：
+
+1. **scan.json 与 1-scan-template 返回值不一致**：磁盘上 scan.json 只有 `{templatePath, totalLines, sections}`，无 stageSections/termsSection 字段；按 `sections[].kind`（intro/terms/stage）派生。
+2. **workflow 沙箱无 readFile**（见 bug-coverage-check.js 头注释同款经验）：workflow 脚本无法直接读磁盘 JSON，拆两步——确定性 prepare 脚本切分落盘 + agent read 小文件。
+3. **uiInteraction/notes 技术词污染实锤**：578 个字段中 127 个含技术词（BoxHzmjMah2DView.showDice / C_Bank / MsgJuData / KW_RESULT / onShowZhuang 等），Prompt 必须硬性要求转写成玩家语言，禁止原样复制。
+
+**实现拆为两个文件**：
+
+| 文件 | 角色 | 状态 |
+|---|---|---|
+| `.opencode-workflows/scripts/prepare-planner-experiment.mjs` | 确定性数据准备：读 scan.json + feature_index.json（只读）→ 按 kind 派生 stageSections/termsSection → snake_case 转 camelCase → 白名单剔除（client_logic/evidence/messages/owner 不进产物，结构化隔离第一级）→ 写 `outDir/source/planner-evidence_<stageId>.json` + `meta.json` | 已完成；example 自检 16 项全绿；真实数据已跑通（3 阶段 / 50 原子项，单文件 < 14KB） |
+| `.opencode-workflows/workflows/output-spec-generate/experiment-planner-projection.js` | workflow 投影（显式 scriptPath 调用）：每阶段一个 agent——read 证据文件拿行号与模板路径 → read 模板章节原文 → 按 T0.2 Prompt 写 `outDir/策划版_<stageId>.md`；落盘闸门沿用 fileExists check | 已完成静态检查（node --check）；运行由用户触发 |
+
+**交付标准（用户二审确认）**：
+
+| 检查项 | 要求 |
+|---|---|
+| 输入 | 复用 v1 scan.json 和 feature_index.json |
+| 验证范围 | ST-C01、ST-C05、ST-C02 |
+| 历史目录 | 只读，零修改（example 有只读断言） |
+| 输出 | 三份独立策划版 Markdown |
+| 需求保留 | 原始规则不删改 |
+| 技术泄漏 | 不出现类名、协议、方法或技术路径 |
+| 追溯 | 补充内容关联有效 Atom ID |
+| 实现差异 | 保留财神高亮等真实观察结果，不擅改需求 |
+
+**核心原则（写进 Prompt 硬规则）**：没有证据时宁可标注未验证，不为了让策划版完整而编造业务规则。
 
 ### T0.2 策划版 Prompt 草案（阶段 1 正式实现的蓝本）
 
@@ -82,8 +101,10 @@
    - 每条规则语句后补缩进子项：`  - 界面表现：{uiInteraction 的业务化描述}（AT-ST-Cxx-nnn）`。
    - `notes` 描述实现与需求不一致时，另起 `  - 待确认：需求为「{原文}」，实际表现为「{实际行为}」（AT-...）` 三段式。
    - `verdict=not_found`：`  - 待确认：客户端未查到对应实现（AT-...）`。
-4. **硬性禁令**：正文禁止出现类名（大驼峰 XxxCmd/XxxData 等）、方法名、`Msg`/`CMD_` 前缀协议名、文件路径、`file:line`、`box_hzmj_` 组件名；追溯只允许以 AT-ID 形式内联。
-5. 中文书写、无 Emoji、直接写盘、写完只返回路径。
+4. **硬性禁令**：正文禁止出现类名（大驼峰 XxxCmd/XxxData 等）、方法名、`Msg`/`CMD_`/`GP_` 前缀协议名、常量（`C_`/`KW_`/`ET_`）、文件路径、`file:line`、`box_hzmj_` 组件名；追溯只允许以 AT-ID 形式内联。
+5. **转写而非复制**（二审补充，实测 uiInteraction/notes 残留技术词）：补充行的行为描述必须由 agent 转写成玩家可见行为，禁止从 uiInteraction/notes 原样复制；无法转写的技术细节丢弃不写。
+6. **不编造原则**（二审强调）：没有证据宁可标「待确认」，严禁为文档完整编造业务规则或界面表现。
+7. 中文书写、无 Emoji、直接写盘、写完只返回路径。
 
 ### T0.3 运行与评审（用户触发）
 

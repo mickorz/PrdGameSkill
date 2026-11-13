@@ -1,0 +1,85 @@
+{
+ "stageId": "ST-C01",
+ "title": "定庄与轮庄",
+ "sourceTitle": "开局 > 定庄与轮庄",
+ "fromLine": 22,
+ "toLine": 30,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 8,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C01-001",
+   "name": "首局随机坐庄",
+   "rule": "首局四名玩家中随机坐庄。",
+   "uiRequirement": "",
+   "uiInteraction": "局数据到达后立即派发 onShowZhuang，玩家头像庄标志按等级点亮（杭州麻将走 C_Bank 的 zhuang1~3 页）。",
+   "notes": "客户端无随机定庄逻辑，首庄完全由服务端 zhuang 决定；MsgJuData.first_zhuang 字段在客户端未被消费，无法从客户端验证“随机”过程。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C01-002",
+   "name": "掷骰发牌前庄家已确定",
+   "rule": "掷骰、发牌前已经确定庄家。",
+   "uiRequirement": "",
+   "uiInteraction": "庄家标志在局数据阶段点亮，骰子动画随后在牌桌上播放（BoxHzmjMah2DView.showDice），两者无数据依赖。",
+   "notes": "证据为协议阶段枚举与命令分发顺序，属间接证据；未找到客户端显式“先定庄再掷骰”的时序校验代码。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C01-003",
+   "name": "胡牌者接任下局庄家",
+   "rule": "有人胡牌时，下一小局由胡牌者坐庄。",
+   "uiRequirement": "",
+   "uiInteraction": "本局结算行按 data.banker 标记庄家并显示庄标志；下局开局由 onShowZhuang 重新点亮新庄家头像、清除上一家庄标志。",
+   "notes": "客户端没有“胡牌者→下局庄家”的判定代码，正确性依赖服务端 MsgJuData.zhuang；客户端无法单独验证该规则。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C01-004",
+   "name": "庄家自胡为连庄",
+   "rule": "庄家自己胡牌为连庄。",
+   "uiRequirement": "",
+   "uiInteraction": "结算行按 lianZhuang 选择 C_IsBank 的 1/2/3 档庄标志；结算流水含“连庄”独立流水项，由服务端 win_losts/flow 下发。",
+   "notes": "连庄次数与牢庄等级共用 MsgJuData.banker_level 写入，ResultCmd 另取 getLianZhuangCount 作为结算快照，两字段语义需服务端保证一致。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C01-005",
+   "name": "流局不换庄",
+   "rule": "流局时原庄连庄。",
+   "uiRequirement": "",
+   "uiInteraction": "结算界面按 end_type===ET_DRAWN 切换 C_Line/C_WinLost 的输/平样式；下局原庄家标志由 onShowZhuang 按服务端下发座位重新点亮。",
+   "notes": "CmdNames.CMD_DRAWN 仅出现在协议映射与常量定义中，仓库内无 @RegisterCmd(CMD_DRAWN) 的命令类，流局是否为独立下行或并入 MsgResultHu 存疑，需与服务端确认。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C01-006",
+   "name": "首庄新庄连庄均为三牢",
+   "rule": "首庄、新庄、连庄都是三牢。",
+   "uiRequirement": "",
+   "uiInteraction": "玩家头像按等级切换 C_Bank 的 zhuang1/zhuang2/zhuang3 三档庄图；萧山好友房分支改用 XsmjZhuangComp 数字标志。",
+   "notes": "客户端保留 1~3 档通用模型，无“恒为三牢”的强制逻辑；升庄广播 MsgBankerLevelUp 仍可改变档位，三牢是否由服务端配置固定需确认。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C01-007",
+   "name": "庄闲倍数固定8倍",
+   "rule": "庄闲倍数固定 8 倍。",
+   "uiRequirement": "",
+   "uiInteraction": "结算行与流水显示服务端下发的分数与倍数；头像庄标志在萧山分支显示 x2/x3 数字，杭州麻将走三档庄图。",
+   "notes": "客户端 TIPS 文案“平庄2倍、二牢4倍、三牢8倍”为递增档位，与模板“固定 8 倍”表述不一致；游戏内倍数实际由服务端结算数据决定，客户端无法验证固定 8 倍。",
+   "verdict": "partial"
+  },
+  {
+   "id": "AT-ST-C01-008",
+   "name": "三牢不再增加",
+   "rule": "三牢不再增加。",
+   "uiRequirement": "",
+   "uiInteraction": "匹配房头像设置庄档位时 bankIdx>3 归 3；PlayerPanel 与 ResultItem 的庄标志控制器均只有 1/2/3 三档，无更高档位资源。",
+   "notes": "仅有 UI 档位上限 3 的间接证据；BoxHzmjPlayerView 的杭州麻将分支直接 selectedIndex=zhuangnumber，无 clamp，若服务端下发 >3 会显示异常页。",
+   "verdict": "partial"
+  }
+ ]
+}

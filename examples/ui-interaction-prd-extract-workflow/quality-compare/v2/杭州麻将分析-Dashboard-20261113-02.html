@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRD 质量分析报告</title>
+<style>
+  :root {
+    --bg: #F6F8FB;
+    --card: #FFFFFF;
+    --primary: #3478DB;
+    --p0: #DC5148;
+    --p1: #E8A044;
+    --p2: #4389D5;
+    --p3: #94A3B8;
+    --text: #253247;
+    --muted: #8491A3;
+    --border: #E7ECF2;
+    --radius: 12px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .page { max-width: 1440px; margin: 0 auto; padding: 24px 32px 48px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .section-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+  .section-title .sub { font-size: 12px; font-weight: 400; color: var(--muted); margin-left: 8px; }
+
+  /* 01 头部 */
+  .header { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .header h1 { font-size: 22px; font-weight: 700; }
+  .header .project { font-size: 15px; color: var(--muted); margin-top: 4px; }
+  .header .meta { font-size: 13px; color: var(--muted); margin-top: 10px; }
+  .header .meta span { margin-right: 20px; }
+  .badge { display: inline-block; padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .badge.blocked { background: #FDECEA; color: var(--p0); }
+  .badge.allowed { background: #E8F5EC; color: #2F9E5B; }
+  .badge.na { background: #EEF1F5; color: var(--muted); }
+
+  /* 02 KPI */
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 20px; margin-bottom: 20px; }
+  .kpi {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 20px 24px; cursor: pointer; transition: box-shadow .15s, transform .15s;
+  }
+  .kpi:hover { box-shadow: 0 4px 14px rgba(52,120,219,.12); transform: translateY(-1px); }
+  .kpi .num { font-size: 34px; font-weight: 700; line-height: 1.2; }
+  .kpi .label { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .kpi .num.c-p0 { color: var(--p0); } .kpi .num.c-p1 { color: var(--p1); }
+  .kpi .num.c-p23 { color: var(--text); }
+  .kpi .num.c-cov { color: #2F9E5B; }
+
+  /* 02b 检查覆盖 */
+  .cov-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; margin-bottom: 16px; }
+  .cov-rate { font-size: 26px; font-weight: 700; color: #2F9E5B; }
+  .cov-meta { font-size: 12px; color: var(--muted); }
+  .cov-track { flex: 1; min-width: 180px; height: 12px; background: #F0F3F7; border-radius: 6px; overflow: hidden; }
+  .cov-fill { display: block; height: 100%; border-radius: 6px; background: #2F9E5B; }
+  table.cov { width: 100%; border-collapse: collapse; }
+  table.cov th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  table.cov td { padding: 8px 10px; border-bottom: 1px solid #F0F3F7; font-size: 13px; }
+  table.cov tbody tr.hit { cursor: pointer; }
+  table.cov tbody tr.hit:hover { background: #F7FAFE; }
+  .cov-ids { color: var(--muted); font-size: 12px; }
+  .cov-status { display: inline-block; font-size: 11px; padding: 1px 8px; border-radius: 4px; }
+  .cov-status.hit { background: #FDECEA; color: var(--p0); }
+  .cov-status.clean { background: #E8F5EC; color: #2F9E5B; }
+
+  /* 03 结论 */
+  .conclusion .verdict { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+  .conclusion .verdict.blocked { color: var(--p0); }
+  .conclusion .verdict.allowed { color: #2F9E5B; }
+  .conclusion .reasons { margin-top: 10px; padding-left: 20px; color: var(--text); }
+  .conclusion .reasons li { margin: 3px 0; }
+
+  /* 04 风险 */
+  .risk-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .risk-group h3 { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+  .risk-item {
+    display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px;
+    border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  .risk-item:hover { border-color: var(--primary); background: #F7FAFE; }
+  .risk-item .pri { flex: none; font-size: 12px; font-weight: 700; padding: 1px 8px; border-radius: 4px; color: #fff; margin-top: 2px; }
+  .risk-item .body { flex: 1; min-width: 0; }
+  .risk-item .name { font-weight: 600; font-size: 13px; }
+  .risk-item .name .id { color: var(--muted); font-weight: 400; margin-left: 6px; white-space: nowrap; }
+  .risk-item .desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* 05 分布图表 */
+  .charts { display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 24px; }
+  .chart h3 { font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 12px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; cursor: pointer; padding: 3px 4px; border-radius: 6px; }
+  .bar-row:hover, .bar-row.active { background: #F0F6FD; }
+  .bar-row .bl { flex: none; width: 34px; font-weight: 600; font-size: 13px; }
+  .bar-row .track { flex: 1; display: block; height: 18px; background: #F0F3F7; border-radius: 4px; overflow: hidden; }
+  .bar-row .fill { display: block; height: 100%; border-radius: 4px; min-width: 6px; }
+  .bar-row .val { flex: none; width: 96px; font-size: 12px; color: var(--muted); text-align: right; }
+  .donut-wrap { display: flex; align-items: center; gap: 18px; }
+  .donut { flex: none; position: relative; width: 160px; height: 160px; }
+  .donut svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .donut .center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .donut .center b { font-size: 26px; }
+  .donut .center span { font-size: 11px; color: var(--muted); }
+  .legend { flex: 1; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 4px 6px; border-radius: 6px; cursor: pointer; }
+  .legend-item:hover, .legend-item.active { background: #F0F6FD; }
+  .legend-item .dot { flex: none; width: 10px; height: 10px; border-radius: 3px; }
+  .legend-item .t { flex: 1; }
+  .legend-item .v { color: var(--muted); }
+
+  /* 06 TOP5 */
+  .top-list .rank {
+    display: flex; align-items: center; gap: 12px; padding: 11px 12px;
+    border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  .top-list .rank:hover { border-color: var(--primary); background: #F7FAFE; }
+  .top-list .no { flex: none; width: 22px; height: 22px; border-radius: 50%; background: #EEF1F5; color: var(--muted); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .top-list .title { flex: 1; font-weight: 600; font-size: 13px; }
+  .top-list .title .id { color: var(--muted); font-weight: 400; margin-right: 8px; }
+  .top-list .tag { flex: none; font-size: 11px; color: var(--muted); }
+  .top-list .tag .rf { margin-left: 8px; }
+
+  /* 07 问题清单 */
+  .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px; }
+  .toolbar select, .toolbar input {
+    border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px;
+    font-size: 13px; background: #fff; color: var(--text); outline: none;
+  }
+  .toolbar input { width: 220px; }
+  .toolbar select:focus, .toolbar input:focus { border-color: var(--primary); }
+  .toolbar .count { font-size: 12px; color: var(--muted); }
+  .toolbar .spacer { flex: 1; }
+  .btn {
+    border: 1px solid var(--border); background: #fff; color: var(--text);
+    border-radius: 8px; padding: 7px 14px; font-size: 13px; cursor: pointer;
+  }
+  .btn:hover { border-color: var(--primary); color: var(--primary); }
+  .btn.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .btn.primary:hover { background: #2B66C4; }
+  table.issues { width: 100%; border-collapse: collapse; }
+  table.issues th {
+    text-align: left; font-size: 12px; color: var(--muted); font-weight: 600;
+    padding: 8px 10px; border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  table.issues td { padding: 10px; border-bottom: 1px solid #F0F3F7; vertical-align: top; }
+  table.issues tbody tr { cursor: pointer; }
+  table.issues tbody tr:hover { background: #F7FAFE; }
+  td.id, .pri-tag { font-family: "SF Mono", Consolas, monospace; }
+  td.id { color: var(--muted); font-size: 12px; white-space: nowrap; }
+  td.title { font-weight: 600; max-width: 460px; }
+  td.loc { color: var(--muted); font-size: 12px; max-width: 220px; }
+  .pri-tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 4px; color: #fff; }
+  .type-tag { display: inline-block; font-size: 11px; padding: 1px 8px; border-radius: 4px; background: #EEF1F5; color: var(--muted); }
+  .empty { text-align: center; color: var(--muted); padding: 32px 0; }
+
+  /* 08 综合分析 */
+  .analysis ul { padding-left: 20px; }
+  .analysis li { margin: 6px 0; }
+
+  /* 抽屉 */
+  .mask { position: fixed; inset: 0; background: rgba(20,30,45,.4); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 40; }
+  .mask.show { opacity: 1; pointer-events: auto; }
+  .drawer {
+    position: fixed; top: 0; right: -520px; width: 520px; max-width: 100vw; height: 100vh;
+    background: #fff; z-index: 50; box-shadow: -8px 0 30px rgba(20,30,45,.15);
+    transition: right .25s ease; display: flex; flex-direction: column;
+  }
+  .drawer.show { right: 0; }
+  .drawer-head { display: flex; align-items: center; gap: 10px; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+  .drawer-head .id { font-family: monospace; color: var(--muted); font-size: 13px; }
+  .drawer-head .title { font-weight: 700; font-size: 15px; flex: 1; }
+  .drawer-head .close { border: none; background: none; font-size: 20px; color: var(--muted); cursor: pointer; padding: 4px; }
+  .drawer-nav { display: flex; align-items: center; gap: 8px; padding: 8px 20px; border-bottom: 1px solid var(--border); }
+  .drawer-nav .pos { font-size: 12px; color: var(--muted); flex: 1; }
+  .drawer-body { flex: 1; overflow-y: auto; padding: 20px; }
+  .drawer-body h4 { font-size: 12px; color: var(--muted); font-weight: 600; margin: 18px 0 6px; }
+  .drawer-body h4:first-child { margin-top: 0; }
+  .drawer-body h5 { font-size: 13px; font-weight: 700; margin: 14px 0 6px; padding-top: 10px; border-top: 1px dashed var(--border); }
+  .drawer-body blockquote {
+    border-left: 3px solid var(--border); background: #F8FAFC;
+    padding: 10px 14px; border-radius: 0 8px 8px 0; white-space: pre-wrap; font-size: 13px; color: #47586E;
+  }
+  .drawer-body .mini-table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 12px; display: table; }
+  .drawer-body .mini-table th, .drawer-body .mini-table td { border: 1px solid var(--border); padding: 6px 8px; text-align: left; vertical-align: top; }
+  .drawer-body .mini-table th { background: #F6F8FB; color: var(--muted); font-weight: 600; white-space: nowrap; }
+  .drawer-body p { font-size: 13px; }
+  .drawer-body .status { margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--border); font-size: 12px; color: var(--muted); }
+  .drawer-body .kv { margin-bottom: 10px; }
+
+  /* 浮动操作 */
+  .fab { position: fixed; right: 28px; bottom: 28px; display: flex; flex-direction: column; gap: 10px; z-index: 30; }
+  .fab .btn { box-shadow: 0 4px 14px rgba(20,30,45,.12); }
+
+  /* 响应式 */
+  @media (max-width: 1180px) {
+    .charts { grid-template-columns: 1fr; }
+    .risk-cols { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 1024px) {
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .page { padding: 16px 20px 40px; }
+  }
+  @media (max-width: 768px) {
+    .kpis { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .card { padding: 16px; }
+    .toolbar input { width: 100%; }
+    .toolbar { gap: 8px; }
+    /* 表格转卡片 */
+    table.issues, table.issues tbody, table.issues tr, table.issues td { display: block; width: 100%; }
+    table.issues thead { display: none; }
+    table.issues tbody tr { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; padding: 10px; }
+    table.issues tbody td { border: none; padding: 2px 0; }
+    td.id { display: inline-block; }
+    /* 抽屉全屏 */
+    .drawer { width: 100vw; right: -100vw; }
+    .fab { right: 16px; bottom: 16px; }
+  }
+
+  /* 主导航 Tab（审计总览/需求覆盖/规则覆盖/问题明细） */
+  .main-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .mtab {
+    padding: 10px 24px; border: 1px solid var(--border); background: var(--card);
+    border-radius: 10px; font-size: 15px; font-weight: 600; color: var(--muted); cursor: pointer; font-family: inherit;
+  }
+  .mtab.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .mtab .n { font-size: 12px; font-weight: 400; opacity: .85; margin-left: 4px; }
+
+  /* 审计规模指标卡（领导首页） */
+  .scale-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin: 14px 0 4px; }
+  .scale-card { border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; background: #FAFBFD; }
+  .scale-card .num { font-size: 30px; font-weight: 700; line-height: 1.15; }
+  .scale-card .num.hl { color: var(--primary); }
+  .scale-card .num.warn { color: var(--p0); }
+  .scale-card .label { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .scale-card .sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .mgmt-box { border-left: 3px solid var(--primary); background: #F6F9FE; border-radius: 0 8px 8px 0; padding: 12px 16px; margin-top: 14px; font-size: 13px; line-height: 1.8; color: #34455C; }
+  .mgmt-box b { color: var(--text); }
+  .src-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .src-chip { font-size: 12px; padding: 4px 10px; border-radius: 12px; background: #EEF1F5; color: var(--muted); }
+
+  /* 状态标签（七状态互斥色系） */
+  .st-tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 12px; white-space: nowrap; }
+  .st-pass { background: #E8F5EC; color: #2F9E5B; }
+  .st-partial { background: #FFF4E0; color: #C07A00; }
+  .st-conflict { background: #FDECEA; color: var(--p0); }
+  .st-missing { background: #FDECEA; color: var(--p0); }
+  .st-unverified { background: #EEF1F5; color: var(--muted); }
+  .st-na { background: #F3F5F8; color: #A8B4C4; }
+  .st-pending { background: #FFF9E6; color: #9A7B00; }
+
+  /* 需求/规则覆盖视图 */
+  .rtm-stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .rtm-chip { padding: 6px 14px; border-radius: 16px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--card); color: var(--muted); }
+  .rtm-chip.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .rtm-toolbar { display: flex; gap: 10px; margin: 10px 0 12px; flex-wrap: wrap; }
+  .rtm-toolbar input, .rtm-toolbar select { padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-family: inherit; }
+  .rtm-toolbar input { width: 240px; }
+  table.rtm { border-collapse: collapse; width: 100%; font-size: 13px; }
+  table.rtm th { text-align: left; padding: 8px 10px; background: #F6F8FB; color: var(--muted); font-weight: 600; white-space: nowrap; }
+  table.rtm td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.rtm tbody tr { cursor: pointer; }
+  table.rtm tbody tr:hover { background: #F7FAFE; }
+  table.rtm td.mono { font-family: Consolas, monospace; color: var(--primary); white-space: nowrap; font-weight: 600; }
+  td.r-nowrap { white-space: nowrap; }
+  .mod-head { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: #F6F8FB; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+  .mod-head:hover { background: #EEF3FA; }
+  .mod-head .name { font-weight: 700; font-size: 14px; flex: 1; }
+  .mod-head .m { font-size: 12px; color: var(--muted); }
+  .mod-body { display: none; padding: 4px 0 8px 12px; }
+  .mod-group.open .mod-body { display: block; }
+  .rtm-tip { font-size: 12px; color: var(--muted); margin: 8px 0 14px; line-height: 1.7; }
+  .rtm-empty-tip { border: 1px dashed var(--border); border-radius: 10px; padding: 30px; text-align: center; color: var(--muted); line-height: 1.8; }
+
+  /* 打印 */
+  @media print {
+    body { background: #fff; }
+    .page { max-width: none; padding: 0; }
+    .card { border: none; box-shadow: none; break-inside: avoid; padding: 12px 0; margin-bottom: 12px; }
+    .toolbar, .fab, .mask, .drawer, .kpi .label-tip { display: none !important; }
+    .kpi { border: 1px solid #ddd; }
+    .kpi:hover { transform: none; box-shadow: none; }
+    .top-list .rank, .risk-item, table.issues tbody tr { break-inside: avoid; cursor: default; }
+    table.issues tbody tr:hover { background: none; }
+    a { text-decoration: none; color: inherit; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- 主导航 -->
+  <nav class="main-tabs" id="main-tabs">
+    <button class="mtab active" data-view="overview">审计总览</button>
+    <button class="mtab" data-view="requirements">需求覆盖</button>
+    <button class="mtab" data-view="rules">规则覆盖</button>
+    <button class="mtab" data-view="issues">问题明细</button>
+    <button class="mtab" data-view="unified" id="tab-unified" style="display:none">统一覆盖</button>
+  </nav>
+
+  <div id="view-overview">
+  <!-- 01 报告头部 -->
+  <header class="card header" id="sec-header"></header>
+
+  <!-- 02 质量指标 -->
+  <section class="kpis" id="sec-kpis"></section>
+
+  <!-- 03 检查结论 -->
+  <section class="card conclusion" id="sec-conclusion"></section>
+
+  <!-- 04 风险分析 -->
+  <section class="card" id="sec-risks"></section>
+
+  <!-- 05 问题分布 -->
+  <section class="card charts" id="sec-charts"></section>
+
+  <!-- 06 重点问题 TOP5 -->
+  <section class="card" id="sec-top"></section>
+  </div>
+
+  <!-- 需求覆盖视图（RTM 存在时渲染） -->
+  <section class="card" id="view-requirements" style="display:none"></section>
+
+  <!-- 规则覆盖视图（RTM 存在时渲染新矩阵；无 RTM 时回退显示历史文件级近似清单） -->
+  <section class="card" id="view-rules" style="display:none"></section>
+
+  <!-- 统一覆盖视图（unified 存在时渲染，v4 阶段 8：同一 REQ 三维度覆盖） -->
+  <section class="card" id="view-unified" style="display:none"></section>
+
+  <div id="view-issues" style="display:none">
+  <!-- 完整问题清单 -->
+  <section class="card" id="sec-list">
+    <div class="section-title">完整问题清单<span class="sub" id="list-count"></span></div>
+    <div class="toolbar" id="toolbar">
+      <select id="f-priority">
+        <option value="">全部优先级</option>
+        <option value="P0">P0</option><option value="P1">P1</option>
+        <option value="P2">P2</option><option value="P3">P3</option>
+      </select>
+      <select id="f-type"><option value="">全部类型</option></select>
+      <select id="f-dimension"><option value="">全部维度</option></select>
+      <select id="f-module"><option value="">全部模块</option></select>
+      <input id="f-q" type="search" placeholder="搜索 ID / 问题 / 位置">
+      <button class="btn" id="btn-clear">清除筛选</button>
+      <span class="spacer"></span>
+      <span class="count" id="f-count"></span>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="issues">
+        <thead><tr><th>ID</th><th>问题标题</th><th>优先级</th><th>类型</th><th>维度</th><th>原文位置</th></tr></thead>
+        <tbody id="issue-tbody"></tbody>
+      </table>
+      <div class="empty" id="issue-empty" style="display:none">没有符合筛选条件的问题</div>
+    </div>
+  </section>
+
+  <!-- 08 综合分析 -->
+  <section class="card analysis" id="sec-analysis"></section>
+
+</div>
+
+<!-- 详情抽屉 -->
+<div class="mask" id="mask"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-head">
+    <span class="pri-tag" id="d-pri"></span>
+    <span class="id" id="d-id"></span>
+    <div class="title" id="d-title"></div>
+    <button class="close" id="d-close" title="关闭">x</button>
+  </div>
+  <div class="drawer-nav">
+    <button class="btn" id="d-prev">上一条</button>
+    <button class="btn" id="d-next">下一条</button>
+    <span class="pos" id="d-pos"></span>
+  </div>
+  <div class="drawer-body" id="d-body"></div>
+</aside>
+
+<!-- 浮动操作 -->
+<div class="fab">
+  <button class="btn" id="btn-top" title="返回顶部">返回顶部</button>
+  <button class="btn primary" id="btn-print" title="打印 / 导出 PDF">打印 / PDF</button>
+</div>
+
+<script type="application/json" id="report-data">{"schema_version":1,"report":{"title":"PRD 质量分析报告","project_name":"杭州麻将","document_name":"核心流程杭州麻将好友房AI-11-12-2","inspection_date":"2026-11-13","source_file":"input/【杭州麻将】核心流程杭州麻将好友房AI-11-12-2.md","rule_baselines":[".claude/skills/ui-interaction-prd-extract/references/rules/hzmj_ui_interaction（8 个规则文件）"],"overall_conclusion":{"status":"NA","summary":"","reasons":[]}},"statistics":{"total":77,"priority":{"P0":2,"P1":20,"P2":49,"P3":6},"types":{"需求缺失":21,"内容冲突":8,"逻辑错误":10,"描述不完整":32,"定义歧义":6},"dimensions":{"UI 交互":77}},"risk_groups":[{"key":"blocker","name":"开发阻塞风险","description":"关键流程/规则缺失或矛盾，直接阻塞开发或验收","issue_ids":["Q01","Q02"]}],"modules":[{"name":"听牌提示／查听按钮","issue_ids":["Q01"]},{"name":"断线重连 / 场景恢复","issue_ids":["Q02","Q13","Q18","Q19"]},{"name":"大结算界面","issue_ids":["Q03"]},{"name":"小结算界面","issue_ids":["Q04"]},{"name":"玩家头像·离线状态","issue_ids":["Q05"]},{"name":"开局流程 / 牌墙与发牌","issue_ids":["Q06"]},{"name":"手牌置灰与出牌交互","issue_ids":["Q07"]},{"name":"杠与出牌拦截","issue_ids":["Q08"]},{"name":"小结算与下一局","issue_ids":["Q09"]},{"name":"自摸与杠操作区","issue_ids":["Q10"]},{"name":"听牌提示／手牌听牌标记","issue_ids":["Q11","Q56"]},{"name":"胡牌展示","issue_ids":["Q12"]},{"name":"倒计时与超时提示","issue_ids":["Q14"]},{"name":"结算 / 大结算","issue_ids":["Q15"]},{"name":"方位盘倒计时","issue_ids":["Q16"]},{"name":"听牌提示／听牌详情面板开合","issue_ids":["Q17"]},{"name":"断线重连 / 权限恢复","issue_ids":["Q20"]},{"name":"小结算 / 继续游戏","issue_ids":["Q21"]},{"name":"抢杠胡响应","issue_ids":["Q22"]},{"name":"听牌提示／记牌器","issue_ids":["Q23"]},{"name":"摊牌与台面标识","issue_ids":["Q24"]},{"name":"断线重连 / 局内状态补刷","issue_ids":["Q25"]},{"name":"断线重连 / 方位信息（骰子）","issue_ids":["Q26"]},{"name":"超时提示解除","issue_ids":["Q27"]},{"name":"倒计时·他人长考提醒","issue_ids":["Q28"]},{"name":"倒计时 / 超时提示","issue_ids":["Q29"]},{"name":"听牌 / 手牌信息","issue_ids":["Q30"]},{"name":"小结算 / 预约洗牌","issue_ids":["Q31"]},{"name":"等待阶段 / 换座","issue_ids":["Q32"]},{"name":"牌墙","issue_ids":["Q33"]},{"name":"倒计时音效","issue_ids":["Q34"]},{"name":"开局流程 / 洗牌道具（预约洗牌）","issue_ids":["Q35"]},{"name":"行牌操作 / 摸牌","issue_ids":["Q36"]},{"name":"飘分表现","issue_ids":["Q37","Q59"]},{"name":"开局流程 / 下一小局序列","issue_ids":["Q38"]},{"name":"定庄 / 方位盘","issue_ids":["Q39"]},{"name":"方位盘","issue_ids":["Q40"]},{"name":"局终动画链","issue_ids":["Q41"]},{"name":"玩家头像 / 断线表现","issue_ids":["Q42"]},{"name":"剩余牌数","issue_ids":["Q43"]},{"name":"方位盘方位光","issue_ids":["Q44"]},{"name":"本期范围与无托管","issue_ids":["Q45"]},{"name":"对局内通用提示 / 轻提示","issue_ids":["Q46"]},{"name":"手牌操作","issue_ids":["Q47"]},{"name":"吃碰杠按钮与手牌高亮","issue_ids":["Q48"]},{"name":"对局内提示与结算演出","issue_ids":["Q49"]},{"name":"吃碰杠胡操作","issue_ids":["Q50"]},{"name":"多操作状态（选组）","issue_ids":["Q51"]},{"name":"吃碰杠胡操作（按钮）","issue_ids":["Q52"]},{"name":"手牌置灰与操作区收尾","issue_ids":["Q53"]},{"name":"手牌配色与压暗","issue_ids":["Q54"]},{"name":"出牌拦截提示","issue_ids":["Q55"]},{"name":"流局路径","issue_ids":["Q57"]},{"name":"摊牌表现","issue_ids":["Q58"]},{"name":"番型字效","issue_ids":["Q60"]},{"name":"断线重连 / 牌河恢复","issue_ids":["Q61"]},{"name":"头像层 / 重连","issue_ids":["Q62"]},{"name":"发牌与首出提示","issue_ids":["Q63"]},{"name":"庄标","issue_ids":["Q64"]},{"name":"出牌放大","issue_ids":["Q65"]},{"name":"断线重连","issue_ids":["Q66"]},{"name":"开局流程 / 对局开始动画","issue_ids":["Q67"]},{"name":"同步与异常处理 / 重连","issue_ids":["Q68"]},{"name":"方位信息 / 骰子","issue_ids":["Q69"]},{"name":"飘财与操作按钮","issue_ids":["Q70"]},{"name":"断线等待","issue_ids":["Q71"]},{"name":"结算 / 听牌资源加载","issue_ids":["Q72"]},{"name":"出牌动画","issue_ids":["Q73"]},{"name":"吃碰杠胡操作（吃）","issue_ids":["Q74"]},{"name":"听牌提示／杭麻特殊听牌标签","issue_ids":["Q75"]},{"name":"断线重连 / 倒计时恢复","issue_ids":["Q76"]},{"name":"财神指示","issue_ids":["Q77"]}],"featured_issues":["Q01","Q02"],"issues":[{"id":"Q01","title":"承载查听的常驻听牌组件与查听按钮显隐规则整体缺失（本类主条目，Q30 同根因）","priority":"P0","type":"需求缺失","module":["听牌提示／查听按钮"],"dimension":"UI 交互","source_location":"3.2.5 手牌信息（听牌标签）、3.2.5.1 手牌交互说明、4.5 行牌操作（提牌）、3.2.5 手牌信息（听牌标签/听牌详情）、4.5 行牌操作（提牌）","rule_ref":"02#8。基准 8 规定常驻听牌组件含查听按钮，显示条件为「有已听牌数据（查听，play_mah==0）且自己未胡」，并规定显隐时机：出牌后显示、摸牌后隐藏、有出牌权限时隐藏、自己胡或本小局结束时隐藏、点击桌面时隐藏。需求文档只描述「提起带听牌标签的候选牌 → 打开该牌打出后的听牌详情」这一条打听路径，完全没有查听数据概念、没有查听按钮，也没有任何按钮显隐时机。查听与打听是两类数据（基准 2），已处听牌态（play_mah==0）的玩家在未提牌时无法查看自己听了什么、几张、多少倍。自动胡按钮因本期按无托管处理可不做，但查听按钮不属于托管范围。","original_text":"位置“3.2.5 手牌信息（听牌标签）、3.2.5.1 手牌交互说明、4.5 行牌操作（提牌）、3.2.5 手牌信息（听牌标签/听牌详情）、4.5 行牌操作（提牌）”。需求文档无对应描述。","problem":"基准 8 规定常驻听牌组件含查听按钮，显示条件为「有已听牌数据（查听，play_mah==0）且自己未胡」，并规定显隐时机：出牌后显示、摸牌后隐藏、有出牌权限时隐藏、自己胡或本小局结束时隐藏、点击桌面时隐藏。需求文档只描述「提起带听牌标签的候选牌 → 打开该牌打出后的听牌详情」这一条打听路径，完全没有查听数据概念、没有查听按钮，也没有任何按钮显隐时机。查听与打听是两类数据（基准 2），已处听牌态（play_mah==0）的玩家在未提牌时无法查看自己听了什么、几张、多少倍。自动胡按钮因本期按无托管处理可不做，但查听按钮不属于托管范围。","impact":"开发无法实现已听牌状态的听牌查看入口；玩家听牌后只能靠提牌候选牌间接看到牌面，听牌态无反馈；测试与验收缺少按钮出现/消失的判定口径。","suggestion":"在 3.2.5 或独立小节补「查听按钮」：组件构成（查听按钮，自动胡按钮本期不做并明示）、显示条件（存在查听数据且本家未胡）、位置与样式、显示时机（本家出牌后显示）、隐藏时机（摸牌、获得出牌权、自己胡、本小局结束、点击桌面空白）。","status":"待确认","has_detail":true,"requirementIds":[],"acceptance":"有查听数据且未胡时，出牌后按钮出现；摸牌后、轮到本家操作时、本家胡牌或流局结束时、点击桌面空白后按钮消失；无查听数据时不出现，可逐条出用例。"},{"id":"Q02","title":"全文缺失 end_wait 场景快照自动应答链路","priority":"P0","type":"需求缺失","module":["断线重连 / 场景恢复"],"dimension":"UI 交互","source_location":"7.2 同步与异常处理「重连恢复」、4.4 发牌、4.6 吃碰杠胡操作（胡牌演出）","rule_ref":"04#13,04#14,04#15,04#16。基准规定：行牌、发牌、洗牌三个场景命令的快照若带 end_wait，客户端必须立即自动应答，防止服务端一直等待；正常发牌要在发牌动画完成时（摊牌后另有 1 秒兜底）才解除重连标记并应答；第 2 局起发牌后跳过界面等待直接应答；胡牌多段动画中只应答一次。需求 7.2 只写了“加载…剩余倒计时”“已提交且仍待裁决的操作恢复为等待”，全链路没有任何场景应答/end_wait 的触发条件、时机、次数与去重规则。","original_text":"位置“7.2 同步与异常处理「重连恢复」、4.4 发牌、4.6 吃碰杠胡操作（胡牌演出）”。需求文档无对应描述。","problem":"基准规定：行牌、发牌、洗牌三个场景命令的快照若带 end_wait，客户端必须立即自动应答，防止服务端一直等待；正常发牌要在发牌动画完成时（摊牌后另有 1 秒兜底）才解除重连标记并应答；第 2 局起发牌后跳过界面等待直接应答；胡牌多段动画中只应答一次。需求 7.2 只写了“加载…剩余倒计时”“已提交且仍待裁决的操作恢复为等待”，全链路没有任何场景应答/end_wait 的触发条件、时机、次数与去重规则。","impact":"重连落在发牌、洗牌或胡牌演出阶段时，客户端不会回 end_wait，服务端持续等待，整桌卡在发牌或结算前无法继续；测试无法构造 end_wait 相关用例，上线后属整桌阻塞级故障。","suggestion":"在 7.2 增加「场景应答（end_wait）」小节：1）行牌/发牌/洗牌快照带 end_wait 即自动应答，无需玩家操作；2）正常发牌路径在发牌动画结束应答，并有摊牌后 1 秒兜底；3）第 2 局起发牌后跳过界面等待直接应答；4）胡牌多段动画只应答一次，重复到达不再发送。","status":"待确认","has_detail":true,"requirementIds":[],"acceptance":"分别在与局发牌进行中、发牌结束未进入行牌、第 2 局及以后发牌、胡牌多段演出进行中断线重连：客户端在恢复完成时（发牌为动画完成或 1 秒内）各回一次 end_wait，服务端无等待超时，整桌能继续到下一操作阶段，且无重复应答。"},{"id":"Q03","title":"大结算界面与触发规则整体缺失（本类主条目，Q15 同根因）","priority":"P1","type":"需求缺失","module":["大结算界面"],"dimension":"UI 交互","source_location":"5.1 结算流程 小结算与下一局、6.1.1 本场结束、附录 A 后续版本配置 片数、6.1.1 触发逻辑（本场结束）、6.1.2 UI交互以及说明 #9、7.1 菜单（确认解散）","rule_ref":"03#17,03#18,03#19,03#14。基准定义局终第 4 步为大结算：总分数据组装（总局数、起止时间、房主、解散人、每家自摸/接炮/叫嘴统计）、动画链第 4 步延迟 2 秒弹出、解散局跳过动画链立即弹出、收到大结算事件后小结算强制切“最后一局”页。需求文档正文完全没有大结算界面的数据、内容、弹出时机和入口，却在附录 A 片数中写“进入大结算”，前后不一致。。缺失说明：达到设定局数后，各端显示末局小结算，底部中央显示绿色【返回大厅】……任一玩家结算后片数小于或等于 0 时结束本场并进入大结算。","original_text":"位置“5.1 结算流程 小结算与下一局、6.1.1 本场结束、附录 A 后续版本配置 片数、6.1.1 触发逻辑（本场结束）、6.1.2 UI交互以及说明 #9、7.1 菜单（确认解散）”。需求文档无对应描述。","problem":"基准定义局终第 4 步为大结算：总分数据组装（总局数、起止时间、房主、解散人、每家自摸/接炮/叫嘴统计）、动画链第 4 步延迟 2 秒弹出、解散局跳过动画链立即弹出、收到大结算事件后小结算强制切“最后一局”页。需求文档正文完全没有大结算界面的数据、内容、弹出时机和入口，却在附录 A 片数中写“进入大结算”，前后不一致。。缺失说明：达到设定局数后，各端显示末局小结算，底部中央显示绿色【返回大厅】……任一玩家结算后片数小于或等于 0 时结束本场并进入大结算。","impact":"开发无法实现局终第 4 步；末局验收只能验到小结算与【返回大厅】，无法验总分明细；附录 A 的“进入大结算”成为悬空引用。","suggestion":"补一节“大结算界面”，至少写明：弹出时机（动画链第 4 步延迟、解散局立即弹）、数据项（总局数/起止时间/房主/游戏名/解散人 + 每家自摸/接炮/叫嘴与未叫嘴次数）、界面版式与按钮出口、小结算“最后一局”页切换。若本期确定不做大结算，须在“本期开发范围”明确写“本期不展示大结算，末局以【返回大厅】结束”，并同步修正附录 A。","status":"待确认","has_detail":true,"requirementIds":[],"acceptance":"末局动画结束后按文档可复现大结算弹出时点与内容字段；解散局可复现立即弹出；小结算收到大结算事件切最后一局页；或文档明确声明本期无大结算且附录 A 无悬空引用。"},{"id":"Q04","title":"小结算缺少流水明细与总番","priority":"P1","type":"需求缺失","module":["小结算界面"],"dimension":"UI 交互","source_location":"6.1.2 UI交互以及说明 第2/4/6项、5.1 结算流程 胡牌场景","rule_ref":"03#10,03#12。基准小结算数据含“额外流水”，每位玩家显示“流水汇总与总番”，文案格式为“动作(番名)[方位] ±N分”并按人数生成本家/上家/下家/对家方位文案。需求文档小结算只有玩家行、手牌、净得分、番型名称和承包标识，全篇无流水条目、无总番数字。。缺失说明：每行分为左侧玩家信息、中间手牌、右侧得分及标记。手牌在中间栏内从左向右横排。……赢家牌组上方的番型文字仅显示番型名称及复合次数。","original_text":"位置“6.1.2 UI交互以及说明 第2/4/6项、5.1 结算流程 胡牌场景”。需求文档无对应描述。","problem":"基准小结算数据含“额外流水”，每位玩家显示“流水汇总与总番”，文案格式为“动作(番名)[方位] ±N分”并按人数生成本家/上家/下家/对家方位文案。需求文档小结算只有玩家行、手牌、净得分、番型名称和承包标识，全篇无流水条目、无总番数字。。缺失说明：每行分为左侧玩家信息、中间手牌、右侧得分及标记。手牌在中间栏内从左向右横排。……赢家牌组上方的番型文字仅显示番型名称及复合次数。","impact":"本期存在三摊承包、反承包和链式承包（同一赢家多笔赔付），无流水时玩家和测试都无法核对“谁赔给谁、按几倍、合计多少”，承包标识也无数据支撑，验收无法判定庄闲 8 倍、2 倍反承包等算分是否正确。","suggestion":"在小结算行内补流水区：列出每笔“动作(番名)[方位] ±N分”，并给出各家流水汇总与总番；明确一炮多响不适用（本期禁止一炮多响）但承包/反承包/链式承包多条流水并列的排序（按来源座位）。","status":"待确认","has_detail":true,"requirementIds":[],"acceptance":"自摸、点炮、抢杠、承包、反承包、链式承包各场景的小结算均能逐笔显示流水与总番，测试可据流水加总复算净得分。"},{"id":"Q05","title":"离线解散预警（缺省600秒）完全未描述","priority":"P1","type":"需求缺失","module":["玩家头像·离线状态"],"dimension":"UI 交互","source_location":"3.2.3 玩家头像信息「玩家状态」-离线状态；7.2 同步与异常处理","rule_ref":"05#14。UI 基准 05#14 规定玩家离线时触发离线解散预警提示（好友房缺省 600 秒，可被房间配置覆盖）。需求只定义了深色覆盖层、断链图标和从 00:00 起的「分:秒」离线时长，以及恢复在线时移除图标与计时，没有预警的触发时机、阈值、提示文案与位置、返回后隐藏规则、到点解散后的表现；也没有说明离线期间倒计时是否继续、操作权归谁、由谁触发解散。","original_text":"位置“3.2.3 玩家头像信息「玩家状态」-离线状态；7.2 同步与异常处理”。需求文档无对应描述。","problem":"UI 基准 05#14 规定玩家离线时触发离线解散预警提示（好友房缺省 600 秒，可被房间配置覆盖）。需求只定义了深色覆盖层、断链图标和从 00:00 起的「分:秒」离线时长，以及恢复在线时移除图标与计时，没有预警的触发时机、阈值、提示文案与位置、返回后隐藏规则、到点解散后的表现；也没有说明离线期间倒计时是否继续、操作权归谁、由谁触发解散。","impact":"离线玩家可无限挂房，另外三家既无可见预警也无法判断何时能重开；开发不知道要不要做该提示，测试无法为离线解散编写任何用例，与现网表现不一致。","suggestion":"在 3.2.3 或 7.2 增加离线解散预警小节：触发条件（玩家转为离线）、阈值（缺省 600 秒、可被房间配置覆盖）、显示对象与位置（仅他人视角）、文案、计时方式、玩家回线后立即隐藏、与超时提示层同时出现时的层级与互斥、到达阈值后由服务端解散并给出提示；若本期不做，写明「本期不实现离线解散预警」并登记与现网差异说明。","status":"待确认","has_detail":true,"requirementIds":[],"acceptance":"玩家离线后其他三家在其座位处看到离线解散预警并按秒递减；到达 600 秒（或被覆盖的配置值）房间解散并给出提示；阈值内回线预警立即消失、对局继续；本家自己不显示该预警。上述四点可直接写成用例。"},{"id":"Q06","title":"牌墙展示、骰点多一墩与发牌消耗动画未描述（本类主条目，Q33 同根因）","priority":"P1","type":"需求缺失","module":["开局流程 / 牌墙与发牌"],"dimension":"UI 交互","source_location":"3.2「局中信息」（无牌墙信息小节）、3.2.1「方位信息」骰子、4.4「发牌」、三.对局流程-3.2.2 玩法信息、4.4 发牌","rule_ref":"08#1,08#8,08#9,08#10。基准 08#1 规定开局命令序列为开局数据→局数据（定庄）→牌墙→掷骰→发牌数据→首抓；08#8 规定牌墙按骰子结果推算哪边多一墩、显示开关按玩家设置；08#9、08#10 规定发牌及常规摸牌时牌墙逐张消失（发牌每张约0.25秒）。需求全文没有牌墙界面与牌墙数据描述，只在余牌数/摸牌处提“刷新各视角的牌墙”；4.4 发牌从牌序头部直接发放，未说明骰点与牌墙多一墩方位、发牌起点的关系，也未说明发牌数据仅更新余牌数、发牌动画由首抓命令触发。","original_text":"位置“3.2「局中信息」（无牌墙信息小节）、3.2.1「方位信息」骰子、4.4「发牌」、三.对局流程-3.2.2 玩法信息、4.4 发牌”。需求文档无对应描述。","problem":"基准 08#1 规定开局命令序列为开局数据→局数据（定庄）→牌墙→掷骰→发牌数据→首抓；08#8 规定牌墙按骰子结果推算哪边多一墩、显示开关按玩家设置；08#9、08#10 规定发牌及常规摸牌时牌墙逐张消失（发牌每张约0.25秒）。需求全文没有牌墙界面与牌墙数据描述，只在余牌数/摸牌处提“刷新各视角的牌墙”；4.4 发牌从牌序头部直接发放，未说明骰点与牌墙多一墩方位、发牌起点的关系，也未说明发牌数据仅更新余牌数、发牌动画由首抓命令触发。","impact":"客户端无法实现牌墙画面与牌墙消牌；骰点结果对牌墙/发牌无视觉作用，四端牌墙可能不一致；验收无对照标准。","suggestion":"新增牌墙与发牌界面章节：四家牌墙位置、堆叠与墩数，骰点→哪边多一墩，初始136→83剩余的可视化，牌墙显示开关及默认值，发牌/摸牌/杠时牌墙逐张消失节奏（发牌每张约0.25秒），并明确发牌数据只更新余牌数、发牌动画由首抓触发的时序。","status":"待确认","has_detail":true,"requirementIds":[],"acceptance":"开启牌墙显示时，四家牌墙按骰点在某侧多一墩；发牌时牌墙逐张消失且余牌数同步到83；常规摸牌/杠时牌墙相应消牌；关闭开关时牌墙隐藏但余牌数与手牌正常；四端牌墙画面一致。"},{"id":"Q07","title":"受飘财摸打限制时的压暗与胡杠提示的亮度规则冲突","priority":"P1","type":"内容冲突","module":["手牌置灰与出牌交互"],"dimension":"UI 交互","source_location":"3.2.5.1 手牌交互说明（提牌）、4.6 吃碰杠胡操作（杠）、4.7 多操作状态（同一玩家可多项操作）","rule_ref":"01#15,01#16。需求一边规定受飘财摸打限制时只允许最右分隔位的摸牌或补牌，其余手牌压暗并不可提起，一边又规定暗杠与加杠的候选牌保持正常亮度、能胡时整手保持正常亮度。而 2.3.1.4「杠」与 2.3.2「飘」已写明飘财限制下仍可暗杠、仍可胡牌，两条规则会在同一局面同时生效：例如新摸八万与手中三张八万可暗杠时，三张原手牌同时「压暗不可提」和「保持正常亮度」。需求没有规定哪条优先。","original_text":"位置“3.2.5.1 手牌交互说明（提牌）、4.6 吃碰杠胡操作（杠）、4.7 多操作状态（同一玩家可多项操作）”。引文：“「飘财限制…其余手牌压暗并保持原位」；「参与任一合法杠的手牌保持正常亮度，其余手牌压暗」；「能胡时整手保持正常亮度」”","problem":"需求一边规定受飘财摸打限制时只允许最右分隔位的摸牌或补牌，其余手牌压暗并不可提起，一边又规定暗杠与加杠的候选牌保持正常亮度、能胡时整手保持正常亮度。而 2.3.1.4「杠」与 2.3.2「飘」已写明飘财限制下仍可暗杠、仍可胡牌，两条规则会在同一局面同时生效：例如新摸八万与手中三张八万可暗杠时，三张原手牌同时「压暗不可提」和「保持正常亮度」。需求没有规定哪条优先。","impact":"开发无法确定压暗算法的判定顺序，先判飘财还是先判操作提示会导致视觉结果相反；测试与验收也无法判定该局面下的手牌亮度是否正确。","suggestion":"补充叠加优先级：取得胡或杠提示时，提示亮度优先于飘财压暗，飘财压暗只作用于不可打出的原手牌，并排除本次胡或杠需要的牌；或在飘财段直接写明例外条款并给出示例。","status":"待确认","has_detail":true,"requirementIds":["REQ-374","REQ-375","REQ-414","REQ-436"],"acceptance":"按两个用例验收：飘财限制下新摸八万加手中三张八万可暗杠，以及飘财限制下可自摸。四端手牌亮度一致，压暗牌仍不可提起，可提牌与可打牌集合符合规范。"},{"id":"Q08","title":"碰后仅剩原有暗杠时是否需点【过】自相矛盾","priority":"P1","type":"内容冲突","module":["杠与出牌拦截"],"dimension":"UI 交互","source_location":"4.6 吃碰杠胡操作「杠」；4.5 行牌操作「出牌」","rule_ref":"01#7,01#9。基准 01#7 规定有胡权限且操作区处于展示态时，任何出牌尝试都被拦截并提示 3 秒「点“过”才能出牌」；01#9 规定杠单/多组合与取消等价于过。同一段落内两条规则互相否定：前句给出例外“可杠项仅为原有暗杠时可直接出牌”，紧接的“碰后可杠时仍须先点【过】”又取消了该例外；4.5 又统一表述为“本次杠提示按 4.6「杠」须先点【过】”。当玩家碰牌后手中恰有四张同牌（唯一可杠项是碰前已有的暗杠）时，两条规则同时命中，无法判断出牌是否被拦截。","original_text":"位置“4.6 吃碰杠胡操作「杠」；4.5 行牌操作「出牌」”。引文：“杠提示待处理时，须先点【过】才能出牌。若可杠项仅为原手牌中已有的暗杠（四张同牌在本次摸牌或补牌前已在手中），可直接出牌。碰后可杠时仍须先点【过】。”","problem":"同一段落内两条规则互相否定：前句给出例外“可杠项仅为原有暗杠时可直接出牌”，紧接的“碰后可杠时仍须先点【过】”又取消了该例外；4.5 又统一表述为“本次杠提示按 4.6「杠」须先点【过】”。当玩家碰牌后手中恰有四张同牌（唯一可杠项是碰前已有的暗杠）时，两条规则同时命中，无法判断出牌是否被拦截。","impact":"客户端无法确定的手牌是否可出牌、是否弹“点‘过’才能出牌”提示；同一牌型可能被实现成两种相反行为，测试无法出稳定用例。","suggestion":"明确优先级：例如“可杠项仅为碰前已存在的暗杠时可直接出牌；可杠项包含本次碰牌形成的加杠、或由本次摸入/补入牌组成的暗杠时，须先点【过】”，并在 4.5 引用同一条件。","status":"待确认","has_detail":true,"requirementIds":["REQ-411","REQ-412","REQ-183"],"acceptance":"构造“碰2筒后手中仍有4张1万（碰前已在手）”与“碰后摸入第4张可加杠”两组用例：前者双击/滑动可直接出牌且不出现拦截提示；后者出牌被拦截并提示“点‘过’才能出牌”，点【过】后可出牌。"},{"id":"Q09","title":"下一小局流程漏摇骰与定财神，与后续小局描述矛盾（本类主条目，Q38 同根因）","priority":"P1","type":"内容冲突","module":["小结算与下一局"],"dimension":"UI 交互","source_location":"5.1 结算流程「小结算与下一局」；4.1 对局开始「触发逻辑」；4.3 定财神；3.2.2 玩法信息「财神」、5.1「流程明细」小结算与下一局、4.1「对局开始」触发逻辑、4.3「定财神」、4.4「发牌」","rule_ref":"08#1,08#2。基准 08#1 规定开局命令序列固定为开局数据→局数据（定庄）→牌墙→掷骰→发牌数据→首抓；08#2 规定仅首局或非包厢播开局动画、第 2 局起跳过开场等待直接应答推进。5.1 把下一小局写成“定庄→发牌”，跳过摇骰与定财神；但 4.1 写“后续小局直接进入摇骰发牌”，4.3 与 3.2.2 写“每小局掷骰动画开始时显示白板指示牌”，4.2 写庄标“在每个小局掷骰动画开始时展示”。同一流程出现三种串联方式，无法确定第2–8局是否播骰子、是否出现财神指示牌、庄标以哪一帧为准。","original_text":"位置“5.1 结算流程「小结算与下一局」；4.1 对局开始「触发逻辑」；4.3 定财神；3.2.2 玩法信息「财神」、5.1「流程明细」小结算与下一局、4.1「对局开始」触发逻辑、4.3「定财神」、4.4「发牌」”。引文：“四人均已准备后自动开始下一小局，按 4.2「定庄」确定庄家，再按 4.4「发牌」继续。”","problem":"5.1 把下一小局写成“定庄→发牌”，跳过摇骰与定财神；但 4.1 写“后续小局直接进入摇骰发牌”，4.3 与 3.2.2 写“每小局掷骰动画开始时显示白板指示牌”，4.2 写庄标“在每个小局掷骰动画开始时展示”。同一流程出现三种串联方式，无法确定第2–8局是否播骰子、是否出现财神指示牌、庄标以哪一帧为准。","impact":"第2–8局的进入序列无法实现与验收；按 5.1 实现会漏掉摇骰与财神指示牌，玩家看不到本局财神。","suggestion":"统一为一条序列（四人均已准备→按 4.2 定庄并显示庄标→摇骰并显示白板财神指示牌→按 4.4 发牌→进入庄家出牌倒计时），并让 5.1、4.1、4.3 引用同一处。","status":"待确认","has_detail":true,"requirementIds":["REQ-452","REQ-126","REQ-338","REQ-119"],"acceptance":"第2局及以后每局逐项核对：摇骰出现、庄标随掷骰同时出现、白板指示牌在骰盘左侧出现并持续到局末、发牌后进入倒计时；第1局在此基础上额外播放 4.1 开局动画。"},{"id":"Q10","title":"自摸与杠同现时按钮集合及【过】作用范围互相矛盾","priority":"P1","type":"内容冲突","module":["自摸与杠操作区"],"dimension":"UI 交互","source_location":"4.6 吃碰杠胡操作「杠」「自摸」；4.7 多操作状态「可多杠」「同一玩家可多项操作」","rule_ref":"01#3,01#6,01#9。基准 01#3 规定操作区页面为空白/碰杠胡/选择多杠/报听选择，碰杠胡任一可显示时切展示态；01#6 规定过（需上报）与过2（仅本地收尾）分工；01#9 规定多杠取消同时执行过。本家行牌时可能同时可自摸与可暗杠/加杠，但 4.6「杠」只列【杠】【过】、4.6「自摸」只列【自摸】【过】，未定义并存时的按钮集合与左右顺序；作用范围也冲突——4.6「杠」说点【过】“放弃本次杠并解除出牌拦截”，4.7 说共用【过】“放弃同一事件下本家的全部待响应操作”，而【取消】又明确会一并放弃【自摸】。","original_text":"位置“4.6 吃碰杠胡操作「杠」「自摸」；4.7 多操作状态「可多杠」「同一玩家可多项操作」”。引文：“本家行牌时，若可暗杠或加杠，在手牌右上方显示【杠】【过】。 / 只有本家在手牌右上方看到【自摸】【过】。 / 点【取消】放弃本家在本次行牌机会中的全部可选操作，包括同次可自摸时的【自摸】。”","problem":"本家行牌时可能同时可自摸与可暗杠/加杠，但 4.6「杠」只列【杠】【过】、4.6「自摸」只列【自摸】【过】，未定义并存时的按钮集合与左右顺序；作用范围也冲突——4.6「杠」说点【过】“放弃本次杠并解除出牌拦截”，4.7 说共用【过】“放弃同一事件下本家的全部待响应操作”，而【取消】又明确会一并放弃【自摸】。","impact":"无法实现按钮布局与点击语义，可能误放弃自摸或无法放弃杠；测试无法判定“点过后是否还能自摸”。","suggestion":"在 4.7 增设“本家行牌阶段多操作”小节：定义按钮顺序（如【杠】【自摸】【过】）、各按钮点击后保留/放弃哪些操作、【过】是否连带放弃自摸，并统一 4.6 两处表述。","status":"待确认","has_detail":true,"requirementIds":["REQ-422","REQ-411","REQ-437","REQ-435"],"acceptance":"构造“摸牌后同时可自摸与暗杠”“杠后补牌同时可自摸与再杠”两例：按钮集合与顺序符合定义；点【过】后按定义保留/放弃自摸；点【杠】→【取消】后自摸已放弃且可正常出牌。"},{"id":"Q11","title":"同牌面多张候选的标记规则与基准「同牌值只标第一张」冲突","priority":"P1","type":"逻辑错误","module":["听牌提示／手牌听牌标记"],"dimension":"UI 交互","source_location":"3.2.5.1 手牌交互说明（听牌标签显示规则）","rule_ref":"02#6。基准 6 明确打听箭头显示在手牌上且「同牌值只标第一张」，即同一牌值只在一张牌上出现标记。需求文档规定同牌面有多张候选时，每张都被标记（最右侧显示推荐文字，其余显示箭头），标记数量与标记位置（最右 vs 第一张）均与现网实现不同。这是与 UI 基准的事实冲突，不是数值口径差异。","original_text":"位置“3.2.5.1 手牌交互说明（听牌标签显示规则）”。引文：“相同牌面有多张候选时，最右侧显示推荐文字，其余显示箭头。”","problem":"基准 6 明确打听箭头显示在手牌上且「同牌值只标第一张」，即同一牌值只在一张牌上出现标记。需求文档规定同牌面有多张候选时，每张都被标记（最右侧显示推荐文字，其余显示箭头），标记数量与标记位置（最右 vs 第一张）均与现网实现不同。这是与 UI 基准的事实冲突，不是数值口径差异。","impact":"开发按需求实现会在同牌值多张牌上重复绘制标记；按基准验收时会被判不符，且同牌值多张标记会造成手牌区视觉拥挤。","suggestion":"若沿用现网，改为「同一牌值只在该组最左第一张显示标签，其余同牌面不显示」；若确为有意调整，需在该条标注为新增并给出与现网差异说明及依据。","status":"待确认","has_detail":true,"requirementIds":["REQ-333","REQ-334","REQ-330"],"acceptance":"手中持 3 张 5 万且均为候选时，只有最左 1 张出现「优/大/多/箭头」标记，另外两张无标记，可作为一条断言用例。"},{"id":"Q12","title":"番型选取口径未区分胡牌过程与局终","priority":"P1","type":"逻辑错误","module":["胡牌展示"],"dimension":"UI 交互","source_location":"2.3.4.2 番型介绍 番型互斥与优先级、4.6 吃碰杠胡操作 自摸/胡牌按钮预览","rule_ref":"03#9。基准明确两处口径不同：胡牌过程命令按升序取最小番型，局终命令按降序取最大番型。需求文档统一规定“番型展示和结算均使用最高档”，并把该口径用于胡牌按钮预览/听牌详情，“最小番型”分支完全不存在。","original_text":"位置“2.3.4.2 番型介绍 番型互斥与优先级、4.6 吃碰杠胡操作 自摸/胡牌按钮预览”。引文：“先取倍数最高的档位。若最高倍数相同，选本节番型明细中序号较大的一档。番型展示和结算均使用该档。”","problem":"基准明确两处口径不同：胡牌过程命令按升序取最小番型，局终命令按降序取最大番型。需求文档统一规定“番型展示和结算均使用最高档”，并把该口径用于胡牌按钮预览/听牌详情，“最小番型”分支完全不存在。","impact":"同一手牌在胡牌按钮预览、胡牌过程演出与局终结算可能显示不同番型与倍数；按需求实现会与现网演出不一致，且测试无法判断哪一处应显示最低档。","suggestion":"在 4.6 胡牌按钮预览与 5.1 番型字效分别写明取档规则：胡牌过程取最小番型（升序），局终取最大番型（降序），并说明两处不一致是既定表现，不视为 bug。","status":"待确认","has_detail":true,"requirementIds":["REQ-425","REQ-246","REQ-062"],"acceptance":"对同时满足多个番型的手牌，可按文档分别验证胡牌过程显示最低档、局终显示最高档；两处取值有明确条款可引用。"},{"id":"Q13","title":"「再播放仍有效的动画」会使重连重播摸牌/胡牌动画","priority":"P1","type":"逻辑错误","module":["断线重连 / 场景恢复"],"dimension":"UI 交互","source_location":"7.2 同步与异常处理「动画追赶」","rule_ref":"04#5,04#11。基准规定恢复子命令走“只写数据缓存、不触发界面动画”的静默模式，重连恢复不播开局动画、摸牌动画、胡牌动画，骰子只静态展示。需求的“再播放仍有效的动画”没有区分“首次重连恢复”与“运行中漏事件追赶”，按字面会把断线瞬间正在播放的摸牌、胡牌、飘分为“仍有效”而重播。","original_text":"位置“7.2 同步与异常处理「动画追赶」”。引文：“按服务端事件顺序更新。检测到漏事件或界面落后时，跳过已过期的过场和操作提示，直接恢复到最新状态，再播放仍有效的动画。倒计时以服务端时间为准。”","problem":"基准规定恢复子命令走“只写数据缓存、不触发界面动画”的静默模式，重连恢复不播开局动画、摸牌动画、胡牌动画，骰子只静态展示。需求的“再播放仍有效的动画”没有区分“首次重连恢复”与“运行中漏事件追赶”，按字面会把断线瞬间正在播放的摸牌、胡牌、飘分为“仍有效”而重播。","impact":"重连后出现摇骰/摸牌/胡牌动画重播，胡牌局可能重复飘分与结算演出，玩家看到的牌桌与断线前不一致，界面停留时间被拉长，测试无法判定达标。","suggestion":"明确拆成两条：首次重连恢复一律静默，只写缓存后统一渲染，不播开局/摸牌/胡牌/飘分动画；运行中追赶只补播尚未过期的有效事件，已过期的过场与操作提示直接跳过。","status":"待确认","has_detail":true,"requirementIds":["REQ-478","REQ-476"],"acceptance":"在与局开始、摸牌动画中、胡牌多段演出与飘分中、小结算已弹出四个时点断线重连：界面直接呈现最新静态状态，无摇骰/摸牌/胡牌动画重播，无重复飘分和重复结算演出。"},{"id":"Q14","title":"超时提示与超时自动解散缺失，并被主动解散表述排除（本类主条目，Q29 同根因）","priority":"P1","type":"逻辑错误","module":["倒计时与超时提示"],"dimension":"UI 交互","source_location":"3.2.1 方位信息「倒计时」；4.5 行牌操作「出牌」；7.2 同步与异常处理「重连恢复」、3.2.1 方位信息（倒计时）、7.2 同步与异常处理","rule_ref":"05#12。UI 基准 05#12 规定超时由服务端驱动：玩家超时先弹出提示层，文案含「玩家X操作超时，超时Y秒自动解散房间」和「当前超时时间Z秒」，提示阈值缺省 60 秒、解散阈值缺省 300 秒（可被房间配置覆盖），提示层内每秒自增计数。需求只写「归零后保持 00」「继续等待手动出牌」、并在 7.2 把唯一出口写成「手动操作或有玩家主动解散」，全文没有提示层、阈值、累加计数与超时自动解散的任何定义，同时把解散的触发源限定为玩家主动，等于把现网服务端超时解散流程排除掉；而且 4.5 用「按无托管处理」来解释超时，容易让人误以为超时只跟自动出牌有关，但按 05#12，超时提示与超时解散属于好友房通用流程，不应被「无托管」关掉。","original_text":"位置“3.2.1 方位信息「倒计时」；4.5 行牌操作「出牌」；7.2 同步与异常处理「重连恢复」、3.2.1 方位信息（倒计时）、7.2 同步与异常处理”。引文：“出牌或响应倒计时归零后保持 00，继续等待手动出牌或响应。断线等待和解散见 7.2「同步与异常处理」；……无托管时，倒计时归零后等待手动操作或有玩家主动解散。”","problem":"UI 基准 05#12 规定超时由服务端驱动：玩家超时先弹出提示层，文案含「玩家X操作超时，超时Y秒自动解散房间」和「当前超时时间Z秒」，提示阈值缺省 60 秒、解散阈值缺省 300 秒（可被房间配置覆盖），提示层内每秒自增计数。需求只写「归零后保持 00」「继续等待手动出牌」、并在 7.2 把唯一出口写成「手动操作或有玩家主动解散」，全文没有提示层、阈值、累加计数与超时自动解散的任何定义，同时把解散的触发源限定为玩家主动，等于把现网服务端超时解散流程排除掉；而且 4.5 用「按无托管处理」来解释超时，容易让人误以为超时只跟自动出牌有关，但按 05#12，超时提示与超时解散属于好友房通用流程，不应被「无托管」关掉。","impact":"开发按现文实现后，挂机玩家可无限停留、房间无法超时回收；重连恢复里的等待终点（超时还是主动解散）无法收敛；测试无法为「超时→提示层→自动解散」链路编写用例，也无法验收四端提示层文案与秒数同步。","suggestion":"在 3.2.1、4.5、7.2 增加超时小节，写全：触发源（服务端超时事件）、提示层展示时机与层级、文案两行（超时X秒自动解散房间／当前超时时间Z秒）、提示阈值 60 秒与解散阈值 300 秒（缺省值，可被房间配置覆盖）、当前超时秒数每秒 +1、超时后是否仍可手动出牌或被拦截、与 7.1 主动解散的优先级；若本期确定不实现，必须写明「本期不实现超时提示层与超时自动解散」并单独登记与现网实现的差异说明，不要用「按无托管处理」代替声明。","status":"待确认","has_detail":true,"requirementIds":["REQ-388","REQ-294","REQ-273"],"acceptance":"他人出牌超时满 60 秒时，四端出现提示层且「当前超时时间」每秒 +1；满 300 秒房间自动解散并给出提示；阈值内该玩家出牌或响应后提示层关闭；若文档声明不做，则用例写「超时后无提示层且房间不自动解散」，作为差异项验收。测试可按提示阈值、解散阈值、恢复操作三种时点直接出正反用例。"},{"id":"Q15","title":"末局小结算直接返回大厅，大结算弹层缺失（与 Q03 同根因，重复登记，建议合并）","priority":"P1","type":"逻辑错误","module":["结算 / 大结算"],"dimension":"UI 交互","source_location":"6.1.1 触发逻辑（本场结束）、6.1.2 UI交互以及说明 #9、7.1 菜单（确认解散）","rule_ref":"03#14,03#18,03#19。基准 03#14、03#18、03#19 规定小结算的末局关闭条件为「最后一局转大结算」：大结算在局终动画链第 4 步延迟 2 秒弹出（解散局直出），且已显示时跳过、防止重复弹出；需求把末局小结算直接接到【返回大厅】，7.1 解散也直接回大厅显示「房间已解散」。全文除附录 A 片数一句外未定义大结算的触发条件、展示内容、关闭方式与防重，既与基准冲突，也与附录 A「进入大结算」的表述不一致。","original_text":"位置“6.1.1 触发逻辑（本场结束）、6.1.2 UI交互以及说明 #9、7.1 菜单（确认解散）”。引文：“达到设定局数后，各端显示末局小结算，底部中央显示绿色【返回大厅】。点击后，仅该玩家收起小结算、离开房间并返回大厅，房主也按同一规则处理。”","problem":"基准规定小结算的末局关闭条件为「最后一局转大结算」：大结算在局终动画链第 4 步延迟 2 秒弹出（解散局直出），且已显示时跳过、防止重复弹出；需求把末局小结算直接接到【返回大厅】，7.1 解散也直接回大厅显示「房间已解散」。全文除附录 A 片数一句外未定义大结算的触发条件、展示内容、关闭方式与防重，既与基准冲突，也与附录 A「进入大结算」的表述不一致。","impact":"8 局结束没有总成绩汇总，末局与解散局流程无法按现网验收；开发可能漏做大结算或把解散流程做成直接回大厅；测试缺少大结算用例与防重口径。","suggestion":"与 Q03 合并处理：明确本期是否保留大结算。保留时补充：打开条件（末局小结算后延迟 2 秒、解散局直出）、展示内容（总积分/名次等）、手动关闭、与小结算及【返回大厅】的先后、已显示不重复弹；不保留时正文明示「本期不做大结算」，并说明末局/解散局改为返回大厅的差异。","status":"待确认","has_detail":true,"requirementIds":["REQ-106","REQ-458","REQ-206"],"acceptance":"第 8 局小结算后 2 秒内弹出大结算（或按明示差异直接回大厅）；大结算只弹一次；解散局按约定分支出大结算或回大厅；测试可分别验证末局、解散局、重复触发。"},{"id":"Q16","title":"倒计时最后3秒颜色与基准不符（黄色 vs 红色）","priority":"P1","type":"逻辑错误","module":["方位盘倒计时"],"dimension":"UI 交互","source_location":"三.对局流程-3.2.1 方位信息-倒计时","rule_ref":"07#2。基准为“超过3秒默认蓝色，最后3秒切红色”，需求文档写成蓝青色普通、03/02/01/00 黄色，颜色档位与切色时点均与现网不一致；且 00 也被指定为黄色，基准未定义归零后的字体颜色。","original_text":"位置“三.对局流程-3.2.1 方位信息-倒计时”。引文：“中央以两位数字显示剩余秒数。出牌阶段和弃牌响应阶段分别在开始时显示 10 秒，按秒递减。普通数字为蓝青色，03、02、01、00 为黄色。”","problem":"基准为“超过3秒默认蓝色，最后3秒切红色”，需求文档写成蓝青色普通、03/02/01/00 黄色，颜色档位与切色时点均与现网不一致；且 00 也被指定为黄色，基准未定义归零后的字体颜色。","impact":"客户端按 PRD 做黄色，与现网红色不一致，UI 走查与取色验收无统一口径；越接近归零越应警示的视觉语义被削弱。","suggestion":"改为“大于3秒蓝青色，03、02、01 切红色”，明确 00 是否沿用红色；若确为有意改版，补一段“与现网实现差异说明”。","status":"待确认","has_detail":true,"requirementIds":["REQ-271"],"acceptance":"倒计时 10→04 为蓝青色，03、02、01 为红色（或按确认的改版色值），截图取色可逐档比对；00 的颜色在文档中有唯一取值。"},{"id":"Q17","title":"听牌详情的关闭时机只用笼统表述，缺自己可胡、流局、重置等时机","priority":"P1","type":"描述不完整","module":["听牌提示／听牌详情面板开合"],"dimension":"UI 交互","source_location":"3.2.5 手牌信息（听牌标签）、3.2.5.1 手牌交互说明、4.5 行牌操作（提牌）","rule_ref":"02#11。基准 11 逐条列明关闭时机：出牌后、摸牌时、自己可胡时、自己胡时、流局摊牌、点桌面空白、重置。需求文档仅列「取消提牌、改选非候选牌、确认出牌或离开本家可出牌阶段」，且「离开本家可出牌阶段」未定义边界（自摸待处理、杠提示待处理、等待他家响应是否算离开）。因此「本家自摸待处理时提牌是否仍弹出听牌详情」「流局摊牌时是否收起」「下一小局重置时是否清空」均无法判定。","original_text":"位置“3.2.5 手牌信息（听牌标签）、3.2.5.1 手牌交互说明、4.5 行牌操作（提牌）”。引文：“取消提牌、改选非候选牌、确认出牌或离开本家可出牌阶段时收起。”","problem":"基准 11 逐条列明关闭时机：出牌后、摸牌时、自己可胡时、自己胡时、流局摊牌、点桌面空白、重置。需求文档仅列「取消提牌、改选非候选牌、确认出牌或离开本家可出牌阶段」，且「离开本家可出牌阶段」未定义边界（自摸待处理、杠提示待处理、等待他家响应是否算离开）。因此「本家自摸待处理时提牌是否仍弹出听牌详情」「流局摊牌时是否收起」「下一小局重置时是否清空」均无法判定。","impact":"自摸待处理、流局、跨小局三种场景下面板是否残留无法验收，易出现胡牌演出中仍挂着听牌面板或下一局残留旧听牌数据。","suggestion":"把「离开本家可出牌阶段」替换为基准 11 的逐条时机：出牌确认后、摸牌时、本家可胡（自摸待处理）时、本家胡牌时、流局摊牌时、点桌面空白时、下一小局重置时，并说明各时机的收起表现（直接消失/是否带动画）。","status":"待确认","has_detail":true,"requirementIds":["REQ-318","REQ-324"],"acceptance":"逐条触发 7 个时机，听牌详情面板均收起且不残留；自摸按钮出现时面板不显示，可作为独立用例。"},{"id":"Q18","title":"重连未按游戏状态分发对应场景快照","priority":"P1","type":"描述不完整","module":["断线重连 / 场景恢复"],"dimension":"UI 交互","source_location":"7.2 同步与异常处理「重连恢复」","rule_ref":"04#2。基准按开始、做牌、发牌、行牌、洗牌五种游戏状态分发对应场景命令，状态无映射时不执行任何恢复。需求只有“准备页/当前对局/小结算”三个页面级分支，对“当前小局进行中”未再区分开局动画、摇骰做牌、发牌理牌、行牌、洗牌等阶段，也没写各阶段取哪份快照、是否等动画结束、无映射时如何处理。","original_text":"位置“7.2 同步与异常处理「重连恢复」”。引文：“重连恢复。先按本人的房间和行牌状态选择页面。本人已离房或房间已解散时回大厅。房间仍在时，首局尚未开始则恢复房间准备页，当前小局进行中则恢复当前对局。”","problem":"基准按开始、做牌、发牌、行牌、洗牌五种游戏状态分发对应场景命令，状态无映射时不执行任何恢复。需求只有“准备页/当前对局/小结算”三个页面级分支，对“当前小局进行中”未再区分开局动画、摇骰做牌、发牌理牌、行牌、洗牌等阶段，也没写各阶段取哪份快照、是否等动画结束、无映射时如何处理。","impact":"开发只能按页面级实现：发牌中重连可能把 13/14 张手牌、余牌数 83、庄家独立位错配，或卡在动画阶段无法进入行牌；验收无法按阶段出用例。","suggestion":"在 7.2 补一张“游戏状态 → 场景命令/页面”的映射表：开始→开局快照、做牌→做牌快照、发牌→发牌快照、行牌→行牌快照、洗牌→洗牌快照，小结算/准备为页面级；并明确状态无映射时不执行恢复（保持当前页面）以及各快照恢复完成后进入的下一状态。","status":"待确认","has_detail":true,"requirementIds":["REQ-475","REQ-476"],"acceptance":"在开局动画、摇骰做牌、发牌理牌、行牌、洗牌、小结算六个时点分别断线重连，客户端进入与断线时状态对应的页面/快照，手牌张数、余牌数、独立位、行牌方与断线前一致；无映射状态不出现半恢复界面。"},{"id":"Q19","title":"重连恢复只列数据清单，未规定固定恢复顺序","priority":"P1","type":"描述不完整","module":["断线重连 / 场景恢复"],"dimension":"UI 交互","source_location":"7.2 同步与异常处理「重连恢复」","rule_ref":"04#3。基准规定行牌快照恢复顺序固定为：开局数据（静默）→玩家信息（静默）→游戏配置→局数据→牌墙→手牌→河牌→权限（完整路径）→恢复倒计时/方位灯/头像框→end_wait 应答，且前序子命令只写数据缓存、不触发界面动画。需求只给出一组无先后顺序的字段，也没有“先缓存后统一渲染”的约束。","original_text":"位置“7.2 同步与异常处理「重连恢复」”。引文：“进入相应页面后，加载该玩家可见的座位、准备和在线状态、局数、庄家及牢数、积分、余牌、公开牌河及牌组、本家手牌和分隔位、行牌方、可用操作及剩余倒计时。已提交且仍待裁决的操作恢复为等待。”","problem":"基准规定行牌快照恢复顺序固定为：开局数据（静默）→玩家信息（静默）→游戏配置→局数据→牌墙→手牌→河牌→权限（完整路径）→恢复倒计时/方位灯/头像框→end_wait 应答，且前序子命令只写数据缓存、不触发界面动画。需求只给出一组无先后顺序的字段，也没有“先缓存后统一渲染”的约束。","impact":"实现顺序不同会产生可见错误：权限先于手牌恢复会出现按钮与手牌不匹配；倒计时先于局数据恢复会先跳秒再被覆盖；方位高亮/头像框不随倒计时一起恢复会出现高亮与数字不同步，且无验收口径。","suggestion":"在 7.2 补恢复顺序表，逐项标注顺序与“是否静默（只写缓存、不刷界面）”，并把“权限放在局数据、手牌、河牌之后”“倒计时/方位高亮/头像框在权限之后统一刷新”“最后统一 end_wait”写成硬约束。","status":"待确认","has_detail":true,"requirementIds":["REQ-476"],"acceptance":"测试可按顺序逐项断言：恢复完成时手牌张数、河牌张数与副露和断线前一致；权限按钮只出现在实际有操作资格的座位；倒计时数字与方位高亮指向同一操作者；全程无单项子命令触发的中间动画。"},{"id":"Q20","title":"「可用操作」笼统，权限与按钮未按位恢复","priority":"P1","type":"描述不完整","module":["断线重连 / 权限恢复"],"dimension":"UI 交互","source_location":"7.2 同步与异常处理「重连恢复」、4.6 吃碰杠胡操作（弃牌响应与「过」）","rule_ref":"04#8。基准要求重连后权限与按钮按位完整恢复：碰/杠/胡/过的显隐、手牌置灰（禁手与飘财限制）、听牌按钮隐藏；他人权限立即收操作区。需求只写“可用操作”“恢复为等待”，未定义恢复后具体显示哪些按钮、手牌亮度/置灰是否恢复、已提交等待态是否仍显示按钮与倒计时、能否再次提交。","original_text":"位置“7.2 同步与异常处理「重连恢复」、4.6 吃碰杠胡操作（弃牌响应与「过」）”。引文：“加载该玩家可见的座位、准备和在线状态、局数、庄家及牢数、积分、余牌、公开牌河及牌组、本家手牌和分隔位、行牌方、可用操作及剩余倒计时。已提交且仍待裁决的操作恢复为等待。”","problem":"基准要求重连后权限与按钮按位完整恢复：碰/杠/胡/过的显隐、手牌置灰（禁手与飘财限制）、听牌按钮隐藏；他人权限立即收操作区。需求只写“可用操作”“恢复为等待”，未定义恢复后具体显示哪些按钮、手牌亮度/置灰是否恢复、已提交等待态是否仍显示按钮与倒计时、能否再次提交。","impact":"恢复后可能出现不该有的【吃】【碰】【胡】按钮（越权提交被服务端拒绝）或缺少应有按钮（玩家无法继续），禁手/飘财的压暗未恢复会导致可打出禁打牌；等待态无表现口径，验收不可测。","suggestion":"在 7.2 增加“权限恢复”条：按服务端下发的权限位重建【吃】【碰】【杠】【胡】【过】【自摸】及听牌入口，恢复禁手/飘财的手牌置灰与不可提；自己已提交待裁决时不显示对应按钮，仅保留等待提示与响应倒计时且不可重复提交；其他玩家的权限一律收起。","status":"待确认","has_detail":true,"requirementIds":["REQ-476","REQ-477"],"acceptance":"在可吃、可碰、可胡、可暗杠、禁手生效、飘财限制、已提交等待裁决七种状态分别重连：按钮集合与断线前逐项一致，不可打的牌仍压暗，等待态不可重复提交，其他座位无多余按钮。"},{"id":"Q21","title":"继续游戏未重置局内弹层与按钮态","priority":"P1","type":"描述不完整","module":["小结算 / 继续游戏"],"dimension":"UI 交互","source_location":"6.1.1 触发逻辑（小结算与下一局）、6.1.2 UI交互以及说明 #9","rule_ref":"06#4。基准的再来一局是统一重置事件驱动所有视图各自清理：清数据、按钮态归零、隐藏大牌出牌、停动画、关小结算弹窗。需求只列了手牌/碰杠区/牌河，未定义操作按钮与吃/杠选组面板、听牌详情、点「过」轻提示、提牌虚影、禁手压暗、倒计时与方位高亮、进行中动效的关闭与归零。","original_text":"位置“6.1.1 触发逻辑（小结算与下一局）、6.1.2 UI交互以及说明 #9”。引文：“点击【继续游戏】后，本端收起小结算，回到同桌准备状态。清除本端桌面上上一局的手牌、碰杠区和牌河，保留座位和累计积分。本家显示「已准备」，其余座位按各自操作显示「已准备」或「未准备」。”","problem":"基准的再来一局是统一重置事件驱动所有视图各自清理：清数据、按钮态归零、隐藏大牌出牌、停动画、关小结算弹窗。需求只列了手牌/碰杠区/牌河，未定义操作按钮与吃/杠选组面板、听牌详情、点「过」轻提示、提牌虚影、禁手压暗、倒计时与方位高亮、进行中动效的关闭与归零。","impact":"下一局准备阶段可能残留上一局按钮、选组面板、压暗或动效，出现可点击的过期操作或视觉错乱；验收无法判断「重置完成」的标准。","suggestion":"按统一重置补全清单：关闭所有局内弹层（听牌详情、吃/杠选组、轻提示）、隐藏操作按钮与胡牌预览、取消提牌和虚影、解除禁手/飘财压暗、停止并清除局终动效与飘分、倒计时和方位高亮归零；明确由一条重置事件驱动各视图自清。","status":"待确认","has_detail":true,"requirementIds":["REQ-451"],"acceptance":"点击继续游戏后逐项检查无残留；下一局发牌前所有局内弹层关闭、按钮与预览隐藏、手牌无压暗、无旧动效/飘分，四家头像与累计积分保留；测试可据此出重置检查清单。"},{"id":"Q22","title":"抢杠胡响应阶段缺倒计时与方位等待表现","priority":"P1","type":"描述不完整","module":["抢杠胡响应"],"dimension":"UI 交互","source_location":"3.2.1 方位信息「倒计时」；4.6「杠」加杠；4.6「吃胡（点炮胡）、抢杠胡」","rule_ref":"07#1,07#5。基准 07#1 规定中央两位数字逐秒倒数、归零显示 00 等待；07#5 规定方位光当前行动家亮、其余灭并随倒计时呼吸闪烁。3.2.1 只为“出牌阶段”和“弃牌响应阶段”定义 10 秒倒计时；抢杠胡由加杠触发，不属于弃牌响应，文档未定义其响应倒计时、中央数字是否切换、四方方位高亮归属（加杠者还是胡家），也未定义加杠者等待期间是否暂停杠字动效与补牌。4.6「杠」只有一句“先处理其他玩家的抢杠胡响应”。","original_text":"位置“3.2.1 方位信息「倒计时」；4.6「杠」加杠；4.6「吃胡（点炮胡）、抢杠胡」”。引文：“出牌阶段和弃牌响应阶段分别在开始时显示 10 秒，按秒递减。”","problem":"3.2.1 只为“出牌阶段”和“弃牌响应阶段”定义 10 秒倒计时；抢杠胡由加杠触发，不属于弃牌响应，文档未定义其响应倒计时、中央数字是否切换、四方方位高亮归属（加杠者还是胡家），也未定义加杠者等待期间是否暂停杠字动效与补牌。4.6「杠」只有一句“先处理其他玩家的抢杠胡响应”。","impact":"抢杠胡阶段缺可验收的时长与视觉反馈，可能出现无人知道需要响应，或加杠者已补牌又需撤销的界面错乱。","suggestion":"在 3.2.1 与 4.6 补充：抢杠胡响应沿用 10 秒并共用中央数字；可胡者亮本家底边红、其余亮加杠者；加杠者等待期间暂不补牌、不播杠字；归零后保持 00 等待手动操作；点【过】后加杠继续。","status":"待确认","has_detail":true,"requirementIds":["REQ-187","REQ-426","REQ-272"],"acceptance":"触发加杠后：所有视角中央切 10 秒倒计时；可胡者见【胡】【过】并亮本家底边；加杠者不补牌；倒计时到 00 仍可点【胡】/【过】；点【过】后杠成立并补牌，杠字只播一次。"},{"id":"Q23","title":"记牌器（长按桌面 0.3 秒或点牌数区域打开）未在需求中描述","priority":"P2","type":"需求缺失","module":["听牌提示／记牌器"],"dimension":"UI 交互","source_location":"3.2.5 手牌信息、4.5 行牌操作、6 辅助功能","rule_ref":"02#12。基准 12 规定：长按桌面 0.3 秒且持有记牌器道具时弹出记牌器，松手关闭；点击牌数区域也可打开。需求文档全文未出现「记牌器」「道具」相关内容，也未在「本期开发范围」或附录中声明本期不做。基准 4 要求听牌剩余张数按记牌数据计算，需求虽定义了可见牌推算口径（3.2.5.1），但记牌器这一查看入口缺失。","original_text":"位置“3.2.5 手牌信息、4.5 行牌操作、6 辅助功能”。需求文档无对应描述。","problem":"基准 12 规定：长按桌面 0.3 秒且持有记牌器道具时弹出记牌器，松手关闭；点击牌数区域也可打开。需求文档全文未出现「记牌器」「道具」相关内容，也未在「本期开发范围」或附录中声明本期不做。基准 4 要求听牌剩余张数按记牌数据计算，需求虽定义了可见牌推算口径（3.2.5.1），但记牌器这一查看入口缺失。","impact":"测试无法判断记牌器入口是否需要验证；若客户端已具备长按桌面弹记牌器行为，需求未覆盖会导致验收时与现网表现对不上。","suggestion":"二选一并写明：方案一，补记牌器交互（触发手势与时长、道具前置条件、松手关闭、点牌数区域打开、显示内容）；方案二，在本期范围的「不做项」中明示「本期不提供记牌器与道具」。","status":"待确认","has_detail":true,"requirementIds":[],"acceptance":"若做：长按桌面 0.3 秒（持有道具）弹出、松手关闭、点牌数区域可打开；若不做：范围声明中可检索到明确的不做说明。"},{"id":"Q24","title":"台面标识仅有点炮，缺自摸/胡炮/叫嘴","priority":"P2","type":"需求缺失","module":["摊牌与台面标识"],"dimension":"UI 交互","source_location":"4.6 吃碰杠胡操作 吃胡（点炮胡）、抢杠胡、5.1 结算流程 胡牌场景、6.1.2 UI交互以及说明","rule_ref":"03#3,03#12。基准台面标识枚举为未叫嘴/叫嘴/点炮/胡炮/自摸，按胡型与叫嘴数据标注每人头顶；小结算每家还要显示叫嘴标识。需求文档只描述放铳者方位的「点炮」，自摸胡时该座位无任何台面标识，胡炮标识、叫嘴/未叫嘴标识、小结算叫嘴标识全篇未出现，也未说明本期是否存在叫嘴状态。。缺失说明：各端在胡牌者对应方位显示番型的同时，在放铳者对应方位显示「点炮」。","original_text":"位置“4.6 吃碰杠胡操作 吃胡（点炮胡）、抢杠胡、5.1 结算流程 胡牌场景、6.1.2 UI交互以及说明”。需求文档无对应描述。","problem":"基准台面标识枚举为未叫嘴/叫嘴/点炮/胡炮/自摸，按胡型与叫嘴数据标注每人头顶；小结算每家还要显示叫嘴标识。需求文档只描述放铳者方位的「点炮」，自摸胡时该座位无任何台面标识，胡炮标识、叫嘴/未叫嘴标识、小结算叫嘴标识全篇未出现，也未说明本期是否存在叫嘴状态。。缺失说明：各端在胡牌者对应方位显示番型的同时，在放铳者对应方位显示「点炮」。","impact":"自摸局终牌桌上无法区分赢家归属；叫嘴相关标识无法实现，也无法判断本期是“无此功能”还是“漏写”。","suggestion":"补台面标识枚举与每人头顶/方位的显示规则（自摸、胡炮、点炮，以及叫嘴/未叫嘴），并在小结算行内补叫嘴标识；若本期无叫嘴玩法，明确写“本期不展示叫嘴/未叫嘴标识”，自摸与胡炮标识仍需补齐。","status":"待确认","has_detail":true,"requirementIds":[],"acceptance":"自摸、点炮、抢杠胡三种局终可分别在对应座位看到正确台面标识；小结算每行叫嘴标识（或明确声明不做）可逐条验收。"},{"id":"Q25","title":"恢复后固定补刷项（局内状态、头像位置、本家显示、首出提示）缺失","priority":"P2","type":"需求缺失","module":["断线重连 / 局内状态补刷"],"dimension":"UI 交互","source_location":"7.2 同步与异常处理「重连恢复」、3.2.1 对局前｜座位、4.4 发牌","rule_ref":"04#4,04#7。基准规定恢复完成后无条件补刷：切换为局内状态、切换头像位置、显示自己玩家；并由局数据/权限命令补判庄家标识、首出提示与骰子隐藏。需求只列“加载…庄家及牢数…”，没有任何恢复后的渲染/状态切换动作，也未区分准备页与局内位、未写庄家首轮出牌提示在恢复后如何重新显示。","original_text":"位置“7.2 同步与异常处理「重连恢复」、3.2.1 对局前｜座位、4.4 发牌”。需求文档无对应描述。","problem":"基准规定恢复完成后无条件补刷：切换为局内状态、切换头像位置、显示自己玩家；并由局数据/权限命令补判庄家标识、首出提示与骰子隐藏。需求只列“加载…庄家及牢数…”，没有任何恢复后的渲染/状态切换动作，也未区分准备页与局内位、未写庄家首轮出牌提示在恢复后如何重新显示。","impact":"重连后可能出现本家头像不显示、头像停在准备页自由位而手牌已按局内布局渲染的错位；庄家首轮断线重连后看不到首出提示，误以为未轮到自己。","suggestion":"补充“恢复完成后固定补刷”清单：1）切换为局内状态；2）按准备页/局内位切换本家头像位置；3）强制显示本家玩家与手牌；4）按局数据补刷庄标；5）按权限补判首出提示与骰子隐藏。","status":"待确认","has_detail":true,"requirementIds":[],"acceptance":"首局未开始重连本家头像在准备位；任一局进行中重连本家头像在桌面左下方局内位且与手牌/碰杠区同布局；庄家首轮断线重连后仍显示首出提示；任何时点本家头像不缺失、不重叠。"},{"id":"Q26","title":"未定义重连时骰子不播滚动、行牌中不展示","priority":"P2","type":"需求缺失","module":["断线重连 / 方位信息（骰子）"],"dimension":"UI 交互","source_location":"3.2.1 方位信息｜骰子、7.2 同步与异常处理「重连恢复」","rule_ref":"04#10。基准规定：行牌中重连不展示骰子；发牌/洗牌/做牌重连时骰子静态展示（跳过滚动动画，播一次入场帧后不自动隐藏）。需求只定义了实时路径“骰子翻滚后停稳、退场后中央切换为倒计时”，完全没有恢复路径的骰子处理。","original_text":"位置“3.2.1 方位信息｜骰子、7.2 同步与异常处理「重连恢复」”。需求文档无对应描述。","problem":"基准规定：行牌中重连不展示骰子；发牌/洗牌/做牌重连时骰子静态展示（跳过滚动动画，播一次入场帧后不自动隐藏）。需求只定义了实时路径“骰子翻滚后停稳、退场后中央切换为倒计时”，完全没有恢复路径的骰子处理。","impact":"按现文实现会在重连时重播摇骰，或让骰子残留在中央压住倒计时与余牌数，玩家误以为正在重新开局；测试无判定依据。","suggestion":"补充“重连骰子表现”：行牌阶段恢复不显示骰子，直接显示倒计时；发牌/做牌/洗牌阶段恢复只静态显示断线前点数、不播滚动动画，进入行牌时按正常规则隐藏。","status":"待确认","has_detail":true,"requirementIds":[],"acceptance":"行牌中重连：中央无骰子、直接显示倒计时与余牌数；发牌阶段重连：骰子静态停在断线前点数且无滚动过程，切入行牌后隐藏；无骰子与倒计时/余牌数位置冲突。"},{"id":"Q27","title":"超时提示关闭与「已返回」横幅缺失","priority":"P2","type":"需求缺失","module":["超时提示解除"],"dimension":"UI 交互","source_location":"3.2.1 方位信息「倒计时」；3.2.3 玩家头像信息「玩家状态」-离线状态；7.2 同步与异常处理「重连恢复」","rule_ref":"05#13。UI 基准 05#13 规定该玩家任意操作数据到达且未断线时，隐藏超时提示并弹出「已返回」横幅。需求只有离线覆盖在确认恢复在线时移除断线图标和计时，没有超时提示层的关闭条件（什么事件算「该玩家恢复操作」）、没有「已返回」横幅的文案/位置/时长，也没有区分「断线保持中不解除」这一前置条件，超时提示状态机在需求里不闭环。","original_text":"位置“3.2.1 方位信息「倒计时」；3.2.3 玩家头像信息「玩家状态」-离线状态；7.2 同步与异常处理「重连恢复」”。需求文档无对应描述。","problem":"UI 基准 05#13 规定该玩家任意操作数据到达且未断线时，隐藏超时提示并弹出「已返回」横幅。需求只有离线覆盖在确认恢复在线时移除断线图标和计时，没有超时提示层的关闭条件（什么事件算「该玩家恢复操作」）、没有「已返回」横幅的文案/位置/时长，也没有区分「断线保持中不解除」这一前置条件，超时提示状态机在需求里不闭环。","impact":"若补齐超时提示层而无解除规则，提示会长期残留在桌面挡住牌桌；开发无法判断玩家点【过】或出牌后是否立即关闭、断线中是否关闭；测试无法验收「恢复操作→提示消失并播横幅」这一链路。","suggestion":"在超时提示小节补：解除条件（收到该玩家的任意操作数据且当前在线）、关闭方式（提示层直接隐藏还是淡出）、「已返回」横幅的文案、出现位置与停留时长、仅本端还是四端同步播放、断线期间收到重连数据不解除、与离线覆盖层移除的先后顺序。","status":"待确认","has_detail":true,"requirementIds":[],"acceptance":"超时提示层显示中该玩家完成任意操作（出牌、点击【过】、提交吃碰杠胡）后，四端提示层关闭并播放「已返回」横幅；该玩家断线状态下不关闭；横幅停留结束后无残留。测试可按操作类型与断线/在线两组条件出用例。"},{"id":"Q28","title":"他人倒计时超8秒道具引导提醒层缺失","priority":"P2","type":"需求缺失","module":["倒计时·他人长考提醒"],"dimension":"UI 交互","source_location":"3.2.1 方位信息「倒计时」；4.6 吃碰杠胡操作「弃牌响应与「过」」","rule_ref":"05#17。UI 基准 05#17 规定他人倒计时超过 8 秒仍未操作时弹出道具引导提醒层。需求对倒计时只写了两位数字样式、颜色、响应阶段四端同步、归零保持 00，全文无「道具」相关描述，既没有该提醒层的触发条件、显示对象（仅他人座位）、层级与位置、每个倒计时周期只弹一次、下一阶段开始或恢复操作时隐藏，也没有声明本期不做。","original_text":"位置“3.2.1 方位信息「倒计时」；4.6 吃碰杠胡操作「弃牌响应与「过」」”。需求文档无对应描述。","problem":"UI 基准 05#17 规定他人倒计时超过 8 秒仍未操作时弹出道具引导提醒层。需求对倒计时只写了两位数字样式、颜色、响应阶段四端同步、归零保持 00，全文无「道具」相关描述，既没有该提醒层的触发条件、显示对象（仅他人座位）、层级与位置、每个倒计时周期只弹一次、下一阶段开始或恢复操作时隐藏，也没有声明本期不做。","impact":"四人局中一人长考时，其余玩家除了看到数字停在 00 之外没有任何可见反馈与引导，等待态无明确终态；开发不知道要不要做该层，测试无法判定他人长考时应出现什么。","suggestion":"在倒计时小节补充：触发条件（他人座位倒计时已超过 8 秒且本周期未弹过）、显示对象（仅其他玩家视角，本家自己超时不弹）、提醒层样式与层级、是否可点击、每周期仅一次、下一次倒计时刷新或该玩家恢复操作时隐藏；若本期确定不做道具体系，显式写「本期不实现道具引导提醒层」并登记与现网差异说明。","status":"待确认","has_detail":true,"requirementIds":[],"acceptance":"他人倒计时走过 8 秒时，其座位方向出现道具引导提醒层；同一倒计时周期不重复弹出；下一倒计时周期可再次触发；本家回合及已有响应按钮的玩家不弹；恢复操作或进入下一阶段后消失。"},{"id":"Q29","title":"超时操作引导与超时提示层未定义（与 Q14 同根因，重复登记，建议合并）","priority":"P2","type":"需求缺失","module":["倒计时 / 超时提示"],"dimension":"UI 交互","source_location":"3.2.1 方位信息（倒计时）、7.2 同步与异常处理","rule_ref":"05#12,05#17。基准 05#12 定义玩家操作超时由服务端驱动显示超时提示层，05#17 定义他人倒计时超过 8 秒时显示道具引导提醒层。基准定义两个超时弹层：他人倒计时超过 8 秒时显示超时操作引导，下次倒计时刷新时隐藏；玩家操作超时由服务端驱动显示超时提示层，玩家回归时关闭。需求只写倒计时归零保持 00 继续等待手动操作，未定义任何超时引导/提示层的触发条件、显示内容、层级和关闭条件。","original_text":"位置“3.2.1 方位信息（倒计时）、7.2 同步与异常处理”。需求文档无对应描述。","problem":"基准定义两个超时弹层：他人倒计时超过 8 秒时显示超时操作引导，下次倒计时刷新时隐藏；玩家操作超时由服务端驱动显示超时提示层，玩家回归时关闭。需求只写倒计时归零保持 00 继续等待手动操作，未定义任何超时引导/提示层的触发条件、显示内容、层级和关闭条件。","impact":"玩家不知道当前该谁操作或自己已超时；断线回归无提示；测试无法覆盖超时相关界面；与现网表现不一致。","suggestion":"与 Q14 合并处理：补充两条规则：1）他人倒计时超过 8 秒时在本端显示超时操作引导（位置、内容、层级），下一次倒计时刷新时隐藏；2）服务端判定玩家操作超时时显示超时提示层，玩家回归或恢复操作时关闭；并说明无托管下不自动出牌但仍显示超时提示。","status":"待确认","has_detail":true,"requirementIds":[],"acceptance":"他人倒计时到第 8 秒出现引导，倒计时刷新即消失；玩家超时后显示提示层，回归后自动关闭；无托管下超时不自动出牌；可据此出超时用例。"},{"id":"Q30","title":"听牌列表缺查听入口与重复点击开合（与 Q01 同根因，重复登记，建议合并）","priority":"P2","type":"需求缺失","module":["听牌 / 手牌信息"],"dimension":"UI 交互","source_location":"3.2.5 手牌信息（听牌标签/听牌详情）、4.5 行牌操作（提牌）","rule_ref":"02#8,02#10。基准中听牌列表有两个打开入口：主界面查听按钮、提牌且可听；并规定重复点击听牌弹窗切换关闭。需求只定义「提起带听牌标签的候选牌」打开听牌详情，未定义查听按钮的位置与显隐、点击开合，也未定义重复点击同一入口关闭及防止重复打开。","original_text":"位置“3.2.5 手牌信息（听牌标签/听牌详情）、4.5 行牌操作（提牌）”。需求文档无对应描述。","problem":"基准中听牌列表有两个打开入口：主界面查听按钮、提牌且可听；并规定重复点击听牌弹窗切换关闭。需求只定义「提起带听牌标签的候选牌」打开听牌详情，未定义查听按钮的位置与显隐、点击开合，也未定义重复点击同一入口关闭及防止重复打开。","impact":"玩家无法主动查听；若实现按钮会出现重复点击叠层或无法关闭；测试缺少入口与开合用例。","suggestion":"与 Q01 合并处理：补充主界面查听按钮的显示条件（听牌时可用/常驻）、点击打开听牌列表、再次点击关闭；明确与提牌打开共用同一面板，重复点击不叠加，出牌、失去听牌或离开出牌阶段时自动关闭。","status":"待确认","has_detail":true,"requirementIds":[],"acceptance":"听牌时显示查听按钮，点一次打开、再点关闭；提牌打开与按钮打开为同一面板且不叠层；听牌状态消失或出牌后自动关闭；测试覆盖两种入口。"},{"id":"Q31","title":"预约洗牌按钮与弹层未定义（本类主条目，Q35 同根因）","priority":"P2","type":"需求缺失","module":["小结算 / 预约洗牌"],"dimension":"UI 交互","source_location":"4.5 行牌操作、4.6 吃碰杠胡操作、6.1.1 触发逻辑（后续小局入口）、本期开发范围、默认规则、4.4「发牌」、5.1「流程明细」小结算与下一局（全文无洗牌章节）","rule_ref":"08#12,08#13。基准 08#12 定义预约洗牌前置条件（已胡、非最后局、未预约、非复盘，当日首次显示带提示），08#13 定义对每个预约座位播 spine 且最后一个完成后应答。需求全文没有预约洗牌按钮或弹层，后续小局只依赖小结算【继续游戏】，且未说明是移除该功能还是遗漏，也未说明与继续游戏的关系。","original_text":"位置“4.5 行牌操作、4.6 吃碰杠胡操作、6.1.1 触发逻辑（后续小局入口）、本期开发范围、默认规则、4.4「发牌」、5.1「流程明细」小结算与下一局（全文无洗牌章节）”。需求文档无对应描述。","problem":"基准主界面常驻预约洗牌按钮，弹层在「已胡+非最后局+未预约+点按钮」时打开，通过弹窗操作关闭。需求全文没有预约洗牌按钮或弹层，后续小局只依赖小结算【继续游戏】，且未说明是移除该功能还是遗漏，也未说明与继续游戏的关系。","impact":"现网已有的预约洗牌入口可能被误删或残留；开发无法判断是否实现；测试无开合条件可依。","suggestion":"明确本期是否保留预约洗牌。保留则补充按钮位置与显隐条件（已胡、非最后局、未预约）、弹层内容与关闭方式、与【继续游戏】的先后；不保留则明示「本期移除预约洗牌」并说明替代流程。","status":"待确认","has_detail":true,"requirementIds":[],"acceptance":"保留时四个条件同时满足才显示按钮，点击打开弹层，操作后关闭；不保留时界面无该按钮且文档明示；测试可按条件组合验证显隐。"},{"id":"Q32","title":"换座入口、动画与服务端通知未定义","priority":"P2","type":"需求缺失","module":["等待阶段 / 换座"],"dimension":"UI 交互","source_location":"3.1 对局前（座位）、3.2.3 玩家头像信息","rule_ref":"06#9。基准定义换座动画：头像飞向桌面中心再飞回，动画完成后通知服务端。需求等待阶段只定义按加入顺序入座，未定义换座入口与权限、可换座时机、头像飞行过程、完成后通知服务端及失败恢复。","original_text":"位置“3.1 对局前（座位）、3.2.3 玩家头像信息”。需求文档无对应描述。","problem":"基准定义换座动画：头像飞向桌面中心再飞回，动画完成后通知服务端。需求等待阶段只定义按加入顺序入座，未定义换座入口与权限、可换座时机、头像飞行过程、完成后通知服务端及失败恢复。","impact":"现网已有的换座入口可能被误删或残留，开发无法判断是否实现；换座动画与服务端同步缺失，测试无验收依据。","suggestion":"明确本期是否保留换座。保留则补充入口与权限、可换座时机、发起后头像飞中心再飞回的动画、动画完成后通知服务端刷新座位、失败时恢复原座位；不保留则明示本期不做换座。","status":"待确认","has_detail":true,"requirementIds":[],"acceptance":"指定玩家发起换座后头像动画完成并通知服务端刷新座位；失败时恢复原座位与头像位置；测试可验证入口权限、动画与同步。"},{"id":"Q33","title":"牌墙显示与开关、骰子和奇偶决定多一墩均未描述（与 Q06 同根因，重复登记，建议合并）","priority":"P2","type":"需求缺失","module":["牌墙"],"dimension":"UI 交互","source_location":"三.对局流程-3.2.2 玩法信息、4.4 发牌","rule_ref":"07#8。基准定义牌墙显示受玩家设置开关控制，并按骰子点数之和的奇偶推算哪一侧多一墩；需求文档全文只把“牌墙”当作发牌与剩余可摸牌数的计算来源，没有任何牌墙视觉展示、玩家设置开关、多一墩归属的描述。","original_text":"位置“三.对局流程-3.2.2 玩法信息、4.4 发牌”。需求文档无对应描述。","problem":"基准定义牌墙显示受玩家设置开关控制，并按骰子点数之和的奇偶推算哪一侧多一墩；需求文档全文只把“牌墙”当作发牌与剩余可摸牌数的计算来源，没有任何牌墙视觉展示、玩家设置开关、多一墩归属的描述。","impact":"若现网牌墙可见，客户端缺少开关与多墩分配规则将无法还原；测试也无法验证关闭开关后的表现。","suggestion":"与 Q06 合并处理：补充牌墙是否展示、默认开关状态、关闭时是否隐藏整面牌墙，以及骰子和为奇数/偶数时多出的一墩归属哪一侧的明确规则。","status":"待确认","has_detail":true,"requirementIds":[],"acceptance":"给定骰子点数，能算出多一墩位置并可在画面核对；关闭开关后牌墙整面隐藏且不影响余牌数显示。"},{"id":"Q34","title":"倒计时音效（自己回合且未自动胡）未描述","priority":"P2","type":"需求缺失","module":["倒计时音效"],"dimension":"UI 交互","source_location":"三.对局流程-3.2.1 方位信息-倒计时、4.5 行牌操作-出牌","rule_ref":"07#2。基准规定自己回合且未自动胡时播放倒计时音效；需求文档只规定“发牌与理牌的音效资源及触发时点本方案不添加”，对倒计时音效既未否定也未定义，属于漏项。","original_text":"位置“三.对局流程-3.2.1 方位信息-倒计时、4.5 行牌操作-出牌”。需求文档无对应描述。","problem":"基准规定自己回合且未自动胡时播放倒计时音效；需求文档只规定“发牌与理牌的音效资源及触发时点本方案不添加”，对倒计时音效既未否定也未定义，属于漏项。","impact":"音频资源与播放时机无依据，开发可能不做或随意做，验收无法判断是否符合现网。","suggestion":"明确是否保留倒计时音效；保留时补充触发条件（本家可操作且【自摸】未待处理）、播放起点（如剩余3秒）与每局次数限制。","status":"待确认","has_detail":true,"requirementIds":[],"acceptance":"本家回合倒计时到约定秒数时听到音效，他家回合与非本家可操作阶段无该音效，可出音频用例。"},{"id":"Q35","title":"预约洗牌道具的预约条件与动画完全未描述（与 Q31 同根因，重复登记，建议合并）","priority":"P2","type":"需求缺失","module":["开局流程 / 洗牌道具（预约洗牌）"],"dimension":"UI 交互","source_location":"本期开发范围、默认规则、4.4「发牌」、5.1「流程明细」小结算与下一局（全文无洗牌章节）","rule_ref":"08#12,08#13,08#14。基准 08#12 定义预约前置守卫（自己已胡、非最后一局、未预约、非复盘，当日首次显示带提示）；08#13 定义对每个预约座位播 spine（自己/他人不同动画段，最后一个座位完成后发应答）；08#14 定义洗牌阶段重连快照恢复。需求未出现“洗牌/预约”任何描述，也未声明本期不做。","original_text":"位置“本期开发范围、默认规则、4.4「发牌」、5.1「流程明细」小结算与下一局（全文无洗牌章节）”。需求文档无对应描述。","problem":"基准 08#12 定义预约前置守卫（自己已胡、非最后一局、未预约、非复盘，当日首次显示带提示）；08#13 定义对每个预约座位播 spine（自己/他人不同动画段，最后一个座位完成后发应答）；08#14 定义洗牌阶段重连快照恢复。需求未出现“洗牌/预约”任何描述，也未声明本期不做。","impact":"该功能无法开发与验收；已胡玩家缺少预约入口，多人预约时动画与应答顺序无定义，重连恢复也无据可依。","suggestion":"与 Q31 合并处理：补充洗牌道具章节：入口/按钮显隐与四类前置条件、预约与取消流程、当日首次提示、每座位 spine 分段与完成应答、洗牌阶段重连的静态骰子+牌墙恢复；若本期不做需在“本期开发范围”明确排除。","status":"待确认","has_detail":true,"requirementIds":[],"acceptance":"仅满足四条件的本家显示预约入口；预约后逐座位播洗牌动画，最后一个座位完成才进入下一步；未预约/末局/复盘时无入口；洗牌阶段重连恢复静态画面。"},{"id":"Q36","title":"摸牌后的凑牌（顺/刻/杠）动画未描述","priority":"P2","type":"需求缺失","module":["行牌操作 / 摸牌"],"dimension":"UI 交互","source_location":"4.5「行牌操作」摸牌","rule_ref":"08#10。基准 08#10 要求本家摸牌滑入后触发凑牌动画判定，凑成顺/刻/杠时按花色播动画，他人直接摆牌。需求只写新牌落入最右分隔位及牌墙/余牌数刷新，没有凑牌判定与动画。","original_text":"位置“4.5「行牌操作」摸牌”。需求文档无对应描述。","problem":"基准 08#10 要求本家摸牌滑入后触发凑牌动画判定，凑成顺/刻/杠时按花色播动画，他人直接摆牌。需求只写新牌落入最右分隔位及牌墙/余牌数刷新，没有凑牌判定与动画。","impact":"摸牌反馈不完整，玩家无法感知凑牌结果；验收缺少可对照的动画标准。","suggestion":"补充摸牌后凑牌动画：触发条件（顺/刻/杠）、按花色区分、播放时长、与摸牌落位/听牌提示/同牌高亮的先后关系，以及未凑成时无动画。","status":"待确认","has_detail":true,"requirementIds":[],"acceptance":"摸到能成顺/刻/杠的牌时按花色播对应凑牌动画；未凑成不播；动画与摸牌落位衔接且不影响牌墙/余牌数。"},{"id":"Q37","title":"飘分显示对象与负分颜色两处矛盾","priority":"P2","type":"内容冲突","module":["飘分表现"],"dimension":"UI 交互","source_location":"4.6 吃碰杠胡操作 自摸、4.6 吃碰杠胡操作 吃胡（点炮胡）、抢杠胡、5.1 结算流程 胡牌场景","rule_ref":"03#8。4.6 写“按各端座位显示飘分”（含 0 分座位）且负分为“灰色”；5.1 与 6.1.1 写“只在得分非 0 的玩家”显示飘分且负分为“浅蓝灰色”。显示对象和负分色值两处冲突。","original_text":"位置“4.6 吃碰杠胡操作 自摸、4.6 吃碰杠胡操作 吃胡（点炮胡）、抢杠胡、5.1 结算流程 胡牌场景”。引文：“随后按各端座位显示飘分，正分用黄色，负分用灰色。……各端只在本局得分非 0 的玩家座位内侧显示飘分……负分用浅蓝灰色并带减号。”","problem":"4.6 写“按各端座位显示飘分”（含 0 分座位）且负分为“灰色”；5.1 与 6.1.1 写“只在得分非 0 的玩家”显示飘分且负分为“浅蓝灰色”。显示对象和负分色值两处冲突。","impact":"实现无法确定 0 分座位是否播飘分、负分用灰色还是浅蓝灰，测试无法判定色值和对局内 0 分玩家是否有飘分。","suggestion":"统一为基准口径：仅对分数变化的座位逐个播飘分，0 分座位不播；负分统一为浅蓝灰并带减号，删除 4.6 中“按各端座位”“灰色”的表述或改为引用 5.1。","status":"待确认","has_detail":true,"requirementIds":["REQ-446","REQ-429"],"acceptance":"点炮局中未参与赔付的两名 0 分玩家座位不出现飘分；所有负分飘分取浅蓝灰色带减号，全篇只保留一处色值定义。"},{"id":"Q38","title":"下一小局序列漏定财神且与4.4衔接矛盾（与 Q09 同根因，重复登记，建议合并）","priority":"P2","type":"内容冲突","module":["开局流程 / 下一小局序列"],"dimension":"UI 交互","source_location":"5.1「流程明细」小结算与下一局、4.1「对局开始」触发逻辑、4.3「定财神」、4.4「发牌」","rule_ref":"08#1,08#2。5.1 的下一局序列为定庄→发牌，跳过 4.3 定财神；4.3 写“每小局掷骰动画开始时显示白板指示牌”，4.4 又写“4.3 白板指示牌已显示”，4.1 写“后续小局直接进入摇骰发牌”。三处序列不一致，无法确定后续小局是否显示财神指示牌与摇骰。","original_text":"位置“5.1「流程明细」小结算与下一局、4.1「对局开始」触发逻辑、4.3「定财神」、4.4「发牌」”。引文：“四人均已准备后自动开始下一小局，按 4.2「定庄」确定庄家，再按 4.4「发牌」继续。”","problem":"5.1 的下一局序列为定庄→发牌，跳过 4.3 定财神；4.3 写“每小局掷骰动画开始时显示白板指示牌”，4.4 又写“4.3 白板指示牌已显示”，4.1 写“后续小局直接进入摇骰发牌”。三处序列不一致，无法确定后续小局是否显示财神指示牌与摇骰。","impact":"开发可能在第2局起漏做财神指示牌或摇骰，四端开局表现不一致；验收无统一序列。","suggestion":"与 Q09 合并处理：统一下一小局序列为：定庄→掷骰（同帧显示庄标与财神指示牌）→发牌，并修正 5.1 中跳过 4.3 的表述。","status":"待确认","has_detail":true,"requirementIds":["REQ-452","REQ-338","REQ-126"],"acceptance":"第2局起每局均按定庄→掷骰（庄标+财神指示牌）→发牌执行，与4.1/4.2/4.3/4.4一致。"},{"id":"Q39","title":"风位字出现时机与掷骰前已定庄矛盾（本类主条目，Q40 同根因）","priority":"P2","type":"内容冲突","module":["定庄 / 方位盘"],"dimension":"UI 交互","source_location":"3.2.1「方位信息」无方位/未操作、4.2「定庄」UI及动画、3.2.1 方位信息「无方位／未操作」；4.2 定庄「UI及动画」","rule_ref":"08#6。4.2 明确“掷骰开始前已经确定庄家及其牢数”，而风位由庄家为东推导，故掷骰前应已确定风位；3.2.1 却把“未分配风位、四侧无风位字”作为开局过场状态，录屏又显示骰子退场后才出现风位字，未说明风位字首次出现与换庄刷新的确切帧。","original_text":"位置“3.2.1「方位信息」无方位/未操作、4.2「定庄」UI及动画、3.2.1 方位信息「无方位／未操作」；4.2 定庄「UI及动画」”。引文：“进入开局过场并显示方位盘底座后，未分配风位时只显示暗色底座，四侧无风位字和高亮。”","problem":"4.2 明确“掷骰开始前已经确定庄家及其牢数”，而风位由庄家为东推导，故掷骰前应已确定风位；3.2.1 却把“未分配风位、四侧无风位字”作为开局过场状态，录屏又显示骰子退场后才出现风位字，未说明风位字首次出现与换庄刷新的确切帧。","impact":"各端风位字出现时机可能不一致，与庄标刷新不同步；无法判断哪种表现正确。","suggestion":"统一为定庄数据到达/掷骰开始同帧刷新庄标与灰暗风位字，掷骰退场后维持；换庄局同样同帧刷新，并删除或改写“未分配风位”状态。","status":"待确认","has_detail":true,"requirementIds":["REQ-265","REQ-266","REQ-342","REQ-348"],"acceptance":"首局与换庄局均在掷骰开始帧看到与庄家东位一致的四侧风位字，且与庄标同帧出现；骰子退场后风位字保持。"},{"id":"Q40","title":"风位字出现时机与“掷骰前已定庄”矛盾（与 Q39 同根因，重复登记，建议合并）","priority":"P2","type":"内容冲突","module":["方位盘"],"dimension":"UI 交互","source_location":"3.2.1 方位信息「无方位／未操作」；4.2 定庄「UI及动画」","rule_ref":"08#6,08#7。基准 08#6 规定定庄数据含庄家座位、连庄次数与门风，并刷新庄标与方位盘底图；08#7 规定掷骰动画播完延迟 1 秒自动隐藏。4.2 明确“掷骰前已确定本小局的庄家和牢数”，而风位由庄家推导（庄为东、逆时针南西北），掷骰开始前就应可渲染风位；但 3.2.1 把“未分配风位、四侧无风位字”作为开局过场后的状态，录屏又在骰子退场后的 00:09.50 才出现风位字。风位何时从无到有、庄标出现时四侧是否已有风位字，两处结论相反。","original_text":"位置“3.2.1 方位信息「无方位／未操作」；4.2 定庄「UI及动画」”。引文：“进入开局过场并显示方位盘底座后，未分配风位时只显示暗色底座，中央留空，四侧无风位字和高亮。”","problem":"4.2 明确“掷骰前已确定本小局的庄家和牢数”，而风位由庄家推导（庄为东、逆时针南西北），掷骰开始前就应可渲染风位；但 3.2.1 把“未分配风位、四侧无风位字”作为开局过场后的状态，录屏又在骰子退场后的 00:09.50 才出现风位字。风位何时从无到有、庄标出现时四侧是否已有风位字，两处结论相反。","impact":"开发无法确定风位字渲染帧与初始显隐；验收“开局过场是否应显示风位字”会出现两种合理答案。","suggestion":"与 Q39 合并处理：明确时序，例如“掷骰动画开始时与庄标同帧按庄家=东渲染四侧风位字（灰暗态），此前底座无风位字”，并改写 3.2.1 中“未分配风位”的歧义描述与对应录屏时点。","status":"待确认","has_detail":true,"requirementIds":["REQ-265","REQ-266","REQ-342"],"acceptance":"逐帧核对：摇骰开始帧四侧风位字已按庄家为东显示为灰暗态；过场底座阶段无风位字；换庄后下一局同一帧按新庄刷新风位。"},{"id":"Q41","title":"亮牌早于番型，与四步链顺序不一致","priority":"P2","type":"逻辑错误","module":["局终动画链"],"dimension":"UI 交互","source_location":"4.6 吃碰杠胡操作 自摸/吃胡、5.1 结算流程 胡牌场景、6.1.1 胡牌后进入","rule_ref":"03#1。基准四步链为：①点炮/番型动画 → ②摊牌+台面标识 → ③小结算 → ④大结算，摊牌发生在番型动画之后；需求文档写“对局结束 + 各家手牌亮出”与番型字效同时或更早，摊牌先于番型。同时基准给出每步停留 1.5 秒的节奏，需求只写“短暂保留”“退场后”，无任何时长与推进门禁。","original_text":"位置“4.6 吃碰杠胡操作 自摸/吃胡、5.1 结算流程 胡牌场景、6.1.1 胡牌后进入”。引文：“各端显示「对局结束」，各家手牌亮出，并在胡牌者对应位置显示番型。”","problem":"基准四步链为：①点炮/番型动画 → ②摊牌+台面标识 → ③小结算 → ④大结算，摊牌发生在番型动画之后；需求文档写“对局结束 + 各家手牌亮出”与番型字效同时或更早，摊牌先于番型。同时基准给出每步停留 1.5 秒的节奏，需求只写“短暂保留”“退场后”，无任何时长与推进门禁。","impact":"亮牌与番型字效的叠放层次和先后时序无法确定，动画节奏无验收阈值，开发各写一版，验收无据。","suggestion":"按基准写明：收操作区 → 隐藏出牌放大 → 番型/点炮动画（1.5 秒）→ 摊牌+台面标识（1.5 秒）→ 小结算 → 大结算，并给出各步停留时长和“上一步结束才进入下一步”的推进条件（可引用附录 B 允许可视节奏微调）。","status":"待确认","has_detail":true,"requirementIds":["REQ-443","REQ-444","REQ-429"],"acceptance":"录屏对照可确认番型字效先于摊牌完成，每步停留约 1.5 秒，且上一步未结束不进入下一步；文档有明确阈值可供验收。"},{"id":"Q42","title":"断线计时初值与满 1 小时封顶与基准冲突","priority":"P2","type":"逻辑错误","module":["玩家头像 / 断线表现"],"dimension":"UI 交互","source_location":"3.2.3 玩家头像信息·玩家状态·离线状态","rule_ref":"04#17。基准要求断线时长初值按断线时间戳计算（他端晚收到离线状态时应从实际已流逝秒数起算），满 1 小时封顶显示“60:00”并停表，分、秒不足两位数补 0。需求写成“每次转为离线从00:00开始”，并缺失 60:00 封顶停表与补 0 规则，与本端/他端计时起点不一致时会出现四端秒数不同。","original_text":"位置“3.2.3 玩家头像信息·玩家状态·离线状态”。引文：“在线视角在离线玩家头像内容上显示深色覆盖层，中央为白色断链图标，图标下方用黄色「分:秒」显示离线时长。每次转为离线从00:00开始并逐秒增加，确认恢复在线时移除断线图标和计时。再次离线重新计时。”","problem":"基准要求断线时长初值按断线时间戳计算（他端晚收到离线状态时应从实际已流逝秒数起算），满 1 小时封顶显示“60:00”并停表，分、秒不足两位数补 0。需求写成“每次转为离线从00:00开始”，并缺失 60:00 封顶停表与补 0 规则，与本端/他端计时起点不一致时会出现四端秒数不同。","impact":"其他玩家看到上线方离线时可能从 00:00 开始而非实际已离线时长，长时断线会无限递增（如 75:30），与现网表现不一致，测试无法断言封顶与补 0。","suggestion":"改为“按离线时间戳计算初值，逐秒递增；分、秒均两位补 0；累计满 1 小时封顶显示「60:00」并停表；恢复在线立即移除并停止计时；再次离线按新的时间戳重新计算”。","status":"待确认","has_detail":true,"requirementIds":["REQ-291"],"acceptance":"玩家离线 3 秒后他端才收到状态：头像计时从 00:03 开始；连续断线 62 分钟：显示停在 60:00 不再增加；个位数秒显示 00:05；恢复在线后图标与计时同时消失。"},{"id":"Q43","title":"余牌数显示位置与基准（返回按钮栏）不一致","priority":"P2","type":"逻辑错误","module":["剩余牌数"],"dimension":"UI 交互","source_location":"三.对局流程-3.2.2 玩法信息-剩余张数","rule_ref":"07#7。基准写明剩余牌数组件挂在返回按钮栏，需求文档将其定位在中央骰盘右侧，且未说明这是有意改版；两处位置无法同时满足。","original_text":"位置“三.对局流程-3.2.2 玩法信息-剩余张数”。引文：“余牌数显示在中央骰盘右侧。骰盘切换为行牌倒计时后，余牌数继续显示在右侧。”","problem":"基准写明剩余牌数组件挂在返回按钮栏，需求文档将其定位在中央骰盘右侧，且未说明这是有意改版；两处位置无法同时满足。","impact":"按 PRD 实现会与现网布局不一致，UI 走查/还原度验收会判为偏差；若沿用现网位置又与 PRD 文字冲突，开发需自行决策。","suggestion":"明确以哪种位置为准；如采用骰盘右侧，在文档中标注“与现网实现差异（原挂在返回按钮栏）”并同步锚点组件说明。","status":"待确认","has_detail":true,"requirementIds":["REQ-275","REQ-276"],"acceptance":"余牌数只有一个确定归属位置；按该位置截图与基准或差异说明一致，走查可直接判定。"},{"id":"Q44","title":"方位光归零后未熄灭，且未描述随倒计时呼吸","priority":"P2","type":"逻辑错误","module":["方位盘方位光"],"dimension":"UI 交互","source_location":"三.对局流程-3.2.1 方位信息-操作指示、倒计时","rule_ref":"07#5。基准规定方位光随倒计时呼吸闪烁、归零熄灭；需求文档只写“循环闪烁”，未与倒计时节奏绑定，且明确倒计时归零后仍保持等待，高亮只在轮次交接时清除，等于归零后方位光继续亮，与基准冲突。","original_text":"位置“三.对局流程-3.2.1 方位信息-操作指示、倒计时”。引文：“该玩家开始操作时，在方位盘对应边循环闪烁高亮……轮次交接后清除上一边的高亮。／出牌或响应倒计时归零后保持 00，继续等待手动出牌或响应。”","problem":"基准规定方位光随倒计时呼吸闪烁、归零熄灭；需求文档只写“循环闪烁”，未与倒计时节奏绑定，且明确倒计时归零后仍保持等待，高亮只在轮次交接时清除，等于归零后方位光继续亮，与基准冲突。","impact":"实现方会做出“00 仍常亮/自由闪烁”的效果，与现网呼吸+归零熄灭不同，动效验收无依据。","suggestion":"补充：方位光与该边倒计时同步呼吸闪烁；倒计时到 00 时方位光熄灭，但操作权未交接前不再重新点亮，直到下一次实际获得操作权。","status":"待确认","has_detail":true,"requirementIds":["REQ-268","REQ-269"],"acceptance":"录屏验证：高亮亮度随秒数周期性变化；归零瞬间该边高亮熄灭且 00 期间不再点亮；轮次交接时新边亮起。"},{"id":"Q45","title":"「按无托管处理」未界定超时与离线提示是否实现","priority":"P2","type":"定义歧义","module":["本期范围与无托管"],"dimension":"UI 交互","source_location":"本期开发范围；3.2.3 玩家头像信息「玩家状态」-离线状态；4.5 行牌操作「出牌」","rule_ref":"05#1,05#12,05#14。需求用一句「按无托管处理」整体关闭托管体系，但 UI 基准把托管提示（05#11 托管出牌次数惩罚提醒）、超时提示（05#12、05#13）、离线解散预警（05#14）分属不同体系：前者依附托管状态，后两者是好友房通用超时与断线流程。3.2.3 又写「界面不展示托管提示」，按字面可被理解为所有头顶提示/预警都不做。需求没有逐项列出本期关闭什么、保留什么，开发与测试无法判定超时提示层、超时自动解散、离线解散预警、8 秒道具引导到底属于「无托管」的排除范围还是漏写。","original_text":"位置“本期开发范围；3.2.3 玩家头像信息「玩家状态」-离线状态；4.5 行牌操作「出牌」”。引文：“本期范围为四人好友房的核心流程，按无托管处理。……本核心流程按无托管处理。头像不显示「托管中」字样，界面不展示托管提示或取消托管入口。”","problem":"需求用一句「按无托管处理」整体关闭托管体系，但 UI 基准把托管提示（05#11 托管出牌次数惩罚提醒）、超时提示（05#12、05#13）、离线解散预警（05#14）分属不同体系：前者依附托管状态，后两者是好友房通用超时与断线流程。3.2.3 又写「界面不展示托管提示」，按字面可被理解为所有头顶提示/预警都不做。需求没有逐项列出本期关闭什么、保留什么，开发与测试无法判定超时提示层、超时自动解散、离线解散预警、8 秒道具引导到底属于「无托管」的排除范围还是漏写。","impact":"同一句「按无托管处理」在不同人心中的落实范围不同：一种实现会砍掉超时与离线预警，另一种会保留；测试无法据文档判断某提示「应该有」还是「应该没有」，验收口径不可复现。","suggestion":"在「本期开发范围」或 7.2 增加一张本期范围清单，逐条对照：托管类型（托管/自动摸打）、自动胡入口、菜单主动托管、托管遮罩、头像托管角标、托管惩罚提醒标注「本期不做」；超时提示层、超时自动解散、离线解散预警、8 秒道具引导逐项标注「本期实现」或「本期不做（附现网差异说明）」。同时把 3.2.3 的措辞限定为「不展示托管状态相关的字样、提示与入口」，避免被扩大解释为关闭一切等待类提示。","status":"待确认","has_detail":true,"requirementIds":["REQ-116","REQ-294","REQ-388"],"acceptance":"清单逐项可勾选；每个基准条款都能在文档中查到「实现/不做/差异说明」的明确结论；测试不需要再靠推断决定某提示是否应出现。"},{"id":"Q46","title":"轻提示停留时长模糊且缺玩家回归触发","priority":"P2","type":"定义歧义","module":["对局内通用提示 / 轻提示"],"dimension":"UI 交互","source_location":"4.8 对局内通用提示（点“过”才能出牌）、7.2 同步与异常处理","rule_ref":"01#7,04#19。基准 01#7 规定「点“过”才能出牌」提示持续 3 秒；04#19 规定玩家任意操作数据到达时隐藏超时提示并弹「玩家X已返回」3 秒横幅。基准规定轻提示 3 秒自动关闭，且「玩家回归」也会触发轻提示。需求只写「短暂停留」，未给停留时长，也未定义玩家回归触发；「各条分别计时」没有计时基准，无法确定每条提示何时消失。","original_text":"位置“4.8 对局内通用提示（点“过”才能出牌）、7.2 同步与异常处理”。引文：“提示原位淡入，短暂停留后原位淡出。连续触发时，新提示在原位置淡入，已有提示整体上移一行，各条分别计时并依次淡出。”","problem":"基准规定轻提示 3 秒自动关闭，且「玩家回归」也会触发轻提示。需求只写「短暂停留」，未给停留时长，也未定义玩家回归触发；「各条分别计时」没有计时基准，无法确定每条提示何时消失。","impact":"轻提示可能常驻或过快消失，无法验收；玩家回归时缺少轻提示，与基准不一致。","suggestion":"明确单条轻提示显示 3 秒后自动淡出、堆叠行数与行高、连续触发各自独立计时；补充玩家回归时触发轻提示的文案与关闭条件；若本期不做回归提示需明示差异。","status":"待确认","has_detail":true,"requirementIds":["REQ-441","REQ-442"],"acceptance":"单条提示 3 秒自动消失；连续多条按行堆叠且各自 3 秒计时依次淡出；玩家回归出现约定提示；测试可用计时用例验证。"},{"id":"Q47","title":"横滑切换提牌与滑动出牌方向判定重叠","priority":"P2","type":"定义歧义","module":["手牌操作"],"dimension":"UI 交互","source_location":"4.5 行牌操作「提牌」「出牌」","rule_ref":"01#12,01#14。基准 01#12 规定出牌三种方式（单击/双击/滑动）且滑动仅限单张提起态；01#14 规定提牌/放下与同时最多抬起 1 张。同一次横向拖动既被定义为“只切换提牌”，又被定义为“高于提牌高度线即可提交出牌”（滑动出牌允许向左/向右）。文中未说明高度线是否对横滑生效，也未规定先切换提牌还是先判定出牌，一条手势存在两种互斥结果。","original_text":"位置“4.5 行牌操作「提牌」「出牌」”。引文：“沿手牌横向滑动时，滑到可提牌才切换提牌……横滑选牌仅更新本家的提牌状态，出牌按下方规则提交。 / 向上、向左或向右移动都按该牌的提牌高度线判定。拖动位置高于该线时显示半透明虚影……松手提交出牌请求。”","problem":"同一次横向拖动既被定义为“只切换提牌”，又被定义为“高于提牌高度线即可提交出牌”（滑动出牌允许向左/向右）。文中未说明高度线是否对横滑生效，也未规定先切换提牌还是先判定出牌，一条手势存在两种互斥结果。","impact":"玩家想横滑换牌可能误出牌，或想出牌却只换牌；实现与测试用例无法对齐。","suggestion":"明确手势分区：低于提牌高度线时横滑只切换提牌且不出牌；一旦高于高度线即锁定为出牌拖动并停止切换提牌，同时说明纵向与横向判定的优先级。","status":"待确认","has_detail":true,"requirementIds":["REQ-379","REQ-387","REQ-378"],"acceptance":"在手牌区横向拖动：低于高度线只切换提牌、松手不出牌；高于高度线后不再切换提牌且显示虚影，松手提交出牌；两段互不混用。"},{"id":"Q48","title":"同次可碰与直杠时高亮2张还是3张未定义","priority":"P2","type":"定义歧义","module":["吃碰杠按钮与手牌高亮"],"dimension":"UI 交互","source_location":"4.6「碰」「杠」；4.7 多操作状态「同一玩家可多项操作」","rule_ref":"01#9,01#10,01#15。基准 01#9 规定杠单/多组合与取消执行过；01#10 规定碰只有一种组合直接发送；01#15 规定有碰或杠权限且无胡权限时除目标牌外整手置灰。手中恰有3张同牌时可同时碰与直杠（2.3.1.3 允许只用其中2张碰），按钮为【碰】【杠】【过】，但 4.6「碰」要求亮2张、4.6「杠」要求亮3张，4.7 只说“按对应操作高亮可用手牌”，未定义并存时保留几张、是否包含第3张、点【碰】或【杠】后高亮如何变化。","original_text":"位置“4.6「碰」「杠」；4.7 多操作状态「同一玩家可多项操作」”。引文：“本端可碰时显示【碰】【过】，两张可碰牌保持亮度，其余手牌压暗。 / 直杠响应时，可用于直杠的三张手牌保持亮度，其余手牌压暗。”","problem":"手中恰有3张同牌时可同时碰与直杠（2.3.1.3 允许只用其中2张碰），按钮为【碰】【杠】【过】，但 4.6「碰」要求亮2张、4.6「杠」要求亮3张，4.7 只说“按对应操作高亮可用手牌”，未定义并存时保留几张、是否包含第3张、点【碰】或【杠】后高亮如何变化。","impact":"客户端无法确定置灰/高亮张数（按牌值实现会亮3张，与“两张”文案不符）；测试无法判定哪几张应亮。","suggestion":"明确并存规则，例如“同次可碰与直杠时参与直杠的3张同牌全部保持亮度；只可碰时同牌面全部保持亮度（至少2张）”，并说明点【碰】后高亮是否收缩。","status":"待确认","has_detail":true,"requirementIds":["REQ-402","REQ-414"],"acceptance":"手牌含3张五万、上家打出五万：本端3张五万均保持亮度、其余压暗；只有2张时亮2张；点【碰】后按碰组合刷新，点【杠】后按直杠移牌规则刷新。"},{"id":"Q49","title":"多处提示与摊牌停留时长只有“短暂/片刻”（与 Q55 同根因，重复登记，建议合并）","priority":"P2","type":"定义歧义","module":["对局内提示与结算演出"],"dimension":"UI 交互","source_location":"4.8 对局内通用提示「三摊落地」「点“过”才能出牌」；5.1 结算流程「胡牌场景」「流局场景」","rule_ref":"03#1,03#4。基准 03#1 规定局终四步动画链中摊牌与台面标识每步停留 1.5 秒；03#4 规定摊牌完成后延迟 1 秒发应答推进流程。“短暂停留”“短暂保留”“片刻”均未给秒数，而附录 B 又规定“正文明确写出的交互阈值用于验收”。多条叠加时的行高、上移距离、最大同屏条数也未定义，导致提示与结算演出无可核对的时间口径。","original_text":"位置“4.8 对局内通用提示「三摊落地」「点“过”才能出牌」；5.1 结算流程「胡牌场景」「流局场景」”。引文：“提示原位淡入，短暂停留后原位淡出。连续触发时，新提示在原位置淡入，已有提示整体上移一行，各条分别计时并依次淡出。 / 牌桌保留终局摊牌片刻，再展示小结算。”","problem":"“短暂停留”“短暂保留”“片刻”均未给秒数，而附录 B 又规定“正文明确写出的交互阈值用于验收”。多条叠加时的行高、上移距离、最大同屏条数也未定义，导致提示与结算演出无可核对的时间口径。","impact":"前端只能自定时长与堆叠参数，测试与验收无法判断是否达标；不同实现间节奏不一致。","suggestion":"与 Q55 合并处理：为每处补明确阈值（如单条提示停留 1.5 秒、淡入淡出各 0.2 秒；三摊落地停留 2 秒；终局牌桌保留 1 秒），并补充最多同屏条数、行高、上移距离及超限淘汰规则。","status":"待确认","has_detail":true,"requirementIds":["REQ-440","REQ-442","REQ-444","REQ-447"],"acceptance":"连续触发提示时每条按定义时长出现到消失、第2条起整体上移一行且位置固定、超过最大条数按定义淘汰；结算演出各段落时长与定义一致（可逐帧对比）。"},{"id":"Q50","title":"【过】未区分需上报与仅本地收尾","priority":"P2","type":"描述不完整","module":["吃碰杠胡操作"],"dimension":"UI 交互","source_location":"4.6 吃碰杠胡操作（弃牌响应与「过」、自摸）、4.7 多操作状态（同一玩家可多项操作）","rule_ref":"01#6。基准中【过】有两类：一类需上行，发 sendCancel；一类无需上报，点击只做本地收尾、不发任何包。需求把所有【过】统一写成「提交操作请求」，没有区分自摸、暗杠、加杠提示这类本家操作阶段的过与弃牌响应中的过是否上行、是否等待回包、回包前能否直接出牌。","original_text":"位置“4.6 吃碰杠胡操作（弃牌响应与「过」、自摸）、4.7 多操作状态（同一玩家可多项操作）”。引文：“点击按钮提交操作请求。…主动点【过】后收起本次提示，按剩余响应继续裁决。”","problem":"基准中【过】有两类：一类需上行，发 sendCancel；一类无需上报，点击只做本地收尾、不发任何包。需求把所有【过】统一写成「提交操作请求」，没有区分自摸、暗杠、加杠提示这类本家操作阶段的过与弃牌响应中的过是否上行、是否等待回包、回包前能否直接出牌。","impact":"自摸点过后若也上行，可能触发服务端异常应答或重复应答；应上行处若只本地收起，会出现点过后仍被拦截或按钮残留。测试无法按两条路径分别出用例。","suggestion":"补一张对照表，列出每个【过】场景：是否上行、是否等待回包、回包前按钮与手牌状态、点过后能否立即出牌；并说明上行携带本次询问编号。","status":"待确认","has_detail":true,"requirementIds":["REQ-401","REQ-437","REQ-412"],"acceptance":"每个场景都可观测到是否发出请求、回包前后按钮与手牌状态，以及点过之后出牌是否立即生效。"},{"id":"Q51","title":"选组的【取消】未定义为等同于提交【过】","priority":"P2","type":"描述不完整","module":["多操作状态（选组）"],"dimension":"UI 交互","source_location":"4.6 吃碰杠胡操作（杠（多组）、吃（多组））、4.7 多操作状态（可多杠、可多吃）","rule_ref":"01#9。基准明确：多杠态下点【取消】同时执行【过】，即发 sendCancel。需求只写放弃可选操作、收起选组、返回本家出牌，没有写取消是否等同提交【过】、是否上行并等待服务端裁决，也没写回包前能否提交出牌。","original_text":"位置“4.6 吃碰杠胡操作（杠（多组）、吃（多组））、4.7 多操作状态（可多杠、可多吃）”。引文：“点【取消】放弃本次全部可选操作，收起选组并清除本次杠提示的压暗。…取消和共用【过】的作用范围见 4.7「多操作状态」。”","problem":"基准明确：多杠态下点【取消】同时执行【过】，即发 sendCancel。需求只写放弃可选操作、收起选组、返回本家出牌，没有写取消是否等同提交【过】、是否上行并等待服务端裁决，也没写回包前能否提交出牌。","impact":"服务端仍在等待杠或过的应答时，客户端已收起选组并允许出牌，请求会被拒绝或流程卡住；多吃取消的上行时机同样不确定。","suggestion":"明确选组的【取消】等同提交【过】：写明上行、进入等待、等待期禁止出牌、回包后按 4.5 恢复出牌；多吃取消同样提交过，并继续参与操作优先级裁决。","status":"待确认","has_detail":true,"requirementIds":["REQ-420","REQ-409"],"acceptance":"多杠、多吃各点一次取消，可验证发出过请求、等待期不能出牌、裁决后按钮区与手牌恢复。"},{"id":"Q52","title":"权限按钮缺少 0.5 秒防连点约束","priority":"P2","type":"描述不完整","module":["吃碰杠胡操作（按钮）"],"dimension":"UI 交互","source_location":"4.6 吃碰杠胡操作、7.2 同步与异常处理（重复提交与过期操作）","rule_ref":"01#11。基准规定每个权限按钮点击后 0.5 秒内不可再点（touchable=false，延迟恢复）。需求只在服务端做同一请求幂等，没有定义客户端按钮防连点的时长、作用范围（同一按钮、整组按钮还是候选牌）与恢复时机。","original_text":"位置“4.6 吃碰杠胡操作、7.2 同步与异常处理（重复提交与过期操作）”。引文：“点击按钮提交操作请求。…重复点击或重试不能重复扣牌、计分或计局。”","problem":"基准规定每个权限按钮点击后 0.5 秒内不可再点（touchable=false，延迟恢复）。需求只在服务端做同一请求幂等，没有定义客户端按钮防连点的时长、作用范围（同一按钮、整组按钮还是候选牌）与恢复时机。","impact":"连点会重复上行、重复播放动效或重复展开选组，客户端表现与服务端状态可能不一致；验收没有可测口径。","suggestion":"补充：任一权限按钮（碰、杠、胡、自摸、过、取消、候选牌）提交后 0.5 秒内不可再次触发，冷却结束后恢复，冷却期内点击无反馈。","status":"待确认","has_detail":true,"requirementIds":["REQ-477"],"acceptance":"0.5 秒内连点两次只发出 1 次请求、只播放 1 次动效；可用日志与录屏验证按钮禁用与恢复时点。"},{"id":"Q53","title":"压暗清除与操作区收起时机不完整","priority":"P2","type":"描述不完整","module":["手牌置灰与操作区收尾"],"dimension":"UI 交互","source_location":"4.6 吃碰杠胡操作（碰、杠（多组））、4.7 多操作状态（同一玩家可多项操作）","rule_ref":"01#4,01#17。基准的压暗清除时机有三处：点碰或点杠按钮提交时、操作区收起时、他人权限到达时。需求只写了点【过】、点【取消】、点【吃】（多组）清灰；没有写点【碰】或点【杠】直接提交后是否立即清灰，也没有写他人取得操作权、响应结束导致操作区收起时，按钮组、手牌压暗与提牌如何收尾（解锁手牌、清听牌提示）。","original_text":"位置“4.6 吃碰杠胡操作（碰、杠（多组））、4.7 多操作状态（同一玩家可多项操作）”。引文：“碰成立后，各端移除被拿走的弃牌及其浮标、放大牌…；点共用的【过】…清除本次高亮或压暗”","problem":"基准的压暗清除时机有三处：点碰或点杠按钮提交时、操作区收起时、他人权限到达时。需求只写了点【过】、点【取消】、点【吃】（多组）清灰；没有写点【碰】或点【杠】直接提交后是否立即清灰，也没有写他人取得操作权、响应结束导致操作区收起时，按钮组、手牌压暗与提牌如何收尾（解锁手牌、清听牌提示）。","impact":"提交到回包之间手牌可能一直压暗或残留按钮；退出等待态时是否解锁手牌、是否清除提示没有依据，容易出现提交后仍无法提牌或按钮不消失。","suggestion":"补充收尾清单：点碰、点杠、点胡提交即清灰并禁用按钮；他人取得操作权或响应结束时收起按钮区、解锁手牌、清除听牌与同牌面提示。","status":"待确认","has_detail":true,"requirementIds":["REQ-374","REQ-406","REQ-414"],"acceptance":"分别在提交瞬间、回包瞬间、他人取得操作权瞬间断言按钮可见性、手牌亮度与可提状态一致。"},{"id":"Q54","title":"同一张牌多状态叠加的颜色优先级缺失","priority":"P2","type":"描述不完整","module":["手牌配色与压暗"],"dimension":"UI 交互","source_location":"3.2.5 手牌信息（麻将子）、3.2.5.1 手牌交互说明（提牌）、4.6 吃碰杠胡操作（碰）","rule_ref":"01#16。基准给出同牌多状态的覆盖顺序为 黄 高于 灰，灰 高于 财神红，财神红 高于 正常。需求只用「压暗」「保持亮度」「粉色牌面」描述，没有说明这三种表现分别对应哪个状态，也没有说明一张牌同时满足财神与压暗（如飘财限制下的财神）、或同时是听牌候选与禁打牌时以哪个为准。","original_text":"位置“3.2.5 手牌信息（麻将子）、3.2.5.1 手牌交互说明（提牌）、4.6 吃碰杠胡操作（碰）”。引文：“本家手中的白板财神使用粉色牌面…吃碰禁手牌压暗并保持原位…两张可碰牌保持亮度，其余手牌压暗”","problem":"基准给出同牌多状态的覆盖顺序为 黄 高于 灰，灰 高于 财神红，财神红 高于 正常。需求只用「压暗」「保持亮度」「粉色牌面」描述，没有说明这三种表现分别对应哪个状态，也没有说明一张牌同时满足财神与压暗（如飘财限制下的财神）、或同时是听牌候选与禁打牌时以哪个为准。","impact":"财神被压暗、禁打牌兼候选牌等叠加态下牌面颜色无法确定，不同场景表现可能不一致，视觉验收没有判据。","suggestion":"增加着色优先级表，按基准层级写明「可操作高亮、禁打压暗、财神着色、常态」的覆盖关系，并给出财神被压暗时的示例。","status":"待确认","has_detail":true,"requirementIds":["REQ-402","REQ-436","REQ-375"],"acceptance":"用财神被压暗、财神兼听牌候选、禁打牌兼候选三组用例核对牌面表现一致且符合层级表。"},{"id":"Q55","title":"「点“过”才能出牌」提示时长未量化（本类主条目，Q49 同根因）","priority":"P2","type":"描述不完整","module":["出牌拦截提示"],"dimension":"UI 交互","source_location":"4.8 对局内通用提示（点“过”才能出牌）、4.5 行牌操作（出牌）、4.8 对局内通用提示「三摊落地」「点“过”才能出牌」；5.1 结算流程「胡牌场景」「流局场景」","rule_ref":"01#7。基准规定单条提示停留 3 秒。需求只写「短暂停留」，没有给出停留时长，也没有给出连续触发时的最大堆叠条数、超出上限的处理方式和上移距离。","original_text":"位置“4.8 对局内通用提示（点“过”才能出牌）、4.5 行牌操作（出牌）、4.8 对局内通用提示「三摊落地」「点“过”才能出牌」；5.1 结算流程「胡牌场景」「流局场景」”。引文：“提示原位淡入，短暂停留后原位淡出。连续触发时，新提示在原位置淡入，已有提示整体上移一行，各条分别计时并依次淡出。”","problem":"基准规定单条提示停留 3 秒。需求只写「短暂停留」，没有给出停留时长，也没有给出连续触发时的最大堆叠条数、超出上限的处理方式和上移距离。","impact":"提示消失时机与多条叠加的排版无法测试，可能出现提示长时间驻留或堆叠遮挡按钮区。","suggestion":"明确单条停留 3 秒（含淡入淡出时长）、最多同时显示条数，以及超出时的处理顺序，并补充堆叠示例。","status":"待确认","has_detail":true,"requirementIds":["REQ-442","REQ-441"],"acceptance":"连续触发 4 次后逐条计时，每条约 3 秒后淡出，堆叠条数与位置符合规定。"},{"id":"Q56","title":"出牌后听牌箭头是否保留、何时清除未描述","priority":"P2","type":"描述不完整","module":["听牌提示／手牌听牌标记"],"dimension":"UI 交互","source_location":"3.2.5.1 手牌交互说明（听牌标签）、4.5 行牌操作（出牌）","rule_ref":"02#6。基准 6 规定「出牌后仍保留有效箭头」。需求文档只写详情面板在出牌后收起，并只说「张数或倍数变化后刷新标签和详情」，未说明手牌上的听牌标签/箭头在出牌后是否保留、保留到何时（下一次摸牌、下一回合、还是立即清除），也未说明是否按出牌后的剩余手牌重新计算。","original_text":"位置“3.2.5.1 手牌交互说明（听牌标签）、4.5 行牌操作（出牌）”。引文：“选中候选牌后按 3.2.5「手牌信息」显示详情，换选时刷新，取消提牌、选中非候选牌或出牌后收起。”","problem":"基准 6 规定「出牌后仍保留有效箭头」。需求文档只写详情面板在出牌后收起，并只说「张数或倍数变化后刷新标签和详情」，未说明手牌上的听牌标签/箭头在出牌后是否保留、保留到何时（下一次摸牌、下一回合、还是立即清除），也未说明是否按出牌后的剩余手牌重新计算。","impact":"出牌后手牌上听牌标记的有无、清除时点无法判断，视觉验收无依据；开发可能出牌即清空，与现网「保留有效箭头」不符。","suggestion":"补一句：本家有效出牌后，手牌上已显示的有效听牌标记保留；下一次摸牌或进入下一操作阶段时按新牌型重新计算，无有效标记时清除。","status":"待确认","has_detail":true,"requirementIds":["REQ-333","REQ-318"],"acceptance":"出牌后原候选牌的标记仍显示；下家摸牌并回到本家操作时按新牌重算，旧标记不残留。"},{"id":"Q57","title":"流局路径未描述清理听牌与出牌放大等前置（本类主条目，Q65 同根因）","priority":"P2","type":"描述不完整","module":["流局路径"],"dimension":"UI 交互","source_location":"5.1 结算流程 流局场景、6.1.1 流局后进入、三.对局流程-4.5 行牌操作-出牌、5.1 结算流程-流局场景","rule_ref":"03#2。基准流局路径为：摊牌 → 隐藏听牌按钮/听牌弹窗/出牌放大 → 收操作区 → 倒计时与方位光熄灭 → 切荒牌页。需求文档流局场景只写“停止行牌→亮手牌→黄庄→小结算”，未写隐藏听牌按钮与听牌弹窗、清除出牌放大牌、收操作区；5.1 胡牌场景的“操作按钮、胡牌预览、听牌提示和放大的弃牌退场”只挂在胡牌场景下。","original_text":"位置“5.1 结算流程 流局场景、6.1.1 流局后进入、三.对局流程-4.5 行牌操作-出牌、5.1 结算流程-流局场景”。引文：“确认后停止行牌，流局计 1 小局。……各端按座位方向亮出四家手牌，桌面中央同时显示橙色「黄庄」。”","problem":"基准流局路径为：摊牌 → 隐藏听牌按钮/听牌弹窗/出牌放大 → 收操作区 → 倒计时与方位光熄灭 → 切荒牌页。需求文档流局场景只写“停止行牌→亮手牌→黄庄→小结算”，未写隐藏听牌按钮与听牌弹窗、清除出牌放大牌、收操作区；5.1 胡牌场景的“操作按钮、胡牌预览、听牌提示和放大的弃牌退场”只挂在胡牌场景下。","impact":"流局时听牌详情面板、出牌放大牌可能残留在终局牌桌上，各端实现不一致，验收无法判定应收起哪些元素。","suggestion":"在流局场景按基准补齐与胡牌场景对称的清理清单：收操作区、隐藏听牌按钮与听牌弹窗、清除出牌放大与浮标、停止倒计时与方位高亮，再亮牌显示黄庄。","status":"待确认","has_detail":true,"requirementIds":["REQ-447","REQ-457","REQ-395"],"acceptance":"在带有听牌提示、出牌放大和倒计时的局面触发流局，终局牌桌上这些元素全部消失，仅保留亮牌、黄庄字样、牌河与余牌数 20。"},{"id":"Q58","title":"摊牌动画表现与推倒规则完全未描述","priority":"P2","type":"描述不完整","module":["摊牌表现"],"dimension":"UI 交互","source_location":"5.1 结算流程 胡牌场景、6.1.1 胡牌后进入、6.1.2 第2项 手牌摆布","rule_ref":"03#4,03#5。基准摊牌包含：所有有手牌的玩家手牌推倒、胡家手牌末张落地图、自己手牌右移缩小、完成后延迟 1 秒再发应答推进；胡家手牌置胡牌态并重排、显示胡牌来源指示、自己胡后手牌禁止触摸。需求文档只写“亮出四家手牌”和胡牌张单摆，没有推倒方向、末张落地、自身手牌右移缩小、1 秒应答门禁和终局牌桌禁触摸的规则。","original_text":"位置“5.1 结算流程 胡牌场景、6.1.1 胡牌后进入、6.1.2 第2项 手牌摆布”。引文：“各端在原牌桌上亮出四家手牌，同时在桌面中央显示橙金色「对局结束」。……胡牌张单独摆在赢家手牌尾端。”","problem":"基准摊牌包含：所有有手牌的玩家手牌推倒、胡家手牌末张落地图、自己手牌右移缩小、完成后延迟 1 秒再发应答推进；胡家手牌置胡牌态并重排、显示胡牌来源指示、自己胡后手牌禁止触摸。需求文档只写“亮出四家手牌”和胡牌张单摆，没有推倒方向、末张落地、自身手牌右移缩小、1 秒应答门禁和终局牌桌禁触摸的规则。","impact":"摊牌动画无从实现；若缺少“完成后延迟应答”门禁，各端小结算进入时点可能不同；终局手牌是否可点提无规定，易产生可交互残留。","suggestion":"补摊牌表现：各家手牌推倒顺序与姿态、胡家末张落地图、本家手牌右移缩小的终局布局、摊牌完成后延迟 1 秒才推进、胡家手牌按胡牌组合重排并标来源、摊牌期间及胡后手牌不可触摸。","status":"待确认","has_detail":true,"requirementIds":["REQ-444","REQ-460"],"acceptance":"可逐条验证四家手牌推倒姿态、胡家末张单摆、本家手牌右移缩小、摊牌结束约 1 秒后进入下一环、终局手牌点击无提牌反馈。"},{"id":"Q59","title":"飘分逐个播放与完成门禁未定义","priority":"P2","type":"描述不完整","module":["飘分表现"],"dimension":"UI 交互","source_location":"5.1 结算流程 胡牌场景、6.1.1 胡牌后进入","rule_ref":"03#8。基准要求有分数变化的座位逐个播分数动画，全部座位动画完成才进入下一步，并有动画回调丢失时强制触发的保底。需求只写“飘分逐渐淡出”，未规定播放顺序（座位顺序或得分顺序）、是否并行、以及“全部飘分结束”才进小结算的判定。","original_text":"位置“5.1 结算流程 胡牌场景、6.1.1 胡牌后进入”。引文：“飘分逐渐淡出，牌桌保留终局摊牌片刻，再展示小结算。”","problem":"基准要求有分数变化的座位逐个播分数动画，全部座位动画完成才进入下一步，并有动画回调丢失时强制触发的保底。需求只写“飘分逐渐淡出”，未规定播放顺序（座位顺序或得分顺序）、是否并行、以及“全部飘分结束”才进小结算的判定。","impact":"不同端可能同时或不同时播完，小结算打开时点不一致；若某座位动画回调丢失，文档无兜底规则，会卡在牌桌无法进入小结算。","suggestion":"明确飘分按固定座位顺序逐个播放、全部座位完成后才进入小结算，并规定动画回调超时/丢失时的兜底强制推进，保证不会阻塞结算。","status":"待确认","has_detail":true,"requirementIds":["REQ-446","REQ-429"],"acceptance":"多座位同时有分数变化时可逐个播放且全部结束后才进小结算；模拟动画回调丢失仍能在限定时间内进入小结算且分数正确。"},{"id":"Q60","title":"番型字效未配置回落与特效降级规则缺失","priority":"P2","type":"描述不完整","module":["番型字效"],"dimension":"UI 交互","source_location":"5.1 结算流程 胡牌场景（番型字效）、4.6 吃碰杠胡操作 自摸","rule_ref":"03#7,03#6。基准规定番型动画按番型选皮肤、未配置时回落平胡，特效关闭时只播简单胡/自摸动画；胡牌光柱需“显示特效”开启且非复盘且有特效换装才播。需求文档只举例说明颜色随番型变化，未写未配置番型的回落规则、特效关闭时的简化表现，也未提及胡牌光柱及其开关/换装条件。","original_text":"位置“5.1 结算流程 胡牌场景（番型字效）、4.6 吃碰杠胡操作 自摸”。引文：“在胡牌者对应方位播放番型字效。番型颜色与光效随实际番型变化，例如金色「财飘」、绿色「平胡」。”","problem":"基准规定番型动画按番型选皮肤、未配置时回落平胡，特效关闭时只播简单胡/自摸动画；胡牌光柱需“显示特效”开启且非复盘且有特效换装才播。需求文档只举例说明颜色随番型变化，未写未配置番型的回落规则、特效关闭时的简化表现，也未提及胡牌光柱及其开关/换装条件。","impact":"本期新增飘杠、杠飘、七客各档等大量番型，若缺少皮肤，可能出现无字效或报错；缺少降级规则时，低端机或关闭特效场景表现不可预期，测试无法判定该场景是否算缺陷。","suggestion":"补番型字效的皮肤选取与未配置回落平胡规则、特效关闭时只播简单胡/自摸、胡牌光柱的显示特效开关与特效换装前置条件；若本期不接设置中的“显示特效”，明确写“本期特效常开/按默认配置”，并说明光柱是否播放。","status":"待确认","has_detail":true,"requirementIds":["REQ-445","REQ-463"],"acceptance":"对未配置皮肤的番型可验证回落平胡字效；关闭特效场景只播简化动画不报错；光柱开关条件有明确条款或明确声明本期不做。"},{"id":"Q61","title":"恢复后未补刷最后弃牌浮标、出牌放大与来源箭头（本类主条目，Q66 同根因）","priority":"P2","type":"描述不完整","module":["断线重连 / 牌河恢复"],"dimension":"UI 交互","source_location":"7.2 同步与异常处理「重连恢复」、3.2.4 牌河信息「最近打出牌」、4.5 行牌操作（出牌放大）、7.2 同步与异常处理-重连恢复","rule_ref":"04#9。基准规定河牌恢复后，若最后出牌者与最后一张河牌一致，要补箭头位置与出牌放大。需求只写“加载公开牌河及牌组”，而 3.2.4 的浮标规则是“下一张弃牌飞出时清除旧浮标”、4.5 的放大牌是“下一张有效弃牌开始飞行时切换”，重连时没有新的弃牌事件，按现文最后一张弃牌可能既无浮标也无放大牌与箭头。","original_text":"位置“7.2 同步与异常处理「重连恢复」、3.2.4 牌河信息「最近打出牌」、4.5 行牌操作（出牌放大）、7.2 同步与异常处理-重连恢复”。引文：“加载该玩家可见的座位、准备和在线状态、局数、庄家及牢数、积分、余牌、公开牌河及牌组、本家手牌和分隔位、行牌方、可用操作及剩余倒计时。”","problem":"基准规定河牌恢复后，若最后出牌者与最后一张河牌一致，要补箭头位置与出牌放大。需求只写“加载公开牌河及牌组”，而 3.2.4 的浮标规则是“下一张弃牌飞出时清除旧浮标”、4.5 的放大牌是“下一张有效弃牌开始飞行时切换”，重连时没有新的弃牌事件，按现文最后一张弃牌可能既无浮标也无放大牌与箭头。","impact":"在他人刚出牌、本家收到响应按钮时重连，看不到被响应的是哪张牌，容易误判响应对象；出牌放大的漏刷也让四端表现不一致，验收无标准。","suggestion":"补充：恢复河牌后若存在未被取走的最后弃牌，补刷该牌浮标与出牌放大（放大仅非出牌者视角）及来源箭头，方位与断线前一致；最后弃牌已被吃碰杠胡取走或无人响应阶段不显示，下一张弃牌落稳后按正常规则出现。","status":"待确认","has_detail":true,"requirementIds":["REQ-476","REQ-305","REQ-392"],"acceptance":"在他人刚出牌且本家收到响应按钮时重连：最后一张弃牌有浮标与放大牌，方位与断线前一致；无人响应的摸牌阶段重连：浮标保留在最后一张弃牌；最后弃牌被取走后重连：无浮标、无放大牌。"},{"id":"Q62","title":"再来一局与重连的头像层重置语义缺失","priority":"P2","type":"描述不完整","module":["头像层 / 重连"],"dimension":"UI 交互","source_location":"6.1.1 触发逻辑（小结算与下一局）、7.2 同步与异常处理（重连恢复）","rule_ref":"06#8。基准要求头像层重置分两种语义：准备回包/重连时只清状态、不隐藏其他玩家头像；重新匹配时才隐藏其他三家。需求只写「保留座位和累计积分」，重连只列恢复数据，未明确头像层是保留不重建还是隐藏，开发可能按整层重置处理。","original_text":"位置“6.1.1 触发逻辑（小结算与下一局）、7.2 同步与异常处理（重连恢复）”。引文：“清除本端桌面上上一局的手牌、碰杠区和牌河，保留座位和累计积分。”","problem":"基准要求头像层重置分两种语义：准备回包/重连时只清状态、不隐藏其他玩家头像；重新匹配时才隐藏其他三家。需求只写「保留座位和累计积分」，重连只列恢复数据，未明确头像层是保留不重建还是隐藏，开发可能按整层重置处理。","impact":"继续游戏或重连后其他三家头像可能消失或重建错位，与基准「不藏头像」冲突；测试无明确预期。","suggestion":"补充头像层规则：再来一局（准备回包）与重连只刷新准备、在线、庄标、积分等状态，不隐藏其他三家头像、不重建头像层；仅换房或重新匹配时隐藏其他三家。","status":"待确认","has_detail":true,"requirementIds":["REQ-451","REQ-475","REQ-280"],"acceptance":"点击继续游戏或断线重连后，四家头像均保持原位，仅状态与准备标识刷新；换房或重新匹配后其他三家隐藏；测试可对比两种场景。"},{"id":"Q63","title":"首出庄/闲提示条缺文案、形态与仅一次约束","priority":"P2","type":"描述不完整","module":["发牌与首出提示"],"dimension":"UI 交互","source_location":"三.对局流程-4.4 发牌-发牌UI以及动画表现","rule_ref":"07#10。基准要求本局第一次出牌权限时显示提示条，按自己是否庄家切换文案，并隐藏骰子，且仅出现一次；需求文档只有“优先出牌提示/等待提示”两个名词，未给提示形态（提示条位置）、庄/闲文案内容、是否每小局都出现、是否只出一次、是否需与骰子退场联动。","original_text":"位置“三.对局流程-4.4 发牌-发牌UI以及动画表现”。引文：“理牌完成后，骰盘区域显示庄家出牌倒计时。庄家收到优先出牌提示，闲家收到等待提示。”","problem":"基准要求本局第一次出牌权限时显示提示条，按自己是否庄家切换文案，并隐藏骰子，且仅出现一次；需求文档只有“优先出牌提示/等待提示”两个名词，未给提示形态（提示条位置）、庄/闲文案内容、是否每小局都出现、是否只出一次、是否需与骰子退场联动。","impact":"开发无法确定提示条文案与出现次数，可能每小局重复弹或与骰子同时显示；测试无法判定“只出现一次”。","suggestion":"补全：首出提示条的位置与样式、庄家/闲家两套文案、每小局仅展示一次的计数口径、与骰子退场的先后关系（提示出现即隐藏骰子）。","status":"待确认","has_detail":true,"requirementIds":["REQ-359","REQ-264"],"acceptance":"每小局首次进入出牌阶段时出现一次提示，庄/闲文案正确，骰子已退场；本局后续出牌不再出现，可出用例。"},{"id":"Q64","title":"庄标在小局重置/准备桌面是否隐藏未定义","priority":"P2","type":"描述不完整","module":["庄标"],"dimension":"UI 交互","source_location":"三.对局流程-4.2 定庄-UI及动画-持续与刷新、5.1 结算流程-继续游戏","rule_ref":"07#9。基准规定重置时庄标全部隐藏、换庄时切到新庄家头像；需求文档只列举“掷骰、定财神、发牌、行牌”期间持续显示，对点击【继续游戏】回到准备桌面到下一局掷骰开始之间庄标是否隐藏、上一局庄家未被换下时是否继续显示没有规定。","original_text":"位置“三.对局流程-4.2 定庄-UI及动画-持续与刷新、5.1 结算流程-继续游戏”。引文：“庄标在掷骰、定财神、发牌及行牌时持续显示。下一小局也在掷骰动画开始时按本局庄家和牢数刷新。”","problem":"基准规定重置时庄标全部隐藏、换庄时切到新庄家头像；需求文档只列举“掷骰、定财神、发牌、行牌”期间持续显示，对点击【继续游戏】回到准备桌面到下一局掷骰开始之间庄标是否隐藏、上一局庄家未被换下时是否继续显示没有规定。","impact":"可能出现准备桌面仍挂着上局庄标，或提前显示新庄标，与现网刷新时机不一致，测试无法判定重置后的正确状态。","suggestion":"补充：本小局结算并回到准备状态时庄标全部隐藏；下一小局掷骰动画开始同一帧按新庄家与牢数重新显示，换庄时不得在旧庄家头像残留。","status":"待确认","has_detail":true,"requirementIds":["REQ-350","REQ-352"],"acceptance":"点【继续游戏】后四家头像上均无庄标；下一局掷骰首帧仅新庄家显示「庄×3」。"},{"id":"Q65","title":"流局/黄庄场景下放大弃牌是否退场未规定（与 Q57 同根因，重复登记，建议合并）","priority":"P2","type":"描述不完整","module":["出牌放大"],"dimension":"UI 交互","source_location":"三.对局流程-4.5 行牌操作-出牌、5.1 结算流程-流局场景","rule_ref":"07#14。基准要求出牌放大在碰/杠/胡/流局/重置时统一隐藏；需求文档只定义了被新弃牌替换、被吃碰杠胡取走两种清除方式，胡牌场景另行写了“放大弃牌退场”，但流局（黄庄）场景与重置（继续游戏清桌）场景均未说明放大牌和浮标是否需要清除。","original_text":"位置“三.对局流程-4.5 行牌操作-出牌、5.1 结算流程-流局场景”。引文：“放大弃牌的退场。选择「过」及随后摸牌时，继续显示当前放大牌。下一张有效弃牌开始飞行时，清除上一张放大牌……当前弃牌因吃、碰、直杠或吃胡从牌河被取走时，在该牌移出牌河的同一时点清除放大牌和浮标。”","problem":"基准要求出牌放大在碰/杠/胡/流局/重置时统一隐藏；需求文档只定义了被新弃牌替换、被吃碰杠胡取走两种清除方式，胡牌场景另行写了“放大弃牌退场”，但流局（黄庄）场景与重置（继续游戏清桌）场景均未说明放大牌和浮标是否需要清除。","impact":"黄庄时最后一张放大牌可能一直挂在桌面直到小结算，与现网不一致；阶段切换时残留元素影响终局画面验收。","suggestion":"与 Q57 合并处理：补充：确认流局、进入小结算、以及回到准备桌面清桌时，立即清除放大弃牌与浮标（不等待下一张弃牌）。","status":"待确认","has_detail":true,"requirementIds":["REQ-395","REQ-392"],"acceptance":"黄庄演出开始时桌面无放大弃牌与浮标残留；点【继续游戏】后桌面无任何放大牌。"},{"id":"Q66","title":"重连恢复未要求补回最近弃牌浮标/箭头（与 Q61 同根因，重复登记，建议合并）","priority":"P2","type":"描述不完整","module":["断线重连"],"dimension":"UI 交互","source_location":"7.2 同步与异常处理-重连恢复","rule_ref":"07#15。基准要求重连恢复时若最后出牌匹配则补箭头（浮标）指示；需求文档列出的恢复字段中没有最近弃牌浮标/箭头，也没有“匹配不上则不显示”的兜底口径。","original_text":"位置“7.2 同步与异常处理-重连恢复”。引文：“进入相应页面后，加载该玩家可见的座位、准备和在线状态、局数、庄家及牢数、积分、余牌、公开牌河及牌组、本家手牌和分隔位、行牌方、可用操作及剩余倒计时。”","problem":"基准要求重连恢复时若最后出牌匹配则补箭头（浮标）指示；需求文档列出的恢复字段中没有最近弃牌浮标/箭头，也没有“匹配不上则不显示”的兜底口径。","impact":"重连后可能丢失最近弃牌指示，玩家无法确认当前响应对象，且测试缺少恢复清单项。","suggestion":"与 Q61 合并处理：在重连恢复字段中补充“按服务端记录的最后一张弃牌恢复其浮标/箭头位置；若与牌河末张不匹配则不显示”。","status":"待确认","has_detail":true,"requirementIds":["REQ-476","REQ-305"],"acceptance":"断线重连后牌河末张上方浮标位置与离线前一致；无有效最后弃牌时无浮标；可出重连用例。"},{"id":"Q67","title":"开局动画缺 spine 兜底与动画完成应答推进","priority":"P2","type":"描述不完整","module":["开局流程 / 对局开始动画"],"dimension":"UI 交互","source_location":"4.1「对局开始」动画展示及流程、4.4「发牌」","rule_ref":"08#3,08#4,08#9。基准 08#3 要求开局面板淡出后发应答；08#4 要求 spine 事件未触发时强制头像归位；08#9 要求首抓发牌动画完成发应答并解除重连标记。需求只写固定时点与“动画结束”，没有 spine 事件丢失/资源缺失时的兜底，也没有动画完成后的应答推进条件（何时发、超时如何处理）。","original_text":"位置“4.1「对局开始」动画展示及流程、4.4「发牌」”。引文：“约865 ms 时，字样和光带完全消失，开局动画结束。桌面、常驻信息区及正在播放的摇骰继续显示。”","problem":"基准 08#3 要求开局面板淡出后发应答；08#4 要求 spine 事件未触发时强制头像归位；08#9 要求首抓发牌动画完成发应答并解除重连标记。需求只写固定时点与“动画结束”，没有 spine 事件丢失/资源缺失时的兜底，也没有动画完成后的应答推进条件（何时发、超时如何处理）。","impact":"spine 异常时可能停在开局面板或不推进；发牌动画完成无应答会造成状态不同步；异常场景无法出测试用例。","suggestion":"为每段关键动画补充“完成条件=spine 事件或超时兜底”和“完成后发应答”；明确 spine 未触发时强制头像/面板归位；明确首抓发牌动画结束发应答并解除重连标记。","status":"待确认","has_detail":true,"requirementIds":["REQ-343","REQ-347","REQ-337"],"acceptance":"模拟 spine 事件不触发或资源缺失时，头像/面板在约定时间内归位并进入下一阶段；正常与异常两种情况都能在规定时间推进到摇骰/发牌/行牌。"},{"id":"Q68","title":"重连落在掷骰/发牌/洗牌阶段的展示未定义","priority":"P2","type":"描述不完整","module":["同步与异常处理 / 重连"],"dimension":"UI 交互","source_location":"7.2「同步与异常处理」重连恢复、动画追赶","rule_ref":"08#7,08#14。基准 08#7 要求重连时骰子静态展示（播入场帧后留到首出提示收起）；08#14 要求洗牌阶段用洗牌快照恢复（静态骰子+牌墙+应答）。需求重连恢复清单不含骰子/牌墙/洗牌状态，动画追赶只笼统说跳过过期过场，无法判断重连在掷骰、发牌、洗牌阶段应显示静态画面还是重播动画。","original_text":"位置“7.2「同步与异常处理」重连恢复、动画追赶”。引文：“进入相应页面后，加载该玩家可见的座位、准备和在线状态、局数、庄家及牢数、积分、余牌、公开牌河及牌组、本家手牌和分隔位、行牌方、可用操作及剩余倒计时。”","problem":"基准 08#7 要求重连时骰子静态展示（播入场帧后留到首出提示收起）；08#14 要求洗牌阶段用洗牌快照恢复（静态骰子+牌墙+应答）。需求重连恢复清单不含骰子/牌墙/洗牌状态，动画追赶只笼统说跳过过期过场，无法判断重连在掷骰、发牌、洗牌阶段应显示静态画面还是重播动画。","impact":"重连后可能重播摇骰/发牌或中央空白，与服务端阶段不一致；验收无口径。","suggestion":"在 7.2 按阶段补充：掷骰阶段显示静态骰子并留到首出提示、发牌阶段恢复已发牌进度且不重播、洗牌阶段用快照恢复静态骰子+牌墙并发应答。","status":"待确认","has_detail":true,"requirementIds":["REQ-475","REQ-476","REQ-263"],"acceptance":"在上述三个阶段断线重连，画面与服务端当前阶段一致；不重播已完成的摇骰/发牌/洗牌动画；静态骰子保留到首出提示。"},{"id":"Q69","title":"骰子退场触发与延迟时长未定义","priority":"P2","type":"描述不完整","module":["方位信息 / 骰子"],"dimension":"UI 交互","source_location":"3.2.1「方位信息」骰子、4.4「发牌」","rule_ref":"08#7。基准 08#7 规定骰子 spine 播完后延迟1秒自动隐藏；需求只写停稳后可并行、退场后留空，未写退场由什么触发、延迟多久、与发牌并行的最晚时点，录屏时间码又只用于定位不作验收。","original_text":"位置“3.2.1「方位信息」骰子、4.4「发牌」”。引文：“骰子停稳后可以和发牌画面并行展示。骰子退场后中央先留空。”","problem":"基准 08#7 规定骰子 spine 播完后延迟1秒自动隐藏；需求只写停稳后可并行、退场后留空，未写退场由什么触发、延迟多久、与发牌并行的最晚时点，录屏时间码又只用于定位不作验收。","impact":"开发可能停稳即隐藏或一直不隐藏，导致与发牌重叠节奏和首出倒计时时机不一致，无法验收。","suggestion":"明确骰子停稳后固定延迟1秒自动退场，退场与发牌并行的允许时长，以及首出倒计时前中央留空。","status":"待确认","has_detail":true,"requirementIds":["REQ-264","REQ-263"],"acceptance":"骰子停稳后约1秒自动消失；与发牌的并行为短暂重叠且不超过约定时长；首出倒计时出现前中央留空。"},{"id":"Q70","title":"飘财限制期间吃碰明杠入口的显隐与反馈未定义","priority":"P2","type":"描述不完整","module":["飘财与操作按钮"],"dimension":"UI 交互","source_location":"2.2 名词介绍「飘」；2.3.1.2「吃」、2.3.1.3「碰」、2.3.1.4「杠」；2.3.2.8 三摊承包；4.6 吃碰杠胡操作","rule_ref":"01#7,01#14。2.2 只写了玩法禁止，未写界面表现；4.6 各操作只描述“可执行时”显示按钮，没有把飘财限制写成显式排除项；同类禁用场景在 2.3.2.8 却明确写了“客户端不显示该牌的【吃】入口”。两处颗粒度不一致，无法确定限制期间是隐藏入口、置灰不可点，还是显示后可点但提交被拒。","original_text":"位置“2.2 名词介绍「飘」；2.3.1.2「吃」、2.3.1.3「碰」、2.3.1.4「杠」；2.3.2.8 三摊承包；4.6 吃碰杠胡操作”。引文：“受限制的玩家仍可按规则胡牌、暗杠，禁止吃、碰、明杠。”","problem":"2.2 只写了玩法禁止，未写界面表现；4.6 各操作只描述“可执行时”显示按钮，没有把飘财限制写成显式排除项；同类禁用场景在 2.3.2.8 却明确写了“客户端不显示该牌的【吃】入口”。两处颗粒度不一致，无法确定限制期间是隐藏入口、置灰不可点，还是显示后可点但提交被拒。","impact":"可能给受限制玩家显示可点的【吃】【碰】【杠】入口，造成无效请求或无反馈失败；验收无法判定“限制期间是否应出现入口”。","suggestion":"参照 2.3.2.8 写法补充：受飘财摸打限制时本端不显示【吃】【碰】【直杠】【加杠】入口，仅显示【胡】【暗杠】【过】；若保留入口则须定义置灰样式与提交失败的提示文案与时长。","status":"待确认","has_detail":true,"requirementIds":["REQ-375","REQ-177","REQ-181","REQ-184"],"acceptance":"A 飘财后 B 收到弃牌响应：B 端不出现【吃】【碰】【直杠】入口（或按定义置灰不可点），仅按规则出现【胡】【暗杠】【过】；点按无效入口无请求上行、无错误弹窗。"},{"id":"Q71","title":"断线期间对局等待与界面表现未定义","priority":"P2","type":"描述不完整","module":["断线等待"],"dimension":"UI 交互","source_location":"3.2.1 方位信息「倒计时」；7.2 同步与异常处理","rule_ref":"04#17,05#14。基准 04#17 规定断线时头像覆盖断线图标并按分秒计时；05#14 规定玩家离线触发离线解散预警（好友房缺省 600 秒）。3.2.1 把“断线等待”指向 7.2，但 7.2 只定义了重连后恢复哪个页面、恢复哪些数据，以及“无托管时倒计时归零后等待手动操作或有玩家主动解散”；未定义断线发生到重连之间，对局是否暂停、倒计时是否继续走、其他三家除离线覆盖外是否出现等待提示、被断线者的操作权如何保留、何时可判定本局无法继续。","original_text":"位置“3.2.1 方位信息「倒计时」；7.2 同步与异常处理”。引文：“断线等待和解散见 7.2「同步与异常处理」。”","problem":"3.2.1 把“断线等待”指向 7.2，但 7.2 只定义了重连后恢复哪个页面、恢复哪些数据，以及“无托管时倒计时归零后等待手动操作或有玩家主动解散”；未定义断线发生到重连之间，对局是否暂停、倒计时是否继续走、其他三家除离线覆盖外是否出现等待提示、被断线者的操作权如何保留、何时可判定本局无法继续。","impact":"断线场景无法实现与验收；联调易出现“桌面永久停在 00、无人知道能否继续”的多解表现。","suggestion":"在 7.2 增设“断线等待”小节：本局保持等待、倒计时保持 00、不清桌不重置；其他玩家显示该座位离线覆盖并保留其操作权；恢复后按当前局面续打；房间仅由任一玩家通过菜单解散，解散后不计分不计局（与 7.1 一致）。","status":"待确认","has_detail":true,"requirementIds":["REQ-291","REQ-292","REQ-476"],"acceptance":"对局中一名玩家断线：其余三家看到离线覆盖与 00 倒计时，牌桌不重置、不自动摸打；断线者重连后回到同一局面并可继续操作；解散后无结算、局数不增加。"},{"id":"Q72","title":"听牌与小结算资源未约定进游戏预加载","priority":"P3","type":"需求缺失","module":["结算 / 听牌资源加载"],"dimension":"UI 交互","source_location":"3.2.5 手牌信息、5.1 结算流程、6.1 结算界面","rule_ref":"06#3。基准要求听牌包与小结算包在进游戏时预加载，防止结算弹窗卡顿。需求未约定任何资源预加载时机或首次打开的性能要求。","original_text":"位置“3.2.5 手牌信息、5.1 结算流程、6.1 结算界面”。需求文档无对应描述。","problem":"基准要求听牌包与小结算包在进游戏时预加载，防止结算弹窗卡顿。需求未约定任何资源预加载时机或首次打开的性能要求。","impact":"首次打开听牌详情或小结算可能卡顿、闪白，验收无性能口径，与现网体验不一致。","suggestion":"补充「进游戏/进房加载时预加载听牌面板与小结算资源」，明确预加载完成前不进入可操作阶段的约束，或给出首次打开耗时与卡顿的验收阈值。","status":"待确认","has_detail":true,"requirementIds":[],"acceptance":"进房加载完成时听牌与小结算资源已就绪；首次打开听牌详情或小结算无可感知卡顿（给出具体耗时阈值）；测试可测量首次打开耗时。"},{"id":"Q73","title":"出牌飞行动画时长与快出牌口径未定义","priority":"P3","type":"定义歧义","module":["出牌动画"],"dimension":"UI 交互","source_location":"4.5 行牌操作（出牌）、附录 B 录屏素材（时间口径）","rule_ref":"01#19。需求正文没有定义出牌飞行的标准时长，唯一数字是录屏样本，而附录 B 明确录屏时间码不用于验收；基准区分默认 0.15s 与开启快出牌后的 0.1s，需求也未说明本期好友房是否启用快出牌。","original_text":"位置“4.5 行牌操作（出牌）、附录 B 录屏素材（时间口径）”。引文：“从松手前最后一帧虚影到5筒落稳约100毫秒，为录屏样本。”","problem":"需求正文没有定义出牌飞行的标准时长，唯一数字是录屏样本，而附录 B 明确录屏时间码不用于验收；基准区分默认 0.15s 与开启快出牌后的 0.1s，需求也未说明本期好友房是否启用快出牌。","impact":"动画节奏无法验收，开发可能采用与现网不一致的时长；快出牌开关是否生效也无结论。","suggestion":"在正文中写明确认出牌到落稳的标准时长，并说明本期是否启用快出牌及其时长口径；如沿用录屏节奏，需显式声明。","status":"待确认","has_detail":true,"requirementIds":["REQ-389","REQ-387"],"acceptance":"可按正文阈值测量出牌落稳耗时，并可确认快出牌是否生效。"},{"id":"Q74","title":"新增吃入口缺少与现网实现的差异说明","priority":"P3","type":"描述不完整","module":["吃碰杠胡操作（吃）"],"dimension":"UI 交互","source_location":"4.6 吃碰杠胡操作（吃（单组）、吃（多组））、4.7 多操作状态（可多吃）","rule_ref":"01#5。基准记载现网杭麻客户端未注册吃按钮，没有吃操作界面入口。本期需求启用吃，并新增单组与多组吃面板，属于有意扩展，但需求未标注这一与现网的差异，也未列出客户端需新增的界面元素与改造范围。","original_text":"位置“4.6 吃碰杠胡操作（吃（单组）、吃（多组））、4.7 多操作状态（可多吃）”。引文：“点【吃】后，本端在手牌上方展开可选顺子，每组用同一深色底框完整显示三张正面牌…右侧显示【取消】。原【吃】【过】退场，手牌恢复常态亮度。”","problem":"基准记载现网杭麻客户端未注册吃按钮，没有吃操作界面入口。本期需求启用吃，并新增单组与多组吃面板，属于有意扩展，但需求未标注这一与现网的差异，也未列出客户端需新增的界面元素与改造范围。","impact":"开发按现网资源实现会漏做【吃】按钮与选组面板；测试缺少差异对照，无法区分回归缺陷与新增功能。","suggestion":"增加「与现网实现的差异说明」小节，写出现网无吃入口，本方案新增按钮、单组与多组选组面板及取消逻辑，并列出需要新增的界面元素与资源。","status":"待确认","has_detail":true,"requirementIds":["REQ-404","REQ-407","REQ-408"],"acceptance":"需求中能查到差异清单，UI 验收可按清单逐项确认新增元素与交互。"},{"id":"Q75","title":"新增的「爆」「飘」听牌标签未标注为现网差异","priority":"P3","type":"描述不完整","module":["听牌提示／杭麻特殊听牌标签"],"dimension":"UI 交互","source_location":"3.2.5 手牌信息（杭麻听牌标签）、3.2.5.1 手牌交互说明","rule_ref":"02#14。基准 14 记录：客户端无爆头/财飘的专门 UI 标签或控件，仅在匹配场等待文案中出现。需求文档新增了金色「爆」、红色「飘」两种听牌标签并规定其与普通标签的优先级，属于现网不存在的新增表现，但正文未标注为新增，也未给出与现网实现的差异说明。","original_text":"位置“3.2.5 手牌信息（杭麻听牌标签）、3.2.5.1 手牌交互说明”。引文：“杭麻听牌标签。可爆头显示金色「爆」，可财飘显示红色「飘」。”","problem":"基准 14 记录：客户端无爆头/财飘的专门 UI 标签或控件，仅在匹配场等待文案中出现。需求文档新增了金色「爆」、红色「飘」两种听牌标签并规定其与普通标签的优先级，属于现网不存在的新增表现，但正文未标注为新增，也未给出与现网实现的差异说明。","impact":"评审与验收无法区分「新增设计」和「对现网的误解」，后续若现网行为与需求不一致，容易被当作缺陷返工。","suggestion":"在该条后加「本期新增：现网客户端无爆头/财飘听牌标签，仅匹配场文案提及，本标签为本期新增表现」的差异说明，并注明图标资源与优先级（爆/飘分别与优/大/多/箭头的比较关系）。","status":"待确认","has_detail":true,"requirementIds":["REQ-323","REQ-317"],"acceptance":"需求文本中可检索到该标签的「本期新增」标注；测试按优先级规则（同为候选时飘优先于爆、特殊标签优先普通标签）可出用例。"},{"id":"Q76","title":"未定义重连方位灯秒数比倒计时多 1 秒余量","priority":"P3","type":"描述不完整","module":["断线重连 / 倒计时恢复"],"dimension":"UI 交互","source_location":"7.2 同步与异常处理「重连恢复」「动画追赶」、3.2.1 方位信息「倒计时」「操作指示」","rule_ref":"04#1,04#12。基准规定重连入口按服务端时钟建立倒计时基准并记录已流逝时间，恢复时方位灯（方位高亮/头像流光）的秒数比中央倒计时多 1 秒余量。需求只写“剩余倒计时”和“倒计时以服务端时间为准”，未定义恢复时基准秒数如何取、是否续跑不再重置，也未写方位灯与倒计时的 1 秒余量关系。","original_text":"位置“7.2 同步与异常处理「重连恢复」「动画追赶」、3.2.1 方位信息「倒计时」「操作指示」”。引文：“倒计时以服务端时间为准。”","problem":"基准规定重连入口按服务端时钟建立倒计时基准并记录已流逝时间，恢复时方位灯（方位高亮/头像流光）的秒数比中央倒计时多 1 秒余量。需求只写“剩余倒计时”和“倒计时以服务端时间为准”，未定义恢复时基准秒数如何取、是否续跑不再重置，也未写方位灯与倒计时的 1 秒余量关系。","impact":"各端自行实现时会出现重连后倒计时从 10 重新开始、或倒计时已到 00 而方位高亮先熄灭（反之亦然）的不同步表现，属于可感知但影响较小的时序偏差。","suggestion":"补充：重连恢复以服务端剩余秒数建立倒计时基准，不重置为 10 秒；方位高亮/头像流光的计时比中央倒计时多 1 秒余量，切换操作者时两者一起刷新。","status":"待确认","has_detail":true,"requirementIds":["REQ-476","REQ-268"],"acceptance":"他人出牌 4 秒后本家重连：中央倒计时显示 06（非 10），方位高亮保持约 1 秒后随倒计时结束才熄灭；四端秒数与高亮对象一致。"},{"id":"Q77","title":"财神指示牌为新增能力，未标注与现网实现差异","priority":"P3","type":"描述不完整","module":["财神指示"],"dimension":"UI 交互","source_location":"三.对局流程-4.3 定财神、3.2.2 玩法信息-财神、3.2.5 手牌信息-麻将子","rule_ref":"07#13,07#12。基准说明现网客户端没有中央财神指示牌与翻财神动画（财神命令无处理类），手牌癞子角标才是现网表现；需求文档新增了中央竖向指示牌并只描述粉色牌面，未声明这是新增能力，也未说明与现网“手牌黄色角标”的关系（是否保留角标）。","original_text":"位置“三.对局流程-4.3 定财神、3.2.2 玩法信息-财神、3.2.5 手牌信息-麻将子”。引文：“掷骰动画开始时，在桌面中央骰盘左侧直接显示白板指示牌。……该指示牌只用于界面展示，实际牌组中的四张白板均作为财神。”","problem":"基准说明现网客户端没有中央财神指示牌与翻财神动画（财神命令无处理类），手牌癞子角标才是现网表现；需求文档新增了中央竖向指示牌并只描述粉色牌面，未声明这是新增能力，也未说明与现网“手牌黄色角标”的关系（是否保留角标）。","impact":"开发会把新增指示牌当作既有功能实现，缺少资源与工作量评估；手牌财神是否还带角标无法确定，易与现网视觉核对时被判为缺陷。","suggestion":"在该节增加“与现网实现的差异说明”：现网无中央财神指示牌、无翻财神动画，本期为新增；明确手牌财神是否保留黄色角标或统一改为粉色牌面。","status":"待确认\n\n---","has_detail":true,"requirementIds":["REQ-278","REQ-279","REQ-214"],"acceptance":"文档中存在差异说明段落并明确手牌财神角标取舍，开发据此可评估资源与工作量，走查按差异说明验收。"}],"overall_recommendations":[]}</script>
+<script>
+(function () {
+  'use strict';
+  var DATA = JSON.parse(document.getElementById('report-data').textContent);
+  // RTM 视图数据（--rtm 构建时存在；旧报告为 null，需求/规则覆盖 Tab 显示降级提示）
+  var RTM = DATA.rtm || null;
+  var secAnalysis = document.getElementById('sec-analysis');
+  if (secAnalysis) document.getElementById('view-overview').appendChild(secAnalysis);
+  // 主导航切换（需求/规则视图首次切入时懒渲染）
+  var viewRendered = { overview: true, requirements: false, rules: false, issues: true, unified: false };
+  var UNIFIED = DATA.unified || null;
+  if (UNIFIED) {
+    document.getElementById('tab-unified').style.display = '';
+  }
+  document.getElementById('main-tabs').addEventListener('click', function (e) {
+    var btn = e.target.closest('.mtab');
+    if (!btn) return;
+    var v = btn.getAttribute('data-view');
+    Array.prototype.forEach.call(document.querySelectorAll('.mtab'), function (t) { t.classList.toggle('active', t === btn); });
+    ['overview', 'requirements', 'rules', 'issues', 'unified'].forEach(function (name) {
+      document.getElementById('view-' + name).style.display = name === v ? '' : 'none';
+    });
+    if (v === 'requirements' && !viewRendered.requirements) { viewRendered.requirements = true; renderRequirementsView(); }
+    if (v === 'rules' && !viewRendered.rules) { viewRendered.rules = true; renderRulesView(); }
+    if (v === 'unified' && !viewRendered.unified && UNIFIED) { viewRendered.unified = true; renderUnifiedView(); }
+    window.scrollTo(0, 0);
+  });
+  var PRI_COLOR = { P0: '#DC5148', P1: '#E8A044', P2: '#4389D5', P3: '#94A3B8' };
+  var PRI_ORDER = { P0: 0, P1: 1, P2: 2, P3: 3 };
+  var TYPE_COLOR = ['#3478DB', '#9A6FE0', '#DC5148', '#E8A044', '#94A3B8', '#4EC3B0'];
+  var TYPE_DESC = {
+    '需求缺失': '基准规则已定义，但需求文档缺失或未描述（MISSING）',
+    '内容冲突': '需求文档内部两处描述互相矛盾（CONFLICT）',
+    '逻辑错误': '与规则基准冲突或自身逻辑错误（LOGIC）',
+    '定义歧义': '描述模糊，可多种理解（AMBIGUOUS）',
+    '描述不完整': '描述不完整，无法实现或验收（INCOMPLETE）',
+    '未分类': '源报告该条目仅登记在清单中，无详情块，未提供问题性质'
+  };
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function stripMd(s) { return String(s || '').replace(/\*\*/g, ''); }
+  function priTag(p) { return '<span class="pri-tag" style="background:' + PRI_COLOR[p] + '">' + p + '</span>'; }
+  function $(id) { return document.getElementById(id); }
+
+  var byId = {};
+  DATA.issues.forEach(function (it) { byId[it.id] = it; });
+
+  // ---------- 01 头部 ----------
+  (function () {
+    var c = DATA.report.overall_conclusion || {};
+    var badge = c.status === 'BLOCKED'
+      ? '<span class="badge blocked">存在阻塞问题</span>'
+      : c.status === 'ALLOWED'
+        ? '<span class="badge allowed">可进入下一阶段</span>'
+        : '<span class="badge na">检查完成</span>';
+    var baselines = (DATA.report.rule_baselines || []).map(stripMd).join('；');
+    if (RTM) {
+      // 领导总览 header：审计规模 → 发现 → 结论（外部评审定案）
+      var st = RTM.statistics;
+      var agg = st.ruleCoverageAgg || { fullyPassed: 0, partial: 0, conflict: 0, missing: 0, unverified: 0, pendingConfirm: 0, notApplicable: 0 };
+      var proj = esc(DATA.report.project_name ? DATA.report.project_name + ' · ' : '');
+      var issueP0 = DATA.statistics.priority.P0 || 0;
+      var issueP1 = DATA.statistics.priority.P1 || 0;
+      var srcRef = 0, srcImpl = 0, srcOther = 0;
+      (RTM.rules || []).forEach(function (r) {
+        if (r.sourceType === 'reference-prd') srcRef += 1;
+        else if (r.sourceType === 'implementation-reverse') srcImpl += 1;
+        else srcOther += 1;
+      });
+      $('sec-header').innerHTML =
+        '<div style="flex:1">' +
+          '<h1>' + proj + 'PRD 质量审计报告</h1>' +
+          '<div class="project">游戏需求完整性与规则一致性检查 · 检查对象：' + esc(DATA.report.source_file) + ' · ' + esc(DATA.report.inspection_date) + '</div>' +
+          '<div class="scale-cards">' +
+            '<div class="scale-card"><div class="num hl">' + st.requirementTotal + '</div><div class="label">提取的原子需求点</div><div class="sub">来自原始 PRD</div></div>' +
+            '<div class="scale-card"><div class="num hl">' + st.rulePointTotal + '</div><div class="label">规则原子检查点</div><div class="sub">规则基准目录（适用 ' + st.applicableRulePoints + '）</div></div>' +
+            '<div class="scale-card"><div class="num">' + (st.checkCompleteRate * 100).toFixed(1) + '%</div><div class="label">检查完成率</div><div class="sub">' + st.checkedRulePoints + ' / ' + st.applicableRulePoints + ' 适用规则点</div></div>' +
+            '<div class="scale-card"><div class="num">' + (st.fullPassRate * 100).toFixed(1) + '%</div><div class="label">规则完整通过率</div><div class="sub">' + agg.fullyPassed + ' / ' + st.applicableRulePoints + ' 适用规则点</div></div>' +
+            '<div class="scale-card"><div class="num">' + DATA.statistics.total + '</div><div class="label">问题记录</div><div class="sub">未做同根因规范化复核</div></div>' +
+          '</div>' +
+          '<div class="src-chips">' +
+            '<span class="src-chip">规则来源：客户端实现逆向 ' + srcImpl + ' 条</span>' +
+            '<span class="src-chip">PRD 基准参照 ' + srcRef + ' 条（权威性待确认）</span>' +
+            (srcOther ? '<span class="src-chip">其他来源 ' + srcOther + ' 条</span>' : '') +
+          '</div>' +
+          '<div class="mgmt-box">' +
+            '本次审计共提取 <b>' + st.requirementTotal + '</b> 个原子需求点，建立 <b>' + st.rulePointTotal + '</b> 个原子规则检查点作为对照基准，其中 <b>' + st.applicableRulePoints + '</b> 个被判定适用本次检查（检查完成率 <b>' + (st.checkCompleteRate * 100).toFixed(1) + '%</b>）。' +
+            '规则完整通过率 <b>' + (st.fullPassRate * 100).toFixed(1) + '%</b>（' + agg.fullyPassed + ' 个完整通过，另有部分满足 ' + agg.partial + ' / 冲突 ' + agg.conflict + ' / 需求缺失 ' + agg.missing + '），说明当前需求文档仍存在较多需要补齐或修正的规则内容。' +
+            '本次记录 <b>' + DATA.statistics.total + '</b> 条问题，其中 P0/P1 高优先级 <b>' + (issueP0 + issueP1) + '</b> 条。另有 <b>' + (st.unverifiedRequirements || 0) + '</b> 个需求点的有效检查追踪尚未完成，需进一步核实。' +
+            '建议优先处理阻塞级问题、核实规则适用范围与需求映射完整性，再推进下一阶段规格生成。' +
+            '<br><span style="color:var(--muted)">注：问题数量未做同根因规范化复核，不直接等同于 ' + DATA.statistics.total + ' 个独立缺陷。</span>' +
+          '</div>' +
+        '</div><div>' + badge + '</div>';
+    } else {
+    $('sec-header').innerHTML =
+      '<div><h1>' + esc(DATA.report.title || 'PRD 质量分析报告') + '</h1>' +
+      '<div class="project">' + esc(DATA.report.project_name ? DATA.report.project_name + ' · ' + DATA.report.document_name : DATA.report.document_name) + '</div>' +
+      '<div class="meta">' +
+        '<span>检查对象：' + esc(DATA.report.source_file) + '</span>' +
+        '<span>检查日期：' + esc(DATA.report.inspection_date) + '</span>' +
+        (baselines ? '<span>检查基准：' + esc(baselines) + '</span>' : '') +
+        (DATA.coverageStats
+          ? '<span>需求点：' + DATA.coverageStats.requirementTotal + '</span>' +
+            '<span>检查完成率：' + DATA.coverageStats.completeRatePct + '%</span>' +
+            '<span>规则通过率：' + DATA.coverageStats.passRatePct + '%（分母=已完成检查）</span>'
+          : '') +
+      '</div></div><div>' + badge + '</div>';
+    }
+  })();
+
+  // ---------- 02 KPI ----------
+  (function () {
+    var p = DATA.statistics.priority;
+    var total = DATA.statistics.total;
+    var p23 = (p.P2 || 0) + (p.P3 || 0);
+    var cards = [
+      { num: total, label: '问题总数', cls: '', filter: {} },
+      { num: p.P0 || 0, label: 'P0 严重问题', cls: 'c-p0', filter: { priority: 'P0' } },
+      { num: p.P1 || 0, label: 'P1 高优先级', cls: 'c-p1', filter: { priority: 'P1' } },
+      { num: p23, label: 'P2 一般 + P3 建议', cls: 'c-p23', filter: { p23: true } }
+    ];
+    if (DATA.coverage && DATA.coverage.totalFiles) {
+      cards.push({
+        num: DATA.coverage.cleanRate + '%',
+        label: '文件级未发现问题',
+        cls: 'c-cov',
+        filter: { cov: true }
+      });
+    }
+    $('sec-kpis').innerHTML = cards.map(function (c) {
+      return '<div class="kpi" data-filter=\'' + esc(JSON.stringify(c.filter)) + '\' role="button" tabindex="0">' +
+        '<div class="num ' + c.cls + '">' + c.num + '</div><div class="label">' + esc(c.label) + '</div></div>';
+    }).join('');
+    Array.prototype.forEach.call(document.querySelectorAll('.kpi'), function (el) {
+      var go = function () {
+        var f = JSON.parse(el.getAttribute('data-filter'));
+        if (f.cov) { var covTarget = document.getElementById('sec-coverage'); if (covTarget) scrollTo(0, covTarget.offsetTop - 12); return; }
+        if (f.p23) { setFilter({ priority: ['P2', 'P3'] }); } else { setFilter(f); }
+        scrollTo(0, $('sec-list').offsetTop - 12);
+      };
+      el.addEventListener('click', go);
+      el.addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); });
+    });
+  })();
+
+  // ---------- 03 结论 ----------
+  (function () {
+    var c = DATA.report.overall_conclusion || {};
+    if (!c.summary) { $('sec-conclusion').style.display = 'none'; return; }
+    var reasons = (c.reasons || []).map(function (r) { return '<li>' + esc(stripMd(r)) + '</li>'; }).join('');
+    $('sec-conclusion').innerHTML =
+      '<div class="section-title">检查结论</div>' +
+      '<div class="verdict ' + (c.status === 'BLOCKED' ? 'blocked' : c.status === 'ALLOWED' ? 'allowed' : '') + '">' +
+        esc(stripMd(c.summary)) + '</div>' +
+      (reasons ? '<ul class="reasons">' + reasons + '</ul>' : '');
+  })();
+
+  // ---------- 03b 检查覆盖（旧文件级近似；RTM 模式下由规则覆盖 Tab 取代；无旧数据或无节点时安全跳过） ----------
+  (function () {
+    var covEl = document.getElementById('sec-coverage');
+    if (!covEl) return;
+    var cov = DATA.coverage;
+    if (RTM || !cov || !cov.items || !cov.items.length) { covEl.style.display = 'none'; return; }
+    var rate = cov.totalFiles ? (cov.cleanFiles / cov.totalFiles * 100) : 0;
+    var rows = cov.items.map(function (x) {
+      var ids = x.issueIds || [];
+      var isHit = x.status === 'hit';
+      return '<tr class="' + (isHit ? 'hit' : '') + '" data-cov-ids="' + esc(ids.join(',')) + '"' +
+        (isHit ? ' role="button" tabindex="0"' : '') + '>' +
+        '<td>' + esc(x.file) + '</td><td>' + x.sections + '</td>' +
+        '<td class="cov-ids">' + esc(ids.length ? ids.join('、') : '-') + '</td>' +
+        '<td><span class="cov-status ' + (isHit ? 'hit' : 'clean') + '">' + (isHit ? '发现问题' : '未发现问题') + '</span></td></tr>';
+    }).join('');
+    covEl.innerHTML =
+      '<div class="section-title">检查覆盖清单<span class="sub">' + esc(cov.passRateText || '') + '</span></div>' +
+      '<div class="cov-summary">' +
+        '<div><div class="cov-rate">' + rate.toFixed(1) + '%</div><div class="cov-meta">文件级未发现问题率</div></div>' +
+        '<div class="cov-meta">规则文件 ' + cov.totalFiles + ' 个 · 章节 ' + cov.totalSections + ' 个<br>' +
+          '关联问题 ' + cov.hitFiles + ' 个文件 · 未发现问题 ' + cov.cleanFiles + ' 个文件</div>' +
+        '<div class="cov-track"><span class="cov-fill" style="width:' + rate + '%"></span></div>' +
+      '</div>' +
+      '<div class="cov-meta" style="margin-bottom:10px">口径：' + esc(cov.mapping || '') + '</div>' +
+      '<table class="cov"><thead><tr><th>规则文件</th><th>章节数</th><th>关联问题</th><th>状态</th></tr></thead><tbody>' +
+        rows + '</tbody></table>';
+    Array.prototype.forEach.call(document.querySelectorAll('tr[data-cov-ids]'), function (tr) {
+      var ids = (tr.getAttribute('data-cov-ids') || '').split(',').filter(Boolean);
+      if (!ids.length) return;
+      var go = function () { setFilter({ ids: ids }); scrollTo(0, $('sec-list').offsetTop - 12); };
+      tr.addEventListener('click', go);
+      tr.addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); });
+    });
+  })();
+
+  // ---------- 04 风险 ----------
+  (function () {
+    var groups = DATA.risk_groups || [];
+    if (!groups.length) { $('sec-risks').style.display = 'none'; return; }
+    $('sec-risks').innerHTML = '<div class="section-title">重点风险分析</div><div class="risk-cols">' +
+      groups.map(function (g) {
+        var items = g.issue_ids.map(function (id) {
+          var it = byId[id]; if (!it) return '';
+          return '<div class="risk-item" data-open="' + id + '">' + priTag(it.priority) +
+            '<div class="body"><div class="name">' + esc(it.title) + '<span class="id">' + id + '</span></div>' +
+            '<div class="desc">' + esc(stripMd(it.impact)) + '</div></div></div>';
+        }).join('');
+        return '<div class="risk-group"><h3>' + esc(g.name) + '<span class="id" style="color:var(--muted);font-weight:400;margin-left:8px">' +
+          g.issue_ids.length + ' 项</span></h3>' + items + '</div>';
+      }).join('') + '</div>';
+  })();
+
+  // ---------- 05 图表 ----------
+  var typeKeys = Object.keys(DATA.statistics.types);
+  (function () {
+    var st = DATA.statistics, total = st.total;
+    // A 优先级进度条
+    var priRows = ['P0', 'P1', 'P2', 'P3'].filter(function (p) { return st.priority[p]; }).map(function (p) {
+      var n = st.priority[p];
+      return '<div class="bar-row" data-pri="' + p + '" title="点击按 ' + p + ' 筛选">' +
+        '<span class="bl" style="color:' + PRI_COLOR[p] + '">' + p + '</span>' +
+        '<span class="track"><span class="fill" style="width:' + (total ? (n / total * 100) : 0) + '%;background:' + PRI_COLOR[p] + '"></span></span>' +
+        '<span class="val">' + n + ' · ' + (total ? (n / total * 100).toFixed(2) : 0) + '%</span></div>';
+    }).join('');
+
+    // B 类型环形图（SVG stroke-dasharray 分段）
+    var R = 62, C = 2 * Math.PI * R, used = 0;
+    var segs = typeKeys.map(function (t, i) {
+      var n = st.types[t], len = total ? (n / total * C) : 0;
+      var s = '<circle r="' + R + '" cx="80" cy="80" fill="none" stroke="' + TYPE_COLOR[i % TYPE_COLOR.length] +
+        '" stroke-width="22" stroke-dasharray="' + Math.max(len - 2, 0) + ' ' + (C - Math.max(len - 2, 0)) +
+        '" stroke-dashoffset="' + (-used) + '"></circle>';
+      used += len;
+      return s;
+    }).join('');
+    var legend = typeKeys.map(function (t, i) {
+      var n = st.types[t];
+      return '<div class="legend-item" data-type="' + esc(t) + '" title="' + esc(TYPE_DESC[t] || t) + '" style="cursor:help">' +
+        '<span class="dot" style="background:' + TYPE_COLOR[i % TYPE_COLOR.length] + '"></span>' +
+        '<span class="t">' + esc(t) + '</span><span class="v">' + n + ' · ' + (total ? (n / total * 100).toFixed(1) : 0) + '%</span></div>';
+    }).join('');
+
+    // C 模块柱状图
+    var mods = (DATA.modules || []).slice().sort(function (a, b) { return b.issue_ids.length - a.issue_ids.length; });
+    var maxMod = mods.length ? mods[0].issue_ids.length : 1;
+    var modRows = mods.map(function (m) {
+      return '<div class="bar-row" data-mod="' + esc(m.name) + '" title="重点模块集合（非全量互斥分类），点击筛选">' +
+        '<span class="bl" style="width:auto;min-width:34px">' + esc(m.name) + '</span>' +
+        '<span class="track"><span class="fill" style="width:' + (m.issue_ids.length / maxMod * 100) + '%;background:var(--primary)"></span></span>' +
+        '<span class="val">' + m.issue_ids.length + ' 条</span></div>';
+    }).join('') || '<div class="empty">无模块数据</div>';
+
+    $('sec-charts').innerHTML =
+      '<div class="chart"><h3>优先级分布</h3>' + priRows + '</div>' +
+      '<div class="chart"><h3>问题类型分布</h3><div class="donut-wrap">' +
+        '<div class="donut"><svg viewBox="0 0 160 160">' + segs + '</svg>' +
+        '<div class="center"><b>' + total + '</b><span>问题总数</span></div></div>' +
+        '<div class="legend">' + legend + '</div></div></div>' +
+      '<div class="chart"><h3>重点业务模块分布</h3>' + modRows +
+        '<div style="font-size:11px;color:var(--muted);margin-top:8px">注：来自报告总结的重点模块集合，非全部问题的互斥分类</div></div>';
+  })();
+
+  // ---------- 06 TOP5 ----------
+  (function () {
+    var feat = DATA.featured_issues || [];
+    if (!feat.length) { $('sec-top').style.display = 'none'; return; }
+    var finIds = ((DATA.risk_groups || []).find(function (g) { return g.key === 'financial'; }) || {}).issue_ids || [];
+    $('sec-top').innerHTML = '<div class="section-title">重点问题 TOP ' + feat.length +
+      '<span class="sub">排序依据：开发阻塞、资损风险、优先级</span></div><div class="top-list">' +
+      feat.map(function (id, i) {
+        var it = byId[id]; if (!it) return '';
+        return '<div class="rank" data-open="' + id + '">' +
+          '<span class="no">' + (i + 1) + '</span>' +
+          priTag(it.priority) +
+          '<span class="title"><span class="id">' + id + '</span>' + esc(it.title) + '</span>' +
+          '<span class="tag">' + esc(it.type) +
+          (finIds.indexOf(id) >= 0 ? '<span class="rf">资损风险</span>' : '') + '</span></div>';
+      }).join('') + '</div>';
+  })();
+
+  // ---------- 08 综合分析 ----------
+  (function () {
+    var recs = DATA.overall_recommendations || [];
+    if (!recs.length) { $('sec-analysis').style.display = 'none'; return; }
+    $('sec-analysis').innerHTML = '<div class="section-title">综合分析与建议<span class="sub">保留报告原始结论</span></div><ul>' +
+      recs.map(function (r) { return '<li>' + esc(stripMd(r)) + '</li>'; }).join('') + '</ul>';
+  })();
+
+  // ---------- 07 清单 + 筛选 ----------
+  var filter = { priority: '', type: '', dimension: '', module: '', q: '', ids: null };
+  // 类型/模块/维度下拉选项
+  typeKeys.forEach(function (t) {
+    var o = document.createElement('option'); o.value = t; o.textContent = t; $('f-type').appendChild(o);
+  });
+  Object.keys(DATA.statistics.dimensions || {}).forEach(function (d) {
+    var o = document.createElement('option'); o.value = d; o.textContent = d + '（' + DATA.statistics.dimensions[d] + '）'; $('f-dimension').appendChild(o);
+  });
+  (DATA.modules || []).forEach(function (m) {
+    var o = document.createElement('option'); o.value = m.name; o.textContent = m.name + '（' + m.issue_ids.length + '）'; $('f-module').appendChild(o);
+  });
+
+  function filtered() {
+    var q = filter.q.trim().toLowerCase();
+    var priList = Array.isArray(filter.priority) ? filter.priority : (filter.priority ? [filter.priority] : null);
+    return DATA.issues.filter(function (it) {
+      if (filter.ids && filter.ids.length && filter.ids.indexOf(it.id) < 0) return false;
+      if (priList && priList.indexOf(it.priority) < 0) return false;
+      if (filter.type && it.type !== filter.type) return false;
+      if (filter.dimension && (it.dimension || '') !== filter.dimension) return false;
+      if (filter.module && (it.module || []).indexOf(filter.module) < 0) return false;
+      if (q && (it.id + ' ' + it.title + ' ' + it.source_location).toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    }).sort(function (a, b) { return PRI_ORDER[a.priority] - PRI_ORDER[b.priority] || a.id.localeCompare(b.id); });
+  }
+
+  function renderList() {
+    var list = filtered();
+    $('issue-tbody').innerHTML = list.map(function (it) {
+      return '<tr data-open="' + it.id + '"><td class="id">' + it.id + '</td><td class="title">' + esc(it.title) + '</td>' +
+        '<td>' + priTag(it.priority) + '</td><td><span class="type-tag">' + esc(it.type) + '</span></td>' +
+        '<td><span class="type-tag">' + esc(it.dimension || '功能规则') + '</span></td>' +
+        '<td class="loc">' + esc(it.source_location) + '</td></tr>';
+    }).join('');
+    $('issue-empty').style.display = list.length ? 'none' : 'block';
+    $('f-count').textContent = '当前显示 ' + list.length + ' / ' + DATA.statistics.total + ' 条';
+    // 高亮当前筛选项
+    document.querySelectorAll('.bar-row[data-pri], .legend-item[data-type], .bar-row[data-mod]').forEach(function (el) {
+      var active = false;
+      if (el.dataset.pri) active = (Array.isArray(filter.priority) ? filter.priority.join() : filter.priority) === el.dataset.pri
+        || (Array.isArray(filter.priority) && filter.priority.length === 1 && filter.priority[0] === el.dataset.pri);
+      if (el.dataset.type) active = filter.type === el.dataset.type;
+      if (el.dataset.mod) active = filter.module === el.dataset.mod;
+      el.classList.toggle('active', active);
+    });
+  }
+
+  function setFilter(f) {
+    filter.priority = f.priority !== undefined ? f.priority : '';
+    filter.type = f.type !== undefined ? f.type : '';
+    filter.dimension = f.dimension !== undefined ? f.dimension : '';
+    filter.module = f.module !== undefined ? f.module : '';
+    filter.q = f.q !== undefined ? f.q : '';
+    filter.ids = f.ids !== undefined ? f.ids : null;
+    $('f-priority').value = Array.isArray(filter.priority) ? '' : filter.priority;
+    $('f-type').value = filter.type;
+    $('f-dimension').value = filter.dimension;
+    $('f-module').value = filter.module;
+    $('f-q').value = filter.q;
+    renderList();
+  }
+
+  $('f-priority').addEventListener('change', function () { filter.priority = this.value; filter.ids = null; renderList(); });
+  $('f-type').addEventListener('change', function () { filter.type = this.value; filter.ids = null; renderList(); });
+  $('f-dimension').addEventListener('change', function () { filter.dimension = this.value; filter.ids = null; renderList(); });
+  $('f-module').addEventListener('change', function () { filter.module = this.value; filter.ids = null; renderList(); });
+  $('f-q').addEventListener('input', function () { filter.q = this.value; filter.ids = null; renderList(); });
+  $('btn-clear').addEventListener('click', function () {
+    filter = { priority: '', type: '', dimension: '', module: '', q: '', ids: null };
+    $('f-priority').value = ''; $('f-type').value = ''; $('f-dimension').value = ''; $('f-module').value = ''; $('f-q').value = '';
+    renderList();
+  });
+
+  // 图表点击筛选（toggle）
+  document.addEventListener('click', function (e) {
+    var priEl = e.target.closest ? e.target.closest('.bar-row[data-pri]') : null;
+    if (priEl) {
+      filter.priority = (filter.priority === priEl.dataset.pri) ? '' : priEl.dataset.pri;
+      $('f-priority').value = Array.isArray(filter.priority) ? '' : filter.priority;
+      renderList(); return;
+    }
+    var typeEl = e.target.closest ? e.target.closest('.legend-item[data-type]') : null;
+    if (typeEl) {
+      filter.type = (filter.type === typeEl.dataset.type) ? '' : typeEl.dataset.type;
+      $('f-type').value = filter.type; renderList(); return;
+    }
+    var modEl = e.target.closest ? e.target.closest('.bar-row[data-mod]') : null;
+    if (modEl) {
+      filter.module = (filter.module === modEl.dataset.mod) ? '' : modEl.dataset.mod;
+      $('f-module').value = filter.module; renderList(); return;
+    }
+    var openEl = e.target.closest ? e.target.closest('[data-open]') : null;
+    if (openEl) openDrawer(openEl.getAttribute('data-open'));
+  });
+
+  // ---------- 抽屉 ----------
+  var curId = null;
+  // 行内 Markdown：esc 后处理粗体（**x** -> strong）
+  function inlineMd(s) {
+    return esc(s).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  }
+  // 简易富文本渲染：**小节**： 行 -> 分块标题；逐行成段；连续 | 行组转表格
+  function renderRich(text) {
+    if (!text || !String(text).trim()) return '<p style="color:var(--muted)">（源报告清单条目，无详情块，未提供该字段内容）</p>';
+    var html = [], tbl = [];
+    function flush() {
+      if (!tbl.length) return;
+      var rows = tbl.filter(function (l) { return !/^\|[\s:|-]+\|?$/.test(l.trim()); });
+      var trs = rows.map(function (row, ri) {
+        var cells = row.replace(/^\|/, '').replace(/\|$/, '').split('|').map(function (c) { return c.trim(); });
+        var tag = ri === 0 ? 'th' : 'td';
+        return '<tr>' + cells.map(function (c) { return '<' + tag + '>' + inlineMd(c) + '</' + tag + '>'; }).join('') + '</tr>';
+      }).join('');
+      html.push('<table class="mini-table">' + trs + '</table>');
+      tbl = [];
+    }
+    String(text).split('\n').forEach(function (l) {
+      var t = l.trim();
+      if (t.startsWith('|')) { tbl.push(l); return; }
+      flush();
+      // **小节标题**： 单独成块（如「范例（需求必须按此格式写）：」）
+      var h = t.match(/^\*\*([^*]+)\*\*([：:])?\s*$/);
+      if (h) { html.push('<h5>' + esc(h[1]) + (h[2] || '') + '</h5>'); return; }
+      if (t) html.push('<p>' + inlineMd(l) + '</p>');
+    });
+    flush();
+    return html.length ? html.join('') : '<p style="color:var(--muted)">（源报告清单条目，无详情块，未提供该字段内容）</p>';
+  }
+  function openDrawer(id) {
+    var it = byId[id]; if (!it) return;
+    curId = id;
+    $('d-pri').textContent = it.priority; $('d-pri').style.background = PRI_COLOR[it.priority] || '#94A3B8';
+    $('d-id').textContent = id + ' · ' + it.type + (it.dimension ? ' · ' + it.dimension : '');
+    $('d-title').textContent = it.title;
+    // 详情体：有内容的节才渲染；无详情块条目问题分析兜底用清单问题列，避免整屏占位文案
+    var bodyHtml = '<h4>原文位置</h4>' + renderRich(it.source_location);
+    if (it.original_text && String(it.original_text).trim()) bodyHtml += '<h4>原文引用</h4><blockquote>' + esc(it.original_text) + '</blockquote>';
+    bodyHtml += '<h4>问题分析</h4>' + renderRich(it.problem || it.title);
+    if (it.impact && String(it.impact).trim()) bodyHtml += '<h4>影响说明</h4>' + renderRich(it.impact);
+    if (it.suggestion && String(it.suggestion).trim()) bodyHtml += '<h4>修改建议</h4>' + renderRich(it.suggestion);
+    if (it.rule_ref) bodyHtml += '<h4>基准依据</h4>' + renderRich(it.rule_ref);
+    if (it.acceptance) bodyHtml += '<h4>验收口径</h4>' + renderRich(it.acceptance);
+    if (it.suggestion && String(it.suggestion).trim()) bodyHtml += '<h4>修改建议</h4>' + renderRich(it.suggestion);
+    if (it.rule_ref) bodyHtml += '<h4>基准依据</h4>' + renderRich(it.rule_ref);
+    if (it.acceptance) bodyHtml += '<h4>验收口径</h4>' + renderRich(it.acceptance);
+    if (!it.has_detail) bodyHtml += '<div class="status">清单级条目：源报告未展开详情块，问题描述摘自清单问题列，原文引用与建议待补</div>';
+    // RTM 反向链接：问题 → 需求/规则（无 RTM 数据时显式提示，不猜测）
+    if (RTM) {
+      var rtmIssue = (RTM.issues || []).filter(function (x) { return x.id === id })[0]
+      if (rtmIssue) {
+        if ((rtmIssue.requirementIds || []).length) {
+          bodyHtml += '<h4>关联需求（RTM）</h4><p>' + rtmIssue.requirementIds.map(function (rid) {
+            return '<a href="javascript:void(0)" data-jump-req="' + esc(rid) + '">' + esc(rid) + '</a>'
+          }).join('、') + '</p>'
+        }
+        if ((rtmIssue.ruleIds || []).length) {
+          bodyHtml += '<h4>检查规则（RTM）</h4><p>' + rtmIssue.ruleIds.slice(0, 20).map(function (rid) {
+            return '<a href="javascript:void(0)" data-jump-rule="' + esc(rid) + '">' + esc(rid) + '</a>'
+          }).join('、') + (rtmIssue.ruleIds.length > 20 ? ' 等 ' + rtmIssue.ruleIds.length + ' 条' : '') + '</p>'
+        }
+        if (!(rtmIssue.requirementIds || []).length && !(rtmIssue.ruleIds || []).length) {
+          bodyHtml += '<div class="status">缺少 RTM 映射数据：该问题未关联到具体需求点或规则点。</div>'
+        }
+      }
+    } else if (!it.has_detail) {
+      bodyHtml += '<div class="status">缺少 RTM 映射数据（旧版报告）。</div>'
+    }
+    $('d-body').innerHTML = bodyHtml +
+      '<div class="status">处理状态：' + esc(it.status) + '（只读，Dashboard 不提供裁决操作）' +
+      (it.module && it.module.length ? ' · 模块：' + esc(it.module.join('、')) : '') + '</div>';
+    var list = filtered();
+    var idx = list.findIndex(function (x) { return x.id === id; });
+    $('d-pos').textContent = idx >= 0 ? (idx + 1) + ' / ' + list.length : '';
+    $('d-prev').disabled = idx <= 0;
+    $('d-next').disabled = idx >= 0 && idx >= list.length - 1;
+    // 恢复问题抽屉标准头（实体抽屉可能隐藏过这些元素）
+    $('d-pri').style.display = ''
+    $('d-prev').style.display = ''
+    $('d-next').style.display = ''
+    var headSpan = document.querySelector('.drawer-head .id')
+    if (headSpan && !headSpan.id) headSpan.outerHTML = '<span class="id" id="d-id"></span>'
+    $('drawer').classList.add('show'); $('drawer').setAttribute('aria-hidden', 'false');
+    $('mask').classList.add('show');
+    $('d-body').scrollTop = 0;
+  }
+  function closeDrawer() {
+    $('drawer').classList.remove('show'); $('drawer').setAttribute('aria-hidden', 'true');
+    $('mask').classList.remove('show'); curId = null;
+  }
+  $('d-close').addEventListener('click', closeDrawer);
+  $('mask').addEventListener('click', closeDrawer);
+  $('d-prev').addEventListener('click', function () {
+    var list = filtered(), i = list.findIndex(function (x) { return x.id === curId; });
+    if (i > 0) openDrawer(list[i - 1].id);
+  });
+  $('d-next').addEventListener('click', function () {
+    var list = filtered(), i = list.findIndex(function (x) { return x.id === curId; });
+    if (i >= 0 && i < list.length - 1) openDrawer(list[i + 1].id);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeDrawer();
+    if (!curId) return;
+    if (e.key === 'ArrowLeft') $('d-prev').click();
+    if (e.key === 'ArrowRight') $('d-next').click();
+  });
+
+  // ---------- RTM：需求覆盖 / 规则覆盖视图与实体抽屉 ----------
+  var ST_TEXT = { pass: '通过', 'fully-passed': '完整通过', partial: '部分满足', conflict: '冲突', missing: '需求缺失', unverified: '未验证', na: '不适用', 'pending-confirm': '待确认' }
+  var ST_CLASS = { pass: 'st-pass', 'fully-passed': 'st-pass', partial: 'st-partial', conflict: 'st-conflict', missing: 'st-missing', unverified: 'st-unverified', na: 'st-na', 'pending-confirm': 'st-pending' }
+  function stTag(s) { return '<span class="st-tag ' + (ST_CLASS[s] || 'st-unverified') + '">' + (ST_TEXT[s] || s || '未验证') + '</span>' }
+  // 规则文件 → 业务模块（按文件名前缀；未匹配归入其他）
+  var MODULE_MAP = [
+    { re: /^(01|02|03|04|05|06|07|08)-/, mod: '开局与发牌' },
+    { re: /^(09|10|11|12|13|14|15)-/, mod: '行牌与吃碰杠胡' },
+    { re: /^(16|17|18|19|38|39|20)-/, mod: '结算与结束' },
+    { re: /^(21|22|23|24|25|26|27|28|29)-/, mod: '配置与加分玩法' },
+    { re: /^(30|31|32|33|34|35|36|37)-/, mod: '重连与状态恢复' },
+    { re: /^40-/, mod: '界面交互触发' },
+    { re: /产品需求文档PRD/, mod: 'PRD 基准对照' },
+  ]
+  function moduleOf(file) {
+    var base = String(file || '').replace(/^.*\//, '')
+    for (var i = 0; i < MODULE_MAP.length; i++) if (MODULE_MAP[i].re.test(base)) return MODULE_MAP[i].mod
+    return '其他'
+  }
+  var REQ_BY_ID = RTM ? {} : null
+  var RULE_BY_ID = RTM ? {} : null
+  if (RTM) {
+    RTM.requirements.forEach(function (r) { REQ_BY_ID[r.requirementId] = r })
+    RTM.rules.forEach(function (r) { RULE_BY_ID[r.ruleId] = r })
+  }
+
+  // 需求覆盖视图
+  var reqFilter = 'all'
+  var reqQuery = ''
+  function renderRequirementsView() {
+    var el = $('view-requirements')
+    if (!RTM) {
+      el.innerHTML = '<div class="rtm-empty-tip">本报告为旧版文件，无 RTM 需求追踪数据。<br>请使用 game-prd-check（rtm 开启）重新生成报告，或在构建 Dashboard 时传 --rtm 指向运行快照目录。</div>'
+      return
+    }
+    var st = RTM.statistics
+    var agg = st.ruleCoverageAgg || { fullyPassed: 0, partial: 0, conflict: 0, missing: 0, unverified: 0, pendingConfirm: 0, notApplicable: 0 }
+    var fpCount = st.fullyPassedRequirements || 0
+    var issueReqCount = RTM.requirements.filter(function (r) { return (r.issueIds || []).length > 0 }).length
+    var unvCount = st.unverifiedRequirements || 0
+    var chips = [
+      { k: 'all', t: '全部 ' + RTM.requirements.length },
+      { k: 'fully', t: '完整通过 ' + fpCount },
+      { k: 'issue', t: '存在问题 ' + issueReqCount },
+      { k: 'unverified', t: '未验证 ' + unvCount },
+    ]
+    var html =
+      '<div class="section-title">需求覆盖矩阵<span class="sub">全部 ' + RTM.requirements.length + ' 个原子需求点（含无问题的，不只有问题项）</span></div>' +
+      '<div class="rtm-tip">口径：需求级完整通过 = 该需求点的全部关联规则检查点均判定通过且证据校验通过、无关联有效未解决问题；已关联规则全部通过不代表已经过所有检查维度（当前维度：game）。' +
+        '规则检查完成率 ' + ((st.checkCompleteRate || 0) * 100).toFixed(1) + '% 与需求追踪完成率 ' + ((st.requirementTraceabilityRate || 0) * 100).toFixed(1) + '% 是两个不同指标。</div>' +
+      '<div class="rtm-stats">' + chips.map(function (c) { return '<span class="rtm-chip' + (reqFilter === c.k ? ' active' : '') + '" data-rf="' + c.k + '">' + c.t + '</span>' }).join('') + '</div>' +
+      '<div class="rtm-toolbar"><input id="req-q" type="search" placeholder="搜索需求 ID / 标题 / 规则 ID" value="' + esc(reqQuery) + '"></div>' +
+      '<div style="overflow-x:auto"><table class="rtm"><thead><tr><th>需求 ID</th><th>标题</th><th>来源</th><th>关联 Rule</th><th>检查状态</th><th>关联问题</th></tr></thead><tbody id="req-tbody"></tbody></table>' +
+      '<div class="empty" id="req-empty" style="display:none">没有符合筛选条件的需求点</div></div>'
+    el.innerHTML = html
+    renderReqRows()
+    Array.prototype.forEach.call(el.querySelectorAll('.rtm-chip'), function (chip) {
+      chip.addEventListener('click', function () {
+        reqFilter = chip.getAttribute('data-rf')
+        Array.prototype.forEach.call(el.querySelectorAll('.rtm-chip'), function (x) { x.classList.toggle('active', x === chip) })
+        renderReqRows()
+      })
+    })
+    $('req-q').addEventListener('input', function () { reqQuery = this.value; renderReqRows() })
+  }
+  function reqVisible(r) {
+    if (reqFilter === 'fully' && !r.fullyPassed) return false
+    if (reqFilter === 'issue' && (r.issueIds || []).length === 0) return false
+    if (reqFilter === 'unverified' && r.overallStatus !== 'unverified') return false
+    if (reqQuery) {
+      var q = reqQuery.toLowerCase()
+      var hay = (r.requirementId + ' ' + r.title + ' ' + (r.ruleLinks || []).map(function (x) { return x.ruleId }).join(' ')).toLowerCase()
+      if (hay.indexOf(q) < 0) return false
+    }
+    return true
+  }
+  function renderReqRows() {
+    var list = RTM.requirements.filter(reqVisible)
+    var rows = list.map(function (r) {
+      var src = r.source ? esc((r.source.file || '').replace(/^.*\//, '')) + (r.source.section ? ' §' + esc(r.source.section) : '') : '-'
+      return '<tr data-req="' + esc(r.requirementId) + '">' +
+        '<td class="mono">' + r.requirementId + '</td><td>' + esc(r.title) + '</td>' +
+        '<td class="r-nowrap">' + src + '</td>' +
+        '<td>' + (r.ruleLinks.length ? esc(r.ruleLinks.slice(0, 3).map(function (x) { return x.ruleId }).join('、')) + (r.ruleLinks.length > 3 ? ' 等 ' + r.ruleLinks.length + ' 条' : '') : '<span class="muted">无对应 Rule</span>') + '</td>' +
+        '<td class="r-nowrap">' + stTag(r.overallStatus === 'pass' ? 'fully-passed' : r.overallStatus) + '</td>' +
+        '<td>' + (r.issueIds.length || '-') + '</td></tr>'
+    }).join('')
+    $('req-tbody').innerHTML = rows
+    $('req-empty').style.display = rows ? 'none' : 'block'
+    Array.prototype.forEach.call(document.querySelectorAll('#req-tbody tr'), function (tr) {
+      tr.addEventListener('click', function () { openReqDrawer(tr.getAttribute('data-req')) })
+    })
+  }
+
+  // 统一覆盖视图（v4 阶段 8）：同一 REQ 查看 game/ui/bug 三维度覆盖 + 未验证清单
+  var VERDICT_LABEL_U = { pass: '通过', partial: '部分', missing: '缺失', conflict: '冲突', incomplete: '不完整', unverified: '未验证', insufficient: '信息不足', na: '不适用', logic: '逻辑错误', ambiguous: '歧义' }
+  var VERDICT_COLOR_U = { pass: '#3E9B63', partial: '#E8A044', missing: '#DC5148', conflict: '#DC5148', incomplete: '#E8A044', unverified: '#94A3B8', insufficient: '#94A3B8', na: '#C4CCD6', logic: '#DC5148', ambiguous: '#E8A044' }
+  function vTagU(v) {
+    var label = VERDICT_LABEL_U[v] || v || '无关联'
+    var color = VERDICT_COLOR_U[v] || '#94A3B8'
+    return '<span class="pri-tag" style="background:' + color + '">' + esc(label) + '</span>'
+  }
+  function renderUnifiedView() {
+    var el = $('view-unified')
+    var st = UNIFIED.statistics
+    var reqs = UNIFIED.requirements
+    var unlinked = reqs.filter(function (r) { return !r.linked })
+    var bd = st.byDimension || {}
+    var kpis = [
+      ['需求总数', st.requirements.total],
+      ['已关联', st.requirements.linked],
+      ['未验证', unlinked.length],
+      ['game 关系', bd.game ? bd.game.total : 0],
+      ['ui 关系', bd.ui ? bd.ui.total : 0],
+      ['bug 关系', bd.bug ? bd.bug.total : 0]
+    ]
+    var html = ''
+    html += '<div class="section-title">统一覆盖<span class="sub">同一 REQ 查看三维度判定（extractionRunId ' + esc(st.extractionRunId || '未登记') + '）</span></div>'
+    html += '<div class="kpis">' + kpis.map(function (k) {
+      return '<div class="kpi"><div class="kpi-num">' + k[1] + '</div><div class="kpi-label">' + k[0] + '</div></div>'
+    }).join('') + '</div>'
+    html += '<div class="toolbar" id="unified-toolbar">'
+    html += '<label><input type="checkbox" id="uf-game" checked> game</label>&nbsp;&nbsp;'
+    html += '<label><input type="checkbox" id="uf-ui" checked> ui</label>&nbsp;&nbsp;'
+    html += '<label><input type="checkbox" id="uf-bug" checked> bug</label>&nbsp;&nbsp;&nbsp;&nbsp;'
+    html += '<label><input type="checkbox" id="uf-unlinked"> 只看未验证（无任何关联）</label>&nbsp;&nbsp;&nbsp;&nbsp;'
+    html += '<input type="text" id="uf-q" placeholder="按 REQ ID 或标题过滤" style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;width:200px">'
+    html += '</div>'
+    html += '<table class="cov"><thead><tr><th>REQ ID</th><th>标题</th><th>game</th><th>ui</th><th>bug</th></tr></thead><tbody id="unified-tbody"></tbody></table>'
+    el.innerHTML = html
+    function draw() {
+      var showGame = $('uf-game').checked, showUi = $('uf-ui').checked, showBug = $('uf-bug').checked
+      var onlyUnlinked = $('uf-unlinked').checked
+      var q = $('uf-q').value.trim().toLowerCase()
+      var rows = reqs.filter(function (r) {
+        if (onlyUnlinked && r.linked) return false
+        var any = (showGame && r.game.total > 0) || (showUi && r.ui.total > 0) || (showBug && r.bug.total > 0)
+        if (!onlyUnlinked && !any) return false
+        if (q && (r.requirementId.toLowerCase().indexOf(q) < 0 && String(r.title).toLowerCase().indexOf(q) < 0)) return false
+        return true
+      })
+      $('unified-tbody').innerHTML = rows.map(function (r) {
+        var g = showGame && r.game.total > 0 ? vTagU(r.game.worst) + ' ' + r.game.total + ' 条' : '<span style="color:var(--muted)">—</span>'
+        var u = showUi && r.ui.total > 0 ? '问题 ' + r.ui.total + ' 条' : '<span style="color:var(--muted)">—</span>'
+        var b = showBug && r.bug.total > 0 ? '缺陷 ' + r.bug.total + ' 条' : '<span style="color:var(--muted)">—</span>'
+        return '<tr class="hit" data-req="' + esc(r.requirementId) + '"><td>' + esc(r.requirementId) + '</td><td>' + esc(r.title) + '</td><td>' + g + '</td><td>' + u + '</td><td>' + b + '</td></tr>'
+      }).join('') || '<tr><td colspan="5" style="color:var(--muted)">无匹配需求点</td></tr>'
+      Array.prototype.forEach.call(document.querySelectorAll('#unified-tbody tr.hit'), function (tr) {
+        tr.addEventListener('click', function () { openUnifiedDrawer(tr.getAttribute('data-req')) })
+      })
+    }
+    ['uf-game', 'uf-ui', 'uf-bug', 'uf-unlinked'].forEach(function (id) { $(id).addEventListener('change', draw) })
+    $('uf-q').addEventListener('input', draw)
+    draw()
+  }
+  function openUnifiedDrawer(reqId) {
+    var r = null
+    for (var i = 0; i < UNIFIED.requirements.length; i++) { if (UNIFIED.requirements[i].requirementId === reqId) { r = UNIFIED.requirements[i]; break } }
+    if (!r) return
+    var body = ''
+    body += '<div class="drawer-title">' + esc(r.requirementId) + ' ' + esc(r.title) + '</div>'
+    body += '<div class="drawer-body">'
+    body += '<div class="section-title">game 规则覆盖（' + r.game.total + ' 条关系，最差判定 ' + (VERDICT_LABEL_U[r.game.worst] || '无') + '）</div>'
+    body += r.game.total
+      ? '<table class="mini-table"><thead><tr><th>规则</th><th>判定</th><th>证据</th></tr></thead><tbody>' + r.game.rules.map(function (x) {
+          return '<tr><td>' + esc(x.ruleId) + '</td><td>' + vTagU(x.verdict) + '</td><td>' + esc(x.evidence).slice(0, 200) + '</td></tr>'
+        }).join('') + '</tbody></table>'
+      : '<div style="color:var(--muted)">无 game 关系</div>'
+    body += '<div class="section-title">UI 问题关联（' + r.ui.issues.length + ' 条）</div>'
+    body += r.ui.issues.length
+      ? '<table class="mini-table"><thead><tr><th>问题</th><th>判定</th><th>证据</th></tr></thead><tbody>' + r.ui.issues.map(function (x) {
+          return '<tr><td>' + esc(x.id) + '</td><td>' + vTagU(x.verdict) + '</td><td>' + esc(x.evidence) + '</td></tr>'
+        }).join('') + '</tbody></table>'
+      : '<div style="color:var(--muted)">无 UI 问题关联</div>'
+    body += '<div class="section-title">Bug 需求关系（' + r.bug.bugs.length + ' 条）</div>'
+    body += r.bug.bugs.length
+      ? '<table class="mini-table"><thead><tr><th>缺陷</th><th>判定</th><th>依据</th></tr></thead><tbody>' + r.bug.bugs.map(function (x) {
+          return '<tr><td>' + esc(x.bugId) + '</td><td>' + vTagU(x.verdict) + '</td><td>' + esc(x.reason) + '</td></tr>'
+        }).join('') + '</tbody></table>'
+      : '<div style="color:var(--muted)">无 Bug 关系（未被任何历史缺陷检验）</div>'
+    body += '</div>'
+    var drawer = document.querySelector('.drawer')
+    drawer.querySelector('.drawer-body').innerHTML = body
+    drawer.classList.add('open')
+  }
+
+  // 规则覆盖视图（按业务模块折叠）
+  var ruleOpen = {}
+  function renderRulesView() {
+    var el = $('view-rules')
+    if (!RTM) {
+      // 无 RTM：回退显示历史文件级近似清单（旧 sec-coverage 内容已渲染，此处移动进来）
+      var legacy = document.getElementById('sec-coverage')
+      el.innerHTML = '<div class="rtm-tip">本报告无 RTM 原子级数据，以下为<b>旧版文件级近似覆盖</b>（口径：模块关键词匹配；“未发现问题”不等同逐条确认通过）。</div>'
+      if (legacy) { legacy.style.display = ''; el.appendChild(legacy) }
+      return
+    }
+    var groups = {}
+    RTM.rules.forEach(function (r) {
+      var mod = moduleOf(r.file)
+      if (!groups[mod]) groups[mod] = []
+      groups[mod].push(r)
+    })
+    var order = ['开局与发牌', '行牌与吃碰杠胡', '结算与结束', '配置与加分玩法', '重连与状态恢复', '界面交互触发', 'PRD 基准对照', '其他']
+    var html = '<div class="section-title">Rule 覆盖矩阵<span class="sub">' + RTM.rules.length + ' 个原子检查点，按业务模块折叠；na = 已确认不适用本次检查</span></div>'
+    html += '<div class="rtm-tip">口径：完成率 = 非 unverified 的适用规则点 / 适用规则点；完整通过 = 全部必要检查记录均 pass 且证据通过校验、无关联有效未解决问题。规则来源标注中“PRD 基准参照”与“客户端逆向”的权威性待人工确认。</div>'
+    order.forEach(function (mod) {
+      var list = groups[mod]
+      if (!list || !list.length) return
+      var cnt = { full: 0, bad: 0, unv: 0, na: 0 }
+      list.forEach(function (r) {
+        if (r.verdict === 'na') cnt.na += 1
+        else if (r.verdict === 'unverified') cnt.unv += 1
+        else if (r.verdict === 'pass') cnt.full += 1
+        else cnt.bad += 1
+      })
+      var gid = 'mod-' + mod.replace(/\s/g, '')
+      html += '<div class="mod-group" id="' + gid + '">' +
+        '<div class="mod-head" data-mod="' + gid + '"><span class="name">' + esc(mod) + '</span>' +
+          '<span class="m">规则点 ' + list.length + '</span><span class="m">完整通过 ' + cnt.full + '</span>' +
+          '<span class="m">有问题 ' + cnt.bad + '</span><span class="m">未验证 ' + cnt.unv + '</span>' +
+          '<span class="m">不适用 ' + cnt.na + '</span></div>' +
+        '<div class="mod-body"><div style="overflow-x:auto"><table class="rtm"><thead><tr><th>Rule ID</th><th>来源文件</th><th>规则摘要</th><th>来源类型</th><th>检查状态</th><th>关联需求</th></tr></thead><tbody>' +
+          list.map(function (r) {
+            var srcTag = r.sourceType === 'reference-prd' ? '<span class="st-tag st-pending">PRD 基准参照</span>'
+              : r.sourceType === 'implementation-reverse' ? '<span class="st-tag st-pass">客户端逆向</span>'
+              : '<span class="st-tag st-unverified">' + esc(r.sourceType || 'unknown') + '</span>'
+            return '<tr data-rule="' + esc(r.ruleId) + '"><td class="mono">' + esc(r.ruleId) + '</td>' +
+              '<td class="r-nowrap">' + esc((r.file || '').replace(/^.*\//, '')) + '</td>' +
+              '<td>' + esc((r.text || '').slice(0, 60)) + '</td><td>' + srcTag + '</td>' +
+              '<td class="r-nowrap">' + stTag(r.verdict) + '</td>' +
+              '<td>' + (r.requirementIds || []).length + '</td></tr>'
+          }).join('') +
+        '</tbody></table></div></div></div>'
+    })
+    el.innerHTML = html
+    Array.prototype.forEach.call(el.querySelectorAll('.mod-head'), function (head) {
+      head.addEventListener('click', function () {
+        var g = document.getElementById(head.getAttribute('data-mod'))
+        if (g) g.classList.toggle('open')
+      })
+    })
+    Array.prototype.forEach.call(el.querySelectorAll('tr[data-rule]'), function (tr) {
+      tr.addEventListener('click', function () { openRuleDrawer(tr.getAttribute('data-rule')) })
+    })
+  }
+
+  // 实体抽屉：需求 / 规则（复用问题抽屉容器，按类型渲染，支持三向跳转）
+  function showEntityDrawer(headHtml, bodyHtml) {
+    $('d-pri').style.display = 'none'
+    $('d-prev').style.display = 'none'
+    $('d-next').style.display = 'none'
+    $('drawer').classList.add('show'); $('drawer').setAttribute('aria-hidden', 'false')
+    $('mask').classList.add('show')
+    $('d-body').innerHTML = bodyHtml
+    $('d-body').scrollTop = 0
+    var head = document.querySelector('.drawer-head .id'); if (head) head.outerHTML = '<span class="id">' + headHtml + '</span>'
+  }
+  // 问题抽屉打开时恢复标准头（openDrawer 原逻辑保留 id 文本）
+  function openReqDrawer(requirementId) {
+    var r = REQ_BY_ID[requirementId]
+    if (!r) return
+    showEntityDrawer(
+      esc(r.requirementId) + ' · ' + stTag(r.overallStatus === 'pass' ? 'fully-passed' : r.overallStatus),
+      '<h4>需求原文</h4><blockquote>' + esc(r.text) + '</blockquote>' +
+        '<h4>来源</h4><p>' + esc(r.source ? (r.source.file || '') + (r.source.section ? ' §' + r.source.section : '') + '（第 ' + r.source.fromLine + '~' + r.source.toLine + ' 行）' : '-') + '</p>' +
+        '<h4>关联规则与检查结论（' + (r.ruleLinks || []).length + ' 条）</h4>' +
+        ((r.ruleLinks || []).length ? '<table class="mini-table"><thead><tr><th>Rule</th><th>判定</th><th>证据</th></tr></thead><tbody>' +
+          r.ruleLinks.map(function (x) {
+            return '<tr><td><a href="javascript:void(0)" data-jump-rule="' + esc(x.ruleId) + '">' + esc(x.ruleId) + '</a></td>' +
+              '<td>' + stTag(x.verdict) + (x.executionStatus === 'unverified' ? ' <span class="muted">（未完成）</span>' : '') + '</td>' +
+              '<td>' + esc((x.evidence || '').slice(0, 160)) + '</td></tr>'
+          }).join('') + '</tbody></table>' : '<p style="color:var(--muted)">无对应 Rule（待确认：可能为合理新增需求，需补充检查范围）</p>') +
+        '<h4>关联问题（' + (r.issueIds || []).length + ' 条）</h4>' +
+        ((r.issueIds || []).length
+          ? '<p>' + r.issueIds.map(function (id) { return '<a href="javascript:void(0)" data-jump-issue="' + esc(id) + '">' + esc(id) + '</a>' }).join('、') + '</p>'
+          : '<p style="color:var(--muted)">无关联问题</p>') +
+        (r.verificationStatus === 'unverified' && r.unverifiedReason
+          ? '<div class="status">未验证归因：' + esc(r.unverifiedReason) + '</div>' : '') +
+        '<div class="status">检查维度：' + esc((r.coverageDimensions || []).join('、')) + '（已关联规则全部通过 ≠ 已经过所有应执行维度的检查）</div>'
+    )
+    wireEntityJumps()
+  }
+  function openRuleDrawer(ruleId) {
+    var r = RULE_BY_ID[ruleId]
+    if (!r) return
+    var evidences = (RTM.requirements || []).filter(function (q) { return (q.ruleLinks || []).some(function (x) { return x.ruleId === ruleId }) })
+      .map(function (q) { var link = q.ruleLinks.filter(function (x) { return x.ruleId === ruleId })[0]; return { requirementId: q.requirementId, title: q.title, status: link.status, evidence: link.evidence, evidenceInvalid: link.evidenceInvalid } })
+    showEntityDrawer(
+      esc(ruleId) + ' · ' + stTag(r.verdict),
+      '<h4>规则原文</h4><blockquote>' + esc(r.text) + '</blockquote>' +
+        '<h4>来源</h4><p>' + esc((r.file || '').replace(/^.*\//, '')) + (r.section ? ' §' + esc(r.section) : '') + '</p>' +
+        '<p><span class="src-chip">来源类型：' + esc(r.sourceType || 'unknown') + '</span> <span class="src-chip">权威性：' + esc(r.authority || 'pending-confirm') + '</span></p>' +
+        '<h4>关联需求与检查证据（' + evidences.length + ' 条）</h4>' +
+        (evidences.length ? '<table class="mini-table"><thead><tr><th>需求</th><th>判定</th><th>证据</th></tr></thead><tbody>' +
+          evidences.map(function (e) {
+            return '<tr><td><a href="javascript:void(0)" data-jump-req="' + esc(e.requirementId) + '">' + esc(e.requirementId) + '</a> ' + esc(e.title) + '</td>' +
+              '<td>' + stTag(e.evidenceInvalid ? 'unverified' : e.status) + '</td><td>' + esc((e.evidence || '').slice(0, 160)) + '</td></tr>'
+          }).join('') + '</tbody></table>' : '<p style="color:var(--muted)">无对应需求（orphan：可能为范围外规则或待确认缺口，不直接判需求缺失）</p>') +
+        '<h4>关联问题</h4>' +
+        ((r.issueIds || []).length ? '<p>' + r.issueIds.map(function (id) { return '<a href="javascript:void(0)" data-jump-issue="' + esc(id) + '">' + esc(id) + '</a>' }).join('、') + '</p>' : '<p style="color:var(--muted)">无</p>')
+    )
+    wireEntityJumps()
+  }
+  function wireEntityJumps() {
+    Array.prototype.forEach.call(document.querySelectorAll('#d-body [data-jump-rule]'), function (a) {
+      a.addEventListener('click', function () { openRuleDrawer(a.getAttribute('data-jump-rule')) })
+    })
+    Array.prototype.forEach.call(document.querySelectorAll('#d-body [data-jump-req]'), function (a) {
+      a.addEventListener('click', function () { openReqDrawer(a.getAttribute('data-jump-req')) })
+    })
+    Array.prototype.forEach.call(document.querySelectorAll('#d-body [data-jump-issue]'), function (a) {
+      a.addEventListener('click', function () { openDrawer(a.getAttribute('data-jump-issue')) })
+    })
+  }
+
+  // ---------- 浮动操作 ----------
+  $('btn-top').addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  $('btn-print').addEventListener('click', function () { window.print(); });
+
+  renderList();
+})();
+</script>
+</body>
+</html>

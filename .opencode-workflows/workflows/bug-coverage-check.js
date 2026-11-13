@@ -29,7 +29,7 @@
 //   date          检查日期（YYYY-MM-DD）；脚本内禁止取当前时间，需由调用方传入
 //   batchSize     每批缺陷数，默认 15
 //   maxDetailP2   详情区最多展开的 P2 条数，默认 100
-//   analysisModel 分析阶段模型，默认 biangfeng-gateway/deepseek-v4.1-flash-official（传空串用会话默认）
+//   analysisModel 分析阶段模型，默认 biangfeng-gateway/deepseek-v4.1-flash-official（传空串用会话默认；扫描固定 bf-flash 不受此参数影响）
 //   reviewModel   质检模型，默认同 analysisModel（传空串用会话默认）
 //   concurrency   并发上限，默认 16（运行时钳制到 16）
 //   fast          默认 true：跳过报告质检
@@ -298,7 +298,8 @@ const scan = await agent(
     '2. 用 grep 匹配 "^#{1,3} " 或 Get-Content 过滤，给出 PRD 的章节大纲（一级到三级标题，每行“行号 标题”），PRD 路径：' + prdFiles.join('、'),
     '3. 输出必须覆盖全部缺陷文件，一条不漏，不要合并文件。',
   ].join('\n'),
-  { label: '扫描缺陷与 PRD 大纲', schema: SCAN_SCHEMA, ...analysisAgentOptions, timeoutMs: 900000 }
+  // 扫描是轻量清单活，固定 bf-flash（不随 analysisModel/会话默认变；并行跑时与判定路模型错开）
+  { label: '扫描缺陷与 PRD 大纲', schema: SCAN_SCHEMA, model: 'biangfeng-gateway/deepseek-v4.1-flash-official', timeoutMs: 900000 }
 )
 
 if (!scan || !Array.isArray(scan.bugs) || scan.bugs.length === 0) {

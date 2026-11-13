@@ -170,8 +170,9 @@ const skipReview = fast && A.skipReview !== false
 
 ## 五、引用说明
 
-- 本 skill 双模式方案的完整设计：`dev-docs/design/2026-11-11-workflow-authoring-speed-quality-mode.md`
-- game-prd-check 优化全过程（模式来源）：`dev-docs/design/2026-11-10-game-prd-check-workflow-optimization.md`
-- workflow 运行时 API：`.agents/skills/workflow-authoring/references/runtime.md`
-- workflow 编写规范：`.agents/skills/workflow-authoring/SKILL.md`
-- 原始检查 skill（流程与报告结构基准）：`.claude/skills/game-prd-check/SKILL.md`
+本手册的模式源自 game-prd-check workflow 的六轮迭代调优，完整设计文档在 PrdGameSkill 仓库：
+
+- 双模式方案设计：`mickorz/PrdGameSkill` 仓库 `dev-docs/design/2026-11-11-workflow-authoring-speed-quality-mode.md`
+- 模式来源（game-prd-check 优化全过程）：`mickorz/PrdGameSkill` 仓库 `dev-docs/design/2026-11-10-game-prd-check-workflow-optimization.md`
+- workflow 运行时 API：本仓库 [runtime.md](runtime.md)
+- workflow 编写规范：本仓库 [SKILL.md](../SKILL.md)

@@ -1,0 +1,523 @@
+{
+ "stageId": "ST-C14",
+ "title": "番型",
+ "sourceTitle": "番型",
+ "fromLine": 163,
+ "toLine": 181,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 30,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C14-001",
+   "name": "先确认牌型再确认胡牌方式",
+   "rule": "先确认牌型，再确认这次是自摸、点炮胡还是抢杠胡。",
+   "uiRequirement": "",
+   "uiInteraction": "胡牌按钮按胡牌类型切换自摸/胡两种动作皮肤；胡牌者方位播放番型字效，点炮时由放铳方位另播点炮字效。",
+   "notes": "客户端只消费判定结果，未见“先牌型、后胡牌方式”的判定流程代码。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "有人胡牌并进入结算",
+    "condition": "结算明细中存在该座位的胡牌记录",
+    "action": "同时取出牌型结果与胡牌方式，分别驱动番型字效和自摸或点炮表现",
+    "result": "胡牌者方位出现番型字效，点炮或抢杠时放铳方位出现点炮字效"
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C14-002",
+   "name": "番型分三组且组内只取最高一档",
+   "rule": "番型分三组，组内只取最高一档。",
+   "uiRequirement": "",
+   "uiInteraction": "同一手牌只播一个主番型字效；杠飘、杠爆、七客这类组合另走组合字效节点。",
+   "notes": "三组互斥只在注释层声明；客户端按动画优先级而非分组取高，没有分组倍率计算。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "一组手牌同时命中多个番型",
+    "condition": "服务端返回的番型列表里有多条记录",
+    "action": "按既定优先级只挑一档作为主番型用于播放",
+    "result": "玩家只看到一段主番型字效，不会把所有命中番型逐条播完"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：番型分三组、组内只取最高一档。服务端实现：common_game/common_game_algorithm.cpp:127 TestFan 构造 kBasicIdsDesc/kKongIdsDesc/kCaiIdsDesc 三个互斥 ID 组，:112-122 TestExclusiveGroup 组内按倍数从高到低遍历、命中首个即 push 并 break，正是三组、组内取高，与规则同构（SVE-ST-C14-P01-03、SVE-ST-C14-P01-04）。"
+  },
+  {
+   "id": "AT-ST-C14-003",
+   "name": "组间连乘得出总倍数",
+   "rule": "组间连乘，最终倍数为三组最高档相乘。",
+   "uiRequirement": "",
+   "uiInteraction": "胡牌按钮显示“N倍”；结算流水行显示“N倍”；听牌面板每张听牌显示服务端下发的倍数并按房间封顶值截断。",
+   "notes": "客户端只做展示，没有三组连乘的运算实现。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "胡牌成立或查看听牌",
+    "condition": "服务端已算出该次胡牌的总倍数",
+    "action": "把总倍数原样写进胡牌按钮、结算流水和听牌列表",
+    "result": "玩家看到该次胡牌对应的总倍数数字"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：组间连乘，总倍数为三组最高档相乘。服务端实现：common_game/common_game_algorithm.cpp:283 CalcFanPoint 令 point=1(:286)，遍历 TestFan 每组唯一命中条目做 point *= GetFanPoint(fc.id)*fc.cnt(:296)，即三组最高档相乘，与规则同构（SVE-ST-C14-P01-05）。"
+  },
+  {
+   "id": "AT-ST-C14-004",
+   "name": "点炮与抢杠不计爆头等番型",
+   "rule": "点炮和抢杠不算爆头、财飘、杠开、十风。",
+   "uiRequirement": "",
+   "uiInteraction": "点炮或抢杠时胡牌按钮用“胡”皮肤而非“自摸”皮肤，放铳方位播放点炮字效。",
+   "notes": "需求要求点炮与抢杠剔除爆头、财飘、杠开、十风，客户端没有对应过滤逻辑，番型组合完全由服务端 fan_ids 决定。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "别人打出的牌被胡走，或加杠的第四张被抢",
+    "condition": "胡牌方式是点炮或抢杠而不是自摸",
+    "action": "按非自摸方式选择胡牌动作与点炮表现",
+    "result": "玩家看到胡牌方位不是自摸表现，放铳方位出现点炮字效"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：点炮和抢杠不算爆头、财飘、杠开、十风。服务端实现：common_game/common_game_fan_type.cpp:15 IsSelfTake 对 kHtDiscard/kHtRobKong 返回 false，:250 IsFanTypeBaoTou、:261 IsFanTypeCaiPiao、:295 GetGangKaiLevel、:408 IsFanTypeTenWind 首行均以 !IsSelfTake(p) 直接 return false，四类番型在点炮/抢杠下天然不计，与规则同构（SVE-ST-C14-P01-06~10）。"
+  },
+  {
+   "id": "AT-ST-C14-005",
+   "name": "平胡为四组面子加一对",
+   "rule": "平胡：4 组面子加 1 对。",
+   "uiRequirement": "",
+   "uiInteraction": "番型列表缺失或全部为平胡时，桌面结算文案显示“平胡”。",
+   "notes": "成型判定在服务端，客户端只有番型名称与兜底文案。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "一手牌按四组面子加一对胡牌",
+    "condition": "该手牌没有命中更高的番型",
+    "action": "按最低档番型命名并展示",
+    "result": "玩家在结算中看到“平胡”"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：平胡为 4 组面子加 1 对。服务端实现：common_game/common_game_fan_type.cpp:123 IsFanTypePingHu 要求 sep_type_==kSepType3N2（3n+2，即 4 面子+1 将），common_game/common_game_fan_type.h:181 注释明确“4 副顺子/刻子+1 副对子”，与规则同构（SVE-ST-C14-P01-11、SVE-ST-C14-P01-12）。"
+  },
+  {
+   "id": "AT-ST-C14-006",
+   "name": "财神可参与面子或对子",
+   "rule": "财神可参与面子或对子。",
+   "uiRequirement": "",
+   "uiInteraction": "副露与顺子按牌值升序摆放，财神被插到它所补的缺口位置。",
+   "notes": "财神面与财神将标志只做定义，仓库内未见引用；展示插位逻辑仅解决摆放顺序。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "副露或胡牌组合里含财神",
+    "condition": "财神被用来补顺子或充当对子",
+    "action": "按缺口把财神摆到对应位置展示",
+    "result": "玩家看到的组合牌序里，财神出现在它替代的那张牌的位置"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：财神可参与面子或对子。服务端实现：mah_frame/base/algorithm.cpp:2172 JokerTestHu3n2 依次按真实对子将、两财神将(kCMFJokJiang)、单财神将(kCMFSglJiang) 展开，:2213 JokerTestHu3n 按 need_joker 用财神补足面子，故财神既可作将（对子）也可作面子，与规则同构（SVE-ST-C14-P01-13、SVE-ST-C14-P01-14）。"
+  },
+  {
+   "id": "AT-ST-C14-007",
+   "name": "平胡倍数为1",
+   "rule": "平胡倍数为 1。",
+   "uiRequirement": "",
+   "uiInteraction": "胡牌按钮与结算流水按服务端点数显示“N倍”。",
+   "notes": "客户端只在注释中记录平胡为 1 倍，不参与计算。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "平胡成立",
+    "condition": "该手牌未命中更高番型",
+    "action": "按服务端给的点数展示倍数",
+    "result": "玩家看到平胡对应的 1 倍"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：平胡倍数为 1。服务端实现：common_game/common_game_init.cpp:344 固定倍数表将 kFTHzmjPingHu 注册为 1，CalcFanPoint 经 GetFanPoint 取 1 参与连乘（SVE-ST-C14-P01-15）。"
+  },
+  {
+   "id": "AT-ST-C14-008",
+   "name": "带财七对成立条件",
+   "rule": "七对：14 张组成 7 对，且手里至少有 1 张财神。",
+   "uiRequirement": "",
+   "uiInteraction": "结算文案显示七对、豪华七对、双豪华七对、三豪华七对，叠加爆头时显示七客系名称。",
+   "notes": "客户端只按服务端番型 ID 映射名称，未判断手里是否有财神。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "一手牌做成七对",
+    "condition": "手里带财神并按七对胡牌",
+    "action": "按命中的七对档位命名并播放对应字效",
+    "result": "玩家在结算中看到七对或七客系番型名"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：七对为 14 张组成 7 对且手里至少有 1 张财神。服务端实现：common_game/common_game_fan_type.cpp:332 IsFanTypeQiDui 要求 sep_type_==kSepType2N（14 张 7 对）、cai_shen_count_in_hand>0，并以 CountQuadPairGroups==0 约束基础档（有杠子组者由豪华档 AT-009/AT-010 按组内取高承接），与规则同构（SVE-ST-C14-P01-16）。"
+  },
+  {
+   "id": "AT-ST-C14-009",
+   "name": "带财七对档位倍数",
+   "rule": "七对 / 豪华 / 双豪华 / 三豪华，倍数 2 / 4 / 8 / 16。",
+   "uiRequirement": "",
+   "uiInteraction": "四档七对分别播不同的番型字效（七对、豪华、双豪华、三豪华），七客档位另用 hhqk、2hhqk、3hhqk 等皮肤。",
+   "notes": "倍数文案在客户端仅为注释，实际倍率来自服务端。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "带财七对胡牌并命中豪华档位",
+    "condition": "某个非财神牌面凑成四张实牌越多，档位越高",
+    "action": "按档位播放对应字效并显示服务端给的倍数",
+    "result": "玩家看到豪华级数递增，倍数随之增加"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：七对/豪华/双豪华/三豪华倍数 2/4/8/16。服务端实现：common_game/common_game_init.cpp:345-348 固定倍数表分别将 kFTHzmjQiDui/kFTHzmjHaoQi/kFTHzmjDoubleHaoQi/kFTHzmjTripleHaoQi 注册为 2/4/8/16，CalcFanPoint 取用，与规则同构（SVE-ST-C14-P01-17）。"
+  },
+  {
+   "id": "AT-ST-C14-010",
+   "name": "豪华按非财神牌面四张实牌计一组",
+   "rule": "某种非财神牌面有 4 张实牌，计 1 组豪华。",
+   "uiRequirement": "",
+   "uiInteraction": "命中的豪华档位在结算文案与字效中体现。",
+   "notes": "四张实牌的统计规则不可由客户端代码证实。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "七对手里出现四张相同的非财神牌",
+    "condition": "该牌面四张都是真实牌",
+    "action": "按豪华级数命名与播放字效",
+    "result": "玩家看到豪华、双豪华或三豪华的番型名"
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C14-011",
+   "name": "白板不计豪华",
+   "rule": "白板不计豪华。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "仓库内只找到白板作为财神牌值常量，未见豪华组数统计，也未见把白板排除在豪华之外的逻辑。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C14-012",
+   "name": "清七对为七对且手里没有财神",
+   "rule": "清七对：同样是 7 对，但手里没有财神。",
+   "uiRequirement": "",
+   "uiInteraction": "清七对四档各有独立字效皮肤（qqd、hhqqd、2hhqqd、3hhqqd）。",
+   "notes": "“没有财神”这一条件只在注释中体现，客户端不做校验。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "一手七对牌型不包含财神",
+    "condition": "七对成型且手里无财神",
+    "action": "按清七对档位命名并播放对应字效",
+    "result": "玩家看到清七对或豪华清七对名称"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：清七对为 7 对且手里没有财神。服务端 IsFanTypeQingQiDui(common_game_fan_type.cpp:376) 要求 sep_type_==kSepType2N、cai_shen_count_in_hand<=0、CountQuadPairGroups==0，静态注册恒定生效无配置开关（SVE-ST-C14-P02-01），「无财神」条件由注释级落到硬校验，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C14-013",
+   "name": "清七对档位倍数",
+   "rule": "清七对 / 豪华 / 双豪华 / 三豪华，倍数 4 / 8 / 16 / 32。",
+   "uiRequirement": "",
+   "uiInteraction": "清七对四档分别播不同字效，结算文案显示对应档位名称。",
+   "notes": "倍率不作为客户端计算依据；萧山倍率表对清七对给出的是另一套数值，不能当杭州证据。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "无财七对胡牌并命中豪华档位",
+    "condition": "四张实牌的组数越多档位越高",
+    "action": "按档位播放字效并显示服务端倍数",
+    "result": "玩家看到清七对档位名与对应倍数"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：清七对/豪华/双豪华/三豪华倍数 4/8/16/32。服务端 common_game_init.cpp:349-352 固定注册 kFTHzmjQingQiDui 4、QingHaoQi 8、DoubleQingHaoQi 16、TripleQingHaoQi 32，注释明确无好友房/金币场配置差异，CalcFanPoint 按注册值乘算（SVE-ST-C14-P02-02），数值与档位一一对应。"
+  },
+  {
+   "id": "AT-ST-C14-014",
+   "name": "杠开须为自摸",
+   "rule": "杠开：自摸，杠链为 1 / 2 / 3 / 4 及以上。",
+   "uiRequirement": "",
+   "uiInteraction": "摸牌后若满足杠开条件给出杠开相关提示；胡牌按钮按自摸显示“自摸”动作而非“胡”。",
+   "notes": "杠开提示只覆盖“手里正好有一组可杠”的情形，判定口径比结算规则窄。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "杠牌之后摸进一张能胡的牌",
+    "condition": "这次胡牌是自摸而不是点炮或抢杠",
+    "action": "按自摸方式展示胡牌表现并映射杠开番型",
+    "result": "玩家看到自摸形态的胡牌与杠开类番型字效"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：杠开须自摸、杠链为 1/2/3/4 及以上。服务端 GetGangKaiLevel(common_game_fan_type.cpp:295) 先过 IsSelfTake(common_game_fan_type.cpp:15)，点炮/抢杠一律 false，再取 gang_chain 并返回 gang_count>0（SVE-ST-C14-P02-03/04），自摸与杠链门槛均在服务端硬校验。"
+  },
+  {
+   "id": "AT-ST-C14-015",
+   "name": "杠开档位对应杠链数量",
+   "rule": "杠开档位为杠上开花 / 二连杠 / 三连杠 / 四连杠，对应杠链为 1 / 2 / 3 / 4 及以上。",
+   "uiRequirement": "",
+   "uiInteraction": "四个档位分别播 gk、2lgk、3lgk、4lgk 字效；组合成杠飘时按档位拼出“杠飘（二连杠）”这类文案。",
+   "notes": "档位体系与表现为客户端实现；杠链如何累计由服务端决定。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "杠开胡牌，且连续开杠的次数不同",
+    "condition": "服务端返回的番型标明是第几连杠",
+    "action": "按连杠次数选择对应字效与文案",
+    "result": "玩家看到杠上开花、二连杠、三连杠或四连杠"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：杠上开花/二连杠/三连杠/四连杠对应杠链 1/2/3/4 及以上。服务端 IsFanTypeGangShangHua/DoubleKong/TripleKong/QuadKong(common_game_fan_type.cpp:304/310/316/322) 分别 ==1/==2/==3/>=4，杠链唯一累加入口 PushGangChain(common_game_server_data.h:88) 每次杠 +1（SVE-ST-C14-P02-05/06/07），原先「杠链累计口径」疑点已确证，四档与杠链次数一一对应。"
+  },
+  {
+   "id": "AT-ST-C14-016",
+   "name": "杠开档位倍数",
+   "rule": "杠上开花 / 二连杠 / 三连杠 / 四连杠的倍数为 2 / 4 / 8 / 16。",
+   "uiRequirement": "",
+   "uiInteraction": "胡牌按钮与结算流水按服务端点数显示倍数。",
+   "notes": "四档倍数只存在于注释，客户端不参与计算。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "杠开胡牌",
+    "condition": "命中某一档连杠",
+    "action": "按服务端点数展示倍数",
+    "result": "玩家看到与连杠档位对应的倍数"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：杠上开花/二连杠/三连杠/四连杠倍数 2/4/8/16。服务端 common_game_init.cpp:354-357 固定注册 2/4/8/16，CalcFanPoint(common_game_algorithm.cpp:294) point*=fan_point 参与结算（SVE-ST-C14-P02-08），倍数表与规则一致。"
+  },
+  {
+   "id": "AT-ST-C14-017",
+   "name": "爆头成立条件",
+   "rule": "爆头：自摸，飘档为 0，单放与财神成将。",
+   "uiRequirement": "",
+   "uiInteraction": "万能听时在该张牌上显示爆的听牌标签，听牌面板对任意牌显示“胡”。",
+   "notes": "客户端只有爆头听牌识别，没有“飘档为 0”与“单放与财神成将”的成牌校验。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "手里剩一张财神且其他牌已成四组面子",
+    "condition": "这次是自摸，且本次没有飘",
+    "action": "按爆头档位命名并播放对应字效",
+    "result": "玩家看到爆头番型名与爆头字效"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：爆头 = 自摸 + 飘档为 0 + 单放与财神成将。服务端 IsFanTypeBaoTou(common_game_fan_type.cpp:250) 依次校验 IsSelfTake、piao_level!=0 返回 false、MV_ALL 时回退 is_qiao_xiang 否则走 IsDanFangWithCai(common_game_fan_type.cpp:23)，飘档字段由 piao_level(common_game_server_data.h:97) 维护（SVE-ST-C14-P02-09/10/11），三条件与服务端实现同构。"
+  },
+  {
+   "id": "AT-ST-C14-018",
+   "name": "爆头倍数",
+   "rule": "爆头倍数为 2。",
+   "uiRequirement": "",
+   "uiInteraction": "胡牌按钮与结算流水显示服务端给的倍数。",
+   "notes": "倍数值只在注释中体现，不参与客户端计算。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "爆头胡牌",
+    "condition": "命中爆头番型",
+    "action": "按服务端点数展示倍数",
+    "result": "玩家看到爆头对应的倍数"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：爆头倍数 2。服务端 common_game_init.cpp:359 注册 {kFTHzmjBaoTou, \"爆头\", 2}（SVE-ST-C14-P02-12），编译期常量并由 CalcFanPoint 乘入。"
+  },
+  {
+   "id": "AT-ST-C14-019",
+   "name": "听任意牌时改看进张前是否敲响",
+   "rule": "听任意牌时，改看进张前是否敲响。",
+   "uiRequirement": "",
+   "uiInteraction": "打出某张牌后若构成万能听，在该牌上显示爆或飘的听牌标签；听牌面板对任意牌显示“胡”。",
+   "notes": "需求中的“敲响”在客户端代码中无对应概念，只有任意牌听牌识别；爆与飘的区分仅按打出的牌是否为财神。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "打出一张牌后听任意牌",
+    "condition": "该次听牌可胡任意一张牌",
+    "action": "按打出的是否为财神分别标记为飘或爆",
+    "result": "玩家看到该张牌上出现爆或飘的听牌标签"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：听任意牌时改看进张前是否敲响。服务端 MakeFanFuncParams(common_game_algorithm.cpp:271) 仅在胡牌流程用进张前手牌算 is_qiao_xiang，IsQiaoXiang(common_game_algorithm.cpp:16) 在任一拆牌方案等待表含 MV_ALL 时返回 true，爆头/财飘 MV_ALL 分支取该值(common_game_fan_type.cpp:257)；BoxPlayStep::IsQiaoXiangNow(common_game_com_play.cpp:33) 在打财神后维护 piao_level（SVE-ST-C14-P02-13/14/15/16）。「敲响」在服务端即万能听+进张前判定，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C14-020",
+   "name": "财飘成立条件",
+   "rule": "财飘：自摸，飘档正好为 1 / 2 / 3 及以上，且单放与财神成将。",
+   "uiRequirement": "",
+   "uiInteraction": "有人飘时在该座位播 piao 动作字效；打出财神构成万能听时在牌上显示飘标签。",
+   "notes": "客户端只存飘计数并做表现，财飘的成立与自摸条件不在客户端判定。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "出牌阶段有一方打出财神",
+    "condition": "该次飘在胡牌前仍然有效",
+    "action": "给该座位播飘的动作与计数，结算时按财飘档位命名",
+    "result": "玩家看到飘的字效，胡牌时看到财飘类番型"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：财飘 = 自摸 + 飘档正好 1/2/3 及以上 + 单放与财神成将。服务端 IsFanTypeCaiPiao/DoubleCaiPiao/TripleCaiPiao(common_game_fan_type.cpp:261/270/279) 均先 IsSelfTake，再按 piao_level==1/==2/>=3 精确档位判定并复用 IsDanFangWithCai（SVE-ST-C14-P02-17/18/19），成立条件与档位口径与规则同构。"
+  },
+  {
+   "id": "AT-ST-C14-021",
+   "name": "财飘档位与3档以上归并",
+   "rule": "财飘 / 双财飘 / 三财飘，倍数 4 / 8 / 16；3 档及以上都是三财飘。",
+   "uiRequirement": "",
+   "uiInteraction": "三档分别播 cp、2cp、3cp 字效，文案显示财飘、双财飘、三财飘。",
+   "notes": "“3 档及以上都是三财飘”在客户端表现为只有一个三财飘档位，无更高档位。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "带飘胡牌",
+    "condition": "服务端判定本次飘档为 1、2 或 3 及以上",
+    "action": "按飘档选择对应档位名与字效",
+    "result": "玩家看到财飘、双财飘或三财飘"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：财飘/双财飘/三财飘倍数 4/8/16，3 档及以上均为三财飘。服务端 common_game_init.cpp:360-362 注册 4/8/16；IsFanTypeTripleCaiPiao(common_game_fan_type.cpp:279) 以 piao_level>=3 判定，TestFan kCaiIdsDesc(common_game_algorithm.cpp:187) 由高到低互斥、命中即 break(common_game_algorithm.cpp:114)（SVE-ST-C14-P02-19/20/21），3 档以上不会落回低档。"
+  },
+  {
+   "id": "AT-ST-C14-022",
+   "name": "杠开与财飘同时命中时合并为杠飘或飘杠",
+   "rule": "同时命中杠上开花和财飘时，去掉这两条，改记杠飘或飘杠。",
+   "uiRequirement": "",
+   "uiInteraction": "组合字效播 gp 或 pg；赢家流水文案与桌面结算文案写成杠飘或飘杠，不再并列显示杠上开花与财飘。",
+   "notes": "客户端能识别组合并为展示合并，但服务端到底下发组合番型 ID 还是两条拆分番型会产生两种文案路径：拆分时客户端一律默认叫杠飘（代码注释说明番型顺序不可靠）。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "一次胡牌同时是杠上开花又是财飘",
+    "condition": "服务端番型里同时含杠开与财飘，或直接下发组合番型",
+    "action": "把两条合并成一条组合番型用于字效与文案",
+    "result": "玩家看到杠飘或飘杠，而不是分别看到杠上开花与财飘"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：同时命中杠上开花和财飘时去掉这两条，改记杠飘或飘杠。服务端 TestFan(common_game_algorithm.cpp:199) 在 has_gang_shang_hua && has_cai_piao 时 erase kFTHzmjGangShangHua 与 kFTHzmjCaiPiao，并按 piao_before_gang 追加单条 kFTHzmjPiaoGang/kFTHzmjGangPiao；piao_before_gang(common_game_server_data.h:100) 由杠步骤维护（SVE-ST-C14-P02-22/23/24），服务端下发单条合并番型而非拆分两条，原「拆分两种文案路径」疑点消解。"
+  },
+  {
+   "id": "AT-ST-C14-023",
+   "name": "杠飘组合倍数为8并再乘基础番",
+   "rule": "杠飘或飘杠倍数 8，再乘基础番；平胡加这一档是 8 倍，七对加这一档是 16 倍。",
+   "uiRequirement": "",
+   "uiInteraction": "胡牌按钮与结算流水按服务端点数显示倍数，桌面文案显示“杠飘（二连杠，双财飘）”这类组合明细。",
+   "notes": "8 倍与“再乘基础番”只写在注释与文案示例中，客户端不做连乘计算。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "杠开与财飘叠加胡牌",
+    "condition": "该次胡牌命中杠飘或飘杠组合",
+    "action": "按服务端点数展示组合倍数，文案保留组合与明细",
+    "result": "玩家看到组合番型的倍数，平胡底是 8 倍、七对底是 16 倍"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：杠飘/飘杠倍数 8 再乘基础番，平胡加这档 8 倍、七对加这档 16 倍。服务端 common_game_init.cpp:366-367 注册杠飘/飘杠倍数 8，CalcFanPoint(common_game_algorithm.cpp:294-296) 对命中番型逐条 point *= fan_point*cnt，平胡 1×8=8、七对 2×8=16（SVE-ST-C14-P02-25/26），连乘关系固定无配置。"
+  },
+  {
+   "id": "AT-ST-C14-024",
+   "name": "从第一张出牌起连续打字牌",
+   "rule": "十风：从第一张出牌起连续打字牌。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "仓库内只找到十风番型 ID、名称与字效皮肤，未见从第一张出牌起累计字牌张数的逻辑；字牌判定函数存在但全仓无调用点。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：十风从第一张出牌起连续打字牌才累计。服务端实现：common_game/com_game/common_game_com_play.cpp:97 起首张判定 CountOuts(seat)==1（SVE-ST-C14-P03-01），首张非字牌即资格失效，IsTenWindCountedTile→Algorithm::IsZi（mah_frame/base/algorithm.cpp:426，SVE-ST-C14-P03-02）限定东南西北中发白，命中所打即 SetTenWindCount(seat,1)（计数字段 common_game/common_game_server_data.h:101，SVE-ST-C14-P03-03），与规则同构；enable_ten_wind 为杭州创房默认下发值 1（hzmj_server/game_logic.cpp:109）。"
+  },
+  {
+   "id": "AT-ST-C14-025",
+   "name": "十风中途作废不可重算",
+   "rule": "中途打出非字牌，或吃、碰、杠，本局作废，不能再重新累计。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "未见十风累计的作废与不可重算逻辑，也未见相关提示文案。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：中途打出非字牌或吃/碰/杠则本局作废、不可重算。服务端实现：ten_wind_live 注释明确首张出牌须为字牌且中途不打非字牌/不吃碰杠，否则本小局永久失效（common_game/common_game_server_data.h:102，SVE-ST-C14-P03-04）；吃（common_game_com_action.cpp:118，SVE-ST-C14-P03-05）、碰（common_game_com_pung.cpp:119，SVE-ST-C14-P03-06）、明杠（common_game_com_kong.cpp:89，SVE-ST-C14-P03-07）均 SetTenWindCount 0 + SetTenWindLive 0，且全仓无恢复入口，无重算路径，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C14-026",
+   "name": "满10张后任意自摸都能胡",
+   "rule": "满 10 张后任意自摸都能胡，不要求成牌。",
+   "uiRequirement": "",
+   "uiInteraction": "十风播放专属番型字效（sf），结算亮牌按十风特例处理。",
+   "notes": "“任意自摸都能胡、不要求成牌”不可由客户端证实，客户端只有十风番型识别与亮牌特例处理。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "连续打出 10 张以上字牌后自摸",
+    "condition": "累计未被打断",
+    "action": "按十风番型播放专属字效并处理亮牌",
+    "result": "玩家看到十风番型字效"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：满 10 张后任意自摸都能胡，不要求成牌。服务端实现：BoxHuStep::TestHu 在 GetEnableTenWind() && TenWindCount>=10 && GetNextHuType()==kHtSelf 时直接 AddHuPowerSeats 并 return true，无手牌成牌校验（common_game/com_game/common_game_com_action.cpp:410，SVE-ST-C14-P03-08）；IsTenWindWinner/GetSettleHands 以出牌区替换手牌结算（common_game_context.cpp:781/:789，SVE-ST-C14-P03-09/10），IsFanTypeTenWind 限定仅自摸不计点炮（common_game_fan_type.cpp:408，SVE-ST-C14-P03-11），与规则同构。"
+  },
+  {
+   "id": "AT-ST-C14-027",
+   "name": "十风只记自身不与其它番型相乘",
+   "rule": "只记十风，不与平胡、杠开、财飘、七对相乘。",
+   "uiRequirement": "",
+   "uiInteraction": "十风单独播一段字效，不与其它番型拼组合文案。",
+   "notes": "独占番名单挂在萧山配置里，杭州侧只有注释声明独占；是否真的不与其它番型相乘由服务端保证。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "十风成立并自摸胡牌",
+    "condition": "本次胡牌被判定为十风",
+    "action": "只按十风单条番型播放表现",
+    "result": "玩家只看到十风，不会同时看到平胡或七对叠加"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：只记十风，不与平胡、杠开、财飘、七对相乘。服务端实现：CommonGameAlgorithm::TestFan 顶部短路仅 push kFTHzmjTenWind 单项即 CalcFanPoint 后 return true（common_game/common_game_algorithm.cpp:133，SVE-ST-C14-P03-12）；注册表注释显式声明独占、不在三组互斥内（common_game_init.cpp:363，SVE-ST-C14-P03-13）；枚举注释声明不与基础/杠开/财神/七对组合（common_game_fan_type.h:47，SVE-ST-C14-P03-14），互斥语义与规则同构。"
+  },
+  {
+   "id": "AT-ST-C14-028",
+   "name": "十风倍率递增",
+   "rule": "10 张为 2 倍，每多一张再乘 2。",
+   "uiRequirement": "",
+   "uiInteraction": "胡牌按钮与结算流水显示服务端给的倍数。",
+   "notes": "唯一带具体数值的倍率表是萧山表，把十风记为 4，与杭州 2 倍起步口径不同；该表仅在萧山玩法生效，杭州倍率取服务端，不能据此判杭州实现有误。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "十风胡牌",
+    "condition": "连续字牌张数超过 10 张",
+    "action": "按服务端点数展示倍数",
+    "result": "玩家看到每多一张字牌倍数翻一倍"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：10 张为 2 倍，每多一张再乘 2。服务端实现：AddFanType 注册十风基础倍数 2（common_game_init.cpp:364，SVE-ST-C14-P03-17），CalcFanPoint 在 ten_wind_count>10 时 point *= 1<<(ten_wind_count-10)，注释即 10 张=基础×2、11 张=×4、12 张=×8（common_game_algorithm.cpp:307，SVE-ST-C14-P03-15）；枚举注释同一口径（common_game_fan_type.h:49，SVE-ST-C14-P03-16）；杭州侧 enable_ten_wind 默认 true（hzmj_server/game_logic.cpp:109，SVE-ST-C14-P03-18），与规则同构。"
+  },
+  {
+   "id": "AT-ST-C14-029",
+   "name": "财神牌面染红可点击无角标",
+   "rule": "财神牌面染红，可点击，没有角标。",
+   "uiRequirement": "财神牌面染红，可点击，没有角标。",
+   "uiInteraction": "手牌中的财神显示为红色牌面，没有角标；未被禁打的财神仍可点击出牌。",
+   "notes": "“可点击”最终受服务端禁打数据约束（财飘回合等场景会禁打部分牌），客户端没有对财神单独放行。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "本局确定财神牌后展示手牌",
+    "condition": "某张牌的值等于本局财神牌值",
+    "action": "把这张牌刷成红色并清掉角标",
+    "result": "玩家看到红色的财神牌，牌上没有任何角标，未禁打时可正常点出"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：财神牌面染红、可点击、无角标（纯客户端表现）。服务端实现：仅确认财神牌值固定下发（common_game_context.cpp:49，SVE-ST-C14-P03-19）、财神可正常打出并被 CheckPlay 受理（common_game_com_play.cpp:63，SVE-ST-C14-P03-20）；但 MakePower 在飘财受限座位下发禁打黑名单（common_game_com_play.cpp:23，SVE-ST-C14-P03-21），说明“可点击”仍受服务端禁打数据约束，染色与角标本属客户端表现、服务端无对应实现，维持原判。"
+  },
+  {
+   "id": "AT-ST-C14-030",
+   "name": "打出的财神在牌河保留原牌面只留红色",
+   "rule": "打出后牌河仍是原牌面，只保留这层红色。",
+   "uiRequirement": "打出后牌河仍是原牌面，只保留这层红色。",
+   "uiInteraction": "牌河里打出的财神显示原来的白板牌面，仅叠加一层红色；同牌处于高亮状态时不覆盖高亮色。",
+   "notes": "染色逻辑在同牌高亮（绿/蓝）时会让位，需求只约束牌面与红色，不涉及高亮优先级。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "有一方打出财神",
+    "condition": "打出的牌值等于本局财神牌值",
+    "action": "把这张牌放进牌河并只刷红色",
+    "result": "玩家在牌河看到白板原牌面，颜色是红色"
+   },
+   "l7": "verified",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  }
+ ]
+}

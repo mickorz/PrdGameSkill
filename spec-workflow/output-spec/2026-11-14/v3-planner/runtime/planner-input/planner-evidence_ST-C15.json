@@ -1,0 +1,438 @@
+{
+ "stageId": "ST-C15",
+ "title": "结算",
+ "sourceTitle": "结算",
+ "fromLine": 182,
+ "toLine": 199,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 25,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C15-001",
+   "name": "每小局只结算一次并停止行牌",
+   "rule": "胡牌确认后停止行牌，每小局只结算一次。",
+   "uiRequirement": "",
+   "uiInteraction": "结算消息到达后进入固定结算演出序列，不再回到出牌流程。",
+   "notes": "客户端未见「本小局已结算过则忽略重复结算消息」的幂等判断，唯一性只能由服务端保证。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "有人胡牌并确认胡牌",
+    "condition": "本小局结算结果已产生",
+    "action": "客户端停止本局继续操作并进入结算演出",
+    "result": "玩家不用再出牌或响应，直接看到结算演出开始"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义「胡牌确认后停止行牌，每小局只结算一次」 vs 服务端实现：BoxResultStep::Execute 仅直接调一次 OnResult（SVE-ST-C15-P01-01, common_game/com_game/common_game_com_result.cpp:17），OnResult 首行 AddAllState(kMahStateEnd) 压终态并 SendEndGame 每小局唯一一次 770（SVE-ST-C15-P01-02、SVE-ST-C15-P01-04, mah_frame/base/base_context.cpp:188），ChangeNextStep→SetCurStep 单向切步（SVE-ST-C15-P01-03, mah_frame/base/step.cpp:122），终态阻断回行牌态（SVE-ST-C15-P01-05, mah_frame/base/base_data.cpp:692），无配置分支，实现与规则同构，允许升级。"
+  },
+  {
+   "id": "AT-ST-C15-002",
+   "name": "胡张取值来源（自摸/点炮/抢杠）",
+   "rule": "自摸的胡张是本次摸入或补入的牌，点炮胡的胡张是弃牌，抢杠胡的胡张是被抢的第 4 张。",
+   "uiRequirement": "",
+   "uiInteraction": "胡牌者行内单放一张牌，并在所属组合内打「胡」角标。",
+   "notes": "客户端只消费 dan_fang，三种胡法各自取哪张牌由服务端决定，无法在本工程内验证。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "胡牌结算数据下发",
+    "condition": "玩家本局胡牌",
+    "action": "客户端把结算数据里的胡张单放展示并打胡角标",
+    "result": "玩家看到胡牌那一行有一张牌被标为胡"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义「自摸取本次摸入/补入牌、点炮取弃牌、抢杠取被抢第 4 张」 vs 服务端实现：CheckHu 按 kMahStateTake/kHzmjStateFirstWait→GetJustTake、kMahStatePlay→GetJustPlay、kMahStateTKong→GetJustTKong().mahs[0]（SVE-ST-C15-P01-06, common_game/com_game/common_game_com_action.cpp:531），SetHuDanFang 落 hu_info.df_mah（SVE-ST-C15-P01-08, mah_frame/base/base_data.cpp:1094），FillMsgResultHu 以 df_mah 写 dan_fang 单张下发（SVE-ST-C15-P01-10, common_game/com_game_context.cpp:141），框架同口径（SVE-ST-C15-P01-07），无配置参与取值，实现与规则同构，允许升级。"
+  },
+  {
+   "id": "AT-ST-C15-003",
+   "name": "停止操作按钮、胡牌预览与放大弃牌",
+   "rule": "各端停止操作按钮、胡牌预览和放大弃牌。",
+   "uiRequirement": "操作按钮收起、胡牌预览关闭、放大弃牌隐藏。",
+   "uiInteraction": "操作按钮区切回空状态，听牌面板关闭，出牌放大层整体隐藏。",
+   "notes": "",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "本局胡牌结算开始",
+    "condition": "无额外条件，结算消息到达即执行",
+    "action": "客户端收起出牌与吃碰杠胡按钮、关闭听牌面板、隐藏放大的弃牌",
+    "result": "牌桌上不再出现可点的操作按钮、听牌面板和放大弃牌"
+   },
+   "l7": "verified",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C15-004",
+   "name": "方位盘停止倒计时",
+   "rule": "方位盘停止倒计时。",
+   "uiRequirement": "方位盘倒计时数字与方位灯停止。",
+   "uiInteraction": "倒计时数字清空、方位闪烁灯隐藏。",
+   "notes": "清空倒计时的入口只在整场结束（MsgEndGame）调用；胡牌结算流程只关闭操作按钮，未见显式停止方位盘计时。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "整场对局结束消息到达",
+    "condition": "本场结束",
+    "action": "客户端清空并停止方位盘倒计时与方位灯",
+    "result": "方位盘不再显示倒计时数字与闪烁"
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C15-005",
+   "name": "亮出四家手牌并显示对局结束",
+   "rule": "在原牌桌亮出四家手牌，桌面中央显示「对局结束」。",
+   "uiRequirement": "四家手牌摊开可见，桌面中央出现「对局结束」提示。",
+   "uiInteraction": "四家手牌全部翻开，桌面中央加载「对局结束」图。",
+   "notes": "「对局结束」为图片资源（页 1 hu 对应的图标），仓库内无该图源文件，文案内容无法逐字验证。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "本局结算消息到达",
+    "condition": "有人胡牌且结束类型为胡牌",
+    "action": "客户端把四家手牌翻开摆在原位，并在桌面中央显示结束提示图",
+    "result": "玩家看到四家手牌全部摊开，桌面中央出现「对局结束」"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义「原牌桌亮出四家手牌、桌面中央显示对局结束」 vs 服务端实现：FillMsgPlayerHands 对 0~player_count-1 无条件下发每座 hands/combs（SVE-ST-C15-P01-16, common_game/common_game_context.cpp:405），胡家另取 GetSettleHands（SVE-ST-C15-P01-17），SendEndGame 的 flag=end_type 无条件下发（SVE-ST-C15-P01-04），亮牌侧已确证；但「对局结束」为图片资源（页 1 hu 图标），仓库无图源文件、文案无法逐字核验，维持 partial。"
+  },
+  {
+   "id": "AT-ST-C15-006",
+   "name": "黄庄亮牌与中央黄庄提示",
+   "rule": "黄庄：亮出四家手牌，桌面中央显示「黄庄」，保留终局牌河、财神和余牌数 20。",
+   "uiRequirement": "四家手牌摊开，桌面中央出现「黄庄」，牌河、财神与余牌数仍可见。",
+   "uiInteraction": "中央加载黄庄提示图，桌面仍显示牌河、财神与右侧余牌数。",
+   "notes": "余牌数 20 的具体数值由服务端牌墙数据驱动，客户端未硬编码；黄庄提示图内容同样无法逐字验证。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "本局无人胡牌判黄庄",
+    "condition": "牌墙剩 20 张且本次摸打与弃牌响应完成",
+    "action": "客户端亮出四家手牌并在中央显示黄庄提示，保留牌河、财神与余牌数",
+    "result": "玩家看到「黄庄」提示和四家手牌，桌面牌面与余牌数仍在"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义「黄庄亮四家手牌、中央显示黄庄、保留牌河财神与余牌数 20」 vs 服务端实现：TakeStep::IsDrawn 判定 CountWalls()<=GetDrawnCnt（SVE-ST-C15-P01-18, mah_frame/com_basic/com_take.cpp:118），InitConfigByBox 固定 SetDrawnCnt(20) 且 2/3/4 人一致（SVE-ST-C15-P01-19, hzmj_server/server_config.cpp:33），SetEndType(kEtDrawn)→OnEndResult 转结算（SVE-ST-C15-P01-20），FillMsgRemainingWallCards 逐张下发剩余牌墙（SVE-ST-C15-P01-21, common_game/com_game_context.cpp:423）；余牌阈值与亮牌侧确证，但中央「黄庄」提示图内容无法逐字验证，维持 partial。"
+  },
+  {
+   "id": "AT-ST-C15-007",
+   "name": "胡牌者方位播放番型字效",
+   "rule": "「对局结束」仍在时，胡牌者方位播放番型字效。",
+   "uiRequirement": "胡牌者座位上出现番型字效。",
+   "uiInteraction": "对应座位方位出现番型字效，播完自动隐藏。",
+   "notes": "结束字样只保持 1 秒（定时复位），字效时长较长；「仍在时」的重叠关系未精确验证。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "本局胡牌结算演出开始",
+    "condition": "该座位本局胡牌",
+    "action": "客户端在该座位方位播放命中番型的字效",
+    "result": "玩家看到胡牌那一家位置上出现番型演出，播完自动消失"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义「对局结束仍在时，胡牌者方位播放番型字效」 vs 服务端实现：CountFan 对各座位拆解取最高番产出 fan 列表（SVE-ST-C15-P01-23, mah_frame/base/algorithm.cpp:1811），FillMsgFanDetails/FillMsgResultHu 按 hu_seat 无条件下发 fan_ids（SVE-ST-C15-P01-22, common_game/com_game_context.cpp:389；SVE-ST-C15-P01-10），座位绑定确证；但「结束字样仅保持 1 秒」与字效时长属客户端演出时序，服务端仅固定消息顺序，重叠关系未验证，维持 partial。"
+  },
+  {
+   "id": "AT-ST-C15-008",
+   "name": "放铳方位显示「点炮」",
+   "rule": "点炮胡和抢杠胡同时在放铳方位显示「点炮」，抢杠胡的放铳者是加杠者。",
+   "uiRequirement": "放铳者座位上出现「点炮」字效。",
+   "uiInteraction": "放铳者方位出现「点炮」/一炮多响字效，播完隐藏。",
+   "notes": "抢杠胡的放铳者是否为加杠者取决于服务端下发的 df_from，客户端只按该座位播放。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "点炮胡或抢杠胡结算",
+    "condition": "该胡牌不是自摸",
+    "action": "客户端在放铳那一家方位播放「点炮」表现",
+    "result": "玩家看到放铳者位置上出现「点炮」"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义「点炮胡与抢杠胡在放铳方位显示点炮，抢杠放铳者为加杠者」 vs 服务端实现：BoxTKongStep 记录 SetLastKongSeat(加杠者)（SVE-ST-C15-P01-24, common_game/com_game/common_game_com_kong.cpp:271），CheckHu 点炮 from_seat=GetJustPlaySeat、抢杠 from_seat=GetJustTKongSeat（SVE-ST-C15-P01-06），FillMsgResultHu set_df_from 下发放铳座位（SVE-ST-C15-P01-10），CalcFinalWinLost 抢杠付款取 GetLastKongSeat（SVE-ST-C15-P01-25, common_game/com_game/common_game_com_result.cpp:113）；映射确证，但点炮/抢杠可达性受 enable_banker_discard_hu 与三牢门槛约束、「点炮」字效为客户端资源，维持 partial。"
+  },
+  {
+   "id": "AT-ST-C15-009",
+   "name": "先刷新头像旁累计积分",
+   "rule": "先刷新头像旁的累计积分。",
+   "uiRequirement": "头像旁累计积分更新。",
+   "uiInteraction": "各玩家头像旁累计积分刷新为新数值。",
+   "notes": "头像分数刷新有两条路径（结算消息写入 + 玩家分数消息广播），面板显示刷新还会在飘分开始时按座位再触发一次；实际先后依赖消息到达顺序。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "本局结算分数下发",
+    "condition": "无",
+    "action": "客户端用最新累计分刷新每个玩家头像旁的数值",
+    "result": "玩家看到其他家和自己的头像旁分数变成最新累计分"
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C15-010",
+   "name": "非 0 得分座位飘分与正负样式",
+   "rule": "番型字效退场后，只在本局得分不为 0 的座位内侧飘分。正分金黄色，负分浅蓝灰色并带减号。",
+   "uiRequirement": "得分非 0 的座位内侧出现飘分，正分金黄、负分浅蓝灰带减号。",
+   "uiInteraction": "座位内侧出现飘分数字，按正负切换字图，动画结束后淡出隐藏。",
+   "notes": "正负字图（fnt_win/fnt_lose）的实际颜色不在仓库内，减号来自服务端下发的负数本身。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "番型字效播放完成",
+    "condition": "该座位本局得分不为 0",
+    "action": "客户端在该座位内侧显示飘分数字，按正负切换字图后淡出",
+    "result": "玩家看到非 0 分的座位飘出分数，0 分座位没有飘分"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义「仅本局得分非 0 座位飘分，正分金黄、负分浅蓝灰带减号」 vs 服务端实现：CalcFinalWinLost 以负值记付款方、正值记胡家（SVE-ST-C15-P01-30, common_game/com_game/common_game_com_result.cpp:82），SyncWinLostItems 逐座写 score（SVE-ST-C15-P01-29, result.cpp:229），FillAllWinLosts 对全部座位下发 score（0 也下发，SVE-ST-C15-P01-28, common_game/com_game_context.cpp:285），座位与非 0/正负号口径确证；但正负字图 fnt_win/fnt_lose 实际颜色不在仓库内，视觉样式无法验证，维持 partial。"
+  },
+  {
+   "id": "AT-ST-C15-011",
+   "name": "飘分淡出后保留牌桌再开小结算",
+   "rule": "飘分淡出后短暂保留终局牌桌，再打开小结算。",
+   "uiRequirement": "牌桌先短暂停留，随后出现小结算。",
+   "uiInteraction": "终局牌桌停留数秒后弹出小结算面板。",
+   "notes": "打开小结算用的是从结算消息起的固定延迟，不是以飘分淡出完成为条件；快节奏或长动画下停留时长会偏离需求。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "本局结算消息到达",
+    "condition": "无",
+    "action": "客户端先摊牌停桌，再在固定数秒后打开小结算",
+    "result": "玩家先看到终局牌桌停留片刻，然后出现小结算"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义「飘分淡出后短暂保留终局牌桌，再打开小结算」 vs 服务端实现：OnResult 内先 SendResultHu 群发 1286（SVE-ST-C15-P01-31, common_game/com_game/common_game_context.cpp:117）后 SendEndGame 群发 770（SVE-ST-C15-P01-02/04），服务端不做延时或等待、顺序固定；但客户端小结算以结算消息起的固定延迟打开、不以飘分淡出完成为条件，停留时长存在偏离，维持 partial。"
+  },
+  {
+   "id": "AT-ST-C15-012",
+   "name": "面板覆盖终局牌桌与本家行置顶高亮",
+   "rule": "小结算盖在终局牌桌上。各端以本家为第一行，向下依次为下家、对家、上家。本家行置顶并高亮。",
+   "uiRequirement": "面板覆盖牌桌，本家行在第一行且高亮。",
+   "uiInteraction": "面板覆盖牌桌，第一行为本家并高亮，其后依次为下家、对家、上家。",
+   "notes": "行序依赖玩家列表本身按本地座位升序返回，该数据源不在本工程可查范围；遮罩由公共壳提供。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "小结算面板打开",
+    "condition": "无",
+    "action": "客户端以本家为第一行向下排出下家、对家、上家，并把本家行高亮",
+    "result": "玩家看到自己在第一行并被高亮，其下依次是下家、对家、上家"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求：面板覆盖终局牌桌，行序为本家→下家→对家→上家，本家行置顶并高亮。服务端：SVE-ST-C15-P02-01 FillAllWinLosts 恒按座位 0..n-1 升序下发全桌 win_losts（common_game_context.cpp:290），SVE-ST-C15-P02-02 按 seat 下发全桌手牌（common_game_context.cpp:405），仅确证全桌数据齐备；置顶旋转与高亮在客户端，未获客户端证据。维持 partial。"
+  },
+  {
+   "id": "AT-ST-C15-013",
+   "name": "按本端净得分切换胜负主题",
+   "rule": "胡牌局按本端本局净得分切换主题：大于或等于 0 为「恭喜获胜」，小于 0 为「遗憾失败」。黄庄四端都是「黄庄」。",
+   "uiRequirement": "主题随本端净得分切换，黄庄统一为「黄庄」。",
+   "uiInteraction": "本家行主题按胜负切页，黄庄局走流局页。",
+   "notes": "「恭喜获胜」「遗憾失败」「黄庄」标题文案在公共壳，本工程只提供胜负/流局标记与行主题切页。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "小结算面板打开",
+    "condition": "本端本局净得分为正或 0、为负、或本局黄庄",
+    "action": "客户端按本端得分选择胜负主题，黄庄走流局主题",
+    "result": "玩家看到自己这边是获胜、失败或黄庄的主题"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求：胡牌局按本端净得分切主题，≥0 为「恭喜获胜」、<0 为「遗憾失败」，黄庄四端为「黄庄」。服务端：SVE-ST-C15-P02-03 WriteFinalScores 以 final_score>0→kWin、<0→kLose、其余（含 0）→kDraw（common_game_com_result.cpp:395-398），0 分边界实现判流局而需求判获胜；SVE-ST-C15-P02-04 仅提供带符号分数。细节差异仍在，维持 partial。"
+  },
+  {
+   "id": "AT-ST-C15-014",
+   "name": "行左侧座位头像昵称与庄家倍数",
+   "rule": "每行左侧为座位、头像和昵称。庄家行显示「庄×3」。",
+   "uiRequirement": "每行左侧显示座位方向、头像、昵称，庄家行带倍数角标。",
+   "uiInteraction": "左侧竖排座位名、头像与昵称，庄家位置出现庄倍数角标。",
+   "notes": "庄倍数角标取服务端牢庄档位，笃三老庄下应为 3（庄×3）；若服务端下发其他档位，客户端会显示 1/2 倍。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "小结算每行渲染",
+    "condition": "该座位本局为庄家",
+    "action": "客户端显示座位方向、头像与昵称，并给庄家行加庄倍数角标",
+    "result": "玩家看到各家方位、头像昵称，庄家行带庄标记"
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C15-015",
+   "name": "行内牌区摆布与胡张角标",
+   "rule": "中间从左到右是碰杠区和手牌，杠的第 4 张垒在上方，暗杠顶张正面。胡牌者其余手牌按胡牌组合分组，未胡牌者连续摆放。胡入的那一张在所属组合内标绿色「胡」。",
+   "uiRequirement": "碰杠区在左、手牌在右；杠第 4 张垒上方、暗杠顶张正面；胡入牌带「胡」角标。",
+   "uiInteraction": "从左侧碰杠组到右侧手牌依次排布，杠组顶部多出一张，暗杠只露顶张，胡入牌带角标。",
+   "notes": "胡角标图片 ico_hu.png 的颜色无法在本工程内验证是否为绿色。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "小结算每行渲染牌区",
+    "condition": "该座位胡牌或未胡",
+    "action": "客户端按组合或连续方式摆牌，杠组垒起第 4 张、暗杠只露顶张，并在胡入那张牌上打胡角标",
+    "result": "玩家看到碰杠区与手牌的摆法，以及被标为胡的那张牌"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求：碰杠区在左、手牌在右，杠第 4 张垒上方、暗杠顶张正面，胡入张标绿色「胡」。服务端：SVE-ST-C15-P02-09 GetResultJson 按 combs 分组并在暗杠 kCMFCKong 追加 1、明杠/补杠追加 0 作第 4 张标记（common_game_com_result.cpp:444-451），SVE-ST-C15-P02-11 下发 dan_fang 胡入张（common_game_context.cpp:161）；角标颜色与摆布属客户端资源，未获证据。维持 partial。"
+  },
+  {
+   "id": "AT-ST-C15-016",
+   "name": "右侧本局净得分样式",
+   "rule": "右侧为本局净得分。正分带加号，0 分显示「0」，负分带减号。",
+   "uiRequirement": "右侧显示本局净得分，正分加号、0 显示 0、负分带减号。",
+   "uiInteraction": "每行右侧分数按正负显示不同字图与符号。",
+   "notes": "黄色/浅蓝灰配色在 win/lose 字图内，仓库内无法读取；减号依赖服务端下发负数。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "小结算每行渲染",
+    "condition": "无",
+    "action": "客户端把本局净得分显示在行右侧，正分加号，按正负切换字图",
+    "result": "玩家看到每家的本局得分，正分带加号、0 就是 0、负分带减号"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求：右侧为本局净得分，正分带加号、0 显示「0」、负分带减号。服务端：SVE-ST-C15-P02-13 FillAllWinLosts 原样下发带符号 wl.score（common_game_context.cpp:295），可支撑减号；加号与黄/浅蓝灰配色在客户端 win/lose 字图内，未获证据。维持 partial。"
+  },
+  {
+   "id": "AT-ST-C15-017",
+   "name": "赢家牌组上方番型名称",
+   "rule": "赢家牌组上方写实际命中的番型名称。同时命中多组时都写上，例如「七对」「杠飘」。双财飘、双豪华七对、二连杠直接写全名。",
+   "uiRequirement": "番型名称显示在赢家牌组上方，多组并列显示。",
+   "uiInteraction": "赢家行牌组上方出现番型文字，命中多组时连续展示，超长时截断。",
+   "notes": "普通多番用空串拼接（如「七对杠飘」），二/三连杠以「杠飘（二连杠）」括号形式给出，未完全等同于「直接写全名」的写法。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "赢家行渲染番型文案",
+    "condition": "该座位本局胡牌",
+    "action": "客户端把命中的番型名称写在该行牌组上方，命中多组时一起展示",
+    "result": "玩家看到赢家牌型上方写着本次命中的番型名称"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求：赢家牌组上方写实际命中番型名称，多组并列，双财飘/双豪华七对/二连杠直接写全名。服务端：SVE-ST-C15-P02-14 逐条下发全部 fan_id（common_game_context.cpp:167），SVE-ST-C15-P02-15 GetFanName 取 ft_defs_.name（algorithm.cpp:1772），服务端只给离散番名；拼接写法（「七对杠飘」「杠飘（二连杠）」）在客户端，与「直接写全名」的差异未消。维持 partial。"
+  },
+  {
+   "id": "AT-ST-C15-018",
+   "name": "最右侧标注胡牌方式",
+   "rule": "最右侧标胡牌方式：自摸、点炮胡或抢杠胡。",
+   "uiRequirement": "行最右侧显示胡牌方式标签。",
+   "uiInteraction": "赢家行右侧显示胡牌方式标签。",
+   "notes": "控件只有不参与/点炮/吃胡/自摸四页，抢杠胡与点炮胡都落在「吃胡」页，无法区分「点炮胡」与「抢杠胡」。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "赢家行渲染胡牌方式",
+    "condition": "该座位本局胡牌",
+    "action": "客户端在行右侧显示胡牌方式标签，自摸显示自摸，其余显示吃胡",
+    "result": "玩家看到赢家行右侧写着自摸或吃胡"
+   },
+   "l7": "decision_required",
+   "l7Reason": "需求：行最右侧标胡牌方式为自摸、点炮胡或抢杠胡。服务端：SVE-ST-C15-P02-17 恒下发 hu_type（common_game_context.cpp:158），SVE-ST-C15-P02-18 定义 kHtSelf/kHtDiscard/kHtRobKong 三态（macros.h:327），区分完整；冲突来自客户端控件仅四页，点炮胡与抢杠胡(hu_type=3)都落「吃胡」页，缺「点炮胡」「抢杠胡」文案。纯客户端视觉冲突，维持 conflict。｜策划裁决（2026-11-14）：B 改需求（接受现状实现——自摸/吃胡两页口径，需求侧修订待上游）"
+  },
+  {
+   "id": "AT-ST-C15-019",
+   "name": "赔付者行标注「点炮」",
+   "rule": "点炮胡、抢杠胡的赔付者标「点炮」。",
+   "uiRequirement": "赔付者行显示「点炮」标签。",
+   "uiInteraction": "放铳者行右侧出现「点炮」标签。",
+   "notes": "抢杠胡的赔付者同样按 df_from 命中，前提是服务端把加杠者写为该字段。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "小结算行渲染",
+    "condition": "该座位不是胡牌者，且是某次非自摸胡牌的放铳者",
+    "action": "客户端在该行显示「点炮」标签",
+    "result": "玩家看到点炮或抢杠胡的放铳者那一行标着「点炮」"
+   },
+   "l7": "verified",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C15-020",
+   "name": "三摊承包的赢家与赔付者标注",
+   "rule": "三摊承包：赢家标黄色「承包」，赔付者得分右侧标「三摊承包」。",
+   "uiRequirement": "赢家标「承包」，赔付者得分右侧标「三摊承包」。",
+   "uiInteraction": "赢家行出现承包文案，承包方行右侧出现承包角标图。",
+   "notes": "角标页名为 chengbao，备注「承包」；本工程未出现「三摊承包」文案，赔付者角标是否显示该字样无法读取图片验证；「黄色」也无法确认。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "本局存在承包结算",
+    "condition": "某方向摊数达到承包成立条件且本局结算产生承包赔付",
+    "action": "客户端在赢家行写承包文案，并在出承包的一方行显示承包角标",
+    "result": "玩家看到赢家标着承包，赔付方那一行带承包标记"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求：三摊承包时赢家标黄色「承包」，赔付者得分右侧标「三摊承包」。服务端：SVE-ST-C15-P02-23/24 ApplyBaoContracts 在 tan>=3 时生成 BaoSettleItem(from=赔付方,to=胡牌方,relation=1)（common_game_com_result.cpp:316/336-338），SVE-ST-C15-P02-26 由 enable_three_tan_bao 控制且客户端创房默认下发 1，能力确为启用态。服务端只确证承包关系与金额，客户端「三摊承包」文案与黄色未获证据。维持 partial。"
+  },
+  {
+   "id": "AT-ST-C15-021",
+   "name": "反承包的双方标注",
+   "rule": "反承包：赢家标「反承包」，赔付者标「反承包」。",
+   "uiRequirement": "赢家与赔付者都显示「反承包」。",
+   "uiInteraction": "赢家行出现反承包文案，赔付方行出现反承包角标。",
+   "notes": "同一座位同时命中两条关系时角标只取第一条（提前返回），可能存在只显示一种关系的边缘情况。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "本局存在反承包结算",
+    "condition": "原被承包方自摸触发反承包赔付",
+    "action": "客户端在赢家行写反承包文案，并在赔付方行显示反承包角标",
+    "result": "玩家看到赢家和赔付方都标着反承包"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求：反承包时赢家标「反承包」、赔付者标「反承包」。服务端：SVE-ST-C15-P02-27 在 tan_opp_win>=3 时 relation=2、opp_pay=total*2 并 SetBaoRelation(opp,win_seat,2)（common_game_com_result.cpp:326-329），关系生成正确；客户端同一座位同时命中两条关系时角标只取第一条（提前返回）的边缘情况仍在。维持 partial。"
+  },
+  {
+   "id": "AT-ST-C15-022",
+   "name": "链式承包的分向标注",
+   "rule": "链式承包：赢家同时标「承包」和「反承包」，番型只写一次；付 S 的一方标「三摊承包」，付 2 × S 的一方标「反承包」。",
+   "uiRequirement": "赢家同时出现承包与反承包标识，赔付方按赔付额分别标注。",
+   "uiInteraction": "赢家行文本同时出现承包与反承包，番型只出现一次。",
+   "notes": "赢家双标可通过两条流水文案实现，但角标只取第一条关系；赔付方仍只有「承包/反承包」角标，未见按 S 与 2×S 区分「三摊承包」的文案实现。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "同一赢家同时存在承包与反承包关系",
+    "condition": "链式承包成立并产生两笔赔付",
+    "action": "客户端给赢家同时写承包与反承包文案（番型只写一次），给赔付方加对应关系角标",
+    "result": "玩家看到赢家同时带承包和反承包，赔付方各带一种关系标记"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求：链式承包赢家同时标「承包」「反承包」、番型只写一次；付 S 方标「三摊承包」，付 2×S 方标「反承包」。服务端：SVE-ST-C15-P02-30 逐对手独立结算胡牌方参与的庄闲对（common_game_com_result.cpp:305-342），relation=1 收 total / relation=2 收 total×2（SVE-ST-C15-P02-27），可同时产生双向关系；客户端仍只有承包/反承包角标，未见按 S 与 2×S 区分「三摊承包」的文案。维持 partial。"
+  },
+  {
+   "id": "AT-ST-C15-023",
+   "name": "左下展示本局财神正面",
+   "rule": "左下展示本局财神正面，即白板。",
+   "uiRequirement": "小结算左下区显示本局财神牌正面。",
+   "uiInteraction": "左下角出现一张财神牌正面并带财神配色。",
+   "notes": "财神为白板由玩法固定，客户端只按当局财神牌值显示，未硬编码白板。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "小结算打开并挂载左下区",
+    "condition": "本局存在财神",
+    "action": "客户端按当局财神牌值显示一张正面财神牌",
+    "result": "玩家在左下角看到本局财神那张牌的正面"
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C15-024",
+   "name": "长按查看牌桌与松手恢复",
+   "rule": "右下为「长按查看牌桌」：在底部栏扣除中央主按钮后的区域按住 500 毫秒，临时收起小结算，按本家视角查看终局牌桌；松手恢复同一张小结算。",
+   "uiRequirement": "按住区域 500 毫秒临时收起小结算并查看牌桌，松手恢复。",
+   "uiInteraction": "长按后小结算收起、牌桌可见并高亮财神；松手恢复小结算。",
+   "notes": "500 毫秒判定、收起/恢复小结算本体与按本家视角查看由公共壳实现，本工程只提供事件出口与桌面财神高亮。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "玩家在底部区域按住",
+    "condition": "小结算已打开",
+    "action": "客户端派发查桌事件，桌面显示终局牌桌并高亮财神，松手后派发恢复事件",
+    "result": "玩家按住时看到终局牌桌，松手回到原来的小结算"
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C15-025",
+   "name": "继续游戏与返回大厅",
+   "rule": "非末局底部中央为【继续游戏】。点击后本端收起小结算，清除上一局手牌、碰杠区和牌河，保留座位和累计积分，本家显示「已准备」。四人均准备后自动开下一小局。第 8 局按钮为【返回大厅】，点击后退出房间。",
+   "uiRequirement": "底部中央按钮非末局为【继续游戏】、第 8 局为【返回大厅】，点击后有本端收起与准备表现。",
+   "uiInteraction": "点击后小结算收起、牌桌清空回到等待，本家头像出现准备角标。",
+   "notes": "继续游戏/末局按钮文案、是否最后一局、四人准备自动开局与返回大厅由公共壳与服务端驱动；本类继续回调为空实现，需确认壳层是否自行发准备。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "玩家点击底部主按钮",
+    "condition": "非末局为继续游戏，第 8 局为返回大厅",
+    "action": "客户端收起小结算，清空上一局手牌、碰杠与牌河，保留座位与累计分，并显示本家已准备",
+    "result": "玩家回到牌桌等待，本家头像显示已准备；四人到齐后自动开下一局"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求侧：点击【继续游戏】后本端收起小结算、清除上一局手牌/碰杠区/牌河、保留座位与累计积分、本家显示「已准备」，四人均准备后自动开下一小局；第 8 局按钮为【返回大厅】并退出房间。服务端侧：OnGameStart→OnResetGameStart（common_game/common_game_logic.cpp:37/454）→CommonGameServerData::ResetRound（common_game_server_data.cpp:30）+BaseData::ResetRound（mah_frame/base/base_data.cpp:35，清 hands_/chow_groups_/outs_/ke_group_/kong_group_/shun_groups_）可确证清手牌、碰杠、牌河；跨局累计由 CommonGameServerData::Reset 的 ClearMatchAccStats 仅在整局清零（common_game_server_data.cpp:25，SVE-ST-C15-P03-12），配合 DragonMah::Start 的 AddJuCount（dragon_mah.cpp:38）与 WriteFinalScores（common_game_com_result.cpp:386）可对应保留座位与累计积分；但「本家显示已准备/四人准备自动开下一小局」的 Ready 消息处理在三根目录零命中，第 8 局末局判定与返回大厅也由房间层决定、本片无证据，故仅部分同构，维持 partial。"
+  }
+ ]
+}

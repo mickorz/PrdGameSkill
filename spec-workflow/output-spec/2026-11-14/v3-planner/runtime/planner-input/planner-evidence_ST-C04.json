@@ -1,0 +1,234 @@
+{
+ "stageId": "ST-C04",
+ "title": "操作优先级",
+ "sourceTitle": "行牌 > 操作优先级",
+ "fromLine": 47,
+ "toLine": 58,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 13,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C04-001",
+   "name": "同一弃牌的响应优先级次序",
+   "rule": "对同一张弃牌，可响应操作的优先级为：点炮胡最高，碰与直杠次之，吃最低。",
+   "uiRequirement": "",
+   "uiInteraction": "操作面板切到「碰杠胡」页，吃、碰、杠、胡按钮同屏按水平排布自左向右显示，按钮带闪烁高亮动效；胡按钮额外显示所胡牌面与倍数。",
+   "notes": "客户端只呈现服务端给出的可操作集合，未实现优先级比较；吃、碰、杠、胡按钮同屏并列，不存在按优先级压制低优先级按钮的表现。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "别人打出一张牌后，轮到自己决定要不要响应",
+    "condition": "系统判定自己对这张弃牌可以胡、可以碰、可以杠或可以吃",
+    "action": "客户端把能做的操作按钮一起亮出来，等玩家点其中一个",
+    "result": "玩家看到胡、碰、杠、吃按钮同时出现，胡按钮上还显示所胡的牌和倍数"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：同一弃牌响应优先级为点炮胡 > 碰/直杠 > 吃。服务端：常量 kStepLevelHu=4、kStepLevelPung=3、kStepLevelKong=3、kStepLevelChow=2（mah_frame/base/macros.h:203-206，SVE-ST-C04-P01-01），各 Step::GetLevel 原样返回（com_hu.h:54 / com_pung.h:52 / com_kong.h:30 / com_chow.h:50，SVE-ST-C04-P01-02~05），ConAction::OnConAction 只执行最大 level 候选（mah_frame/base/con_action.cpp:43-61，SVE-ST-C04-P01-11）。等级次序与规则完全同构。"
+  },
+  {
+   "id": "AT-ST-C04-002",
+   "name": "碰与直杠同级",
+   "rule": "碰与直杠属于同一优先级，彼此不分先后高低。",
+   "uiRequirement": "",
+   "uiInteraction": "碰按钮与杠按钮在「碰杠胡」页同级并列显示，各自独立高亮；有多个杠可选时展开多杠选择列表。",
+   "notes": "客户端把明杠、暗杠、补杠合并为同一个「杠」按钮，未单独区分直杠；未见碰与杠之间的先后裁决逻辑。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "别人打出的牌自己既能碰又能杠",
+    "condition": "系统同时下发碰与杠的可操作权限",
+    "action": "客户端同时亮出碰和杠两个按钮，等玩家自己选",
+    "result": "玩家看到碰、杠两个按钮并列，点哪个都立即把选择报上去"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：碰与直杠同级、互不分先后。服务端：kStepLevelPung == kStepLevelKong == 3（mah_frame/base/macros.h:204-205，SVE-ST-C04-P01-01），GetLevel 直接返回同名常量（com_pung.h:52 / com_kong.h:30，SVE-ST-C04-P01-03/04），且 GetConActionWeight 仅对 kStepLevelHu 叠加座位权重、碰杠不做任何区分（mah_frame/com_basic/com_action.cpp:826-832，SVE-ST-C04-P01-07）。与规则同构。"
+  },
+  {
+   "id": "AT-ST-C04-003",
+   "name": "碰与直杠并存时座位号小者先裁决",
+   "rule": "多名玩家同时能对同一张弃牌碰或直杠时，不区分是碰还是直杠，按座位号小的先裁决。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端按座位接收权限消息，但工程内未发现座位号比较或最小座位优先的判定代码。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C04-004",
+   "name": "碰与直杠只发给能成立且座位最小的一家",
+   "rule": "碰与直杠的可操作权限只下发给当前确实能成立、且在可成立者中座位号最小的那一家。",
+   "uiRequirement": "",
+   "uiInteraction": "只有轮到自己那一条权限消息才会弹出碰或杠按钮；他人可操作时不出现其按钮，复盘模式例外，按座位逐家还原。",
+   "notes": "客户端结构上「一条权限消息只服务一个座位」，但该座位是否就是能成立者中座位号最小者由服务端决定，客户端无任何校验。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "有人打出一张牌",
+    "condition": "系统判定某一家能碰或能杠这张牌",
+    "action": "客户端只给那一家弹出碰或杠按钮，其他三家界面不出现这些按钮",
+    "result": "能操作的那一家看到碰或杠按钮，其余玩家看不到"
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C04-005",
+   "name": "多人可胡时每家都收到胡",
+   "rule": "多名玩家对同一张弃牌都能胡时，每一家都会收到胡的操作提示。",
+   "uiRequirement": "",
+   "uiInteraction": "收到胡权限的那一家出现带所胡牌面与倍数的胡按钮，并带高亮闪烁动效。",
+   "notes": "协议接口保留并发等待标记，但工程内未见「多家同时收到胡提示」的界面处理；非本家的胡按钮在常规对局中不展示。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "有人打出一张牌",
+    "condition": "系统判定不止一家能胡这张牌",
+    "action": "客户端给每个能胡的玩家各弹一个胡按钮",
+    "result": "能胡的玩家各自看到自己的胡按钮，几家同时都可点胡，不立刻分出胜负"
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C04-006",
+   "name": "近者胡则远者不成立",
+   "rule": "多人可胡时，若距离出牌者更近的一家胡牌成立，更远一家的胡不再成立。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端未按座位远近做胡牌资格剔除，胡牌结果完全依据服务端结算数据。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verified",
+   "l7Reason": "需求：多人可胡时近者成立则远者不再成立。服务端：hzmj 基线硬编码 SetDuoXiang(false)（common_game/common_game_server_config.cpp:11，SVE-ST-C04-P01-18），GetConActionWeight 非多响时对胡叠加 GetSeatWeight（mah_frame/com_basic/com_action.cpp:826-832，SVE-ST-C04-P01-07），GetSeatWeight 以打牌者 GetNowSeat 为基准算逆时针距离、越近权重越大（com_action.cpp:834-838，SVE-ST-C04-P01-17），ConAction::OnConAction 只执行最大 level 者（con_action.cpp:43-61，SVE-ST-C04-P01-11），故远者候选落选。与规则同构。"
+  },
+  {
+   "id": "AT-ST-C04-007",
+   "name": "近者放弃后远者仍可胡",
+   "rule": "更近的一家选择放弃后，更远一家的胡仍然可以成立。",
+   "uiRequirement": "",
+   "uiInteraction": "点「过」后胡、碰按钮收起，手牌恢复可操作；放弃有需回包与仅本地收起两种按钮。",
+   "notes": "只证实放弃的上报链路与并发等待字段，未见「顺延给下一位可胡者」的客户端表现。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "自己可以胡却选择不胡，点了过",
+    "condition": "自己当前处于可胡的响应状态",
+    "action": "客户端把放弃结果报给服务端并收起胡按钮",
+    "result": "玩家点过之后胡按钮消失，要等新的权限或结算结果才知道最终谁胡"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：更近一家放弃后更远一家仍可胡。服务端：ConAction::OnConAction 收到响应先 ClearUserConAction(seat) 擦除该座位全部候选并重算 maxkey（mah_frame/base/con_action.cpp:19-61，SVE-ST-C04-P01-19），ClearUserConAction 按 GETSEAT 逐条 erase（con_action.cpp:70-81，SVE-ST-C04-P01-20），擦除近者后次近胡候选按距离权重成为最大者并继续等待执行（com_action.cpp:826-838，SVE-ST-C04-P01-17）。与规则同构。"
+  },
+  {
+   "id": "AT-ST-C04-008",
+   "name": "只允许一人胡、不一炮多响",
+   "rule": "同一张弃牌只允许一人胡牌，不出现一炮多响。",
+   "uiRequirement": "",
+   "uiInteraction": "结算时若收到多条胡牌项，在放炮方位置播放「一炮多响」字效动画；只有一条时播放「点炮」动画。",
+   "notes": "客户端保留了一炮多响的展示分支（胡牌项大于一条即播放多响动效），属于对旧规则的兼容路径；禁止多响只能由服务端保证，客户端不做限制。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "一张弃牌打完、结算下发",
+    "condition": "服务端把这张牌产生的所有胡牌项一起发下来",
+    "action": "客户端按胡牌项条数逐个亮牌，条数大于一条时按一炮多响播放动效",
+    "result": "只有一个胡家时玩家看到点炮动效；若出现多家胡则看到一炮多响动效"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：同一弃牌只允许一人胡、不一炮多响。服务端：HuStep::CheckHu 仅在 IsDuoXiang 为真时收集多家，否则 vctseat 只 push 唯一 seat（mah_frame/com_basic/com_hu.cpp:273-282，SVE-ST-C04-P01-21），hzmj 基线 SetDuoXiang(false)（common_game/common_game_server_config.cpp:11，SVE-ST-C04-P01-18），胡牌执行前 BoxHuStep::Execute 再 SetIsHuDuoXiang(false)（common_game/com_game/common_game_com_action.cpp:239，SVE-ST-C04-P01-22）。与规则同构。"
+  },
+  {
+   "id": "AT-ST-C04-009",
+   "name": "从出牌者起逆时针最近的可胡者优先",
+   "rule": "多人可胡时，从出牌者起沿逆时针方向，距离最近的可胡者优先。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端未按出牌者逆时针距离排序胡牌优先级，座位换算仅用于界面方位显示。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verified",
+   "l7Reason": "需求：从出牌者起逆时针最近的可胡者优先。服务端：GetSeatWeight 以 GetNowSeat（出牌者）为基准，返回 mpcnt-(n_seat-whoplay+mpcnt)%mpcnt，逆时针距离越近权重越大（mah_frame/com_basic/com_action.cpp:834-838，SVE-ST-C04-P01-17），该权重经 GetConActionWeight 叠加到胡等级（com_action.cpp:826-832，SVE-ST-C04-P01-07）后由 ConAction 取最大者（con_action.cpp:43-61，SVE-ST-C04-P01-11），且 hzmj 恒非多响（common_game_server_config.cpp:11，SVE-ST-C04-P01-18）。与规则同构。"
+  },
+  {
+   "id": "AT-ST-C04-010",
+   "name": "放弃后顺延",
+   "rule": "距离最近的可胡者放弃后，胡牌资格顺延给下一位可胡者。",
+   "uiRequirement": "",
+   "uiInteraction": "点「过」后操作按钮收起、手牌恢复可点；需回包的过会发请求，仅本地收起的过2 不发请求。",
+   "notes": "只证实放弃的上报与界面收起，未见顺延到下一家的客户端表现。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "玩家在可胡或可碰时不操作，点了过",
+    "condition": "自己当前持有可响应的权限",
+    "action": "客户端把放弃结果报给服务端并收起按钮",
+    "result": "玩家点过后按钮消失，界面回到等待状态，等下一轮权限或结算结果"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：最近可胡者放弃后顺延给下一位可胡者。服务端：放弃触发 ClearUserConAction 按座位清除候选（mah_frame/base/con_action.cpp:70-81，SVE-ST-C04-P01-20），OnConAction 重算 maxkey 并等待/执行当前最大者（con_action.cpp:19-61，SVE-ST-C04-P01-19），顺延目标由胡候选座位距离权重降序决定（com_action.cpp:826-838，SVE-ST-C04-P01-07/17）。与规则同构。"
+  },
+  {
+   "id": "AT-ST-C04-011",
+   "name": "低优先级先提交时等待高优先级放弃",
+   "rule": "低优先级操作先提交时不会立即执行，需先等待全部更高优先级的玩家手动放弃后才执行。",
+   "uiRequirement": "",
+   "uiInteraction": "点击吃、碰、杠后按钮收起、手牌置灰恢复；真正的副露摆放要等服务端广播回来才出现。",
+   "notes": "客户端没有「等待更高优先级玩家放弃」的排队提示或等待态界面，只是不在本地执行；是否等待由服务端控制。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "玩家点了一个优先级较低的操作，且比别人先提交",
+    "condition": "还有优先级更高的玩家没有表态",
+    "action": "客户端只把这次操作报上去并收起面板，不在本地先变牌",
+    "result": "玩家点了吃或碰后不会马上看到副露摆出，要等服务端确认后才出现"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求：低优先级先提交时不立即执行，需先等待全部更高优先级玩家手动放弃后才执行。服务端：OnConAction 在当前最大 level 候选 is_respond==false 时 return false 挂起、仅在最大者回应后 DoConAction（mah_frame/base/con_action.cpp:57-60，SVE-ST-C04-P01-23），等级差由 macros.h:203-206 与注册链路保证（SVE-ST-C04-P01-01/06）。服务端实现只证实「等待当前最大 level 者回应」，不等于「等待全部更高优先级玩家放弃」，且客户端仍无等待态提示，维持 partial。"
+  },
+  {
+   "id": "AT-ST-C04-012",
+   "name": "高优先级成立后其余响应取消",
+   "rule": "更高优先级的操作一旦成立，其他玩家的响应一律取消。",
+   "uiRequirement": "",
+   "uiInteraction": "他人的吃、碰、杠、胡一旦成立，自己面板上的吃碰杠胡按钮立即消失，手牌恢复为不可直接出牌状态；同时播放对应的动作动画。",
+   "notes": "客户端是在收到动作成立广播后才收起面板，属于结果侧表现；已提交的低优先级请求是否被服务端丢弃无法由客户端证实。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "有玩家完成了吃、碰、杠或胡",
+    "condition": "自己原本还有待表态的响应按钮",
+    "action": "客户端关闭自己的操作面板并撤销可出牌状态",
+    "result": "玩家看到自己的吃碰杠胡按钮瞬间消失，桌面改播对方的动作动画"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：更高优先级操作一旦成立，其他玩家响应一律取消。服务端：ConAction::OnConAction 只对最大 level 且已回应候选调用 DoConAction（mah_frame/base/con_action.cpp:57-60，SVE-ST-C04-P01-24），ActionStep::DoConAction 按 msg_id 仅执行该一家并切步（mah_frame/com_basic/com_action.cpp:546-593，SVE-ST-C04-P01-25），随后 ActionStep::ClearAllMap 清空 con_power_step_/action_power_step_/action_server_step_ 及 ClearActionPower（com_action.cpp:885-897，SVE-ST-C04-P01-26），其余响应确实被丢弃。与规则同构，原「服务端是否丢弃无法证实」的 partial 理由已消解。"
+  },
+  {
+   "id": "AT-ST-C04-013",
+   "name": "吃只能吃上家",
+   "rule": "吃牌只能使用上家（本家逆时针方向上一家）刚打出的牌。",
+   "uiRequirement": "",
+   "uiInteraction": "可吃时出现吃按钮；存在多种吃法时弹出三张一组的吃法选择列表，选中后立即上报。",
+   "notes": "客户端完全信任服务端下发的吃组合，本地无「来源必须是上家」的座位关系校验；上家限制只能由服务端保证。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "上家打出一张牌",
+    "condition": "系统判定自己可以吃这张牌",
+    "action": "客户端亮出吃按钮，玩家选中一种吃法后上报",
+    "result": "玩家看到吃按钮和可选吃法，点了之后自己的副露里出现这组顺子，进牌从出牌的那家牌河里消失"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：吃牌只能使用上家（本家逆时针方向上一家）刚打出的牌，且客户端无座位关系校验、完全信任服务端下发的吃组合。服务端实现：BoxChowStep::Judge（common_game/com_game/common_game_com_action.cpp:54）无条件取 discard_seat=GetPreSeat()、可吃座位=GetNextSeat(discard_seat)，无任何玩法配置可放开非上家来源（SVE-ST-C04-P02-01/02/03）；Algorithm::TestChow（mah_frame/base/algorithm.cpp:3261）以 who=GetPreSeat() 固定 comb.from（SVE-ST-C04-P02-05/07）；出牌时 PlayStep::CheckPlay 写 JustPlay/JustPlaySeat（com_play.cpp:243，SVE-ST-C04-P02-09），ChowStep::DelJustChowFromHand（com_chow.cpp:122）复核 comb.from==GetJustPlaySeat，不符直接拒绝（SVE-ST-C04-P02-06）；吃还经 kPowerIdChow 权限校验（com_action.cpp:182，SVE-ST-C04-P02-10）。服务端侧唯一来源即上家、唯一可吃牌即刚打出的牌，与规则同构，原 partial/unverified 可升级。"
+  }
+ ]
+}

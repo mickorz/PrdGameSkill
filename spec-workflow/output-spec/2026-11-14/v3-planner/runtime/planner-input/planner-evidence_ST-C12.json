@@ -1,0 +1,421 @@
+{
+ "stageId": "ST-C12",
+ "title": "三摊承包",
+ "sourceTitle": "三摊承包",
+ "fromLine": 131,
+ "toLine": 149,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 24,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C12-001",
+   "name": "只统计吃牌",
+   "rule": "只统计吃牌。",
+   "uiRequirement": "",
+   "uiInteraction": "对局桌面没有摊计数展示；摊更新事件仅写调试日志。",
+   "notes": "匹配场提示文案写有「A给B吃碰三摊后B胡牌则A承包」「吃碰三摊要注意」，与「只统计吃牌」表述不一致；客户端无摊计数逻辑，是否只计吃牌取决于系统。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "一名玩家吃进另一名玩家打出的牌时",
+    "condition": "只有吃牌进入摊数统计",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C12-002",
+   "name": "吃牌即对出牌者加一摊",
+   "rule": "A 吃 B 的牌，A 对 B 加 1 摊。",
+   "uiRequirement": "",
+   "uiInteraction": "该对摊数达到 3 时播放三摊落地动效。",
+   "notes": "摊数按成对座位记录的方向语义有证据；每次吃牌 +1 的累计在系统侧完成，客户端只接收结果。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "一名玩家吃进另一名玩家打出的牌",
+    "condition": "",
+    "action": "记录这一对玩家之间的摊数",
+    "result": ""
+   },
+   "l7": "verified",
+   "l7Reason": "需求「A 吃 B 的牌，A 对 B 加 1 摊」；服务端 BoxChowStep::Execute 在 common_game/com_game/common_game_com_action.cpp:134 对 (chow_seat_, GetPreSeat()) 自增 1 摊，且无任何配置分支（SVE-ST-C12-P01-01），CommonGameServerData::GetTanCount/SetTanCount 以 from/to 定向读写（SVE-ST-C12-P01-05, common_game/common_game_server_data.h:61），计数与方向均与规则同构。"
+  },
+  {
+   "id": "AT-ST-C12-003",
+   "name": "两个方向分开计",
+   "rule": "两个方向分开计。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "数据结构按玩家对分别存放，可支持两方向独立记录；两方向是否互不影响由系统判定。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "同一对玩家之间发生吃牌",
+    "condition": "",
+    "action": "分别记录这一对玩家两个方向的摊数",
+    "result": ""
+   },
+   "l7": "verified",
+   "l7Reason": "需求「两个方向分开计」；服务端 tan_count_ 为二维定向矩阵 tan_count_[from][to]，读写均带双下标（SVE-ST-C12-P01-05, common_game/com_game/common_game_server_data.h:61），ResetRound 逐 (a,b) 清零（SVE-ST-C12-P01-06, common_game/common_game_server_data.cpp:47），FillMsgTanItems 以 from×to 全组合下发（SVE-ST-C12-P01-07, common_game/common_game_context.cpp:78），两方向独立存储与下发，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C12-004",
+   "name": "摊计数与飘财无关",
+   "rule": "与飘财无关。",
+   "uiRequirement": "",
+   "uiInteraction": "飘状态更新走独立的碰杠类动效与计数提示，不改变摊提示表现。",
+   "notes": "客户端摊与飘两套数据完全分离，无联动代码；结算时两者是否互相影响无法从客户端证实。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "玩家打出财神形成飘",
+    "condition": "",
+    "action": "记录并播放飘状态变化，不修改摊数",
+    "result": "玩家看到飘状态变化的动效与提示"
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C12-005",
+   "name": "仅庄闲之间可承包",
+   "rule": "只有庄家和闲家之间能承包。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端未见区分庄家与闲家的承包判定；摊信息与承包关系直接接收后展示，无本地校验。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求「只有庄家和闲家之间能承包」；服务端 CommonGameAlgorithm::IsXianXianTanFull 对庄闲直接返回 false（SVE-ST-C12-P01-12, common_game/common_game_algorithm.cpp:91），BoxResultStep::ApplyBaoContracts 对胡牌方与赔付方均非庄家的组合 continue 不结算承包（SVE-ST-C12-P01-13, common_game/com_game/common_game_com_result.cpp:308），闲闲只做 2 摊吃碰限制而不产生承包，与规则同构；前提 enable_three_tan_bao 开启（创房默认 1）。"
+  },
+  {
+   "id": "AT-ST-C12-006",
+   "name": "闲闲同方向最多两摊",
+   "rule": "两名闲家之间，同一方向最多 2 摊，吃一成立就加 1。",
+   "uiRequirement": "",
+   "uiInteraction": "有吃权限时显示「吃」按钮并高亮可吃组合手牌；无权限不显示。",
+   "notes": "闲闲身份与 2 摊上限的判断不在客户端，客户端只消费吃权限位。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "一名玩家吃进另一名玩家打出的牌",
+    "condition": "这两名玩家之间同一方向的摊数尚未达到上限",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求「两名闲家之间，同一方向最多 2 摊」；服务端 IsXianXianTanFull 在双方均非庄家且 GetTanCount(actor,target)>=2 时返回 true（SVE-ST-C12-P01-12, common_game/common_game_algorithm.cpp:92），吃/碰/明杠三处 Judge 命中即拦截（SVE-ST-C12-P01-16/17/18），阈值与方向口径同构；前提 enable_three_tan_bao 开启（创房默认 1）。"
+  },
+  {
+   "id": "AT-ST-C12-007",
+   "name": "满两摊后不给出吃",
+   "rule": "已经有 2 摊时，再吃这一家的牌不成立，不给出【吃】。",
+   "uiRequirement": "不给出【吃】",
+   "uiInteraction": "没有吃权限时「吃」按钮不出现，手牌不出现可吃组合高亮。",
+   "notes": "「不给出吃」由系统不下发吃权限实现，客户端无本地拦截，也没有摊数与吃按钮的联动代码。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "玩家试图吃进已累计 2 摊的同一家打出的牌",
+    "condition": "该方向摊数已达 2",
+    "action": "按系统给的权限决定是否显示「吃」",
+    "result": "没有吃权限时不出现「吃」按钮"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求「已经有 2 摊时，再吃这一家的牌不成立，不给出【吃】」；服务端 BoxChowStep::Judge 在 IsXianXianTanFull 命中时直接 return false（SVE-ST-C12-P01-16, common_game/com_game/common_game_com_action.cpp:66），不下发吃权限，客户端无从显示【吃】，与规则同构；前提 enable_three_tan_bao 开启（创房默认 1）。"
+  },
+  {
+   "id": "AT-ST-C12-008",
+   "name": "第三摊记承包",
+   "rule": "某一方向计到第 3 摊时记承包。",
+   "uiRequirement": "",
+   "uiInteraction": "达到 3 摊时播放三摊落地动效。",
+   "notes": "客户端以摊数等于 3 作为触发条件，未使用承包关系字段；承包记账本身不在客户端。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "某一方向的摊数被更新",
+    "condition": "该方向摊数达到 3",
+    "action": "播放三摊落地动效",
+    "result": "玩家看到三摊落地动效"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求「某一方向计到第 3 摊时记承包」；服务端吃/碰/明杠三处 Execute 均在 tan>=3 时 SetBaoRelation(from,to,1)（SVE-ST-C12-P01-19/20/21, common_game/com_game/common_game_com_action.cpp:144、common_game_com_pung.cpp:133、common_game_com_kong.cpp:103），承包关系经 TanItem.bao_relation 下发（SVE-ST-C12-P01-22），与规则同构；前提 enable_three_tan_bao 开启。"
+  },
+  {
+   "id": "AT-ST-C12-009",
+   "name": "四端播放三摊落地且可与吃牌字效同屏",
+   "rule": "四端播放「三摊落地」，可与吃牌字效同时显示。",
+   "uiRequirement": "四端播放「三摊落地」，可与吃牌字效同时显示。",
+   "uiInteraction": "屏幕中央播放三摊落地动效，可与吃牌字效同时出现；简洁模式下不播放。",
+   "notes": "落地动效是单个居中节点，代码注释称「动画播在该座位」但实现未按座位定位；消息为广播下发，同一份客户端代码在四端都会播放，但「四端」若指四个方位则不符；简洁模式下会被抑制。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "某一方向摊数达到 3",
+    "condition": "非复盘模式且未开启简洁模式",
+    "action": "在屏幕中央播放三摊落地动效",
+    "result": "玩家看到居中的三摊落地动效，可与吃牌字效同时出现"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求「四端播放三摊落地，可与吃牌字效同时显示」；服务端 BroadcastTanUpdate 以 SendMessage(msg.ID, msg, 0) 全桌广播（SVE-ST-C12-P01-23, common_game/common_game_context.cpp:65-73），仅证明数据到达所有端，不决定客户端是否按座位播放；客户端为单个居中节点、未按座位定位，且 simple_mode 抑制落地动效（SVE-ST-C12-P01-25, hzmj_server/game_logic.cpp:165），视觉与同屏条件仍未满足，维持 partial。"
+  },
+  {
+   "id": "AT-ST-C12-010",
+   "name": "当时不出现承包角标",
+   "rule": "不等到结算，当时没有承包角标。",
+   "uiRequirement": "当时没有承包角标",
+   "uiInteraction": "对局桌面无承包角标；小结算在出承包方座位行显示「承包」或「反承包」图标。",
+   "notes": "桌面完全没有摊数与承包标识，角标只在小结算出现，符合「当时没有承包角标」。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "小结算展示座位行",
+    "condition": "该座位存在有效的承包或反承包关系",
+    "action": "在结算行显示承包或反承包角标",
+    "result": "玩家只在小结算看到承包方角标，对局中看不到"
+   },
+   "l7": "verified",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C12-011",
+   "name": "提示期间可继续摸打",
+   "rule": "提示期间，获权玩家可以继续提牌、出牌。",
+   "uiRequirement": "",
+   "uiInteraction": "动效只覆盖显示层，玩家仍可继续点选并操作出牌与响应按钮。",
+   "notes": "客户端无输入锁与流程阻塞代码；是否在动效期间继续下发摸牌/出牌权限由系统决定。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "三摊落地动效播放期间",
+    "condition": "玩家已获得出牌或摸牌权限",
+    "action": "不冻结操作",
+    "result": "玩家可以继续操作手牌"
+   },
+   "l7": "verified",
+   "l7Reason": "需求「提示期间，获权玩家可以继续提牌、出牌」；服务端吃/碰/明杠三处 Execute 在记摊广播后立即 ChangeNextStep，无等待/输入锁步骤（SVE-ST-C12-P01-28/29/30, common_game/com_game/common_game_com_action.cpp:159、common_game_com_pung.cpp:109、common_game_com_kong.cpp:121），不阻塞后续摸打，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C12-012",
+   "name": "自摸只结算胡牌方参与的承包对",
+   "rule": "自摸只结算胡牌方自己参与的承包对。",
+   "uiRequirement": "",
+   "uiInteraction": "结算流水中承包文案只出现在赢家行，承包角标挂在出承包方座位行。",
+   "notes": "客户端不对承包列表做「只保留胡牌方参与项」的过滤，是否只结算胡牌方参与的承包对由系统决定。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "本局有人自摸胡牌进入结算",
+    "condition": "存在与胡牌方相关的承包关系",
+    "action": "按系统给的承包列表展示承包文案与角标",
+    "result": "玩家在结算看到胡牌方的承包文案与承包方角标"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：自摸只结算胡牌方自己参与的承包对。服务端实现：ApplyBaoContracts（common_game/com_game/common_game_com_result.cpp:289）:305-306 遍历对手时跳过 win_seat，:302-303 注释明示「只结算胡牌方本人参与的承包对，与胡牌方无关的对不结算」，与规则同构（SVE-ST-C12-P02-01/02/03，enable_three_tan_bao=1 且 3/4 人局生效）。"
+  },
+  {
+   "id": "AT-ST-C12-013",
+   "name": "承包方代付三家合计",
+   "rule": "摊方胡，对方付三家输分合计。",
+   "uiRequirement": "",
+   "uiInteraction": "出承包方行显示承包角标；赢家行流水出现「承包」文案。",
+   "notes": "承包金额与「三家合计」的计算在系统侧；结算流水气泡只显示文案标题，不显示承包金额。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "摊方自摸胡牌",
+    "condition": "该方向已成立承包",
+    "action": "在结算给承包方打角标、给胡牌方追加承包文案",
+    "result": "玩家看到承包方角标与胡牌方的承包字样"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：摊方胡，对方付三家输分合计。服务端实现：CalcFinalWinLost 自摸分支 :135-147 逐家生成负值 payments → ApplyBaoContracts :298-300 total=Σpayments（三家钱）→ :325/:334 opp_pay=total 单条写入 → :354 payments=bao_payments 由承包方一人代付（SVE-ST-C12-P02-04/01）。"
+  },
+  {
+   "id": "AT-ST-C12-014",
+   "name": "被摊方胡按两倍反承包",
+   "rule": "被摊方胡，摊方付该合计的 2 倍。",
+   "uiRequirement": "",
+   "uiInteraction": "结算行角标切到反承包图标，文案显示「反承包」。",
+   "notes": "客户端只负责按关系值显示反承包名称与图标，2 倍金额由系统下发；流水文案不带金额。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "被承包方自摸胡牌",
+    "condition": "同一承包关系仍存在",
+    "action": "在结算把该关系标记为反承包",
+    "result": "玩家看到反承包角标或文案"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：被摊方胡，摊方付该合计的 2 倍。服务端实现：ApplyBaoContracts :326-329 tan_opp_win>=3 → relation=2、opp_pay=total*2、SetBaoRelation(opp,win_seat,2)，经 BaoSettleItem.relation=2/score 下发（SVE-ST-C12-P02-05/06）；客户端只显示关系名称与图标属展示层分工，不影响结算规则同构。"
+  },
+  {
+   "id": "AT-ST-C12-015",
+   "name": "双向满三摊只取倒承包两倍",
+   "rule": "双向都满 3 摊时只按倒承包的 2 倍，不两笔叠加。",
+   "uiRequirement": "",
+   "uiInteraction": "同一座位只显示一个承包角标，取第一条有效关系。",
+   "notes": "客户端无「双向满 3 摊只取倒承包 2 倍」的合并规则：若系统下发两条记录，角标只取首条、汇总会累加，可能不符合该规则；是否只下发单条由系统决定。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "同一对玩家的两个方向都达到 3 摊后结算",
+    "condition": "",
+    "action": "按收到的承包记录逐条展示",
+    "result": "玩家可能看到承包与反承包两类标识"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：双向都满 3 摊时只按倒承包的 2 倍，不两笔叠加。服务端实现：ApplyBaoContracts :316-317 同时读取 A→B 与 B→A 摊数，:326-328 tan_opp_win>=3 走倒承包 ×2 单分支（:323 注释「双向互满3摊时…按倒承包×2」），每对手仅 :334 一次写入 bao_payments，不产生两笔。"
+  },
+  {
+   "id": "AT-ST-C12-016",
+   "name": "承包形态定义",
+   "rule": "承包：A 对 B 已成立，A 自摸。B 支付三家原应赔分的合计 S，另外两家本局 0 分。",
+   "uiRequirement": "",
+   "uiInteraction": "承包方行显示承包图标；赢家行流水显示「承包」。",
+   "notes": "「B 付 S、另外两家 0 分」与金额合计在系统侧计算；客户端展示层把承包分从赢家兜底流水里扣除后单独展示名称。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "A 自摸胡牌",
+    "condition": "A 对 B 已成立承包",
+    "action": "在结算把 B 标为承包方、把承包文案挂到 A",
+    "result": "玩家看到 B 行的承包角标与 A 行的承包文案"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：承包为 B 支付三家原应赔分合计 S，另外两家本局 0 分。服务端实现：CalcFinalWinLost :298-300 total 为三家合计 → ApplyBaoContracts :324-334 仅被摊方入 bao_payments 付 total → :354 payments=bao_payments 整体改写，未入 map 座位即 0 分（SVE-ST-C12-P02-01/04/07）。"
+  },
+  {
+   "id": "AT-ST-C12-017",
+   "name": "反承包形态定义",
+   "rule": "反承包：同一关系下 B 自摸。A 支付 2 × S。S 是 B 这次自摸原本向三家应收的合计。",
+   "uiRequirement": "",
+   "uiInteraction": "结算行显示反承包图标与「反承包」文字。",
+   "notes": "反承包标识与文案有完整展示链路；2 倍金额与合计 S 由系统下发，客户端不计算。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "同一承包关系下被承包方自摸",
+    "condition": "该关系有效",
+    "action": "在结算把付款方标记为反承包",
+    "result": "玩家看到反承包角标或文案"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：反承包为同一关系下 B 自摸时 A 支付 2×S。服务端实现：ApplyBaoContracts :326-329 被摊方自摸 → relation=2、opp_pay=total*2 → :336-341 组 BaoSettleItem(score=2S,relation=2) 经 SendResultHu 下发（SVE-ST-C12-P02-01/05/06）；2 倍金额由服务端计算，客户端展示链路完整。"
+  },
+  {
+   "id": "AT-ST-C12-018",
+   "name": "链式承包",
+   "rule": "链式：A 对 B 成立，同时 C 对 A 成立，A 自摸。B 付 S，C 付 2 × S，A 实收 3 × S，第四家 0 分。",
+   "uiRequirement": "",
+   "uiInteraction": "赢家流水可同时出现多条承包相关文案，各付款方行分别显示角标。",
+   "notes": "客户端不校验链式关系与倍数，多条记录的名称与归属完全按系统下发渲染。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "存在两条相连的承包关系且被承包方自摸",
+    "condition": "",
+    "action": "分别展示两条承包记录",
+    "result": "玩家在同一赢家行看到多条承包文案、相关座位出现角标"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：链式承包 B 付 S、C 付 2×S、A 实收 3×S、第四家 0 分。服务端实现：ApplyBaoContracts :305-342 逐对手独立结算并累加 bao_payments → :354 payments=bao_payments（B 付 S、C 付 2S，第四家不在 map），total_win 由 :219-224 反算得 3S，经 SendResultHu 整包下发（SVE-ST-C12-P02-01/02/08）。"
+  },
+  {
+   "id": "AT-ST-C12-019",
+   "name": "点炮仅改写放铳者本人的承包",
+   "rule": "点炮只在放铳者本人是承包对方时改写，基数是原来那一笔点炮分，不是三家之和。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端结算可区分点炮、吃胡与自摸类型，但未见点炮场景下改造承包赔付基数的逻辑；承包记录原样展示。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：点炮只在放铳者本人是承包对方时改写，基数为原点炮分而非三家之和。服务端实现：CalcFinalWinLost 点炮分支 :107-112 仅放铳者一笔 -base*fan*banker → ApplyBaoContracts :312-314 仅当 opp==GetJustPlaySeat 才进入改写，:316-318 基数仍为该单笔（SVE-ST-C12-P02-01/04/09）。"
+  },
+  {
+   "id": "AT-ST-C12-020",
+   "name": "他人承包不赔",
+   "rule": "别人的承包关系不赔，放铳者仍按原点炮付。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端对承包记录只做展示，没有「放铳者是否为承包对方」的判定代码。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：别人的承包关系不赔，放铳者仍按原点炮付。服务端实现：ApplyBaoContracts :310-314 注释「第三方点炮时 A-B 承包不成立，A 不应赔付」，代码 continue 跳过非放铳者；:344 无承包对时保持原 payments，放铳者按 :107-112 原点炮付（SVE-ST-C12-P02-01/02）。"
+  },
+  {
+   "id": "AT-ST-C12-021",
+   "name": "抢杠胡承包额叠加",
+   "rule": "抢杠胡不替换杠牌者的赔付，承包额再叠加。",
+   "uiRequirement": "",
+   "uiInteraction": "结算流水可同时出现抢杠胡文案与承包文案。",
+   "notes": "客户端只是并列展示抢杠与承包两类流水，未实现「不替换杠牌者赔付、承包额叠加」的金额处理。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "抢杠胡成立并结算",
+    "condition": "存在承包关系",
+    "action": "分别展示抢杠与承包两类流水",
+    "result": "玩家在结算同时看到抢杠与承包字样"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：抢杠胡不替换杠牌者赔付，承包额再叠加。服务端实现：CalcFinalWinLost 抢杠分支 :113-132 杠牌者付三家钱 → ApplyBaoContracts :346-352 kHtRobKong 时 payments[kv.first] += kv.second 叠加而非替换，且 hzmj 保持 IsRobKongSettleAsDiscard()=false（common_game_com_result.h:69，SVE-ST-C12-P02-10）。"
+  },
+  {
+   "id": "AT-ST-C12-022",
+   "name": "杠牌者同时是承包方两笔都付",
+   "rule": "杠牌者若同时是承包方，两笔都付。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端未见「杠牌者同时为承包方」的识别或两笔并列赔付处理。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：杠牌者若同时是承包方，两笔都付。服务端实现：CalcFinalWinLost :113-132 以 GetLastKongSeat 为唯一付款方算三家钱 → ApplyBaoContracts :347 注释「杠牌者若同时是承包方，则在杠赔付上叠加承包额」、:350-352 以 += 实现叠加（SVE-ST-C12-P02-01/04/10）。"
+  },
+  {
+   "id": "AT-ST-C12-023",
+   "name": "庄家自摸承包算分示例",
+   "rule": "例：庄家平胡自摸，三名闲家各应赔 8，S = 24。承包方付 24。若同时存在上家对庄家的承包，上家再付 48，庄家得 72。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端不做分数计算，示例中的 S、付款额与实收金额无法在客户端验证，只体现在系统下发的座位总分。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：庄家平胡自摸，三闲家各赔 8（S=24），承包方付 24，另有上家对庄家的承包时上家再付 48，庄家实收 72。服务端实现：CalcFinalWinLost 庄家自摸分支按 base_score(1)*fan_mult(1)*banker_mult(8)=8 逐闲家扣款（common_game/com_game/common_game_com_result.cpp:138-140、:93 牢数倍率 1<<banker_level），ApplyBaoContracts 取 total=Σpayments=24（:298-300），正承包付 total=24（:324-325）、tan_opp_win>=3 时 relation=2 付 total*2=48（:326-329），最终 payments=bao_payments，两对分别付 24 与 48、庄家实收 72（:334-354）（SVE-ST-C12-P03-01/02/03/08/09）。金额 8/24/48/72 与触发条件均与规则同构；仅 relation=2 在实现中标注为“倒承包”，属协议枚举措辞差异，不影响金额口径。"
+  },
+  {
+   "id": "AT-ST-C12-024",
+   "name": "反承包算分示例",
+   "rule": "例：庄家对闲家成立承包，闲家平胡自摸，三家原应赔 8、1、1。庄家按反承包付 20。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "反承包金额由系统计算下发，客户端只显示反承包标识与座位总分，无法验证 20 这个金额口径。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：庄家对闲家成立承包，闲家平胡自摸，三家原应赔 8、1、1，庄家按反承包付 20。服务端实现：闲家自摸分支下庄家付 base_score(1)*fan_mult(1)*banker_mult(8)=8、其余闲家各付 base_score*fan_mult=1，total=10（common_game/com_game/common_game_com_result.cpp:141-145、:93），ApplyBaoContracts 读双向摊数（:316-317），tan_opp_win(庄家→闲家)>=3 命中后 relation=2、opp_pay=total*2=20 并 SetBaoRelation(opp,win_seat,2)（:326-329），随后写入 BaoSettleItem(relation=2) 随 MsgResultHu 下发（:334-341；protocol/hzmj_protocol.proto:353 relation 2=倒承包）（SVE-ST-C12-P03-01/02/03/10/11）。8/1/1 与反承包 20 的金额与方向均与规则同构。"
+  }
+ ]
+}

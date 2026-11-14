@@ -1,0 +1,370 @@
+{
+ "stageId": "ST-C10",
+ "title": "吃碰禁手",
+ "sourceTitle": "行牌 > 吃碰禁手",
+ "fromLine": 97,
+ "toLine": 110,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 21,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C10-001",
+   "name": "坎张吃中间只禁被吃牌",
+   "rule": "用间隔一张的两张吃中间张：只禁被吃的那一张。用 1、3 吃 2，禁打 2。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端不参与禁张推导，禁张经出牌限制下发后由手牌组件置灰（controller/cmd/gameCmd/GamePlayLmtsCmd.ts:31-45），本条计算逻辑不在客户端代码中。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verified",
+   "l7Reason": "需求：用 1、3 吃 2 只禁被吃的 2。服务端 BoxChowStep::CalcChowForbidMahs 在 hand_pair[1]-hand_pair[0]!=1 时走 else（坎张）分支，forbid=TMahs{claimed}（common_game/com_game/common_game_com_action.cpp:196），hand_pair.size()!=2 兜底同样只禁 claimed（:190），两面分支 :192 不会命中；SVE-ST-C10-P01-02/03 与规则同构。"
+  },
+  {
+   "id": "AT-ST-C10-002",
+   "name": "两面吃一端禁两端延伸张",
+   "rule": "用相邻两张吃一端：禁打这两张在 1 至 9 内两端能接成顺子的牌。用 2、3 吃 1 或吃 4，都禁 1 和 4。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "与 AT-ST-C10-004 为同一规则的不同表述；客户端只消费服务端下发的禁打名单。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verified",
+   "l7Reason": "需求：2、3 吃 1 或吃 4 都禁 1 和 4。服务端 :192 判定 hand_pair 相差 1 进两面分支，:194 other_side=(claimed==z)?x-1:z+1，:195 forbid=TMahs{claimed, other_side}；吃 1 得 {1,4}，吃 4 得 {4,1}，两端延伸张同禁；SVE-ST-C10-P01-07/08/09 与规则同构。"
+  },
+  {
+   "id": "AT-ST-C10-003",
+   "name": "1、2 吃 3 的边界收窄",
+   "rule": "用 1、2 吃 3，只禁 3。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "边界收窄由服务端计算，客户端无对应分支。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verified",
+   "l7Reason": "需求：1、2 吃 3 只禁 3。服务端 :194 claimed==z 时 other_side=x-1=16（mah_frame/base/macros.h:44 MAH_DIVIDED=16、一万=17，16 是花色间空档非牌值），:195 黑名单为 {3,16}，mah_frame/base/algorithm.cpp:145 IsSubMah 按牌值精确相等故 16 永不命中真实手牌，实际效果只禁 3，与「外侧不是牌/边界收窄」规则同构；SVE-ST-C10-P01-08/10/11。"
+  },
+  {
+   "id": "AT-ST-C10-004",
+   "name": "相差 1 禁吃进张与另一侧延伸张",
+   "rule": "手上两张相差 1 时，禁吃进的那张和另一侧延伸的那张。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端无禁张推导实现，仅接收最终禁打名单。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verified",
+   "l7Reason": "需求：手上两张相差 1 时禁吃进张与另一侧延伸张。服务端 :192 相差 1 判定 → :194 按 claimed 在高档/低档推导另一侧延伸张 → :195 禁张为 {claimed, other_side} 二元组，与规则同构；SVE-ST-C10-P01-07/08/09。"
+  },
+  {
+   "id": "AT-ST-C10-005",
+   "name": "1、9 外侧无牌只禁吃进张",
+   "rule": "1、9 外侧不是牌，实际只禁吃进的一张。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "边界处理由服务端计算，客户端无对应实现。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verified",
+   "l7Reason": "需求：1、9 外侧不是牌，实际只禁吃进的一张。服务端 :194 claimed==x 时取 z+1（九万 25 +1=26，落入 mah_frame/base/macros.h:44 花色间的空档、非牌值），mah_frame/base/algorithm.cpp:145 IsSubMah 精确相等匹配不命中，黑名单等效只含吃进张；SVE-ST-C10-P01-08/10/11。"
+  },
+  {
+   "id": "AT-ST-C10-006",
+   "name": "相差不为 1 只禁吃进张",
+   "rule": "相差不是 1 时，只禁吃进的那张。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端无禁张推导实现，仅接收最终禁打名单。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verified",
+   "l7Reason": "需求：相差不是 1 时只禁吃进的那张。服务端仅 :192 相差 1 才进两面分支，else 分支 :196 forbid=TMahs{claimed}，:190 hand_pair.size()!=2 兜底亦只禁 claimed，与规则同构；SVE-ST-C10-P01-02/03。"
+  },
+  {
+   "id": "AT-ST-C10-007",
+   "name": "吃碰成立后同牌面手牌全部禁打直到解除",
+   "rule": "吃或碰成立后，同牌面的手牌全部禁打，直到本次限制解除。",
+   "uiRequirement": "",
+   "uiInteraction": "与禁打牌值相同的所有手牌压暗且不可点击，点击出牌弹出「该牌被禁打」。",
+   "notes": "「同牌面全部禁打」按牌值匹配，“同牌面”多张同值手牌会一起置灰；禁张集合与解除时机均由服务端决定。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "本家吃或碰成立",
+    "condition": "系统判定这手牌存在禁打牌",
+    "action": "把这些牌压暗并拦截出牌，直到限制解除",
+    "result": "玩家手里相同的牌都变暗，点它出牌会提示「该牌被禁打」"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：吃或碰成立后同牌面手牌全部禁打直到解除。服务端 mah_frame/base/algorithm.cpp:380 IsLimitMah 经 IsSubMah 按牌值精确比对，同值多张一并命中；mah_frame/com_basic/com_play.cpp:269 JudgeJustPlay 拒绝出牌；common_game/com_game/common_game_com_play.cpp:121-125 出牌后清空黑名单并 SendPlayLmts 即「直到解除」；碰路径 common_game/com_game/common_game_com_pung.cpp:94-97 同样写入；SVE-ST-C10-P01-12/13/15/17 构成闭环，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C10-008",
+   "name": "碰成立后禁打与被碰牌相同的牌",
+   "rule": "碰成立后，禁打与被碰牌相同的牌。",
+   "uiRequirement": "",
+   "uiInteraction": "与被碰牌相同牌值的手牌压暗、点击出牌被拦截并提示「该牌被禁打」。",
+   "notes": "碰后禁张的生成在服务端，客户端只有通用名单消费路径。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "本家有与被碰牌相同的牌且该牌值出现在禁打名单里",
+    "action": "把同牌值的手牌压暗并禁止打出",
+    "result": "玩家不能打出与被碰牌相同的牌"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：碰成立后禁打与被碰牌相同的牌。服务端 BoxPungStep::Execute 在 GetEnablePungForbid 为真时 hands=TMahs{will_pung_comb_.mahs[0]}（被碰牌牌值）并 SetPlayLimit（common_game/com_game/common_game_com_pung.cpp:94-97），好友房默认 EnablePungForbid(true)（hzmj_server/server_config.cpp:32），与规则同构；SVE-ST-C10-P01-17/18。"
+  },
+  {
+   "id": "AT-ST-C10-009",
+   "name": "只按最终选定的一组写禁张",
+   "rule": "只按最终选定的一组写禁张。",
+   "uiRequirement": "",
+   "uiInteraction": "弹出多组顺子供玩家选择，选定后其余选项收起，操作区回到空状态。",
+   "notes": "客户端只上报一组吃法，禁张是否只按该组写入由服务端决定。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "本家获得吃牌机会且有多组可选吃法",
+    "condition": "存在两组以上可吃的顺子组合",
+    "action": "先展示多组顺子让玩家挑一组，只把选中的那组作为本次吃牌",
+    "result": "玩家先看到多组顺子选项，选定后只有选中的那组吃法生效"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：只按最终选定的一组写禁张。客户端上报的 comb 经 mah_frame/com_basic/com_action.cpp:606 SetWillChowComb 落 will_chow_comb_，common_game/com_game/common_game_com_action.cpp:123-125 校验并唯一化后 :153 只对 will_chow_comb_ 调 CalcChowForbidMahs 且 :154 整体覆盖 SetPlayLimit，不叠加其他候选吃法，与规则同构；SVE-ST-C10-P01-20/21/06。"
+  },
+  {
+   "id": "AT-ST-C10-010",
+   "name": "禁张不含财神仍可打财神",
+   "rule": "禁张不含财神，吃完仍可打财神。",
+   "uiRequirement": "",
+   "uiInteraction": "若禁打名单中含财神牌值，财神手牌同样会被压暗；界面没有额外的财神豁免表现。",
+   "notes": "客户端没有独立的财神豁免分支，财神是否可打完全取决于服务端下发的禁打名单。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "吃牌成立后系统下发禁打名单",
+    "condition": "名单中出现某个牌值",
+    "action": "界面按名单逐张比对置灰，不区分该牌是否为财神",
+    "result": "若名单含财神，财神也会被压暗，界面没有额外的财神豁免表现"
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C10-011",
+   "name": "剩余手牌全在禁张内的吃法不能吃",
+   "rule": "吃完后剩余手牌全部落在禁张里的吃法不能吃。",
+   "uiRequirement": "",
+   "uiInteraction": "不出现该吃法的吃牌选项，同时显示一行规则提示文字。",
+   "notes": "客户端不自行过滤吃法，吃牌选项全部来自服务端下发的组合。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "本家存在可吃组合",
+    "condition": "吃完后手里剩下的牌全部落在禁张里",
+    "action": "系统不授予这个吃法，并在本家界面给出一行提示",
+    "result": "玩家看不到这个吃法的选项，只看到「吃禁手规则生效中」"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：吃完后剩余手牌全部落在禁张里的吃法不能吃。服务端 BoxChowStep::Judge 在 enable_chow_forbid 下逐组合 CanPlayAfterChow 过滤（common_game/com_game/common_game_com_action.cpp:86-99），safe_combs 为空则不授予吃权限；:209-216 复刻 DelJustChowFromHand 扣手牌，:221-225 剩余手牌全落禁张返回 false，与规则同构；SVE-ST-C10-P01-26/27/28。"
+  },
+  {
+   "id": "AT-ST-C10-012",
+   "name": "本家提示吃禁手规则生效中",
+   "rule": "本家提示「吃禁手规则生效中」。",
+   "uiRequirement": "本家提示「吃禁手规则生效中」",
+   "uiInteraction": "本家界面出现「吃禁手规则生效中」文字提示，短暂显示后消失；复盘与简洁模式下不显示。",
+   "notes": "提示只在通知座位为本家时展示，满足「本家提示」的范围要求。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "本家想吃的组合会让剩余手牌全部变成禁打牌",
+    "condition": "本家是这次吃牌的玩家",
+    "action": "在界面显示一行文字提示并短暂保留",
+    "result": "本家看到「吃禁手规则生效中」，随后自动消失"
+   },
+   "l7": "verified",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C10-013",
+   "name": "禁打牌压暗牌面仍可辨认",
+   "rule": "禁打牌压暗，牌面仍可辨认。",
+   "uiRequirement": "禁打牌压暗，牌面仍可辨认",
+   "uiInteraction": "被禁打的手牌整体变暗，仍显示原牌面图案。",
+   "notes": "灰化是平台牌面组件的着色能力，压暗后是否仍可辨认需实机确认。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "本家手里出现禁打牌",
+    "condition": "该牌牌值在系统下发的禁打名单内",
+    "action": "把这张手牌的配色压暗成灰色",
+    "result": "玩家看到该牌明显变暗但仍能认出是原来的牌"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：禁打牌压暗后牌面仍可辨认，核心是压暗着色后的视觉可辨认性。服务端实现：禁打牌值（hands 黑名单）恒打包并单发给禁打所属座位，BaseContext::SendPlayLmts（mah_frame/base/base_context.cpp:594）无配置分支，BaseContext::FillMsgPlayLmts（mah_frame/base/base_context.cpp:900）按 seat 组 hands/dfs（SVE-ST-C10-P02-01/02）。服务端只证明「禁打牌值恒下发」，压暗与压暗后能否辨认属客户端牌面组件着色能力，本次无客户端证据，缺陷/差异无法被服务端证据消解，维持 partial。"
+  },
+  {
+   "id": "AT-ST-C10-014",
+   "name": "禁打标记只在本家界面显示",
+   "rule": "禁打牌压暗只在本家界面显示。",
+   "uiRequirement": "只在本家界面显示",
+   "uiInteraction": "只有本家手牌出现压暗效果，其他玩家界面没有任何禁打标记。",
+   "notes": "",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "本家吃或碰后系统判定存在禁打牌",
+    "condition": "只有本家持有这些禁打牌",
+    "action": "只把本家手里的这些牌压暗并禁止打出",
+    "result": "只有本家看到被压暗的禁打牌，其他玩家界面没有变化"
+   },
+   "l7": "verified",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C10-015",
+   "name": "其他家只看到牌背",
+   "rule": "其他家只看到牌背。",
+   "uiRequirement": "其他家只看到牌背",
+   "uiInteraction": "其他三个座位的手牌始终显示为牌背，看不到牌面，也没有压暗效果。",
+   "notes": "其他座位手牌使用独立牌背资源，禁打灰化只作用于本家手牌组件。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "其他玩家查看正在进行的对局",
+    "condition": "除本家外的玩家手牌处于背面状态",
+    "action": "只用牌背展示其他玩家手牌",
+    "result": "其他玩家只看到牌背，看不到牌面与禁打标记"
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C10-016",
+   "name": "禁打牌仍能提起并横滑出虚影",
+   "rule": "这些牌仍能提起，也能横滑出虚影。",
+   "uiRequirement": "这些牌仍能提起，也能横滑出虚影",
+   "uiInteraction": "禁打牌显示为压暗状态；能否提起与横滑出虚影取决于手牌基类的命中判定，本仓库无法直接观察。",
+   "notes": "禁打灰化的同时把牌项触摸属性置为 false，与「仍能提起」存在存疑；手牌触摸与横滑虚影由外部手牌基类与 game_mah 包实现，不在本仓库。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C10-017",
+   "name": "对禁打牌出牌弹出该牌被禁打",
+   "rule": "单击、双击或松手打出时弹出「该牌被禁打」。",
+   "uiRequirement": "单击、双击或松手打出时弹出「该牌被禁打」",
+   "uiInteraction": "弹出「该牌被禁打」文字提示，约 1.3 秒后消失，手牌保留原位。",
+   "notes": "三种出牌手势由手牌基类统一走同一个出牌前校验与出牌回调，未按手势分别处理。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "玩家尝试打出被禁打的牌（点击、双击或滑出后松手）",
+    "condition": "该牌牌值在禁打名单内",
+    "action": "拦下这次出牌并短暂显示文字提示",
+    "result": "玩家看到「该牌被禁打」，这张牌还留在手里"
+   },
+   "l7": "verified",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C10-018",
+   "name": "禁打牌不进牌河",
+   "rule": "牌不进牌河。",
+   "uiRequirement": "牌不进牌河",
+   "uiInteraction": "牌河不出现这张牌，手牌回到原位并保持压暗状态。",
+   "notes": "落河与出牌请求都在禁打校验之后执行，拦截时提前返回。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "玩家尝试打出被禁打的牌",
+    "condition": "出牌前校验发现该牌被禁打",
+    "action": "在把牌送进牌河之前中止出牌",
+    "result": "牌河不出现这张牌，手牌保持原样"
+   },
+   "l7": "verified",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C10-019",
+   "name": "合法出牌后服务端清空禁张",
+   "rule": "打出一张合法牌后，服务端清空禁张。",
+   "uiRequirement": "",
+   "uiInteraction": "下一手本家手牌恢复正常配色，不再有压暗的禁打牌。",
+   "notes": "清空完全依赖服务端下发，客户端出牌后不自行清除；收到空名单时界面刷新入口在无限制时直接返回，实际解除灰化依赖手牌重建或清除灰化事件。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "本家打出一张合法的牌",
+    "condition": "这手牌的禁打限制已不再需要",
+    "action": "系统清空禁打名单，界面收到清空结果后解除压暗",
+    "result": "下一手手牌恢复正常颜色，不再有禁打牌"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：打出一张合法牌后，由服务端清空禁张。服务端实现：BoxPlayStep::Execute（common_game/com_game/common_game_com_play.cpp:117-125）在出牌后读取本座位 play_limit，hands 非空即 SetPlayLimit(seat, TPlayLimit()) 并 SendPlayLmts(seat)；BaseData::SetPlayLimit（mah_frame/base/base_data.cpp:1493）写回 play_limit_[seat]；TPlayLimit 默认 type=kTplimtTypeBlack（mah_frame/base/typedef.h:121），使 SendPlayLmts（base_context.cpp:594）的 type<=0 早退不成立，空名单真实下发（SVE-ST-C10-P02-15/16/17/01）。清空动作仅以 hands 非空为条件、无配置开关，与「合法出牌后服务端清空禁张」同构；原 partial 疑点属客户端刷新执行面，不改变本条服务端规则判定，可升级。"
+  },
+  {
+   "id": "AT-ST-C10-020",
+   "name": "同一回合再杠不清空禁张",
+   "rule": "同一回合再杠不清空。",
+   "uiRequirement": "",
+   "uiInteraction": "杠牌后禁打灰化保持原样，直到服务端下发新的出牌限制。",
+   "notes": "客户端杠处理未涉及禁张，属于「不清空」的被动一致，缺少杠后禁张保留的直接可观测证据。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：同一回合再杠（明杠/暗杠/补杠）不清空禁张。服务端实现：BoxMKongStep::Execute（common_game/com_game/common_game_com_kong.cpp:57）、BoxCKongStep::Execute（common_game/com_game/common_game_com_kong.cpp:150）、BoxTKongStep::Execute（common_game/com_game/common_game_com_kong.cpp:237）三段杠执行体均只处理杠牌/摊数/杠链/跟庄，全段无 SetPlayLimit 或 play_limit 清空；hzmj 唯一禁张清空点为出牌后的 BoxPlayStep::Execute（common_game/com_game/common_game_com_play.cpp:117-125），杠路径不经过该清空点（SVE-ST-C10-P02-18/19/20/15）。杠后禁张保留为固定机制，原 unverified 的「缺少直接可观测证据」已由三杠路径逐段核对补齐，可升级。"
+  },
+  {
+   "id": "AT-ST-C10-021",
+   "name": "补进的牌仍在禁张内不能打",
+   "rule": "补进的牌若牌值仍在禁张里，也不能打。",
+   "uiRequirement": "",
+   "uiInteraction": "摸进的牌若命中禁打值会被压暗，点击出牌被拦下并提示「该牌被禁打」。",
+   "notes": "摸牌位的禁打只认单放禁打值，禁打名单 hands 不作用于摸牌位；补进的牌是否被拦完全取决于服务端是否按单放字段下发。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "本家摸进或补进一张牌",
+    "condition": "这张牌的牌值与系统给出的单放禁打牌值相同",
+    "action": "把这张摸进的牌压暗并在出牌时拦下",
+    "result": "玩家无法打出这张刚摸进的牌，点了会提示「该牌被禁打」"
+   },
+   "l7": "not_applicable",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  }
+ ]
+}

@@ -1,0 +1,180 @@
+{
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "totalLines": 199,
+ "sections": [
+  {
+   "no": 1,
+   "title": "杭州麻将核心需求",
+   "fromLine": 1,
+   "toLine": 8,
+   "kind": "intro",
+   "container": "",
+   "sourceTitle": "杭州麻将核心需求"
+  },
+  {
+   "no": 2,
+   "title": "名词",
+   "fromLine": 9,
+   "toLine": 21,
+   "kind": "terms",
+   "container": "",
+   "sourceTitle": "名词"
+  },
+  {
+   "no": 3,
+   "title": "定庄与轮庄",
+   "fromLine": 22,
+   "toLine": 30,
+   "kind": "stage",
+   "stageId": "ST-C01",
+   "container": "开局",
+   "sourceTitle": "开局 > 定庄与轮庄"
+  },
+  {
+   "no": 4,
+   "title": "财神与牌组",
+   "fromLine": 31,
+   "toLine": 36,
+   "kind": "stage",
+   "stageId": "ST-C02",
+   "container": "开局",
+   "sourceTitle": "开局 > 财神与牌组"
+  },
+  {
+   "no": 5,
+   "title": "发牌",
+   "fromLine": 37,
+   "toLine": 46,
+   "kind": "stage",
+   "stageId": "ST-C03",
+   "container": "开局",
+   "sourceTitle": "开局 > 发牌"
+  },
+  {
+   "no": 6,
+   "title": "操作优先级",
+   "fromLine": 47,
+   "toLine": 58,
+   "kind": "stage",
+   "stageId": "ST-C04",
+   "container": "行牌",
+   "sourceTitle": "行牌 > 操作优先级"
+  },
+  {
+   "no": 7,
+   "title": "吃、碰、杠",
+   "fromLine": 59,
+   "toLine": 70,
+   "kind": "stage",
+   "stageId": "ST-C05",
+   "container": "行牌",
+   "sourceTitle": "行牌 > 吃、碰、杠"
+  },
+  {
+   "no": 8,
+   "title": "杠后补牌",
+   "fromLine": 71,
+   "toLine": 76,
+   "kind": "stage",
+   "stageId": "ST-C06",
+   "container": "行牌",
+   "sourceTitle": "行牌 > 杠后补牌"
+  },
+  {
+   "no": 9,
+   "title": "自摸、放铳、抢杠胡",
+   "fromLine": 77,
+   "toLine": 82,
+   "kind": "stage",
+   "stageId": "ST-C07",
+   "container": "行牌",
+   "sourceTitle": "行牌 > 自摸、放铳、抢杠胡"
+  },
+  {
+   "no": 10,
+   "title": "飘财",
+   "fromLine": 83,
+   "toLine": 91,
+   "kind": "stage",
+   "stageId": "ST-C08",
+   "container": "行牌",
+   "sourceTitle": "行牌 > 飘财"
+  },
+  {
+   "no": 11,
+   "title": "杠开、杠飘、飘杠",
+   "fromLine": 92,
+   "toLine": 96,
+   "kind": "stage",
+   "stageId": "ST-C09",
+   "container": "行牌",
+   "sourceTitle": "行牌 > 杠开、杠飘、飘杠"
+  },
+  {
+   "no": 12,
+   "title": "吃碰禁手",
+   "fromLine": 97,
+   "toLine": 110,
+   "kind": "stage",
+   "stageId": "ST-C10",
+   "container": "行牌",
+   "sourceTitle": "行牌 > 吃碰禁手"
+  },
+  {
+   "no": 13,
+   "title": "出牌与响应",
+   "fromLine": 111,
+   "toLine": 130,
+   "kind": "stage",
+   "stageId": "ST-C11",
+   "container": "行牌",
+   "sourceTitle": "行牌 > 出牌与响应"
+  },
+  {
+   "no": 14,
+   "title": "三摊承包",
+   "fromLine": 131,
+   "toLine": 149,
+   "kind": "stage",
+   "stageId": "ST-C12",
+   "container": "",
+   "sourceTitle": "三摊承包"
+  },
+  {
+   "no": 15,
+   "title": "算分",
+   "fromLine": 150,
+   "toLine": 162,
+   "kind": "stage",
+   "stageId": "ST-C13",
+   "container": "",
+   "sourceTitle": "算分"
+  },
+  {
+   "no": 16,
+   "title": "番型",
+   "fromLine": 163,
+   "toLine": 181,
+   "kind": "stage",
+   "stageId": "ST-C14",
+   "container": "",
+   "sourceTitle": "番型"
+  },
+  {
+   "no": 17,
+   "title": "结算",
+   "fromLine": 182,
+   "toLine": 199,
+   "kind": "stage",
+   "stageId": "ST-C15",
+   "container": "",
+   "sourceTitle": "结算"
+  }
+ ],
+ "termsSection": {
+  "fromLine": 9,
+  "toLine": 21,
+  "title": "名词"
+ },
+ "stageCount": 15
+}

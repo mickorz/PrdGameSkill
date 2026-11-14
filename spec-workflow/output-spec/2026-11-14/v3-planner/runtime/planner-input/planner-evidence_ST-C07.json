@@ -1,0 +1,268 @@
+{
+ "stageId": "ST-C07",
+ "title": "自摸、放铳、抢杠胡",
+ "sourceTitle": "行牌 > 自摸、放铳、抢杠胡",
+ "fromLine": 77,
+ "toLine": 82,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 15,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C07-001",
+   "name": "常规摸牌后出牌前自摸",
+   "rule": "常规摸牌后在出牌前胡牌（自摸）。",
+   "uiRequirement": "",
+   "uiInteraction": "摸牌后操作区出现胡按钮（自摸用 zimo 贴图），按钮上显示所胡的牌面与“XX倍”，按钮播放高亮动画并切到碰杠胡按钮态；点下后按钮收起，进入胡牌流程。",
+   "notes": "客户端不校验“摸牌后未出牌”这一条件，完全依赖服务端下发胡权限；胡后出牌权限被关闭（可出牌位与未胡同时满足才可出牌），因此表现为先胡后不可出牌。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "自己摸进一张牌",
+    "condition": "服务端判定这副牌可以胡",
+    "action": "亮出可胡按钮，并记录这次能胡的牌与倍数",
+    "result": "按钮上出现所胡牌面和倍数，点一下即宣告胡牌，随后结算里自己那一行标为自摸"
+   },
+   "l7": "verified",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C07-002",
+   "name": "杠后补牌后自摸",
+   "rule": "杠后补牌后在出牌前胡牌（自摸）。",
+   "uiRequirement": "",
+   "uiInteraction": "补杠时已亮出的三张牌变为四张；补摸到牌后与其他摸牌一致，出现胡按钮（自摸贴图）与牌面、倍数。",
+   "notes": "补牌消息虽已定义命令名与解码，但未登记进下行消息映射表、也无处理器；杠后补牌是否独立下发无法在客户端证实，杠后胡仅能复用通用摸牌加胡权限的路径。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "自己杠牌后需要补摸一张",
+    "condition": "补摸后这副牌可以胡",
+    "action": "把补杠的第四张牌合入已亮出的牌组，补摸到牌后照常亮出胡按钮",
+    "result": "杠位显示四张牌，补摸后若可胡则出现胡按钮与倍数"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：杠后补牌后、出牌前可自摸，杠上开花属自摸。服务端实现：TakeStep::TakeAfterKong（SVE-ST-C07-P01-04，mah_frame/com_basic/com_take.cpp:19）补牌后 SetJustTake/SetTakes 并 AddAllState(kMahStateTake)；BoxHuStep::Judge（SVE-ST-C07-P01-01，common_game/com_game/common_game_com_action.cpp:271）在该状态无条件 SetNextHuType(kHtSelf)+JudgeSelf，注释明示“杠上开花仍属自摸变体”，再经 HuStep::JudgeSelf 判胡（mah_frame/com_basic/com_hu.cpp:189）。与规则同构，无额外门控。"
+  },
+  {
+   "id": "AT-ST-C07-003",
+   "name": "庄家起手第14张出牌前自摸",
+   "rule": "庄家起手的第 14 张牌，在出牌前胡牌（自摸）。",
+   "uiRequirement": "",
+   "uiInteraction": "发牌后手牌摊开，若有胡权限立即在操作区出现胡按钮；首出阶段另有庄家提示文案与听牌动画，与是否可胡无关。",
+   "notes": "起手牌基数按 13 张推算首出阶段，未见庄家多一张或起手胡的专门处理；起手可胡仅表现为发牌后收到胡权限。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "开局发牌",
+    "condition": "服务端下发自己有胡权限",
+    "action": "展示整副起手牌并亮出胡按钮",
+    "result": "一次牌都没出就看到胡按钮，可直接点胡"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：庄家起手第 14 张在出牌前可自摸。服务端实现：BoxZhuangSelfTakeStep::Execute（SVE-ST-C07-P01-05，common_game/com_game/common_game_com_ju.cpp:288）下发第 14 张并 SetJustTake/SetNowSeat/AddAllState(kMahStateTake)；BoxFirstWaitStep::Execute（SVE-ST-C07-P01-06，common_game/com_game/common_game_com_take.cpp:21）置 kHzmjStateFirstWait 并 ChangeNextStep(庄家)；BoxHuStep::Judge（SVE-ST-C07-P01-01，:272）将 kHzmjStateFirstWait 视同 kMahStateTake 置 kHtSelf，GetHuStands（:514）在起手态把 JustTake 并入当前座位手牌后判胡。"
+  },
+  {
+   "id": "AT-ST-C07-004",
+   "name": "自摸胡牌按4组面子加1组对子",
+   "rule": "自摸的常规结构是 4 组面子加 1 组对子。",
+   "uiRequirement": "",
+   "uiInteraction": "胡牌时摊开手牌，副露按组依次排列，最后单列胡的那张牌；结算行里也按组还原牌型。",
+   "notes": "客户端只展示服务端给出的牌组，不做结构判定；4 组常量仅用于展示容量，不能证明结构合法性由客户端把关。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "胡牌成立后摊牌",
+    "condition": "",
+    "action": "按服务端下发的牌组把手牌分成若干副露和单放牌展示",
+    "result": "玩家看到自己的牌被排成几组顺子、刻子或杠，再单列胡的那张牌"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：自摸常规结构为 4 组面子 + 1 组对子。服务端实现：CommonGameInit 注册 sep_types={kSepType3N2,kSepType2N}（SVE-ST-C07-P01-07，common_game/common_game_init.cpp:120），BoxHuStep::TestHu 以该 sep_types 调算法（SVE-ST-C07-P01-09，common_game/com_game/common_game_com_action.cpp:444），Algorithm::SepTo3n2（SVE-ST-C07-P01-08，mah_frame/base/algorithm.cpp:1462）先取对子为将、剩余牌按模 3 拆 3n 面子且要求有且仅有 1 个模 3 余 2。规则所述“常规结构”即 3N+2 分支，额外注册的 2N（七对族）不构成对该常规结构的否定。"
+  },
+  {
+   "id": "AT-ST-C07-005",
+   "name": "本期固定庄闲放铳",
+   "rule": "本期固定采用庄闲放铳。",
+   "uiRequirement": "",
+   "uiInteraction": "胡牌时在被放炮的玩家位置播点炮或一炮多响动画，结算里胡牌者显示点炮胡、放铳者显示点炮标记。",
+   "notes": "玩法配置消息里只有宝头、三摊包、简洁模式等字段，没有放铳模式字段；客户端只按服务端下发的胡类型渲染，不能证实本期确实锁定庄闲放铳。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "别人打出一张牌后自己可以胡",
+    "condition": "服务端把这次胡判成点炮",
+    "action": "在被放炮的玩家位置播点炮效果，结算里标出谁点炮",
+    "result": "胡牌者结算显示点炮胡，放铳者显示点炮标记与放炮流水"
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C07-006",
+   "name": "仅三牢局才可点炮胡",
+   "rule": "当局是三牢时，点炮胡才成立。",
+   "uiRequirement": "",
+   "uiInteraction": "结算与桌面能体现庄家牢庄档位信息；未见针对“三牢”变化的点炮资格提示。",
+   "notes": "庄闲倍数方法无任何调用点，牢庄等级只做数据记录与结算展示，未参与点炮资格判断。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "本小局确定庄家后",
+    "condition": "",
+    "action": "记录本局的牢庄等级",
+    "result": "结算与桌面能看到庄家的牢庄档位"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：仅当局三牢时点炮胡才成立。服务端实现：BoxHuStep::CanDiscardHu（SVE-ST-C07-P01-12，common_game/com_game/common_game_com_action.cpp:353）在 GetBankerLevel()<3 时直接 return false，门控失败即 JudgeDiscard 不可达；牢庄等级由 banker_level_type 起算（SVE-ST-C07-P01-15，common_game/com_game/common_game_com_ju.cpp:191 type+1 夹取 1..3）并连庄累加（SVE-ST-C07-P01-16，common_game/com_game/common_game_com_result.cpp:358 三牢封顶），落地调用点 JudgeDiscard（SVE-ST-C07-P01-17，:360）首行即 CanDiscardHu。创房下发值口径已核对：客户端默认 enable_banker_discard_hu=1、banker_level_type=2（起手 3 牢），好友房服务端默认 true（SVE-ST-C07-P01-11，hzmj_server/server_config.cpp:19），故该门控在好友房实际生效。"
+  },
+  {
+   "id": "AT-ST-C07-007",
+   "name": "一庄一闲且牌型合法才能点炮胡",
+   "rule": "出牌者与胡牌者正好一边是庄、一边是闲，同时牌型合法，才能点炮胡。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端无庄闲关系与牌型合法性校验，胡权限和番数全部由服务端下发。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：出牌者与胡牌者一庄一闲、且牌型合法才可点炮胡。服务端实现：BoxHuStep::JudgeDiscard（SVE-ST-C07-P01-17，common_game/com_game/common_game_com_action.cpp:360）先 CanDiscardHu 门控，再对每个 hu_seat 计算 is_banker_discard=(seat==zhuang)/is_banker_hu=(hu_seat==zhuang)，二者相等即 continue（:370-372）从而强制一庄一闲，随后 TestHu(hu_seat)（SVE-ST-C07-P01-09，:444）做 3N+2/2N 牌型合法性判定；另有“财神不能放铳”为补充限制，不与规则冲突。创房默认 enable_banker_discard_hu=1 且起手 3 牢，路径可达。"
+  },
+  {
+   "id": "AT-ST-C07-008",
+   "name": "庄家打出的牌只有闲家可胡",
+   "rule": "庄家打出的牌只有闲家可胡。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端不区分出牌者是否庄家，只按服务端下发的胡权限展示按钮。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：庄家打出的牌只有闲家可胡。服务端实现：BoxHuStep::Judge 在 kMahStatePlay 传 GetJustPlaySeat 入 JudgeDiscard（SVE-ST-C07-P01-01，common_game/com_game/common_game_com_action.cpp:283），JudgeDiscard（SVE-ST-C07-P01-17，:360）中 is_banker_discard=(seat==zhuang) 为真时，只有 is_banker_hu 为假（即非庄座位）的 hu_seat 才不会被 :370-372 的相等过滤 continue，随后 TestHu 校验牌型。即庄家出牌仅闲家可胡，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C07-009",
+   "name": "闲家打出的牌只有庄家可胡",
+   "rule": "闲家打出的牌只有庄家可胡。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "与上一条相同，客户端没有按庄闲身份过滤可胡对象的逻辑。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：闲家打出的牌只有庄家可胡。服务端实现：同上 JudgeDiscard（SVE-ST-C07-P01-17，common_game/com_game/common_game_com_action.cpp:367 取 GetZhuang、:371 is_banker_hu=(hu_seat==zhuang)）；seat 非庄时 is_banker_discard=false，仅 is_banker_hu=true（庄家座位）可通过相异校验，即闲家出牌只有庄家可胡。"
+  },
+  {
+   "id": "AT-ST-C07-010",
+   "name": "未形成庄闲关系时只能自摸",
+   "rule": "未形成庄闲关系时只能自摸。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端对点炮与自摸只是渲染服务端下发的胡类型，没有任何“只能自摸”的兜底限制。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C07-011",
+   "name": "只由放铳者赔付",
+   "rule": "点炮胡只由放铳者赔付。",
+   "uiRequirement": "",
+   "uiInteraction": "结算时各座位依次飘出得分或失分，只有有分数变化的座位才飘；结算行里胡牌者显点炮胡、放铳者显放炮，其余两家无该流水。",
+   "notes": "客户端不做赔付计算，也没有“只有炮手扣分”的校验；“只由放铳者赔付”只能从服务端下发数据中观察，客户端无法自证。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "一局结束下发结算",
+    "condition": "本次结算中某个座位有分数变化",
+    "action": "按服务端给出的分数刷新每个座位并播放飘分",
+    "result": "只有有输赢的座位头上飘出得分或失分，放铳者的结算行显示放炮"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：点炮胡只由放铳者赔付。服务端实现：BoxHuStep::CheckHu（SVE-ST-C07-P01-19，common_game/com_game/common_game_com_action.cpp:573）以 from_seat=GetJustPlaySeat() 记录来源并 SetHuDfFrom；BoxResultStep::CalcFinalWinLost（SVE-ST-C07-P01-18，common_game/com_game/common_game_com_result.cpp:107）kHtDiscard 分支 payer=GetJustPlaySeat()、仅 payments[payer]=-pay 一条负额，无其他付款方；SetHuDfFrom 落库见 SVE-ST-C07-P01-20（mah_frame/base/base_data.cpp:1102），结算代码无配置分支。"
+  },
+  {
+   "id": "AT-ST-C07-012",
+   "name": "抢杠与放铳同口径且仅庄闲之间可抢",
+   "rule": "与放铳相同，只有三牢的庄闲之间可以抢杠胡。",
+   "uiRequirement": "",
+   "uiInteraction": "可以抢杠时与点炮一致出现带“胡”贴图的按钮与牌面、倍数；胡牌后播点炮类动画，结算行显示吃胡。",
+   "notes": "客户端把抢杠与点炮合并处理，行为枚举里虽定义了抢杠胡动作类型但无任何使用点；三牢庄闲的抢杠资格完全不可在客户端验证。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "别人加杠时自己可以抢这张杠牌",
+    "condition": "服务端判定这次可以抢杠",
+    "action": "亮出带“胡”贴图的胡按钮，胡牌后按点炮方式表现",
+    "result": "自己胡在加杠的那张牌上，结算里显示为吃胡并出现抢杠流水"
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C07-013",
+   "name": "所加第4张须使响应者合法胡牌",
+   "rule": "所加的第 4 张牌须使响应者合法胡牌。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端只把补杠的第 4 张合进已亮出的杠组并展示，是否能让响应者胡牌完全由服务端判定，客户端无校验。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：所加的第 4 张牌须使响应者合法胡牌（客户端只展示杠组、无校验，属服务端判定领域）。服务端实现：BoxTKongStep::Judge 由 TestTKong 取到含第 4 张的补杠组合（common_game/com_game/common_game_com_kong.cpp:202，SVE-ST-C07-P02-06）；TKongStep::CheckTKong 以 SetJustTKong 落地该 4 张组（mah_frame/com_basic/com_kong.cpp:451，SVE-ST-C07-P02-07）；BoxHuStep::GetHuStands 对非加杠者 push_back(JustTKong.mahs[0]) 把第 4 张并入响应者手牌（common_game/com_game/common_game_com_action.cpp:522，SVE-ST-C07-P02-08）；随后 BoxHuStep::TestHu 调 Algorithm::TestHu 做统一牌型校验（common_game/com_game/common_game_com_action.cpp:444，SVE-ST-C07-P02-09），并在 CheckHu 中按 kHtRobKong 落成败（:562，SVE-ST-C07-P02-10）。三处均无配置分支、恒执行，实现与规则同构。"
+  },
+  {
+   "id": "AT-ST-C07-014",
+   "name": "只由被抢的加杠者按放铳赔付",
+   "rule": "只由被抢的加杠者按放铳赔付。",
+   "uiRequirement": "",
+   "uiInteraction": "结算行里胡牌者能看到抢杠胡、被抢者能看到被抢杠，金额按点炮口径显示；桌面按座位飘分。",
+   "notes": "客户端只展示服务端下发的抢杠与被抢杠流水，赔付对象由服务端决定；被抢者牌河无牌可移除，故抢杠场景只表现胡牌来源方向。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "某家的杠被别人抢胡",
+    "condition": "服务端结算给出抢杠结果",
+    "action": "把抢杠按点炮方式表现，并在结算里分别列出抢杠胡与被抢杠",
+    "result": "胡牌者显示抢杠胡、加杠者显示被抢杠，分数在被抢者与胡牌者之间结算"
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C07-015",
+   "name": "抢杠赔付中其他人不付",
+   "rule": "抢杠胡只由被抢的加杠者赔付，其他人不付。",
+   "uiRequirement": "",
+   "uiInteraction": "抢杠结算时只有胡牌者与被抢者两个座位有分数浮动和胡相关流水，其余两家结算行不显示抢杠内容。",
+   "notes": "“其他人不付”是从结算数据表现反推的，客户端不做赔付分摊计算，无法自证其余两家确实被排除。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "抢杠胡结算",
+    "condition": "服务端只在被抢者与胡牌者之间生成分数",
+    "action": "只为有分数变化的座位显示流水和飘分",
+    "result": "其余两家没有抢杠胡或被抢杠流水，也不飘分"
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  }
+ ]
+}

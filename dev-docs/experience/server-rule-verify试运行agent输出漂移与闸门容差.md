@@ -69,3 +69,15 @@
 **解决方案**：新增确定性重算闸门 `.opencode-workflows/scripts/recount-verify-parts.mjs`（example 16 断言）：以落判分片文件为准，对照 verify-input 期望原子清单重算——全覆盖（缺失/混入外来原子均 fail）、atomId 不重复、applicability 枚举合法、四类分布与 sveCount 重算，成功写 `runtime/verify-recount.json`；子流程 3 用 `commandSuccess` 跑该脚本做闸门 + 新增「回读落判重算」agent 聚合 scopeStats（agent 摘要计数只 log 告警不再 fail）。改闸门属非 agent 调用逻辑，不影响 journal 回放——续跑 24 agent 全回放 253s 收口。
 
 **预防/注意**：凡「agent 返回值只用于校验/统计」的闸门，都要能退到「以落盘文件确定性重算」的口径——agent 摘要最多做告警与交叉提示；分片文件与期望清单（verify-input）的对照交给纯代码闸门。新增 agent 调用（回读重算）追加在既有调用之后，resume 时既有调用照常回放、新调用正常新跑，位置不要插到既有调用前面（会改变调用序列导致回放错位）。
+
+## 坑 7：投影 agent 把「verified→不写差异行」执行成整原子漏写（S4.2，output-spec-generate 链路）
+
+**问题现象**：S4.2 策划版 v3 全量投影（plannerOnly）在 4-assemble 的 AT-ID 覆盖闸门失败：「策划版 AT-ID 覆盖缺失 22 个（AI 漏写补充内容）」。核对 22 个原子（C03-011、C04-006/009、C05-022、C06-003/006、C07-013、C08-001/004/011/017、C09-005、C10-001~006、C11-006/017/028/029）**全部 l7=verified** 且全部有 uiInteraction/notes/businessBehavior 界面内容——规则要求 verified 原子「差异行不写、界面表现行照写」，agent 只写了前半句。
+
+**排查过程**：按缺失 ID 逐个到 planner-parts 分片 grep（0 命中，分片层就漏了）→ 查 planner-evidence 确认 22 个原子全有界面内容（排除「全空原子不硬凑行」的合法省略）→ 定位为 prompt 措辞歧义：「l7=verified：不写差异行（原文照常保留）」没有显式接上「界面表现行照常适用下一条」。
+
+**根因**：plannerDocRules 的 l7 四口径分支与界面表现行规则是两条并列规则，verified/not_applicable 分支只说「不写差异行」，agent 把整条补充行都省了；投影链路没有逐原子的行级覆盖校验（4-assemble 的 AT-ID 覆盖检查是事后闸门，分片已 merge 并删除，无法只补分片）。
+
+**解决方案**：① plannerDocRules 加固：verified/not_applicable 分支显式补「界面表现行照常适用下一条」「差异行不写≠原子项不写」；转写硬规则新增第 6 条覆盖硬规则（本章每个原子 id 必须至少出现在一条补充行，一条语句多原子可合并多 id 一行，全空原子例外；最终装配逐 AT-ID 校验，漏写任一 id 整个装配失败）。② 分片已删只能补最终文档：一次性补写 workflow（单 agent，按 evidence 的 rule 字段定位原文语句锚点，insert 22 条「  - 界面表现：…（id）」子列表行），重跑 build-output-spec 全套闸门（泄漏/覆盖/乱码）确认全过。锚点可定位性：原文规则语句按 prompt 规则 2 逐字保留在文档中，用 rule 文本前缀 grep 即可命中。
+
+**预防/注意**：「分支规则说『不写 X』时必须显式说明同位置其他行类是否照写」——LLM 对否定分支的执行范围容易扩大化；「按类省略」的规则必须配「按实例校验」的闸门（逐 AT-ID 覆盖），且闸门要能在产物合并后兜底修复（merge 删除分片后，补写目标只剩最终文档，锚点靠逐字保留的原文语句）。

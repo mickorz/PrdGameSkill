@@ -1,0 +1,489 @@
+{
+ "stageId": "ST-C05",
+ "title": "吃、碰、杠",
+ "sourceTitle": "行牌 > 吃、碰、杠",
+ "fromLine": 59,
+ "toLine": 70,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 28,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C05-001",
+   "name": "风牌箭牌不能吃",
+   "rule": "风牌、箭牌不能做顺子，不能吃。",
+   "uiRequirement": "",
+   "uiInteraction": "吃按钮与吃选项只按服务端给出的组合展示，客户端不额外过滤风牌、箭牌。",
+   "notes": "未发现客户端对吃牌组合的花色校验，风牌、箭牌能否吃由服务端权限与组合决定。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "别家打出牌后轮到自己响应",
+    "condition": "",
+    "action": "客户端直接采用服务端给出的吃牌组合，不自行判断花色是否可吃",
+    "result": "玩家看到的是服务端允许的吃牌组合"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：风牌、箭牌不能组顺子、不能吃。服务端实现：CommonGameInit::InitData(common_game/common_game_init.cpp:77,102-106) 仅万/条/筒置 has_shun 才 AddShunGroup；BaseData::AddShunGroup(mah_frame/base/base_data.cpp:772) 按 mah/mah+1/mah+2 建顺子组；Algorithm::TestChow(mah_frame/base/algorithm.cpp:3265-3267) 取 chow_groups[mah] 为空即 return false；ChowStep::Judge(mah_frame/com_basic/com_chow.cpp:70) 调用同一判定。字牌键无组且无可放开配置，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C05-002",
+   "name": "风牌箭牌可作碰杠",
+   "rule": "风牌、箭牌不是财神时可以碰、杠。",
+   "uiRequirement": "",
+   "uiInteraction": "风牌、箭牌的碰杠组合可在副露区正常显示，牌面资源表包含东南西北中发白。",
+   "notes": "客户端不校验牌张花色是否为风、箭；财神能否参与碰杠同样由服务端组合决定。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "别家打出牌后轮到自己响应",
+    "condition": "",
+    "action": "客户端按服务端组合把风牌、箭牌渲染成碰或杠",
+    "result": "玩家看到风牌、箭牌形成的刻子或杠显示在副露区"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：风牌、箭牌非财神时可碰、可杠。服务端实现：CommonGameInit::InitData(common_game/common_game_init.cpp:107-111) 对每个含风/箭牌值 AddKeGroup/AddKongGroup；BoxJokerStep::Execute(common_game/com_game/common_game_com_ju.cpp:259-260) 定财神后 InitJokerPungs/InitJokerKongs(mah_frame/base/base_data.cpp:1855/1868) 仅按实际财神牌值删组；BoxPungStep::Judge(common_game/com_game/common_game_com_pung.cpp:36) 直接取该组。非财神字牌可碰杠恒成立，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C05-003",
+   "name": "吃牌成立条件",
+   "rule": "上家刚打出的 1 张非财神，与手中 2 张非财神组成同花色连续顺子。",
+   "uiRequirement": "",
+   "uiInteraction": "副露区新增一组顺子，来源箭头指向被吃进的那张牌所在槽位。",
+   "notes": "客户端不校验是否上家打出、是否非财神；进牌来源只用于箭头指向与牌河移除。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "上家打出一张牌后自己获得吃牌权限",
+    "condition": "服务端下发由进张与两张手牌组成的顺子组合",
+    "action": "客户端把进张从牌河取走、手牌扣两张并在副露区生成三张顺子",
+    "result": "玩家看到自己副露多出一组顺子，箭头指向被吃的那张牌"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：上家刚打出的 1 张非财神与手中 2 张非财神组成同花色连续顺子。服务端实现：BoxChowStep::Judge(common_game/com_game/common_game_com_action.cpp:56) 吃仅限上家，ChowStep::DelJustChowFromHand(mah_frame/com_basic/com_chow.cpp:122) 复核 GetJustPlay/GetJustPlaySeat，InitJokerChows(base_data.cpp:1826) 剔除财神；但 only_pung_no_chow(game_logic.cpp:113-120) 可整段禁吃、enable_chow_forbid 默认 true(game_logic.cpp:131-133) 额外过滤无可打牌的吃法(common_game_com_action.cpp:86-100)，存在规则外附加条件，不能确证同构，维持原判。"
+  },
+  {
+   "id": "AT-ST-C05-004",
+   "name": "多组吃法选一组",
+   "rule": "多种合法组合时选 1 组。",
+   "uiRequirement": "多种合法组合时展示多组备选供玩家选择一组。",
+   "uiInteraction": "点击吃按钮弹出多吃选项池，每组并列展示完整三张牌并支持换行；同时出现取消按钮，点选一组立即发送吃牌并收起选项。",
+   "notes": "选项池复用多杠组件 ChooseGang，并按三张牌槽位动态补足牌面。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "吃牌权限包含多组合法组合时点击吃",
+    "condition": "可吃组合数量大于 1",
+    "action": "客户端列出每组三张供选择，点选后只发送这一组",
+    "result": "玩家看到多组三张顺子备选，点选一组即完成吃牌"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：多种合法组合时展示多组备选并选 1 组。服务端实现：Algorithm::TestChow(algorithm.cpp:3269-3281) 枚举全部合法组合，ChowStep::MakePower(com_chow.cpp:80-87) 整组下发，ActionStep::OnMsgChowC(com_action.cpp:201) 仅接受候选集内选择，BoxChowStep::Execute(common_game_com_action.cpp:123-125) 缺省回退单组。服务端选择机制成立，但客户端备选展示复用多杠组件 ChooseGang 的细节差异未由服务端证据消除，维持 partial。"
+  },
+  {
+   "id": "AT-ST-C05-005",
+   "name": "吃后不摸牌进入出牌",
+   "rule": "吃成功后不摸牌，进入出牌。",
+   "uiRequirement": "",
+   "uiInteraction": "吃完牌后操作按钮收起，手牌进入可出牌状态；此时待出末张按普通手牌布局，不占摸牌单放位。",
+   "notes": "客户端不主动摸牌；进入出牌依赖服务端随后下发的出牌权限。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "吃牌成立",
+    "condition": "",
+    "action": "客户端不发起摸牌，收起响应按钮并按出牌权限开放出牌",
+    "result": "玩家吃完后手牌保持在待出状态，可以直接选牌打出"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：吃成功后不摸牌，直接进入出牌。服务端实现：CommonGameInit::InitStepForBox(common_game/common_game_init.cpp:208) chow_step 后继仅 {action,play,ckong,tkong,wait} 无摸牌步骤；ChowStep::Execute(com_chow.cpp:45) 与 BoxChowStep::Execute(common_game_com_action.cpp:159) 均直接 ChangeNextStep 到出牌权限，未做摸牌。与规则同构，客户端不主动摸牌属正确行为。"
+  },
+  {
+   "id": "AT-ST-C05-006",
+   "name": "吃后同回合可加杠暗杠",
+   "rule": "吃成立的当前回合可以加杠或暗杠。",
+   "uiRequirement": "",
+   "uiInteraction": "吃完后仍出现杠按钮，点杠弹出可杠牌列表，选中即发送杠；对应手牌保持可点击。",
+   "notes": "客户端无法识别“吃碰后同回合”这一场景，完全依赖服务端在同回合给出杠权限。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "刚吃完牌的同一回合",
+    "condition": "服务端同时下发杠权限",
+    "action": "客户端显示杠按钮并列出可杠牌",
+    "result": "玩家吃完后还能看到杠按钮并直接杠"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：吃成立的当前回合可加杠或暗杠。服务端实现：InitStepForBox(common_game_init.cpp:208) chow 后继含 ckong_step/tkong_step；Step::ChangeNextStep(mah_frame/base/step.cpp:122-123) 置 pre_seat=吃牌者；CKongStep::InitPower/Judge(com_kong.cpp:233,237-252) 按该座位自身 stands 判暗杠；BoxTKongStep::Judge(common_game_com_kong.cpp:202-219) 按该座位碰组+手牌判加杠；IsXunLimitPungTKong 默认 false(base_config.cpp:15) 无额外拦截。与规则同构。"
+  },
+  {
+   "id": "AT-ST-C05-007",
+   "name": "碰牌成立条件",
+   "rule": "任意他人刚打出的 1 张非财神，与手中 2 张相同非财神组成刻子。",
+   "uiRequirement": "",
+   "uiInteraction": "副露区新增一组刻子，并刷新进牌来源箭头。",
+   "notes": "客户端不校验打出者、是否“刚打出”以及是否非财神。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "任意别家打出一张牌后自己获得碰牌权限",
+    "condition": "服务端下发由进张与两张手牌组成的刻子组合",
+    "action": "客户端把进张从牌河取走、手牌扣两张并生成三张刻子",
+    "result": "玩家看到副露多出一组刻子"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：任意他人刚打出的非财神与手中两张相同非财神组成刻子。服务端实现：BoxPungStep::Judge(common_game_com_pung.cpp:30,36) 仅排除出牌者并 TestPung，DelJustPungFromHand(com_pung.cpp:149) 复核刚打出。但 IsGuardDealerBlocked(common_game_algorithm.cpp:49-72) 在 guard_dealer 下禁碰，IsXianXianTanFull(:86-92) 在三摊闲闲满 2 摊时拦截，且 server_config.cpp:20 默认 SetEnableThreeTanBao(false) 与 client RuleHzmj.ts 默认 1 口径不一致，规则外限制未澄清，维持 unverified。"
+  },
+  {
+   "id": "AT-ST-C05-008",
+   "name": "碰只消耗两张手牌",
+   "rule": "手中有 3 张也只用 2 张。",
+   "uiRequirement": "",
+   "uiInteraction": "碰后副露显示三张，自己的手牌只少两张，手里仍剩一张同牌。",
+   "notes": "",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "碰牌成立",
+    "condition": "手上有三张相同牌",
+    "action": "客户端只从手牌扣掉两张",
+    "result": "玩家碰后手里仍剩一张同样的牌，副露显示三张"
+   },
+   "l7": "verified",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C05-009",
+   "name": "碰后不摸牌进入出牌",
+   "rule": "碰成功后不摸牌，进入出牌。",
+   "uiRequirement": "",
+   "uiInteraction": "碰完牌后操作按钮收起，手牌进入可出牌状态，待出末张不占摸牌单放位。",
+   "notes": "客户端不主动摸牌；进入出牌依赖服务端随后下发的出牌权限。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "碰牌成立",
+    "condition": "",
+    "action": "客户端不发起摸牌，收起响应按钮并按出牌权限开放出牌",
+    "result": "玩家碰完后手牌保持在待出状态，可以直接选牌打出"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：碰成功后不摸牌，直接进入出牌。服务端实现：InitStepForBox(common_game_init.cpp:209) pung_step 后继 {action,play,ckong,tkong,wait} 无摸牌步骤；PungStep::Execute(com_pung.cpp:52) 与 BoxPungStep::Execute(common_game_com_pung.cpp:109) 均 SendPung 后直接 ChangeNextStep，未摸牌。与规则同构，客户端等待出牌权限属正确行为。"
+  },
+  {
+   "id": "AT-ST-C05-010",
+   "name": "碰后同回合可加杠暗杠",
+   "rule": "碰成立的当前回合可以加杠或暗杠。",
+   "uiRequirement": "",
+   "uiInteraction": "碰完后同一回合仍出现杠按钮与可杠牌列表。",
+   "notes": "客户端无碰后同回合的特殊分支，只按服务端权限位显示杠。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "刚碰完牌的同一回合",
+    "condition": "服务端同时下发杠权限",
+    "action": "客户端显示杠按钮并列出可杠牌",
+    "result": "玩家碰完后还能看到杠按钮并直接杠"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：碰成立的当前回合可加杠或暗杠。服务端实现：InitStepForBox(common_game_init.cpp:209) pung 后继含 ckong_step/tkong_step；ChangeNextStep(step.cpp:122-123) 置 pre_seat=碰牌者；CKongStep::InitPower/Judge(com_kong.cpp:233,237-252) 按该座位自身 stands 判暗杠；BoxTKongStep::Judge(common_game_com_kong.cpp:202-219) 按该座位碰组+手牌判加杠；同巡限制默认关闭(base_config.cpp:15)。与规则同构。"
+  },
+  {
+   "id": "AT-ST-C05-011",
+   "name": "直杠成立条件",
+   "rule": "他人刚打出的 1 张非财神，与手中 3 张相同非财神。",
+   "uiRequirement": "",
+   "uiInteraction": "副露区出现一组四张明杠，播放杠动画与杠音效，其他座位记牌器同步减少。",
+   "notes": "客户端不校验进张来源与是否非财神。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "别家打出的牌与手中三张相同",
+    "condition": "服务端下发明杠权限与四张组合",
+    "action": "客户端把进张从牌河取走、手牌扣三张并生成四张杠",
+    "result": "玩家看到一组四张明杠并听到杠音效"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：他人刚打出的 1 张非财神 + 手中 3 张相同非财神构成直杠。服务端实现：BoxMKongStep::Judge（common_game/com_game/common_game_com_kong.cpp:15）跳过 GetJustPlaySeat() 座位并以 GetJustPlay() 进张，Algorithm::TestMKong（mah_frame/base/algorithm.cpp:3164）校验手中另有 3 张相同，MKongStep::DelJustMKongFromHand（mah_frame/com_basic/com_kong.cpp:154）复核来源座位与牌值，BaseData::InitJokerKongs（mah_frame/base/base_data.cpp:1868）把财神杠组整体剔除（SVE-ST-C05-P02-01~04）。四要素逐项对齐，无实现细节差异。"
+  },
+  {
+   "id": "AT-ST-C05-012",
+   "name": "直杠优先级裁决",
+   "rule": "直杠按优先级裁决后成立。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端没有杠与胡的优先级比较逻辑，只接收服务端最终裁决后的权限与结果消息。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C05-013",
+   "name": "杠后从牌墙尾部补牌",
+   "rule": "直杠成立后从牌墙尾部补牌。",
+   "uiRequirement": "",
+   "uiInteraction": "杠后牌墙从另一端少一张，玩家补进一张牌并播放摸牌动画。",
+   "notes": "客户端无法证明“杠后补牌一定走反向/牌尾”，抓牌方向由服务端下发。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "杠成立后",
+    "condition": "服务端下发抓牌消息并指定反向抓牌",
+    "action": "客户端按方向让牌墙另一端的牌消失并播放摸牌",
+    "result": "玩家看到杠后从牌墙另一头补进一张牌"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：直杠成立后从牌墙尾部补牌。服务端实现：SelfTakeStep::Execute（mah_frame/com_basic/com_take.cpp:206）在 state 含 kMahStateKong 时按 GetIsKongTakeAsc() 选向，TakeAfterKong（:19）非正序走 TakeDesc，BaseData::TakeDesc（mah_frame/base/base_data.cpp:734）取 BackWall 牌尾；is_kong_take_asc 构造默认 false（mah_frame/base/base_config.cpp:11）且 hzmj 无 JSON 下发入口（SVE-ST-C05-P02-12~17）。恒走牌墙尾部，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C05-014",
+   "name": "加杠成立条件",
+   "rule": "出牌阶段，已碰出的刻子手里有第 4 张非财神。",
+   "uiRequirement": "",
+   "uiInteraction": "原来位于副露区的碰变成四张的杠，副露组数不变。",
+   "notes": "“出牌阶段”与“手里有第 4 张”由服务端权限体现，客户端只做碰升级为杠的展示。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "自己出牌阶段，已碰出一组且手里有第 4 张",
+    "condition": "服务端给出补杠权限",
+    "action": "客户端把原碰在原位升级为四张杠并扣掉一张手牌",
+    "result": "玩家看到原来的碰变成杠，副露组数不变"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：出牌阶段，已碰出的刻子手里有第 4 张非财神即可加杠。服务端实现：BoxTKongStep::Judge（common_game/com_game/common_game_com_kong.cpp:202）在自家回合判定，Algorithm::TestTKong（mah_frame/base/algorithm.cpp:3220）要求 counts[m]==1 且已有 kCMFPung 刻子合成杠组，InitJokerKongs（mah_frame/base/base_data.cpp:1868）剔除财神，权限由 InitStepForBox（common_game/common_game_init.cpp:199）随摸牌分发（SVE-ST-C05-P02-18~21/04）。is_xun_limit_pung_tkong 默认 false 不构成额外限制，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C05-015",
+   "name": "加杠先征求抢杠胡",
+   "rule": "加杠先征求抢杠胡；有人抢杠胡则加杠不成立、不补牌。",
+   "uiRequirement": "",
+   "uiInteraction": "抢杠胡时胡牌动效按点炮式播放，结算流水显示“抢杠胡/被抢杠”。",
+   "notes": "未发现“加杠前先征求抢杠胡”的交互流程；抢杠胡依赖服务端直接下发胡牌结果，本地拆回碰函数未被调用。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "玩家点加杠后其他玩家可以胡这张牌",
+    "condition": "有人抢杠胡",
+    "action": "客户端等待服务端裁定，按抢杠胡展示胡牌结果",
+    "result": "玩家看到抢杠胡胡牌，原加杠没有成立"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：加杠先征求抢杠胡，有人抢杠胡则加杠不成立且不补牌。服务端实现：InitStepForBox（common_game/common_game_init.cpp:212）tkong→[self_take, hu] 预留抢杠窗口，BoxHuStep::JudgeRobKong（common_game/com_game/common_game_com_action.cpp:383）在 IsRobKong（base_config.cpp:43 默认 true）下判抢杠胡，BoxHuStep::CheckHu（:623）把 kCMFTKong 还原 kCMFPung 并 SetEndType(kEtHu)，走胡不再补牌（SVE-ST-C05-P02-22~27）。成立条件：enable_banker_discard_hu=1 且 banker_level_type=2（默认值下 BankerLevel>=3 过 CanDiscardHu，SVE-ST-C05-P02-28）；默认配置下与规则同构。"
+  },
+  {
+   "id": "AT-ST-C05-016",
+   "name": "无人抢杠后完成加杠补牌",
+   "rule": "无人胡再完成加杠并补牌。",
+   "uiRequirement": "",
+   "uiInteraction": "碰变杠后从牌墙补进一张牌。",
+   "notes": "客户端不判断是否“无人胡”，只按服务端消息执行。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "加杠无人抢杠胡",
+    "condition": "服务端下发补杠与抓牌消息",
+    "action": "客户端完成碰升级并执行补牌动画",
+    "result": "玩家看到杠成立并补进一张牌"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：无人抢杠胡后再完成加杠并补牌。服务端实现：BoxTKongStep::Execute（common_game/com_game/common_game_com_kong.cpp:237）CheckTKong 完成加杠后 ChangeNextStep 到 action，action 分发 [self_take_step, hu_step]（common_game/common_game_init.cpp:212），无人胡时 SelfTakeStep::Execute（mah_frame/com_basic/com_take.cpp:206）经 TakeAfterKong 补牌（SVE-ST-C05-P02-22/29/17）。流程与规则同构。"
+  },
+  {
+   "id": "AT-ST-C05-017",
+   "name": "暗杠成立与补牌",
+   "rule": "出牌阶段手中 4 张相同非财神，完成后补牌。",
+   "uiRequirement": "",
+   "uiInteraction": "副露区出现一组暗杠，播放暗杠动效与暗杠音效，随后补进一张牌。",
+   "notes": "“出牌阶段”与“非财神”由服务端约束，客户端只做扣四张与展示。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "自己出牌阶段手里有四张相同牌",
+    "condition": "服务端给出暗杠权限",
+    "action": "客户端手牌扣四张、副露区加一组暗杠，随后按服务端消息补牌",
+    "result": "玩家看到一组暗杠并补进一张牌"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：出牌阶段手中 4 张相同非财神即可暗杠，完成后补牌。服务端实现：BoxCKongStep::Judge（common_game/com_game/common_game_com_kong.cpp:132）自家回合判定，Algorithm::TestCKong（mah_frame/base/algorithm.cpp:3190）counts==4 生成 kCMFCKong，InitJokerKongs（mah_frame/base/base_data.cpp:1868）剔除财神，ckong_step->AddNext(self_take_step)（common_game/common_game_init.cpp:211）完成补牌（SVE-ST-C05-P02-30~32/04）。与规则同构。"
+  },
+  {
+   "id": "AT-ST-C05-018",
+   "name": "暗杠正反面展示",
+   "rule": "暗杠下层 3 张牌背、顶张正面，四家都能认出牌面。",
+   "uiRequirement": "暗杠下层 3 张牌背、顶张正面，四家都能认出牌面。",
+   "uiInteraction": "暗杠在副露区显示为一组牌，底层为牌背、最上一张为正面。",
+   "notes": "具体牌背与顶张的渲染由公共麻将组合组件完成，组件源码不在本仓库，无法直接核对“3 张牌背 + 1 张正面”。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "暗杠成立",
+    "condition": "",
+    "action": "客户端在副露区按原始顺序摆放四张，底层用牌背、顶张用正面",
+    "result": "玩家和其他三家都能看到暗杠牌面，但底层三张仍是盖着的"
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C05-019",
+   "name": "暗杠放在碰杠区不计副露",
+   "rule": "暗杠放在碰杠区，但不计副露。",
+   "uiRequirement": "",
+   "uiInteraction": "暗杠显示在碰杠区；摊计数与三摊提示按服务端消息刷新。",
+   "notes": "客户端不区分暗杠是否计摊，只展示服务端摊计数。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "暗杠成立",
+    "condition": "",
+    "action": "客户端把暗杠放进座位旁的碰杠区，摊计数按服务端消息展示",
+    "result": "玩家看到暗杠显示在碰杠区，三摊计数不受暗杠影响"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：暗杠放在碰杠区但不计副露。服务端实现：BoxCKongStep::Execute（common_game/com_game/common_game_com_kong.cpp:183）注释「暗杠非对外操作，不记摊」且全程无 SetTanCount 调用，对照 BoxMKongStep::Execute（同文件:98）在 pung_as_tan 时才 SetTanCount+1（SVE-ST-C05-P02-35/36/37）；暗杠组合仍经 SendKong 进入碰杠区（SVE-ST-C05-P02-33）。放区与不计摊两点均被直证。"
+  },
+  {
+   "id": "AT-ST-C05-020",
+   "name": "吃碰当回合可加杠暗杠",
+   "rule": "吃或碰刚成立的当前回合，同样可以加杠、暗杠。",
+   "uiRequirement": "",
+   "uiInteraction": "吃碰后同一回合出现杠按钮与多杠选项，相关手牌保持可点击。",
+   "notes": "该句与吃、碰两条中的同义句重复，客户端无独立实现。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "刚吃或碰完的同一回合",
+    "condition": "服务端同回合给出杠权限",
+    "action": "客户端显示杠按钮并允许选择暗杠或加杠",
+    "result": "玩家在同回合仍能杠"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：吃或碰刚成立的当前回合同样可以加杠、暗杠。服务端实现：InitStepForBox 中 chow_step->AddNexts(action_step, {play_step, ckong_step, tkong_step, wait_step})（common_game/common_game_init.cpp:208）与 pung_step->AddNexts（:209）同构，Step::AddNexts（mah_frame/base/step.cpp:36）登记后继权限步（SVE-ST-C05-P02-38~40）。吃碰当回合即分发暗杠/加杠权限，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C05-021",
+   "name": "四张相同即可杠",
+   "rule": "四张相同就可以杠。",
+   "uiRequirement": "",
+   "uiInteraction": "出现杠按钮时按可杠牌值展示单张或列表，点选某项即发送杠。",
+   "notes": "客户端不判断“四张相同”，也不校验是否为非财神，可杠项完全来自服务端组合。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "自己回合出现可杠牌",
+    "condition": "服务端给出杠权限与对应组合",
+    "action": "客户端把每个杠组合列成一个可杠项，多时展示列表",
+    "result": "玩家看到杠按钮和可选的可杠牌"
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C05-022",
+   "name": "杠后不再按七对结算",
+   "rule": "杠完这条就不再按七对结算。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端结算只按服务端下发的番型与组合展示，没有“杠后不判七对”的逻辑。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：杠完这条就不再按七对结算。服务端实现：CommonGameFanType::IsFanTypeQiDui（common_game/common_game_fan_type.cpp:332）要求 sep_type_==kSepType2N 且 CountQuadPairGroups（:63）为 0，出现 4 张相同组即转豪七系列，杠子移出手牌后张数也不再满足 2N（SVE-ST-C05-P02-41/42）。普通七对被排除，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C05-023",
+   "name": "飘财限制下不能吃",
+   "rule": "受尚未解除的飘财限制时，不能吃。",
+   "uiRequirement": "",
+   "uiInteraction": "飘计数增加时播放飘动效；吃按钮是否可见取决于服务端权限位。",
+   "notes": "无飘状态到吃权限的本地映射，规则只能通过服务端不下发吃位实现。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "自己处于飘财限制中，别家打出可吃的牌",
+    "condition": "服务端未给出吃牌权限",
+    "action": "客户端不显示吃按钮",
+    "result": "玩家看不到吃牌选项"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：受尚未解除的飘财限制时不能吃。服务端实现：BoxChowStep::Judge 在生成吃组合前执行 if (IsPiaoRestricted(seat)) return false（SVE-ST-C05-P03-01，common_game/com_game/common_game_com_action.cpp:60）；IsPiaoRestricted 为 piao_owner_seat 有效且非所有者即受限的固定判定（SVE-ST-C05-P03-02，common_game/common_game_server_data.h:110-112），无玩法配置开关。受限口径与“尚未解除的飘财限制”对应，判定点位于服务端吃位生成入口，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C05-024",
+   "name": "飘财限制下不能碰",
+   "rule": "受尚未解除的飘财限制时，不能碰。",
+   "uiRequirement": "",
+   "uiInteraction": "飘财限制期间若服务端不给碰位，则碰按钮不出现。",
+   "notes": "客户端不读飘计数来拦截碰。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "自己处于飘财限制中，别家打出可碰的牌",
+    "condition": "服务端未给出碰牌权限",
+    "action": "客户端不显示碰按钮",
+    "result": "玩家看不到碰牌选项"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：受尚未解除的飘财限制时不能碰。服务端实现：BoxPungStep::Judge 遍历候选座位时 if (IsPiaoRestricted(iseat)) continue（SVE-ST-C05-P03-03，common_game/com_game/common_game_com_pung.cpp:16），不生成碰组合；受限判定同 IsPiaoRestricted（SVE-ST-C05-P03-02，common_game/common_game_server_data.h:110-112）。禁碰在服务端组合生成阶段成立，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C05-025",
+   "name": "飘财限制下不能直杠",
+   "rule": "受尚未解除的飘财限制时，不能直杠。",
+   "uiRequirement": "",
+   "uiInteraction": "飘财限制期间若服务端不给杠位或只给暗杠组合，则杠按钮不出现或只列暗杠。",
+   "notes": "明杠与暗杠共用一个杠位，客户端无法按权限位区分，只能通过服务端下发的杠组合类型区分。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "自己处于飘财限制中，别家打出可直杠的牌",
+    "condition": "服务端不给直杠组合或整体不给杠位",
+    "action": "客户端不显示直杠选项",
+    "result": "玩家看不到直杠（明杠）选项"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：受尚未解除的飘财限制时不能直杠（明杠）。服务端实现：BoxMKongStep::Judge 遍历候选座位时 if (IsPiaoRestricted(iseat)) continue（SVE-ST-C05-P03-04，common_game/com_game/common_game_com_kong.cpp:21），不生成明杠组合；判定来源同 IsPiaoRestricted（SVE-ST-C05-P03-02，common_game/common_game_server_data.h:110-112）。直杠走明杠步骤且被同一受限判定拦截，与规则同构；暗杠不受影响与 AT-ST-C05-027 的分流一致。"
+  },
+  {
+   "id": "AT-ST-C05-026",
+   "name": "飘财限制下不能加杠",
+   "rule": "受尚未解除的飘财限制时，不能加杠。",
+   "uiRequirement": "",
+   "uiInteraction": "飘财限制期间若服务端不给补杠组合，则玩家看不到加杠选项。",
+   "notes": "客户端不读飘计数来拦截补杠。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "自己处于飘财限制中，且已碰出一组、手里有第 4 张",
+    "condition": "服务端不给补杠组合",
+    "action": "客户端不显示加杠选项",
+    "result": "玩家看不到加杠（补杠）选项"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：受尚未解除的飘财限制时不能加杠（补杠）。服务端实现：BoxTKongStep::Judge 首行 if (IsPiaoRestricted(tkong_seat_)) return false（SVE-ST-C05-P03-05，common_game/com_game/common_game_com_kong.cpp:203），不生成加杠组合；判定来源同 IsPiaoRestricted（SVE-ST-C05-P03-02，common_game/common_game_server_data.h:110-112）。补杠入口直接拒绝，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C05-027",
+   "name": "飘财限制下仍可暗杠",
+   "rule": "受尚未解除的飘财限制时，仍可暗杠。",
+   "uiRequirement": "",
+   "uiInteraction": "飘财限制期间仍可能出现杠按钮，点开只列出可暗杠的牌。",
+   "notes": "客户端不判断飘状态，能否暗杠取决于服务端是否下发暗杠组合。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "自己处于飘财限制中且手里有四张相同牌",
+    "condition": "服务端仍下发暗杠组合",
+    "action": "客户端保留杠按钮并只列出暗杠项",
+    "result": "玩家在飘财限制期间仍能选择暗杠"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：受尚未解除的飘财限制时仍可暗杠。服务端实现：BoxCKongStep::Judge 仅校验 IsWaitSeat/IsBrokenSeat/牌墙余量与 TestCKong，未消费 IsPiaoRestricted，并注释“飘财窗口不限制暗杠（仅禁吃/碰/明杠/补杠）”（SVE-ST-C05-P03-06，common_game/com_game/common_game_com_kong.cpp:132-147），与禁吃碰明杠补杠的受限判定（SVE-ST-C05-P03-02）形成显式分流。实现与规则同构（仍可暗杠）。"
+  },
+  {
+   "id": "AT-ST-C05-028",
+   "name": "暗杠后只能打补进的牌",
+   "rule": "暗杠后只能打尾墩刚补进的那一张。",
+   "uiRequirement": "",
+   "uiInteraction": "暗杠补牌后若服务端下发禁打列表，只有刚补进的那张可点，其余置灰。",
+   "notes": "客户端只有通用的禁打手牌/禁打单放机制，无法证明该限制就是“暗杠后只能打补进牌”。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "暗杠后补进一张牌并进入出牌",
+    "condition": "服务端下发禁打手牌列表",
+    "action": "客户端把被禁的牌置灰并拦截点击",
+    "result": "玩家只能打刚补进的那张牌，其他牌点了提示禁打"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：飘财限制下暗杠后只能打尾墩刚补进的那一张。服务端实现链路：BoxCKongStep::Judge 放行受限座位暗杠（SVE-ST-C05-P03-06，common_game/com_game/common_game_com_kong.cpp:132-147）→ SelfTakeStep::Execute 按 is_kong_take_asc 取方向（SVE-ST-C05-P03-09，mah_frame/com_basic/com_take.cpp:219-221；hzmj 未配置该 key → 默认 false → kTDDescTake 尾墩）→ TakeAfterKong 把补进牌写入 danfang 并 SetTakes（SVE-ST-C05-P03-08，mah_frame/com_basic/com_take.cpp:46）→ BoxPlayStep::MakePower 在 IsPiaoRestricted 且 CountDanFang>0 时把全部手牌写入 play_limit.hands 而 danfang 留空（SVE-ST-C05-P03-07，common_game/com_game/common_game_com_play.cpp:23-26）→ ActionStep::OnMsgPlayC 用 IsLimitMah 拒绝黑名单手牌（SVE-ST-C05-P03-10，mah_frame/com_basic/com_action.cpp:266）。配合好友房恒有财神、飘财窗口不可配置关闭（SVE-ST-C05-P03-11，hzmj_server/server_config.cpp:16），构成“只能打补进牌且来自尾墩”的固定链路；该原子的飘财受限语境与本特征组 scope（暗杠后出牌范围）一致，与规则同构。"
+  }
+ ]
+}

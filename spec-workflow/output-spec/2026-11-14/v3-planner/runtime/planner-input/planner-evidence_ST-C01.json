@@ -1,0 +1,149 @@
+{
+ "stageId": "ST-C01",
+ "title": "定庄与轮庄",
+ "sourceTitle": "开局 > 定庄与轮庄",
+ "fromLine": 22,
+ "toLine": 30,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 8,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C01-001",
+   "name": "首局随机坐庄",
+   "rule": "首局四名玩家中随机坐庄。",
+   "uiRequirement": "",
+   "uiInteraction": "庄家玩家头像左上角出现「庄」字标记，头像庄标志控制器切到对应档位页。",
+   "notes": "客户端未使用局数据里的首局庄座位字段 first_zhuang，只用当前庄座位 zhuang；随机抽取方式没有任何客户端代码可证。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "一小局开始前决定本局由谁坐庄",
+    "condition": "整场第一小局、四名玩家都已入座",
+    "action": "游戏把系统选中的庄家记下来，并在这名玩家头像旁挂上庄家标记",
+    "result": "玩家看到其中一名玩家头像出现「庄」字标记"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求：首局四名玩家中随机坐庄。服务端：创房下发 first_banker_type=0（RuleHzmj.ts:21，UI 未暴露，恒 0）→ BoxZhuangStep::JudgeDingZhuang 走 rand() % GetPlayerCount()（common_game/com_game/common_game_com_ju.cpp:129），再 SetZhuang/SetFirstZhuang（:132-133）；InitConfigByBox 同默认 0（hzmj_server/server_config.cpp:13）。四人对局即四选一随机，与规则同构（SVE-ST-C01-P01-01/03/04）。"
+  },
+  {
+   "id": "AT-ST-C01-002",
+   "name": "掷骰、发牌前确定庄家",
+   "rule": "掷骰、发牌前已经确定庄家。",
+   "uiRequirement": "",
+   "uiInteraction": "正常开局时庄家标记随局数据刷新；断线重连进入发牌帧时骰子、四家手牌与庄家标记同时呈现。",
+   "notes": "状态枚举顺序只代表流程定义；运行时先定庄再掷骰发牌由服务端保证，客户端未做时序校验，断线帧中三者同时出现。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "一局刚开始、骰子还没掷出",
+    "condition": "本局庄家已经确定",
+    "action": "游戏先标出庄家，再播放掷骰与发牌",
+    "result": "玩家在骰子和手牌出现之前就能看到庄家标记；断线回来时骰子、手牌、庄家标记同时出现"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：掷骰、发牌前已经确定庄家。服务端：步骤链固定 start→zhuang→chip（common_game/common_game_init.cpp:179-180，SVE-ST-C01-P01-05）；ZhuangStep::Execute 先 JudgeZhuang/AddAllState(kMahStateZhuang)/SendJuData，再 ChangeNextStep（mah_frame/com_basic/com_ju.cpp:43-51，SVE-06）；ChipStep::Execute 才 RandomChip 掷骰、MixMah 洗牌（:166-171，SVE-07）。定庄恒早于掷骰发牌，时序由服务端步骤链保证（客户端断线帧同时出现不构成反证）。"
+  },
+  {
+   "id": "AT-ST-C01-003",
+   "name": "胡牌者接庄",
+   "rule": "有人胡牌时，下一小局由胡牌者坐庄。",
+   "uiRequirement": "",
+   "uiInteraction": "新一局开局时庄家标记移到上一局胡牌者头像上；结算界面也按庄家座位给对应行显示庄标志。",
+   "notes": "客户端无「胡牌者等于下一局庄家」的推导逻辑，完全依赖服务端下发的庄家座位。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "上一小局有人胡牌、进入下一小局",
+    "condition": "上一小局以胡牌结束",
+    "action": "游戏按系统给出的庄家，更新四家头像上的庄家标记",
+    "result": "玩家看到上一局胡牌的人头像上出现庄家标记"
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C01-004",
+   "name": "庄家自摸连庄",
+   "rule": "庄家自己胡牌为连庄。",
+   "uiRequirement": "",
+   "uiInteraction": "结算流水出现「连庄」条目；庄家头像与结算行的庄标志保持档位图标不消失。",
+   "notes": "局数据处理把牢庄档位同时写入连庄次数（GameJuDataCmd:34），局数据的 lian_zhuang 字段从未被使用；连庄次数与牢庄档位混用，结算庄标志实际显示牢庄档位。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "庄家自己胡牌结束本小局",
+    "condition": "胡牌的人正是本局庄家",
+    "action": "游戏不移动庄家标记，并在结算里列出连庄",
+    "result": "玩家看到庄家标记仍在原庄家头上，结算流水出现「连庄」"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：庄家自己胡牌为连庄。服务端：winner_seat==last_banker 时 SetZhuang(last_banker)+AddLianZhuang（common_game/com_game/common_game_com_ju.cpp:168-170；rotate_banker_type=1 分支 :177-179 同口径，SVE-ST-C01-P01-11）；结算侧 banker_hu 时档位+1、连庄计数+1（common_game/com_game/common_game_com_result.cpp:362-375，SVE-12），并下发 lian_zhuang/banker_level（common_game/com_game/common_game_context.cpp:456，SVE-14）。连庄判定与规则同构；客户端 GameJuDataCmd:34 以牢庄档位代连庄次数属客户端取数问题，不改写服务端判定。"
+  },
+  {
+   "id": "AT-ST-C01-005",
+   "name": "流局原庄连庄",
+   "rule": "流局时原庄连庄。",
+   "uiRequirement": "",
+   "uiInteraction": "结算界面流局行按输/平样式显示，不展示胡牌信息。",
+   "notes": "本地未找到注册的流局命令类，实际处理可能在仓库外的公共模块；未发现原庄连庄相关的客户端处理。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "本小局打到无人胡牌结束",
+    "condition": "牌墙剩余不足、本局判流局",
+    "action": "游戏按流局展示本局结算画面",
+    "result": "玩家看到本局以流局结算，没有胡牌方"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求：流局时原庄连庄。服务端：end_type != kEtHu 时按 draw_continue_banker（创房下发 1，RuleHzmj.ts:25；服务端默认 true，hzmj_server/server_config.cpp:15）执行 SetZhuang(last_banker)+AddLianZhuang（common_game/com_game/common_game_com_ju.cpp:144-147，SVE-ST-C01-P01-15）；结算侧 is_draw 时 banker_continues 取 draw_continue_banker（common_game/com_game/common_game_com_result.cpp:364，SVE-16）。流局原庄连庄成立（客户端未注册流局命令不影响服务端判定）。"
+  },
+  {
+   "id": "AT-ST-C01-006",
+   "name": "首庄新庄连庄都是三牢",
+   "rule": "首庄、新庄、连庄都是三牢。",
+   "uiRequirement": "",
+   "uiInteraction": "庄家头像庄字标记按档位切换不同图标（1/2/3 档），升庄时播放加庄动画并刷新档位。",
+   "notes": "客户端按服务端下发档位显示，未强制三牢；非萧山房也会接收升庄广播并派发加庄表现（GameBankerLevelUpCmd:31-32），档位最终取值依赖服务端。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "一小局确定庄家",
+    "condition": "首庄、换庄后的新庄或连庄",
+    "action": "游戏记下系统给出的牢庄档位，并按档位在庄家标记上显示对应图标",
+    "result": "玩家看到庄家标记显示当前牢庄档位图标"
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C01-007",
+   "name": "庄闲倍数固定8倍",
+   "rule": "庄闲倍数固定 8 倍。",
+   "uiRequirement": "",
+   "uiInteraction": "结算界面直接显示各家得分，没有单列「8倍」倍数文案。",
+   "notes": "庄闲倍数由档位左移计算（1 档 2 倍、2 档 4 倍、3 档 8 倍），并非固定 8 倍；匹配提示文案还写有平庄 2 倍、二牢 4 倍、三牢 8 倍的递增说明，但该文案只在匹配场展示，好友房不走匹配提示。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "本小局结算庄家与闲家的输赢",
+    "condition": "本局存在庄家与三名闲家",
+    "action": "游戏按牢庄档位换算庄闲倍数，分数直接采用系统算好的结果",
+    "result": "玩家看到按庄闲关系算出的分数，界面不单独显示固定8倍"
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C01-008",
+   "name": "三牢封顶不再增加",
+   "rule": "三牢不再增加。",
+   "uiRequirement": "",
+   "uiInteraction": "杭州房头像庄字图标最多显示三档；萧山数字庄标志按档位显示 xN，档位更大时也不截断。",
+   "notes": "杭州房靠图标页数天然限制在三档，结算处再钳制到 3；数字庄标志无上限，若服务端下发超过三牢会显示 x4 及以上，客户端未做封顶拦截。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "庄家连续坐庄、档位继续变化",
+    "condition": "庄家再次连庄",
+    "action": "游戏直接显示系统给出的档位，图标最多三档，数字标记不封顶",
+    "result": "玩家看到庄家标记档位跟着系统数值变化，没有出现超过三牢被拦下的表现"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：三牢不再增加。服务端：hzmj 层（game_logic.cpp）无 banker_continue_type 解析入口、客户端创房不下发该键，取值恒为 CommonGameServerConfig::Reset 的 0（common_game/common_game_server_config.cpp:12，SVE-ST-C01-P01-27）；UpdateBankerLevel 在 type==0 时仅 level<3 才 ++level，三牢封顶（common_game/com_game/common_game_com_result.cpp:369-371，SVE-26）；cap=50 分支仅萧山玩法（xiaoshanmj_server/com_game/xiaoshanmj_com_banker_level.cpp:37，SVE-28）不作用于 hzmj 好友房。"
+  }
+ ]
+}

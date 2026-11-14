@@ -1,0 +1,217 @@
+{
+ "stageId": "ST-C03",
+ "title": "发牌",
+ "sourceTitle": "开局 > 发牌",
+ "fromLine": 37,
+ "toLine": 46,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 12,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C03-001",
+   "name": "牌墙头部庄家起逆时针发牌",
+   "rule": "从牌墙头部、庄家起、按逆时针发牌。",
+   "uiRequirement": "",
+   "uiInteraction": "掷骰动画后，四个座位按本地座位索引 0~3 依次播放发牌动画。",
+   "notes": "客户端不区分庄家起手，也不校验逆时针；发牌起点由服务端下发的牌墙正/反向索引与骰子决定，发牌动画按本地座位 0~3 顺序循环播放（0 为本人）。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "一局开始、掷出骰子之后",
+    "condition": "牌墙已就位且庄家已确定",
+    "action": "从牌墙靠前的一端连续取走整副要发的牌，并按座位轮流把牌发到四家",
+    "result": "玩家先看到掷骰动画，再看到四个座位依次收到牌，牌墙靠前的一段被取走"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：从牌墙头部、庄家起、按逆时针发牌。服务端实现：mah_frame/com_basic/com_ju.cpp:216 开牌位置 seat=(GetZhuang()+(chip_num-1)%4)%4，以庄位为基准叠加骰子和偏移；mah_frame/base/base_data.cpp:727 TakeAsc 恒从 walls_.front() 取牌（头部成立）；mah_frame/base/base_data.cpp:755 GetNextAsc 递减且 com_ju.cpp:216 注释「索引为逆时针计数」（逆时针成立）。头部取牌与逆时针可被服务端确证，但起点由骰子偏移决定而非严格「庄家起」，属细节差异。"
+  },
+  {
+   "id": "AT-ST-C03-002",
+   "name": "每人4张发3轮各12张",
+   "rule": "每人 4 张，发 3 轮，各 12 张。",
+   "uiRequirement": "",
+   "uiInteraction": "自己的手牌以随机顺序逐张落位，落位结束后自动理成有序手牌；其他座位显示整手牌背面。",
+   "notes": "客户端没有\"每人4张发3轮\"的分轮逻辑，整手牌一次性发完且动画顺序为随机打乱；四张为一轮的发牌节奏无法由客户端证实。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "发牌开始",
+    "condition": "",
+    "action": "把整手牌一次性发到每个座位，自己的牌以随机顺序一张张出现，发完再按财神规则排序",
+    "result": "玩家看到手牌连续落下后自动整理成有序牌型"
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C03-003",
+   "name": "再每人1张各13张",
+   "rule": "再每人 1 张，各 13 张。",
+   "uiRequirement": "",
+   "uiInteraction": "四家手牌数量一致地铺开，自己为明牌、其他家为牌背。",
+   "notes": "客户端按服务端下发的 hands 原样铺牌，未校验每人为13张；13张只能由起手张数常量与取牌公式间接印证。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "开局发牌时收到各座位手牌数据",
+    "condition": "",
+    "action": "把每个座位的手牌原样铺到对应位置，不额外补牌，也不核对张数",
+    "result": "玩家看到四家各有相同数量的手牌，自己为明牌"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：再每人 1 张，各 13 张。服务端实现：com_ju.cpp:279 TakeFirstStep::TakeFirst 以 GetFirstCount()-1 为上限逐座位补牌（SVE-ST-C03-P01-04）；mah_frame/base/base_config.cpp:6 + macros.h:213 DEF_FIRST_COUNT=14，故每人补到 13 张（SVE-ST-C03-P01-06）；base_context.cpp:269 BaseContext::SendTakeFirst 将各座位 hands 原样下发（SVE-ST-C03-P01-07）。四人局每人 13 张与规则同构。"
+  },
+  {
+   "id": "AT-ST-C03-004",
+   "name": "再给庄家1张共14张",
+   "rule": "再给庄家 1 张。庄家 14 张，三名闲家各 13 张。",
+   "uiRequirement": "",
+   "uiInteraction": "自己的手牌发完后为多一张的整手牌；其他座位仍是牌背，看不出具体张数差异。",
+   "notes": "客户端未判断首次抓牌者是否为庄家，只对抓牌座位手牌+1；庄家身份来自局数据。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "开局第一次抓牌",
+    "condition": "该次抓牌属于开局的第一次取牌",
+    "action": "给抓牌那一家手牌再加一张，并与整手牌一起发出",
+    "result": "玩家看到庄家比别人多一张牌，庄家本人看到自己为十四张"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：再给庄家 1 张，庄家 14 张、三名闲家各 13 张。服务端实现：mah_frame/com_basic/com_take.cpp:259 ZhuangSelfTakeStep::Execute 以 TakeFlag::kTFBanker 为庄家再取 1 张并下发（SVE-ST-C03-P01-08）；common_game/com_game/common_game_com_ju.cpp:288 BoxZhuangSelfTakeStep::Execute 走同一庄家摸牌路径（SVE-ST-C03-P01-09）；庄位由 com_ju.cpp:116 BoxZhuangStep::JudgeZhuang 确定（SVE-ST-C03-P01-10）。庄 14 / 闲 13 恒定，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C03-005",
+   "name": "共发出53张",
+   "rule": "共发出 53 张。",
+   "uiRequirement": "",
+   "uiInteraction": "发牌动画期间牌墙靠前一段牌被取走并隐藏。",
+   "notes": "53 张由\"每家手牌数×4+1\"推算得出，客户端不存在硬编码 53，也没有发出张数的校验。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "开局第一次取牌",
+    "condition": "本次取牌发生在开局发牌阶段",
+    "action": "从牌墙一次性取走\"每家手牌数乘人数再加一\"张牌",
+    "result": "牌墙一次性少掉一大段，桌面剩余张数随之更新"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：共发出 53 张。服务端实现：com_ju.cpp:279 TakeFirstStep::TakeFirst 按 GetPlayerCount 逐座位发 13 张（SVE-ST-C03-P01-04）+ com_take.cpp:259 庄家额外 1 张（SVE-ST-C03-P01-08）；common_game/common_game_logic.cpp:477 InitTableData 取 GetChairCount 设玩家数，创房默认 4 人（SVE-ST-C03-P01-11）。4 人局共发出 13×4+1=53 张，与规则同构（2/3 人局为 40/27 张，属参数口径差异）。"
+  },
+  {
+   "id": "AT-ST-C03-006",
+   "name": "余83张",
+   "rule": "余 83 张。",
+   "uiRequirement": "",
+   "uiInteraction": "桌面右侧剩余张数面板显示当前剩余张数；剩余数到达首出判定值时显示庄家/闲家首出提示并收起骰子。",
+   "notes": "剩余张数显示在桌面右侧；83 由\"牌墙总数136－起手13×4－1\"得到，与模板\"余83张\"一致，但136 依赖服务端下发的牌墙总数。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "发牌取牌完成",
+    "condition": "牌墙总数与每人起手张数为标准配置",
+    "action": "在桌面侧边显示牌墙剩余张数，并用该数值判断是否进入首出阶段",
+    "result": "玩家看到剩余张数显示为八十三，同时出现庄家先出的提示"
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C03-007",
+   "name": "庄家用14张直接进入首轮",
+   "rule": "庄家用这 14 张直接进入首轮。",
+   "uiRequirement": "",
+   "uiInteraction": "发牌结束立即出现首出提示（庄家/闲家两种文案）与出牌按钮，玩家可直接点牌打出。",
+   "notes": "庄家进入首轮由服务端权限驱动；客户端只负责发牌结束、状态回切与首出提示显示。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "发牌动画结束",
+    "condition": "发牌完成、轮到首轮出牌",
+    "action": "结束发牌表现并通知可以继续，显示庄家/闲家首出提示并允许出牌",
+    "result": "玩家看到发牌结束后直接进入出牌阶段，并看到\"庄\"或\"闲\"的首出提示"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：庄家用这 14 张直接进入首轮。服务端实现：common_game/com_game/common_game_com_take.cpp:21 BoxFirstWaitStep::Execute 在庄家 14 张起手阶段即下发听牌提示并以 ChangeNextStep(GetSvrData()->GetZhuang(), GetNextStep()) 分发到 action（SVE-ST-C03-P01-15）；common_game/common_game_init.cpp:193 InitStepForBox 中 first_wait_step 直连 action_step（SVE-ST-C03-P01-16）。步骤链与规则同构。"
+  },
+  {
+   "id": "AT-ST-C03-008",
+   "name": "庄家首轮不再摸牌",
+   "rule": "庄家不再摸牌。",
+   "uiRequirement": "",
+   "uiInteraction": "庄家发牌结束后没有额外的摸牌动画与摸牌位牌张，直接可点手牌打出。",
+   "notes": "客户端没有\"庄家不摸牌\"的显式判断，只是因为首次抓牌同时承担发牌动画，才不额外播摸牌表现。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "庄家第一次行动",
+    "condition": "首轮由庄家先出",
+    "action": "开局第一次取牌已把多出的一张并入整手牌，之后不再为庄家单独摸牌",
+    "result": "玩家看到庄家发牌结束后没有摸牌动画，直接可以选牌打出"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：庄家首轮不再摸牌。服务端实现：com_take.cpp:259 ZhuangSelfTakeStep::Execute 一次取完第 14 张（SVE-ST-C03-P01-08），common_game_com_ju.cpp:288 BoxZhuangSelfTakeStep::Execute 取后即进入等待（SVE-ST-C03-P01-09）；common_game_init.cpp:193 步骤链 take_first→zhuang_self→first_wait→action，首轮前无 NextTakeStep（SVE-ST-C03-P01-16）。与规则同构。"
+  },
+  {
+   "id": "AT-ST-C03-009",
+   "name": "理牌后立即给出自摸",
+   "rule": "理牌后若已满足自摸，立即给出【自摸】。",
+   "uiRequirement": "立即给出【自摸】。",
+   "uiInteraction": "胡按钮出现时按胡牌类型切换表现，自摸类型显示为自摸样式，并在按钮上展示胡的牌与倍数。",
+   "notes": "自摸样式、胡的牌与倍数均来自服务端权限消息；客户端没有发牌后自摸判定，\"立即\"的时机由服务端控制，无法由客户端证实。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "发牌理牌完成并收到可胡提示",
+    "condition": "理牌后手牌已构成自摸",
+    "action": "亮出胡按钮并按自摸样式呈现，等待玩家点击后上报胡牌",
+    "result": "玩家看到带自摸样式、标注胡牌与倍数的胡按钮，可点击胡牌"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：理牌后若已满足自摸，立即给出【自摸】。服务端实现：common_game/com_game/common_game_com_action.cpp:259 BoxHuStep::Judge 将起手状态 kHzmjStateFirstWait 视同 kMahStateTake 走自摸判胡（SVE-ST-C03-P01-17），common_game_com_action.cpp:402 BoxHuStep::TestHu 成牌即 AddHuPowerSeats 授胡权限（SVE-ST-C03-P01-18）；起手状态由 common_game_com_take.cpp:21 first_wait 直接进入（SVE-ST-C03-P01-15），发牌结束即判无需等待额外时机，与「立即」同构。"
+  },
+  {
+   "id": "AT-ST-C03-010",
+   "name": "同时给出过按钮",
+   "rule": "同时给出【过】。",
+   "uiRequirement": "立即给出【过】。",
+   "uiInteraction": "过按钮与胡按钮同时出现在操作按钮组中，点击过按钮后按钮收起、手牌灰态清除。",
+   "notes": "过按钮与胡按钮同页显示，点击即上行取消；是否在发牌理牌后\"同时\"出现取决于服务端权限下发。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "玩家同时获得胡与放弃的选择权",
+    "condition": "服务端下发包含放弃位的操作权限",
+    "action": "显示过按钮，玩家点击后上报放弃本次操作并收起按钮",
+    "result": "玩家看到过按钮与胡按钮并列，点击过后按钮收起"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：同时给出【过】。服务端实现：mah_frame/com_basic/com_action.cpp:816 ActionStep::GetPowerAndCombs 在非出牌权限且 power>0 时追加 kPowerIdCancelS（SVE-ST-C03-P01-20），com_action.cpp:983 ActionStep::SendPowerToClient 将权限与时钟同批下发（SVE-ST-C03-P01-19），common_game_com_action.cpp:40 BoxActionStep::OnMsgCancel 处理过（SVE-ST-C03-P01-21）。过与胡权限同批下发，与「同时给出」同构。"
+  },
+  {
+   "id": "AT-ST-C03-011",
+   "name": "爆头按其余13张判断",
+   "rule": "爆头按其余 13 张判断。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端不做爆头牌型判定，只在收到胡权限时记录\"本回合有胡权限\"，爆头名称与样式来自服务端番型；未体现\"按其余13张\"的判定基数。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：爆头按其余 13 张判断。服务端实现：common_game/common_game_fan_type.cpp:250 IsFanTypeBaoTou 要求自摸且以进张（danfang）与财神成将（SVE-ST-C03-P01-22），common_game_fan_type.cpp:23 IsDanFangWithCai 以 danfang+财神为将、其余手牌按 3N2/2N 拆解判定（SVE-ST-C03-P01-23），common_game_init.cpp:359 AddFanType 恒注册爆头番型（SVE-ST-C03-P01-24）。即先扣除进张再判其余手牌，与「按其余 13 张判断」同构。"
+  },
+  {
+   "id": "AT-ST-C03-012",
+   "name": "七客按其余13张判断",
+   "rule": "七客按其余 13 张判断。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "七客仅作为结算番型与动效命名出现（七对与爆头的组合），客户端没有按手牌张数判定的实现。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verification_required",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  }
+ ]
+}

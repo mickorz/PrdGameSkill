@@ -1,0 +1,217 @@
+{
+ "stageId": "ST-C09",
+ "title": "杠开、杠飘、飘杠",
+ "sourceTitle": "行牌 > 杠开、杠飘、飘杠",
+ "fromLine": 92,
+ "toLine": 96,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 12,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C09-001",
+   "name": "杠开四档与杠链次数对应命名",
+   "rule": "杠上开花 / 二连杠 / 三连杠 / 四连杠分别对应自摸时杠链为 1 / 2 / 3 / 4 及以上。",
+   "uiRequirement": "",
+   "uiInteraction": "胡牌后在胡牌座位播放牌型 Spine 动效（杠开系走 KW_Ani_Hu 特效节点），并播放对应番型语音；桌面/流水文案显示番型名。",
+   "notes": "档位由服务端 fan_ids 决定，客户端无连杠计数逻辑。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "玩家杠牌后摸牌自摸胡牌",
+    "condition": "该次胡牌前的连续杠次数为 1 / 2 / 3 / 4 次",
+    "action": "按连杠次数选择对应的牌型名称、牌型动效与语音",
+    "result": "玩家看到“杠上开花/二连杠/三连杠/四连杠”字样动效，结算流水显示对应名称"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：自摸时杠链 1/2/3/4 及以上分别对应杠上开花/二连杠/三连杠/四连杠。服务端实现：GetGangKaiLevel 先 IsSelfTake 前置、取 hp->gang_chain 要求 >0（common_game_fan_type.cpp:295，SVE-ST-C09-P01-01），四档判定分别为 ==1/==2/==3/>=4（common_game_fan_type.cpp:304/310/316/322，SVE-ST-C09-P01-02~05），注册名依次为杠上开花/二连杠/三连杠/四连杠（common_game_init.cpp:354-357，SVE-ST-C09-P01-06），档位与命名一一对应，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C09-002",
+   "name": "杠开四档倍数 2/4/8/16",
+   "rule": "杠链 1 / 2 / 3 / 4 及以上对应倍数 2 / 4 / 8 / 16。",
+   "uiRequirement": "",
+   "uiInteraction": "好友房流水只显示番型名、不拼倍数；匹配场在流水文案后追加“N倍”；玩家最终看到的是结算分数。",
+   "notes": "倍率值仅出现在注释与萧山动画比较表中，好友房结算不显示倍数文字，倍数只体现在最终得分。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "杠开后胡牌进入结算",
+    "condition": "连杠次数分别为 1 / 2 / 3 / 4 次及以上",
+    "action": "客户端展示下发的番型名称与最终得分，不自行计算倍数",
+    "result": "玩家看到的得分按 2/4/8/16 倍体现，但界面不单独显示倍数"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：杠链 1/2/3/4 及以上对应倍数 2/4/8/16。服务端实现：kAllFans 常量表四档注册倍数 2/4/8/16（common_game_init.cpp:354-357，SVE-ST-C09-P01-06），并注明倍数由规则本身决定、无好友房/金币场配置差异（common_game_init.cpp:341，SVE-ST-C09-P01-07），CalcFanPoint 按注册倍数逐项连乘（common_game_algorithm.cpp:294，SVE-ST-C09-P01-21），倍率值固定且与规则一致。"
+  },
+  {
+   "id": "AT-ST-C09-003",
+   "name": "杠开只对自摸成立",
+   "rule": "杠开成立的前提是自摸（自摸且杠链为 N）。",
+   "uiRequirement": "",
+   "uiInteraction": "自摸与点炮播放不同语音与表现；有杠权限且存在杠开可能时弹出提示气泡（气泡文案在外部平台模块）。",
+   "notes": "客户端按番型 ID 直接播杠开动效，不校验胡牌方式是否与杠开番型匹配，因此无法证实“仅自摸才记杠开”由哪一层保证。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "玩家杠牌后摸牌胡牌",
+    "condition": "胡牌方式为自摸（非点炮、抢杠、点杠花）",
+    "action": "按自摸表现播放对应牌型动效与语音",
+    "result": "玩家看到与胡牌方式相匹配的番型动效与语音"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：杠开成立前提是自摸（自摸且杠链为 N）。服务端实现：IsSelfTake 对 kHtDiscard/kHtRobKong 返回 false、其余（含 kHtDianGangHua）为真（common_game_fan_type.cpp:15，SVE-ST-C09-P01-08），GetGangKaiLevel 在取档前统一调用 IsSelfTake 并直接 return false（common_game_fan_type.cpp:295/297，SVE-ST-C09-P01-01），四档均经此前置，非自摸无法命中杠开，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C09-004",
+   "name": "四连杠及以上统一 16 倍",
+   "rule": "四连杠及以上都记 16 倍（不再随杠链继续升档）。",
+   "uiRequirement": "",
+   "uiInteraction": "四连杠播放 4lgk 特效与四连杠语音；更高连杠没有独立动效资源，需归到四连杠表现。",
+   "notes": "未见 5 连杠及以上的档位定义，模板“及以上记 16 倍”需要服务端把更高连杠归并为 2409 才能对上四连杠表现。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "玩家连续杠四次及以上后自摸胡牌",
+    "condition": "连杠次数达到 4 次或更多",
+    "action": "统一归入四连杠一档展示牌型名与最高档动效",
+    "result": "玩家看到“四连杠”字样与四连杠语音，分数按 16 倍呈现"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：四连杠及以上统一 16 倍，不再随杠链升档。服务端实现：IsFanTypeQuadKong 以 gang_count >= 4 封顶并注释“四连杠及以上均记四连杠”（common_game_fan_type.cpp:322，SVE-ST-C09-P01-05），该 ID 常量注册为 16x（common_game_init.cpp:357，SVE-ST-C09-P01-06），TestFan 互斥组最高档优先（common_game_algorithm.cpp:182，SVE-ST-C09-P01-05 调用链），倍数无配置差异（SVE-ST-C09-P01-07），5 连杠以上确被归并到四连杠档，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C09-005",
+   "name": "杠链中断后胡牌不算杠开",
+   "rule": "杠链已断后再胡，不是杠开。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端不维护连杠状态；杠消息只带座位与面子信息，没有连杠计数，因此无法判定杠链是否中断。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：杠链已断后再胡不算杠开。服务端实现：打出非财神牌时 ClearGangChain 归零杠链（common_game_com_play.cpp:78，SVE-ST-C09-P01-09/10），吃、碰同样 ClearGangChain（common_game_com_action.cpp:130、common_game_com_pung.cpp:147，SVE-ST-C09-P01-11/12），ClearGangChain 将 gang_chain 置 0（common_game_server_data.h:84，SVE-ST-C09-P01-09），GetGangKaiLevel 要求 gang_count>0 才成立（common_game_fan_type.cpp:301，SVE-ST-C09-P01-01），断链后不再命中杠开，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C09-006",
+   "name": "杠飘飘杠仅由杠开与财飘同时命中产生",
+   "rule": "杠飘、飘杠只在同时命中杠上开花和财飘时拆出。",
+   "uiRequirement": "",
+   "uiInteraction": "命中后播放杠飘/飘杠组合特效动效与组合语音，结算显示组合名（不是杠开名 + 财飘名并列）。",
+   "notes": "组合识别依赖服务端下发的 fan_ids，客户端把 2419/2420 同时算作杠系和财飘系。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "胡牌结算时同时出现杠开类与财飘类牌型",
+    "condition": "同一手胡牌既满足杠上开花又满足财飘",
+    "action": "把两侧合并成一个组合牌型，播放组合牌型动效与组合语音，结算只显示组合名",
+    "result": "玩家看到“杠飘”或“飘杠”字样动效与对应语音，流水里出现组合名称"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：杠飘/飘杠只在同时命中杠上开花与财飘时拆出。服务端实现：TestFan 检测 2406 与 2403 是否同时命中（common_game_algorithm.cpp:195，SVE-ST-C09-P01-13），仅 has_gang_shang_hua && has_cai_piao 时 erase 这两条并合并为一条（common_game_algorithm.cpp:199，SVE-ST-C09-P01-14），按 piao_before_gang 二选一落 2419/2420（common_game_algorithm.cpp:205，SVE-ST-C09-P01-15），两 ID 定义为杠开+财飘组合（common_game_fan_type.h:54/55，SVE-ST-C09-P01-16/17），拆分条件与规则同构。"
+  },
+  {
+   "id": "AT-ST-C09-007",
+   "name": "杠飘飘杠倍数为 8",
+   "rule": "杠飘、飘杠倍数为 8。",
+   "uiRequirement": "",
+   "uiInteraction": "不单独显示“8 倍”文字，玩家看到的是结算分数与组合番型名。",
+   "notes": "8 倍仅以注释与萧山动画倍率表形式存在，不是好友房结算依据。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "结算时命中杠飘或飘杠组合",
+    "condition": "杠开与财飘同时成立",
+    "action": "按组合倍数参与结算并显示最终得分",
+    "result": "玩家看到的得分按 8 倍体现，界面不单独标出 8 倍"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：杠飘、飘杠倍数为 8。服务端实现：注册表杠飘 8x（common_game_init.cpp:366，SVE-ST-C09-P01-18）、飘杠 8x（common_game_init.cpp:367，SVE-ST-C09-P01-19），番型枚举注释同为 8x（common_game_fan_type.h:54/55，SVE-ST-C09-P01-16/17），CalcFanPoint 按注册值连乘（common_game_algorithm.cpp:294，SVE-ST-C09-P01-21），倍数固定为 8。"
+  },
+  {
+   "id": "AT-ST-C09-008",
+   "name": "杠飘飘杠倍数再乘基础番",
+   "rule": "杠飘、飘杠倍数为 8，再乘上基础番。",
+   "uiRequirement": "",
+   "uiInteraction": "结算流水只展示番型文案与分数，不展示乘法过程或分项倍数。",
+   "notes": "客户端只承载文案与分数，无法验证连乘后的具体数值。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "组合牌型与其他牌型同时成立并计算总分",
+    "condition": "杠飘或飘杠与基础牌型同时命中",
+    "action": "只展示组合番型名与最终得分，不展示乘法过程",
+    "result": "玩家看到的最终分数为组合倍数与基础番相乘后的结果"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：杠飘/飘杠 8 倍再乘基础番。服务端实现：拆分只 erase 2406/2403 并追加 2419/2420，基础番仍留在 ftcnts（common_game_algorithm.cpp:199，SVE-ST-C09-P01-14），CalcFanPoint 从 point=1 起逐条 point *= fan_point * fc.cnt（common_game_algorithm.cpp:283/294，SVE-ST-C09-P01-20/21），8 倍与基础番处于同一连乘链，与“再乘基础番”同构。"
+  },
+  {
+   "id": "AT-ST-C09-009",
+   "name": "杠发生时飘档大于 0 记飘杠",
+   "rule": "杠发生时飘档已经大于 0，记飘杠。",
+   "uiRequirement": "",
+   "uiInteraction": "胡牌时播放“飘杠”特效动效与飘杠语音；结算流水显示“飘杠”。",
+   "notes": "客户端有飘杠的独立表现，但“杠时飘档是否已大于 0”的判定不可见于客户端代码。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "玩家先打出财神形成飘，之后杠牌并在杠后自摸胡牌",
+    "condition": "杠发生时玩家已经有飘",
+    "action": "以“飘杠”作为牌型名播放专属动效与语音",
+    "result": "玩家看到“飘杠”动效、听到飘杠语音，结算流水显示“飘杠”"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：杠发生时飘档已大于 0 记飘杠。服务端实现：明杠/补杠执行时 SetPiaoBeforeGang(seat, GetPiaoLevel(seat) > 0)（common_game_com_kong.cpp:118/188，SVE-ST-C09-P01-22/23），该值注入 hp->piao_before_gang（common_game_algorithm.cpp:245，SVE-ST-C09-P01-09 调用链）后在 TestFan 为真取 2420 飘杠（common_game_algorithm.cpp:205，SVE-ST-C09-P01-15），2420 注释为“财飘后杠开”（common_game_fan_type.h:55，SVE-ST-C09-P01-17），判定口径与规则同构。"
+  },
+  {
+   "id": "AT-ST-C09-010",
+   "name": "杠时飘档为 0 记杠飘",
+   "rule": "杠发生时飘档未大于 0（即 0），记杠飘。",
+   "uiRequirement": "",
+   "uiInteraction": "胡牌时播放“杠飘”特效动效与杠飘语音；结算流水显示“杠飘”。",
+   "notes": "拆分模式（只有杠开+财飘、无 2419/2420）时代码显式注释“fan_ids 顺序不可靠”并默认按杠飘显示，若真实为飘杠可能显示不一致。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "玩家还没飘就先杠，杠后打出财神并在下一轮自摸胡牌",
+    "condition": "杠发生时玩家尚未飘（飘次数为 0）",
+    "action": "以“杠飘”作为牌型名播放专属动效与语音",
+    "result": "玩家看到“杠飘”动效与语音，结算流水显示“杠飘”"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：杠发生时飘档为 0 记杠飘。服务端实现：piao_level==0 时 piao_before_gang 为假，TestFan 落 2419 杠飘（common_game_algorithm.cpp:205，SVE-ST-C09-P01-15；common_game_com_kong.cpp:118/188，SVE-ST-C09-P01-22/23），服务端判定确定且与规则同构；但客户端拆分模式注释“fan_ids 顺序不可靠”并默认按杠飘展示（基线 difference_detail 引用的客户端代码），真实为飘杠时展示仍可能不一致，该客户端细节差异未被服务端证据消解，维持 partial。"
+  },
+  {
+   "id": "AT-ST-C09-011",
+   "name": "二连杠双财飘及更高档不拆仍连乘",
+   "rule": "二连杠、双财飘及更高档不拆，仍按各组连乘。",
+   "uiRequirement": "",
+   "uiInteraction": "玩家只看到一个组合动效与一条组合文案，括号中提示高档明细，没有分档倍数展示。",
+   "notes": "客户端只在文案层保留高档明细，倍数连乘由服务端完成，因此“是否拆开计分”无法由客户端证实。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "连杠两次及以上或飘两次及以上时，仍同时命中杠开与财飘",
+    "condition": "杠开侧或财飘侧档位高于 1",
+    "action": "仍只显示一个组合牌型名，在括号里补充高档明细",
+    "result": "玩家看到“杠飘（二连杠，双财飘）”这类组合文案与单一组合动效"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：二连杠、双财飘及更高档不拆，仍按各组连乘。服务端实现：TestFan 注释声明仅基础档（命中 2406 与 2403）拆分，更高档组合不含二者、保持基础番型连乘推导（common_game_algorithm.cpp:191-194，SVE-ST-C09-P01-24），拆分条件同时要求 has_gang_shang_hua && has_cai_piao（common_game_algorithm.cpp:199，SVE-ST-C09-P01-14），CalcFanPoint 对各番逐项连乘（common_game_algorithm.cpp:294，SVE-ST-C09-P01-20/21），高档不拆仍连乘与规则同构。"
+  },
+  {
+   "id": "AT-ST-C09-012",
+   "name": "没有单独的杠爆与七客",
+   "rule": "没有单独的杠爆、七客。",
+   "uiRequirement": "",
+   "uiInteraction": "播放“杠爆”“七客”组合动效与语音，结算流水显示组合名，但没有独立的杠爆/七客番型项与倍数条目。",
+   "notes": "客户端没有独立番型 ID，但展示层仍以“杠爆”“七客”命名呈现，需确认这种组合命名展示是否与“没有单独的杠爆、七客”的表述冲突。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "杠开与爆头同时命中，或七对与爆头/财飘同时命中",
+    "condition": "两侧组合成立",
+    "action": "只按组合表现播放动效与文案，不追加独立番型项",
+    "result": "玩家看到“杠爆”“七客”组合字样与动效，分数只按两侧番型相乘得出"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：没有单独的杠爆、七客番型。服务端实现：番型枚举段 2401~2428、以 2429 为结束哨兵（common_game_fan_type.h:94，SVE-ST-C09-P01-26），kAllFans 全量注册表含基础/七对/杠开/财神/十风/杠飘/飘杠等但无杠爆、七客独立条目（common_game_init.cpp:342，SVE-ST-C09-P01-27），二者仅以组合称谓出现在注释/提示语（common_game_fan_type.h:35、common_game_fan_type.cpp:18，SVE-ST-C09-P01-25/28），确无独立番型，与规则同构。"
+  }
+ ]
+}

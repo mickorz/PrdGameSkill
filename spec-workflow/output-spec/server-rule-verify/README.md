@@ -118,6 +118,15 @@
   - DR：样本覆盖条目一致 3 / 分歧 5（正式更进取：C02-006/007/009、C04-001/012 建议 partial/unverified→consistent，其中 C04-001 优先级次序与 S2.1 裁决链证据（macros.h:203-206 级别常量）方向一致）；样本未覆盖 17 条为正式新增建议
 - **S3.2 partial 复核进度**：v2 的 64 条 partial 中已复核 3 条（证据就位三阶段 ST-C01/02/04），2 条建议升级（C02-006、C04-012）；其余 partial 原子随 S4.1 分批补证时逐阶段复核
 
+## S4.2 策划版 v3 重新投影（plannerOnly 全量，2026-11-14）
+
+- **链路**：prepare（v2 基线只读 + 正式 l7-classify 319/319 内嵌，全量 15 阶段）→ `3-produce-outputs`（plannerOnly 磁盘模式，run-mwge7ien-3：19 agent/17 分片，两次 provider 超时重试成功）→ `4-assemble-verify`（plannerOnly：合并分片 → 追溯索引 → 泄漏检查 → AT-ID 覆盖检查）
+- **一轮卡点**：装配 AT-ID 覆盖闸门拦下 **22 个漏写原子**（全部 l7=verified——agent 把「verified→不写差异行」执行成了整原子漏写，界面表现行也没写；22 个原子均有 uiInteraction/notes/businessBehavior 内容，规则 486 要求界面表现行照写）→ 一次性补写 workflow（run-mwggr0nl-5，单 agent 向最终文档插入 22 条界面表现行——分片已被 merge 删除，只能补最终文档）+ 重跑装配校验全过
+- **prompt 加固**（供后续重投影）：plannerDocRules 明确「verified/not_applicable 差异行不写≠原子项不写，界面表现行照常适用」+ 新增覆盖硬规则「本章每个原子 id 必须至少出现在一条补充行，最终装配逐 AT-ID 校验，漏写任一 id 整个装配失败」
+- **验收**：泄漏零命中（无类名/协议名/file:line/.ts 残留）、AT-ID 覆盖 100%（319 唯一 id）、追溯索引 319 条、旧式「待确认」行 0（口径统一）
+- **产物**：`spec-workflow/output-spec/2026-11-14/v3-planner/`——`核心流程杭州麻将好友房AI-策划版.md`（484 行：规则待验证 94 行 / 待策划裁决 2 行 / 界面表现 151 行；多原子合并成行属正常）+ `trace_index.json` + runtime/planner-input + build-config + 校验报告；**正式策划版文档（v2 产物）零覆盖**（约束「历史策划版零覆盖」）
+- **口径说明**：本投影消费当前 pending 状态的 l7-classify（129 verification_required 原子全部落「规则待验证」行）；策划批准 173 条升级建议 + v3 合并后需重投影（此时多数「规则待验证」行将消失为 verified 无行）
+
 ## S4.1 第三批 + 全量收口（ST-C03/11/12，2026-11-14）
 
 - **执行**：runId `run-mwgbqusi-2`（一轮卡点修复后续跑贯通）：37 agent（24 journal 回放 + 13 新跑），253s；104 原子（发牌 12/1 片、出牌与响应 68/7 片、三摊承包 24/3 片）；卡点：ST-C11-p06 agent 返回摘要计数手误（四类合计 9 ≠ atomCount 8，分片文件本身正确 8/8）→ 新增确定性重算闸门 `recount-verify-parts.mjs`（以分片文件为准：全覆盖/无重复/枚举合法/分布重算 + 回读 agent 聚合，agent 摘要降级为告警；example 16 断言全绿），续跑收口（详见 experience 坑 6）

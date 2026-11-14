@@ -1,0 +1,251 @@
+{
+ "stageId": "ST-C06",
+ "title": "杠后补牌",
+ "sourceTitle": "行牌 > 杠后补牌",
+ "fromLine": 71,
+ "toLine": 76,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 14,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C06-001",
+   "name": "杠后从牌墙尾部补 1 张",
+   "rule": "每次杠从牌墙尾部补 1 张。",
+   "uiRequirement": "",
+   "uiInteraction": "取到的牌插入该家手牌并亮出，非自己时按手牌计数更新；同时刷新牌墙剩余张数。",
+   "notes": "客户端既不判断补几张，也不决定从牌头还是牌尾取，完全按服务端下发的方向与张数执行；协议里另有 is_kong_take_asc 字段但客户端未使用，无法从客户端证明杠后固定走尾部。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "任一玩家开杠",
+    "condition": "服务端把这次补牌作为一次抓牌通知下发，且方向为从牌墙尾部取牌",
+    "action": "从牌墙尾部取一张牌放入开杠玩家手牌并亮出这张牌",
+    "result": "开杠玩家手牌多出一张牌，牌墙剩余数字随之刷新"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：每次杠从牌墙尾部补 1 张。服务端实现：SelfTakeStep::Execute（mah_frame/com_basic/com_take.cpp:219-224，SVE-ST-C06-P01-02）命中 kMahStateKong 状态位时按 GetIsKongTakeAsc() 选方向，TakeAfterKong（com_take.cpp:19-40，SVE-ST-C06-P01-01）先消耗 KongTakeCount-1 张再取 1 张并 SetJustTake；is_kong_take_asc 默认 false、kong_take_count 默认 1（mah_frame/base/base_config.cpp:10-11，SVE-ST-C06-P01-03），hzmj 好友房 LoadBoxJsonConfig（hzmj_server/game_logic.cpp:18，SVE-ST-C06-P01-04）无对应覆写分支；明杠/暗杠/加杠状态位均落 (kMahStateKong<<8) 分支（mah_frame/base/macros.h:248-250），好友房恒为牌尾补 1 张，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C06-002",
+   "name": "补牌后牌墙余牌减 1",
+   "rule": "杠补牌后牌墙余牌减 1。",
+   "uiRequirement": "",
+   "uiInteraction": "牌墙右侧数字在每次抓牌与补牌后刷新，重连恢复时也按剩余张数重刷；牌墙显示受对局内牌墙开关控制。",
+   "notes": "扣减量等于服务端下发的取牌张数，客户端没有固定减 1 的常量；补牌恰好 1 张由服务端保证。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "任一玩家抓牌或杠后补牌",
+    "condition": "收到抓牌通知",
+    "action": "按取牌张数扣减牌墙余数并刷新牌墙数字",
+    "result": "牌墙剩余张数数字变小"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：杠补牌后牌墙余牌减 1。服务端实现：TakeAfterKong 走牌尾调 BaseData::TakeDesc（mah_frame/base/base_data.cpp:734-738，SVE-ST-C06-P01-05）→ BackWall（base_data.cpp:275-281，SVE-ST-C06-P01-06）取 walls_.back() 后 pop_back()，出墙恰扣 1 张；余牌 CountWalls（base_data.cpp:257-259，SVE-ST-C06-P01-07）直接返回 walls_.size()；好友房 KongTakeCount=1（base_config.cpp:10，SVE-ST-C06-P01-03），补 1 张即余牌减 1，客户端按下发张数扣减与固定 1 等价，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C06-003",
+   "name": "牌墙少于 21 张不能杠",
+   "rule": "牌墙少于 21 张不能杠。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端没有 21 张门槛判断，也没有因余牌不足而隐藏或置灰杠按钮的逻辑；杠按钮仅由服务端下发的杠权限位控制，可杠牌组也全部来自权限数据。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：牌墙少于 21 张不能杠。服务端实现：BoxMKongStep::Judge（common_game/com_game/common_game_com_kong.cpp:17，SVE-ST-C06-P01-08）、BoxCKongStep::Judge（common_game_com_kong.cpp:138，SVE-ST-C06-P01-09）、BoxTKongStep::Judge（common_game_com_kong.cpp:209，SVE-ST-C06-P01-10）统一以 CountWalls() < KongTakeCount + DrawnCnt 拦截；好友房 SetDrawnCnt(20)（hzmj_server/server_config.cpp:33，SVE-ST-C06-P01-11）且 LoadBoxJsonConfig 无 drawn_cnt/kong_take_count 覆写（hzmj_server/game_logic.cpp:18，SVE-ST-C06-P01-04），KongTakeCount 取默认 1，门槛恒为余牌 <21 即 21 张，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C06-004",
+   "name": "剩 20 张及以下时下一次摸牌前黄庄",
+   "rule": "剩 20 张及以下时，下一次摸牌前黄庄。",
+   "uiRequirement": "",
+   "uiInteraction": "匹配界面提示文案出现「剩余20张牌前无人胡牌则流局」；小结算按流局展示自己的输赢状态；提示动画包内打包了流局文字图。",
+   "notes": "客户端只展示流局结果与提示文案，没有「剩 20 张后先完成本次摸打与弃牌响应、下一次摸牌前才判黄庄」的时序逻辑；流局文字图仅在包内声明，未检索到代码引用。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "牌墙剩 20 张及以下且本次摸打与弃牌响应结束后仍无人胡牌",
+    "condition": "轮到下一次摸牌之前",
+    "action": "结束本小局并按流局展示结算",
+    "result": "玩家看到流局结算，自己的输赢按流局显示"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：剩 20 张及以下时下一次摸牌前黄庄。服务端实现：TakeStep::IsDrawn（mah_frame/com_basic/com_take.cpp:118-121，SVE-ST-C06-P01-12）以 CountWalls() <= DrawnCnt 判定；SelfTakeStep::Execute（com_take.cpp:209-213，SVE-ST-C06-P01-13）与 NextTakeStep::Execute（com_take.cpp:154-158）均在取牌前判 IsDrawn→SetEndType(kEtDrawn)+OnEndResult；胡选择阶段 HuChooseStep::CheckIsEndGame（mah_frame/com_basic/com_hu_choose.cpp:81-89，SVE-ST-C06-P01-14）与 IsDraw（com_hu_choose.cpp:122-133，SVE-ST-C06-P01-15）同口径；DrawnCnt 固定 20（hzmj_server/server_config.cpp:33，SVE-ST-C06-P01-11），即余牌 <=20 时本回合摸打与响应完结后、下一次取牌前判流局，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C06-005",
+   "name": "杠后可以继续杠",
+   "rule": "杠后可以继续杠。",
+   "uiRequirement": "",
+   "uiInteraction": "杠按钮按权限显示并循环发光；存在多个可杠选项时弹出可杠牌列表供点选，选中后收起操作区并置灰手牌。",
+   "notes": "客户端无条件按服务端权限展示杠按钮，没有「本回合不能再杠」的本地限制；但也没有主动判断杠后能否再杠，能否续杠取决于服务端是否再次下发杠权限。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "玩家开杠后轮到其继续行牌",
+    "condition": "服务端再次下发可杠权限",
+    "action": "重新列出可杠的牌并显示杠按钮",
+    "result": "玩家可以再次点杠继续开杠"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：杠后可以继续杠。服务端实现：CommonGameInit::InitStepForBox（common_game/common_game_init.cpp:199，SVE-ST-C06-P01-16）self_take_step 后继链含 ckong_step/tkong_step；BoxActionStep::Execute（common_game/com_game/common_game_com_action.cpp:37，SVE-ST-C06-P01-17）每回合重新取并发动作并调 Judge；BoxMKongStep::Execute 末尾 ChangeNextStep（common_game/com_game/common_game_com_kong.cpp:121，SVE-ST-C06-P01-18）回流 SelfTake→Action→Judge；BoxCKongStep::Judge（common_game_com_kong.cpp:132-148）/BoxTKongStep::Judge（common_game_com_kong.cpp:202-235）仅按手牌/碰组与牌墙门槛判定，同巡禁补杠开关 IsXunLimitPungTKong 默认 false（mah_frame/base/base_config.cpp:15）且 hzmj 未设置，代码无“杠后本回合禁杠”限制，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C06-006",
+   "name": "每次续杠重新检查牌墙不少于 21 张",
+   "rule": "杠后继续杠时，每次重新检查牌墙不少于 21 张。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端没有任何牌墙余量检查；可杠选项完全来自服务端权限下发的可杠牌组，余牌数字只用于展示。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：杠后继续杠时每次重新检查牌墙不少于 21 张。服务端实现：三处 Judge（common_game/com_game/common_game_com_kong.cpp:17/138/209，SVE-ST-C06-P01-08/09/10）的余牌门槛写在 Judge 内、每次动作分发（common_game_init.cpp:199，SVE-ST-C06-P01-16；common_game_com_action.cpp:37，SVE-ST-C06-P01-17）重新调用且无一次性缓存；CountWalls（mah_frame/base/base_data.cpp:257，SVE-ST-C06-P01-07）实时返回 walls_.size()，DrawnCnt 固定 20（hzmj_server/server_config.cpp:33，SVE-ST-C06-P01-11）+ KongTakeCount 1（base_config.cpp:10），续杠按当时余牌重检 21 张，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C06-007",
+   "name": "补牌可以自摸",
+   "rule": "补牌可以自摸。",
+   "uiRequirement": "",
+   "uiInteraction": "胡按钮展示本次胡的牌与倍数，字效按胡牌类型切换（自摸显示自摸样式，点炮与抢杠显示胡样式）并循环发光；杠后自摸播放杠上开花字效。",
+   "notes": "客户端只按服务端给的胡牌类型展示，不区分这张牌是否来自杠后补牌；杠后自摸的识别依赖服务端下发的番型。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "杠后补的牌摸到手",
+    "condition": "这张牌使手牌成立胡牌且服务端下发胡权限",
+    "action": "显示胡按钮并切换为自摸字效，玩家点击后提交胡",
+    "result": "玩家看到自摸样式的胡按钮与胡牌倍数，结算显示杠上开花类番型"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：补牌可以自摸。服务端实现：TakeAfterKong（mah_frame/com_basic/com_take.cpp:45-52，SVE-ST-C06-P01-22）补牌即 SetJustTake + AddState(seat,kMahStateTake)；BoxHuStep::Judge（common_game/com_game/common_game_com_action.cpp:271-282，SVE-ST-C06-P01-19）kMahStateTake 取 GetJustTake、SetNextHuType(kHtSelf) 后调 JudgeSelf；CommonGameFanType::IsSelfTake（common_game/common_game_fan_type.cpp:15-20，SVE-ST-C06-P01-20）仅排除点炮/抢杠，GetGangKaiLevel（common_game_fan_type.cpp:295-302，SVE-ST-C06-P01-21）以自摸+gang_chain>0 计杠开，补牌自摸链路固定无开关，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C06-008",
+   "name": "不胡则继续杠或打出 1 张",
+   "rule": "补牌后不胡则继续杠或打出 1 张。",
+   "uiRequirement": "",
+   "uiInteraction": "点手牌出牌后收起操作区并清灰；杠按钮仍按权限显示，玩家可选择杠而非出牌。",
+   "notes": "客户端每次只允许打出一张，出牌后立即收起操作区；「不胡」这一前提没有客户端判断，取决于服务端是否下发胡权限。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "杠后补牌完成且玩家没有胡牌",
+    "condition": "玩家处于自己的出牌阶段",
+    "action": "玩家点一张手牌打出，或改点杠继续开杠",
+    "result": "打出的牌进入牌河且本回合结束，或桌上再多一组杠"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：补牌后不胡则继续杠或打出 1 张。服务端实现：补牌后 Action 分发（common_game/com_game/common_game_com_action.cpp:37，SVE-ST-C06-P01-17）在胡步之外提供 ckong_step/tkong_step/play_step（common_game_init.cpp:199，SVE-ST-C06-P01-16）；出牌 PlayStep::DoEndPlay（mah_frame/com_basic/com_play.cpp:168-210，SVE-ST-C06-P01-26）→JudgeJustPlay（com_play.cpp:256-272，SVE-ST-C06-P01-23）只校验单张在手/在垫牌→DelJustPlayFromHand（com_play.cpp:274-295，SVE-ST-C06-P01-24）恰移除 1 张并清垫牌→CheckPlay（com_play.cpp:235-255，SVE-ST-C06-P01-25）置刚出牌后 ChangeNextStep 结束本回合；不胡后续杠/单张出牌两条路径齐备，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C06-009",
+   "name": "明杠使杠链加 1",
+   "rule": "明杠使杠链加 1。",
+   "uiRequirement": "",
+   "uiInteraction": "明杠播放明杠动作动画与明杠音效，桌面新增一组杠副露；杠后自摸按番型显示杠上开花/二连杠/三连杠/四连杠字效。",
+   "notes": "客户端没有杠链数值或计数显示；连杠档位只以番型字效出现，档位由服务端下发的番型决定，无法证明客户端把明杠计入杠链。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "玩家明杠",
+    "condition": "杠成立并进入杠后行牌",
+    "action": "播放明杠动作与音效、摆放杠副露并转入补牌",
+    "result": "玩家看到明杠动画与杠副露，若杠后自摸则看到杠上开花及以上连杠字效"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：明杠使杠链加 1；服务端实现：BoxMKongStep::Execute（common_game/com_game/common_game_com_kong.cpp:116）明杠执行末尾无条件调用 PushGangChain(mkong_seat_, false)（SVE-ST-C06-P02-02），ServerData::PushGangChain（common_game/common_game_server_data.h:88，SVE-ST-C06-P02-01）执行 GetGangChain(seat)+1 且 false 分支不改暗杠标记，判据与计数均为无条件，无配置分支，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C06-010",
+   "name": "暗杠使杠链加 1",
+   "rule": "暗杠使杠链加 1。",
+   "uiRequirement": "",
+   "uiInteraction": "暗杠播放暗杠动作动画与暗杠音效，桌面新增一组暗杠副露；杠后自摸显示杠开系档位字效。",
+   "notes": "暗杠与明杠在客户端只区分动画、音效与副露牌序，均不产生杠链计数；杠链含暗杠的标记在客户端也不存在。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "玩家暗杠",
+    "condition": "暗杠成立并进入杠后行牌",
+    "action": "播放暗杠动作与音效、按原序摆放暗杠副露并转入补牌",
+    "result": "玩家看到暗杠动画与暗杠副露，杠后自摸时看到杠开系字效"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：暗杠使杠链加 1；服务端实现：BoxCKongStep::Execute（common_game/com_game/common_game_com_kong.cpp:186，SVE-ST-C06-P02-03）暗杠执行末尾无条件 PushGangChain(ckong_seat_, true)，复用同一 +1 入口 ServerData::PushGangChain（common_game/common_game_server_data.h:88，SVE-ST-C06-P02-01）先累加杠链再置暗杠标记，加 1 语义与规则一致，仅额外标记不影响计数，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C06-011",
+   "name": "加杠使杠链加 1",
+   "rule": "加杠使杠链加 1。",
+   "uiRequirement": "",
+   "uiInteraction": "补杠播放补杠动作动画与补杠音效，已碰组的副露被替换为杠组；杠后自摸显示杠开系档位字效。",
+   "notes": "补杠在客户端是独立渲染分支，但没有杠链计数；也不区分补杠是否被抢杠成功后的杠链回退。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "玩家把已碰的刻子补成杠",
+    "condition": "补杠成立并进入杠后行牌",
+    "action": "播放补杠动作与音效、把碰组替换为杠组并转入补牌",
+    "result": "玩家看到补杠动画与杠副露，杠后自摸时看到杠开系字效"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：加杠使杠链加 1；服务端实现：BoxTKongStep::Execute（common_game/com_game/common_game_com_kong.cpp:274，SVE-ST-C06-P02-04）补杠执行末尾无条件 PushGangChain(tkong_seat_, false) -> ServerData::PushGangChain（common_game/common_game_server_data.h:88，SVE-ST-C06-P02-01）杠链 +1，Judge（:202-234）只校验飘窗口/牌墙/同巡不改变累加，规则同构。"
+  },
+  {
+   "id": "AT-ST-C06-012",
+   "name": "吃或碰使杠链归零",
+   "rule": "吃、碰使杠链归零。",
+   "uiRequirement": "",
+   "uiInteraction": "吃/碰分别播放对应动作动画与音效，桌面新增副露组，操作区收起。",
+   "notes": "找到的只是吃/碰的副露与动画处理，未见任何杠链状态被清零或连杠档位被重置的客户端逻辑；杠链归零由服务端完成。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "玩家吃牌或碰牌",
+    "condition": "吃/碰成立",
+    "action": "播放吃/碰动作并摆放副露，本回合操作区收起",
+    "result": "玩家看到吃/碰动画与副露，之后的杠后自摸不再享有连杠档位（该结果只体现为结算番型不同）"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：吃、碰使杠链归零；服务端实现：BoxChowStep::Execute（common_game/com_game/common_game_com_action.cpp:130，SVE-ST-C06-P02-06）与 BoxPungStep::Execute（common_game/com_game/common_game_com_pung.cpp:147，SVE-ST-C06-P02-07）均无条件调用 ClearGangChain -> ServerData::ClearGangChain（common_game/common_game_server_data.h:84，SVE-ST-C06-P02-05）置 gang_chain=0 并清暗杠标记，两路径齐备，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C06-013",
+   "name": "打出非财神使杠链归零",
+   "rule": "打出非财神牌使杠链归零。",
+   "uiRequirement": "",
+   "uiInteraction": "出牌播放出牌动画与出牌音效，牌进入牌河，本回合操作区关闭。",
+   "notes": "客户端出牌处理不区分财神与非财神的杠链影响；只找到出牌表现本身，未见杠链归零实现。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "玩家打出一张非财神牌",
+    "condition": "该牌被打出到牌河",
+    "action": "播放出牌表现并结束本回合",
+    "result": "玩家看到牌进牌河，后续自摸不再享有连杠档位（只体现为结算番型不同）"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：打出非财神牌使杠链归零；服务端实现：BoxPlayStep::CheckPlay（common_game/com_game/common_game_com_play.cpp:78，SVE-ST-C06-P02-08）在打出牌 != cai_shen 的 else 分支无条件 SetPiaoLevel(0)+ClearGangChain(seat) -> ServerData::ClearGangChain（common_game/common_game_server_data.h:84，SVE-ST-C06-P02-05）置 0，判据即非财神，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C06-014",
+   "name": "打出财神后不再敲响使杠链归零",
+   "rule": "打出财神但打出后不再敲响，杠链归零。",
+   "uiRequirement": "",
+   "uiInteraction": "打出财神后播放飘的动作字效，飘计数按服务端下发值刷新。",
+   "notes": "客户端完全没有「敲响」这一概念，飘计数与杠链是两套状态；无法从客户端判断打出财神后是否仍敲响以及杠链是否被清零。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "玩家打出一张财神",
+    "condition": "服务端判定打出后手牌不再满足敲响",
+    "action": "更新该玩家的飘状态并播飘表现，杠链状态由服务端处理",
+    "result": "玩家看到飘字效与飘次数变化，后续自摸按无连杠档位结算"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：打出财神但打出后不再敲响则杠链归零；服务端实现：BoxPlayStep::CheckPlay（common_game/com_game/common_game_com_play.cpp:74，SVE-ST-C06-P02-09）在 IsQiaoXiangNow(seat) 为 false 时 SetPiaoLevel(0)+ClearGangChain，IsQiaoXiangNow（common_game/com_game/common_game_com_play.cpp:33，SVE-ST-C06-P02-10）以打出后手牌判定敲响，非敲响即归零，ClearGangChain 见 common_game_server_data.h:84（SVE-ST-C06-P02-05），与规则同构。"
+  }
+ ]
+}

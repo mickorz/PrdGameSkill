@@ -481,9 +481,9 @@ function plannerDocRules(sourceTitle) {
     '   - 原子项带 l7 字段（服务端复核 L7 分类，差异结论以它为准，优先级高于 notes 推断）时，按 l7 四值生成差异行：',
     '     - l7=verification_required：写「  - 规则待验证：{按 l7Reason 转写：缺什么证据或依赖什么配置}（{原子项id}）」',
     '     - l7=decision_required：写「  - 待策划裁决：需求为「{原文规则}」，实际表现为「{实际行为}」（{原子项id}）」（实际行为按 l7Reason 与 uiInteraction/notes/businessBehavior 中已查到的实际表现转写）',
-    '     - l7=verified：不写差异行（规则已验证一致，原文照常保留）',
-    '     - l7=not_applicable：不写差异行（该规则不适用当前玩法，不纳入当前玩法差异清单，原文照常保留）',
-    '   - 该语句对应的原子项 verdict=confirmed/partial 且 uiInteraction 或 notes 或 businessBehavior 有内容：写「  - 界面表现：{玩家可理解的行为描述}（{原子项id}）」（带 l7 字段的原子项同样适用本条，界面表现行与差异行并存）',
+    '     - l7=verified：不写差异行（规则已验证一致，原文照常保留），但界面表现行照常适用下一条',
+    '     - l7=not_applicable：不写差异行（该规则不适用当前玩法，不纳入当前玩法差异清单，原文照常保留），但界面表现行照常适用下一条',
+    '   - 该语句对应的原子项 verdict=confirmed/partial 且 uiInteraction 或 notes 或 businessBehavior 有内容：写「  - 界面表现：{玩家可理解的行为描述}（{原子项id}）」（带 l7 字段的原子项同样适用本条，界面表现行与差异行并存；verified/not_applicable 原子项漏写整行属漏写——差异行不写≠原子项不写）',
     '   - 原子项无 l7 字段，且 notes 描述了实现与需求不一致（如需求说按普通白板展示、实际牌河中仍高亮）：另起一条「  - 待确认：需求为「{原文规则}」，实际表现为「{实际行为}」（{原子项id}）」',
     '   - 原子项 verdict=not_found：写「  - 待确认：客户端未查到对应实现（{原子项id}）」',
     '   - 原子项 uiInteraction、notes、businessBehavior 均为空、verdict=confirmed/partial 且无 l7 字段：不硬凑补充行，只保留原文。',
@@ -494,8 +494,12 @@ function plannerDocRules(sourceTitle) {
     '3. 无法转写成玩家行为的技术细节直接丢弃，不写进策划版；转写不得改变该行为的事实本身。',
     '4. 没有证据支撑的规则宁可标注「待确认」，严禁为了让文档完整而编造业务规则或编造界面表现。',
     '5. 每条补充行末尾用括号附原子项 id（AT-ST-Cxx-nnn 形式），供追溯。',
-    '6. 全文不得出现：类名、方法名、Msg/CMD/GP 前缀协议名、C_/KW_/ET_ 前缀常量、box_ 组件名、source-code 路径、任何 .ts/.xml/.cpp/.json 文件名与 file:line 定位。',
-    '7. 中文书写，无 Emoji，不要用代码围栏包裹分片；直接逐条边写边落盘，不要先整理全部再写盘。',
+    '6. 原子项覆盖硬规则（S4.2 坑）：本章每个原子项 id（AT-ST-Cxx-nnn）必须至少出现在一条补充行里',
+    '   （界面表现行/差异行/待确认行；一条原文语句对应多个原子项时可合并为一条含多个 id 的补充行）；',
+    '   唯一例外是「uiInteraction、notes、businessBehavior、l7Reason 均为空且无 l7 字段」的全空原子项（不硬凑行）。',
+    '   最终装配会逐 AT-ID 校验本章覆盖率，漏写任何一个原子项 id 整个装配失败重来。',
+    '7. 全文不得出现：类名、方法名、Msg/CMD/GP 前缀协议名、C_/KW_/ET_ 前缀常量、box_ 组件名、source-code 路径、任何 .ts/.xml/.cpp/.json 文件名与 file:line 定位。',
+    '8. 中文书写，无 Emoji，不要用代码围栏包裹分片；直接逐条边写边落盘，不要先整理全部再写盘。',
   ]
 }
 

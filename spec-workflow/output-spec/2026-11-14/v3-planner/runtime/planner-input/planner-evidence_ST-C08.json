@@ -1,0 +1,353 @@
+{
+ "stageId": "ST-C08",
+ "title": "飘财",
+ "sourceTitle": "行牌 > 飘财",
+ "fromLine": 83,
+ "toLine": 91,
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "atomCount": 20,
+ "termsFromLine": 9,
+ "termsToLine": 21,
+ "atoms": [
+  {
+   "id": "AT-ST-C08-001",
+   "name": "全场唯一飘财窗口",
+   "rule": "全场同时只有一个飘财窗口。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端只按座位保存飘计数，没有「窗口所有者」或「唯一窗口」的状态字段、界面元素或协议字段；飘状态消息仅含座位与次数。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：全场同时只有一个飘财窗口。服务端实现：窗口由单标量 piao_owner_seat 承载（common_game/common_game_server_data.h:107，SVE-ST-C08-P01-01），每小局 CommonGameServerData::ResetRound 复位为 -1（common_game/common_game_server_data.cpp:68，SVE-ST-C08-P01-02），打出财神时 BoxPlayStep::CheckPlay 覆盖写 SetPiaoOwnerSeat(seat)（common_game/com_game/common_game_com_play.cpp:64，SVE-ST-C08-P01-03）。单字段 -1/座位 结构上无法并存第二个窗口，实现与规则同构。"
+  },
+  {
+   "id": "AT-ST-C08-002",
+   "name": "所有者限制另外三家",
+   "rule": "打出财神的玩家成为所有者，限制另外三家。",
+   "uiRequirement": "",
+   "uiInteraction": "自己受限时手牌灰化并被拦截出牌，其他座位没有专属表现。",
+   "notes": "客户端没有「所有者」概念，只接收受限座位；无法从客户端证实受限对象恰为另外三家。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "场上出现飘财限制，自己是被限制的一方",
+    "condition": "限制内容指向自己这个座位",
+    "action": "把不许打出的手牌设为灰色并禁止点选出牌",
+    "result": "自己手里大部分牌变灰、点不动，只能打还能打的牌"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：打出财神的玩家成为所有者，限制另外三家。服务端实现：所有者由 BoxPlayStep::CheckPlay 在打出财神时 SetPiaoOwnerSeat(seat) 确定（common_game/com_game/common_game_com_play.cpp:63-64，SVE-ST-C08-P01-03/11）；受限判定 IsPiaoRestricted 定义为「有窗口且 seat != 所有者」（common_game/common_game_server_data.h:110，SVE-ST-C08-P01-04），受限集合恰为除所有者外其他座位，并接入吃（common_game/com_game/common_game_com_action.cpp:60，SVE-ST-C08-P01-05）、碰（common_game/com_game/common_game_com_pung.cpp:16，SVE-ST-C08-P01-06）、明杠（common_game/com_game/common_game_com_kong.cpp:21，SVE-ST-C08-P01-07），实现与规则同构。"
+  },
+  {
+   "id": "AT-ST-C08-003",
+   "name": "窗口换人且不叠加",
+   "rule": "之后再有人打出财神，窗口直接换到这个人，不叠加。",
+   "uiRequirement": "",
+   "uiInteraction": "灰态按最新一份限制重算；限制包为空时解除缓存。",
+   "notes": "只能看到限制状态被整包覆盖（非叠加），客户端未建模「窗口转移」本身。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "限制目标换成另一家，重新收到一份限制内容",
+    "condition": "新内容只包含新的受限座位与禁打牌",
+    "action": "用新内容整体替换旧的受限座位和禁打列表",
+    "result": "灰掉的牌按最新一次限制重算，两次限制不会叠加"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：之后再有人打出财神，窗口直接换到这个人，不叠加。服务端实现：BoxPlayStep::CheckPlay 对所有者座位先判再以 SetPiaoOwnerSeat(seat) 直接覆盖赋值，无计数/叠加结构（common_game/com_game/common_game_com_play.cpp:60-64，SVE-ST-C08-P01-03/09），承载字段为单标量 piao_owner_seat（common_game/common_game_server_data.h:107，SVE-ST-C08-P01-01）；覆盖写即换人不叠加，实现与规则同构。"
+  },
+  {
+   "id": "AT-ST-C08-004",
+   "name": "被逼打财神时窗口转移",
+   "rule": "受限玩家若被逼打出刚摸到的财神，窗口就转到他身上。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端没有「受限方打出财神导致窗口转移」的分支处理，也没有窗口状态可转移；限制仅表现为服务端下发的禁打清单。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：受限玩家若被逼打出刚摸到的财神，窗口就转到他身上。服务端实现：BoxPlayStep::MakePower 对受限座位把全手牌写入黑名单、仅留摸进牌可打（common_game/com_game/common_game_com_play.cpp:23-26，SVE-ST-C08-P01-08/16）；BoxPlayStep::CheckPlay 再判 mah == cai_shen 时不做受限分支区分，统一 SetPiaoOwnerSeat(seat) 并累加 piao_count、BroadcastPiao（common_game/com_game/common_game_com_play.cpp:63-66，SVE-ST-C08-P01-11/03/10）；受限方被逼打出的财神同样触发窗口转移，实现与规则同构。"
+  },
+  {
+   "id": "AT-ST-C08-005",
+   "name": "受限时可胡与暗杠",
+   "rule": "受限时可以胡牌和暗杠。",
+   "uiRequirement": "",
+   "uiInteraction": "受限时只要服务端给了权限，操作区仍出现胡按钮与杠按钮，暗杠并入杠按钮的多杠选择。",
+   "notes": "杠按钮混合明杠、暗杠与补杠，客户端无法区分「只允许暗杠」；匹配场提示文案写「除了杠、胡」，未区分暗杠。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "受限一家的回合出现可选操作",
+    "condition": "系统判定该玩家可以胡或可以杠",
+    "action": "照常显示胡按钮与杠按钮，不做额外屏蔽",
+    "result": "受限玩家仍然能点胡或点杠"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：受限时可以胡牌和暗杠。服务端实现：BoxCKongStep::Judge 明示飘财窗口不限制暗杠（common_game/com_game/common_game_com_kong.cpp:132，SVE-ST-C08-P01-12）；BoxHuStep::Judge 的自摸/放铳/抢杠三分支均不引用 IsPiaoRestricted（common_game/com_game/common_game_com_action.cpp:259-297，自摸 JudgeSelf 见 :281，SVE-ST-C08-P01-13/14），受限方胡牌与暗杠判定均不受飘财限制，实现与规则同构。"
+  },
+  {
+   "id": "AT-ST-C08-006",
+   "name": "受限时禁止吃碰与直杠加杠",
+   "rule": "受限时不能吃、碰、直杠、加杠。",
+   "uiRequirement": "",
+   "uiInteraction": "受限时若服务端未下发吃碰杠权限，对应按钮不出现；一旦下发则正常显示。",
+   "notes": "匹配场提示写「除了杠、胡」与需求「不能直杠、加杠」表述不一致；客户端无飘财态禁止直杠与加杠的专门拦截。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "受限一家的回合出现可选操作",
+    "condition": "系统下发的可用操作里没有吃、碰、杠",
+    "action": "完全按系统下发的操作显示按钮，界面自身不再额外判断飘财限制",
+    "result": "受限玩家看不到吃碰杠按钮，操作区只剩能出的牌"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：受限时不能吃、碰、直杠、加杠。服务端实现：吃 BoxChowStep::Judge（common_game/com_game/common_game_com_action.cpp:60，SVE-ST-C08-P01-05）、碰 BoxPungStep::Judge（common_game/com_game/common_game_com_pung.cpp:16，SVE-ST-C08-P01-06）、直杠 BoxMKongStep::Judge（common_game/com_game/common_game_com_kong.cpp:21，SVE-ST-C08-P01-07）、加杠 BoxTKongStep::Judge（common_game/com_game/common_game_com_kong.cpp:203，SVE-ST-C08-P01-15）均在开头直判 IsPiaoRestricted 并返回 false，无配置开关包裹，四种禁手齐备，实现与规则同构。"
+  },
+  {
+   "id": "AT-ST-C08-007",
+   "name": "只能打摸进或最新补进的那一张",
+   "rule": "受限时只能打刚摸进或最新补进的那一张。",
+   "uiRequirement": "",
+   "uiInteraction": "被禁的牌不可触摸，强行出牌会被拦下并弹出「该牌被禁打」。",
+   "notes": "客户端不自行推导「只能打摸进那张」，而是执行服务端下发的禁打清单；杠后补牌是否算摸牌位依赖数据层摸牌标记。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "受限玩家点击一张手牌准备打出",
+    "condition": "这张牌被列入禁打范围",
+    "action": "拦下这次出牌并提示该牌被禁打",
+    "result": "被禁的牌灰掉点不动，硬点会弹出「该牌被禁打」"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：受限时只能打刚摸进或最新补进的那一张。服务端实现：BoxPlayStep::MakePower 把受限座位全手牌写入 play_limit.hands、danfang 留空（common_game/com_game/common_game_com_play.cpp:23-26，SVE-ST-C08-P01-08/16）；PlayStep::JudgeJustPlay 以 Algorithm::IsLimitMah 与 IsSubMah(dfs, mah) 判合法（mah_frame/com_basic/com_play.cpp:269，SVE-ST-C08-P01-17）；IsLimitMah 摸牌位走 dfs 分支（mah_frame/base/algorithm.cpp:380-387，SVE-ST-C08-P01-18）；杠后补牌 TakeStep::TakeAfterKong 重设 danfang 并 SetJustTake（mah_frame/com_basic/com_take.cpp:45-46，SVE-ST-C08-P01-19），补进牌同样进入可打集合，实现与规则同构。"
+  },
+  {
+   "id": "AT-ST-C08-008",
+   "name": "其余手牌压暗且仅本家可见",
+   "rule": "其余手牌压暗，只在自己界面显示。",
+   "uiRequirement": "其余手牌压暗，只在自己界面显示。",
+   "uiInteraction": "受限时被禁手牌变灰、不可点，只有自己手牌区发生变化。",
+   "notes": "「压暗」以染灰实现且仅对服务端列入禁打的牌生效；「只在自己界面显示」对应客户端本就只渲染自己手牌，无法由客户端代码证实别家视野。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "自己处于限制状态",
+    "condition": "手里的牌属于不许打出的范围",
+    "action": "逐张把手牌染灰并设为不可触摸，只处理自己的手牌区",
+    "result": "自己看到大部分手牌变灰不能点"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：其余手牌压暗，只在自己界面显示。服务端实现：受限方不可打牌以 GetHands 全手牌黑名单表达（common_game/com_game/common_game_com_play.cpp:23-26，SVE-ST-C08-P01-16），BaseContext::SendPlayLmts 按单个 seat 下发（mah_frame/base/base_context.cpp:594，SVE-ST-C08-P01-20），手牌下发仅 seat == chair_id 或 is_open_card 时成立（common_game/common_game_context.cpp:546，SVE-ST-C08-P01-21），重连补发出一律只取 chair_id 视角（:565，SVE-ST-C08-P01-22），is_open_card 基线默认 false（mah_frame/base/base_config.cpp:23，SVE-ST-C08-P01-23）、好友房下发口径未含该项。但「压暗」本身仍是客户端染灰渲染，服务端证据只能确证禁打集合与视角口径，不能确证视觉压暗；且可见性随 is_open_card 可配（true 即真实下发他家手牌），细节差异维持原判。"
+  },
+  {
+   "id": "AT-ST-C08-009",
+   "name": "限制盖过吃碰禁手",
+   "rule": "这份限制盖过吃碰禁手。",
+   "uiRequirement": "",
+   "uiInteraction": "命中不同拦截原因时分别弹出「吃禁手规则生效中」「有财必拷响规则生效中」「只碰不吃规则生效中」。",
+   "notes": "客户端把「财飘出牌限制」呈现为「有财必拷响规则生效中」，与遮挡吃碰禁手的优先级无直接对应；未见两类限制的优先级处理。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "受限操作被拦下",
+    "condition": "拦截原因是吃碰禁手、飘财出牌限制或只碰不吃之一",
+    "action": "按拦截原因弹出对应的文字提示",
+    "result": "玩家看到不同文案的提示条，如「有财必拷响规则生效中」「吃禁手规则生效中」"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求语义：这份限制盖过吃碰禁手。服务端实现：吃禁手命中时 BoxChowStep::Execute 写 play_limit 黑名单（common_game/com_game/common_game_com_action.cpp:151-155，SVE-ST-C08-P01-25），BaseData::SetPlayLimit 对同座位整包赋值替换（mah_frame/base/base_data.cpp:1493-1505，SVE-ST-C08-P01-24），飘财侧 BoxPlayStep::MakePower 恒以整包 SetPlayLimit 覆盖（common_game/com_game/common_game_com_play.cpp:26，SVE-ST-C08-P01-16），Execute 注释确认 play_limit 黑名单唯一来源即吃/碰禁手（:118，SVE-ST-C08-P01-26）；好友房创房口径 enable_chow_forbid/enable_pung_forbid 均置 true（hzmj_server/server_config.cpp:31，SVE-ST-C08-P01-27）。整包覆盖即为「盖过」，实现与规则同构。"
+  },
+  {
+   "id": "AT-ST-C08-010",
+   "name": "所有者下次出牌先关窗",
+   "rule": "所有者自己下一次出牌时先关掉窗口。",
+   "uiRequirement": "",
+   "uiInteraction": "自己出牌后手牌恢复亮色，禁打数据仍保留，等待下一次限制内容刷新。",
+   "notes": "客户端没有「出牌即关窗」的实现，只有出牌后清灰的显示动作；关窗时机完全依赖服务端。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "自己打出牌、本回合结束",
+    "condition": "本回合自己有出牌动作",
+    "action": "清掉手牌上的灰态显示，但不主动清除禁打名单",
+    "result": "出牌后手牌恢复亮色，真正解除要等系统下一次给出限制内容"
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：所有者自己下一次出牌时先关掉窗口。服务端实现：BoxPlayStep::CheckPlay 先判 GetPiaoOwnerSeat() == seat 即 SetPiaoOwnerSeat(-1) 结束旧窗口（common_game/com_game/common_game_com_play.cpp:60-61，SVE-ST-C08-P01-09/28），关窗语句位于随后 mah == cai_shen 的开窗判定之前（:63-64，SVE-ST-C08-P01-03），顺序固定为先关后判，实现与规则同构。"
+  },
+  {
+   "id": "AT-ST-C08-011",
+   "name": "又打出财神则窗口重开",
+   "rule": "这张若又是财神，立刻重开。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端无窗口开合状态，也没有「打出的牌是财神则重开窗口」的分支；只会在收到飘次数大于 0 的状态时播一次飘字。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verified",
+   "l7Reason": "需求语义：这张若又是财神，立刻重开。服务端实现：同一 BoxPlayStep::CheckPlay 流程内先关窗（common_game/com_game/common_game_com_play.cpp:60-61，SVE-ST-C08-P01-09/28），再判 mah == cai_shen（:63，SVE-ST-C08-P01-11）并立即 SetPiaoOwnerSeat(seat) 重开（:64，SVE-ST-C08-P01-03），同时累加 piao_count 与 BroadcastPiao（:65-66，SVE-ST-C08-P01-10；统一广播见 common_game/common_game_context.cpp:93-98，SVE-ST-C08-P01-29），关窗与重开同流程顺序执行，实现与规则同构。"
+  },
+  {
+   "id": "AT-ST-C08-012",
+   "name": "飘档加一的条件",
+   "rule": "飘档只在打出财神、且打出后手牌仍然敲响时加 1。",
+   "uiRequirement": "",
+   "uiInteraction": "次数大于 0 时播放飘字；结算时按档位显示财飘、双财飘、三财飘名称。",
+   "notes": "未见「打出后仍敲响才加 1」的判定代码，客户端直接采用服务端次数。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "有人打出财神",
+    "condition": "系统判定这次飘财成立",
+    "action": "接收并保存该座位的飘次数",
+    "result": "飘次数按系统给出的值更新，结算时显示对应财飘档位"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：飘档只在打出财神、且打出后手牌仍然敲响时加 1。服务端：BoxPlayStep::CheckPlay 先判 cai_shen != MV_NONE && mah == cai_shen 才进飘档分支（common_game/com_game/common_game_com_play.cpp:63），随后 IsQiaoXiangNow(seat) 为真才 SetPiaoLevel+1、否则归零（common_game/com_game/common_game_com_play.cpp:70）；IsQiaoXiangNow 所用 GetHands(seat) 已是移除所打之牌后的手牌（common_game/com_game/common_game_com_play.cpp:33），IsQiaoXiang 的万能听即敲响（common_game/common_game_algorithm.cpp:16）（SVE-ST-C08-P02-01/02/03/04）。「打出财神」+「打出后仍敲响」双条件与规则同构。"
+  },
+  {
+   "id": "AT-ST-C08-013",
+   "name": "未敲响打财神则飘档与杠链归零",
+   "rule": "没敲响就打财神，飘档和杠链都归零。",
+   "uiRequirement": "",
+   "uiInteraction": "次数为 0 时不播放飘字，界面无其他反馈。",
+   "notes": "客户端完全不存在「杠链」概念与相应归零逻辑，归零只能由服务端计数体现。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "打出财神但手牌没有敲响",
+    "condition": "该座位飘次数被清零",
+    "action": "收到 0 次时不再播放飘字动画",
+    "result": "玩家看不到飘字，次数维持清零状态"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：没敲响就打财神，飘档和杠链都归零。服务端：财神但 IsQiaoXiangNow 为假的 else 分支同时 SetPiaoLevel(seat, 0) 与 ClearGangChain(seat)（common_game/com_game/common_game_com_play.cpp:72）；ClearGangChain 将 gang_chain 置 0 并清暗杠标记（common_game/com_game/common_game_server_data.h:84）（SVE-ST-C08-P02-05/06/03）。飘档与杠链两处归零与规则同构。"
+  },
+  {
+   "id": "AT-ST-C08-014",
+   "name": "打出普通牌飘档归零",
+   "rule": "打出普通牌同样归零。",
+   "uiRequirement": "",
+   "uiInteraction": "计数归零后不再播放飘字。",
+   "notes": "客户端出牌过程中不改飘次数；若服务端在归零时不下发飘状态，界面也不会有任何归零动作。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "打出普通牌",
+    "condition": "该座位飘次数被清零",
+    "action": "界面没有清零动作，只在收到 0 次时不再播飘字",
+    "result": "归零后座位旁不再出现飘字"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：打出普通牌时飘档同样归零。服务端：非财神出牌的 else 分支无条件 SetPiaoLevel(seat, 0) 并 ClearGangChain(seat)（common_game/com_game/common_game_com_play.cpp:76；ClearGangChain 见 common_game/com_game/common_game_server_data.h:84）（SVE-ST-C08-P02-07/06）。打出普通牌即归零与规则同构。"
+  },
+  {
+   "id": "AT-ST-C08-015",
+   "name": "各家飘档独立",
+   "rule": "各家飘档独立。",
+   "uiRequirement": "",
+   "uiInteraction": "飘字动画按座位对应的碰杠节点播放，各家互不影响。",
+   "notes": "按座位独立存储已确认；独立累加的判定仍在服务端。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "某一家打出财神",
+    "condition": "该家的飘次数发生变化",
+    "action": "按座位分别记录四家的飘次数，互不覆盖",
+    "result": "每家各算各的飘，别人飘了不影响自己"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：各家飘档独立。服务端：piao_level 以 AutoPropertyBySeat 按座位数组存储（common_game/com_game/common_game_server_data.h:97），CheckPlay 仅自增当前出牌者座位（common_game/com_game/common_game_com_play.cpp:71），算番按 seat 取档（common_game/common_game_algorithm.cpp:242），广播 MsgPiao 亦按 seat 携带该座位次数（common_game/common_game_context.cpp:93）（SVE-ST-C08-P02-08/09/10/11）。按座位存储、累加、读取、下发全链路互不影响，独立累加判定已由服务端确证，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C08-016",
+   "name": "吃碰杠不清飘档",
+   "rule": "吃、碰、杠不清飘档。",
+   "uiRequirement": "",
+   "uiInteraction": "吃碰杠后飘字与飘次数保持不变。",
+   "notes": "以「吃碰杠流程不触碰飘次数、清零点只有小局重置」间接印证，未见正向断言代码。",
+   "verdict": "partial",
+   "businessBehavior": {
+    "trigger": "有玩家吃、碰或杠",
+    "condition": "该玩家已有飘次数",
+    "action": "吃碰杠流程不改动飘次数",
+    "result": "吃碰杠后飘字与次数保持原样"
+   },
+   "l7": "verification_required",
+   "l7Reason": "需求：吃、碰、杠都不清飘档。服务端：吃/碰执行体只调 ClearGangChain、全程不写 piao_level/piao_count（common_game/com_game/common_game_com_action.cpp:130、common_game/com_game/common_game_com_pung.cpp:147），明杠仅 PushGangChain 与只读 GetPiaoLevel 判断、未清零（common_game/com_game/common_game_com_kong.cpp:116），并有「吃/碰/杠不打断」注释（common_game/com_game/common_game_com_play.cpp:68）（SVE-ST-C08-P02-12/13/14/15）。吃、碰与明杠已确证不触碰飘档，但杠分支仅取证到明杠 BoxMKongStep，暗杠/补杠未取证，无法确证「杠」全部类型不清飘档，细节覆盖不足，维持 partial。"
+  },
+  {
+   "id": "AT-ST-C08-017",
+   "name": "吃和碰清杠链",
+   "rule": "吃和碰会清杠链。",
+   "uiRequirement": "",
+   "uiInteraction": "",
+   "notes": "客户端没有杠链数据、杠链界面或清杠链逻辑；吃牌与碰牌处理只更新面子数据与动作动画。",
+   "verdict": "not_found",
+   "businessBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "l7": "verified",
+   "l7Reason": "需求：吃和碰会清杠链。服务端：BoxChowStep::Execute 末尾 ClearGangChain(chow_seat_)（common_game/com_game/common_game_com_action.cpp:130）、BoxPungStep::Execute 末尾 ClearGangChain(pung_seat_)（common_game/com_game/common_game_com_pung.cpp:147），ClearGangChain 置 gang_chain=0 并清暗杠标记（common_game/com_game/common_game_server_data.h:84）（SVE-ST-C08-P02-13/14/06）。吃、碰均显式清杠链，与规则同构。"
+  },
+  {
+   "id": "AT-ST-C08-018",
+   "name": "飘次数本局累加与小局重置",
+   "rule": "飘次数本局累加，小局重置时清掉。",
+   "uiRequirement": "",
+   "uiInteraction": "新一局开始后不残留上一局的飘字与计数。",
+   "notes": "小局清零已确认；累加由服务端计算。大结算中的「财飘 N 次」统计的是财飘胡牌次数，不是飘次数。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "一局开始或界面重置",
+    "condition": "进入新的小局",
+    "action": "把四个座位的飘次数一起清零",
+    "result": "新一局看不到上一局留下的飘字和次数"
+   },
+   "l7": "verified",
+   "l7Reason": "需求：飘次数本局累加，小局重置时清掉。服务端：每打出一次财神 SetPiaoCount(seat, +1) 并 BroadcastPiao（common_game/com_game/common_game_com_play.cpp:65），每小局开局 OnResetGameStart 调 ResetRound（common_game/common_game_logic.cpp:467），ResetRound 逐座位 SetPiaoCount(0)/SetPiaoLevel(0)（common_game/common_game_server_data.cpp:54）（SVE-ST-C08-P02-16/17/18/19）。本局累加与小局清零均与规则同构。"
+  },
+  {
+   "id": "AT-ST-C08-019",
+   "name": "碰杠位播放飘字",
+   "rule": "次数大于 0 时，在该座位碰杠位播放「飘」字。",
+   "uiRequirement": "次数大于 0 时，在该座位碰杠位播放「飘」字。",
+   "uiInteraction": "在该玩家碰杠位置闪出「飘」字动画并自动消失。",
+   "notes": "播放在复盘中会跳过；飘字节点与吃碰杠动作共用，播放结束统一隐藏。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "某家打出财神导致飘次数大于 0",
+    "condition": "飘次数大于 0",
+    "action": "在该座位对应的碰杠位置播放一个「飘」字特效，播完自动隐藏",
+    "result": "该玩家座位旁闪出一个「飘」字动画"
+   },
+   "l7": "verified",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "id": "AT-ST-C08-020",
+   "name": "飘字无常驻标签",
+   "rule": "没有常驻标签。",
+   "uiRequirement": "没有常驻标签。",
+   "uiInteraction": "座位旁只在瞬间出现飘字，之后不残留任何飘相关标签或数字。",
+   "notes": "全局搜索未见飘次数的常驻文本或角标元素，仅小局结算外的「财飘次数」统计属于结算数据，不是座次常驻标签。",
+   "verdict": "confirmed",
+   "businessBehavior": {
+    "trigger": "飘字特效播放结束",
+    "condition": "飘次数大于 0",
+    "action": "特效节点隐藏，不生成常驻文字或角标",
+    "result": "座位旁只在瞬间看到「飘」字，之后不残留任何飘次数标签"
+   },
+   "l7": "verified",
+   "l7Reason": "本轮未出复核建议，维持基线差异"
+  }
+ ]
+}

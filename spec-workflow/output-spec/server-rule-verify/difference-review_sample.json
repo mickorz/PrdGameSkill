@@ -1,6 +1,6 @@
 {
  "schemaVersion": 1,
- "sampleNote": "OSG-W4 T0.4 交付样本：复核前后对照（14 条代表性条目，覆盖 v2 全部 2 个 conflict）。二审修订（2026-11-14）：AT-ST-C01-002 撤销升级建议（scope 降 unknown）；l7 为业务分类四值（pending 时为 proposed 性质），reviewStatus 为审批状态（pending/approved/rejected），两字段独立；effectiveDifference 为当前生效结论（未批准时等于 previousDifference）。全部条目 reviewStatus=pending，批准后由装配扩展合并进 v3，不覆盖 v2",
+ "sampleNote": "OSG-W4 T0.4 交付样本：复核前后对照（14 条代表性条目，覆盖 v2 全部 2 个 conflict）。二审修订（2026-11-14）：AT-ST-C01-002 撤销升级建议（scope 降 unknown）；l7 为业务分类四值（pending 时为 proposed 性质），reviewStatus 为审批状态（pending/approved/rejected），两字段独立；effectiveDifference 为当前生效结论（未批准时等于 previousDifference）。全部条目 reviewStatus=pending，批准后由装配扩展合并进 v3，不覆盖 v2。S1.1 修订（2026-11-14）：l7Projection 手写统计漂移经 classify-l7.mjs 重算修正（verified 2/verification_required 10 → 1/11），统计块一律确定性计算",
  "baseline": {
   "indexPath": "spec-workflow/output-spec/2026-11-14/1-spec/feature_index.json",
   "differenceStats": {
@@ -26,11 +26,11 @@
   ]
  },
  "l7Projection": {
-  "verified": 2,
-  "verification_required": 10,
+  "verified": 1,
+  "verification_required": 11,
   "decision_required": 2,
   "not_applicable": 0,
-  "note": "L7 仅对已复核 14 条；其余 305 条待 S3 复核"
+  "note": "L7 仅对已复核 14 条；其余 305 条待 S3 复核。S1.1（2026-11-14）按条目 l7 经 classify-l7.mjs 确定性重算修正：原手写 verified 2 / verification_required 10 与条目不符（AT-ST-C01-002 二审撤销升级建议后统计块未同步重算），统计块禁止手工填写"
  },
  "entries": [
   {

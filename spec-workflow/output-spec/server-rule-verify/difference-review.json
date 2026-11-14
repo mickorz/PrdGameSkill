@@ -403,7 +403,7 @@
    "atomId": "AT-ST-C02-008",
    "previousDifference": "conflict",
    "reviewedDifference": "conflict",
-   "reviewReason": "需求语义：打出后按普通白板留在牌河且不再作为财神参与后续牌局。客户端证据：牌河与出牌放大牌面重新刷财神红（BoxHzmjMah2DView.ts:1127-1132、BoxHzmjMainView.ts:1044-1054），与“按普通白板展示”不一致，该视觉冲突独立成立。服务端补充：虽以原牌值白板写入牌河（SVE-ST-C02-P01-19/20，com_play.cpp:247、base_data.cpp:606），但出牌区白板仍被计入 cai_shen_count（SVE-ST-C02-P01-21，common_game_algorithm.cpp:248），与“不再作为财神”口径同样相反，服务端证据不能消解冲突。",
+   "reviewReason": "需求语义：打出后按普通白板留在牌河且不再作为财神参与后续牌局。客户端证据：牌河与出牌放大牌面重新刷财神红（BoxHzmjMah2DView.ts:1127-1132、BoxHzmjMainView.ts:1044-1054），与“按普通白板展示”不一致，该视觉冲突独立成立。服务端补充：虽以原牌值白板写入牌河（SVE-ST-C02-P01-19/20，com_play.cpp:247、base_data.cpp:606），但出牌区白板仍被计入 cai_shen_count（SVE-ST-C02-P01-21，common_game_algorithm.cpp:248），与“不再作为财神”口径同样相反，服务端证据不能消解冲突。｜策划裁决（2026-11-14）：B 改需求（接受现状实现——打出的财神保持牌河财神高亮，需求侧修订待上游）",
    "reviewRule": "ui-conflict-stands-alone（维持 conflict，服务端证据不改判消冲突）",
    "scopeApplicability": "active",
    "scopeNote": "SVE-19/20 显示打出财神以原牌值（白板）写入牌河，恒实现；但 SVE-21 显示出牌区白板仍被计入 cai_shen_count，与“不再作为财神”相反，构成需复核的口径差。",
@@ -413,9 +413,9 @@
     "SVE-ST-C02-P01-21"
    ],
    "l7": "decision_required",
-   "reviewStatus": "pending",
+   "reviewStatus": "approved",
    "effectiveDifference": "conflict",
-   "l7Basis": "proposed"
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C02-009",

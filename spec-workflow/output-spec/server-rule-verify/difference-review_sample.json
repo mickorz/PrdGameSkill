@@ -1,6 +1,6 @@
 {
  "schemaVersion": 1,
- "sampleNote": "OSG-W4 T0.4 交付样本：复核前后对照（14 条代表性条目，覆盖 v2 全部 2 个 conflict）。二审修订（2026-11-14）：AT-ST-C01-002 撤销升级建议（scope 降 unknown）；l7 为业务分类四值（pending 时为 proposed 性质），reviewStatus 为审批状态（pending/approved/rejected），两字段独立；effectiveDifference 为当前生效结论（未批准时等于 previousDifference）。全部条目 reviewStatus=pending，批准后由装配扩展合并进 v3，不覆盖 v2。S1.1 修订（2026-11-14）：l7Projection 手写统计漂移经 classify-l7.mjs 重算修正（verified 2/verification_required 10 → 1/11），统计块一律确定性计算",
+ "sampleNote": "OSG-W4 T0.4 交付样本：复核前后对照（14 条代表性条目，覆盖 v2 全部 2 个 conflict）。二审修订（2026-11-14）：AT-ST-C01-002 撤销升级建议（scope 降 unknown）；l7 为业务分类四值（pending 时为 proposed 性质），reviewStatus 为审批状态（pending/approved/rejected），两字段独立；effectiveDifference 为当前生效结论（未批准时等于 previousDifference）。全部条目 reviewStatus=pending，批准后由装配扩展合并进 v3，不覆盖 v2。S1.1 修订（2026-11-14）：l7Projection 手写统计漂移经 classify-l7.mjs 重算修正（verified 2/verification_required 10 → 1/11），统计块一律确定性计算。S2.1 复核字段更新（2026-11-14）：6 条 unknown 复核结论依服务端深查证据升级（C01-002/C02-006/C02-007/C02-009/C04-001/C04-012），l7Projection 分布不变（1/11/2/0）；difference 结论不变（scope 与 difference 独立）",
  "baseline": {
   "indexPath": "spec-workflow/output-spec/2026-11-14/1-spec/feature_index.json",
   "differenceStats": {
@@ -55,14 +55,15 @@
    "reviewedDifference": "unverified",
    "reviewReason": "二审撤销升级建议（2026-11-14）：Step 链注册顺序与执行顺序未证，scope 降 unknown，时序规则不足以判 consistent；待 S2 补调度代码证据后重判",
    "reviewRule": "evidence-is-not-consistency",
-   "scopeApplicability": "unknown",
+   "scopeApplicability": "active",
    "evidenceIds": [
     "SVE-ST-C01-002"
    ],
    "l7": "verification_required",
    "reviewStatus": "pending",
    "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "l7Basis": "proposed",
+   "scopeNote": "S2.1 服务端复核：Step 链 AddNext 直证定庄先于骰子/发牌（common_game_init.cpp:179-193），见 SVE-ST-C01-002/008"
   },
   {
    "atomId": "AT-ST-C01-006",
@@ -143,14 +144,15 @@
    "reviewedDifference": "unverified",
    "reviewReason": "Joker 移出候选机制方向支持「不能吃白板」，但候选生成到权限下发的完整调用链未核，不足以升 consistent",
    "reviewRule": "evidence-is-not-consistency",
-   "scopeApplicability": "unknown",
+   "scopeApplicability": "conditional",
    "evidenceIds": [
     "SVE-ST-C02-002"
    ],
    "l7": "verification_required",
    "reviewStatus": "pending",
    "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "l7Basis": "proposed",
+   "scopeNote": "S2.1 服务端复核：白板财神（cai_shen_type=0 默认）白板从吃候选移除；翻财神（=1）白板为替身可组顺子（InitInstdChows），见 SVE-ST-C02-006（base_data.cpp:1826）"
   },
   {
    "atomId": "AT-ST-C04-013",
@@ -173,14 +175,15 @@
    "reviewedDifference": "unverified",
    "reviewReason": "框架 ask 机制存在但优先级排序（胡>碰/杠>吃）实现细节未展开，不足以判定",
    "reviewRule": "no-server-evidence-is-not-conflict",
-   "scopeApplicability": "unknown",
+   "scopeApplicability": "active",
    "evidenceIds": [
     "SVE-ST-C04-003"
    ],
    "l7": "verification_required",
    "reviewStatus": "pending",
    "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "l7Basis": "proposed",
+   "scopeNote": "S2.1 服务端复核：级别常量胡4>碰=杠3>吃2（macros.h:203-206）+ ConAction 最高级未响应阻塞/已响应立即执行（con_action.cpp:40-57），见 SVE-ST-C04-003/004/005"
   },
   {
    "atomId": "AT-ST-C01-005",
@@ -203,14 +206,15 @@
    "reviewedDifference": "unverified",
    "reviewReason": "发现疑似禁打财神状态机制（com_action.cpp:165），与需求「无前置状态限制」构成矛盾候选；需 S2 核验 CheckPlay 后改判 conflict 或维持",
    "reviewRule": "no-server-evidence-is-not-conflict（矛盾候选标记，S2 优先）",
-   "scopeApplicability": "unknown",
+   "scopeApplicability": "active",
    "evidenceIds": [
     "SVE-ST-C02-004"
    ],
    "l7": "verification_required",
    "reviewStatus": "pending",
    "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "l7Basis": "proposed",
+   "scopeNote": "S2.1 服务端复核：打财神无爆头/敲响前置；com_action.cpp:165 为吃禁手黑名单翻财神归一化（CalcChowForbidMahs com_action.cpp:162-206）非状态前置，矛盾候选解除，见 SVE-ST-C02-004/010"
   },
   {
    "atomId": "AT-ST-C02-006",
@@ -218,14 +222,15 @@
    "reviewedDifference": "partial",
    "reviewReason": "十风计数证据支持白板按普通牌值处理，但打牌链路未完整核验，维持部分一致",
    "reviewRule": "evidence-is-not-consistency",
-   "scopeApplicability": "unknown",
+   "scopeApplicability": "active",
    "evidenceIds": [
     "SVE-ST-C02-003"
    ],
    "l7": "verification_required",
    "reviewStatus": "pending",
    "effectiveDifference": "partial",
-   "l7Basis": "proposed"
+   "l7Basis": "proposed",
+   "scopeNote": "S2.1 服务端复核：CheckPlay 任意手牌可打无财神专项禁打，打财神仅触发飘财窗口/飘级（com_play.cpp:53-85/18-29），见 SVE-ST-C02-003/010"
   },
   {
    "atomId": "AT-ST-C04-012",
@@ -233,14 +238,15 @@
    "reviewedDifference": "partial",
    "reviewReason": "askid 过期拒绝机制方向支持「高优先级成立后其他响应取消」，细节未核，维持部分一致",
    "reviewRule": "evidence-is-not-consistency",
-   "scopeApplicability": "unknown",
+   "scopeApplicability": "active",
    "evidenceIds": [
     "SVE-ST-C04-003"
    ],
    "l7": "verification_required",
    "reviewStatus": "pending",
    "effectiveDifference": "partial",
-   "l7Basis": "proposed"
+   "l7Basis": "proposed",
+   "scopeNote": "S2.1 服务端复核：最高级已响应立即执行并切换胜者步骤，其余响应随 ClearAllMap 失效（con_action.cpp:57-61/28-31），见 SVE-ST-C04-003/005"
   }
  ]
 }

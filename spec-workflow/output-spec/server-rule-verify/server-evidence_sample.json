@@ -136,8 +136,10 @@
    "file": "common_game/com_game/common_game_com_action.cpp",
    "location": "common_game/com_game/common_game_com_action.cpp:165",
    "symbol": "CalcChowForbidMahs 注释",
-   "excerpt": "存在禁打财神机制：财神是万能，禁打财神值实为禁打其物理替身白板——疑似与出牌状态条件相关，待 S2 核验 CheckPlay",
-   "configKeys": []
+   "excerpt": "S2.1 已核验：此处「禁打财神值」是吃禁手黑名单（enable_chow_forbid）的翻财神归一化处理（白板↔财神值互转），非打出财神的前置状态限制；CheckPlay（com_play.cpp:53-85）无爆头前置",
+   "configKeys": [
+    "enable_chow_forbid"
+   ]
   },
   {
    "id": "SVE-ST-C04-001",
@@ -167,6 +169,167 @@
    "location": "mah_frame/com_basic/com_action.cpp:92",
    "symbol": "ActionStep askid 机制",
    "excerpt": "HuC/PlayC/Cancel 响应统一携带 askid，过期 askid 拒绝（L167）——低优先级提交等待/取消的框架机制",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C01-008",
+   "atomId": "AT-ST-C01-002",
+   "layer": "common_game",
+   "file": "common_game/common_game_init.cpp",
+   "location": "common_game/common_game_init.cpp:179",
+   "symbol": "Step 链连接 AddNext",
+   "excerpt": "start→zhuang→chip→(specf)→mix_card→joker→take_first→…→take_first 发牌（L179-193）：定庄（JudgeZhuang）先于掷骰（ChipStep）与发牌（TakeFirstStep）",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C01-009",
+   "atomId": "AT-ST-C01-008",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:358",
+   "symbol": "BoxResultStep::UpdateBankerLevel",
+   "excerpt": "L369-370 BankerContinueType==0 时 if (level < 3) { ++level; } 三牢庄封顶；hzmj 无 banker_continue_type JSON 覆写入口（common_game_server_config.cpp:12 默认 0，注释「好友房不可配置为 1」；仅 xiaoshanmj 可配），好友房恒三牢封顶",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C02-005",
+   "atomId": "AT-ST-C02-001",
+   "layer": "common_game",
+   "file": "common_game/common_game_init.cpp",
+   "location": "common_game/common_game_init.cpp:53",
+   "symbol": "CommonGameInit::InitData 组墙",
+   "excerpt": "万/条/筒各 36（has_shun，DEF_WAN/TIAO/TONG_COUNT=36）、风 16（DEF_FENG_COUNT）、箭 12（DEF_JIAN_COUNT；del_feng 时仅留白板 4 张 L95/L108），每种 4 张入墙（L75-113 + mah_frame/base/macros.h:218-222）；enable_two_suit（≤3人剔万字）与 del_feng 默认 false → 136 张",
+   "configKeys": [
+    "enable_two_suit",
+    "del_feng"
+   ]
+  },
+  {
+   "id": "SVE-ST-C02-006",
+   "atomId": "AT-ST-C02-009",
+   "layer": "mah_frame",
+   "file": "base/base_data.cpp",
+   "location": "mah_frame/base/base_data.cpp:1826",
+   "symbol": "BaseData::InitJokerChows",
+   "excerpt": "对每个财神移除全部三类顺子候选组合（joker-2/joker-1/joker、joker-1/joker/joker+1、joker/joker+1/joker+2）；由 BoxJokerStep::Execute（com_ju.cpp:254）在注册财神后调用，BoxChowStep::Judge 的 TestChow 候选（com_action.cpp:82）不再含财神",
+   "configKeys": [
+    "cai_shen_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C02-007",
+   "atomId": "AT-ST-C02-010",
+   "layer": "mah_frame",
+   "file": "base/base_data.cpp",
+   "location": "mah_frame/base/base_data.cpp:1855",
+   "symbol": "BaseData::InitJokerPungs",
+   "excerpt": "对每个财神移除财神刻子候选组合（joker×3）；PungStep::Judge 的 TestPung 候选（com_pung.cpp:90）不再含财神，白板财神模式（cai_shen_type=0）下白板不能碰",
+   "configKeys": [
+    "cai_shen_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C02-008",
+   "atomId": "AT-ST-C02-011",
+   "layer": "mah_frame",
+   "file": "base/base_data.cpp",
+   "location": "mah_frame/base/base_data.cpp:1868",
+   "symbol": "BaseData::InitJokerKongs",
+   "excerpt": "对每个财神移除明杠/暗杠/补杠全部三类候选组合（DelMKong/DelCKong/DelTKong）；MKongStep::Judge 的 TestMKong 候选（com_kong.cpp:101）不再含财神，白板财神模式下打出的白板财神不能杠",
+   "configKeys": [
+    "cai_shen_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C02-009",
+   "atomId": "AT-ST-C02-012",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:363",
+   "symbol": "BoxHuStep::JudgeDiscard",
+   "excerpt": "L363-364 注释直证「财神不能放铳：别人打出的财神不能被胡（需求 §2 财神/§8 放铳）」+ if (GetJustPlay() == GetCaiShen()) return false——对财神牌值恒成立（点炮权限本身的 enable_banker_discard_hu/三牢门槛是另一原子语义）",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C02-010",
+   "atomId": "AT-ST-C02-006",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_play.cpp",
+   "location": "common_game/com_game/common_game_com_play.cpp:53",
+   "symbol": "BoxPlayStep::CheckPlay",
+   "excerpt": "打财神仅触发飘财窗口/飘级结算（L59-79）与跟庄状态机，无爆头/敲响前置判定；框架 PlayStep::CheckPlay（mah_frame com_play.cpp:235-254）任意手牌可打（仅黑名单/摸进牌窗口校验，财神与普通牌同口径）；服务端还会主动产出「打财神→万能听」建议（L322-345）",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C04-004",
+   "atomId": "AT-ST-C04-001",
+   "layer": "mah_frame",
+   "file": "base/macros.h",
+   "location": "mah_frame/base/macros.h:203",
+   "symbol": "kStepLevel 级别常量",
+   "excerpt": "kStepLevelChow=2（吃）/kStepLevelPung=3（碰）/kStepLevelKong=3（杠）/kStepLevelHu=4（胡）：点炮胡最高、碰与直杠同为 3 级、吃最低（L203-206）",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C04-005",
+   "atomId": "AT-ST-C04-011",
+   "layer": "mah_frame",
+   "file": "base/con_action.cpp",
+   "location": "mah_frame/base/con_action.cpp:19",
+   "symbol": "ConAction::OnConAction",
+   "excerpt": "最高级未响应（is_respond==false）则 return false 不执行（L57）——低优先级先提交需等待全部更高优先级玩家响应；最高级已响应则立即 DoConAction（L59-60）执行并切换步骤（com_action.cpp:546-582 SetNextActionStep+DoActionEnd），其余响应随 ClearAllMap 失效（高优先级成立后其余取消）",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C04-006",
+   "atomId": "AT-ST-C04-004",
+   "layer": "mah_frame",
+   "file": "com_basic/com_pung.cpp",
+   "location": "mah_frame/com_basic/com_pung.cpp:66",
+   "symbol": "PungStep::Judge",
+   "excerpt": "座位升序扫描（0→playerCount-1），首个 TestPung 成功座位即 pung_seat_ 并 return true（L66-104）——碰权限只下发给确实能成立且座位号最小的那一家",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C04-007",
+   "atomId": "AT-ST-C04-003",
+   "layer": "mah_frame",
+   "file": "com_basic/com_kong.cpp",
+   "location": "mah_frame/com_basic/com_kong.cpp:80",
+   "symbol": "MKongStep::Judge",
+   "excerpt": "直杠（对刚打出牌的明杠）同构：座位升序扫描首个 TestMKong 成功者独得权限（L80-114）；碰与直杠同级（macros.h:204-205 均=3），同级并存全部响应后按 map 升序（key=seat<<16|power，macros.h:345）座位号小者先裁决",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C04-008",
+   "atomId": "AT-ST-C04-005",
+   "layer": "mah_frame",
+   "file": "com_basic/com_hu.cpp",
+   "location": "mah_frame/com_basic/com_hu.cpp:165",
+   "symbol": "HuStep::MakePower",
+   "excerpt": "全部 hu_power_seats 逐一入 TPower 授胡权限（L165-178），ActionStep::SendPowerToClient 按座位下发（com_action.cpp:983-1013）——多人可胡时每家都收到胡；hzmj 点炮候选为庄闲配对（BoxHuStep::JudgeDiscard com_action.cpp:360-381，多闲家对庄弃牌均入候选）",
+   "configKeys": [
+    "enable_banker_discard_hu"
+   ]
+  },
+  {
+   "id": "SVE-ST-C04-009",
+   "atomId": "AT-ST-C04-009",
+   "layer": "mah_frame",
+   "file": "com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:826",
+   "symbol": "ActionStep::GetConActionWeight / GetSeatWeight",
+   "excerpt": "非一炮多响时胡权重 = kStepLevelHu + GetSeatWeight(seat)，GetSeatWeight = mpcnt - (seat - whoplay + mpcnt) % mpcnt（距出牌者近权重高，L834-838）——近者胡先裁决、近者成立则远者不再执行；近者 OnMsgCancel → ClearUserConAction 清其全部条目（con_action.cpp:70-81）后远者已响应胡成为最高即执行（放弃后顺延）",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C04-010",
+   "atomId": "AT-ST-C04-008",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:534",
+   "symbol": "BoxHuStep::CheckHu 注释",
+   "excerpt": "「hzmj 未启用一炮多响（IsDuoXiang 默认关闭），单一胡牌座位」；Execute 顶部 SetIsHuDuoXiang(false)（L239）；hzmj 30 项好友房配置无 is_duo_xiang 覆写入口",
    "configKeys": []
   }
  ]

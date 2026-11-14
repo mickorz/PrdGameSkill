@@ -6,7 +6,8 @@
 //      33 原子样本重跑与 difference-review_sample 的 l7 分布一致）；分布 verified 1 / verification_required 11 /
 //      decision_required 2 / not_applicable 0 与 l7Projection 一致；全部 pending → effectiveDifference 分布
 //      = previousDifference 分布（1/2/2/9）、l7Approved 全 0、未复核 305；
-//      S1.4 回归锚点：scope 样本 34 条目、stats active 2 / conditional 9 / unknown 23 / inactive 0；
+//      S1.4 回归锚点：scope 样本 34 条目、stats active 14 / conditional 20 / unknown 0 / inactive 0
+//      （S2.1 深查落判后；S2.1 前为 active 2/conditional 9/unknown 23）；
 //      关键口径：C04-013 verified+pending+proposed；C02-008 证据级 client-visual → active → decision_required；
 //      C15-018 补据后同样走证据级 client-visual → active → decision_required（S1.3 前缺 scope-index 条目为
 //      unknown 不降级）；C02-004 consistent×conditional 不算 verified
@@ -107,7 +108,7 @@ const readJson = (p) => JSON.parse(fs.readFileSync(p, 'utf8'))
   // 人工预期（二审修订 + S1.3 补据）钉死，样本数据变化必须显式更新此锚点
   const siSample = readJson(path.join(SAMPLE_DIR, 'scope-index_sample.json'))
   assert.equal(siSample.entries.length, 34)
-  assert.deepEqual(siSample.stats, { active: 2, conditional: 9, unknown: 23, inactive: 0 })
+  assert.deepEqual(siSample.stats, { active: 14, conditional: 20, unknown: 0, inactive: 0 }) // S2.1 深查落判后（23 条 unknown 全部升级）
 
   // 关键口径逐条
   const find = (id) => out.entries.find((e) => e.atomId === id)

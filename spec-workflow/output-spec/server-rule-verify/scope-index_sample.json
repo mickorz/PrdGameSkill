@@ -1,15 +1,15 @@
 {
  "schemaVersion": 1,
- "sampleNote": "OSG-W4 T0.2 交付样本：ST-C01/02/04 共 33 原子的作用域判定。二审修订（2026-11-14）：AT-ST-C01-002 因执行顺序未证由 active 降 unknown；conflict 类条目必须提供证据级 scope（evidenceScopes），Atom 级 applicability 仅为汇总视图；缺失 scope 的原子一律 unknown（未查证），不得缺省为 inactive。判定规则见 dev-docs/design/2026-11-14-OSG-W4-L7分类与玩法配置作用域设计.md 3.1/3.3。S1.3 补据（2026-11-14）：AT-ST-C15-018（difference-review 中的 ST-C15 conflict 条目）补证据级 scope（client-visual active），样本扩至 34 条目（ST-C01/02/04 全部 33 原子 + ST-C15 conflict 条目），满足设计 112 行「conflict 条目必须带 evidenceScopes」硬闸门",
+ "sampleNote": "OSG-W4 T0.2 交付样本：ST-C01/02/04 共 33 原子的作用域判定。二审修订（2026-11-14）：AT-ST-C01-002 因执行顺序未证由 active 降 unknown；conflict 类条目必须提供证据级 scope（evidenceScopes），Atom 级 applicability 仅为汇总视图；缺失 scope 的原子一律 unknown（未查证），不得缺省为 inactive。判定规则见 dev-docs/design/2026-11-14-OSG-W4-L7分类与玩法配置作用域设计.md 3.1/3.3。S1.3 补据（2026-11-14）：AT-ST-C15-018（difference-review 中的 ST-C15 conflict 条目）补证据级 scope（client-visual active），样本扩至 34 条目（ST-C01/02/04 全部 33 原子 + ST-C15 conflict 条目），满足设计 112 行「conflict 条目必须带 evidenceScopes」硬闸门。S2.1 深查落判（2026-11-14）：23 条 unknown 全部依服务端只读源码证据升级（二审优先三项均已闭环：C02-007 无爆头前置判 active、C01-006/007 创房下发值待 S2.2 客户端核对维持 conditional、ST-C04 askid 裁决链全量落判），unknown 清零；证据见 server-evidence_sample.json 新增 SVE-ST-C01-008/009、SVE-ST-C02-005~010、SVE-ST-C04-004~010",
  "scopeTarget": {
   "game": "hzmj",
   "roomType": "friend",
   "gameId": "42320"
  },
  "stats": {
-  "active": 2,
-  "conditional": 9,
-  "unknown": 23,
+  "active": 14,
+  "conditional": 20,
+  "unknown": 0,
   "inactive": 0
  },
  "entries": [
@@ -29,15 +29,16 @@
   },
   {
    "atomId": "AT-ST-C01-002",
-   "applicability": "unknown",
+   "applicability": "active",
    "configVerified": true,
-   "callPathVerified": false,
-   "configCondition": "无配置依赖（时序规则）",
-   "callPath": "common_game_init.cpp:148 注册顺序已见，push 顺序即执行顺序未核",
+   "callPathVerified": true,
+   "configCondition": "无配置依赖（Step 链结构固定）",
+   "callPath": "InitStepForBox AddNext 链 start→zhuang→chip→(specf)→mix_card→joker→take_first→…（common_game_init.cpp:179-193）：定庄 JudgeZhuang（com_ju.cpp:116）先于掷骰 ChipStep 与发牌 TakeFirstStep",
    "evidenceIds": [
-    "SVE-ST-C01-002"
+    "SVE-ST-C01-002",
+    "SVE-ST-C01-008"
    ],
-   "unresolved": "二审降级（2026-11-14）：Step 链注册顺序与实际执行顺序未验证，先标 unknown；补调度代码证据后升级",
+   "unresolved": "",
    "noServerEvidence": false
   },
   {
@@ -107,48 +108,55 @@
   },
   {
    "atomId": "AT-ST-C01-008",
-   "applicability": "unknown",
+   "applicability": "active",
    "configVerified": true,
-   "callPathVerified": false,
-   "configCondition": "封顶钳制在 GetConfiguredBankerLevel（≤3）；连庄推进 UpdateBankerLevel 细节未读",
-   "callPath": "com_result.cpp:49 UpdateBankerLevel 未核",
+   "callPathVerified": true,
+   "configCondition": "无（BankerContinueType 恒 0：hzmj 无 banker_continue_type JSON 覆写入口，common_game_server_config.cpp:12 默认 0 注释「好友房不可配置为 1」，仅 xiaoshanmj 可配）",
+   "callPath": "UpdateBankerLevel（com_result.cpp:358-384）：连庄时 BankerContinueType==0 分支 if (level<3) ++level 三牢庄封顶（L369-370 注释直证）；换庄按 banker_level_type 起算档位重置",
    "evidenceIds": [
-    "SVE-ST-C01-005"
+    "SVE-ST-C01-005",
+    "SVE-ST-C01-009"
    ],
-   "unresolved": "S2 待查：UpdateBankerLevel 全逻辑",
+   "unresolved": "",
    "noServerEvidence": false
   },
   {
    "atomId": "AT-ST-C02-001",
-   "applicability": "unknown",
-   "configVerified": false,
-   "callPathVerified": false,
-   "configCondition": "",
-   "callPath": "",
-   "evidenceIds": [],
-   "unresolved": "S2 待查：服务端牌墙初始化（万条筒 36/风 16）未展开",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "enable_two_suit=false（默认，≤3 人开启时剔万字）且 del_feng=false（默认）→ 万/条/筒各 36 张（DEF_WAN/TIAO/TONG_COUNT=36，mah_frame/base/macros.h:218-220），每种 4 张；开启后对应花色剔除",
+   "callPath": "InitData 组墙（common_game_init.cpp:53-113）→ MixMah 取 GetAllMahs 洗牌入墙（mah_frame com_ju.cpp:186-239）",
+   "evidenceIds": [
+    "SVE-ST-C02-005"
+   ],
+   "unresolved": "",
    "noServerEvidence": true
   },
   {
    "atomId": "AT-ST-C02-002",
-   "applicability": "unknown",
-   "configVerified": false,
-   "callPathVerified": false,
-   "configCondition": "",
-   "callPath": "",
-   "evidenceIds": [],
-   "unresolved": "同上",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "del_feng=false（默认）→ 东南西北四风共 16 张（DEF_FENG_COUNT=16，macros.h:221）；del_feng=true 时整组剔除",
+   "callPath": "InitData 组墙（common_game_init.cpp:66/91-92）→ MixMah 入墙",
+   "evidenceIds": [
+    "SVE-ST-C02-005"
+   ],
+   "unresolved": "",
    "noServerEvidence": true
   },
   {
    "atomId": "AT-ST-C02-003",
-   "applicability": "unknown",
-   "configVerified": false,
-   "callPathVerified": false,
-   "configCondition": "",
-   "callPath": "",
-   "evidenceIds": [],
-   "unresolved": "同上（箭 12）",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "del_feng=false（默认）→ 中发白三箭共 12 张（DEF_JIAN_COUNT=12，macros.h:222）；del_feng=true 时箭牌仅保留白板 4 张（common_game_init.cpp:95/108）",
+   "callPath": "InitData 组墙（common_game_init.cpp:94-96/107-112）→ MixMah 入墙",
+   "evidenceIds": [
+    "SVE-ST-C02-005"
+   ],
+   "unresolved": "",
    "noServerEvidence": true
   },
   {
@@ -181,29 +189,31 @@
   },
   {
    "atomId": "AT-ST-C02-006",
-   "applicability": "unknown",
+   "applicability": "active",
    "configVerified": true,
-   "callPathVerified": false,
-   "configCondition": "白板打出按牌值正常计（十风计数）；是否存在禁打财神状态条件未核",
-   "callPath": "CheckPlay 未核",
+   "callPathVerified": true,
+   "configCondition": "无（打财神触发飘财窗口为 §6.4 机制副作用而非打出前置；吃禁手/碰禁手黑名单与飘财窗口摸打限制对财神与普通牌同口径）",
+   "callPath": "框架 PlayStep::CheckPlay 任意手牌可打（mah_frame com_play.cpp:235-254，仅黑名单/摸进牌窗口校验）→ BoxPlayStep::CheckPlay 打财神仅触发飘财窗口/飘级结算（com_play.cpp:53-85）；服务端主动产出「打财神→万能听」建议（com_play.cpp:322-345）",
    "evidenceIds": [
-    "SVE-ST-C02-003"
+    "SVE-ST-C02-003",
+    "SVE-ST-C02-010"
    ],
-   "unresolved": "S2 待查：CheckPlay 禁打财神条件",
+   "unresolved": "",
    "noServerEvidence": false
   },
   {
    "atomId": "AT-ST-C02-007",
-   "applicability": "unknown",
-   "configVerified": false,
-   "callPathVerified": false,
-   "configCondition": "",
-   "callPath": "",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "无（打出财神无任何前置状态判定；com_action.cpp:165 处「禁打财神值」为吃禁手黑名单的翻财神归一化处理，非状态前置）",
+   "callPath": "BoxPlayStep::CheckPlay 无爆头/敲响前置，打财神仅触发飘财窗口与飘级（com_play.cpp:53-85）；CalcChowForbidMahs 黑名单归一化非打出前置（com_action.cpp:162-206）；有财必拷响（must_bao_tou_with_cai）约束的是自摸胡型非打出（com_action.cpp:433-441）",
    "evidenceIds": [
-    "SVE-ST-C02-004"
+    "SVE-ST-C02-004",
+    "SVE-ST-C02-010"
    ],
-   "unresolved": "S2 优先：疑似存在禁打状态机制（com_action.cpp:165），与需求「无前置状态限制」构成矛盾候选",
-   "noServerEvidence": true
+   "unresolved": "",
+   "noServerEvidence": false
   },
   {
    "atomId": "AT-ST-C02-008",
@@ -235,196 +245,225 @@
   },
   {
    "atomId": "AT-ST-C02-009",
-   "applicability": "unknown",
+   "applicability": "conditional",
    "configVerified": true,
-   "callPathVerified": false,
-   "configCondition": "Joker 移出候选机制存在；候选组生成到权限下发的完整路径未核",
-   "callPath": "com_ju.cpp:248→候选生成未核",
+   "callPathVerified": true,
+   "configCondition": "cai_shen_type=0（默认白板财神）→ 财神牌值=白板，白板从吃候选移除不能被吃；=1（翻财神）→ 白板为替身 instd 可组顺子（InitInstdChows），不能吃的是翻出的财神牌值",
+   "callPath": "BoxJokerStep::Execute AddJoker+InitJokerChows（com_ju.cpp:250-254）→ InitJokerChows 移除含财神全部三类顺子组合（mah_frame base_data.cpp:1826-1853）→ BoxChowStep::Judge TestChow 候选不含财神（com_action.cpp:82）",
    "evidenceIds": [
-    "SVE-ST-C02-002"
+    "SVE-ST-C02-002",
+    "SVE-ST-C02-006"
    ],
-   "unresolved": "S2 待查：吃候选生成排除路径",
+   "unresolved": "",
    "noServerEvidence": false
   },
   {
    "atomId": "AT-ST-C02-010",
-   "applicability": "unknown",
+   "applicability": "conditional",
    "configVerified": true,
-   "callPathVerified": false,
-   "configCondition": "同上（碰）",
-   "callPath": "InitJokerPungs 未核",
+   "callPathVerified": true,
+   "configCondition": "cai_shen_type=0（默认）→ 白板从碰候选移除不能被碰；=1（翻财神）→ 白板为普通牌/替身可碰，不能碰的是翻出的财神牌值",
+   "callPath": "BoxJokerStep::Execute InitJokerPungs（com_ju.cpp:259）→ InitJokerPungs 移除财神刻子组合（base_data.cpp:1855-1866）→ PungStep::Judge TestPung 候选不含财神（mah_frame com_pung.cpp:90）",
    "evidenceIds": [
-    "SVE-ST-C02-002"
+    "SVE-ST-C02-002",
+    "SVE-ST-C02-007"
    ],
-   "unresolved": "S2 待查",
-   "noServerEvidence": true
+   "unresolved": "",
+   "noServerEvidence": false
   },
   {
    "atomId": "AT-ST-C02-011",
-   "applicability": "unknown",
+   "applicability": "conditional",
    "configVerified": true,
-   "callPathVerified": false,
-   "configCondition": "同上（杠）",
-   "callPath": "InitJokerKongs 未核",
+   "callPathVerified": true,
+   "configCondition": "cai_shen_type=0（默认）→ 白板从杠候选移除（明/暗/补杠三类）不能被杠；=1（翻财神）→ 白板可杠，不能杠的是翻出的财神牌值",
+   "callPath": "BoxJokerStep::Execute InitJokerKongs（com_ju.cpp:260）→ InitJokerKongs 移除财神明/暗/补杠全部组合（base_data.cpp:1868-1882）→ MKongStep::Judge TestMKong 候选不含财神（mah_frame com_kong.cpp:101）",
    "evidenceIds": [
-    "SVE-ST-C02-002"
+    "SVE-ST-C02-002",
+    "SVE-ST-C02-008"
    ],
-   "unresolved": "S2 待查",
-   "noServerEvidence": true
+   "unresolved": "",
+   "noServerEvidence": false
   },
   {
    "atomId": "AT-ST-C02-012",
-   "applicability": "unknown",
-   "configVerified": false,
-   "callPathVerified": false,
-   "configCondition": "",
-   "callPath": "",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "无（对财神牌值恒成立；点炮权限本身的 enable_banker_discard_hu/三牢门槛属另一原子语义）",
+   "callPath": "BoxHuStep::JudgeDiscard（com_action.cpp:363-364）：if (GetJustPlay() == GetCaiShen()) return false，注释直证「财神不能放铳：别人打出的财神不能被胡（需求 §2 财神/§8 放铳）」",
    "evidenceIds": [
-    "SVE-ST-C02-001"
+    "SVE-ST-C02-001",
+    "SVE-ST-C02-009"
    ],
-   "unresolved": "S2 待查：点炮判定对白板财神（JokerTestHu 万能处理）的排除",
-   "noServerEvidence": true
+   "unresolved": "",
+   "noServerEvidence": false
   },
   {
    "atomId": "AT-ST-C04-001",
-   "applicability": "unknown",
-   "configVerified": false,
-   "callPathVerified": false,
-   "configCondition": "",
-   "callPath": "",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "无（级别常量与裁决机制固定）",
+   "callPath": "kStepLevelHu=4/kStepLevelPung=3/kStepLevelKong=3/kStepLevelChow=2（mah_frame macros.h:203-206）→ ConAction::OnConAction 最高级已响应立即执行、未响应阻塞低级（mah_frame con_action.cpp:40-57）；胡权重另加座位距离加权（com_action.cpp:826-838）",
    "evidenceIds": [
-    "SVE-ST-C04-003"
+    "SVE-ST-C04-003",
+    "SVE-ST-C04-004",
+    "SVE-ST-C04-005"
    ],
-   "unresolved": "S2 待查：框架 ask 分发的优先级排序（mah_frame）",
-   "noServerEvidence": true
+   "unresolved": "",
+   "noServerEvidence": false
   },
   {
    "atomId": "AT-ST-C04-002",
-   "applicability": "unknown",
-   "configVerified": false,
-   "callPathVerified": false,
-   "configCondition": "",
-   "callPath": "",
-   "evidenceIds": [],
-   "unresolved": "S2 待查",
-   "noServerEvidence": true
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "无（常量同级固定）",
+   "callPath": "kStepLevelPung == kStepLevelKong == 3（macros.h:204-205）→ ConAction 同级平权裁决，碰与直杠不分先后高低",
+   "evidenceIds": [
+    "SVE-ST-C04-004"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
   },
   {
    "atomId": "AT-ST-C04-003",
-   "applicability": "unknown",
-   "configVerified": false,
-   "callPathVerified": false,
-   "configCondition": "",
-   "callPath": "",
-   "evidenceIds": [],
-   "unresolved": "S2 待查（客户端 verdict=not_found，服务端未查）",
-   "noServerEvidence": true
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "无（裁决机制固定）",
+   "callPath": "碰 PungStep::Judge 与直杠 MKongStep::Judge 同级并存且全部响应后，ConAction 按 map 升序遍历（key=seat<<16|power，macros.h:345）取首个同级已响应 → 座位号小者先裁决，不区分碰还是杠（con_action.cpp:43-53）",
+   "evidenceIds": [
+    "SVE-ST-C04-004",
+    "SVE-ST-C04-007"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
   },
   {
    "atomId": "AT-ST-C04-004",
-   "applicability": "unknown",
-   "configVerified": false,
-   "callPathVerified": false,
-   "configCondition": "",
-   "callPath": "",
-   "evidenceIds": [],
-   "unresolved": "S2 待查",
-   "noServerEvidence": true
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "无（下发机制固定）",
+   "callPath": "PungStep::Judge 座位升序扫描首个 TestPung 成功座位独得碰权限（mah_frame com_pung.cpp:66-104）；MKongStep::Judge 直杠同构（mah_frame com_kong.cpp:80-114）——只下发给确实能成立且座位号最小的那一家",
+   "evidenceIds": [
+    "SVE-ST-C04-006",
+    "SVE-ST-C04-007"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
   },
   {
    "atomId": "AT-ST-C04-005",
-   "applicability": "unknown",
-   "configVerified": false,
-   "callPathVerified": false,
-   "configCondition": "hu_infos 多 hu_items 数据形态存在（一炮多响可能）",
-   "callPath": "BoxHuStep::Judge（com_action.cpp:259）",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "多人可胡场景门槛：enable_banker_discard_hu（默认 true）且 banker_level=3（三牢）时庄闲间才产生点炮胡候选，抢杠胡同绑（com_action.cpp:353-385）；候选生成后全员下发机制本身无配置",
+   "callPath": "BoxHuStep::JudgeDiscard 庄闲配对逐闲家 TestHu 入 hu_power_seats（com_action.cpp:360-381）→ HuStep::MakePower 全部 hu_power_seats 逐一授胡权限（mah_frame com_hu.cpp:165-178）→ ActionStep::SendPowerToClient 按座位下发（mah_frame com_action.cpp:983-1013）",
    "evidenceIds": [
-    "SVE-ST-C04-002"
+    "SVE-ST-C04-002",
+    "SVE-ST-C04-008"
    ],
-   "unresolved": "S2 待查：全员下发逻辑",
+   "unresolved": "",
    "noServerEvidence": false
   },
   {
    "atomId": "AT-ST-C04-006",
-   "applicability": "unknown",
-   "configVerified": false,
-   "callPathVerified": false,
-   "configCondition": "",
-   "callPath": "",
-   "evidenceIds": [],
-   "unresolved": "S2 待查（客户端 not_found）",
-   "noServerEvidence": true
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "多人可胡场景门槛同 AT-ST-C04-005（三牢点炮/抢杠候选）；距离加权裁决机制本身恒生效",
+   "callPath": "GetConActionWeight（mah_frame com_action.cpp:826-832）：胡权重=kStepLevelHu+GetSeatWeight（距出牌者近权重高）→ ConAction 最高已响应立即执行：近者胡先被执行，远者胡不再执行（con_action.cpp:40-57）",
+   "evidenceIds": [
+    "SVE-ST-C04-008",
+    "SVE-ST-C04-009"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
   },
   {
    "atomId": "AT-ST-C04-007",
-   "applicability": "unknown",
-   "configVerified": false,
-   "callPathVerified": false,
-   "configCondition": "",
-   "callPath": "",
-   "evidenceIds": [],
-   "unresolved": "S2 待查",
-   "noServerEvidence": true
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "多人可胡场景门槛同 AT-ST-C04-005；放弃清条目机制本身恒生效",
+   "callPath": "近者 OnMsgCancel → OnConAction(kStepLevelCancelS) → ClearUserConAction 清该座位全部条目（con_action.cpp:70-81）→ 远者已响应胡成为最高已响应立即执行",
+   "evidenceIds": [
+    "SVE-ST-C04-005",
+    "SVE-ST-C04-009"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
   },
   {
    "atomId": "AT-ST-C04-008",
-   "applicability": "unknown",
-   "configVerified": false,
-   "callPathVerified": false,
-   "configCondition": "",
-   "callPath": "",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "无（hzmj 未启用一炮多响且 30 项好友房配置无 is_duo_xiang 覆写入口）",
+   "callPath": "BoxHuStep::CheckHu 注释直证「hzmj 未启用一炮多响（IsDuoXiang 默认关闭），单一胡牌座位」（com_action.cpp:534）+ Execute SetIsHuDuoXiang(false)（L239）+ 胡按距离权重裁决而非多响并发（mah_frame com_action.cpp:826-832）",
    "evidenceIds": [
-    "SVE-ST-C04-002"
+    "SVE-ST-C04-002",
+    "SVE-ST-C04-010"
    ],
-   "unresolved": "S2 待查：is_multi_hu 分支与需求「不出现一炮多响」的关系",
-   "noServerEvidence": true
+   "unresolved": "",
+   "noServerEvidence": false
   },
   {
    "atomId": "AT-ST-C04-009",
-   "applicability": "unknown",
-   "configVerified": false,
-   "callPathVerified": false,
-   "configCondition": "",
-   "callPath": "",
-   "evidenceIds": [],
-   "unresolved": "S2 待查（客户端 not_found）",
-   "noServerEvidence": true
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "多人可胡场景门槛同 AT-ST-C04-005；距离加权机制在非一炮多响下恒生效（hzmj 恒生效）",
+   "callPath": "GetSeatWeight = mpcnt - (seat - whoplay + mpcnt) % mpcnt（mah_frame com_action.cpp:834-838，距出牌者近权重高）→ OnMsgHuC 胡权重=kStepLevelHu+座位权重 → 距出牌者最近的可胡者优先裁决",
+   "evidenceIds": [
+    "SVE-ST-C04-009"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
   },
   {
    "atomId": "AT-ST-C04-010",
-   "applicability": "unknown",
-   "configVerified": false,
-   "callPathVerified": false,
-   "configCondition": "",
-   "callPath": "",
-   "evidenceIds": [],
-   "unresolved": "S2 待查",
-   "noServerEvidence": true
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "多人可胡场景门槛同 AT-ST-C04-005；顺延机制本身恒生效",
+   "callPath": "同 AT-ST-C04-007：放弃者 ClearUserConAction 清条目后，剩余已响应胡中权重最高者立即执行（con_action.cpp:40-57/70-81）",
+   "evidenceIds": [
+    "SVE-ST-C04-005",
+    "SVE-ST-C04-009"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
   },
   {
    "atomId": "AT-ST-C04-011",
-   "applicability": "unknown",
+   "applicability": "active",
    "configVerified": true,
-   "callPathVerified": false,
-   "configCondition": "askid 机制存在（低优先级提交等待/取消的框架支撑）",
-   "callPath": "mah_frame/com_basic/com_action.cpp:92-168",
+   "callPathVerified": true,
+   "configCondition": "无（ConAction 裁决机制固定）",
+   "callPath": "ConAction::OnConAction：最高级未响应（is_respond==false）则 return false 不执行（con_action.cpp:43-57）→ 低优先级先提交需等待全部更高优先级玩家响应（成立或放弃）；等待期 askid 校验保证响应有效（mah_frame com_action.cpp:167-172）",
    "evidenceIds": [
-    "SVE-ST-C04-003"
+    "SVE-ST-C04-003",
+    "SVE-ST-C04-005"
    ],
-   "unresolved": "S2 待查：等待顺序细节",
+   "unresolved": "",
    "noServerEvidence": false
   },
   {
    "atomId": "AT-ST-C04-012",
-   "applicability": "unknown",
+   "applicability": "active",
    "configVerified": true,
-   "callPathVerified": false,
-   "configCondition": "同上",
-   "callPath": "mah_frame/com_basic/com_action.cpp:167",
+   "callPathVerified": true,
+   "configCondition": "无（裁决机制固定）",
+   "callPath": "最高级已响应立即 DoConAction 并 SetNextActionStep 切换至胜者步骤（con_action.cpp:57-61 + mah_frame com_action.cpp:546-582）→ 其余玩家响应随 ActionStep::End ClearAllMap 全部失效（com_action.cpp:28-31/885-897），askid 推进后过期响应被拒（com_action.cpp:167-172）",
    "evidenceIds": [
-    "SVE-ST-C04-003"
+    "SVE-ST-C04-003",
+    "SVE-ST-C04-005"
    ],
-   "unresolved": "S2 待查：高优先级成立后取消广播",
+   "unresolved": "",
    "noServerEvidence": false
   },
   {

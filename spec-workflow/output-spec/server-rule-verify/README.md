@@ -104,6 +104,11 @@
 - `需求差异裁决清单.md`：v2 全部 2 个 conflict（AT-ST-C02-008 财神牌河高亮 / AT-ST-C15-018 胡牌方式标注文案）的策划可读双栏对照（需求拆句 vs 实现），复核规则 `ui-conflict-stands-alone`，差异维持 conflict、L7 decision_required，pending 人工裁决（A 改客户端 / B 改需求 / C 其他 + approved/rejected 裁决栏）
 - 附 A：试运行 ST-C01 的 5 条 unverified→consistent 升级建议（AT-ST-C01-001/002/004/005/008，复核规则 `evidence-is-not-consistency`）批量批准表，含 AT-ST-C01-004 scope 分歧注记（样本 conditional vs 试运行 active，批准即采 active）；批准后经 S3.3 合并进 v3，v2 基线只读
 
+## S3.3 v3 复核合并脚本（2026-11-14，就绪，正式合并待裁决回传）
+
+- `assemble-output-spec-index.mjs v3 <v2SpecDir> <verifyDir> <outDir> <date>`：读 v2 `feature_index.json`（只读，sha256 写前后校验不变）+ 本目录正式三件（scope-index / server-evidence / difference-review），把 reviewStatus=**approved** 条目的复核结论合并进 v3 新目录：approved 采 reviewedDifference，pending/rejected 维持基线，未复核原子不动；每复核原子新增 l7（终局矩阵视图）/l7_basis/review_status 等字段；差异统计双路互验；输出 `feature_index.json`（schema_version 3 + v3_merge 溯源块）
+- 裁决流程：`需求差异裁决清单.md` 回传 → approved/rejected 落 difference-review 条目 reviewStatus → 跑 v3 子命令出正式 v3 索引（S3.3 验收：v3 differenceStats 与 approved 合并结果一致、v2 hash 不变）；example 场景 9/10 全绿 + 真实数据冒烟通过（0 approved → v3 统计=基线）
+
 ## 关键发现摘要（详见调查报告）
 
 1. **定庄/牢庄/财神三个核心规则都是好友房配置项**（first_banker_type / banker_level_type / cai_shen_type），需求原文把它们写成无条件规则——「查到实现」与「需求满足」之间隔着配置确认，这正是 scope 层存在的意义。

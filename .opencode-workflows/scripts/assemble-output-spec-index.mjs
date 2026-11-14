@@ -13,22 +13,42 @@
 //     difference_stats 并计入 difference_unmarked（未经新 Schema 查证，不冒充已验证，
 //     需求 6.4）；business_behavior 视为空对象。
 //
+// v3 复核合并模式（2026-11-14，OSG-W4 S3.3）：
+//   - 子命令 `v3`：读取 v2 feature_index.json（只读，写前后 hash 校验不变）+
+//     server-rule-verify 正式三件（scope-index.json / server-evidence.json /
+//     difference-review.json），把 reviewStatus=approved 条目的复核结论合并进 v3 新目录。
+//   - 合并语义：approved 条目 difference 采 reviewedDifference（effectiveDifference）；
+//     pending/rejected 条目维持 v2 基线差异；未复核原子不动。
+//   - 每个复核原子新增字段：difference_v2 / review_status / reviewed_difference /
+//     review_rule / review_reason / l7（终局矩阵视图：scope × 终局 difference，经
+//     classifyL7 合成终局 DR 重算）/ l7_basis（approved/rejected/baseline）/
+//     scope_applicability / scope_source / evidence_ids。
+//   - 闸门：classifyL7 全量交叉校验（基线漂移/evidenceIds/scope stats）；v3 差异统计
+//     双路互验（基线-迁移调整 vs 逐原子重算）；DR baseline.differenceStats 与 v2 一致；
+//     v3 输出目录不得等于 v2 目录（v2 只读）。
+//
 // 可导入：export assembleIndex(specDir, date, sourceDesc, expectedStageCount)
-//         返回 { ok, problems, summary }，不直接退出进程
+//         export assembleV3FromReview({ v2IndexPath, verifyDir, outDir, date })
+//         均返回 { ok, problems, summary }，不直接退出进程
 // CLI 用法：
 //   node assemble-output-spec-index.mjs <specDir> <date> <sourceDesc> [expectedStageCount]
+//   node assemble-output-spec-index.mjs v3 <v2SpecDir> <verifyDir> <outDir> <date>
 //
 // 行为：
 //   - 解析全部片段，校验文件名与 stage.id 一致、stage/feature/atom ID 全局唯一
 //   - expectedStageCount 给定时校验片段数一致（防上次运行残留片段混入）
 //   - 写 <specDir>/feature_index.json（UTF-8 无 BOM，结构对齐原 1-spec 总入口）
 //   - 写 <specDir>/stage_manifest.md（阶段速查表：原子数/证实分布/协议消息/UI 模块）
+//   - v3 模式写 <outDir>/feature_index.json（schema_version 3 + v3_merge 溯源块）
 //
-// 退出码（CLI）：0 成功 / 1 结构错误（无片段、JSON 损坏、ID 冲突、空阶段、阶段数不符）
+// 退出码（CLI）：0 成功 / 1 结构错误（无片段、JSON 损坏、ID 冲突、空阶段、阶段数不符、
+//                v3 闸门失败、v2 hash 变化）
 
 import fs from 'node:fs'
 import path from 'node:path'
+import crypto from 'node:crypto'
 import { fileURLToPath } from 'node:url'
+import { classifyL7 } from './classify-l7.mjs'
 
 function cell(s) {
   return String(s === undefined || s === null ? '' : s)
@@ -281,14 +301,227 @@ export function assembleIndex(specDir, date, sourceDesc, expectedStageCount) {
   return { ok: true, problems: [], summary: summary }
 }
 
+// ---------- v3 复核合并模式（OSG-W4 S3.3）：approved 条目合并进 v3 新目录，v2 只读 ----------
+
+// 终局 l7Basis 语义：approved=已批准生效 / rejected=驳回维持基线 / pending=未裁决维持基线
+const L7_BASIS_FINAL = { approved: 'approved', rejected: 'rejected', pending: 'baseline' }
+
+export function assembleV3FromReview({ v2IndexPath, verifyDir, outDir, date }) {
+  const problems = []
+  const bad = (msg) => {
+    problems.push(msg)
+    console.error('[失败] ' + msg)
+    return { ok: false, problems: problems, summary: null }
+  }
+  if (!v2IndexPath || !verifyDir || !outDir) {
+    return bad('v3 参数缺失：v2IndexPath / verifyDir / outDir 任一为空')
+  }
+  const v2Abs = path.resolve(v2IndexPath)
+  const outAbs = path.resolve(outDir)
+  if (!fs.existsSync(v2Abs)) return bad('v2 feature_index.json 不存在：' + v2Abs)
+  if (path.dirname(v2Abs) === outAbs) {
+    return bad('v3 输出目录不得等于 v2 目录（v2 只读，hash 必须不变）')
+  }
+  const v2HashBefore = crypto.createHash('sha256').update(fs.readFileSync(v2Abs)).digest('hex')
+  let v2Index
+  try {
+    v2Index = JSON.parse(fs.readFileSync(v2Abs, 'utf8'))
+  } catch (err) {
+    return bad('v2 feature_index.json 解析失败：' + err.message)
+  }
+
+  const readJson = (p) => {
+    if (!fs.existsSync(p)) return null
+    try {
+      return JSON.parse(fs.readFileSync(p, 'utf8'))
+    } catch (err) {
+      return { __parseError: err.message }
+    }
+  }
+  const scopeIndex = readJson(path.join(verifyDir, 'scope-index.json'))
+  const serverEvidence = readJson(path.join(verifyDir, 'server-evidence.json'))
+  const differenceReview = readJson(path.join(verifyDir, 'difference-review.json'))
+  if (!scopeIndex || !serverEvidence || !differenceReview) {
+    return bad('server-rule-verify 正式三件缺失（scope-index.json / server-evidence.json / difference-review.json）：' + verifyDir)
+  }
+  if (scopeIndex.__parseError || serverEvidence.__parseError || differenceReview.__parseError) {
+    return bad('server-rule-verify 正式三件 JSON 解析失败：' + verifyDir)
+  }
+
+  // 基线差异统计 + 原子索引
+  const DIFF_KEYS = ['consistent', 'partial', 'conflict', 'unverified']
+  const baselineStats = { consistent: 0, partial: 0, conflict: 0, unverified: 0 }
+  const atomById = new Map()
+  for (const fe of v2Index.features || []) {
+    for (const at of fe.atoms || []) {
+      if (atomById.has(at.id)) return bad('v2 原子 ID 重复：' + at.id)
+      atomById.set(at.id, at)
+      if (DIFF_KEYS.includes(at.difference)) baselineStats[at.difference]++
+      else return bad('v2 原子 difference 非法：' + at.id + ' -> ' + at.difference)
+    }
+  }
+  if (v2Index.difference_stats) {
+    for (const k of DIFF_KEYS) {
+      if (v2Index.difference_stats[k] !== baselineStats[k]) {
+        bad('v2 difference_stats 与原子重算不一致：' + k + ' header=' + v2Index.difference_stats[k] + ' 重算=' + baselineStats[k])
+      }
+    }
+  }
+
+  // 合成终局视图 DR：approved 保留 reviewedDifference，pending/rejected 回退 previousDifference；
+  // 剥离 classifyL7 会重算的字段（l7/effectiveDifference/l7Basis）与假设全 approved 的投影块，
+  // 使 classifyL7 按「终局差异」输出每原子 l7（矩阵：scope × 终局 difference）
+  const drEntries = differenceReview.entries || []
+  const drByAtom = new Map()
+  for (const e of drEntries) {
+    if (!e || !e.atomId) return bad('复核条目缺 atomId')
+    if (drByAtom.has(e.atomId)) return bad('复核条目 atomId 重复：' + e.atomId)
+    drByAtom.set(e.atomId, e)
+  }
+  const synthEntries = drEntries.map((e) => {
+    const final = e.reviewStatus === 'approved' ? e.reviewedDifference : e.previousDifference
+    const s = Object.assign({}, e, { reviewedDifference: final })
+    delete s.l7
+    delete s.effectiveDifference
+    delete s.l7Basis
+    return s
+  })
+  const synthDr = Object.assign({}, differenceReview, { entries: synthEntries })
+  delete synthDr.afterReviewProjection
+  delete synthDr.l7Projection
+
+  const r = classifyL7({ featureIndex: v2Index, scopeIndex: scopeIndex, serverEvidence: serverEvidence, differenceReview: synthDr })
+  for (const p of r.problems) bad('classifyL7：' + p)
+  if (problems.length) return { ok: false, problems: problems, summary: null }
+  const l7ByAtom = new Map(r.output.entries.map((e) => [e.atomId, e]))
+
+  // 终局差异统计双路互验：路径一（基线 - previous + final 调整）vs 路径二（逐原子重算）
+  const finalStats = Object.assign({}, baselineStats)
+  const transitions = []
+  for (const e of drEntries) {
+    const final = e.reviewStatus === 'approved' ? e.reviewedDifference : e.previousDifference
+    finalStats[e.previousDifference]--
+    finalStats[final]++
+    if (e.reviewStatus === 'approved' && final !== e.previousDifference) {
+      transitions.push({ atomId: e.atomId, from: e.previousDifference, to: final })
+    }
+  }
+  const recount = { consistent: 0, partial: 0, conflict: 0, unverified: 0 }
+  for (const [id, at] of atomById) {
+    const e = drByAtom.get(id)
+    const final = e ? (e.reviewStatus === 'approved' ? e.reviewedDifference : e.previousDifference) : at.difference
+    recount[final]++
+  }
+  for (const k of DIFF_KEYS) {
+    if (finalStats[k] !== recount[k]) bad('v3 差异统计双路不一致：' + k + ' 调整法=' + finalStats[k] + ' 重算法=' + recount[k])
+  }
+
+  // v3 索引构建（深拷贝 v2，逐复核原子合并）
+  const v3 = JSON.parse(JSON.stringify(v2Index))
+  v3.schema_version = 3
+  v3.generated_by = 'assemble-output-spec-index.mjs v3 merge（OSG-W4 S3.3：approved 复核结论合并，v2 只读）'
+  v3.date = date || v2Index.date
+  let approvedCount = 0
+  let rejectedCount = 0
+  let pendingCount = 0
+  for (const fe of v3.features || []) {
+    for (const at of fe.atoms || []) {
+      const e = drByAtom.get(at.id)
+      if (!e) continue
+      const c = l7ByAtom.get(at.id)
+      at.difference_v2 = e.previousDifference
+      at.difference = e.reviewStatus === 'approved' ? e.reviewedDifference : e.previousDifference
+      at.review_status = e.reviewStatus
+      at.reviewed_difference = e.reviewedDifference
+      if (e.reviewRule !== undefined) at.review_rule = e.reviewRule
+      if (e.reviewReason !== undefined) at.review_reason = e.reviewReason
+      if (c) {
+        at.l7 = c.l7
+        at.l7_basis = L7_BASIS_FINAL[e.reviewStatus] || 'baseline'
+        at.scope_applicability = c.scopeApplicability
+        at.scope_source = c.scopeSource
+        at.evidence_ids = c.evidenceIds
+      }
+      if (e.reviewStatus === 'approved') approvedCount++
+      else if (e.reviewStatus === 'rejected') rejectedCount++
+      else pendingCount++
+    }
+  }
+  v3.difference_stats = {
+    consistent: recount.consistent,
+    partial: recount.partial,
+    conflict: recount.conflict,
+    unverified: recount.unverified,
+    unmarked_v1: (v2Index.difference_stats && v2Index.difference_stats.unmarked_v1) || 0,
+  }
+  v3.v3_merge = {
+    from: v2IndexPath,
+    verifyDir: verifyDir,
+    date: v3.date,
+    reviewStatus: { approved: approvedCount, rejected: rejectedCount, pending: pendingCount },
+    transitions: transitions,
+    baseline_stats: baselineStats,
+    v3_stats: v3.difference_stats,
+    note: 'S3.3 approved 合并：approved 条目 difference 采 reviewedDifference，pending/rejected 维持 v2 基线；l7 为终局矩阵视图（scope × 终局 difference）',
+  }
+
+  // v2 只读闸门：写 v3 前后 v2 hash 必须不变
+  const v2HashAfter = crypto.createHash('sha256').update(fs.readFileSync(v2Abs)).digest('hex')
+  if (v2HashAfter !== v2HashBefore) return bad('v2 文件 hash 变化（v2 只读被破坏）')
+  if (problems.length) return { ok: false, problems: problems, summary: null }
+
+  fs.mkdirSync(outAbs, { recursive: true })
+  const v3Path = path.join(outAbs, 'feature_index.json')
+  fs.writeFileSync(v3Path, JSON.stringify(v3, null, 1), 'utf8')
+
+  const summary = {
+    outDir: outAbs,
+    indexPath: v3Path,
+    atomCount: atomById.size,
+    reviewedCount: drEntries.length,
+    reviewStatus: { approved: approvedCount, rejected: rejectedCount, pending: pendingCount },
+    approvedTransitions: transitions.length,
+    baselineStats: baselineStats,
+    v3Stats: recount,
+    v2Sha256: v2HashBefore,
+  }
+  console.log(
+    '[成功] v3 feature_index.json：原子 ' + atomById.size + '（复核 ' + drEntries.length + '：approved ' + approvedCount +
+      ' / rejected ' + rejectedCount + ' / pending ' + pendingCount + '，生效迁移 ' + transitions.length + ' 条）'
+  )
+  console.log(
+    '[成功] 差异统计 ' + baselineStats.consistent + '/' + baselineStats.partial + '/' + baselineStats.conflict + '/' + baselineStats.unverified +
+      ' -> ' + recount.consistent + '/' + recount.partial + '/' + recount.conflict + '/' + recount.unverified + '；v2 hash 不变'
+  )
+  console.log('SUMMARY ' + JSON.stringify(summary))
+  return { ok: true, problems: [], summary: summary }
+}
+
 // CLI 直调守卫（被 import 时不执行，见 dev-docs/experience/workflow扫描agent全量转述超时-确定性扫描替代.md）
 const invokedDirectly =
   process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 
 if (invokedDirectly) {
+  const [mode, ...rest] = process.argv.slice(2)
+  if (mode === 'v3') {
+    // v3 复核合并：node assemble-output-spec-index.mjs v3 <v2SpecDir> <verifyDir> <outDir> <date>
+    const [v2SpecDir, verifyDir, outDir, date] = rest
+    if (!v2SpecDir || !verifyDir || !outDir) {
+      console.error('用法: node assemble-output-spec-index.mjs v3 <v2SpecDir> <verifyDir> <outDir> <date>')
+      process.exit(1)
+    }
+    const r = assembleV3FromReview({
+      v2IndexPath: path.join(v2SpecDir, 'feature_index.json'),
+      verifyDir: verifyDir,
+      outDir: outDir,
+      date: date,
+    })
+    process.exit(r.ok ? 0 : 1)
+  }
   const [specDir, date, sourceDesc, expectedStageCount] = process.argv.slice(2)
   if (!specDir) {
     console.error('用法: node assemble-output-spec-index.mjs <specDir> <date> <sourceDesc> [expectedStageCount]')
+    console.error('      node assemble-output-spec-index.mjs v3 <v2SpecDir> <verifyDir> <outDir> <date>')
     process.exit(1)
   }
   const r = assembleIndex(specDir, date, sourceDesc, expectedStageCount)

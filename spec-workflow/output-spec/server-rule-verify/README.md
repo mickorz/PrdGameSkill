@@ -118,6 +118,15 @@
   - DR：样本覆盖条目一致 3 / 分歧 5（正式更进取：C02-006/007/009、C04-001/012 建议 partial/unverified→consistent，其中 C04-001 优先级次序与 S2.1 裁决链证据（macros.h:203-206 级别常量）方向一致）；样本未覆盖 17 条为正式新增建议
 - **S3.2 partial 复核进度**：v2 的 64 条 partial 中已复核 3 条（证据就位三阶段 ST-C01/02/04），2 条建议升级（C02-006、C04-012）；其余 partial 原子随 S4.1 分批补证时逐阶段复核
 
+## S4.1 第二批：行牌 复核（ST-C05~C10，2026-11-14）
+
+- **执行**：runId `run-mwg8iegw-1`：39 agent（一次贯通零卡点，3-verify prompt file 字段加固生效），wall 4868s / 12127 tok；110 原子（吃碰杠 28、杠后补牌 14、胡 15、飘财 20、杠开杠飘 12、吃碰禁手 21），12 片
+- **产物**（正式三件累积 215 scope + 215 DR + 601 SVE；l7-classify reviewed 215/319，l7 133/79/2/1，五道闸门通过）：本批 90 条建议 pending；scope active 94/conditional 14/unknown 1/inactive 1（全库首例）
+- **值得注意条目**：
+  - **AT-ST-C10-016 unknown**：「提起/横滑出虚影」纯客户端表现，服务端仅出牌消息校验（com_action.cpp:213-274），无拖动相关消息/状态——诚实 unknown → verification_required
+  - **AT-ST-C10-021 inactive（全库首例，待策划确认）**：「补进的牌仍在禁张内不能打」——禁打判定 is_danfang 二选一（algorithm.cpp:380-388：单放牌只比 play_limit.dfs、手牌比 hands），补进牌走单放路径，而 hzmj 全部 play_limit 写入只填 hands（吃碰杠 com_action.cpp:151-1xx）→ 禁打名单对补进牌数据上永不命中 → 判 inactive（l7 not_applicable）；基线 notes 亦指出「补进的牌是否被拦完全取决于服务端是否按单放字段下发」；差异维持 unverified，S4.3 报告浮出裁决
+- **汇总口径**：reviewStatus pending 213 / approved 2；effectiveDifference consistent 19 / partial 46 / conflict 2 / unverified 148
+
 ## S4.1 第一批：算分/番型/结算 复核（ST-C13/14/15，2026-11-14）
 
 - **执行**：runId `run-mwg6o42u-14`（一轮卡点修复后续跑贯通）：27 agent（26 journal 回放 + 1 新跑 L7 回读），20s；72 原子（ST-C13 17/2 片、ST-C14 30/3 片、ST-C15 25/3 片）；卡点：ST-C14-p03 三条 SVE `file` 漏写中间目录段 `com_game/`（location 正确）→ 对 symbol-index 核验后机械修复 + prompt 加固（详见 experience 文档坑 5）

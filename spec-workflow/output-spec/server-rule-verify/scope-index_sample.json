@@ -1,6 +1,6 @@
 {
  "schemaVersion": 1,
- "sampleNote": "OSG-W4 T0.2 交付样本：ST-C01/02/04 共 33 原子的作用域判定。二审修订（2026-11-14）：AT-ST-C01-002 因执行顺序未证由 active 降 unknown；conflict 类条目必须提供证据级 scope（evidenceScopes），Atom 级 applicability 仅为汇总视图；缺失 scope 的原子一律 unknown（未查证），不得缺省为 inactive。判定规则见 dev-docs/design/2026-11-14-OSG-W4-L7分类与玩法配置作用域设计.md 3.1/3.3。S1.3 补据（2026-11-14）：AT-ST-C15-018（difference-review 中的 ST-C15 conflict 条目）补证据级 scope（client-visual active），样本扩至 34 条目（ST-C01/02/04 全部 33 原子 + ST-C15 conflict 条目），满足设计 112 行「conflict 条目必须带 evidenceScopes」硬闸门。S2.1 深查落判（2026-11-14）：23 条 unknown 全部依服务端只读源码证据升级（二审优先三项均已闭环：C02-007 无爆头前置判 active、C01-006/007 创房下发值待 S2.2 客户端核对维持 conditional、ST-C04 askid 裁决链全量落判），unknown 清零；证据见 server-evidence_sample.json 新增 SVE-ST-C01-008/009、SVE-ST-C02-005~010、SVE-ST-C04-004~010",
+ "sampleNote": "OSG-W4 T0.2 交付样本：ST-C01/02/04 共 33 原子的作用域判定。二审修订（2026-11-14）：AT-ST-C01-002 因执行顺序未证由 active 降 unknown；conflict 类条目必须提供证据级 scope（evidenceScopes），Atom 级 applicability 仅为汇总视图；缺失 scope 的原子一律 unknown（未查证），不得缺省为 inactive。判定规则见 dev-docs/design/2026-11-14-OSG-W4-L7分类与玩法配置作用域设计.md 3.1/3.3。S1.3 补据（2026-11-14）：AT-ST-C15-018（difference-review 中的 ST-C15 conflict 条目）补证据级 scope（client-visual active），样本扩至 34 条目（ST-C01/02/04 全部 33 原子 + ST-C15 conflict 条目），满足设计 112 行「conflict 条目必须带 evidenceScopes」硬闸门。S2.1 深查落判（2026-11-14）：23 条 unknown 全部依服务端只读源码证据升级（二审优先三项均已闭环：C02-007 无爆头前置判 active、C01-006/007 创房下发值待 S2.2 客户端核对维持 conditional、ST-C04 askid 裁决链全量落判），unknown 清零；证据见 server-evidence_sample.json 新增 SVE-ST-C01-008/009、SVE-ST-C02-005~010、SVE-ST-C04-004~010。S2.2 配置下发值核对（2026-11-14）：客户端大厅 xuanwulobby（gameId 42320=GAME_HZMJ_HYF → DefaultConfigHZMJ 全量下发，GameRuleConfig.ts:83/311/624、LobbyCreateRoomView.ts:807-825）核对结论落 20 条 conditional 条目 configCondition：创房默认笃三老庄（banker_level_type=2，三牢起步 8 倍，与需求首庄三牢/固定 8 倍一致）、庄闲放铳(庄三)默认开、白板财神默认（可选翻）、first_banker_type/rotate_banker_type/draw_continue_banker UI 未暴露恒默认（0/0/1）、缺一色仅 2/3 人默认勾选、无风牌默认不勾；5 条 unresolved 全部清零",
  "scopeTarget": {
   "game": "hzmj",
   "roomType": "friend",
@@ -18,13 +18,13 @@
    "applicability": "conditional",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "first_banker_type=0（默认）随机；=1 房主",
+   "configCondition": "first_banker_type=0（默认）随机；=1 房主；创房 UI 未暴露该项（RuleHzmj.ts:21 默认 0，gameRule 无对应行，协议全量下发默认值）→ 好友房恒随机定首庄",
    "callPath": "JudgeZhuang→JudgeDingZhuang（com_ju.cpp:127）",
    "evidenceIds": [
     "SVE-ST-C01-001",
     "SVE-ST-C01-007"
    ],
-   "unresolved": "好友房创房面板实际下发值需客户端配置核对",
+   "unresolved": "",
    "noServerEvidence": false
   },
   {
@@ -46,7 +46,7 @@
    "applicability": "conditional",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "rotate_banker_type=0（默认）赢家坐庄；=1 逆时针轮换",
+   "configCondition": "rotate_banker_type=0（默认）赢家坐庄；=1 逆时针轮换；创房 UI 未暴露（RuleHzmj.ts:23）→ 好友房恒赢家坐庄",
    "callPath": "JudgeHuanZhuang（com_ju.cpp:166）",
    "evidenceIds": [
     "SVE-ST-C01-003"
@@ -59,12 +59,12 @@
    "applicability": "conditional",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "rotate_banker_type 两分支连庄口径不同（原庄自胡 vs 单人自摸/接炮）",
+   "configCondition": "rotate_banker_type 两分支连庄口径不同（原庄自胡 vs 单人自摸/接炮）；创房 UI 未暴露恒 0（RuleHzmj.ts:23）→ type=1 分支好友房不可达，语义差异仅存于代码路径",
    "callPath": "JudgeHuanZhuang（com_ju.cpp:169-181）",
    "evidenceIds": [
     "SVE-ST-C01-003"
    ],
-   "unresolved": "需求「庄家自己胡牌为连庄」与 type=1 分支语义差异待 S2 精读",
+   "unresolved": "",
    "noServerEvidence": false
   },
   {
@@ -72,7 +72,7 @@
    "applicability": "conditional",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "draw_continue_banker 默认 true 流局连庄；false 轮换",
+   "configCondition": "draw_continue_banker 默认 1 流局连庄；false 轮换；创房 UI 未暴露（RuleHzmj.ts:25）→ 好友房恒流局连庄",
    "callPath": "JudgeHuanZhuang（com_ju.cpp:143）",
    "evidenceIds": [
     "SVE-ST-C01-004"
@@ -85,12 +85,12 @@
    "applicability": "conditional",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "banker_level_type 默认 0 → 1 牢起步；=2（笃三老庄）才三牢",
+   "configCondition": "创房默认笃三老庄（banker_level_type=2，RuleHzmj.ts:29 默认值 + L276-287 UI 行默认选中「笃三老庄」）→ 服务端 banker_level=2+1=3 三牢起步，与需求「首庄三牢」默认一致；玩家可改平庄起 0/笃二老庄 1 → 非恒三牢",
    "callPath": "JudgeDingZhuang→GetConfiguredBankerLevel（com_ju.cpp:135,191）",
    "evidenceIds": [
     "SVE-ST-C01-005"
    ],
-   "unresolved": "需求「首庄三牢」与默认配置 1 牢不一致，需策划确认好友房配置范围",
+   "unresolved": "",
    "noServerEvidence": false
   },
   {
@@ -98,12 +98,12 @@
    "applicability": "conditional",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "倍率=1<<banker_level：默认配置 2 倍起步，三牢才 8 倍",
+   "configCondition": "倍率=1<<banker_level：创房默认笃三老庄 → banker_level=3 → 8 倍（与需求「庄闲固定 8 倍」默认一致，RuleHzmj.ts:29/276-287）；玩家改档位则 2/4 倍",
    "callPath": "结算写分（com_result.cpp:93）",
    "evidenceIds": [
     "SVE-ST-C01-006"
    ],
-   "unresolved": "需求「固定 8 倍」与默认配置不符，同上待策划确认",
+   "unresolved": "",
    "noServerEvidence": false
   },
   {
@@ -125,7 +125,7 @@
    "applicability": "conditional",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "enable_two_suit=false（默认，≤3 人开启时剔万字）且 del_feng=false（默认）→ 万/条/筒各 36 张（DEF_WAN/TIAO/TONG_COUNT=36，mah_frame/base/macros.h:218-220），每种 4 张；开启后对应花色剔除",
+   "configCondition": "4 人局（人数行默认 4 人，RuleHzmj.ts:11/77-143）缺一色不展示（置 0/服务端 mpcnt=4 不剔）→ 万条筒各 36 共 108；2/3 人局缺一色默认勾选（enable_two_suit=1，RuleHzmj.ts:45 + L364-369 仅 2/3 人展示）→ 服务端剔万字剩 100 张；del_feng 默认不勾",
    "callPath": "InitData 组墙（common_game_init.cpp:53-113）→ MixMah 取 GetAllMahs 洗牌入墙（mah_frame com_ju.cpp:186-239）",
    "evidenceIds": [
     "SVE-ST-C02-005"
@@ -138,7 +138,7 @@
    "applicability": "conditional",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "del_feng=false（默认）→ 东南西北四风共 16 张（DEF_FENG_COUNT=16，macros.h:221）；del_feng=true 时整组剔除",
+   "configCondition": "del_feng=0（创房「无风牌」复选默认不勾，RuleHzmj.ts:44 + L362）→ 东南西北 16 张默认在；勾选则整组剔除",
    "callPath": "InitData 组墙（common_game_init.cpp:66/91-92）→ MixMah 入墙",
    "evidenceIds": [
     "SVE-ST-C02-005"
@@ -151,7 +151,7 @@
    "applicability": "conditional",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "del_feng=false（默认）→ 中发白三箭共 12 张（DEF_JIAN_COUNT=12，macros.h:222）；del_feng=true 时箭牌仅保留白板 4 张（common_game_init.cpp:95/108）",
+   "configCondition": "del_feng 默认不勾（RuleHzmj.ts:44）→ 中发白 12 张默认在；勾选 del_feng 时箭牌仅保留白板 4 张",
    "callPath": "InitData 组墙（common_game_init.cpp:94-96/107-112）→ MixMah 入墙",
    "evidenceIds": [
     "SVE-ST-C02-005"
@@ -164,13 +164,13 @@
    "applicability": "conditional",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "cai_shen_type 默认 0 白板财神；=1 翻财神（需求「固定白板」实为默认值而非唯一值）",
+   "configCondition": "cai_shen_type 创房默认 0 白板财神（RuleHzmj.ts:27 默认值 + L265-275 玩法行默认选中「白板财神」），未锁定——玩家可选「翻财神」=1（需求「固定白板」实为默认值而非锁定值）",
    "callPath": "BoxJokerStep::Execute（com_ju.cpp:232-247）",
    "evidenceIds": [
     "SVE-ST-C02-001",
     "SVE-ST-C01-007"
    ],
-   "unresolved": "需确认好友房是否锁定 cai_shen_type=0",
+   "unresolved": "",
    "noServerEvidence": false
   },
   {
@@ -178,7 +178,7 @@
    "applicability": "conditional",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "白板财神时 4 张白板按牌值全为财神；翻财神时白板转替身 instd",
+   "configCondition": "白板财神（创房默认，RuleHzmj.ts:27/265-275）时 4 张白板按牌值全为财神；翻财神（可选）时白板转替身 instd",
    "callPath": "com_ju.cpp:236-251",
    "evidenceIds": [
     "SVE-ST-C02-001",
@@ -232,7 +232,7 @@
      "ref": "SVE-ST-C02-002",
      "layer": "common_game",
      "applicability": "conditional",
-     "note": "服务端财神候选排除，受 cai_shen_type 配置影响"
+     "note": "服务端财神候选排除，受 cai_shen_type 配置影响（创房默认 0 白板财神，玩家可选翻财神，RuleHzmj.ts:27/265-275）"
     },
     {
      "ref": "client-visual",
@@ -248,7 +248,7 @@
    "applicability": "conditional",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "cai_shen_type=0（默认白板财神）→ 财神牌值=白板，白板从吃候选移除不能被吃；=1（翻财神）→ 白板为替身 instd 可组顺子（InitInstdChows），不能吃的是翻出的财神牌值",
+   "configCondition": "cai_shen_type=0（创房默认白板财神，RuleHzmj.ts:27/265-275）→ 财神牌值=白板，白板从吃候选移除不能被吃；玩家选翻财神 =1 → 白板为替身 instd 可组顺子，不能吃的是翻出的财神牌值",
    "callPath": "BoxJokerStep::Execute AddJoker+InitJokerChows（com_ju.cpp:250-254）→ InitJokerChows 移除含财神全部三类顺子组合（mah_frame base_data.cpp:1826-1853）→ BoxChowStep::Judge TestChow 候选不含财神（com_action.cpp:82）",
    "evidenceIds": [
     "SVE-ST-C02-002",
@@ -262,7 +262,7 @@
    "applicability": "conditional",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "cai_shen_type=0（默认）→ 白板从碰候选移除不能被碰；=1（翻财神）→ 白板为普通牌/替身可碰，不能碰的是翻出的财神牌值",
+   "configCondition": "cai_shen_type=0（创房默认白板财神，RuleHzmj.ts:27/265-275）→ 白板从碰候选移除不能被碰；翻财神 =1 → 白板为普通牌/替身可碰，不能碰的是翻出的财神牌值",
    "callPath": "BoxJokerStep::Execute InitJokerPungs（com_ju.cpp:259）→ InitJokerPungs 移除财神刻子组合（base_data.cpp:1855-1866）→ PungStep::Judge TestPung 候选不含财神（mah_frame com_pung.cpp:90）",
    "evidenceIds": [
     "SVE-ST-C02-002",
@@ -276,7 +276,7 @@
    "applicability": "conditional",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "cai_shen_type=0（默认）→ 白板从杠候选移除（明/暗/补杠三类）不能被杠；=1（翻财神）→ 白板可杠，不能杠的是翻出的财神牌值",
+   "configCondition": "cai_shen_type=0（创房默认白板财神，RuleHzmj.ts:27/265-275）→ 白板从杠候选移除（明/暗/补杠）不能被杠；翻财神 =1 → 白板可杠，不能杠的是翻出的财神牌值",
    "callPath": "BoxJokerStep::Execute InitJokerKongs（com_ju.cpp:260）→ InitJokerKongs 移除财神明/暗/补杠全部组合（base_data.cpp:1868-1882）→ MKongStep::Judge TestMKong 候选不含财神（mah_frame com_kong.cpp:101）",
    "evidenceIds": [
     "SVE-ST-C02-002",
@@ -360,7 +360,7 @@
    "applicability": "conditional",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "多人可胡场景门槛：enable_banker_discard_hu（默认 true）且 banker_level=3（三牢）时庄闲间才产生点炮胡候选，抢杠胡同绑（com_action.cpp:353-385）；候选生成后全员下发机制本身无配置",
+   "configCondition": "创房默认满足：胡牌行默认「庄闲放铳(庄三)」（enable_banker_discard_hu=1，RuleHzmj.ts:31 + L288-298）且连庄数默认笃三老庄（banker_level_type=2 → 三牢）→ 庄闲点炮胡候选默认产生（庄闲配对逐闲家授胡权限）；玩家改「自摸胡」0 或降牢档 → 不产生（抢杠胡同绑门槛）",
    "callPath": "BoxHuStep::JudgeDiscard 庄闲配对逐闲家 TestHu 入 hu_power_seats（com_action.cpp:360-381）→ HuStep::MakePower 全部 hu_power_seats 逐一授胡权限（mah_frame com_hu.cpp:165-178）→ ActionStep::SendPowerToClient 按座位下发（mah_frame com_action.cpp:983-1013）",
    "evidenceIds": [
     "SVE-ST-C04-002",
@@ -374,7 +374,7 @@
    "applicability": "conditional",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "多人可胡场景门槛同 AT-ST-C04-005（三牢点炮/抢杠候选）；距离加权裁决机制本身恒生效",
+   "configCondition": "多人可胡场景门槛：创房默认满足（enable_banker_discard_hu=1 庄闲放铳(庄三) + banker_level_type=2 三牢，RuleHzmj.ts:31/29）；玩家改自摸胡/降档则无多人可胡场景；距离加权裁决机制本身恒生效",
    "callPath": "GetConActionWeight（mah_frame com_action.cpp:826-832）：胡权重=kStepLevelHu+GetSeatWeight（距出牌者近权重高）→ ConAction 最高已响应立即执行：近者胡先被执行，远者胡不再执行（con_action.cpp:40-57）",
    "evidenceIds": [
     "SVE-ST-C04-008",
@@ -388,7 +388,7 @@
    "applicability": "conditional",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "多人可胡场景门槛同 AT-ST-C04-005；放弃清条目机制本身恒生效",
+   "configCondition": "多人可胡场景门槛：创房默认满足（enable_banker_discard_hu=1 + banker_level_type=2 三牢，RuleHzmj.ts:31/29）；放弃清条目机制本身恒生效",
    "callPath": "近者 OnMsgCancel → OnConAction(kStepLevelCancelS) → ClearUserConAction 清该座位全部条目（con_action.cpp:70-81）→ 远者已响应胡成为最高已响应立即执行",
    "evidenceIds": [
     "SVE-ST-C04-005",
@@ -416,7 +416,7 @@
    "applicability": "conditional",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "多人可胡场景门槛同 AT-ST-C04-005；距离加权机制在非一炮多响下恒生效（hzmj 恒生效）",
+   "configCondition": "多人可胡场景门槛：创房默认满足（enable_banker_discard_hu=1 + banker_level_type=2 三牢，RuleHzmj.ts:31/29）；距离加权机制在非一炮多响下恒生效（hzmj 恒生效）",
    "callPath": "GetSeatWeight = mpcnt - (seat - whoplay + mpcnt) % mpcnt（mah_frame com_action.cpp:834-838，距出牌者近权重高）→ OnMsgHuC 胡权重=kStepLevelHu+座位权重 → 距出牌者最近的可胡者优先裁决",
    "evidenceIds": [
     "SVE-ST-C04-009"
@@ -429,7 +429,7 @@
    "applicability": "conditional",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "多人可胡场景门槛同 AT-ST-C04-005；顺延机制本身恒生效",
+   "configCondition": "多人可胡场景门槛：创房默认满足（enable_banker_discard_hu=1 + banker_level_type=2 三牢，RuleHzmj.ts:31/29）；顺延机制本身恒生效",
    "callPath": "同 AT-ST-C04-007：放弃者 ClearUserConAction 清条目后，剩余已响应胡中权重最高者立即执行（con_action.cpp:40-57/70-81）",
    "evidenceIds": [
     "SVE-ST-C04-005",

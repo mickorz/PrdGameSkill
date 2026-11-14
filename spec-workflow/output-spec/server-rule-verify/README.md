@@ -12,7 +12,7 @@
 |---|---|---|
 | `symbol-index.json` | 服务端符号索引（S2.0）：common_game/hzmj_server/mah_frame 三目录确定性扫描（class/struct、类方法、自由函数、配置项 json_key 含默认值元数据；pb 生成文件排除单独计数），供 agent 按 Atom 查索引定位 file:line | 134 文件 / 1793 符号（class 144 / 方法 1356 / 自由函数 258 / 配置项 35） |
 | `server-evidence_sample.json` | 服务端证据（29 条真实 file:line，common_game/hzmj_server/mah_frame 三层；S2.1 新增 15 条覆盖三 Stage 全部 23 条原 unknown） | 29 条 |
-| `scope-index_sample.json` | 玩法配置作用域判定：ST-C01/02/04 全部 33 原子 + ST-C15-018 conflict 条目（S1.3 补据），共 34 条目：active 14 / conditional 20 / unknown 0 / inactive 0（S2.1 深查落判：23 条 unknown 全部依服务端只读源码证据升级，二审优先三项闭环） | 34 条 |
+| `scope-index_sample.json` | 玩法配置作用域判定：ST-C01/02/04 全部 33 原子 + ST-C15-018 conflict 条目（S1.3 补据），共 34 条目：active 14 / conditional 20 / unknown 0 / inactive 0（S2.1 深查落判：23 条 unknown 全部依服务端只读源码证据升级；S2.2 创房 UI 核对：20 条 conditional 条目 configCondition 落客户端创房默认值核对结论，unresolved 5 条清零） | 34 条 |
 | `difference-review_sample.json` | 差异二次复核对照（14 条代表性条目，含 v2 全部 2 个 conflict；全部 pending 未合并；含 effectiveDifference 与确定性迁移统计 66/64/2/187；S1.1 修订：l7Projection 手写统计漂移经重算修正 2/10/2/0 → 1/11/2/0；S2.1：6 条 unknown 复核字段依服务端深查证据升级为 active×5/conditional×1，difference 结论不变） | 14 条 |
 | `l7-classify_sample.json` | L7 分类产物（S1.1 起，S2.1 重算）：classify-l7.mjs 按设计 4.1 矩阵对 14 条复核样本的确定性分类，分布 verified 1 / verification_required 11 / decision_required 2 / not_applicable 0（S2.1 落判后 l7 分布不变，仅 6 条目 scope 字段经复核字段更新为 active/conditional，来源 review-field）；全部 pending → l7Approved 全 0（未批准不入正式索引）；AT-ST-C02-008 与 AT-ST-C15-018（S1.3 补据后）均采证据级 scope（client-visual → active → decision_required） | 14 条 |
 
@@ -57,6 +57,17 @@
   - ③ ST-C04 askid 裁决链 → **全量落判**：级别常量胡 4 > 碰=杠 3 > 吃 2（macros.h:203-206）+ ConAction 最高级未响应阻塞/已响应立即执行（con_action.cpp:19-62）+ 碰/直杠升序扫描座位最小独得（com_pung.cpp:66 / com_kong.cpp:80）+ 胡按座位距离加权近者优先（com_action.cpp:826-838）+ 一炮多响关闭（com_action.cpp:534 注释直证）
 - 其余落判：C01-002（定庄先于骰子/发牌，Step 链 AddNext 直证）→ active；C01-008（三牢封顶，UpdateBankerLevel L369-370 + hzmj 无 banker_continue_type 覆写入口）→ active；C02-001/002/003（牌墙 136 张，InitData + macros.h:218-222）→ conditional（enable_two_suit/del_feng 默认 false）；C02-006（可打财神）→ active；C02-009/010/011（不能吃/碰/杠打出的白板财神）→ conditional（cai_shen_type=0 默认；翻财神时白板为替身）；C02-012（财神不能点炮胡，JudgeDiscard L363-364 注释直证）→ active
 - 回归：l7-classify_sample 重算重生成（l7 分布不变 1/11/2/0，仅 6 条目 scope 字段更新且来源为 review-field——scope 优先级：difference-review 复核字段 > scope-index Atom 级 > unknown，深查复核结论须同时落 DR 复核字段与 scope-index）；classify-l7.example S1.4 锚点同步（stats active 14/conditional 20/unknown 0）；三 example 全绿；v2 零改动
+
+## S2.2 创房 UI 配置下发值核对（2026-11-14）
+
+- 客户端证据：`E:/WorkProjects/Lobby/xuanwulobby`（大厅仓库，只读）：gameId 42320 = `GAME_HZMJ_HYF`（GameRuleConfig.ts:83）→ `BoxRoomGameRuleButtonConfigHZMJ` UI 行配置（:311）与 `DefaultConfigHZMJ` 创房默认参数（RuleHzmj.ts:6-54，「与服务端 game_rule 字段对齐」）；创房未缓存本地规则时全量取默认下发（LobbyCreateRoomView.ts:807-825），`FIXED_RULE_FIELDS_BY_GAME` 注释（GameRuleConfig.ts:363-372）证明 UI 无行的字段协议仍固定下发默认值
+- 核对结论（落 19 条 conditional 条目 configCondition + C02-008 evidenceScopes note）：
+  - **创房默认笃三老庄**（banker_level_type=2，RuleHzmj.ts:29 + UI 行 L276-287 默认选中）→ 服务端 banker_level=3 **三牢起步、庄闲 8 倍**，与需求「首庄三牢/固定 8 倍」**默认一致**（S2.1 时依据服务端 LoadBoxJsonConfig 默认 0 误判为不一致，S2.2 修正：服务端默认值只是缺 key 兜底，客户端恒全量下发）；玩家可改平庄起/笃二老庄 → 维持 conditional
+  - 庄闲放铳(庄三) 默认开（enable_banker_discard_hu=1，L31/288-298）→ ST-C04 多人可胡门槛默认满足（配合默认三牢），玩家可改自摸胡 → 维持 conditional
+  - 白板财神默认（cai_shen_type=0，L27/265-275），**未锁定**——玩家可选翻财神 → C02-004/005/009/010/011 维持 conditional，unresolved 清零
+  - first_banker_type/rotate_banker_type/draw_continue_banker UI 未暴露 → 恒发默认 0/0/1（随机首庄/赢家坐庄/流局连庄）；rotate type=1 分支好友房不可达
+  - 缺一色仅 2/3 人局展示且默认勾选（enable_two_suit=1，L45/364-369）→ 2/3 人局服务端剔万字 100 张、4 人局（默认人数）136 张；无风牌默认不勾（del_feng=0）→ 风 16/箭 12 默认在
+- unresolved 5 条全部清零（C01-001/004/006/007、C02-004），无转人工确认项；stats 不变（active 14/conditional 20/unknown 0/inactive 0）；l7-classify 重算一致；三 example 全绿；v2 零改动
 
 ## 关键发现摘要（详见调查报告）
 

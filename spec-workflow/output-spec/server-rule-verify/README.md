@@ -99,6 +99,11 @@
   - AT-ST-C01-004（庄家自摸连庄）：scope 样本 conditional → 正式 active——样本以 rotate_banker_type 两分支连庄口径不同（type=1 分支好友房不可达）保守判 conditional，agent 以 com_ju.cpp:168 / com_result.cpp:358 / base_data.cpp:950 / com_context.cpp:456 四条证据判可达口径统一 active；均属可辩护区间，转 S3 人工裁决（reviewStatus pending 保证未批准前不进正式索引）
 - **结论**：链路贯通验收通过；scope 真分歧率 1/8，升级建议质量与 S2.1 人工结论对齐；S4 全量跑（12 Stage / 311 原子）可复用本链路
 
+## S3.1 需求差异裁决清单（2026-11-14，交策划）
+
+- `需求差异裁决清单.md`：v2 全部 2 个 conflict（AT-ST-C02-008 财神牌河高亮 / AT-ST-C15-018 胡牌方式标注文案）的策划可读双栏对照（需求拆句 vs 实现），复核规则 `ui-conflict-stands-alone`，差异维持 conflict、L7 decision_required，pending 人工裁决（A 改客户端 / B 改需求 / C 其他 + approved/rejected 裁决栏）
+- 附 A：试运行 ST-C01 的 5 条 unverified→consistent 升级建议（AT-ST-C01-001/002/004/005/008，复核规则 `evidence-is-not-consistency`）批量批准表，含 AT-ST-C01-004 scope 分歧注记（样本 conditional vs 试运行 active，批准即采 active）；批准后经 S3.3 合并进 v3，v2 基线只读
+
 ## 关键发现摘要（详见调查报告）
 
 1. **定庄/牢庄/财神三个核心规则都是好友房配置项**（first_banker_type / banker_level_type / cai_shen_type），需求原文把它们写成无条件规则——「查到实现」与「需求满足」之间隔着配置确认，这正是 scope 层存在的意义。

@@ -118,6 +118,13 @@
   - DR：样本覆盖条目一致 3 / 分歧 5（正式更进取：C02-006/007/009、C04-001/012 建议 partial/unverified→consistent，其中 C04-001 优先级次序与 S2.1 裁决链证据（macros.h:203-206 级别常量）方向一致）；样本未覆盖 17 条为正式新增建议
 - **S3.2 partial 复核进度**：v2 的 64 条 partial 中已复核 3 条（证据就位三阶段 ST-C01/02/04），2 条建议升级（C02-006、C04-012）；其余 partial 原子随 S4.1 分批补证时逐阶段复核
 
+## S4.1 第一批：算分/番型/结算 复核（ST-C13/14/15，2026-11-14）
+
+- **执行**：runId `run-mwg6o42u-14`（一轮卡点修复后续跑贯通）：27 agent（26 journal 回放 + 1 新跑 L7 回读），20s；72 原子（ST-C13 17/2 片、ST-C14 30/3 片、ST-C15 25/3 片）；卡点：ST-C14-p03 三条 SVE `file` 漏写中间目录段 `com_game/`（location 正确）→ 对 symbol-index 核验后机械修复 + prompt 加固（详见 experience 文档坑 5）
+- **产物**（正式三件累积 105 scope + 105 DR + 298 SVE；l7-classify reviewed 105/319，l7 48/55/2/0，五道闸门通过）：本批 53 条建议 pending；scope active 49/conditional 21/unknown 2（C15-024 长按小结算、C15-025 准备/下一小局——服务端三根零实现，客户端公共壳交互，诚实 unknown → verification_required）；decision_required 2（C02-008 已裁决 approved、C15-018 裁决 B 改需求已落 approved）
+- **裁决落位**：C02-008 / C15-018 两条 conflict 均裁决 **B 改需求**（接受现状实现），reviewStatus 已落 approved（effectiveDifference 维持 conflict，需求侧修订待上游）；升级建议（附 A/A2 20 条 + 本批 53 条）仍待裁决回传
+- **汇总口径**：reviewStatus pending 103 / approved 2 / rejected 0；effectiveDifference consistent 10 / partial 23 / conflict 2 / unverified 70
+
 ## 关键发现摘要（详见调查报告）
 
 1. **定庄/牢庄/财神三个核心规则都是好友房配置项**（first_banker_type / banker_level_type / cai_shen_type），需求原文把它们写成无条件规则——「查到实现」与「需求满足」之间隔着配置确认，这正是 scope 层存在的意义。

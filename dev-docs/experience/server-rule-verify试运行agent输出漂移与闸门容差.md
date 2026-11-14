@@ -45,3 +45,15 @@
 - **续跑省成本**：`resumeFromRunId` 对未变 agent() 调用直接回放 journal（S3.2 续跑 12 agent 里 11 个回放、仅 1 个新跑、21s 完成），只有 prompt 变过的子流程重跑；改闸门逻辑（非 agent 调用）不影响回放。
 - **网关怪癖**：thinking 模式不支持 `json_schema` tool_choice，运行时会自动降级为 prompt JSON 模式（日志有提示，无需处理）。
 - 试运行最终结果与对照结论见 `spec-workflow/output-spec/server-rule-verify/README.md` S2.3 节；S3.2 批跑（ST-C02/ST-C04）对照结论见同文件 S3.2 节。
+
+## 坑 5：SVE file 字段丢中间目录段（location 正确、file 漏写）
+
+**问题现象**：S4.1 第一批（ST-C13/14/15，run-mwg6o42u-14）merge 闸门报「SVE location 与 file 不一致」3 条：agent 的 location 写对了完整路径（`common_game/com_game/common_game_com_play.cpp:63`），file 却漏掉中间目录段写成 `common_game/common_game_com_play.cpp`；连坐 3 条「evidenceIds 不在 server-evidence」（同 3 条 SVE 被拒）。
+
+**排查过程**：dump 分片 JSON 逐字段对比 file/location；到 symbol-index 查真实路径确认 location 口径正确（方法符号 CheckPlay:53/MakePower:18/Execute:87 均命中，引用行在方法体内合理）；file 是转写手误。
+
+**根因**：3-verify-scope prompt 只要求「location 以 file 开头」，没要求反向一致（file 与 location 路径部分逐字符一致）；agent 从符号索引转写 file 时漏复制中间目录段，location 另按读文件路径写、反而正确。
+
+**解决方案**：① 机械修复（已核验 ground truth 后）：file = location 冒号前路径部分，直接改分片 JSON，resume 续跑全回放 20s 收口（不改 prompt 保证 journal 回放）；② prompt 加固（防复发）：3-verify-scope.js 规则块补「file 必须与 location 冒号前路径逐字符一致（含 com_game 等中间目录），闸门逐条比对，漏写整轮合并失败」，后续批次生效。
+
+**预防/注意**：修复 agent 产物前必须先到 symbol-index/源码核验正确值，机械修复仅限「字段间可互相推导且闸门只查内部一致性」的场景；prompt 修复与续跑回放互斥——改了 prompt 该类 agent 全部重跑，赶时间先机械修复续跑收口、prompt 加固留给下一批。

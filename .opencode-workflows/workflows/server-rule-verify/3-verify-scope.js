@@ -118,6 +118,8 @@ function verifyPrompt(partFile) {
     '   - 双写要求（S2.1 经验闸门）：dr.scopeApplicability 必须等于 applicability。',
     '   - SVE.file 路径映射：符号索引 file 形如 game_hzmj/common_game/... -> SVE 写 common_game/...；',
     '     game_hzmj/hzmj_server/... -> hzmj_server/...；mah_frame/... 原样。location 必须以 file 开头（file:行号）。',
+    '     file 必须与 location 冒号前的路径部分逐字符一致（含 com_game 等中间目录，不得省略任何目录段）；',
+    '     校验闸门会逐条比对 file 与 location 前缀，漏写目录段整轮合并失败。',
     '   - 新增 SVE 编号 SVE-<stageId>-P<partNo>-NN（NN 从 01 起递增，本片内不得重复）；既有正式条目已覆盖的证据复用原 id（摘录可更新）。',
     '   - 共享证据（同一 file:line 服务多个原子，如同一配置 key 同时支撑两个规则原子）：SVE 只写一条',
     '     （放在首个引用的原子下，atomId 填该原子），其余原子在各自 evidenceIds 里引用同一个 id，',

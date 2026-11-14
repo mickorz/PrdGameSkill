@@ -1,0 +1,173 @@
+{
+ "schemaVersion": 1,
+ "sampleNote": "OSG-W4 T0.2 交付样本：三 Stage 服务端证据映射（非全量）。全部 file:line 来自 2026-11-14 只读调查，调查报告见 dev-docs/research/2026-11-14-OSG-W4-T0服务端结构与职责调查报告.md",
+ "sourceRepos": {
+  "common_game": "E:/WorkProjects/xc-flow/.xflow/xc/xcodeDev/game-mahjong/server/Logic/mahjong_server/src/game_hzmj/common_game",
+  "hzmj_server": "E:/WorkProjects/xc-flow/.xflow/xc/xcodeDev/game-mahjong/server/Logic/mahjong_server/src/game_hzmj/hzmj_server",
+  "pathNote": "需求原文 src/common/game_hzmj/common_game 层级勘误，见需求文档第 6 节登记"
+ },
+ "entries": [
+  {
+   "id": "SVE-ST-C01-001",
+   "atomId": "AT-ST-C01-001",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_ju.cpp",
+   "location": "common_game/com_game/common_game_com_ju.cpp:127",
+   "symbol": "BoxZhuangStep::JudgeDingZhuang",
+   "excerpt": "if (GetSvrCfg()->GetFirstBankerType() == 1) { 房主 } else { rand() % playerCount }",
+   "configKeys": [
+    "first_banker_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C01-002",
+   "atomId": "AT-ST-C01-002",
+   "layer": "common_game",
+   "file": "common_game/common_game_init.cpp",
+   "location": "common_game/common_game_init.cpp:148",
+   "symbol": "Step 链注册 BoxZhuangStep→ChipStep→BoxJokerStep",
+   "excerpt": "ZhuangStep 先于 ChipStep（骰子）创建，定庄在掷骰前",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C01-003",
+   "atomId": "AT-ST-C01-003",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_ju.cpp",
+   "location": "common_game/com_game/common_game_com_ju.cpp:166",
+   "symbol": "BoxZhuangStep::JudgeHuanZhuang",
+   "excerpt": "rotate_banker_type==0 赢家坐庄（原庄自胡连庄）；==1 逆时针轮换",
+   "configKeys": [
+    "rotate_banker_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C01-004",
+   "atomId": "AT-ST-C01-005",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_ju.cpp",
+   "location": "common_game/com_game/common_game_com_ju.cpp:143",
+   "symbol": "BoxZhuangStep::JudgeHuanZhuang",
+   "excerpt": "end_type != kEtHu 时 draw_continue_banker 决定庄家是否继续",
+   "configKeys": [
+    "draw_continue_banker"
+   ]
+  },
+  {
+   "id": "SVE-ST-C01-005",
+   "atomId": "AT-ST-C01-006",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_ju.cpp",
+   "location": "common_game/com_game/common_game_com_ju.cpp:191",
+   "symbol": "BoxZhuangStep::GetConfiguredBankerLevel",
+   "excerpt": "level = banker_level_type + 1，钳制 [1,3]；默认 type=0 → 1 牢起步",
+   "configKeys": [
+    "banker_level_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C01-006",
+   "atomId": "AT-ST-C01-007",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:93",
+   "symbol": "结算写分",
+   "excerpt": "banker_mult = 1 << banker_level（1牢=2 2牢=4 3牢=8）",
+   "configKeys": [
+    "banker_level_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C01-007",
+   "atomId": "AT-ST-C01-001",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:19",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "好友房 JSON 覆写 19 项：first_banker_type(0随机/1房主)、cai_shen_type(0白板/1翻)、banker_level_type(0平庄起)等",
+   "configKeys": [
+    "first_banker_type",
+    "cai_shen_type",
+    "banker_level_type",
+    "rotate_banker_type",
+    "draw_continue_banker"
+   ]
+  },
+  {
+   "id": "SVE-ST-C02-001",
+   "atomId": "AT-ST-C02-004",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_ju.cpp",
+   "location": "common_game/com_game/common_game_com_ju.cpp:232",
+   "symbol": "BoxJokerStep::Execute",
+   "excerpt": "cai_shen_type != 0 才翻财神；type=0 时 cai_shen = MV_BAI_BAN 白板直接为财神",
+   "configKeys": [
+    "cai_shen_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C02-002",
+   "atomId": "AT-ST-C02-009",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_ju.cpp",
+   "location": "common_game/com_game/common_game_com_ju.cpp:248",
+   "symbol": "BoxJokerStep::Execute",
+   "excerpt": "AddJoker(cai_shen) 注册财神并从吃碰杠候选组移除实际财神；翻财神时白板登记为替代牌",
+   "configKeys": [
+    "cai_shen_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C02-003",
+   "atomId": "AT-ST-C02-006",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_play.cpp",
+   "location": "common_game/com_game/common_game_com_play.cpp:48",
+   "symbol": "十风计数",
+   "excerpt": "翻财神模式下白板既是财神替身也算其本身字牌，打出白板不中断十风且计数+1",
+   "configKeys": [
+    "cai_shen_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C02-004",
+   "atomId": "AT-ST-C02-007",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:165",
+   "symbol": "CalcChowForbidMahs 注释",
+   "excerpt": "存在禁打财神机制：财神是万能，禁打财神值实为禁打其物理替身白板——疑似与出牌状态条件相关，待 S2 核验 CheckPlay",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C04-001",
+   "atomId": "AT-ST-C04-013",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:56",
+   "symbol": "BoxChowStep::Judge",
+   "excerpt": "seat = GetNextSeat(discard_seat)（吃仅限上家，需求 §8.2）",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C04-002",
+   "atomId": "AT-ST-C04-005",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:259",
+   "symbol": "BoxHuStep::Judge",
+   "excerpt": "自摸/点炮/抢杠三态分派；hu_infos 含 from_seat 与多 hu_items（一炮多响数据形态存在）",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C04-003",
+   "atomId": "AT-ST-C04-011",
+   "layer": "mah_frame",
+   "file": "com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:92",
+   "symbol": "ActionStep askid 机制",
+   "excerpt": "HuC/PlayC/Cancel 响应统一携带 askid，过期 askid 拒绝（L167）——低优先级提交等待/取消的框架机制",
+   "configKeys": []
+  }
+ ]
+}

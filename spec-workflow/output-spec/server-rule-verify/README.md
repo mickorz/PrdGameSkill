@@ -1,0 +1,33 @@
+# OSG-W4 服务端规则补证样本（T0.2 / T0.4 交付物）
+
+- **日期**：2026-11-14
+- **性质**：第一阶段（只读调查）交付样本，非全量产物。后续正式产物由 `server-rule-verify/` workflow 生成到本目录（samples 后缀区分）。
+- **上游基线**：`spec-workflow/output-spec/2026-11-14/1-spec/feature_index.json`（319 原子，schema_version=2，v2 产物只读）
+- **调查事实**：`dev-docs/research/2026-11-14-OSG-W4-T0服务端结构与职责调查报告.md`
+- **判定规则**：`dev-docs/design/2026-11-14-OSG-W4-L7分类与玩法配置作用域设计.md`
+
+## 文件清单
+
+| 文件 | 内容 | 规模 |
+|---|---|---|
+| `server-evidence_sample.json` | 服务端证据（14 条真实 file:line，common_game/hzmj_server/mah_frame 三层） | SVE 条目 |
+| `scope-index_sample.json` | ST-C01/02/04 全部 33 原子的玩法配置作用域判定：active 2 / conditional 9 / unknown 22 / inactive 0 | 33 条 |
+| `difference-review_sample.json` | 差异二次复核对照（14 条代表性条目，含 v2 全部 2 个 conflict；全部 pending 未合并） | 14 条 |
+
+## T0.4 局部验收结果（逐条对照需求）
+
+| 验收项 | 结果 | 证据 |
+|---|---|---|
+| 服务端证据真实存在 | 通过 | 14 条 SVE 均为只读调查实取 file:line，无编造；noServerEvidence=true 的原子如实留空 |
+| 玩法配置与调用链可核 | 通过 | conditional 条目均带 configCondition + callPath；好友房 19 项 JSON 配置入口（game_logic.cpp:19）已定位 |
+| 通用能力不自动判好友房冲突 | 通过 | AT-ST-C02-004（cai_shen_type 默认白板、可配翻）判 conditional 而非 conflict；AT-ST-C01-006/007（三牢/8 倍为配置档位）同 |
+| 缺服务端证据不自动产生冲突 | 通过 | 22 条 unknown 全部维持原 difference 并标 verification_required，无一改判 conflict |
+| 真实客户端视觉冲突不被消除 | 通过 | AT-ST-C02-008、AT-ST-C15-018 两条 conflict 全部维持并转 decision_required（ui-conflict-stands-alone） |
+| 复核前后 difference 对比 | 已输出 | difference-review_sample.json 的 baseline 与 afterReviewProjection（pending：66/63/2/188，批准前 v2 保持 65/64/2/188） |
+
+## 关键发现摘要（详见调查报告）
+
+1. **定庄/牢庄/财神三个核心规则都是好友房配置项**（first_banker_type / banker_level_type / cai_shen_type），需求原文把它们写成无条件规则——「查到实现」与「需求满足」之间隔着配置确认，这正是 scope 层存在的意义。
+2. 需求「首庄三牢、庄闲固定 8 倍」与默认配置（1 牢、2 倍起步）**存在配置依赖分歧**，已标记待策划确认（未判 conflict，规则 3）。
+3. AT-ST-C02-007（打出财神无前置限制）发现**疑似禁打财神状态机制**（com_action.cpp:165），列为 S2 矛盾候选优先核验。
+4. AT-ST-C04-013（吃仅限上家）服务端直证，是本轮唯一建议升 consistent 的原子（pending）。

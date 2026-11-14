@@ -1,0 +1,210 @@
+{
+ "schemaVersion": 1,
+ "sampleNote": "OSG-W4 T0.4 交付样本：复核前后对照（14 条代表性条目，覆盖 v2 全部 2 个 conflict）。复核规则与 L7 矩阵见设计文档 4.1/4.2；全部条目 reviewStatus=pending，人工批准后由装配扩展合并进 v3，不覆盖 v2",
+ "baseline": {
+  "indexPath": "spec-workflow/output-spec/2026-11-14/1-spec/feature_index.json",
+  "differenceStats": {
+   "consistent": 65,
+   "partial": 64,
+   "conflict": 2,
+   "unverified": 188
+  }
+ },
+ "afterReviewProjection": {
+  "consistent": 66,
+  "partial": 63,
+  "conflict": 2,
+  "unverified": 188,
+  "note": "按本样本批准后的预测分布：C01-002 与 C04-013 升 consistent（pending，未合并）"
+ },
+ "l7Projection": {
+  "verified": 2,
+  "verification_required": 10,
+  "decision_required": 2,
+  "not_applicable": 0,
+  "note": "L7 仅对已复核 14 条；其余 305 条待 S3 复核"
+ },
+ "entries": [
+  {
+   "atomId": "AT-ST-C01-001",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "reviewReason": "服务端证明定庄为配置依赖（first_banker_type 默认随机），好友房实际下发值未确认，不足以改判",
+   "reviewRule": "no-server-evidence-is-not-conflict",
+   "scopeApplicability": "conditional",
+   "evidenceIds": [
+    "SVE-ST-C01-001",
+    "SVE-ST-C01-007"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C01-002",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "reviewReason": "规则内容即「掷骰前定庄」时序本身，Step 链注册顺序（Zhuang 先于 Chip）直接证实；无配置依赖，符合 active 口径",
+   "reviewRule": "evidence-is-not-consistency（复核后确认不适用，允许升级）",
+   "scopeApplicability": "active",
+   "evidenceIds": [
+    "SVE-ST-C01-002"
+   ],
+   "l7": "verified",
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C01-006",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "reviewReason": "服务端默认 banker_level_type=0 → 1 牢起步，与需求「首庄三牢」存在配置依赖分歧；无明确矛盾实现，需策划确认配置范围后再判",
+   "reviewRule": "common-capability-is-not-enabled",
+   "scopeApplicability": "conditional",
+   "evidenceIds": [
+    "SVE-ST-C01-005"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C01-007",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "reviewReason": "倍率=1<<banker_level 非固定 8 倍（默认 2 倍起步），同 AT-ST-C01-006，配置依赖待确认",
+   "reviewRule": "common-capability-is-not-enabled",
+   "scopeApplicability": "conditional",
+   "evidenceIds": [
+    "SVE-ST-C01-006"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C02-004",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "reviewReason": "默认配置（cai_shen_type=0）下白板即财神与需求一致；但配置允许翻财神，「固定」语义依赖配置锁定，维持 consistent 并降 L7 为规则待验证",
+   "reviewRule": "common-capability-is-not-enabled",
+   "scopeApplicability": "conditional",
+   "evidenceIds": [
+    "SVE-ST-C02-001"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C02-008",
+   "previousDifference": "conflict",
+   "reviewedDifference": "conflict",
+   "reviewReason": "服务端移出候选与需求后半句（不参与后续）方向一致；但客户端牌河高亮与前半句（按普通白板展示）冲突独立成立，视觉冲突不因服务端规则正确而消除",
+   "reviewRule": "ui-conflict-stands-alone",
+   "scopeApplicability": "conditional",
+   "evidenceIds": [
+    "SVE-ST-C02-002"
+   ],
+   "l7": "decision_required",
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C15-018",
+   "previousDifference": "conflict",
+   "reviewedDifference": "conflict",
+   "reviewReason": "纯客户端控件页签差异（抢杠胡与点炮胡同页无法区分），无服务端证据可推翻，维持冲突待策划裁决",
+   "reviewRule": "ui-conflict-stands-alone",
+   "scopeApplicability": "unknown",
+   "evidenceIds": [],
+   "l7": "decision_required",
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C02-009",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "reviewReason": "Joker 移出候选机制方向支持「不能吃白板」，但候选生成到权限下发的完整调用链未核，不足以升 consistent",
+   "reviewRule": "evidence-is-not-consistency",
+   "scopeApplicability": "unknown",
+   "evidenceIds": [
+    "SVE-ST-C02-002"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C04-013",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "reviewReason": "服务端直证「吃仅限上家」（GetNextSeat(discard_seat)，注释标注需求 §8.2），无配置依赖且与需求规则完全同构；客户端 partial 佐证交互存在",
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "scopeApplicability": "active",
+   "evidenceIds": [
+    "SVE-ST-C04-001"
+   ],
+   "l7": "verified",
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C04-001",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "reviewReason": "框架 ask 机制存在但优先级排序（胡>碰/杠>吃）实现细节未展开，不足以判定",
+   "reviewRule": "no-server-evidence-is-not-conflict",
+   "scopeApplicability": "unknown",
+   "evidenceIds": [
+    "SVE-ST-C04-003"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C01-005",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "reviewReason": "流局连庄为可配项（draw_continue_banker 默认 true），配置下发值未确认",
+   "reviewRule": "common-capability-is-not-enabled",
+   "scopeApplicability": "conditional",
+   "evidenceIds": [
+    "SVE-ST-C01-004"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C02-007",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "reviewReason": "发现疑似禁打财神状态机制（com_action.cpp:165），与需求「无前置状态限制」构成矛盾候选；需 S2 核验 CheckPlay 后改判 conflict 或维持",
+   "reviewRule": "no-server-evidence-is-not-conflict（矛盾候选标记，S2 优先）",
+   "scopeApplicability": "unknown",
+   "evidenceIds": [
+    "SVE-ST-C02-004"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C02-006",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "reviewReason": "十风计数证据支持白板按普通牌值处理，但打牌链路未完整核验，维持部分一致",
+   "reviewRule": "evidence-is-not-consistency",
+   "scopeApplicability": "unknown",
+   "evidenceIds": [
+    "SVE-ST-C02-003"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending"
+  },
+  {
+   "atomId": "AT-ST-C04-012",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "reviewReason": "askid 过期拒绝机制方向支持「高优先级成立后其他响应取消」，细节未核，维持部分一致",
+   "reviewRule": "evidence-is-not-consistency",
+   "scopeApplicability": "unknown",
+   "evidenceIds": [
+    "SVE-ST-C04-003"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending"
+  }
+ ]
+}

@@ -1,0 +1,429 @@
+{
+ "schemaVersion": 1,
+ "sampleNote": "OSG-W4 T0.2 交付样本：ST-C01/02/04 共 33 原子的作用域判定。applicability 判定规则见 dev-docs/design/2026-11-14-OSG-W4-L7分类与玩法配置作用域设计.md 3.1",
+ "scopeTarget": {
+  "game": "hzmj",
+  "roomType": "friend",
+  "gameId": "42320"
+ },
+ "stats": {
+  "active": 2,
+  "conditional": 9,
+  "unknown": 22,
+  "inactive": 0
+ },
+ "entries": [
+  {
+   "atomId": "AT-ST-C01-001",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "first_banker_type=0（默认）随机；=1 房主",
+   "callPath": "JudgeZhuang→JudgeDingZhuang（com_ju.cpp:127）",
+   "evidenceIds": [
+    "SVE-ST-C01-001",
+    "SVE-ST-C01-007"
+   ],
+   "unresolved": "好友房创房面板实际下发值需客户端配置核对",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C01-002",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "无配置依赖（时序规则）",
+   "callPath": "common_game_init.cpp:148 ZhuangStep 注册先于 ChipStep",
+   "evidenceIds": [
+    "SVE-ST-C01-002"
+   ],
+   "unresolved": "Step 链 push 顺序即执行顺序未逐行核验",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C01-003",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "rotate_banker_type=0（默认）赢家坐庄；=1 逆时针轮换",
+   "callPath": "JudgeHuanZhuang（com_ju.cpp:166）",
+   "evidenceIds": [
+    "SVE-ST-C01-003"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C01-004",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "rotate_banker_type 两分支连庄口径不同（原庄自胡 vs 单人自摸/接炮）",
+   "callPath": "JudgeHuanZhuang（com_ju.cpp:169-181）",
+   "evidenceIds": [
+    "SVE-ST-C01-003"
+   ],
+   "unresolved": "需求「庄家自己胡牌为连庄」与 type=1 分支语义差异待 S2 精读",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C01-005",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "draw_continue_banker 默认 true 流局连庄；false 轮换",
+   "callPath": "JudgeHuanZhuang（com_ju.cpp:143）",
+   "evidenceIds": [
+    "SVE-ST-C01-004"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C01-006",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "banker_level_type 默认 0 → 1 牢起步；=2（笃三老庄）才三牢",
+   "callPath": "JudgeDingZhuang→GetConfiguredBankerLevel（com_ju.cpp:135,191）",
+   "evidenceIds": [
+    "SVE-ST-C01-005"
+   ],
+   "unresolved": "需求「首庄三牢」与默认配置 1 牢不一致，需策划确认好友房配置范围",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C01-007",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "倍率=1<<banker_level：默认配置 2 倍起步，三牢才 8 倍",
+   "callPath": "结算写分（com_result.cpp:93）",
+   "evidenceIds": [
+    "SVE-ST-C01-006"
+   ],
+   "unresolved": "需求「固定 8 倍」与默认配置不符，同上待策划确认",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C01-008",
+   "applicability": "unknown",
+   "configVerified": true,
+   "callPathVerified": false,
+   "configCondition": "封顶钳制在 GetConfiguredBankerLevel（≤3）；连庄推进 UpdateBankerLevel 细节未读",
+   "callPath": "com_result.cpp:49 UpdateBankerLevel 未核",
+   "evidenceIds": [
+    "SVE-ST-C01-005"
+   ],
+   "unresolved": "S2 待查：UpdateBankerLevel 全逻辑",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C02-001",
+   "applicability": "unknown",
+   "configVerified": false,
+   "callPathVerified": false,
+   "configCondition": "",
+   "callPath": "",
+   "evidenceIds": [],
+   "unresolved": "S2 待查：服务端牌墙初始化（万条筒 36/风 16）未展开",
+   "noServerEvidence": true
+  },
+  {
+   "atomId": "AT-ST-C02-002",
+   "applicability": "unknown",
+   "configVerified": false,
+   "callPathVerified": false,
+   "configCondition": "",
+   "callPath": "",
+   "evidenceIds": [],
+   "unresolved": "同上",
+   "noServerEvidence": true
+  },
+  {
+   "atomId": "AT-ST-C02-003",
+   "applicability": "unknown",
+   "configVerified": false,
+   "callPathVerified": false,
+   "configCondition": "",
+   "callPath": "",
+   "evidenceIds": [],
+   "unresolved": "同上（箭 12）",
+   "noServerEvidence": true
+  },
+  {
+   "atomId": "AT-ST-C02-004",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "cai_shen_type 默认 0 白板财神；=1 翻财神（需求「固定白板」实为默认值而非唯一值）",
+   "callPath": "BoxJokerStep::Execute（com_ju.cpp:232-247）",
+   "evidenceIds": [
+    "SVE-ST-C02-001",
+    "SVE-ST-C01-007"
+   ],
+   "unresolved": "需确认好友房是否锁定 cai_shen_type=0",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C02-005",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "白板财神时 4 张白板按牌值全为财神；翻财神时白板转替身 instd",
+   "callPath": "com_ju.cpp:236-251",
+   "evidenceIds": [
+    "SVE-ST-C02-001",
+    "SVE-ST-C02-002"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C02-006",
+   "applicability": "unknown",
+   "configVerified": true,
+   "callPathVerified": false,
+   "configCondition": "白板打出按牌值正常计（十风计数）；是否存在禁打财神状态条件未核",
+   "callPath": "CheckPlay 未核",
+   "evidenceIds": [
+    "SVE-ST-C02-003"
+   ],
+   "unresolved": "S2 待查：CheckPlay 禁打财神条件",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C02-007",
+   "applicability": "unknown",
+   "configVerified": false,
+   "callPathVerified": false,
+   "configCondition": "",
+   "callPath": "",
+   "evidenceIds": [
+    "SVE-ST-C02-004"
+   ],
+   "unresolved": "S2 优先：疑似存在禁打状态机制（com_action.cpp:165），与需求「无前置状态限制」构成矛盾候选",
+   "noServerEvidence": true
+  },
+  {
+   "atomId": "AT-ST-C02-008",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "服务端语义：财神移出候选不再参与吃碰杠（与需求后半句一致）；客户端牌河高亮（前半句）冲突独立",
+   "callPath": "com_ju.cpp:248",
+   "evidenceIds": [
+    "SVE-ST-C02-002"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C02-009",
+   "applicability": "unknown",
+   "configVerified": true,
+   "callPathVerified": false,
+   "configCondition": "Joker 移出候选机制存在；候选组生成到权限下发的完整路径未核",
+   "callPath": "com_ju.cpp:248→候选生成未核",
+   "evidenceIds": [
+    "SVE-ST-C02-002"
+   ],
+   "unresolved": "S2 待查：吃候选生成排除路径",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C02-010",
+   "applicability": "unknown",
+   "configVerified": true,
+   "callPathVerified": false,
+   "configCondition": "同上（碰）",
+   "callPath": "InitJokerPungs 未核",
+   "evidenceIds": [
+    "SVE-ST-C02-002"
+   ],
+   "unresolved": "S2 待查",
+   "noServerEvidence": true
+  },
+  {
+   "atomId": "AT-ST-C02-011",
+   "applicability": "unknown",
+   "configVerified": true,
+   "callPathVerified": false,
+   "configCondition": "同上（杠）",
+   "callPath": "InitJokerKongs 未核",
+   "evidenceIds": [
+    "SVE-ST-C02-002"
+   ],
+   "unresolved": "S2 待查",
+   "noServerEvidence": true
+  },
+  {
+   "atomId": "AT-ST-C02-012",
+   "applicability": "unknown",
+   "configVerified": false,
+   "callPathVerified": false,
+   "configCondition": "",
+   "callPath": "",
+   "evidenceIds": [
+    "SVE-ST-C02-001"
+   ],
+   "unresolved": "S2 待查：点炮判定对白板财神（JokerTestHu 万能处理）的排除",
+   "noServerEvidence": true
+  },
+  {
+   "atomId": "AT-ST-C04-001",
+   "applicability": "unknown",
+   "configVerified": false,
+   "callPathVerified": false,
+   "configCondition": "",
+   "callPath": "",
+   "evidenceIds": [
+    "SVE-ST-C04-003"
+   ],
+   "unresolved": "S2 待查：框架 ask 分发的优先级排序（mah_frame）",
+   "noServerEvidence": true
+  },
+  {
+   "atomId": "AT-ST-C04-002",
+   "applicability": "unknown",
+   "configVerified": false,
+   "callPathVerified": false,
+   "configCondition": "",
+   "callPath": "",
+   "evidenceIds": [],
+   "unresolved": "S2 待查",
+   "noServerEvidence": true
+  },
+  {
+   "atomId": "AT-ST-C04-003",
+   "applicability": "unknown",
+   "configVerified": false,
+   "callPathVerified": false,
+   "configCondition": "",
+   "callPath": "",
+   "evidenceIds": [],
+   "unresolved": "S2 待查（客户端 verdict=not_found，服务端未查）",
+   "noServerEvidence": true
+  },
+  {
+   "atomId": "AT-ST-C04-004",
+   "applicability": "unknown",
+   "configVerified": false,
+   "callPathVerified": false,
+   "configCondition": "",
+   "callPath": "",
+   "evidenceIds": [],
+   "unresolved": "S2 待查",
+   "noServerEvidence": true
+  },
+  {
+   "atomId": "AT-ST-C04-005",
+   "applicability": "unknown",
+   "configVerified": false,
+   "callPathVerified": false,
+   "configCondition": "hu_infos 多 hu_items 数据形态存在（一炮多响可能）",
+   "callPath": "BoxHuStep::Judge（com_action.cpp:259）",
+   "evidenceIds": [
+    "SVE-ST-C04-002"
+   ],
+   "unresolved": "S2 待查：全员下发逻辑",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C04-006",
+   "applicability": "unknown",
+   "configVerified": false,
+   "callPathVerified": false,
+   "configCondition": "",
+   "callPath": "",
+   "evidenceIds": [],
+   "unresolved": "S2 待查（客户端 not_found）",
+   "noServerEvidence": true
+  },
+  {
+   "atomId": "AT-ST-C04-007",
+   "applicability": "unknown",
+   "configVerified": false,
+   "callPathVerified": false,
+   "configCondition": "",
+   "callPath": "",
+   "evidenceIds": [],
+   "unresolved": "S2 待查",
+   "noServerEvidence": true
+  },
+  {
+   "atomId": "AT-ST-C04-008",
+   "applicability": "unknown",
+   "configVerified": false,
+   "callPathVerified": false,
+   "configCondition": "",
+   "callPath": "",
+   "evidenceIds": [
+    "SVE-ST-C04-002"
+   ],
+   "unresolved": "S2 待查：is_multi_hu 分支与需求「不出现一炮多响」的关系",
+   "noServerEvidence": true
+  },
+  {
+   "atomId": "AT-ST-C04-009",
+   "applicability": "unknown",
+   "configVerified": false,
+   "callPathVerified": false,
+   "configCondition": "",
+   "callPath": "",
+   "evidenceIds": [],
+   "unresolved": "S2 待查（客户端 not_found）",
+   "noServerEvidence": true
+  },
+  {
+   "atomId": "AT-ST-C04-010",
+   "applicability": "unknown",
+   "configVerified": false,
+   "callPathVerified": false,
+   "configCondition": "",
+   "callPath": "",
+   "evidenceIds": [],
+   "unresolved": "S2 待查",
+   "noServerEvidence": true
+  },
+  {
+   "atomId": "AT-ST-C04-011",
+   "applicability": "unknown",
+   "configVerified": true,
+   "callPathVerified": false,
+   "configCondition": "askid 机制存在（低优先级提交等待/取消的框架支撑）",
+   "callPath": "mah_frame/com_basic/com_action.cpp:92-168",
+   "evidenceIds": [
+    "SVE-ST-C04-003"
+   ],
+   "unresolved": "S2 待查：等待顺序细节",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C04-012",
+   "applicability": "unknown",
+   "configVerified": true,
+   "callPathVerified": false,
+   "configCondition": "同上",
+   "callPath": "mah_frame/com_basic/com_action.cpp:167",
+   "evidenceIds": [
+    "SVE-ST-C04-003"
+   ],
+   "unresolved": "S2 待查：高优先级成立后取消广播",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C04-013",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "无配置依赖（规则即实现）",
+   "callPath": "BoxChowStep::Judge（com_action.cpp:56）",
+   "evidenceIds": [
+    "SVE-ST-C04-001"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  }
+ ]
+}

@@ -3,10 +3,14 @@
 //       计数不自洽 / 乱码 / 分片标记残留 / 补充版缺阶段章节 / 缺模板主标题 / feature_index 缺失
 // v2 场景（2026-11-14，T3.6）：策划版泄漏命中/白名单豁免/干净放行 / AT-ID 覆盖缺失与基准外 /
 //       verifyOutputSpec opts 集成（泄漏 fail、全覆盖放行、difference 统计段进 report）
+// S1.3 场景（2026-11-14，OSG-W4）：checkL7Sidecars 真实样本放行 / 合成夹具五道闸门
+//       （classify 复跑、产物对比、trace 对齐、conflict 证据级 scope、审批状态独立）逐项破坏 /
+//       verifyOutputSpec opts.l7 集成（fail 与放行 + report L7 段）
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import { execFileSync } from 'node:child_process'
-import { verifyOutputSpec, checkPlannerLeakage, checkAtomCoverage } from './verify-output-spec.mjs'
+import { verifyOutputSpec, checkPlannerLeakage, checkAtomCoverage, checkL7Sidecars } from './verify-output-spec.mjs'
+import { classifyL7 } from './classify-l7.mjs'
 
 const SCRIPT = '.opencode-workflows/scripts/verify-output-spec.mjs'
 
@@ -428,8 +432,303 @@ function setup() {
   assert.equal(rNoOpts.ok, true)
 }
 
+// ---------- S1.3（OSG-W4）：L7 Sidecar 复核自洽 ----------
+
+// 合成 L7 夹具（七件套）：v2 风格基线索引（带 difference）+ trace + 三份 Sidecar +
+// classifyL7 现算生成的 l7-classify（产物不手写，防夹具自身漂移）
+function buildL7Fixture(dir) {
+  fs.rmSync(dir, { recursive: true, force: true })
+  fs.mkdirSync(dir, { recursive: true })
+  const featureIndex = {
+    module: '42320',
+    stage_count: 2,
+    feature_count: 2,
+    atom_count: 3,
+    stages: [
+      { id: 'ST-C01', name: '定庄与轮庄', chapter: '开局 > 定庄与轮庄' },
+      { id: 'ST-C02', name: '算分', chapter: '算分' },
+    ],
+    difference_stats: { consistent: 0, partial: 0, conflict: 1, unverified: 2 },
+    features: [
+      {
+        id: 'FP-ST-C01-001', name: '定庄', stage_id: 'ST-C01', stage_name: '定庄与轮庄',
+        atoms: [
+          { id: 'AT-ST-C01-001', name: '首局定庄', verdict: 'confirmed', difference: 'unverified' },
+          { id: 'AT-ST-C01-002', name: '连庄', verdict: 'not_found', difference: 'conflict' },
+        ],
+      },
+      {
+        id: 'FP-ST-C02-001', name: '底分', stage_id: 'ST-C02', stage_name: '算分',
+        atoms: [{ id: 'AT-ST-C02-001', name: '底分为一', verdict: 'partial', difference: 'unverified' }],
+      },
+    ],
+  }
+  const traceIndex = {
+    entries: [
+      { atomId: 'AT-ST-C01-001', sourceStage: 'ST-C01', required: true },
+      { atomId: 'AT-ST-C01-002', sourceStage: 'ST-C01', required: true },
+      { atomId: 'AT-ST-C02-001', sourceStage: 'ST-C02', required: true },
+    ],
+  }
+  const scopeIndex = {
+    schemaVersion: 1,
+    stats: { active: 0, conditional: 1, unknown: 1, inactive: 0 },
+    entries: [
+      { atomId: 'AT-ST-C01-001', applicability: 'conditional', evidenceScopes: [] },
+      {
+        atomId: 'AT-ST-C01-002',
+        applicability: 'unknown',
+        evidenceScopes: [{ ref: 'client-visual', layer: 'client', applicability: 'active' }],
+      },
+    ],
+  }
+  const serverEvidence = {
+    schemaVersion: 1,
+    entries: [{ id: 'SVE-ST-C01-001', atomId: 'AT-ST-C01-001', layer: 'common_game', file: 'com_ju.cpp', line: 127, excerpt: 'JudgeZhuang' }],
+  }
+  const differenceReview = {
+    schemaVersion: 1,
+    entries: [
+      { atomId: 'AT-ST-C01-001', previousDifference: 'unverified', reviewedDifference: 'unverified', reviewStatus: 'pending', scopeApplicability: 'conditional', evidenceIds: ['SVE-ST-C01-001'], reviewRule: 'evidence-is-not-consistency', reviewReason: '配置依赖未确认' },
+      { atomId: 'AT-ST-C01-002', previousDifference: 'conflict', reviewedDifference: 'conflict', reviewStatus: 'pending', scopeApplicability: '', evidenceIds: [], reviewRule: 'ui-conflict-stands-alone', reviewReason: '纯客户端冲突' },
+      { atomId: 'AT-ST-C02-001', previousDifference: 'unverified', reviewedDifference: 'consistent', reviewStatus: 'pending', scopeApplicability: '', evidenceIds: [], reviewRule: 'history-preserved', reviewReason: '建议升 consistent（升级建议，pending 未合并）' },
+    ],
+  }
+  const r = classifyL7({ featureIndex, scopeIndex, serverEvidence, differenceReview }, { date: '2026-11-14' })
+  assert.equal(r.ok, true, '夹具 classify 现算应通过（夹具数据自洽）')
+  const paths = {
+    featureIndexPath: dir + '/feature_index.json',
+    traceIndexPath: dir + '/trace_index.json',
+    scopeIndexPath: dir + '/scope-index.json',
+    serverEvidencePath: dir + '/server-evidence.json',
+    differenceReviewPath: dir + '/difference-review.json',
+    l7ClassifyPath: dir + '/l7-classify.json',
+  }
+  fs.writeFileSync(paths.featureIndexPath, JSON.stringify(featureIndex, null, 1), 'utf8')
+  fs.writeFileSync(paths.traceIndexPath, JSON.stringify(traceIndex, null, 1), 'utf8')
+  fs.writeFileSync(paths.scopeIndexPath, JSON.stringify(scopeIndex, null, 1), 'utf8')
+  fs.writeFileSync(paths.serverEvidencePath, JSON.stringify(serverEvidence, null, 1), 'utf8')
+  fs.writeFileSync(paths.differenceReviewPath, JSON.stringify(differenceReview, null, 1), 'utf8')
+  fs.writeFileSync(paths.l7ClassifyPath, JSON.stringify(r.output, null, 1) + '\n', 'utf8')
+  return { paths, data: { featureIndex, traceIndex, scopeIndex, serverEvidence, differenceReview, l7Output: r.output } }
+}
+
+const sidecarFiles = (p, extra) =>
+  Object.assign(
+    {
+      baselineIndexPath: p.featureIndexPath,
+      verifiedIndexPath: p.featureIndexPath,
+      traceIndexPath: p.traceIndexPath,
+      scopeIndexPath: p.scopeIndexPath,
+      serverEvidencePath: p.serverEvidencePath,
+      differenceReviewPath: p.differenceReviewPath,
+      l7ClassifyPath: p.l7ClassifyPath,
+    },
+    extra || {}
+  )
+
+// 场景 15（S1.3）：checkL7Sidecars 真实样本放行（v2 基线 + 三份样本 Sidecar + l7-classify_sample）
+{
+  const r = checkL7Sidecars({
+    baselineIndexPath: 'spec-workflow/output-spec/2026-11-14/1-spec/feature_index.json',
+    verifiedIndexPath: 'spec-workflow/output-spec/2026-11-14/1-spec/feature_index.json',
+    traceIndexPath: 'spec-workflow/output-spec/2026-11-14/1-spec/trace_index.json',
+    scopeIndexPath: 'spec-workflow/output-spec/server-rule-verify/scope-index_sample.json',
+    serverEvidencePath: 'spec-workflow/output-spec/server-rule-verify/server-evidence_sample.json',
+    differenceReviewPath: 'spec-workflow/output-spec/server-rule-verify/difference-review_sample.json',
+    l7ClassifyPath: 'spec-workflow/output-spec/server-rule-verify/l7-classify_sample.json',
+  })
+  assert.equal(r.ok, true, '真实样本复核自洽应放行（问题：' + r.problems.join(' | ') + '）')
+  assert.equal(r.summary.reviewedCount, 14)
+  assert.deepEqual(r.summary.l7, { verified: 1, verification_required: 11, decision_required: 2, not_applicable: 0 })
+  assert.deepEqual(r.summary.l7Approved, { verified: 0, verification_required: 0, decision_required: 0, not_applicable: 0 })
+  assert.equal(r.summary.traceAtomCount, 319)
+  assert.equal(r.summary.conflictTotal, 2)
+  assert.equal(r.summary.conflictWithEvidenceScope, 2, '两个 conflict 条目均带证据级 scope（C15-018 已补据）')
+}
+
+// 场景 16（S1.3）：合成夹具五道闸门逐项破坏
+{
+  const dir = root + '-l7'
+  const fix = buildL7Fixture(dir)
+  const p = fix.paths
+
+  // 16a 全自洽放行（复核 3 / l7 verification_required 2 + decision_required 1）
+  const r0 = checkL7Sidecars(sidecarFiles(p))
+  assert.equal(r0.ok, true, '夹具全自洽应放行（问题：' + r0.problems.join(' | ') + '）')
+  assert.deepEqual(r0.summary.l7, { verified: 0, verification_required: 2, decision_required: 1, not_applicable: 0 })
+  assert.deepEqual(r0.summary.effectiveDifference, { consistent: 0, partial: 0, conflict: 1, unverified: 2 })
+
+  // 16b classify 落盘后手改条目 l7 → 复算不一致 fail
+  {
+    const tampered = JSON.parse(fs.readFileSync(p.l7ClassifyPath, 'utf8'))
+    tampered.entries.find((e) => e.atomId === 'AT-ST-C01-001').l7 = 'verified'
+    fs.writeFileSync(p.l7ClassifyPath, JSON.stringify(tampered, null, 1), 'utf8')
+    const r = checkL7Sidecars(sidecarFiles(p))
+    assert.equal(r.ok, false)
+    assert.ok(r.problems.some((x) => x.includes('l7-classify 条目与复算不一致') && x.includes('AT-ST-C01-001')))
+    buildL7Fixture(dir)
+  }
+
+  // 16c classify 落盘后手改统计块 → 统计对比 fail
+  {
+    const tampered = JSON.parse(fs.readFileSync(p.l7ClassifyPath, 'utf8'))
+    tampered.stats.l7.verification_required = 99
+    fs.writeFileSync(p.l7ClassifyPath, JSON.stringify(tampered, null, 1), 'utf8')
+    const r = checkL7Sidecars(sidecarFiles(p))
+    assert.equal(r.ok, false)
+    assert.ok(r.problems.some((x) => x.includes('stats.l7.verification_required') && x.includes('复算不一致')))
+    buildL7Fixture(dir)
+  }
+
+  // 16d trace_index 缺基线原子（Sidecar atomId 对齐主键不全）→ fail
+  {
+    const trace = JSON.parse(fs.readFileSync(p.traceIndexPath, 'utf8'))
+    trace.entries = trace.entries.filter((e) => e.atomId !== 'AT-ST-C02-001')
+    fs.writeFileSync(p.traceIndexPath, JSON.stringify(trace, null, 1), 'utf8')
+    const r = checkL7Sidecars(sidecarFiles(p))
+    assert.equal(r.ok, false)
+    assert.ok(r.problems.some((x) => x.includes('trace_index 缺基线原子') && x.includes('AT-ST-C02-001')))
+    assert.ok(r.problems.some((x) => x.includes('difference-review atomId 不在 trace_index') && x.includes('AT-ST-C02-001')))
+    buildL7Fixture(dir)
+  }
+
+  // 16e conflict 条目去 evidenceScopes（重跑 classify 后仅硬闸门命中）→ fail
+  {
+    const scopeIndex = JSON.parse(fs.readFileSync(p.scopeIndexPath, 'utf8'))
+    delete scopeIndex.entries.find((e) => e.atomId === 'AT-ST-C01-002').evidenceScopes
+    fs.writeFileSync(p.scopeIndexPath, JSON.stringify(scopeIndex, null, 1), 'utf8')
+    const rerun = classifyL7(
+      {
+        featureIndex: fix.data.featureIndex,
+        scopeIndex,
+        serverEvidence: fix.data.serverEvidence,
+        differenceReview: fix.data.differenceReview,
+      },
+      { date: '2026-11-14' }
+    )
+    assert.equal(rerun.ok, true, 'classify 对缺 evidenceScopes 是降级处理不 fail（resolveScope 按 unknown）')
+    fs.writeFileSync(p.l7ClassifyPath, JSON.stringify(rerun.output, null, 1) + '\n', 'utf8')
+    const r = checkL7Sidecars(sidecarFiles(p))
+    assert.equal(r.ok, false)
+    assert.equal(r.problems.length, 1, '仅 conflict 证据级 scope 硬闸门命中')
+    assert.ok(r.problems[0].includes('conflict 条目缺证据级 evidenceScopes') && r.problems[0].includes('AT-ST-C01-002'))
+    buildL7Fixture(dir)
+  }
+
+  // 16f 审批状态独立：pending 条目 reviewedDifference 混入正式索引 → fail；修回 previousDifference → 放行
+  {
+    const verified = JSON.parse(JSON.stringify(fix.data.featureIndex))
+    verified.features[1].atoms[0].difference = 'consistent'
+    const verifiedPath = dir + '/feature_index_v3-like.json'
+    fs.writeFileSync(verifiedPath, JSON.stringify(verified, null, 1), 'utf8')
+    const rBad = checkL7Sidecars(sidecarFiles(p, { verifiedIndexPath: verifiedPath }))
+    assert.equal(rBad.ok, false)
+    assert.ok(
+      rBad.problems.some((x) => x.includes('审批状态独立校验失败') && x.includes('AT-ST-C02-001') && x.includes('pending/rejected 条目不得进正式索引')),
+      'pending 条目的 reviewedDifference 混入正式索引被拦截'
+    )
+    verified.features[1].atoms[0].difference = 'unverified'
+    fs.writeFileSync(verifiedPath, JSON.stringify(verified, null, 1), 'utf8')
+    const rOk = checkL7Sidecars(sidecarFiles(p, { verifiedIndexPath: verifiedPath }))
+    assert.equal(rOk.ok, true, 'pending 条目保持 previousDifference 应放行（问题：' + rOk.problems.join(' | ') + '）')
+
+    // approved 条目按 effectiveDifference 合并 → 放行；未合并 → fail
+    const review = JSON.parse(fs.readFileSync(p.differenceReviewPath, 'utf8'))
+    review.entries.find((e) => e.atomId === 'AT-ST-C02-001').reviewStatus = 'approved'
+    fs.writeFileSync(p.differenceReviewPath, JSON.stringify(review, null, 1), 'utf8')
+    const rerun = classifyL7(
+      {
+        featureIndex: fix.data.featureIndex,
+        scopeIndex: fix.data.scopeIndex,
+        serverEvidence: fix.data.serverEvidence,
+        differenceReview: review,
+      },
+      { date: '2026-11-14' }
+    )
+    assert.equal(rerun.ok, true)
+    assert.equal(rerun.summary.effectiveDifference.consistent, 1, 'approved 后 effectiveDifference 取 reviewedDifference')
+    fs.writeFileSync(p.l7ClassifyPath, JSON.stringify(rerun.output, null, 1) + '\n', 'utf8')
+    const rMerged = checkL7Sidecars(sidecarFiles(p, { verifiedIndexPath: verifiedPath }))
+    assert.equal(rMerged.ok, false, 'approved 条目未按 effectiveDifference 合并（仍 previousDifference）应 fail')
+    assert.ok(rMerged.problems.some((x) => x.includes('approved 条目按 effectiveDifference 合并')))
+    verified.features[1].atoms[0].difference = 'consistent'
+    fs.writeFileSync(verifiedPath, JSON.stringify(verified, null, 1), 'utf8')
+    const rApproved = checkL7Sidecars(sidecarFiles(p, { verifiedIndexPath: verifiedPath }))
+    assert.equal(rApproved.ok, true, 'approved 条目按 effectiveDifference 合并应放行（问题：' + rApproved.problems.join(' | ') + '）')
+    assert.equal(rApproved.summary.l7Approved.verification_required, 1, 'approved 条目（C02-001）进 l7Approved 统计')
+    buildL7Fixture(dir)
+  }
+
+  // 16g evidenceIds 断链 → classify 复跑 fail
+  {
+    const review = JSON.parse(fs.readFileSync(p.differenceReviewPath, 'utf8'))
+    review.entries.find((e) => e.atomId === 'AT-ST-C01-001').evidenceIds = ['SVE-404']
+    fs.writeFileSync(p.differenceReviewPath, JSON.stringify(review, null, 1), 'utf8')
+    const r = checkL7Sidecars(sidecarFiles(p))
+    assert.equal(r.ok, false)
+    assert.ok(r.problems.some((x) => x.includes('classify 复跑') && x.includes('evidenceIds 不在 server-evidence') && x.includes('SVE-404')))
+    buildL7Fixture(dir)
+  }
+
+  // 16h 文件缺失 → fail
+  {
+    const r = checkL7Sidecars(sidecarFiles(p, { l7ClassifyPath: dir + '/not-exist.json' }))
+    assert.equal(r.ok, false)
+    assert.ok(r.problems[0].includes('l7-classify 读取失败'))
+    const r2 = checkL7Sidecars(sidecarFiles(p, { scopeIndexPath: '' }))
+    assert.equal(r2.ok, false)
+    assert.ok(r2.problems.some((x) => x.includes('scope-index 路径缺失')))
+  }
+}
+
+// 场景 17（S1.3）：verifyOutputSpec + opts.l7 集成（维度 7：fail 与放行 + report L7 段）
+{
+  setup()
+  // 升级 setup 夹具：feature_index 加 difference 字段与 difference_stats（原子集合不变）
+  const fix = buildL7Fixture(root + '-l7-17')
+  fs.copyFileSync(root + '-l7-17/feature_index.json', root + '/feature_index.json')
+  fs.copyFileSync(root + '-l7-17/trace_index.json', root + '/trace_index.json')
+  for (const f of ['scope-index.json', 'server-evidence.json', 'difference-review.json', 'l7-classify.json']) {
+    fs.copyFileSync(root + '-l7-17/' + f, root + '/' + f)
+  }
+  const l7opts = {
+    l7: {
+      scopeIndexPath: root + '/scope-index.json',
+      serverEvidencePath: root + '/server-evidence.json',
+      differenceReviewPath: root + '/difference-review.json',
+      l7ClassifyPath: root + '/l7-classify.json',
+    },
+  }
+  const rPass = verifyOutputSpec(root, root + '/supplement.md', root + '/template.md', '2026-11-14', l7opts)
+  assert.equal(rPass.ok, true, 'opts.l7 放行（问题：' + rPass.problems.join(' | ') + '）')
+  assert.equal(rPass.summary.l7Sidecars.reviewedCount, 3)
+  const report = fs.readFileSync(root + '/runtime/spec_check/verify-report.md', 'utf8')
+  assert.match(report, /L7 Sidecar 复核自洽（OSG-W4）：复核 3 \/ 3/)
+  assert.match(report, /审批状态独立校验通过/)
+
+  // 手改 l7-classify → 维度 7 fail 进 report
+  const tampered = JSON.parse(fs.readFileSync(root + '/l7-classify.json', 'utf8'))
+  tampered.entries[0].l7 = 'verified'
+  fs.writeFileSync(root + '/l7-classify.json', JSON.stringify(tampered, null, 1), 'utf8')
+  const rFail = verifyOutputSpec(root, root + '/supplement.md', root + '/template.md', '2026-11-14', l7opts)
+  assert.equal(rFail.ok, false)
+  assert.ok(rFail.problems.some((x) => x.includes('l7-classify 条目与复算不一致')))
+  const reportFail = fs.readFileSync(root + '/runtime/spec_check/verify-report.md', 'utf8')
+  assert.match(reportFail, /结论：不放行/)
+  assert.match(reportFail, /l7-classify 条目与复算不一致/)
+
+  // 不传 opts.l7：维度 7 不跑（向后兼容）
+  const rNoL7 = verifyOutputSpec(root, root + '/supplement.md', root + '/template.md', '2026-11-14')
+  assert.equal(rNoL7.ok, true)
+  assert.equal(rNoL7.summary.l7Sidecars, null)
+
+  fs.rmSync(root + '-l7-17', { recursive: true, force: true })
+}
+
 fs.rmSync(root, { recursive: true, force: true })
 fs.rmSync(root + '-v2-leak', { recursive: true, force: true })
 fs.rmSync(root + '-v2-clean', { recursive: true, force: true })
 fs.rmSync(root + '-v2-cov', { recursive: true, force: true })
-console.log('[成功] verify-output-spec.example 全部断言通过（放行/缺文档/原子集合不一致/多登记/计数不自洽/乱码/分片标记/缺章节/缺主标题/缺索引/v2 泄漏与白名单/覆盖缺失与基准外/opts 集成）')
+fs.rmSync(root + '-l7', { recursive: true, force: true })
+console.log('[成功] verify-output-spec.example 全部断言通过（放行/缺文档/原子集合不一致/多登记/计数不自洽/乱码/分片标记/缺章节/缺主标题/缺索引/v2 泄漏与白名单/覆盖缺失与基准外/opts 集成/S1.3 真实样本与五道闸门/opts.l7 集成）')

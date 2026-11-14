@@ -1,13 +1,13 @@
 {
  "schemaVersion": 1,
- "sampleNote": "OSG-W4 T0.2 交付样本：ST-C01/02/04 共 33 原子的作用域判定。二审修订（2026-11-14）：AT-ST-C01-002 因执行顺序未证由 active 降 unknown；conflict 类条目必须提供证据级 scope（evidenceScopes），Atom 级 applicability 仅为汇总视图；缺失 scope 的原子一律 unknown（未查证），不得缺省为 inactive。判定规则见 dev-docs/design/2026-11-14-OSG-W4-L7分类与玩法配置作用域设计.md 3.1/3.3",
+ "sampleNote": "OSG-W4 T0.2 交付样本：ST-C01/02/04 共 33 原子的作用域判定。二审修订（2026-11-14）：AT-ST-C01-002 因执行顺序未证由 active 降 unknown；conflict 类条目必须提供证据级 scope（evidenceScopes），Atom 级 applicability 仅为汇总视图；缺失 scope 的原子一律 unknown（未查证），不得缺省为 inactive。判定规则见 dev-docs/design/2026-11-14-OSG-W4-L7分类与玩法配置作用域设计.md 3.1/3.3。S1.3 补据（2026-11-14）：AT-ST-C15-018（difference-review 中的 ST-C15 conflict 条目）补证据级 scope（client-visual active），样本扩至 34 条目（ST-C01/02/04 全部 33 原子 + ST-C15 conflict 条目），满足设计 112 行「conflict 条目必须带 evidenceScopes」硬闸门",
  "scopeTarget": {
   "game": "hzmj",
   "roomType": "friend",
   "gameId": "42320"
  },
  "stats": {
-  "active": 1,
+  "active": 2,
   "conditional": 9,
   "unknown": 23,
   "inactive": 0
@@ -439,6 +439,26 @@
    ],
    "unresolved": "",
    "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C15-018",
+   "applicability": "active",
+   "configVerified": false,
+   "callPathVerified": false,
+   "configCondition": "",
+   "callPath": "",
+   "evidenceIds": [],
+   "unresolved": "纯客户端差异：抢杠胡与点炮胡在同一操作页签无法区分，无服务端配置与调用路径参与，S2 无可补证项",
+   "noServerEvidence": true,
+   "evidenceScopes": [
+    {
+     "ref": "client-visual",
+     "layer": "client",
+     "applicability": "active",
+     "note": "抢杠胡与点炮胡在同页签无法区分为已观察 UI 表现（v2 客户端证据），冲突产生证据作用域恒为 active"
+    }
+   ],
+   "atomScopeSummary": "Atom 级 applicability 为汇总视图；本条 conflict 无任何服务端证据，唯一冲突产生证据为 client-visual（active），故汇总为 active"
   }
  ]
 }

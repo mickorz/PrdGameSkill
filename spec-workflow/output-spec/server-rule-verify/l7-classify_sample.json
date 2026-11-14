@@ -153,15 +153,16 @@
    "stageId": "ST-C15",
    "previousDifference": "conflict",
    "reviewedDifference": "conflict",
-   "scopeApplicability": "unknown",
-   "scopeSource": "review-field",
+   "scopeApplicability": "active",
+   "scopeSource": "evidence-level-client-visual",
    "l7": "decision_required",
    "reviewStatus": "pending",
    "effectiveDifference": "conflict",
    "l7Basis": "proposed",
    "evidenceIds": [],
    "reviewRule": "ui-conflict-stands-alone",
-   "reviewReason": "纯客户端控件页签差异（抢杠胡与点炮胡同页无法区分），无服务端证据可推翻，维持冲突待策划裁决"
+   "reviewReason": "纯客户端控件页签差异（抢杠胡与点炮胡同页无法区分），无服务端证据可推翻，维持冲突待策划裁决",
+   "scopeNote": "冲突判定采用证据级 scope：冲突产生证据为客户端视觉证据（client-visual），其作用域即判定依据，不受其他服务端证据 inactive/conditional 影响"
   },
   {
    "atomId": "AT-ST-C02-009",

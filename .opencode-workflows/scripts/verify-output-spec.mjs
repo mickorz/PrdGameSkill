@@ -15,8 +15,25 @@
 //   - verifyOutputSpec 签名加可选 opts：{ plannerPath, traceIndexPath, allowlist, skipPlanner }，
 //     不传 opts 时行为与 v1 完全一致（向后兼容，CLI 老用法不炸）。
 //
+// OSG-W4 S1.3 复核自洽扩展（2026-11-14，设计文档 5 节 verify-output-spec 行 + 112 行实现约束）：
+//   - 新增 checkL7Sidecars(files)：L7 Sidecar（scope-index / server-evidence / difference-review
+//     / l7-classify）复核自洽校验——
+//     1) classify 复跑（复用 classify-l7.mjs 的 classifyL7，矩阵/作用域/统计块逻辑不重复实现）：
+//        覆盖四分类矩阵自洽（consistent+active 才 verified）、evidenceIds 存在性、枚举合法、
+//        previousDifference 基线对齐、手写统计块交叉校验、缺 scope 一律 unknown 不判 not_applicable；
+//     2) l7-classify 产物与复算逐条/逐块对比（防 classify 落盘后手改）；
+//     3) Sidecar atomId 全部对齐 trace_index（设计 6：trace atomId 为三份 Sidecar 的对齐主键）；
+//     4) conflict 条目必须带证据级 scope（设计 112：evidenceScopes 缺失即 fail；
+//        classify 的 resolveScope 是降级处理，这里是硬闸门）；
+//     5) 审批状态独立（pending/rejected 条目不得进正式索引：被验证索引原子 difference 必须等于
+//        previousDifference；approved 条目必须等于 effectiveDifference）。
+//   - verifyOutputSpec opts 新增可选 l7 = { baselineIndexPath?, traceIndexPath?, scopeIndexPath,
+//     serverEvidencePath, differenceReviewPath, l7ClassifyPath }：传入时跑维度 7，
+//     baseline/verified 索引默认 specDir/feature_index.json（v3 目录时显式传 v2 基线路径）。
+//
 // 可导入：export verifyOutputSpec(specDir, supplementPath, templatePath, date, opts)
 //         export checkPlannerLeakage(plannerPath, allowlist)
+//         export checkL7Sidecars(files)
 //         返回 { ok, problems, summary }，不直接退出进程
 // CLI 用法：
 //   node verify-output-spec.mjs <specDir> <supplementPath> <templatePath> <date>
@@ -29,12 +46,15 @@
 //   4. 补充版本文档存在、含模板全部标题行（防章节静默丢失）、无乱码
 //   5. 全部产出无 U+FFFD 乱码、无 PART-BEGIN/PART-END 分片标记残留
 //   6.（v2）策划版泄漏正则扫描 + AT-ID 覆盖率 + difference 统计（opts 传入时）
+//   7.（OSG-W4 S1.3）L7 Sidecar 复核自洽（opts.l7 传入时）：classify 复跑 + 产物对比 +
+//      trace_index 对齐 + conflict 证据级 scope + 审批状态独立
 //
 // 退出码（CLI）：0 全部通过 / 1 任一维度失败（失败明细打印到 stderr，并写入 verify-report.md）
 
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { classifyL7 } from './classify-l7.mjs'
 
 function writeReport(reportPath, problems, summaryText) {
   fs.mkdirSync(path.dirname(reportPath), { recursive: true })
@@ -161,6 +181,197 @@ export function checkAtomCoverage(plannerPath, traceIndexPath) {
   }
   const coverage = requiredIds.length > 0 ? (requiredIds.length - missing.length) / requiredIds.length : 1
   return { coverage: coverage, missing: missing, optionalMissing: optionalMissing, extra: extra, problems: problems, notes: notes }
+}
+
+// ============================================================
+// OSG-W4 S1.3：L7 Sidecar 复核自洽校验（设计文档 5 节 + 112 行实现约束）
+// ============================================================
+
+// L7 Sidecar 复核自洽校验（五道闸门，任一命中即 fail）：
+//   1. classify 复跑：classifyL7（classify-l7.mjs 导入，矩阵/作用域/统计块逻辑不重复实现）
+//      ——覆盖四分类矩阵自洽（consistent+active 才 verified）、evidenceIds 存在、枚举合法、
+//      previousDifference 基线对齐、手写统计块交叉校验、缺 scope 一律 unknown 不判 not_applicable
+//   2. l7-classify 产物对比：磁盘 l7-classify.json 与复算 output 逐条/逐统计块比对
+//      ——防 classify 落盘后手改（同款漂移坑见 dev-docs/experience/手写统计块漂移-l7Projection.md）
+//   3. Atom ID 对齐 trace_index：Sidecar（scope-index / server-evidence / difference-review /
+//      l7-classify）atomId 全部在 trace_index 内；trace_index 与基线原子集合同集（对齐主键自洽）
+//   4. conflict 必须带证据级 scope：difference-review 条目 reviewedDifference=conflict 时，
+//      对应 scope-index 条目必须存在且 evidenceScopes 非空（设计 112；classify resolveScope
+//      对缺失 evidenceScopes 是降级处理，此处硬闸门 fail）
+//   5. 审批状态独立（pending 条目不得进正式索引）：被验证索引（verifiedIndexPath）原子
+//      difference —— pending/rejected 条目必须等于 previousDifference，
+//      approved 条目必须等于 effectiveDifference
+// files = {
+//   baselineIndexPath,   // 必填：classify 基线（previousDifference 来源，v2）
+//   verifiedIndexPath,   // 必填：被验证正式索引（v2 同基线；v3 目录时传 v3 路径，baseline 显式传 v2）
+//   traceIndexPath,      // 必填：trace_index.json（对齐主键）
+//   scopeIndexPath, serverEvidencePath, differenceReviewPath,  // 必填：三份 Sidecar
+//   l7ClassifyPath,      // 必填：classify-l7.mjs 产物
+// }
+// 返回 { ok, problems, summary }，不直接退出进程
+export function checkL7Sidecars(files) {
+  const problems = []
+  const bad = (m) => problems.push(m)
+  const F = files || {}
+  const paths = {
+    baseline: F.baselineIndexPath || F.verifiedIndexPath || '',
+    verified: F.verifiedIndexPath || F.baselineIndexPath || '',
+    trace: F.traceIndexPath || '',
+    scopeIndex: F.scopeIndexPath || '',
+    serverEvidence: F.serverEvidencePath || '',
+    differenceReview: F.differenceReviewPath || '',
+    l7Classify: F.l7ClassifyPath || '',
+  }
+  const load = (p, label) => {
+    if (!p) {
+      bad(label + ' 路径缺失（checkL7Sidecars 必填项）')
+      return null
+    }
+    let raw
+    try {
+      raw = fs.readFileSync(p, 'utf8')
+    } catch {
+      bad(label + ' 读取失败：' + p)
+      return null
+    }
+    try {
+      return JSON.parse(raw)
+    } catch (e) {
+      bad(label + ' JSON 解析失败：' + p + '（' + e.message + '）')
+      return null
+    }
+  }
+  const baseline = load(paths.baseline, '基线 feature_index')
+  const verified = load(paths.verified, '正式索引 feature_index')
+  const trace = load(paths.trace, 'trace_index')
+  const scopeIndex = load(paths.scopeIndex, 'scope-index')
+  const serverEvidence = load(paths.serverEvidence, 'server-evidence')
+  const differenceReview = load(paths.differenceReview, 'difference-review')
+  const l7Classify = load(paths.l7Classify, 'l7-classify')
+  if ([baseline, verified, trace, scopeIndex, serverEvidence, differenceReview, l7Classify].some((x) => x === null)) {
+    return { ok: false, problems: problems, summary: null }
+  }
+
+  // 1. classify 复跑（矩阵自洽/证据关联/枚举/基线漂移/手写统计块，全部由 classifyL7 覆盖）
+  const rerun = classifyL7({ featureIndex: baseline, scopeIndex, serverEvidence, differenceReview })
+  for (const p of rerun.problems) bad('classify 复跑：' + p)
+
+  // 2. l7-classify 产物与复算对比（防落盘后手改）
+  if (rerun.ok) {
+    const freshById = new Map(rerun.output.entries.map((e) => [e.atomId, e]))
+    for (const d of l7Classify.entries || []) {
+      const f = freshById.get(d.atomId)
+      if (!f) {
+        bad('l7-classify 条目不在复算结果内（落盘后增改或输入漂移）：' + d.atomId)
+        continue
+      }
+      if (JSON.stringify(d) !== JSON.stringify(f)) {
+        bad('l7-classify 条目与复算不一致（落盘后手改）：' + d.atomId)
+      }
+    }
+    for (const [id] of freshById) {
+      if (!(l7Classify.entries || []).some((d) => d.atomId === id)) {
+        bad('l7-classify 缺复算条目（落盘后删改）：' + id)
+      }
+    }
+    const ds = l7Classify.stats || {}
+    const fs2 = rerun.output.stats
+    for (const g of ['l7', 'l7Approved', 'effectiveDifference', 'reviewStatus']) {
+      const dGroup = ds[g] || {}
+      const fGroup = fs2[g] || {}
+      for (const k of Object.keys(fGroup)) {
+        if (dGroup[k] !== fGroup[k]) {
+          bad('l7-classify stats.' + g + '.' + k + ' 与复算不一致：落盘=' + dGroup[k] + ' 复算=' + fGroup[k])
+        }
+      }
+      for (const k of Object.keys(dGroup)) {
+        if (!(k in fGroup)) bad('l7-classify stats.' + g + '.' + k + ' 复算无此键（落盘后手改）：' + dGroup[k])
+      }
+    }
+    for (const k of ['atomCount', 'reviewedCount', 'unreviewedCount']) {
+      if (ds[k] !== undefined && ds[k] !== fs2[k]) {
+        bad('l7-classify stats.' + k + ' 与复算不一致：落盘=' + ds[k] + ' 复算=' + fs2[k])
+      }
+    }
+  }
+
+  // 3. Atom ID 对齐 trace_index（设计 6：trace atomId 为三份 Sidecar 的对齐主键）
+  const traceIds = new Set((trace.entries || []).map((e) => e.atomId))
+  if (traceIds.size === 0) bad('trace_index entries 为空（对齐主键缺失）')
+  const baselineAtomIds = new Set()
+  for (const fe of baseline.features || []) for (const at of fe.atoms || []) baselineAtomIds.add(at.id)
+  for (const id of baselineAtomIds) {
+    if (!traceIds.has(id)) bad('trace_index 缺基线原子（对齐主键不全）：' + id)
+  }
+  for (const id of traceIds) {
+    if (!baselineAtomIds.has(id)) bad('trace_index 含基线外原子：' + id)
+  }
+  const sidecarAtoms = []
+  for (const e of scopeIndex.entries || []) sidecarAtoms.push(['scope-index', e.atomId])
+  for (const e of serverEvidence.entries || []) sidecarAtoms.push(['server-evidence', e.atomId])
+  for (const e of differenceReview.entries || []) sidecarAtoms.push(['difference-review', e.atomId])
+  for (const e of l7Classify.entries || []) sidecarAtoms.push(['l7-classify', e.atomId])
+  for (const [src, id] of sidecarAtoms) {
+    if (id && !traceIds.has(id)) bad(src + ' atomId 不在 trace_index（对齐主键）：' + id)
+  }
+
+  // 4. conflict 条目必须带证据级 scope（设计 112 硬闸门；classify 是降级处理）
+  const scopeById = new Map((scopeIndex.entries || []).map((e) => [e.atomId, e]))
+  let conflictTotal = 0
+  let conflictWithEvidenceScope = 0
+  for (const e of differenceReview.entries || []) {
+    if (!e || e.reviewedDifference !== 'conflict') continue
+    conflictTotal++
+    const se = scopeById.get(e.atomId)
+    const hasScopes = se && Array.isArray(se.evidenceScopes) && se.evidenceScopes.some((s) => s && s.ref)
+    if (!se) {
+      bad('conflict 条目在 scope-index 无条目（必须带证据级 scope，设计 112）：' + e.atomId)
+    } else if (!hasScopes) {
+      bad('conflict 条目缺证据级 evidenceScopes（必须带证据级 scope，设计 112）：' + e.atomId)
+    } else {
+      conflictWithEvidenceScope++
+    }
+  }
+
+  // 5. 审批状态独立（pending/rejected 条目不得进正式索引；approved 按 effectiveDifference 合并）
+  if (rerun.ok) {
+    const verifiedDiff = new Map()
+    for (const fe of (verified.features || [])) {
+      for (const at of fe.atoms || []) verifiedDiff.set(at.id, at.difference)
+    }
+    for (const e of rerun.output.entries) {
+      if (!verifiedDiff.has(e.atomId)) {
+        bad('正式索引缺复核原子：' + e.atomId)
+        continue
+      }
+      const vd = verifiedDiff.get(e.atomId)
+      const expect = e.reviewStatus === 'approved' ? e.effectiveDifference : e.previousDifference
+      if (vd !== expect) {
+        bad(
+          '审批状态独立校验失败：' + e.atomId + ' reviewStatus=' + e.reviewStatus +
+            ' 正式索引 difference=' + vd + ' 应为=' + expect +
+            (e.reviewStatus === 'approved'
+              ? '（approved 条目按 effectiveDifference 合并）'
+              : '（pending/rejected 条目不得进正式索引，应保持 previousDifference）')
+        )
+      }
+    }
+  }
+
+  const summary = rerun.ok
+    ? {
+        atomCount: rerun.summary.atomCount,
+        reviewedCount: rerun.summary.reviewedCount,
+        l7: rerun.summary.l7,
+        l7Approved: rerun.summary.l7Approved,
+        effectiveDifference: rerun.summary.effectiveDifference,
+        reviewStatus: rerun.summary.reviewStatus,
+        conflictTotal: conflictTotal,
+        conflictWithEvidenceScope: conflictWithEvidenceScope,
+        traceAtomCount: traceIds.size,
+      }
+    : null
+  return { ok: problems.length === 0, problems: problems, summary: summary }
 }
 
 export function verifyOutputSpec(specDir, supplementPath, templatePath, date, opts) {
@@ -305,6 +516,25 @@ export function verifyOutputSpec(specDir, supplementPath, templatePath, date, op
     plannerCoverage = cov
   }
 
+  // 维度 7（OSG-W4 S1.3，opts.l7 传入时）：L7 Sidecar 复核自洽校验
+  // baseline/verified 索引默认 specDir/feature_index.json（v2 同基线场景）；
+  // v3 目录验证时显式传 opts.l7.baselineIndexPath 指向 v2 基线
+  let l7Sidecars = null
+  if (O.l7) {
+    const verifiedIndexPath = path.join(specDir, 'feature_index.json')
+    const r = checkL7Sidecars({
+      baselineIndexPath: O.l7.baselineIndexPath || verifiedIndexPath,
+      verifiedIndexPath: verifiedIndexPath,
+      traceIndexPath: O.l7.traceIndexPath || path.join(specDir, 'trace_index.json'),
+      scopeIndexPath: O.l7.scopeIndexPath,
+      serverEvidencePath: O.l7.serverEvidencePath,
+      differenceReviewPath: O.l7.differenceReviewPath,
+      l7ClassifyPath: O.l7.l7ClassifyPath,
+    })
+    for (const p of r.problems) problems.push(p)
+    l7Sidecars = r
+  }
+
   // 汇总与放行
   const verdictTotal = { confirmed: 0, partial: 0, not_found: 0 }
   for (const f of features) {
@@ -335,6 +565,7 @@ export function verifyOutputSpec(specDir, supplementPath, templatePath, date, op
     supplementPath: supplementPath,
     plannerPath: plannerPath || null,
     plannerCoverage: plannerCoverage ? plannerCoverage.coverage : null,
+    l7Sidecars: l7Sidecars ? l7Sidecars.summary : null,
   }
 
   if (problems.length > 0) {
@@ -357,6 +588,17 @@ export function verifyOutputSpec(specDir, supplementPath, templatePath, date, op
       lines.push('- 策划版文档 ' + plannerPath + '：泄漏正则零命中（白名单 ' + JSON.stringify(O.allowlist || []) + '），AT-ID 覆盖率 ' + (plannerCoverage.coverage * 100).toFixed(1) + '%（必查口径：trace required 条目）')
     }
     for (const n of plannerNotes) lines.push('- 提示：' + n)
+  }
+  if (l7Sidecars && l7Sidecars.ok) {
+    const s = l7Sidecars.summary
+    lines.push(
+      '- L7 Sidecar 复核自洽（OSG-W4）：复核 ' + s.reviewedCount + ' / ' + s.atomCount +
+        '（l7：verified ' + s.l7.verified + ' / verification_required ' + s.l7.verification_required +
+        ' / decision_required ' + s.l7.decision_required + ' / not_applicable ' + s.l7.not_applicable +
+        '；l7Approved：verified ' + s.l7Approved.verified + ' / verification_required ' + s.l7Approved.verification_required +
+        ' / decision_required ' + s.l7Approved.decision_required + ' / not_applicable ' + s.l7Approved.not_applicable + '）' +
+        '，Sidecar atomId 全部对齐 trace_index（' + s.traceAtomCount + '），conflict 条目 ' + s.conflictWithEvidenceScope + '/' + s.conflictTotal + ' 带证据级 scope，审批状态独立校验通过（pending 条目未进正式索引）'
+    )
   }
   lines.push('')
   lines.push('| 阶段 | 原子项 | 已证实 | 部分证实 | 未找到 |')

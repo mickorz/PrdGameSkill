@@ -11,9 +11,9 @@
 | 文件 | 内容 | 规模 |
 |---|---|---|
 | `server-evidence_sample.json` | 服务端证据（14 条真实 file:line，common_game/hzmj_server/mah_frame 三层） | SVE 条目 |
-| `scope-index_sample.json` | ST-C01/02/04 全部 33 原子的玩法配置作用域判定：active 1 / conditional 9 / unknown 23 / inactive 0（二审修订：AT-ST-C01-002 因执行顺序未证由 active 降 unknown） | 33 条 |
+| `scope-index_sample.json` | 玩法配置作用域判定：ST-C01/02/04 全部 33 原子 + ST-C15-018 conflict 条目（S1.3 补据），共 34 条目：active 2 / conditional 9 / unknown 23 / inactive 0（二审修订：AT-ST-C01-002 因执行顺序未证由 active 降 unknown；S1.3 补据：AT-ST-C15-018 补证据级 scope client-visual active，满足设计 112 行硬闸门） | 34 条 |
 | `difference-review_sample.json` | 差异二次复核对照（14 条代表性条目，含 v2 全部 2 个 conflict；全部 pending 未合并；含 effectiveDifference 与确定性迁移统计 66/64/2/187；S1.1 修订：l7Projection 手写统计漂移经重算修正 2/10/2/0 → 1/11/2/0） | 14 条 |
-| `l7-classify_sample.json` | L7 分类产物（S1.1）：classify-l7.mjs 按设计 4.1 矩阵对 14 条复核样本的确定性分类，分布 verified 1 / verification_required 11 / decision_required 2 / not_applicable 0；全部 pending → l7Approved 全 0（未批准不入正式索引）；AT-ST-C02-008 采证据级 scope（client-visual → active） | 14 条 |
+| `l7-classify_sample.json` | L7 分类产物（S1.1）：classify-l7.mjs 按设计 4.1 矩阵对 14 条复核样本的确定性分类，分布 verified 1 / verification_required 11 / decision_required 2 / not_applicable 0；全部 pending → l7Approved 全 0（未批准不入正式索引）；AT-ST-C02-008 与 AT-ST-C15-018（S1.3 补据后）均采证据级 scope（client-visual → active → decision_required） | 14 条 |
 
 ## T0.4 局部验收结果（逐条对照需求）
 
@@ -39,6 +39,13 @@
 - `prepare-planner-doc-input.mjs` 新增可选参数：`<l7ClassifyPath>`（l7/l7Reason 内嵌进 planner-evidence 原子项，条目 atomId 必须在基线内防漂移）与 `<stageIdsCsv>`（阶段过滤，如 ST-C01,ST-C02,ST-C04）
 - `3-produce-outputs.js` 策划版 Prompt（内存/磁盘两链路共用 `plannerDocRules()`）：带 l7 字段原子按四口径生成差异行——verification_required →「规则待验证：缺什么证据或依赖什么配置」；decision_required →「待策划裁决：需求为「…」，实际表现为「…」」；verified / not_applicable → 不写差异行；不再从 notes 猜测差异结论，无 l7 数据原子保持现行为
 - 验收投影（l7-classify_sample.json + v2 基线 + ST-C01/02/04 过滤，33 原子、l7 内嵌 13/14）：产物 `spec-workflow/output-spec/2026-11-14/v3-planner-sample/`；11 规则待验证行全覆盖、C02-008 待策划裁决、C04-013 无差异行、泄漏零命中、v2 零改动
+
+## S1.3/S1.4 复核自洽闸门与三阶段回归（2026-11-14）
+
+- `verify-output-spec.mjs` 新增导出 `checkL7Sidecars(files)`（五道闸门）：① classify 复跑（导入 classifyL7，矩阵自洽 / evidenceIds 存在 / 缺 scope 一律 unknown / 手写统计块交叉校验）；② l7-classify 产物与复算逐条对比（防落盘后手改）；③ Sidecar atomId 全部对齐 trace_index；④ conflict 条目必须带证据级 scope（设计 112 硬闸门）；⑤ 审批状态独立（pending/rejected 不进正式索引，approved 按 effectiveDifference 合并）
+- `verifyOutputSpec` opts 新增可选 `l7`（维度 7），链路接线随 S2.3/S3 落地
+- 样本补据：C15-018 补 scope-index 条目（client-visual active），scope 样本 34 条目；l7-classify_sample 重算重生成（仅 C15-018 scope 字段变化，stats 不变）
+- S1.4 回归：classify-l7.example 钉死回归锚点（34 条目 / active 2 / conditional 9 / unknown 23 / l7 1/11/2/0）；三 example 全绿；v2 零改动（最后改动仍为 OSG-W3 收尾 commit c21dbb1）
 
 ## 关键发现摘要（详见调查报告）
 

@@ -1,7 +1,7 @@
 # OSG-W4 服务端规则补证样本（T0.2 / T0.4 交付物）
 
 - **日期**：2026-11-14
-- **性质**：第一阶段（只读调查）交付样本，非全量产物。后续正式产物由 `server-rule-verify/` workflow 生成到本目录（samples 后缀区分）。
+- **性质**：第一阶段（只读调查）交付样本，非全量产物。后续正式产物由 `server-rule-verify/` workflow 生成到本目录（samples 后缀区分；正式产物为 `scope-index.json` / `server-evidence.json` / `difference-review.json` / `l7-classify.json`，S2.3 workflow 就绪，试运行由用户触发）。
 - **上游基线**：`spec-workflow/output-spec/2026-11-14/1-spec/feature_index.json`（319 原子，schema_version=2，v2 产物只读）
 - **调查事实**：`dev-docs/research/2026-11-14-OSG-W4-T0服务端结构与职责调查报告.md`
 - **判定规则**：`dev-docs/design/2026-11-14-OSG-W4-L7分类与玩法配置作用域设计.md`
@@ -68,6 +68,22 @@
   - first_banker_type/rotate_banker_type/draw_continue_banker UI 未暴露 → 恒发默认 0/0/1（随机首庄/赢家坐庄/流局连庄）；rotate type=1 分支好友房不可达
   - 缺一色仅 2/3 人局展示且默认勾选（enable_two_suit=1，L45/364-369）→ 2/3 人局服务端剔万字 100 张、4 人局（默认人数）136 张；无风牌默认不勾（del_feng=0）→ 风 16/箭 12 默认在
 - unresolved 5 条全部清零（C01-001/004/006/007、C02-004），无转人工确认项；stats 不变（active 14/conditional 20/unknown 0/inactive 0）；l7-classify 重算一致；三 example 全绿；v2 零改动
+
+## S2.3 服务端补证四子流程 workflow 化（2026-11-14，脚本就绪，试运行待用户触发）
+
+- **workflow 套件**（`.opencode-workflows/workflows/server-rule-verify/`，主编排 + 四子流程显式 scriptPath 调用，注册表只扫一级目录不进注册表；调用方式：workflow 工具 scriptPath `./.opencode-workflows/workflows/server-rule-verify/server-rule-verify.js` + args `{ stageIds: 'ST-C01' | 'ST-C01,ST-C04' | 'ALL', date }`）：
+  - `server-rule-verify.js` 主编排：输入就位检查（基线/trace）→ 四子流程内存链式传参 → 汇总返回
+  - `1-scan-server.js`：`commandSuccess` 重建 symbol-index.json（确定性）+ agent 回读 stats
+  - `2-match-atoms.js`：`prepare-verify-atoms.mjs` 分片输入（功能点贪心不拆散：目标 ≤12 原子/片、硬上限 24、超限功能点独立成片；既有正式条目注入幂等参考、**不读 *_sample** 避免抄人工样本；旧分片清理）→ agent 按分片查 `query` CLI + 读源码切片（±30 行）→ 匹配候选落盘（落盘闸门）
+  - `3-verify-scope.js`：agent 逐原子落判（active/conditional/inactive/unknown 判定口径 + S2.2 客户端创房默认值口径内嵌 + SVE 证据条目 + **DR 复核字段双写**（S2.1 经验闸门）+ conflict 证据级 evidenceScopes + SVE 编号 `SVE-<stageId>-P<partNo>-NN`）→ verify-output 落盘
+  - `4-review-difference.js`：复核五规则 pending 建议（reviewRule 前缀白名单）→ **merge-verify-output.mjs** 确定性装配闸门 → classify-l7 CLI 重算 → **verify-output-spec check-l7 CLI 新子模式**（五道闸门 + 报告，不触碰 v2 基线目录）→ l7 统计回读
+- **确定性脚本**（`.opencode-workflows/scripts/`，均带 example 全绿）：
+  - `prepare-verify-atoms.mjs`（example 30 项）：分片输入生成 + 旧分片清理 + manifest
+  - `merge-verify-output.mjs`（example 63 项，含 merge→classify→check-l7 全链端到端）：双写闸门/覆盖闸门/SVE 形状与幂等（同 id 同原子原位替换、跨原子 fail）/reviewRule 白名单/未处理阶段条目保全/reviewStatus 保全（同建议保持 approved、建议变化重置 pending）/classifyL7 矩阵回填 l7/effectiveDifference/l7Basis + baseline/afterReviewProjection/l7Projection 三统计块重算
+  - `verify-output-spec.mjs` 新增 `check-l7` CLI 子模式（example 场景 18）：只跑 L7 Sidecar 五道闸门（不跑维度 1-6、不写 specDir，v2 基线只读不触碰），报告写 `<reportOutDir>/l7-check-report.md`
+- 正式产物（本目录，无 _sample 后缀）：`scope-index.json` / `server-evidence.json` / `difference-review.json` / `l7-classify.json`（首跑起累积，人工样本只读不改）；中间产物 `runtime/verify-input|match-output|verify-output|review-output/` + `runtime/spec-check/l7-check-report.md`
+- 生成前问询结论：速度优先（质量靠确定性闸门兜底）+ 分析模型 deepseek flash + 并发 16；五脚本 wf-syntax-check 全过；六 example 全绿（build-symbol-index / classify-l7 / prepare-planner-doc-input / prepare-verify-atoms / merge-verify-output / verify-output-spec）
+- **试运行验收口径**（ST-C01 单阶段，用户触发）：正式四件生成 + 五道闸门通过 + 与人工样本 ST-C01 八原子条目对照（scope 结论/SVE 摘录方向一致即链路贯通；分歧条目人工复核）
 
 ## 关键发现摘要（详见调查报告）
 

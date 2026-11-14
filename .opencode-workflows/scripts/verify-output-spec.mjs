@@ -31,6 +31,11 @@
 //     serverEvidencePath, differenceReviewPath, l7ClassifyPath }：传入时跑维度 7，
 //     baseline/verified 索引默认 specDir/feature_index.json（v3 目录时显式传 v2 基线路径）。
 //
+// OSG-W4 S2.3 check-l7 CLI 模式（2026-11-14）：
+//   - 新增 CLI 子模式 check-l7：只跑 L7 Sidecar 五道闸门，不跑维度 1-6、不写 specDir
+//     （server-rule-verify 链路闸门，v2 基线只读不触碰）；报告写
+//     <reportOutDir>/l7-check-report.md（缺省 l7-classify 同级 runtime/spec-check/）。
+//
 // 可导入：export verifyOutputSpec(specDir, supplementPath, templatePath, date, opts)
 //         export checkPlannerLeakage(plannerPath, allowlist)
 //         export checkL7Sidecars(files)
@@ -38,6 +43,7 @@
 // CLI 用法：
 //   node verify-output-spec.mjs <specDir> <supplementPath> <templatePath> <date>
 //   （策划版检查参数只经 build-output-spec.mjs 配置文件链路传入，CLI 保持 v1 用法）
+//   node verify-output-spec.mjs check-l7 <baselineIndex> <traceIndex> <scopeIndex> <serverEvidence> <differenceReview> <l7Classify> [reportOutDir]
 //
 // 校验维度：
 //   1. feature_index.json 存在、可解析、计数自洽（stage/feature/atom 与实际数组一致）
@@ -631,9 +637,64 @@ const invokedDirectly =
   process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 
 if (invokedDirectly) {
-  const [specDir, supplementPath, templatePath, date] = process.argv.slice(2)
+  const argv = process.argv.slice(2)
+
+  // check-l7 模式（OSG-W4 S2.3）：只跑 L7 Sidecar 五道闸门，不跑维度 1-6、
+  // 不写 specDir（v2 基线只读）；报告写 <reportOutDir>/l7-check-report.md
+  // （缺省 l7-classify 同级 runtime/spec-check/）。
+  // 用法：node verify-output-spec.mjs check-l7 <baselineIndex> <traceIndex> <scopeIndex> <serverEvidence> <differenceReview> <l7Classify> [reportOutDir]
+  if (argv[0] === 'check-l7') {
+    const [mode, baselineIndexPath, traceIndexPath, scopeIndexPath, serverEvidencePath, differenceReviewPath, l7ClassifyPath, reportOutDir] = argv
+    if (!baselineIndexPath || !traceIndexPath || !scopeIndexPath || !serverEvidencePath || !differenceReviewPath || !l7ClassifyPath) {
+      console.error('用法: node verify-output-spec.mjs check-l7 <baselineIndex> <traceIndex> <scopeIndex> <serverEvidence> <differenceReview> <l7Classify> [reportOutDir]')
+      process.exit(1)
+    }
+    const r = checkL7Sidecars({
+      baselineIndexPath: baselineIndexPath,
+      verifiedIndexPath: baselineIndexPath,
+      traceIndexPath: traceIndexPath,
+      scopeIndexPath: scopeIndexPath,
+      serverEvidencePath: serverEvidencePath,
+      differenceReviewPath: differenceReviewPath,
+      l7ClassifyPath: l7ClassifyPath,
+    })
+    const reportDir =
+      reportOutDir || path.join(path.dirname(path.resolve(l7ClassifyPath)), 'runtime', 'spec-check')
+    const reportPath = path.join(reportDir, 'l7-check-report.md')
+    const lines = ['# L7 Sidecar 五道闸门校验报告（check-l7 模式，OSG-W4 S2.3）', '']
+    lines.push('- 基线：' + baselineIndexPath)
+    lines.push('- Sidecar：scope-index / server-evidence / difference-review / l7-classify（' + path.dirname(path.resolve(l7ClassifyPath)) + '）')
+    if (r.summary) {
+      const s = r.summary
+      lines.push(
+        '- 复核 ' + s.reviewedCount + ' / ' + s.atomCount +
+          '（l7：verified ' + s.l7.verified + ' / verification_required ' + s.l7.verification_required +
+          ' / decision_required ' + s.l7.decision_required + ' / not_applicable ' + s.l7.not_applicable +
+          '；conflict 条目 ' + s.conflictWithEvidenceScope + '/' + s.conflictTotal + ' 带证据级 scope；trace 对齐 ' + s.traceAtomCount + '）'
+      )
+    }
+    if (r.problems.length > 0) {
+      lines.push('')
+      lines.push('## 问题（' + r.problems.length + ' 项）')
+      for (const p of r.problems) lines.push('- ' + p)
+    }
+    fs.mkdirSync(reportDir, { recursive: true })
+    fs.writeFileSync(reportPath, lines.join('\n') + '\n', 'utf8')
+    if (!r.ok) {
+      console.error('[失败] L7 Sidecar 五道闸门未通过，共 ' + r.problems.length + ' 项问题：')
+      for (const p of r.problems) console.error('  - ' + p)
+      console.error('报告 -> ' + reportPath)
+      process.exit(1)
+    }
+    console.log('[成功] L7 Sidecar 五道闸门通过：' + JSON.stringify(r.summary))
+    console.log('报告 -> ' + reportPath)
+    process.exit(0)
+  }
+
+  const [specDir, supplementPath, templatePath, date] = argv
   if (!specDir || !supplementPath || !templatePath) {
     console.error('用法: node verify-output-spec.mjs <specDir> <supplementPath> <templatePath> <date>')
+    console.error('     node verify-output-spec.mjs check-l7 <baselineIndex> <traceIndex> <scopeIndex> <serverEvidence> <differenceReview> <l7Classify> [reportOutDir]')
     process.exit(1)
   }
   const r = verifyOutputSpec(specDir, supplementPath, templatePath, date)

@@ -726,9 +726,58 @@ const sidecarFiles = (p, extra) =>
   fs.rmSync(root + '-l7-17', { recursive: true, force: true })
 }
 
+// 场景 18（S2.3）：check-l7 CLI 模式（真实样本放行 + 报告落盘 + 篡改 fail + 缺参用法）
+{
+  const baseDir = 'spec-workflow/output-spec/server-rule-verify'
+  const basePath = 'spec-workflow/output-spec/2026-11-14/1-spec'
+  const reportDir = baseDir + '/runtime/spec-check-cli-test'
+
+  // 18a 真实样本放行（报告写指定目录）
+  const rPass = run([
+    'check-l7',
+    basePath + '/feature_index.json',
+    basePath + '/trace_index.json',
+    baseDir + '/scope-index_sample.json',
+    baseDir + '/server-evidence_sample.json',
+    baseDir + '/difference-review_sample.json',
+    baseDir + '/l7-classify_sample.json',
+    reportDir,
+  ])
+  assert.equal(rPass.code, 0, 'check-l7 真实样本应放行（输出：' + rPass.out + '）')
+  assert.ok(rPass.out.includes('[成功]') && rPass.out.includes('五道闸门通过'), 'check-l7 成功输出含摘要')
+  const report = fs.readFileSync(reportDir + '/l7-check-report.md', 'utf8')
+  assert.match(report, /L7 Sidecar 五道闸门校验报告/)
+  assert.match(report, /复核 14 \/ 319/)
+  fs.rmSync(reportDir, { recursive: true, force: true })
+
+  // 18b 缺参用法提示（退出码 1）
+  const rUsage = run(['check-l7', basePath + '/feature_index.json'])
+  assert.equal(rUsage.code, 1)
+  assert.ok(rUsage.out.includes('用法'), 'check-l7 缺参输出用法')
+  assert.ok(rUsage.out.includes('check-l7'), '用法提示含 check-l7 子模式')
+
+  // 18c 合成夹具篡改 l7-classify → 五道闸门 fail + 报告含问题（exit 1，不写基线）
+  const dir = root + '-l7-18'
+  const fix = buildL7Fixture(dir)
+  const p = fix.paths
+  const tampered = JSON.parse(fs.readFileSync(p.l7ClassifyPath, 'utf8'))
+  tampered.entries.find((e) => e.atomId === 'AT-ST-C01-001').l7 = 'verified'
+  fs.writeFileSync(p.l7ClassifyPath, JSON.stringify(tampered, null, 1), 'utf8')
+  const rFail = run([
+    'check-l7', p.featureIndexPath, p.traceIndexPath, p.scopeIndexPath, p.serverEvidencePath,
+    p.differenceReviewPath, p.l7ClassifyPath, dir + '/runtime/spec-check',
+  ])
+  assert.equal(rFail.code, 1, 'check-l7 篡改样本应 exit 1')
+  assert.ok(rFail.out.includes('条目与复算不一致'), 'check-l7 失败输出含问题明细')
+  const reportFail = fs.readFileSync(dir + '/runtime/spec-check/l7-check-report.md', 'utf8')
+  assert.match(reportFail, /问题（1 项）/)
+  assert.match(reportFail, /条目与复算不一致/)
+  fs.rmSync(dir, { recursive: true, force: true })
+}
+
 fs.rmSync(root, { recursive: true, force: true })
 fs.rmSync(root + '-v2-leak', { recursive: true, force: true })
 fs.rmSync(root + '-v2-clean', { recursive: true, force: true })
 fs.rmSync(root + '-v2-cov', { recursive: true, force: true })
 fs.rmSync(root + '-l7', { recursive: true, force: true })
-console.log('[成功] verify-output-spec.example 全部断言通过（放行/缺文档/原子集合不一致/多登记/计数不自洽/乱码/分片标记/缺章节/缺主标题/缺索引/v2 泄漏与白名单/覆盖缺失与基准外/opts 集成/S1.3 真实样本与五道闸门/opts.l7 集成）')
+console.log('[成功] verify-output-spec.example 全部断言通过（放行/缺文档/原子集合不一致/多登记/计数不自洽/乱码/分片标记/缺章节/缺主标题/缺索引/v2 泄漏与白名单/覆盖缺失与基准外/opts 集成/S1.3 真实样本与五道闸门/opts.l7 集成/S2.3 check-l7 CLI 模式）')

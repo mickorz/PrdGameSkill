@@ -1,6 +1,6 @@
 {
  "schemaVersion": 1,
- "sampleNote": "OSG-W4 T0.4 交付样本：复核前后对照（14 条代表性条目，覆盖 v2 全部 2 个 conflict）。复核规则与 L7 矩阵见设计文档 4.1/4.2；全部条目 reviewStatus=pending，人工批准后由装配扩展合并进 v3，不覆盖 v2",
+ "sampleNote": "OSG-W4 T0.4 交付样本：复核前后对照（14 条代表性条目，覆盖 v2 全部 2 个 conflict）。二审修订（2026-11-14）：AT-ST-C01-002 撤销升级建议（scope 降 unknown）；l7 为业务分类四值（pending 时为 proposed 性质），reviewStatus 为审批状态（pending/approved/rejected），两字段独立；effectiveDifference 为当前生效结论（未批准时等于 previousDifference）。全部条目 reviewStatus=pending，批准后由装配扩展合并进 v3，不覆盖 v2",
  "baseline": {
   "indexPath": "spec-workflow/output-spec/2026-11-14/1-spec/feature_index.json",
   "differenceStats": {
@@ -12,10 +12,18 @@
  },
  "afterReviewProjection": {
   "consistent": 66,
-  "partial": 63,
+  "partial": 64,
   "conflict": 2,
-  "unverified": 188,
-  "note": "按本样本批准后的预测分布：C01-002 与 C04-013 升 consistent（pending，未合并）"
+  "unverified": 187,
+  "total": 319,
+  "computedBy": "previousDifference→reviewedDifference 确定性迁移（假设全部 approved），禁止手工填写预测值",
+  "transitions": [
+   {
+    "atomId": "AT-ST-C04-013",
+    "from": "unverified",
+    "to": "consistent"
+   }
+  ]
  },
  "l7Projection": {
   "verified": 2,
@@ -37,20 +45,24 @@
     "SVE-ST-C01-007"
    ],
    "l7": "verification_required",
-   "reviewStatus": "pending"
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
   },
   {
    "atomId": "AT-ST-C01-002",
    "previousDifference": "unverified",
-   "reviewedDifference": "consistent",
-   "reviewReason": "规则内容即「掷骰前定庄」时序本身，Step 链注册顺序（Zhuang 先于 Chip）直接证实；无配置依赖，符合 active 口径",
-   "reviewRule": "evidence-is-not-consistency（复核后确认不适用，允许升级）",
-   "scopeApplicability": "active",
+   "reviewedDifference": "unverified",
+   "reviewReason": "二审撤销升级建议（2026-11-14）：Step 链注册顺序与执行顺序未证，scope 降 unknown，时序规则不足以判 consistent；待 S2 补调度代码证据后重判",
+   "reviewRule": "evidence-is-not-consistency",
+   "scopeApplicability": "unknown",
    "evidenceIds": [
     "SVE-ST-C01-002"
    ],
-   "l7": "verified",
-   "reviewStatus": "pending"
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
   },
   {
    "atomId": "AT-ST-C01-006",
@@ -63,7 +75,9 @@
     "SVE-ST-C01-005"
    ],
    "l7": "verification_required",
-   "reviewStatus": "pending"
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
   },
   {
    "atomId": "AT-ST-C01-007",
@@ -76,7 +90,9 @@
     "SVE-ST-C01-006"
    ],
    "l7": "verification_required",
-   "reviewStatus": "pending"
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
   },
   {
    "atomId": "AT-ST-C02-004",
@@ -89,7 +105,9 @@
     "SVE-ST-C02-001"
    ],
    "l7": "verification_required",
-   "reviewStatus": "pending"
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed"
   },
   {
    "atomId": "AT-ST-C02-008",
@@ -102,7 +120,9 @@
     "SVE-ST-C02-002"
    ],
    "l7": "decision_required",
-   "reviewStatus": "pending"
+   "reviewStatus": "pending",
+   "effectiveDifference": "conflict",
+   "l7Basis": "proposed"
   },
   {
    "atomId": "AT-ST-C15-018",
@@ -113,7 +133,9 @@
    "scopeApplicability": "unknown",
    "evidenceIds": [],
    "l7": "decision_required",
-   "reviewStatus": "pending"
+   "reviewStatus": "pending",
+   "effectiveDifference": "conflict",
+   "l7Basis": "proposed"
   },
   {
    "atomId": "AT-ST-C02-009",
@@ -126,7 +148,9 @@
     "SVE-ST-C02-002"
    ],
    "l7": "verification_required",
-   "reviewStatus": "pending"
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
   },
   {
    "atomId": "AT-ST-C04-013",
@@ -139,7 +163,9 @@
     "SVE-ST-C04-001"
    ],
    "l7": "verified",
-   "reviewStatus": "pending"
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
   },
   {
    "atomId": "AT-ST-C04-001",
@@ -152,7 +178,9 @@
     "SVE-ST-C04-003"
    ],
    "l7": "verification_required",
-   "reviewStatus": "pending"
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
   },
   {
    "atomId": "AT-ST-C01-005",
@@ -165,7 +193,9 @@
     "SVE-ST-C01-004"
    ],
    "l7": "verification_required",
-   "reviewStatus": "pending"
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
   },
   {
    "atomId": "AT-ST-C02-007",
@@ -178,7 +208,9 @@
     "SVE-ST-C02-004"
    ],
    "l7": "verification_required",
-   "reviewStatus": "pending"
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
   },
   {
    "atomId": "AT-ST-C02-006",
@@ -191,7 +223,9 @@
     "SVE-ST-C02-003"
    ],
    "l7": "verification_required",
-   "reviewStatus": "pending"
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed"
   },
   {
    "atomId": "AT-ST-C04-012",
@@ -204,7 +238,9 @@
     "SVE-ST-C04-003"
    ],
    "l7": "verification_required",
-   "reviewStatus": "pending"
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed"
   }
  ]
 }

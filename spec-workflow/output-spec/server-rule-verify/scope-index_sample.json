@@ -1,15 +1,15 @@
 {
  "schemaVersion": 1,
- "sampleNote": "OSG-W4 T0.2 交付样本：ST-C01/02/04 共 33 原子的作用域判定。applicability 判定规则见 dev-docs/design/2026-11-14-OSG-W4-L7分类与玩法配置作用域设计.md 3.1",
+ "sampleNote": "OSG-W4 T0.2 交付样本：ST-C01/02/04 共 33 原子的作用域判定。二审修订（2026-11-14）：AT-ST-C01-002 因执行顺序未证由 active 降 unknown；conflict 类条目必须提供证据级 scope（evidenceScopes），Atom 级 applicability 仅为汇总视图；缺失 scope 的原子一律 unknown（未查证），不得缺省为 inactive。判定规则见 dev-docs/design/2026-11-14-OSG-W4-L7分类与玩法配置作用域设计.md 3.1/3.3",
  "scopeTarget": {
   "game": "hzmj",
   "roomType": "friend",
   "gameId": "42320"
  },
  "stats": {
-  "active": 2,
+  "active": 1,
   "conditional": 9,
-  "unknown": 22,
+  "unknown": 23,
   "inactive": 0
  },
  "entries": [
@@ -29,15 +29,15 @@
   },
   {
    "atomId": "AT-ST-C01-002",
-   "applicability": "active",
+   "applicability": "unknown",
    "configVerified": true,
-   "callPathVerified": true,
+   "callPathVerified": false,
    "configCondition": "无配置依赖（时序规则）",
-   "callPath": "common_game_init.cpp:148 ZhuangStep 注册先于 ChipStep",
+   "callPath": "common_game_init.cpp:148 注册顺序已见，push 顺序即执行顺序未核",
    "evidenceIds": [
     "SVE-ST-C01-002"
    ],
-   "unresolved": "Step 链 push 顺序即执行顺序未逐行核验",
+   "unresolved": "二审降级（2026-11-14）：Step 链注册顺序与实际执行顺序未验证，先标 unknown；补调度代码证据后升级",
    "noServerEvidence": false
   },
   {
@@ -216,7 +216,22 @@
     "SVE-ST-C02-002"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "evidenceScopes": [
+    {
+     "ref": "SVE-ST-C02-002",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "服务端财神候选排除，受 cai_shen_type 配置影响"
+    },
+    {
+     "ref": "client-visual",
+     "layer": "client",
+     "applicability": "active",
+     "note": "牌河白板财神高亮为已观察 UI 表现（v2 客户端证据），作用域恒为 active"
+    }
+   ],
+   "atomScopeSummary": "Atom 级 applicability 为汇总视图；本条 conflict 判定按证据级 scope：产生冲突的证据（client-visual）为 active，不受其他服务端证据 inactive/conditional 影响"
   },
   {
    "atomId": "AT-ST-C02-009",

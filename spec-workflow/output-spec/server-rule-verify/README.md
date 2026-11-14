@@ -11,8 +11,8 @@
 | 文件 | 内容 | 规模 |
 |---|---|---|
 | `server-evidence_sample.json` | 服务端证据（14 条真实 file:line，common_game/hzmj_server/mah_frame 三层） | SVE 条目 |
-| `scope-index_sample.json` | ST-C01/02/04 全部 33 原子的玩法配置作用域判定：active 2 / conditional 9 / unknown 22 / inactive 0 | 33 条 |
-| `difference-review_sample.json` | 差异二次复核对照（14 条代表性条目，含 v2 全部 2 个 conflict；全部 pending 未合并） | 14 条 |
+| `scope-index_sample.json` | ST-C01/02/04 全部 33 原子的玩法配置作用域判定：active 1 / conditional 9 / unknown 23 / inactive 0（二审修订：AT-ST-C01-002 因执行顺序未证由 active 降 unknown） | 33 条 |
+| `difference-review_sample.json` | 差异二次复核对照（14 条代表性条目，含 v2 全部 2 个 conflict；全部 pending 未合并；含 effectiveDifference 与确定性迁移统计 66/64/2/187） | 14 条 |
 
 ## T0.4 局部验收结果（逐条对照需求）
 
@@ -23,11 +23,12 @@
 | 通用能力不自动判好友房冲突 | 通过 | AT-ST-C02-004（cai_shen_type 默认白板、可配翻）判 conditional 而非 conflict；AT-ST-C01-006/007（三牢/8 倍为配置档位）同 |
 | 缺服务端证据不自动产生冲突 | 通过 | 22 条 unknown 全部维持原 difference 并标 verification_required，无一改判 conflict |
 | 真实客户端视觉冲突不被消除 | 通过 | AT-ST-C02-008、AT-ST-C15-018 两条 conflict 全部维持并转 decision_required（ui-conflict-stands-alone） |
-| 复核前后 difference 对比 | 已输出 | difference-review_sample.json 的 baseline 与 afterReviewProjection（pending：66/63/2/188，批准前 v2 保持 65/64/2/188） |
+| 复核前后 difference 对比 | 已输出 | difference-review_sample.json 的 baseline 与 afterReviewProjection（由 previousDifference→reviewedDifference 确定性迁移计算：66/64/2/187，合计 319；批准前 v2 保持 65/64/2/188） |
 
 ## 关键发现摘要（详见调查报告）
 
 1. **定庄/牢庄/财神三个核心规则都是好友房配置项**（first_banker_type / banker_level_type / cai_shen_type），需求原文把它们写成无条件规则——「查到实现」与「需求满足」之间隔着配置确认，这正是 scope 层存在的意义。
 2. 需求「首庄三牢、庄闲固定 8 倍」与默认配置（1 牢、2 倍起步）**存在配置依赖分歧**，已标记待策划确认（未判 conflict，规则 3）。
-3. AT-ST-C02-007（打出财神无前置限制）发现**疑似禁打财神状态机制**（com_action.cpp:165），列为 S2 矛盾候选优先核验。
+3. AT-ST-C02-007（打出财神无前置限制）发现**疑似禁打财神状态机制**（com_action.cpp:165），列为 S2 矛盾候选优先核验（重点区分「爆头不是打财神的必要条件」与「特殊状态禁止打特定牌」，两者未必矛盾）。
 4. AT-ST-C04-013（吃仅限上家）服务端直证，是本轮唯一建议升 consistent 的原子（pending）。
+5. 二审修订（2026-11-14）：AT-ST-C01-002 的 active 结论撤销（注册顺序不等于执行顺序，未证前标 unknown）；l7 与 reviewStatus 拆为独立字段并新增 effectiveDifference；conflict 条目提供证据级 scope（evidenceScopes）。

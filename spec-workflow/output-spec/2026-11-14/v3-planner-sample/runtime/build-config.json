@@ -1,0 +1,20 @@
+{
+ "mode": "planner-only",
+ "specDir": "spec-workflow/output-spec/2026-11-14/v3-planner-sample",
+ "supplementPath": "spec-workflow/output-spec/核心流程杭州麻将好友房AI-补充版本.md",
+ "plannerPath": "spec-workflow/output-spec/2026-11-14/v3-planner-sample/核心流程杭州麻将好友房AI-策划版-sample.md",
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "date": "2026-11-14",
+ "sourceDesc": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md（需求模板）+ source-code/client/Code + source-code/client/Fgui（客户端代码证据）",
+ "expectedStageCount": 3,
+ "supplementParts": [],
+ "plannerParts": [
+  "spec-workflow/output-spec/2026-11-14/v3-planner-sample/runtime/planner-parts/part-03.md",
+  "spec-workflow/output-spec/2026-11-14/v3-planner-sample/runtime/planner-parts/part-04.md",
+  "spec-workflow/output-spec/2026-11-14/v3-planner-sample/runtime/planner-parts/part-06.md"
+ ],
+ "sourceSpecDir": "spec-workflow/output-spec/2026-11-14/1-spec",
+ "allowlist": [
+  "AI"
+ ]
+}

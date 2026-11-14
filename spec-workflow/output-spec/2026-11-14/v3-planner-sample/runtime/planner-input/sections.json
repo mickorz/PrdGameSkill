@@ -1,0 +1,42 @@
+{
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md",
+ "totalLines": 199,
+ "sections": [
+  {
+   "no": 3,
+   "title": "定庄与轮庄",
+   "fromLine": 22,
+   "toLine": 30,
+   "kind": "stage",
+   "stageId": "ST-C01",
+   "container": "开局",
+   "sourceTitle": "开局 > 定庄与轮庄"
+  },
+  {
+   "no": 4,
+   "title": "财神与牌组",
+   "fromLine": 31,
+   "toLine": 36,
+   "kind": "stage",
+   "stageId": "ST-C02",
+   "container": "开局",
+   "sourceTitle": "开局 > 财神与牌组"
+  },
+  {
+   "no": 6,
+   "title": "操作优先级",
+   "fromLine": 47,
+   "toLine": 58,
+   "kind": "stage",
+   "stageId": "ST-C04",
+   "container": "行牌",
+   "sourceTitle": "行牌 > 操作优先级"
+  }
+ ],
+ "termsSection": {
+  "fromLine": 9,
+  "toLine": 21,
+  "title": "名词"
+ },
+ "stageCount": 3
+}

@@ -31,6 +31,21 @@
 //   - build-config.json 增加 mode/plannerPath/plannerParts/sourceSpecDir/allowlist，
 //     供 build-output-spec.mjs（v2 起）分模式装配与泄漏检查。
 //
+// v4 L7 复核分类消费（2026-11-14，OSG-W4 S1.2，需求 dev-docs/requirements/2026-11-14-OSG-W4-服务端规则补证与需求差异质量修复.md）：
+//   - 策划版 Prompt 增 L7 四口径分支：原子项带 l7 字段（服务端复核分类）时按四值生成差异行——
+//     verification_required -> 「规则待验证：缺什么证据或依赖什么配置」；decision_required ->
+//     「待策划裁决：需求为「…」，实际表现为「…」」；verified / not_applicable -> 不写差异行
+//     （verified=已验证一致；not_applicable=不适用当前玩法，不纳入差异清单）。
+//     带 l7 的原子项不再从 notes 猜测差异结论（notes 仅作界面表现行的转写素材）；
+//     无 l7 数据保持现行为（OSG-W3 6.4：未经复核分类的原子不硬凑 l7 字段）。
+//   - l7 数据来源（沙箱无 readFile，两条链路）：
+//     磁盘链路（planner-only）：prepare-planner-doc-input.mjs 读 l7-classify.json 内嵌 l7/l7Reason
+//     进 planner-evidence_<stageId>.json（agent 读证据文件时一并读到，结构化隔离在 prepare 源头保证）；
+//     内存链路（full）：args.l7Classify（classify-l7.mjs 产物对象 { entries }）经主编排透传，
+//     slimPlannerEvidence 内嵌进证据 JSON。
+//   - plannerPartPrompt 与 plannerPartPromptFromFile 的结构/转写规则抽为公共 plannerDocRules()
+//     （两份同源，防单边漂移），l7 四口径分支只写一处。
+//
 // 由主 workflow 经显式路径调用（本目录不在注册表扫描范围）：
 //   await workflow({ scriptPath: './.opencode-workflows/workflows/output-spec-generate/3-produce-outputs.js', label: '产出编写' }, { ...childArgs, scan, verify })
 // args：
@@ -46,7 +61,11 @@
 //   plannerOnly    true 时只产出策划版（跳过技术文档/索引/补充版），默认 false；与 skipPlanner 互斥
 //   plannerInputDir planner-only 磁盘输入模式（v3.1/T4.3）：plannerOnly 且未传 verify 时，
 //                  从该目录读 sections.json（一个 echo agent 读回）+ 每阶段证据文件（agent 读投影）；
-//                  由主编排先跑 prepare-planner-doc-input.mjs 生成（证据文件只含业务字段，结构化隔离）
+//                  由主编排先跑 prepare-planner-doc-input.mjs 生成（证据文件只含业务字段，结构化隔离；
+//                  v4 起该脚本支持 l7-classify 内嵌与阶段过滤，证据文件原子可带 l7/l7Reason）
+//   l7Classify      L7 复核分类数据对象（v4，内存链路）：classify-l7.mjs 产物 { entries }，
+//                  有则 slimPlannerEvidence 内嵌 l7/l7Reason 进策划版证据（磁盘链路无需传，
+//                  prepare-planner-doc-input.mjs 已内嵌进证据文件）；未传时保持现行为
 //   sourceSpecDir  历史查证证据目录（planner-only 覆盖检查基准，v3 新增透传进 build-config），默认空
 //   leakAllowlist  泄漏检查白名单词数组（v3 新增透传进 build-config），默认 ['AI']
 //   date           产出日期 YYYY-MM-DD（脚本内禁止取当前时间），默认 2026-11-13
@@ -412,6 +431,14 @@ function slimEvidence(r) {
 // v3 策划版章节写作用的业务证据（T1.2，R2 第一级结构化字段隔离）：
 // 只含业务字段（id/name/rule/uiRequirement/uiInteraction/notes/verdict + businessBehavior 若有），
 // clientLogic、evidence 路径、refs、messages（协议名）等技术字段不进策划版写作上下文
+// v4（OSG-W4 S1.2）：A.l7Classify（classify-l7.mjs 产物对象，内存链路）存在时内嵌 l7/l7Reason；
+// 未复核原子不硬凑 l7 字段（OSG-W3 6.4），无数据保持现行为
+const l7ByAtom = new Map()
+if (A.l7Classify && Array.isArray(A.l7Classify.entries)) {
+  for (const e of A.l7Classify.entries) {
+    if (e && e.atomId && e.l7) l7ByAtom.set(e.atomId, { l7: e.l7, l7Reason: e.reviewReason || '' })
+  }
+}
 function slimPlannerEvidence(r) {
   return {
     stage: r.stage.id + ' ' + r.stage.name,
@@ -428,19 +455,58 @@ function slimPlannerEvidence(r) {
         }
         // schemaVersion 2 数据带业务语义四元组时透传（T2.2 之后），作为界面表现转写的首选依据
         if (at.businessBehavior) o.businessBehavior = at.businessBehavior
+        // v4（OSG-W4 S1.2）：l7 复核分类内嵌（有则一并，供差异行四口径）
+        const l7e = l7ByAtom.get(at.id)
+        if (l7e) {
+          o.l7 = l7e.l7
+          o.l7Reason = l7e.l7Reason
+        }
         return o
       })
     ),
   }
 }
 
+// v4 策划版文档结构规则 + 转写硬规则（OSG-W4 S1.2 抽为公共段）：
+// plannerPartPrompt（内存链路）与 plannerPartPromptFromFile（磁盘链路）共用同一份，
+// 防两份漂移（同款教训见 dev-docs/experience/手写统计块漂移-l7Projection.md）。
+// l7 四口径分支（设计文档 4.1 策划版表达列）：带 l7 字段的原子项差异结论以 l7 为准，
+// 不再从 notes 猜测是否存在需求冲突；无 l7 字段的原子项保持 v3 现行为。
+function plannerDocRules(sourceTitle) {
+  return [
+    '文档结构：',
+    '1. 分片直接以本章节原文开头（含章节标题行）；章节标题行（# 开头的行）必须逐字保留，不得增删原有标题层级、不得改动原语义；可修明显笔误但不改规则含义。阶段章节分片可在标题行后另起一行引语：> 来源：模板「' + sourceTitle + '」章节（策划版）。',
+    '2. 章节原文逐条保留：标题行与规则语句的顺序、语义不得删改。',
+    '3. 在每条规则语句（列表项/段落）之后补充缩进两个空格的子列表项（没有原子项对应的原文语句不补充，保留原样；一条原文语句对应多个原子项时合并成一条补充行）：',
+    '   - 原子项带 l7 字段（服务端复核 L7 分类，差异结论以它为准，优先级高于 notes 推断）时，按 l7 四值生成差异行：',
+    '     - l7=verification_required：写「  - 规则待验证：{按 l7Reason 转写：缺什么证据或依赖什么配置}（{原子项id}）」',
+    '     - l7=decision_required：写「  - 待策划裁决：需求为「{原文规则}」，实际表现为「{实际行为}」（{原子项id}）」（实际行为按 l7Reason 与 uiInteraction/notes/businessBehavior 中已查到的实际表现转写）',
+    '     - l7=verified：不写差异行（规则已验证一致，原文照常保留）',
+    '     - l7=not_applicable：不写差异行（该规则不适用当前玩法，不纳入当前玩法差异清单，原文照常保留）',
+    '   - 该语句对应的原子项 verdict=confirmed/partial 且 uiInteraction 或 notes 或 businessBehavior 有内容：写「  - 界面表现：{玩家可理解的行为描述}（{原子项id}）」（带 l7 字段的原子项同样适用本条，界面表现行与差异行并存）',
+    '   - 原子项无 l7 字段，且 notes 描述了实现与需求不一致（如需求说按普通白板展示、实际牌河中仍高亮）：另起一条「  - 待确认：需求为「{原文规则}」，实际表现为「{实际行为}」（{原子项id}）」',
+    '   - 原子项 verdict=not_found：写「  - 待确认：客户端未查到对应实现（{原子项id}）」',
+    '   - 原子项 uiInteraction、notes、businessBehavior 均为空、verdict=confirmed/partial 且无 l7 字段：不硬凑补充行，只保留原文。',
+    '',
+    '转写硬规则（最重要）：',
+    '1. uiInteraction、notes、businessBehavior、l7Reason 是工程师写的查证记录，其中残留大量技术词，禁止原样复制进策划版：出现类名（如 GameJuDataCmd、GameData）、方法名（如 onShowZhuang、showDice）、协议名（MsgJuData、CMD_xxx、GP_xxx）、常量（C_Bank、KW_RESULT、POWER_ID_HU）、UI 组件名（box_hzmj_xxx）、文件路径与代码定位（source-code/...、xxx.ts:31、xxx.cpp:165）时，必须转写成玩家能看见、能操作的行为描述（例：「BoxHzmjMah2DView.showDice」转写为「牌桌播放骰子动画」；「C_Bank 的 zhuang1~3 页」转写为「庄家标志按牢庄等级分三档点亮」）。',
+    '2. businessBehavior 四元组（触发 trigger/条件 condition/行为 action/结果 result）是业务语义的权威来源，界面表现行优先按它转写；l7Reason 是差异行（规则待验证/待策划裁决）的权威依据。',
+    '3. 无法转写成玩家行为的技术细节直接丢弃，不写进策划版；转写不得改变该行为的事实本身。',
+    '4. 没有证据支撑的规则宁可标注「待确认」，严禁为了让文档完整而编造业务规则或编造界面表现。',
+    '5. 每条补充行末尾用括号附原子项 id（AT-ST-Cxx-nnn 形式），供追溯。',
+    '6. 全文不得出现：类名、方法名、Msg/CMD/GP 前缀协议名、C_/KW_/ET_ 前缀常量、box_ 组件名、source-code 路径、任何 .ts/.xml/.cpp/.json 文件名与 file:line 定位。',
+    '7. 中文书写，无 Emoji，不要用代码围栏包裹分片；直接逐条边写边落盘，不要先整理全部再写盘。',
+  ]
+}
+
 // v3 策划版章节分片 prompt（T1.2）：以阶段 0 实验定稿 Prompt 为蓝本
 // （experiment-planner-projection.js，三检查点评审已通过），差异：
 //   证据 JSON 由内存内嵌（正式链路 verify 结果经主编排内存传入，无需 agent 读盘）
-//   引语去掉「投影实验」字样；businessBehavior 有则作为界面表现转写首选依据
+//   引语去掉「投影实验」字样；businessBehavior 有则作为界面表现转写首选依据；
+//   v4：结构/转写规则改用公共 plannerDocRules（含 l7 四口径分支）
 function plannerPartPrompt(sec, evidence) {
   return [
-    '你是需求文档整理员，面向策划输出。任务：把一个游戏需求章节增强成「策划版」文档分片——原文规则全部保留，补充玩家可理解的界面表现与待确认差异。工作目录为项目根目录。',
+    '你是需求文档整理员，面向策划输出。任务：把一个游戏需求章节增强成「策划版」文档分片——原文规则全部保留，补充玩家可理解的界面表现与差异结论（规则待验证/待策划裁决）。工作目录为项目根目录。',
     '',
     '本章节：' + sec.title + '（来源章节：' + (sec.sourceTitle || sec.title) + '）。',
     '',
@@ -448,27 +514,11 @@ function plannerPartPrompt(sec, evidence) {
     '',
     '第二步，写目标分片文件（write 工具，UTF-8）：' + plannerPartPath(sec),
     '',
-    '文档结构：',
-    '1. 分片直接以本章节原文开头（含章节标题行）；章节标题行（# 开头的行）必须逐字保留，不得增删原有标题层级、不得改动原语义；可修明显笔误但不改规则含义。阶段章节分片可在标题行后另起一行引语：> 来源：模板「' + (sec.sourceTitle || sec.title) + '」章节（策划版）。',
-    '2. 章节原文逐条保留：标题行与规则语句的顺序、语义不得删改。',
-    '3. 在每条规则语句（列表项/段落）之后补充缩进两个空格的子列表项（没有原子项对应的原文语句不补充，保留原样；一条原文语句对应多个原子项时合并成一条补充行）：',
-    '   - 该语句对应的原子项 verdict=confirmed/partial 且 uiInteraction 或 notes 或 businessBehavior 有内容：写「  - 界面表现：{玩家可理解的行为描述}（{原子项id}）」',
-    '   - 原子项 notes 描述了实现与需求不一致（如需求说按普通白板展示、实际牌河中仍高亮）：另起一条「  - 待确认：需求为「{原文规则}」，实际表现为「{实际行为}」（{原子项id}）」',
-    '   - 原子项 verdict=not_found：写「  - 待确认：客户端未查到对应实现（{原子项id}）」',
-    '   - 原子项 uiInteraction、notes、businessBehavior 均为空且 verdict=confirmed/partial：不硬凑补充行，只保留原文。',
-    '',
-    '转写硬规则（最重要）：',
-    '1. uiInteraction、notes、businessBehavior 是工程师写的查证记录，其中残留大量技术词，禁止原样复制进策划版：出现类名（如 GameJuDataCmd、GameData）、方法名（如 onShowZhuang、showDice）、协议名（MsgJuData、CMD_xxx、GP_xxx）、常量（C_Bank、KW_RESULT、POWER_ID_HU）、UI 组件名（box_hzmj_xxx）、文件路径（source-code/...、xxx.ts:31）时，必须转写成玩家能看见、能操作的行为描述（例：「BoxHzmjMah2DView.showDice」转写为「牌桌播放骰子动画」；「C_Bank 的 zhuang1~3 页」转写为「庄家标志按牢庄等级分三档点亮」）。',
-    '2. businessBehavior 四元组（触发 trigger/条件 condition/行为 action/结果 result）是业务语义的权威来源，界面表现行优先按它转写。',
-    '3. 无法转写成玩家行为的技术细节直接丢弃，不写进策划版；转写不得改变该行为的事实本身。',
-    '4. 没有证据支撑的规则宁可标注「待确认」，严禁为了让文档完整而编造业务规则或编造界面表现。',
-    '5. 每条补充行末尾用括号附原子项 id（AT-ST-Cxx-nnn 形式），供追溯。',
-    '6. 全文不得出现：类名、方法名、Msg/CMD/GP 前缀协议名、C_/KW_/ET_ 前缀常量、box_ 组件名、source-code 路径、任何 .ts/.xml 文件名与 file:line。',
-    '7. 中文书写，无 Emoji，不要用代码围栏包裹分片；直接逐条边写边落盘，不要先整理全部再写盘。',
+    ...plannerDocRules(sec.sourceTitle || sec.title),
     '',
     '写完只返回目标文件路径与一句话摘要，不要输出分片全文，不要执行 git 命令。',
     '',
-    '本章节查证结果 JSON（唯一事实依据，原子项业务字段）：',
+    '本章节查证结果 JSON（唯一事实依据，原子项业务字段；带 l7 字段的原子项按上方 l7 四口径生成差异行，无 l7 字段的按传统规则）：',
     JSON.stringify(evidence, null, 1),
   ].join('\n')
 }
@@ -554,37 +604,23 @@ if (!plannerOnly) {
 // v3.1 planner-only 磁盘输入模式 prompt（T4.3）：以阶段 0 实验定稿 Prompt 为蓝本
 // （experiment-planner-projection.js），agent 读证据文件（prepare-planner-doc-input.mjs
 // 产物，只含业务字段）自投影；目标为 planner-parts 分片
+// v4（OSG-W4 S1.2）：结构/转写规则改用公共 plannerDocRules（含 l7 四口径分支）；
+// 证据文件原子可带 l7/l7Reason（prepare-planner-doc-input.mjs 从 l7-classify.json 内嵌）
 function plannerPartPromptFromFile(sec) {
   const evidencePath = plannerInputDir + '/planner-evidence_' + sec.stageId + '.json'
   return [
-    '你是需求文档整理员，面向策划输出。任务：把一个游戏需求章节增强成「策划版」文档分片——原文规则全部保留，补充玩家可理解的界面表现与待确认差异。工作目录为项目根目录。',
+    '你是需求文档整理员，面向策划输出。任务：把一个游戏需求章节增强成「策划版」文档分片——原文规则全部保留，补充玩家可理解的界面表现与差异结论（规则待验证/待策划裁决）。工作目录为项目根目录。',
     '',
     '本章节：' + sec.title + '（来源章节：' + (sec.sourceTitle || sec.title) + '）。',
     '',
     '第一步，读证据文件（唯一事实依据，read 工具）：' + evidencePath,
-    '该文件内含：章节标题（title）、来源章节（sourceTitle）、模板文件路径（templatePath）、模板章节行号（fromLine/toLine）、名词章节行号（termsFromLine/termsToLine）、瘦身原子项列表（atoms，每条含 id/name/rule/uiRequirement/uiInteraction/notes/verdict，businessBehavior 有则一并）。',
+    '该文件内含：章节标题（title）、来源章节（sourceTitle）、模板文件路径（templatePath）、模板章节行号（fromLine/toLine）、名词章节行号（termsFromLine/termsToLine）、瘦身原子项列表（atoms，每条含 id/name/rule/uiRequirement/uiInteraction/notes/verdict，businessBehavior 有则一并，服务端复核分类 l7 与 l7Reason 有则一并——带 l7 字段的原子项按 l7 四口径生成差异行，无 l7 字段的按传统规则）。',
     '',
     '第二步，读模板章节原文：用 read 工具打开证据文件中的 templatePath，offset=fromLine，limit=toLine-fromLine+1（覆盖第 fromLine~toLine 行）；名词术语可另读 termsFromLine~termsToLine 行帮助理解。',
     '',
     '第三步，写目标分片文件（write 工具，UTF-8）：' + plannerPartPath(sec),
     '',
-    '文档结构：',
-    '1. 分片直接以本章节原文开头（含章节标题行）；章节标题行（# 开头的行）必须逐字保留，不得增删原有标题层级、不得改动原语义；可修明显笔误但不改规则含义。阶段章节分片可在标题行后另起一行引语：> 来源：模板「' + (sec.sourceTitle || sec.title) + '」章节（策划版）。',
-    '2. 章节原文逐条保留：标题行与规则语句的顺序、语义不得删改。',
-    '3. 在每条规则语句（列表项/段落）之后补充缩进两个空格的子列表项（没有原子项对应的原文语句不补充，保留原样；一条原文语句对应多个原子项时合并成一条补充行）：',
-    '   - 该语句对应的原子项 verdict=confirmed/partial 且 uiInteraction 或 notes 或 businessBehavior 有内容：写「  - 界面表现：{玩家可理解的行为描述}（{原子项id}）」',
-    '   - 原子项 notes 描述了实现与需求不一致（如需求说按普通白板展示、实际牌河中仍高亮）：另起一条「  - 待确认：需求为「{原文规则}」，实际表现为「{实际行为}」（{原子项id}）」',
-    '   - 原子项 verdict=not_found：写「  - 待确认：客户端未查到对应实现（{原子项id}）」',
-    '   - 原子项 uiInteraction、notes、businessBehavior 均为空且 verdict=confirmed/partial：不硬凑补充行，只保留原文。',
-    '',
-    '转写硬规则（最重要）：',
-    '1. uiInteraction、notes、businessBehavior 是工程师写的查证记录，其中残留大量技术词，禁止原样复制进策划版：出现类名（如 GameJuDataCmd、GameData）、方法名（如 onShowZhuang、showDice）、协议名（MsgJuData、CMD_xxx、GP_xxx）、常量（C_Bank、KW_RESULT、POWER_ID_HU）、UI 组件名（box_hzmj_xxx）、文件路径（source-code/...、xxx.ts:31）时，必须转写成玩家能看见、能操作的行为描述（例：「BoxHzmjMah2DView.showDice」转写为「牌桌播放骰子动画」；「C_Bank 的 zhuang1~3 页」转写为「庄家标志按牢庄等级分三档点亮」）。',
-    '2. businessBehavior 四元组（触发 trigger/条件 condition/行为 action/结果 result）是业务语义的权威来源，界面表现行优先按它转写。',
-    '3. 无法转写成玩家行为的技术细节直接丢弃，不写进策划版；转写不得改变该行为的事实本身。',
-    '4. 没有证据支撑的规则宁可标注「待确认」，严禁为了让文档完整而编造业务规则或编造界面表现。',
-    '5. 每条补充行末尾用括号附原子项 id（AT-ST-Cxx-nnn 形式），供追溯。',
-    '6. 全文不得出现：类名、方法名、Msg/CMD/GP 前缀协议名、C_/KW_/ET_ 前缀常量、box_ 组件名、source-code 路径、任何 .ts/.xml 文件名与 file:line。',
-    '7. 中文书写，无 Emoji，不要用代码围栏包裹分片；直接逐条边写边落盘，不要先整理全部再写盘。',
+    ...plannerDocRules(sec.sourceTitle || sec.title),
     '',
     '写完只返回目标文件路径与一句话摘要，不要输出分片全文，不要执行 git 命令。',
   ].join('\n')

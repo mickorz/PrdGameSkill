@@ -34,6 +34,12 @@
 - 本目录 `l7-classify_sample.json` 即 example 以三份样本 + v2 基线跑出的产物（date=2026-11-14）
 - 修复登记：`difference-review_sample.json` 顶层 `l7Projection` 手写统计与条目不符（AT-ST-C01-002 二审撤销升级建议后未同步重算），已按重算修正为 verified 1 / verification_required 11 / decision_required 2 / not_applicable 0；经验沉淀见 `dev-docs/experience/手写统计块漂移-l7Projection.md`
 
+## S1.2 L7 消费链路：策划版四口径投影（2026-11-14）
+
+- `prepare-planner-doc-input.mjs` 新增可选参数：`<l7ClassifyPath>`（l7/l7Reason 内嵌进 planner-evidence 原子项，条目 atomId 必须在基线内防漂移）与 `<stageIdsCsv>`（阶段过滤，如 ST-C01,ST-C02,ST-C04）
+- `3-produce-outputs.js` 策划版 Prompt（内存/磁盘两链路共用 `plannerDocRules()`）：带 l7 字段原子按四口径生成差异行——verification_required →「规则待验证：缺什么证据或依赖什么配置」；decision_required →「待策划裁决：需求为「…」，实际表现为「…」」；verified / not_applicable → 不写差异行；不再从 notes 猜测差异结论，无 l7 数据原子保持现行为
+- 验收投影（l7-classify_sample.json + v2 基线 + ST-C01/02/04 过滤，33 原子、l7 内嵌 13/14）：产物 `spec-workflow/output-spec/2026-11-14/v3-planner-sample/`；11 规则待验证行全覆盖、C02-008 待策划裁决、C04-013 无差异行、泄漏零命中、v2 零改动
+
 ## 关键发现摘要（详见调查报告）
 
 1. **定庄/牢庄/财神三个核心规则都是好友房配置项**（first_banker_type / banker_level_type / cai_shen_type），需求原文把它们写成无条件规则——「查到实现」与「需求满足」之间隔着配置确认，这正是 scope 层存在的意义。

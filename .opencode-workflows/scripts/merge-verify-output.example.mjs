@@ -381,15 +381,45 @@ function fullChain(outDir, label) {
   check('用例D 无新建议保持既有结论', rNoNew.ok && a1n.reviewedDifference === 'partial' && a1n.reviewStatus === 'pending' && a1n.reviewReason.includes('复核后细节差异'))
 }
 
-// ---------- 用例 E：非目标阶段落判分片 fail ----------
+// ---------- 用例 E：跨阶段混入 fail / 非目标遗留分片跳过 ----------
 
 {
+  // E1：分片声称目标阶段（stageId=ST-C01）却含 ST-C02 原子 → 跨阶段混入 fail
   reset()
   writeBaseline()
   const outDir = path.join(TMP, 'out-e')
   buildFixtures(outDir)
+  writePart(outDir, 'verify-output', 'ST-C01', 'ST-C01-p99.json', [
+    verifyEntry('AT-ST-C02-001', 'conditional', {
+      evidenceIds: ['SVE-ST-C02-P01-01'],
+      sve: [sve('SVE-ST-C02-P01-01', 'AT-ST-C02-001', 'hzmj_server', 'hzmj_server/hzmj_x.cpp', 30, 'InitJoker')],
+    }),
+  ])
   const r = mergeRun(outDir, 'ST-C01')
-  check('用例E 非目标阶段分片 fail', !r.ok && r.problems.some((p) => p.includes('阶段不在目标范围')))
+  check('用例E1 跨阶段混入分片 fail', !r.ok && r.problems.some((p) => p.includes('阶段不在目标范围')))
+
+  // E2：非目标阶段遗留分片（stageId=ST-C02，stageIds=ST-C01）→ 跳过不消费，ST-C01 正常合并
+  reset()
+  writeBaseline()
+  const outDir2 = path.join(TMP, 'out-e2')
+  buildFixtures(outDir2)
+  const r2 = mergeRun(outDir2, 'ST-C01')
+  check(
+    '用例E2 非目标遗留分片跳过（ST-C01 正常合并）',
+    r2.ok && r2.summary.judgeCount === 2 && r2.summary.processedStages === 'ST-C01',
+  )
+  const sv2 = readJson(path.join(outDir2, 'scope-index.json'))
+  check('用例E2 非目标阶段条目未混入', sv2.entries.every((e) => e.atomId.startsWith('AT-ST-C01')) && sv2.entries.length === 2)
+  const sv2Sve = readJson(path.join(outDir2, 'server-evidence.json'))
+  check('用例E2 非目标 SVE 未混入', sv2Sve.entries.length === 2)
+
+  // E3：目标阶段一条落判条目都没有（分片全为遗留）→ fail
+  reset()
+  writeBaseline()
+  const outDir3 = path.join(TMP, 'out-e3')
+  buildFixtures(outDir3)
+  const r3 = mergeRun(outDir3, 'ST-C99')
+  check('用例E3 目标阶段无落判条目 fail', !r3.ok && r3.problems.some((p) => p.includes('目标阶段无落判条目')))
 }
 
 // ---------- 用例 F：闸门 fail 集 ----------

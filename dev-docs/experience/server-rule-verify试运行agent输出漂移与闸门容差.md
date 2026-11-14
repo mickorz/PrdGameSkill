@@ -40,7 +40,8 @@
 - **agent 输出的标识类字段必须在 schema description 里写明格式**（文件名 vs 路径、编号规则、是否含扩展名），校验侧同时做归一化容差——严格全等对 LLM 输出过于脆弱。
 - **涉及源码引用的 prompt 必须写死目录白名单**，尤其源码树里混着玩法变体/其他游戏时（变体目录名几乎相同，agent 极易误引）；确定性闸门（merge 的 layer 前缀校验）做最后防线。
 - **结构性重复模式（共享引用/复用）要在闸门里显式建模**：判等基准用「指针」而非「全文」，可变字段（摘录/说明文字）不计入。
+- **多阶段累积运行必须按分片 stageId 过滤消费**（2026-11-14 S3.2 追加坑）：分阶段跑 server-rule-verify（ST-C01 → ST-C02,ST-C04）时，`runtime/verify-output/`、`runtime/review-output/` 里会留下上次运行的非目标阶段分片；merge 初版扫描目录内全部分片并对非目标阶段条目报「原子阶段不在目标范围」fail。修复：merge 按分片 `stageId` 过滤（非目标阶段分片=上次运行遗留，跳过不消费，`summary.skippedVerifyParts` 记录；正式条目已在正式产物中）；保留跨阶段混入闸门（分片声称目标阶段却含其他阶段原子仍 fail）；新增「目标阶段一条落判条目都没有」fail 兜底。分阶段批跑（S4）前必须验证此语义。
 - **失败定位顺序**：workflow 前台续跑只报一行错 → 手动重跑对应确定性脚本拿问题明细 → node 内联 dump 全字段 diff。
-- **续跑省成本**：`resumeFromRunId` 对未变 agent() 调用直接回放 journal（本轮 6 agent 里 4 个回放 0 token），只有 prompt 变过的子流程重跑；改闸门逻辑（非 agent 调用）不影响回放。
+- **续跑省成本**：`resumeFromRunId` 对未变 agent() 调用直接回放 journal（S3.2 续跑 12 agent 里 11 个回放、仅 1 个新跑、21s 完成），只有 prompt 变过的子流程重跑；改闸门逻辑（非 agent 调用）不影响回放。
 - **网关怪癖**：thinking 模式不支持 `json_schema` tool_choice，运行时会自动降级为 prompt JSON 模式（日志有提示，无需处理）。
-- 试运行最终结果与对照结论见 `spec-workflow/output-spec/server-rule-verify/README.md` S2.3 节。
+- 试运行最终结果与对照结论见 `spec-workflow/output-spec/server-rule-verify/README.md` S2.3 节；S3.2 批跑（ST-C02/ST-C04）对照结论见同文件 S3.2 节。

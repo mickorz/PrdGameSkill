@@ -1,14 +1,14 @@
 {
  "schemaVersion": 1,
- "sampleNote": "OSG-W4 正式产物：server-rule-verify workflow 生成（人工样本见 scope-index_sample.json）。stats 由 merge-verify-output.mjs 重算，禁止手工填写；判定规则见 dev-docs/design/2026-11-14-OSG-W4-L7分类与玩法配置作用域设计.md；run 2026-11-14：ST-C01 落判 8 条（新增 8 / 替换 0，SVE 新增 29）；run 2026-11-14：ST-C01 落判 8 条（新增 0 / 替换 8，SVE 新增 0）",
+ "sampleNote": "OSG-W4 正式产物：server-rule-verify workflow 生成（人工样本见 scope-index_sample.json）。stats 由 merge-verify-output.mjs 重算，禁止手工填写；判定规则见 dev-docs/design/2026-11-14-OSG-W4-L7分类与玩法配置作用域设计.md；run 2026-11-14：ST-C01 落判 8 条（新增 8 / 替换 0，SVE 新增 29）；run 2026-11-14：ST-C01 落判 8 条（新增 0 / 替换 8，SVE 新增 0）；run 2026-11-14：ST-C02,ST-C04 落判 25 条（新增 25 / 替换 0，SVE 新增 69）；run 2026-11-14：ST-C02,ST-C04 落判 25 条（新增 0 / 替换 25，SVE 新增 0）",
  "scopeTarget": {
   "game": "hzmj",
   "roomType": "friend",
   "gameId": "42320"
  },
  "stats": {
-  "active": 3,
-  "conditional": 5,
+  "active": 23,
+  "conditional": 10,
   "unknown": 0,
   "inactive": 0
  },
@@ -135,6 +135,413 @@
     "SVE-ST-C01-P01-27",
     "SVE-ST-C01-P01-28",
     "SVE-ST-C01-P01-29"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C02-001",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "enable_two_suit（缺一色）：创房默认 1（客户端 RuleHzmj.ts，仅 2/3 人局展示且默认勾选，4 人局不展示）；服务端 CommonGameInit::InitData 以 enable_two_suit && playerCount<=3 判定 drop_wan，成立时不为 kMSWan 组墙 -> 万字 36→0 张；可选 0=保留万字（36 张），4 人局恒 36 张。",
+   "callPath": "CommonGameInit::InitData(common_game/common_game_init.cpp:58) 计算 drop_wan → 花色循环 common_game_init.cpp:79-82 取 DEF_WAN_COUNT → AddWallAll/DEF_WAN_COUNT(mah_frame/base/macros.h:218) → 每牌值 AddAllMah 4 次(common_game_init.cpp:109)",
+   "evidenceIds": [
+    "SVE-ST-C02-P01-01",
+    "SVE-ST-C02-P01-02",
+    "SVE-ST-C02-P01-03",
+    "SVE-ST-C02-P01-04"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C02-002",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "del_feng（去风）：创房默认 0（客户端 RuleHzmj.ts 无风牌默认不勾）；服务端 del_feng=1 时不把 kMSFeng 放入 suits -> 东南西北 16→0 张；可选 0=保留风牌 16 张。",
+   "callPath": "CommonGameInit::InitData(common_game/common_game_init.cpp:66) 按 del_feng 决定是否加入 kMSFeng → kMSFeng 分支取 DEF_FENG_COUNT(common_game_init.cpp:92) → DEF_FENG_COUNT(mah_frame/base/macros.h:221) → 每牌值 AddAllMah 4 次(common_game_init.cpp:109)",
+   "evidenceIds": [
+    "SVE-ST-C02-P01-05",
+    "SVE-ST-C02-P01-06",
+    "SVE-ST-C02-P01-07",
+    "SVE-ST-C02-P01-03"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C02-003",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "del_feng（去风）：创房默认 0；服务端 del_feng=1 时 kMSJian 的 tile_count 取 DM_KONG_COUNT（箭牌仅保留白板 4 张，红中/发财 8 张被跳过）-> 中发白 12→4 张；可选 0=DEF_JIAN_COUNT=12。",
+   "callPath": "CommonGameInit::InitData(common_game/common_game_init.cpp:95) case kMSJian 取 del_feng ? DM_KONG_COUNT : DEF_JIAN_COUNT → 跳过非白板(common_game_init.cpp:108) → DEF_JIAN_COUNT(mah_frame/base/macros.h:222) → 每牌值 AddAllMah 4 次(common_game_init.cpp:109)",
+   "evidenceIds": [
+    "SVE-ST-C02-P01-08",
+    "SVE-ST-C02-P01-09",
+    "SVE-ST-C02-P01-03",
+    "SVE-ST-C02-P01-07"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C02-004",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "cai_shen_type（财神确认方式）：创房默认 0=白板财神，此时 cai_shen 恒取 MV_BAI_BAN；可选 1=翻财神，CalcFanCaiShen 从牌墙翻出牌作为实际财神、白板降为替代牌 AddInstd。",
+   "callPath": "BoxJokerStep::Execute(common_game/com_game/common_game_com_ju.cpp:229) 默认 cai_shen=MV_BAI_BAN → GetCaiShenType()!=0 才走 CalcFanCaiShen 分支(common_game_com_ju.cpp:232) → 配置键/hzmj_server/game_logic.cpp:52",
+   "evidenceIds": [
+    "SVE-ST-C02-P01-10",
+    "SVE-ST-C02-P01-11",
+    "SVE-ST-C02-P01-12"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C02-005",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "cai_shen_type：创房默认 0=白板财神时以牌值 AddJoker(MV_BAI_BAN) 登记，IsJoker 按牌值判定 -> 四张白板全部为财神；可选 1=翻财神时白板不登记为财神，仅 AddInstd 作替代牌，四张白板不同时为财神。",
+   "callPath": "BoxJokerStep::Execute(common_game/com_game/common_game_com_ju.cpp:253) AddJoker(cai_shen) → BaseData::AddJoker(mah_frame/base/base_data.cpp:1737) 按牌值入列 → BaseData::IsJoker(mah_frame/base/base_data.cpp:1749) 牌值相等即命中",
+   "evidenceIds": [
+    "SVE-ST-C02-P01-13",
+    "SVE-ST-C02-P01-14",
+    "SVE-ST-C02-P01-15"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C02-006",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "",
+   "callPath": "Player 出牌 -> PlayStep::JudgeJustPlay(mah_frame/com_basic/com_play.cpp:256) 仅校验手牌包含与禁手名单 -> BoxPlayStep::CheckPlay(common_game/com_game/common_game_com_play.cpp:53) 财神走普通出牌流程，仅加飘窗口 -> BoxPlayStep::MakePower(common_game/com_game/common_game_com_play.cpp:18)",
+   "evidenceIds": [
+    "SVE-ST-C02-P01-16",
+    "SVE-ST-C02-P01-17",
+    "SVE-ST-C02-P01-18"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C02-007",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "",
+   "callPath": "PlayStep::JudgeJustPlay(mah_frame/com_basic/com_play.cpp:256) 无爆头/敲响前置 -> BoxPlayStep::CheckPlay(common_game/com_game/common_game_com_play.cpp:53) 非敲响仅把飘等级清零不拦截 -> BoxPlayStep::MakePower(common_game/com_game/common_game_com_play.cpp:18)",
+   "evidenceIds": [
+    "SVE-ST-C02-P01-16",
+    "SVE-ST-C02-P01-17",
+    "SVE-ST-C02-P01-18"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C02-008",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "",
+   "callPath": "PlayStep::CheckPlay(mah_frame/com_basic/com_play.cpp:247) 以原牌值 mah 组装 TOutMah 并 AddOut → BaseData::AddOut(mah_frame/base/base_data.cpp:606) 原样入列 -> CommonGameAlgorithm::MakeFanFuncParams(common_game/common_game_algorithm.cpp:248) 仍把出牌区白板计入财神数",
+   "evidenceIds": [
+    "SVE-ST-C02-P01-19",
+    "SVE-ST-C02-P01-20",
+    "SVE-ST-C02-P01-21"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false,
+   "evidenceScopes": [
+    {
+     "ref": "client-visual",
+     "layer": "client",
+     "applicability": "active",
+     "note": "客户端牌河与出牌放大牌面对打出的白板重新刷财神红（BoxHzmjMah2DView.ts:1127-1132、BoxHzmjMainView.ts:1044-1054），牌图仍是白板，与“按普通白板展示”表述不一致。"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C02-009",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "",
+   "callPath": "BoxJokerStep::Execute 定财神后 InitJokerChows(common_game/com_game/common_game_com_ju.cpp:254) 剔除含财神顺子组 -> BoxChowStep::Judge(common_game/com_game/common_game_com_action.cpp:82) TestChow(GetChowGroups(),...)-> Algorithm::TestChow(mah_frame/base/algorithm.cpp:3261) 按 mah 取组，组空即返回 false",
+   "evidenceIds": [
+    "SVE-ST-C02-P01-22",
+    "SVE-ST-C02-P01-23",
+    "SVE-ST-C02-P01-24"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C02-010",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "",
+   "callPath": "BoxJokerStep::Execute 定财神后 InitJokerPungs(common_game/com_game/common_game_com_ju.cpp:259) 删除财神刻子组 -> BoxPungStep::Judge(common_game/com_game/common_game_com_pung.cpp:36) TestPung(GetPungGroups(),...)-> Algorithm::TestPung(mah_frame/base/algorithm.cpp:3308) 按 mah 取组，组空即 false",
+   "evidenceIds": [
+    "SVE-ST-C02-P01-25",
+    "SVE-ST-C02-P01-26",
+    "SVE-ST-C02-P01-27"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C02-011",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "",
+   "callPath": "BoxJokerStep::Execute 定财神后 InitJokerKongs(common_game/com_game/common_game_com_ju.cpp:260) 删除财神明杠/暗杠/补杠组 -> BoxMKongStep::Judge(common_game/com_game/common_game_com_kong.cpp:42) TestMKong(GetMKongGroups(),...)-> Algorithm::TestMKong(mah_frame/base/algorithm.cpp:3164) 按 mah 取组，组空即 false",
+   "evidenceIds": [
+    "SVE-ST-C02-P01-28",
+    "SVE-ST-C02-P01-29",
+    "SVE-ST-C02-P01-30"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C02-012",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "",
+   "callPath": "BoxHuStep::JudgeDiscard(common_game/com_game/common_game_com_action.cpp:360) 前置短路 JustPlay==CaiShen 返回 false -> CanDiscardHu(common_game_com_action.cpp:353) 点炮胡开关/庄级门槛 -> 覆写框架 HuStep::JudgeDiscard(mah_frame/com_basic/com_hu.cpp:202)",
+   "evidenceIds": [
+    "SVE-ST-C02-P01-31",
+    "SVE-ST-C02-P01-32",
+    "SVE-ST-C02-P01-33"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C04-001",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "",
+   "callPath": "各步骤 Step::GetLevel 返回固定优先级（com_hu.h:54 / com_pung.h:52 / com_kong.h:30 / com_chow.h:50，枚举值见 macros.h:203-206）→ ActionStep::InitPowerStepConAction 以该 level 注册并发权（com_action.cpp:777）→ ConAction::OnConAction 取最大 level 者执行（con_action.cpp:43-61）",
+   "evidenceIds": [
+    "SVE-ST-C04-P01-01",
+    "SVE-ST-C04-P01-02",
+    "SVE-ST-C04-P01-03",
+    "SVE-ST-C04-P01-04",
+    "SVE-ST-C04-P01-05",
+    "SVE-ST-C04-P01-06"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C04-002",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "",
+   "callPath": "PungStep::GetLevel 与 KongStep::GetLevel 返回同一枚举 kStepLevelPung==kStepLevelKong==3（com_pung.h:52 / com_kong.h:30 / macros.h:204-205）→ ActionStep::GetConActionWeight 只为胡追加座位权重、碰杠 level 不加区分（com_action.cpp:826-831）→ InitPowerStepConAction 注册（com_action.cpp:777）",
+   "evidenceIds": [
+    "SVE-ST-C04-P01-01",
+    "SVE-ST-C04-P01-03",
+    "SVE-ST-C04-P01-04",
+    "SVE-ST-C04-P01-07"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C04-003",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "",
+   "callPath": "PungStep::Judge 从座位 0 升序遍历取首个可碰者（com_pung.cpp:66-103）→ MKongStep::Judge 同规则取首个可杠者（com_kong.cpp:86-113）→ 两步骤同 level 3 以 key=(seat<<16|power) 注册（com_action.cpp:771）→ ConAction::OnConAction 在 max level 内按 key 升序裁决（con_action.cpp:43-61）",
+   "evidenceIds": [
+    "SVE-ST-C04-P01-01",
+    "SVE-ST-C04-P01-08",
+    "SVE-ST-C04-P01-09",
+    "SVE-ST-C04-P01-10",
+    "SVE-ST-C04-P01-11"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C04-004",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "",
+   "callPath": "PungStep::MakePower 仅向 pow 推入唯一的 pung_seat_（com_pung.cpp:106-119，该座位由 Judge 座位升序取首个）→ MKongStep::MakePower 同理唯一 mkong_seat_（com_kong.cpp:116-128）→ ActionStep::InitPowerStepConAction 逐 TPower 按座位注册权限（com_action.cpp:770-778）",
+   "evidenceIds": [
+    "SVE-ST-C04-P01-06",
+    "SVE-ST-C04-P01-08",
+    "SVE-ST-C04-P01-12",
+    "SVE-ST-C04-P01-13"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C04-005",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "",
+   "callPath": "HuStep::Judge 在 kMahStatePlay 调 JudgeDiscard（com_hu.cpp:91-98）→ JudgeDiscard 遍历除出牌者外全部座位 TestHu，逐个置该座位寻牌胡标记（com_hu.cpp:214-226）→ HuStep::MakePower 为 hu_power_seats 每座位各推一条 TPower（com_hu.cpp:165-179）→ 注册（com_action.cpp:777）→ SendPowerToClient 逐座位下发各自 power（com_action.cpp:983-1000）",
+   "evidenceIds": [
+    "SVE-ST-C04-P01-06",
+    "SVE-ST-C04-P01-14",
+    "SVE-ST-C04-P01-15",
+    "SVE-ST-C04-P01-16"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C04-006",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "",
+   "callPath": "hzmj 基线硬编码 SetDuoXiang(false)（common_game_server_config.cpp:11）→ ActionStep::GetConActionWeight 非多响时对胡追加 GetSeatWeight（com_action.cpp:826-832）→ GetSeatWeight 按打牌者逆时针距离算权重（com_action.cpp:834-838）→ 注册为候选 level（com_action.cpp:777）→ ConAction::OnConAction 仅执行最大 level 者，远者不成立（con_action.cpp:43-61）",
+   "evidenceIds": [
+    "SVE-ST-C04-P01-07",
+    "SVE-ST-C04-P01-11",
+    "SVE-ST-C04-P01-17",
+    "SVE-ST-C04-P01-18"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C04-007",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "",
+   "callPath": "ConAction::OnConAction 收到响应先 ClearUserConAction 清该座位候选并重算 maxkey；max 候选未回应则 return false 等待（con_action.cpp:19-61）→ ClearUserConAction 按座位擦除候选，使次近者可胡候选成为最大者（con_action.cpp:70-81）→ 胡候选权重按距离降序（com_action.cpp:834-838）",
+   "evidenceIds": [
+    "SVE-ST-C04-P01-17",
+    "SVE-ST-C04-P01-19",
+    "SVE-ST-C04-P01-20"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C04-008",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "",
+   "callPath": "HuStep::CheckHu 仅在 IsDuoXiang 为真时遍历收集多家 JustHu，否则 vctseat 只放入唯一 seat（com_hu.cpp:273-282）→ hzmj 基线硬编码 SetDuoXiang(false)（common_game_server_config.cpp:11）→ hzmj 胡牌执行前再强制 SetIsHuDuoXiang(false)（common_game_com_action.cpp:239）",
+   "evidenceIds": [
+    "SVE-ST-C04-P01-18",
+    "SVE-ST-C04-P01-21",
+    "SVE-ST-C04-P01-22"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C04-009",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "",
+   "callPath": "ActionStep::GetSeatWeight 以打牌者为基准算逆时针距离权重 mpcnt-(seat-whoplay+mpcnt)%mpcnt（com_action.cpp:834-838）→ GetConActionWeight 非多响时叠加到胡等级（com_action.cpp:826-832）→ InitPowerStepConAction 注册为候选 level（com_action.cpp:777）；hzmj 基线注释直证近者优先（common_game_server_config.cpp:11）",
+   "evidenceIds": [
+    "SVE-ST-C04-P01-06",
+    "SVE-ST-C04-P01-07",
+    "SVE-ST-C04-P01-17",
+    "SVE-ST-C04-P01-18"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C04-010",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "",
+   "callPath": "近者可胡候选被 ClearUserConAction 擦除（con_action.cpp:70-81）→ OnConAction 重算 maxkey 等待并执行当前最大者（con_action.cpp:19-61）→ 顺延次序由胡候选座位权重降序决定（com_action.cpp:826-838）",
+   "evidenceIds": [
+    "SVE-ST-C04-P01-07",
+    "SVE-ST-C04-P01-17",
+    "SVE-ST-C04-P01-19",
+    "SVE-ST-C04-P01-20"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C04-011",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "",
+   "callPath": "各步骤按 GetLevel 注册候选等级（吃2/碰杠3/胡4，macros.h:203-206 + com_action.cpp:777）→ ConAction::OnConAction 若当前最大 level 候选尚未回应则 return false，不执行低等级动作（con_action.cpp:57）；高等级回应后才 DoConAction（con_action.cpp:59）",
+   "evidenceIds": [
+    "SVE-ST-C04-P01-01",
+    "SVE-ST-C04-P01-06",
+    "SVE-ST-C04-P01-11",
+    "SVE-ST-C04-P01-19",
+    "SVE-ST-C04-P01-23"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C04-012",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "",
+   "callPath": "ConAction::OnConAction 只对最大 level 且已回应的候选调用 DoConAction（con_action.cpp:57-60）→ ActionStep::DoConAction 按 msg_id 只执行该一家并切换下一步骤（com_action.cpp:546-582, 584-593）→ ActionStep::ClearAllMap 清空 con_power_step_/action_power 等其余待处理响应（com_action.cpp:885-897）",
+   "evidenceIds": [
+    "SVE-ST-C04-P01-19",
+    "SVE-ST-C04-P01-24",
+    "SVE-ST-C04-P01-25",
+    "SVE-ST-C04-P01-26"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C04-013",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "",
+   "callPath": "common_game_init.cpp:168 CreateStep<BoxChowStep> 装配吃步骤 -> BoxChowStep::Judge (common_game_com_action.cpp:54) 取 discard_seat=GetPreSeat()、seat=GetNextSeat(discard_seat) 作为唯一可吃座位 -> Algorithm::TestChow (algorithm.cpp:3261) 以 discard_seat 固定 comb.from -> ActionStep::OnMsgChowC (com_action.cpp:153) 校验 kPowerIdChow 与预生成组合白名单 -> ChowStep::DelJustChowFromHand (com_chow.cpp:117) 复核 GetJustPlaySeat()==comb.from",
+   "evidenceIds": [
+    "SVE-ST-C04-P02-01",
+    "SVE-ST-C04-P02-02",
+    "SVE-ST-C04-P02-03",
+    "SVE-ST-C04-P02-04",
+    "SVE-ST-C04-P02-05",
+    "SVE-ST-C04-P02-06",
+    "SVE-ST-C04-P02-07",
+    "SVE-ST-C04-P02-08",
+    "SVE-ST-C04-P02-09",
+    "SVE-ST-C04-P02-10"
    ],
    "unresolved": "",
    "noServerEvidence": false

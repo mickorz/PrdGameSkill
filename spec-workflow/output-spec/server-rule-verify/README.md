@@ -109,6 +109,15 @@
 - `assemble-output-spec-index.mjs v3 <v2SpecDir> <verifyDir> <outDir> <date>`：读 v2 `feature_index.json`（只读，sha256 写前后校验不变）+ 本目录正式三件（scope-index / server-evidence / difference-review），把 reviewStatus=**approved** 条目的复核结论合并进 v3 新目录：approved 采 reviewedDifference，pending/rejected 维持基线，未复核原子不动；每复核原子新增 l7（终局矩阵视图）/l7_basis/review_status 等字段；差异统计双路互验；输出 `feature_index.json`（schema_version 3 + v3_merge 溯源块）
 - 裁决流程：`需求差异裁决清单.md` 回传 → approved/rejected 落 difference-review 条目 reviewStatus → 跑 v3 子命令出正式 v3 索引（S3.3 验收：v3 differenceStats 与 approved 合并结果一致、v2 hash 不变）；example 场景 9/10 全绿 + 真实数据冒烟通过（0 approved → v3 统计=基线）
 
+## S3.2 批跑：ST-C02 / ST-C04 复核（2026-11-14，scope 证据就位阶段）
+
+- **执行**：runId `run-mwg59v7b-13`（一轮卡点修复后续跑贯通）：12 agent（11 journal 回放 + 1 新跑 L7 回读），wall 21s，tokens 861；ST-C02 12 原子（1 片）+ ST-C04 13 原子（2 片）；卡点：merge 扫到 ST-C01 试运行遗留分片 → 修复 merge 按分片 stageId 过滤（非目标遗留跳过不消费，跨阶段混入仍 fail，目标阶段零条目 fail；详见 experience 文档坑 4），merge example 用例 E 扩为 E1/E2/E3
+- **产物**（正式三件累积至 33 条 scope（active 23/conditional 10）+ 33 条 DR + 98 条 SVE，l7-classify reviewed 33/319，l7 18/14/1/0，五道闸门通过）：本轮 scope 25 条（active 20/conditional 5/unknown 0）、SVE 新增 69（总 98）、建议 17 条 pending（15 条 unverified/partial→consistent 升级 + 2 条维持：C02-008 conflict 维持 `ui-conflict-stands-alone`、C04-011 partial 维持）
+- **与 S2.1 人工样本对照**（ST-C02/C04 25 原子）：
+  - scope：**一致 16 / 分歧 9**（全部为样本 conditional → 正式 active，agent 以多条直接证据判可达口径恒定；分歧原子：C02-008（conflict 原子 evidenceScopes 正确保留 client-visual，仅服务端侧 scope 表述收窄）/009/010/011（财神吃碰杠）、C04-005/006/007/009/010（多人胡/近者优先/顺延）；批准相关 DR 建议即采正式 active 口径，需保守 conditional 请在裁决清单备注——同 C01-004 注记模式）
+  - DR：样本覆盖条目一致 3 / 分歧 5（正式更进取：C02-006/007/009、C04-001/012 建议 partial/unverified→consistent，其中 C04-001 优先级次序与 S2.1 裁决链证据（macros.h:203-206 级别常量）方向一致）；样本未覆盖 17 条为正式新增建议
+- **S3.2 partial 复核进度**：v2 的 64 条 partial 中已复核 3 条（证据就位三阶段 ST-C01/02/04），2 条建议升级（C02-006、C04-012）；其余 partial 原子随 S4.1 分批补证时逐阶段复核
+
 ## 关键发现摘要（详见调查报告）
 
 1. **定庄/牢庄/财神三个核心规则都是好友房配置项**（first_banker_type / banker_level_type / cai_shen_type），需求原文把它们写成无条件规则——「查到实现」与「需求满足」之间隔着配置确认，这正是 scope 层存在的意义。

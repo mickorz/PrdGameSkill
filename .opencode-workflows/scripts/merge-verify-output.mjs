@@ -9,7 +9,10 @@
 //
 // 校验闸门（任一命中 fail，不写产物）：
 //   1. 落判条目：atomId 在基线且其基线阶段属目标范围；applicability 枚举合法；
-//      已处理阶段原子全覆盖（每原子恰一条，缺/重皆 fail）
+//      已处理阶段原子全覆盖（每原子恰一条，缺/重皆 fail）；目标阶段一条落判条目
+//      都没有 fail；分片按 stageId 过滤——非目标阶段分片为上次运行遗留，跳过不消费
+//      （正式条目已在正式产物中，summary.skippedVerifyParts 记录）；分片含非目标
+//      阶段原子仍 fail（跨阶段混入）
 //   2. 双写闸门（S2.1 经验：scope 优先级 复核字段 > scope-index Atom 级）：
 //      落判条目 dr.scopeApplicability 必须等于 applicability
 //      （既有条目带 evidenceScopes 的 conflict 证据级原子除外——
@@ -116,10 +119,16 @@ export function mergeVerifyOutput(input) {
   const judgeByAtom = new Map()
   const sveNew = []
   const processedStages = new Set()
+  const skippedVerifyParts = []
   for (const file of verifyFiles) {
     const doc = readJsonOrNull(path.join(verifyDir, file))
     if (!doc || !Array.isArray(doc.entries)) {
       bad('落判分片非法（缺 entries）：' + file)
+      continue
+    }
+    // 非目标阶段分片 = 上次运行的遗留（条目已在正式产物中），本轮跳过不消费
+    if (doc.stageId !== undefined && !targetSet.has(doc.stageId)) {
+      skippedVerifyParts.push(file)
       continue
     }
     for (const e of doc.entries) {
@@ -156,6 +165,11 @@ export function mergeVerifyOutput(input) {
       if (!judgeByAtom.has(id)) bad('阶段原子缺落判条目：' + stageId + ' / ' + id)
     }
   }
+  // 目标阶段一条落判条目都没有（分片全缺或全为非目标遗留）→ fail
+  if (judgeByAtom.size === 0) {
+    bad('目标阶段无落判条目（目标 ' + [...targetSet].join(',') + '，分片 ' + verifyFiles.join(',') + '）')
+    return { ok: false, problems: problems, summary: null }
+  }
 
   // ---------- 2. 读复核建议分片（可选） ----------
   const reviewDir = path.join(outDir, 'runtime', 'review-output')
@@ -169,6 +183,8 @@ export function mergeVerifyOutput(input) {
       bad('复核建议分片非法（缺 entries）：' + file)
       continue
     }
+    // 非目标阶段分片 = 上次运行的遗留，跳过不消费（建议已在正式 DR 中）
+    if (doc.stageId !== undefined && !targetSet.has(doc.stageId)) continue
     for (const e of doc.entries) {
       if (!e || !judgeByAtom.has(e.atomId)) {
         bad('复核建议 atomId 不在已处理原子：' + file + ' -> ' + (e && e.atomId))
@@ -519,6 +535,7 @@ export function mergeVerifyOutput(input) {
   const summary = {
     processedStages: stageList,
     judgeCount: judgeByAtom.size,
+    skippedVerifyParts: skippedVerifyParts,
     scopeStats: scopeStats,
     newScopeEntries: newScopeCount,
     replacedScopeEntries: replacedScopeCount,

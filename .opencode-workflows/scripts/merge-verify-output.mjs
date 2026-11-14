@@ -14,10 +14,11 @@
 //      落判条目 dr.scopeApplicability 必须等于 applicability
 //      （既有条目带 evidenceScopes 的 conflict 证据级原子除外——
 //        evidenceScopes 优先于复核字段，见设计 3.3）
-//   3. SVE：本轮 id 不重复；形状完备（atomId 在基线 / layer 枚举 / file 以 layer 目录
-//      前缀开头 / location = file:行号 / symbol / excerpt / configKeys）；
-//      与正式既有同 id 同原子 = 幂等重跑或摘录更新（原位替换放行），
-//      同 id 跨原子 fail（id 劫持）
+//   3. SVE：本轮 id 不重复（同 id 同证据指针且 atomId/摘录漂移 = 共享证据跨原子复制，
+//      去重放行保留首个；同 id 指针不同 fail）；形状完备（atomId 在基线 / layer 枚举 /
+//      file 以 layer 目录前缀开头 / location = file:行号 / symbol / excerpt / configKeys）；
+//      与正式既有同 id 同证据指针 = 幂等重跑/摘录更新/共享证据（原位替换放行），
+//      同 id 指针不同 fail（id 劫持）
 //   4. evidenceIds ⊆ 正式既有 + 本轮提交 SVE id；evidenceScopes.ref
 //      ∈ SVE id ∪ { client-visual } 且 applicability 枚举合法
 //   5. 复核建议：atomId 属已处理原子；reviewedDifference 枚举；
@@ -233,16 +234,27 @@ export function mergeVerifyOutput(input) {
     }
   }
 
-  // ---------- 4. SVE 校验（同 id 同原子为幂等重跑/摘录更新放行，跨原子 fail） ----------
+  // ---------- 4. SVE 校验（同 id 同证据指针为幂等重跑/摘录更新/共享证据去重放行，指针不同 fail） ----------
+  // coreOf = 证据指针（layer/file/location/symbol/configKeys）；excerpt 为可更新引文不计入
+  const coreOf = (s) =>
+    JSON.stringify({
+      layer: s.layer,
+      file: s.file,
+      location: s.location,
+      symbol: s.symbol,
+      configKeys: s.configKeys || [],
+    })
   const formalSveIds = new Set((serverEvidence.entries || []).map((e) => e.id))
-  const sveNewIds = new Set()
+  const sveNewById = new Map()
   for (const s of sveNew) {
     if (!s || !s.id) {
       bad('落判分片 SVE 缺 id')
       continue
     }
-    if (sveNewIds.has(s.id)) {
-      bad('本轮 SVE id 重复：' + s.id)
+    if (sveNewById.has(s.id)) {
+      // 同 id 同证据指针（atomId/摘录可漂移）= 共享证据跨原子复制，去重放行（保留首个）
+      if (coreOf(sveNewById.get(s.id)) === coreOf(s)) continue
+      bad('本轮 SVE id 重复且内容不同：' + s.id)
       continue
     }
     if (!atomMap.has(s.atomId)) {
@@ -271,14 +283,19 @@ export function mergeVerifyOutput(input) {
     }
     if (formalSveIds.has(s.id)) {
       const existingFormal = (serverEvidence.entries || []).find((e) => e.id === s.id)
-      if (existingFormal && existingFormal.atomId !== s.atomId) {
-        bad('SVE id 与正式既有冲突且 atomId 不同：' + s.id)
+      if (
+        existingFormal &&
+        existingFormal.atomId !== s.atomId &&
+        coreOf(existingFormal) !== coreOf(s)
+      ) {
+        bad('SVE id 与正式既有冲突且内容不同：' + s.id)
         continue
       }
-      // 同 id 同原子：幂等重跑或摘录更新（以落判版为准，step 8 原位替换）
+      // 同 id 且（同原子或同核心内容）：幂等重跑/摘录更新/共享证据，step 8 以落判版原位替换
     }
-    sveNewIds.add(s.id)
+    sveNewById.set(s.id, s)
   }
+  const sveNewIds = new Set(sveNewById.keys())
   const allSveIds = new Set([...formalSveIds, ...sveNewIds])
   const newSveCount = [...sveNewIds].filter((id) => !formalSveIds.has(id)).length
 
@@ -412,11 +429,10 @@ export function mergeVerifyOutput(input) {
   for (const e of scopeEntries) if (isScope(e.applicability)) scopeStats[e.applicability]++
   const assembledScope = Object.assign({}, scopeIndex, { entries: scopeEntries, stats: scopeStats })
   const sveEntriesFinal = [...(serverEvidence.entries || [])]
-  for (const s of sveNew) {
-    if (!s || !sveNewIds.has(s.id)) continue
+  for (const s of sveNewById.values()) {
     const idx = sveEntriesFinal.findIndex((e) => e.id === s.id)
     if (idx >= 0) {
-      // 同 id 更新（幂等重跑/摘录更新，step 4 已校验同原子）：原位替换
+      // 同 id 更新（幂等重跑/摘录更新/共享证据，step 4 已校验）：原位替换
       sveEntriesFinal[idx] = s
     } else {
       sveEntriesFinal.push(s)

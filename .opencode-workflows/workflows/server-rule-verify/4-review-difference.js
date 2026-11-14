@@ -52,11 +52,18 @@ function withModel(opts) {
 const REVIEW_SUMMARY_SCHEMA = {
   type: 'object',
   properties: {
-    partFile: { type: 'string' },
+    partFile: { type: 'string', description: '分片文件名，不含目录路径，与输入分片同名（如 ST-C01-p01.json）' },
     atomCount: { type: 'number' },
     suggestionCount: { type: 'number' },
   },
   required: ['partFile', 'atomCount', 'suggestionCount'],
+}
+
+// partFile 校验归一化：agent 可能回完整路径，取与期望文件名一致即通过
+function partFileMatches(got, expected) {
+  if (typeof got !== 'string' || got === '') return false
+  const g = got.replaceAll('\\', '/')
+  return g === expected || g.endsWith('/' + expected)
 }
 
 const L7_STATS_SCHEMA = {
@@ -114,7 +121,8 @@ function reviewPrompt(partFile) {
     '       "reviewRule": "<前缀>（可选补充说明）" } ] }',
     '   reviewStatus 由 merge 脚本自动落 pending，不要写在条目里。无建议的分片写 entries: []。',
     '4. 只写这一个文件，不要写其他文件，不要执行 git 命令。',
-    '5. 写完后返回结构化摘要（suggestionCount = entries 条数，可为 0）。',
+    '5. 写完后返回结构化摘要（partFile 填分片文件名本身，不含目录路径，如 ST-C01-p01.json；',
+    '   suggestionCount = entries 条数，可为 0）。',
   ].join('\n')
 }
 
@@ -161,7 +169,7 @@ for (const p of partFiles) {
 let suggestionTotal = 0
 for (let i = 0; i < partFiles.length; i++) {
   const r = reviewResults[i]
-  if (!r || r.partFile !== partFiles[i].file) {
+  if (!r || !partFileMatches(r.partFile, partFiles[i].file)) {
     throw new Error(
       '复核摘要 partFile 不符：期望 ' + partFiles[i].file + ' 实际 ' + (r && r.partFile)
     )

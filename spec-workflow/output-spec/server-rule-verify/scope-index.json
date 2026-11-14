@@ -1,0 +1,143 @@
+{
+ "schemaVersion": 1,
+ "sampleNote": "OSG-W4 正式产物：server-rule-verify workflow 生成（人工样本见 scope-index_sample.json）。stats 由 merge-verify-output.mjs 重算，禁止手工填写；判定规则见 dev-docs/design/2026-11-14-OSG-W4-L7分类与玩法配置作用域设计.md；run 2026-11-14：ST-C01 落判 8 条（新增 8 / 替换 0，SVE 新增 29）；run 2026-11-14：ST-C01 落判 8 条（新增 0 / 替换 8，SVE 新增 0）",
+ "scopeTarget": {
+  "game": "hzmj",
+  "roomType": "friend",
+  "gameId": "42320"
+ },
+ "stats": {
+  "active": 3,
+  "conditional": 5,
+  "unknown": 0,
+  "inactive": 0
+ },
+ "entries": [
+  {
+   "atomId": "AT-ST-C01-001",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "first_banker_type：创房下发 0（client: RuleHzmj.ts，UI 未暴露恒 0）→ 走 rand() % GetPlayerCount() 在四名玩家中随机坐庄；可选 1 → 直接取房主座位 GetHostChairId() 坐庄（不再随机）。服务端 InitConfigByBox 默认 0。",
+   "callPath": "GameLogic::LoadBoxJsonConfig(hzmj_server/game_logic.cpp:38) 覆写 first_banker_type → CommonGameLogic::OnGameStart(common_game/common_game_logic.cpp:66-68) 先 InitConfigByBox 再 LoadBoxJsonConfig → BoxZhuangStep::JudgeZhuang(common_game/com_game/common_game_com_ju.cpp:116) 按局数分派 → JudgeDingZhuang(common_game/com_game/common_game_com_ju.cpp:124) rand()%player_count 随机坐庄并 SetZhuang/SetFirstZhuang",
+   "evidenceIds": [
+    "SVE-ST-C01-P01-01",
+    "SVE-ST-C01-P01-02",
+    "SVE-ST-C01-P01-03"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C01-002",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "",
+   "callPath": "CommonGameInit::InitStepForBox(common_game/common_game_init.cpp:179-192) 固定连接 start→zhuang→chip→mix_card→joker→take_first → ZhuangStep::Execute(mah_frame/com_basic/com_ju.cpp:43) 先 JudgeZhuang 定庄并 SetNowSeat(GetZhuang()) 再切下一步 → ChipStep::Execute(mah_frame/com_basic/com_ju.cpp:166) 才 RandomChip/MixMah/SendThrowChip",
+   "evidenceIds": [
+    "SVE-ST-C01-P01-04",
+    "SVE-ST-C01-P01-05",
+    "SVE-ST-C01-P01-06"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C01-003",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "rotate_banker_type：创房下发 0（client: RuleHzmj.ts，UI 未暴露恒 0）→ 非首局直接 SetZhuang(winner_seat) 由胡牌者坐庄；可选 1 → 逆时针轮到下一位（GetNextSeat(last_banker)），仅庄家单人自摸才连庄。服务端 InitConfigByBox 默认 0。",
+   "callPath": "GameLogic::LoadBoxJsonConfig(hzmj_server/game_logic.cpp:42) 覆写 rotate_banker_type → BoxZhuangStep::JudgeHuanZhuang(common_game/com_game/common_game_com_ju.cpp:139,166-174) rotate_banker_type==0 时取上局胡牌 winner_seat 并 SetZhuang(winner_seat)",
+   "evidenceIds": [
+    "SVE-ST-C01-P01-07",
+    "SVE-ST-C01-P01-08",
+    "SVE-ST-C01-P01-09"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C01-004",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "",
+   "callPath": "BoxZhuangStep::JudgeHuanZhuang(common_game/com_game/common_game_com_ju.cpp:168-170) winner_seat==last_banker 时 SetZhuang(last_banker)+AddLianZhuang → BaseData::AddLianZhuang(mah_frame/base/base_data.cpp:950) lian_zhuang_++ → BoxResultStep::UpdateBankerLevel(common_game/com_game/common_game_com_result.cpp:358) banker_hu 时档位+1 且连庄计数+1 → CommonGameContext::FillMsgJuData(common_game/common_game_context.cpp:456) 下发 lian_zhuang/banker_level",
+   "evidenceIds": [
+    "SVE-ST-C01-P01-10",
+    "SVE-ST-C01-P01-11",
+    "SVE-ST-C01-P01-12",
+    "SVE-ST-C01-P01-13"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C01-005",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "draw_continue_banker：创房下发 1（client: RuleHzmj.ts，UI 未暴露恒 1）→ 流局（end_type!=kEtHu）时 SetZhuang(last_banker)+AddLianZhuang 原庄连庄；可选 0 → 走 RotateZhuang 按轮庄规则换庄。服务端 InitConfigByBox 默认 true。",
+   "callPath": "取流局态：NextTakeStep::Execute(mah_frame/com_basic/com_take.cpp:151) IsDrawn→SetEndType(kEtDrawn) / HuChooseStep::IsDraw(mah_frame/com_basic/com_hu_choose.cpp:122) → BoxZhuangStep::JudgeHuanZhuang(common_game/com_game/common_game_com_ju.cpp:144-150) end_type!=kEtHu 且 GetDrawContinueBanker() 为真时 SetZhuang(last_banker)+AddLianZhuang → BoxResultStep::UpdateBankerLevel(common_game/com_game/common_game_com_result.cpp:364) banker_continues=is_draw?GetDrawContinueBanker()",
+   "evidenceIds": [
+    "SVE-ST-C01-P01-14",
+    "SVE-ST-C01-P01-15",
+    "SVE-ST-C01-P01-16",
+    "SVE-ST-C01-P01-17",
+    "SVE-ST-C01-P01-18",
+    "SVE-ST-C01-P01-19"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C01-006",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "banker_level_type：创房下发 2（client: RuleHzmj.ts）= 笃三老庄 → GetConfiguredBankerLevel 起手档位 = 2+1 = 3（三牢），换庄时按同配置重置为 3，故首庄/新庄/连庄均为三牢；可选 0 平庄起（1 牢）/1 笃二老庄（2 牢）时首庄与新庄只有 1/2 牢。服务端 InitConfigByBox 默认 0，实际值由好友房 JSON 覆盖为 2。",
+   "callPath": "GameLogic::LoadBoxJsonConfig(hzmj_server/game_logic.cpp:57) 覆写 banker_level_type → BoxZhuangStep::JudgeDingZhuang(common_game/com_game/common_game_com_ju.cpp:135) SetBankerLevel(GetConfiguredBankerLevel()) → GetConfiguredBankerLevel(common_game/com_game/common_game_com_ju.cpp:191) = type+1 并钳制 1..3；换庄由 BoxResultStep::UpdateBankerLevel(common_game/com_game/common_game_com_result.cpp:377-381) 按 banker_level_type 重置起始档位",
+   "evidenceIds": [
+    "SVE-ST-C01-P01-20",
+    "SVE-ST-C01-P01-21",
+    "SVE-ST-C01-P01-22",
+    "SVE-ST-C01-P01-23"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C01-007",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "banker_level_type：创房下发 2（client: RuleHzmj.ts）= 笃三老庄 → 起手档位 3 且 banker_continue_type 默认 0 封顶 3，牢庄档位恒为 3，庄闲倍数恒 1<<3 = 8 倍；可选 0 平庄起（档位 1 → 2 倍）/1 笃二老庄（档位 2 → 4 倍）。倍数本身由 1<<banker_level 计算，并非写死 8。",
+   "callPath": "BoxResultStep::CalcFinalWinLost(common_game/com_game/common_game_com_result.cpp:93) banker_mult = 1<<banker_level → CommonGameAlgorithm::BankerMult(common_game/common_game_algorithm.cpp:95) 返回 1<<level → BoxHuStep 判胡时(common_game/com_game/common_game_com_action.cpp:334) point *= BankerMult(GetBankerLevel())；档位由 SVE-ST-C01-P01-20/22 的 banker_level_type 决定",
+   "evidenceIds": [
+    "SVE-ST-C01-P01-24",
+    "SVE-ST-C01-P01-25",
+    "SVE-ST-C01-P01-26",
+    "SVE-ST-C01-P01-23"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  },
+  {
+   "atomId": "AT-ST-C01-008",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "",
+   "callPath": "BoxResultStep::UpdateBankerLevel(common_game/com_game/common_game_com_result.cpp:369-370) 连庄时若 banker_continue_type==0 则 if (level < 3) ++level 实现三牢封顶 → 默认值由 CommonGameServerConfig::Reset(common_game/common_game_server_config.cpp:12) SetBankerContinueType(0) 固定（三根目录内无该 key 的 JSON 下发入口）→ 起手侧 BoxZhuangStep::GetConfiguredBankerLevel(common_game/com_game/common_game_com_ju.cpp:194) if (level > 3) return 3 亦不超三牢",
+   "evidenceIds": [
+    "SVE-ST-C01-P01-27",
+    "SVE-ST-C01-P01-28",
+    "SVE-ST-C01-P01-29"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false
+  }
+ ]
+}

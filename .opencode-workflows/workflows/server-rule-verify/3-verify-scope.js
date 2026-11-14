@@ -42,7 +42,7 @@ function withModel(opts) {
 const VERIFY_SUMMARY_SCHEMA = {
   type: 'object',
   properties: {
-    partFile: { type: 'string' },
+    partFile: { type: 'string', description: '分片文件名，不含目录路径，与输入分片同名（如 ST-C01-p01.json）' },
     atomCount: { type: 'number' },
     active: { type: 'number' },
     conditional: { type: 'number' },
@@ -51,6 +51,13 @@ const VERIFY_SUMMARY_SCHEMA = {
     sveCount: { type: 'number' },
   },
   required: ['partFile', 'atomCount', 'active', 'conditional', 'unknown', 'inactive', 'sveCount'],
+}
+
+// partFile 校验归一化：agent 可能回完整路径，取与期望文件名一致即通过
+function partFileMatches(got, expected) {
+  if (typeof got !== 'string' || got === '') return false
+  const g = got.replaceAll('\\', '/')
+  return g === expected || g.endsWith('/' + expected)
 }
 
 // 客户端创房下发值口径（OSG-W4 S2.2 已核对，杭州麻将 42320 好友房）：
@@ -79,6 +86,11 @@ function verifyPrompt(partFile) {
     '- inactive：服务端实现了该能力但好友房恒不可达（需强证据：无 JSON 下发入口且无其他入口）',
     '- unknown：服务端证据不足（noServerEvidence=true，unresolved 写明缺什么证据；诚实落判，不猜）',
     '',
+    '证据文件范围（硬约束）：仅限三根目录（相对服务端源码根）：game_hzmj/common_game/、',
+    'game_hzmj/hzmj_server/、mah_frame/。变体目录（game_hzmj/chunanmj_server / hzmj2r_server /',
+    'tonglumj_server / xiaoshanmj_server）与其他玩法目录（game_gzmj / game_scmj / game_simple /',
+    'ai_model 等）是其他游戏/变体的实现，不是杭州麻将（42320）的证据，禁止引用其文件与行号。',
+    '',
     '客户端创房下发值口径（S2.2 已核对，conditional 条件的默认值以此为准，引用写 client: RuleHzmj.ts）：',
     CLIENT_DEFAULTS,
     '',
@@ -106,12 +118,16 @@ function verifyPrompt(partFile) {
     '   - 双写要求（S2.1 经验闸门）：dr.scopeApplicability 必须等于 applicability。',
     '   - SVE.file 路径映射：符号索引 file 形如 game_hzmj/common_game/... -> SVE 写 common_game/...；',
     '     game_hzmj/hzmj_server/... -> hzmj_server/...；mah_frame/... 原样。location 必须以 file 开头（file:行号）。',
-    '   - 新增 SVE 编号 SVE-<stageId>-P<partNo>-NN（NN 从 01 起）；既有正式条目已覆盖的证据复用原 id（摘录可更新）。',
+    '   - 新增 SVE 编号 SVE-<stageId>-P<partNo>-NN（NN 从 01 起递增，本片内不得重复）；既有正式条目已覆盖的证据复用原 id（摘录可更新）。',
+    '   - 共享证据（同一 file:line 服务多个原子，如同一配置 key 同时支撑两个规则原子）：SVE 只写一条',
+    '     （放在首个引用的原子下，atomId 填该原子），其余原子在各自 evidenceIds 里引用同一个 id，',
+    '     禁止把同 id 条目复制到多个原子下。',
     '   - 基线 difference=conflict 的原子（客户端视觉冲突类）：条目加 "evidenceScopes":',
     '     [ { "ref": "client-visual", "layer": "client", "applicability": "active", "note": "纯客户端冲突说明" } ]。',
     '   - unknown 落判也要全字段（sve 可为空数组，evidenceIds 可为空）。',
     '5. 只写这一个文件，不要写其他文件，不要执行 git 命令。',
-    '6. 写完后返回结构化摘要（active+conditional+unknown+inactive = atomCount；sveCount = 本片 sve 条目总数）。',
+    '6. 写完后返回结构化摘要（partFile 填分片文件名本身，不含目录路径，如 ST-C01-p01.json；',
+    '   active+conditional+unknown+inactive = atomCount；sveCount = 本片 sve 条目总数）。',
   ].join('\n')
 }
 
@@ -159,7 +175,7 @@ const parts = []
 const scopeStats = { active: 0, conditional: 0, unknown: 0, inactive: 0 }
 for (let i = 0; i < partFiles.length; i++) {
   const r = verifyResults[i]
-  if (!r || r.partFile !== partFiles[i].file) {
+  if (!r || !partFileMatches(r.partFile, partFiles[i].file)) {
     throw new Error(
       '落判摘要 partFile 不符：期望 ' + partFiles[i].file + ' 实际 ' + (r && r.partFile)
     )

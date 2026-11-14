@@ -1,0 +1,204 @@
+{
+ "schemaVersion": 1,
+ "sampleNote": "OSG-W4 正式产物：server-rule-verify workflow 生成（人工样本见 difference-review_sample.json）。baseline / afterReviewProjection / l7Projection 与条目 l7/effectiveDifference/l7Basis 由 merge-verify-output.mjs 确定性重算，禁止手工填写；run 2026-11-14：ST-C01 落判 8 条（新增 8 / 替换 0，SVE 新增 29）；run 2026-11-14：ST-C01 落判 8 条（新增 0 / 替换 8，SVE 新增 0）",
+ "baseline": {
+  "indexPath": "spec-workflow/output-spec/2026-11-14/1-spec/feature_index.json",
+  "differenceStats": {
+   "consistent": 65,
+   "partial": 64,
+   "conflict": 2,
+   "unverified": 188
+  }
+ },
+ "afterReviewProjection": {
+  "consistent": 70,
+  "partial": 64,
+  "conflict": 2,
+  "unverified": 183,
+  "total": 319,
+  "computedBy": "previousDifference→reviewedDifference 确定性迁移（假设全部 approved），merge-verify-output.mjs 重算，禁止手工填写预测值",
+  "transitions": [
+   {
+    "atomId": "AT-ST-C01-001",
+    "from": "unverified",
+    "to": "consistent"
+   },
+   {
+    "atomId": "AT-ST-C01-002",
+    "from": "unverified",
+    "to": "consistent"
+   },
+   {
+    "atomId": "AT-ST-C01-004",
+    "from": "unverified",
+    "to": "consistent"
+   },
+   {
+    "atomId": "AT-ST-C01-005",
+    "from": "unverified",
+    "to": "consistent"
+   },
+   {
+    "atomId": "AT-ST-C01-008",
+    "from": "unverified",
+    "to": "consistent"
+   }
+  ]
+ },
+ "l7Projection": {
+  "verified": 3,
+  "verification_required": 5,
+  "decision_required": 0,
+  "not_applicable": 0,
+  "note": "merge-verify-output.mjs 按 classifyL7 矩阵确定性重算（设计 4.1），禁止手工填写"
+ },
+ "entries": [
+  {
+   "atomId": "AT-ST-C01-001",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "reviewReason": "需求：首局四名玩家中随机坐庄。服务端：创房下发 first_banker_type=0（RuleHzmj.ts:21，UI 未暴露，恒 0）→ BoxZhuangStep::JudgeDingZhuang 走 rand() % GetPlayerCount()（common_game/com_game/common_game_com_ju.cpp:129），再 SetZhuang/SetFirstZhuang（:132-133）；InitConfigByBox 同默认 0（hzmj_server/server_config.cpp:13）。四人对局即四选一随机，与规则同构（SVE-ST-C01-P01-01/03/04）。",
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "scopeApplicability": "conditional",
+   "scopeNote": "SVE-ST-C01-P01-01 的 if (GetFirstBankerType() == 1) 分支说明随机坐庄由 first_banker_type 决定，非恒实现",
+   "evidenceIds": [
+    "SVE-ST-C01-P01-01",
+    "SVE-ST-C01-P01-02",
+    "SVE-ST-C01-P01-03"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C01-002",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "reviewReason": "需求：掷骰、发牌前已经确定庄家。服务端：步骤链固定 start→zhuang→chip（common_game/common_game_init.cpp:179-180，SVE-ST-C01-P01-05）；ZhuangStep::Execute 先 JudgeZhuang/AddAllState(kMahStateZhuang)/SendJuData，再 ChangeNextStep（mah_frame/com_basic/com_ju.cpp:43-51，SVE-06）；ChipStep::Execute 才 RandomChip 掷骰、MixMah 洗牌（:166-171，SVE-07）。定庄恒早于掷骰发牌，时序由服务端步骤链保证（客户端断线帧同时出现不构成反证）。",
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "scopeApplicability": "active",
+   "scopeNote": "SVE-ST-C01-P01-05 的 zhuang_step->AddNext(chip_step) 顺序链固定，先定庄后掷骰发牌，无配置开关",
+   "evidenceIds": [
+    "SVE-ST-C01-P01-04",
+    "SVE-ST-C01-P01-05",
+    "SVE-ST-C01-P01-06"
+   ],
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C01-003",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "reviewReason": "本轮未出复核建议，维持基线差异",
+   "scopeApplicability": "conditional",
+   "scopeNote": "SVE-ST-C01-P01-07 第 166 行 if (GetRotateBankerType() == 0) 才走赢家坐庄，else 分支为逆时针轮换",
+   "evidenceIds": [
+    "SVE-ST-C01-P01-07",
+    "SVE-ST-C01-P01-08",
+    "SVE-ST-C01-P01-09"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C01-004",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "reviewReason": "需求：庄家自己胡牌为连庄。服务端：winner_seat==last_banker 时 SetZhuang(last_banker)+AddLianZhuang（common_game/com_game/common_game_com_ju.cpp:168-170；rotate_banker_type=1 分支 :177-179 同口径，SVE-ST-C01-P01-11）；结算侧 banker_hu 时档位+1、连庄计数+1（common_game/com_game/common_game_com_result.cpp:362-375，SVE-12），并下发 lian_zhuang/banker_level（common_game/com_game/common_game_context.cpp:456，SVE-14）。连庄判定与规则同构；客户端 GameJuDataCmd:34 以牢庄档位代连庄次数属客户端取数问题，不改写服务端判定。",
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "scopeApplicability": "active",
+   "scopeNote": "SVE-ST-C01-P01-10 中 winner_seat == last_banker 分支在 rotate_banker_type 两个取值下都判连庄，无配置依赖",
+   "evidenceIds": [
+    "SVE-ST-C01-P01-10",
+    "SVE-ST-C01-P01-11",
+    "SVE-ST-C01-P01-12",
+    "SVE-ST-C01-P01-13"
+   ],
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C01-005",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "reviewReason": "需求：流局时原庄连庄。服务端：end_type != kEtHu 时按 draw_continue_banker（创房下发 1，RuleHzmj.ts:25；服务端默认 true，hzmj_server/server_config.cpp:15）执行 SetZhuang(last_banker)+AddLianZhuang（common_game/com_game/common_game_com_ju.cpp:144-147，SVE-ST-C01-P01-15）；结算侧 is_draw 时 banker_continues 取 draw_continue_banker（common_game/com_game/common_game_com_result.cpp:364，SVE-16）。流局原庄连庄成立（客户端未注册流局命令不影响服务端判定）。",
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "scopeApplicability": "conditional",
+   "scopeNote": "SVE-ST-C01-P01-14 流局分支由 if (GetDrawContinueBanker()) 决定连庄或 RotateZhuang",
+   "evidenceIds": [
+    "SVE-ST-C01-P01-14",
+    "SVE-ST-C01-P01-15",
+    "SVE-ST-C01-P01-16",
+    "SVE-ST-C01-P01-17",
+    "SVE-ST-C01-P01-18",
+    "SVE-ST-C01-P01-19"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C01-006",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "reviewReason": "本轮未出复核建议，维持基线差异",
+   "scopeApplicability": "conditional",
+   "scopeNote": "SVE-ST-C01-P01-20 档位 = GetBankerLevelType()+1，仅配置 2 时才是三牢，非恒三牢",
+   "evidenceIds": [
+    "SVE-ST-C01-P01-20",
+    "SVE-ST-C01-P01-21",
+    "SVE-ST-C01-P01-22",
+    "SVE-ST-C01-P01-23"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C01-007",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "reviewReason": "本轮未出复核建议，维持基线差异",
+   "scopeApplicability": "conditional",
+   "scopeNote": "SVE-ST-C01-P01-24 倍数 = 1<<banker_level，档位由 SVE-ST-C01-P01-23 的 banker_level_type 决定，8 倍仅在笃三配置下成立",
+   "evidenceIds": [
+    "SVE-ST-C01-P01-24",
+    "SVE-ST-C01-P01-25",
+    "SVE-ST-C01-P01-26",
+    "SVE-ST-C01-P01-23"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C01-008",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "reviewReason": "需求：三牢不再增加。服务端：hzmj 层（game_logic.cpp）无 banker_continue_type 解析入口、客户端创房不下发该键，取值恒为 CommonGameServerConfig::Reset 的 0（common_game/common_game_server_config.cpp:12，SVE-ST-C01-P01-27）；UpdateBankerLevel 在 type==0 时仅 level<3 才 ++level，三牢封顶（common_game/com_game/common_game_com_result.cpp:369-371，SVE-26）；cap=50 分支仅萧山玩法（xiaoshanmj_server/com_game/xiaoshanmj_com_banker_level.cpp:37，SVE-28）不作用于 hzmj 好友房。",
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级；三牢封顶结论限定 hzmj 好友房配置口径）",
+   "scopeApplicability": "active",
+   "scopeNote": "SVE-ST-C01-P01-27/28 三牢封顶由 level<3 判断 + Reset 固定 banker_continue_type=0 保证，好友房无配置入口",
+   "evidenceIds": [
+    "SVE-ST-C01-P01-27",
+    "SVE-ST-C01-P01-28",
+    "SVE-ST-C01-P01-29"
+   ],
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
+  }
+ ]
+}

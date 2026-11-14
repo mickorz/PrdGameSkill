@@ -1,0 +1,333 @@
+{
+ "schemaVersion": 1,
+ "sampleNote": "OSG-W4 正式产物：server-rule-verify workflow 生成（人工样本见 server-evidence_sample.json）；run 2026-11-14：ST-C01 落判 8 条（新增 8 / 替换 0，SVE 新增 29）；run 2026-11-14：ST-C01 落判 8 条（新增 0 / 替换 8，SVE 新增 0）",
+ "sourceRepos": {
+  "common_game": "E:/WorkProjects/xc-flow/.xflow/xc/xcodeDev/game-mahjong/server/Logic/mahjong_server/src/game_hzmj/common_game",
+  "hzmj_server": "E:/WorkProjects/xc-flow/.xflow/xc/xcodeDev/game-mahjong/server/Logic/mahjong_server/src/game_hzmj/hzmj_server",
+  "pathNote": "需求原文 src/common/game_hzmj/common_game 层级勘误，见需求文档第 6 节登记"
+ },
+ "entries": [
+  {
+   "id": "SVE-ST-C01-P01-01",
+   "atomId": "AT-ST-C01-001",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_ju.cpp",
+   "location": "common_game/com_game/common_game_com_ju.cpp:124",
+   "symbol": "BoxZhuangStep::JudgeDingZhuang",
+   "excerpt": "void BoxZhuangStep::JudgeDingZhuang() {\n    uint8_t zhuang_seat;\n    if (GetSvrCfg()->GetFirstBankerType() == 1) {\n        zhuang_seat = static_cast<uint8_t>(GetSvrData()->GetHostChairId());\n    } else {\n        zhuang_seat = static_cast<uint8_t>(rand() % GetSvrData()->GetPlayerCount());\n    }\n\n    GetSvrData()->SetZhuang(zhuang_seat);\n    GetSvrData()->SetFirstZhuang(zhuang_seat);",
+   "configKeys": [
+    "first_banker_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C01-P01-02",
+   "atomId": "AT-ST-C01-001",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:38",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// first_banker_type | int8 | 0随机/1房主 | 0 | 首局庄家来源\nif (config.contains(\"first_banker_type\")) {\n    svr_cfg->SetFirstBankerType(static_cast<int8_t>(CommonUtils::SafeGetJsonInt64(config, \"first_banker_type\")));\n}",
+   "configKeys": [
+    "first_banker_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C01-P01-03",
+   "atomId": "AT-ST-C01-001",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/server_config.cpp",
+   "location": "hzmj_server/server_config.cpp:13",
+   "symbol": "ServerConfig::InitConfigByBox",
+   "excerpt": "SetFirstBankerType(0);",
+   "configKeys": [
+    "first_banker_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C01-P01-04",
+   "atomId": "AT-ST-C01-002",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_ju.cpp",
+   "location": "mah_frame/com_basic/com_ju.cpp:43",
+   "symbol": "ZhuangStep::Execute",
+   "excerpt": "void ZhuangStep::Execute() {\n    Step::Execute();\n\n    JudgeZhuang();\n    JudgeFeng();\n\n    GetSvrData()->AddAllState(kMahStateZhuang);\n\n    GetContext()->SendJuData();\n\n    GetSvrData()->SetNowSeat(GetSvrData()->GetZhuang());\n    ChangeNextStep(GetSvrData()->GetZhuang(), GetNextStep());\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C01-P01-05",
+   "atomId": "AT-ST-C01-002",
+   "layer": "common_game",
+   "file": "common_game/common_game_init.cpp",
+   "location": "common_game/common_game_init.cpp:179",
+   "symbol": "CommonGameInit::InitStepForBox",
+   "excerpt": "start_step->AddNext(zhuang_step);\nzhuang_step->AddNext(chip_step);\n...\nchip_step->AddNext(mix_card_step);  // 发牌前先洗牌（道具阶段）\nmix_card_step->AddNext(joker_step);  // 洗牌后定财神\njoker_step->AddNext(take_first_step);  // 定财神后进入正常流程",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C01-P01-06",
+   "atomId": "AT-ST-C01-002",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_ju.cpp",
+   "location": "mah_frame/com_basic/com_ju.cpp:166",
+   "symbol": "ChipStep::Execute",
+   "excerpt": "void ChipStep::Execute() {\n    Step::Execute();\n\n    RandomChip();\n    MixMah();\n\n    GetSvrData()->AddAllState(kMahStateChip);\n\n    GetContext()->SendThrowChip();\n    GetContext()->SendWallMah();",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C01-P01-07",
+   "atomId": "AT-ST-C01-003",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_ju.cpp",
+   "location": "common_game/com_game/common_game_com_ju.cpp:166",
+   "symbol": "BoxZhuangStep::JudgeHuanZhuang",
+   "excerpt": "bool is_multi_hu = hu_infos[0].hu_items.size() > 1;\nuint8_t winner_seat = is_multi_hu ? static_cast<uint8_t>(hu_infos[0].from_seat)\n                                   : static_cast<uint8_t>(hu_infos[0].hu_items[0].seat);\n\nif (GetSvrCfg()->GetRotateBankerType() == 0) {\n    // 赢家坐庄：无论是否为原庄，直接坐庄；原庄自胡视为连庄\n    if (winner_seat == last_banker) { ... } else {\n        GetSvrData()->SetZhuang(winner_seat);\n        GetSvrData()->SetLianZhuang(1);\n    }\n}",
+   "configKeys": [
+    "rotate_banker_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C01-P01-08",
+   "atomId": "AT-ST-C01-003",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:42",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// rotate_banker_type | int8 | 0赢家坐庄/1逆时针轮换 | 0 | 非首局庄家规则\nif (config.contains(\"rotate_banker_type\")) {\n    svr_cfg->SetRotateBankerType(\n        static_cast<int8_t>(CommonUtils::SafeGetJsonInt64(config, \"rotate_banker_type\")));\n}",
+   "configKeys": [
+    "rotate_banker_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C01-P01-09",
+   "atomId": "AT-ST-C01-003",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/server_config.cpp",
+   "location": "hzmj_server/server_config.cpp:14",
+   "symbol": "ServerConfig::InitConfigByBox",
+   "excerpt": "SetRotateBankerType(0);",
+   "configKeys": [
+    "rotate_banker_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C01-P01-10",
+   "atomId": "AT-ST-C01-004",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_ju.cpp",
+   "location": "common_game/com_game/common_game_com_ju.cpp:168",
+   "symbol": "BoxZhuangStep::JudgeHuanZhuang",
+   "excerpt": "if (winner_seat == last_banker) {\n    GetSvrData()->SetZhuang(last_banker);\n    GetSvrData()->AddLianZhuang();\n}\n// rotate_banker_type==1 分支同样：if (!is_multi_hu && winner_seat == last_banker) {\n//     GetSvrData()->SetZhuang(last_banker);\n//     GetSvrData()->AddLianZhuang();\n// }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C01-P01-11",
+   "atomId": "AT-ST-C01-004",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:358",
+   "symbol": "BoxResultStep::UpdateBankerLevel",
+   "excerpt": "void BoxResultStep::UpdateBankerLevel(uint8_t end_type) {\n    ...\n    bool banker_hu = !is_draw && !hu_seats.empty() && hu_seats[0] == zhuang;\n\n    bool banker_continues = is_draw ? GetSvrCfg()->GetDrawContinueBanker() : banker_hu;\n\n    if (banker_continues) {\n        ...\n        GetSvrData()->SetBankerContinueCount(GetSvrData()->GetBankerContinueCount() + 1);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C01-P01-12",
+   "atomId": "AT-ST-C01-004",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_data.cpp",
+   "location": "mah_frame/base/base_data.cpp:950",
+   "symbol": "BaseData::AddLianZhuang",
+   "excerpt": "void BaseData::AddLianZhuang() {\n    lian_zhuang_++;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C01-P01-13",
+   "atomId": "AT-ST-C01-004",
+   "layer": "common_game",
+   "file": "common_game/common_game_context.cpp",
+   "location": "common_game/common_game_context.cpp:456",
+   "symbol": "CommonGameContext::FillMsgJuData",
+   "excerpt": "void CommonGameContext::FillMsgJuData(int16_t seat, hzmj_protocol::MsgJuData *ju_data) {\n    ju_data->set_ju_count(GetSvrData()->GetJuCount());\n    ...\n    ju_data->set_zhuang(GetSvrData()->GetZhuang());\n    ju_data->set_lian_zhuang(GetSvrData()->GetLianZhuang());\n    ...\n    ju_data->set_banker_level(GetSvrData()->GetBankerLevel());",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C01-P01-14",
+   "atomId": "AT-ST-C01-005",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_ju.cpp",
+   "location": "common_game/com_game/common_game_com_ju.cpp:144",
+   "symbol": "BoxZhuangStep::JudgeHuanZhuang",
+   "excerpt": "// 流局（非胡牌结束）：draw_continue_banker 决定庄家是否继续\nif (end_type != kEtHu) {\n    if (GetSvrCfg()->GetDrawContinueBanker()) {\n        GetSvrData()->SetZhuang(last_banker);\n        GetSvrData()->AddLianZhuang();\n    } else {\n        RotateZhuang(last_banker);\n    }\n    return;\n}",
+   "configKeys": [
+    "draw_continue_banker"
+   ]
+  },
+  {
+   "id": "SVE-ST-C01-P01-15",
+   "atomId": "AT-ST-C01-005",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:47",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// draw_continue_banker | bool | true/false | true | 流局后庄家不变（false 则按轮庄规则换庄）\nif (config.contains(\"draw_continue_banker\")) {\n    svr_cfg->SetDrawContinueBanker(CommonUtils::SafeGetJsonInt64(config, \"draw_continue_banker\") > 0);\n}",
+   "configKeys": [
+    "draw_continue_banker"
+   ]
+  },
+  {
+   "id": "SVE-ST-C01-P01-16",
+   "atomId": "AT-ST-C01-005",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/server_config.cpp",
+   "location": "hzmj_server/server_config.cpp:15",
+   "symbol": "ServerConfig::InitConfigByBox",
+   "excerpt": "SetDrawContinueBanker(true);",
+   "configKeys": [
+    "draw_continue_banker"
+   ]
+  },
+  {
+   "id": "SVE-ST-C01-P01-17",
+   "atomId": "AT-ST-C01-005",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_take.cpp",
+   "location": "mah_frame/com_basic/com_take.cpp:151",
+   "symbol": "NextTakeStep::Execute",
+   "excerpt": "void NextTakeStep::Execute() {\n    Step::Execute();\n\n    if (IsDrawn()) {\n        LOGD(... \"NextTakeStep execute--->is drawn\");\n        GetSvrData()->SetEndType(kEtDrawn);\n        OnEndResult();\n        return;\n    }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C01-P01-18",
+   "atomId": "AT-ST-C01-005",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_hu_choose.cpp",
+   "location": "mah_frame/com_basic/com_hu_choose.cpp:122",
+   "symbol": "HuChooseStep::IsDraw",
+   "excerpt": "bool HuChooseStep::IsDraw() {\n    uint8_t walls_size = GetSvrData()->CountWalls();\n    int8_t drawn_cnt = GetSvrCfg()->GetDrawnCnt();\n    ...\n    if (walls_size > drawn_cnt) {\n        ...\n        return false;\n    }\n    ...\n    return true;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C01-P01-19",
+   "atomId": "AT-ST-C01-005",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:364",
+   "symbol": "BoxResultStep::UpdateBankerLevel",
+   "excerpt": "bool is_draw = (end_type != kEtHu);\nbool banker_hu = !is_draw && !hu_seats.empty() && hu_seats[0] == zhuang;\n\nbool banker_continues = is_draw ? GetSvrCfg()->GetDrawContinueBanker() : banker_hu;",
+   "configKeys": [
+    "draw_continue_banker"
+   ]
+  },
+  {
+   "id": "SVE-ST-C01-P01-20",
+   "atomId": "AT-ST-C01-006",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_ju.cpp",
+   "location": "common_game/com_game/common_game_com_ju.cpp:191",
+   "symbol": "BoxZhuangStep::GetConfiguredBankerLevel",
+   "excerpt": "int8_t BoxZhuangStep::GetConfiguredBankerLevel() {\n    int8_t level = static_cast<int8_t>(GetSvrCfg()->GetBankerLevelType() + 1);\n    if (level < 1) { return 1; }\n    if (level > 3) { return 3; }\n    return level;\n}",
+   "configKeys": [
+    "banker_level_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C01-P01-21",
+   "atomId": "AT-ST-C01-006",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_ju.cpp",
+   "location": "common_game/com_game/common_game_com_ju.cpp:135",
+   "symbol": "BoxZhuangStep::JudgeDingZhuang",
+   "excerpt": "GetSvrData()->SetLianZhuang(1);\nGetSvrData()->SetBankerLevel(GetConfiguredBankerLevel());\nGetSvrData()->SetBankerContinueCount(0);",
+   "configKeys": [
+    "banker_level_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C01-P01-22",
+   "atomId": "AT-ST-C01-006",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:377",
+   "symbol": "BoxResultStep::UpdateBankerLevel",
+   "excerpt": "} else {\n    // 换庄：按 banker_level_type 起算档位重置（0平庄起=1牢；1笃二=2牢；2笃三=3牢）\n    int8_t start_level = static_cast<int8_t>(GetSvrCfg()->GetBankerLevelType() + 1);\n    if (start_level < 1) { start_level = 1; }\n    if (start_level > 3) { start_level = 3; }\n    GetSvrData()->SetBankerLevel(start_level);",
+   "configKeys": [
+    "banker_level_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C01-P01-23",
+   "atomId": "AT-ST-C01-006",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:56",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// banker_level_type | int8 | 0平庄起/1笃二老庄/2笃三老庄 | 0 | 牢庄起算档位，决定庄闲倍率起点（2/4/8倍）\nif (config.contains(\"banker_level_type\")) {\n    svr_cfg->SetBankerLevelType(static_cast<int8_t>(CommonUtils::SafeGetJsonInt64(config, \"banker_level_type\")));\n}",
+   "configKeys": [
+    "banker_level_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C01-P01-24",
+   "atomId": "AT-ST-C01-007",
+   "layer": "common_game",
+   "file": "common_game/common_game_algorithm.cpp",
+   "location": "common_game/common_game_algorithm.cpp:95",
+   "symbol": "CommonGameAlgorithm::BankerMult",
+   "excerpt": "int64_t CommonGameAlgorithm::BankerMult(int8_t banker_level) {\n    if (banker_level < 1) { banker_level = 1; }\n    return static_cast<int64_t>(1) << banker_level;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C01-P01-25",
+   "atomId": "AT-ST-C01-007",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:93",
+   "symbol": "BoxResultStep::CalcFinalWinLost",
+   "excerpt": "int8_t banker_level = GetSvrData()->GetBankerLevel();\nif (banker_level < 1) { banker_level = 1; }\nint64_t banker_mult = static_cast<int64_t>(1) << banker_level;  // 1牢=2 2牢=4 3牢=8",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C01-P01-26",
+   "atomId": "AT-ST-C01-007",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:334",
+   "symbol": "BoxHuStep::JudgeHuPoint",
+   "excerpt": "// hu_point（胡权限倍数）统一乘入牢庄倍数：所有胡型（放铳/抢杠/自摸庄/自摸闲）按庄家口径。\nint64_t banker_mult = CommonGameAlgorithm::BankerMult(GetSvrData()->GetBankerLevel());\npoint *= banker_mult;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C01-P01-27",
+   "atomId": "AT-ST-C01-008",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:369",
+   "symbol": "BoxResultStep::UpdateBankerLevel",
+   "excerpt": "if (GetSvrCfg()->GetBankerContinueType() == 0) {\n    if (level < 3) { ++level; }   // 三牢庄封顶\n} else {\n    if (level < 50) { ++level; }  // 无限连庄：牢庄值封顶 50（倍率 2^level），仅萧山好友房\n}",
+   "configKeys": [
+    "banker_continue_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C01-P01-28",
+   "atomId": "AT-ST-C01-008",
+   "layer": "common_game",
+   "file": "common_game/common_game_server_config.cpp",
+   "location": "common_game/common_game_server_config.cpp:12",
+   "symbol": "CommonGameServerConfig::Reset",
+   "excerpt": "SetBankerContinueType(0);  // 连庄规则默认三牢庄封顶（其它 hzmj 玩法安全默认；萧山好友房可覆盖为 1）",
+   "configKeys": [
+    "banker_continue_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C01-P01-29",
+   "atomId": "AT-ST-C01-008",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_ju.cpp",
+   "location": "common_game/com_game/common_game_com_ju.cpp:194",
+   "symbol": "BoxZhuangStep::GetConfiguredBankerLevel",
+   "excerpt": "if (level > 3) { return 3; }",
+   "configKeys": []
+  }
+ ]
+}

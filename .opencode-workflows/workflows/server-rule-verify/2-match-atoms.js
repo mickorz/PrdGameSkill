@@ -74,13 +74,20 @@ const MANIFEST_SCHEMA = {
 const MATCH_SUMMARY_SCHEMA = {
   type: 'object',
   properties: {
-    partFile: { type: 'string' },
+    partFile: { type: 'string', description: '分片文件名，不含目录路径，与输入分片同名（如 ST-C01-p01.json）' },
     atomCount: { type: 'number' },
     matched: { type: 'number' },
     partial: { type: 'number' },
     none: { type: 'number' },
   },
   required: ['partFile', 'atomCount', 'matched', 'partial', 'none'],
+}
+
+// partFile 校验归一化：agent 可能回完整路径，取与期望文件名一致即通过
+function partFileMatches(got, expected) {
+  if (typeof got !== 'string' || got === '') return false
+  const g = got.replaceAll('\\', '/')
+  return g === expected || g.endsWith('/' + expected)
 }
 
 function matchPrompt(partFile) {
@@ -109,7 +116,8 @@ function matchPrompt(partFile) {
     '   matches 只保留 relevant=true 的候选；无命中的原子 conclusion="none"、matches=[]。',
     '   file 字段用符号索引里的相对路径原样（game_hzmj/ 前缀保留）。',
     '5. 只写这一个文件，不要写其他文件，不要执行 git 命令。',
-    '6. 写完后返回结构化摘要（matched/partial/none 为各 conclusion 的原子数，三者之和 = atomCount）。',
+    '6. 写完后返回结构化摘要（partFile 填分片文件名本身，不含目录路径，如 ST-C01-p01.json；',
+    '   matched/partial/none 为各 conclusion 的原子数，三者之和 = atomCount）。',
   ].join('\n')
 }
 
@@ -186,7 +194,7 @@ let totalMatched = 0
 let totalNone = 0
 for (let i = 0; i < partFiles.length; i++) {
   const r = matchResults[i]
-  if (!r || r.partFile !== partFiles[i].file) {
+  if (!r || !partFileMatches(r.partFile, partFiles[i].file)) {
     throw new Error(
       '匹配摘要 partFile 不符：期望 ' + partFiles[i].file + ' 实际 ' + (r && r.partFile)
     )

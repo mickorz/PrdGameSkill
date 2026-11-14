@@ -30,3 +30,6 @@ examples/game-prd-check-workflow/dashboard/
 input-ui/
 .opencode-workflows/journal/
 source-prd/
+
+# OSG-W4 server-rule-verify workflow runtime intermediates (regenerable products)
+spec-workflow/output-spec/server-rule-verify/runtime/

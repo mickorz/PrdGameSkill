@@ -254,7 +254,7 @@ function fullChain(outDir, label) {
   const upd = sv.entries.find((e) => e.id === 'SVE-ST-C01-P01-01')
   check('用例C 原位替换生效', upd && upd.excerpt === '更新后的摘录' && sv.entries.length === 4)
 
-  // 同 id 跨原子：fail
+  // 同 id 跨原子且内容不同：fail（id 劫持；同内容跨原子为共享证据，见用例 C2）
   reset()
   writeBaseline()
   const outDir2 = path.join(TMP, 'out-c2')
@@ -264,13 +264,82 @@ function fullChain(outDir, label) {
     c01: [
       verifyEntry('AT-ST-C01-001', 'conditional', {
         evidenceIds: ['SVE-ST-C01-P01-01'],
-        sve: [sve('SVE-ST-C01-P01-01', 'AT-ST-C01-002', 'common_game', 'common_game/com_game/a.cpp', 10, 'UpdateBankerLevel')],
+        sve: [sve('SVE-ST-C01-P01-01', 'AT-ST-C01-002', 'common_game', 'common_game/com_game/z.cpp', 99, 'HijackSymbol')],
       }),
       verifyEntry('AT-ST-C01-002', 'active', { evidenceIds: ['SVE-ST-C01-P01-02'], sve: [sve('SVE-ST-C01-P01-02', 'AT-ST-C01-002', 'common_game', 'common_game/com_game/b.cpp', 20, 'JudgeZhuang')] }),
     ],
   })
   const rHijack = mergeRun(outDir2)
-  check('用例C 同 id 跨原子 fail（id 劫持）', okFirst && !rHijack.ok && rHijack.problems.some((p) => p.includes('atomId 不同')))
+  check('用例C 同 id 跨原子且内容不同 fail（id 劫持）', okFirst && !rHijack.ok && rHijack.problems.some((p) => p.includes('内容不同')))
+}
+
+// ---------- 用例 C2：共享证据同 id 跨原子复制（去重放行）/ 同 id 内容不同（fail） ----------
+
+{
+  reset()
+  writeBaseline()
+  const outDir = path.join(TMP, 'out-c2')
+  buildFixtures(outDir)
+  // 首跑：两条独立 SVE
+  check('用例C2 前置：首次合并成功', mergeRun(outDir).ok)
+  // 重跑：同一证据（同 id 同核心内容）被两个原子各写一条（atomId 不同）-> 去重放行，SVE 总数不变
+  const shared = sve('SVE-ST-C01-P01-03', 'AT-ST-C01-001', 'common_game', 'common_game/com_game/c.cpp', 30, 'LoadBoxJsonConfig')
+  buildFixtures(outDir, {
+    c01: [
+      verifyEntry('AT-ST-C01-001', 'conditional', {
+        evidenceIds: ['SVE-ST-C01-P01-01', 'SVE-ST-C01-P01-03'],
+        sve: [sve('SVE-ST-C01-P01-01', 'AT-ST-C01-001', 'common_game', 'common_game/com_game/a.cpp', 10, 'UpdateBankerLevel'), shared],
+      }),
+      verifyEntry('AT-ST-C01-002', 'active', {
+        evidenceIds: ['SVE-ST-C01-P01-02', 'SVE-ST-C01-P01-03'],
+        sve: [sve('SVE-ST-C01-P01-02', 'AT-ST-C01-002', 'common_game', 'common_game/com_game/b.cpp', 20, 'JudgeZhuang'), shared],
+      }),
+    ],
+  })
+  const rShared = mergeRun(outDir)
+  const svShared = readJson(path.join(outDir, 'server-evidence.json'))
+  check(
+    '用例C2 共享证据跨原子复制去重放行',
+    rShared.ok && svShared.entries.filter((e) => e.id === 'SVE-ST-C01-P01-03').length === 1 && svShared.entries.length === 5,
+  )
+  // 同 id 内容不同：fail
+  buildFixtures(outDir, {
+    c01: [
+      verifyEntry('AT-ST-C01-001', 'conditional', {
+        evidenceIds: ['SVE-ST-C01-P01-01', 'SVE-ST-C01-P01-03'],
+        sve: [sve('SVE-ST-C01-P01-01', 'AT-ST-C01-001', 'common_game', 'common_game/com_game/a.cpp', 10, 'UpdateBankerLevel'), sve('SVE-ST-C01-P01-03', 'AT-ST-C01-001', 'common_game', 'common_game/com_game/c.cpp', 30, 'LoadBoxJsonConfig')],
+      }),
+      verifyEntry('AT-ST-C01-002', 'active', {
+        evidenceIds: ['SVE-ST-C01-P01-02', 'SVE-ST-C01-P01-03'],
+        sve: [sve('SVE-ST-C01-P01-02', 'AT-ST-C01-002', 'common_game', 'common_game/com_game/b.cpp', 20, 'JudgeZhuang'), sve('SVE-ST-C01-P01-03', 'AT-ST-C01-002', 'common_game', 'common_game/com_game/d.cpp', 40, 'OtherSymbol')],
+      }),
+    ],
+  })
+  const rDupBad = mergeRun(outDir)
+  check('用例C2 同 id 内容不同 fail', !rDupBad.ok && rDupBad.problems.some((p) => p.includes('重复且内容不同')))
+
+  // 同 id 同证据指针、摘录漂移（真实案例：agent 复制共享证据时摘录截断不同）-> 去重放行保留首个
+  const sharedLong = sve('SVE-ST-C01-P01-03', 'AT-ST-C01-001', 'common_game', 'common_game/com_game/c.cpp', 30, 'LoadBoxJsonConfig')
+  const sharedShort = Object.assign({}, sharedLong, { atomId: 'AT-ST-C01-002', excerpt: '// 截短的摘录' })
+  buildFixtures(outDir, {
+    c01: [
+      verifyEntry('AT-ST-C01-001', 'conditional', {
+        evidenceIds: ['SVE-ST-C01-P01-01', 'SVE-ST-C01-P01-03'],
+        sve: [sve('SVE-ST-C01-P01-01', 'AT-ST-C01-001', 'common_game', 'common_game/com_game/a.cpp', 10, 'UpdateBankerLevel'), sharedLong],
+      }),
+      verifyEntry('AT-ST-C01-002', 'active', {
+        evidenceIds: ['SVE-ST-C01-P01-02', 'SVE-ST-C01-P01-03'],
+        sve: [sve('SVE-ST-C01-P01-02', 'AT-ST-C01-002', 'common_game', 'common_game/com_game/b.cpp', 20, 'JudgeZhuang'), sharedShort],
+      }),
+    ],
+  })
+  const rDrift = mergeRun(outDir)
+  const svDrift = readJson(path.join(outDir, 'server-evidence.json'))
+  const driftEntry = svDrift.entries.find((e) => e.id === 'SVE-ST-C01-P01-03')
+  check(
+    '用例C2 同 id 摘录漂移去重放行（保留首个）',
+    rDrift.ok && driftEntry && driftEntry.excerpt === sharedLong.excerpt && svDrift.entries.length === 5,
+  )
 }
 
 // ---------- 用例 D：reviewStatus 保全 ----------

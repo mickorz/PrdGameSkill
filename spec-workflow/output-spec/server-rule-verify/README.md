@@ -15,6 +15,10 @@
 | `scope-index_sample.json` | 玩法配置作用域判定：ST-C01/02/04 全部 33 原子 + ST-C15-018 conflict 条目（S1.3 补据），共 34 条目：active 14 / conditional 20 / unknown 0 / inactive 0（S2.1 深查落判：23 条 unknown 全部依服务端只读源码证据升级；S2.2 创房 UI 核对：20 条 conditional 条目 configCondition 落客户端创房默认值核对结论，unresolved 5 条清零） | 34 条 |
 | `difference-review_sample.json` | 差异二次复核对照（14 条代表性条目，含 v2 全部 2 个 conflict；全部 pending 未合并；含 effectiveDifference 与确定性迁移统计 66/64/2/187；S1.1 修订：l7Projection 手写统计漂移经重算修正 2/10/2/0 → 1/11/2/0；S2.1：6 条 unknown 复核字段依服务端深查证据升级为 active×5/conditional×1，difference 结论不变） | 14 条 |
 | `l7-classify_sample.json` | L7 分类产物（S1.1 起，S2.1 重算）：classify-l7.mjs 按设计 4.1 矩阵对 14 条复核样本的确定性分类，分布 verified 1 / verification_required 11 / decision_required 2 / not_applicable 0（S2.1 落判后 l7 分布不变，仅 6 条目 scope 字段经复核字段更新为 active/conditional，来源 review-field）；全部 pending → l7Approved 全 0（未批准不入正式索引）；AT-ST-C02-008 与 AT-ST-C15-018（S1.3 补据后）均采证据级 scope（client-visual → active → decision_required） | 14 条 |
+| `scope-index.json` | **正式产物**（S2.3 试运行 ST-C01 生成）：定庄与轮庄 8 原子（active 3 / conditional 5 / unknown 0 / inactive 0） | 8 条 |
+| `server-evidence.json` | **正式产物**（S2.3 试运行 ST-C01 生成）：三根目录真实 file:line 证据 | 29 条 |
+| `difference-review.json` | **正式产物**（S2.3 试运行 ST-C01 生成）：ST-C01 全部 8 原子复核条目（pending；含 5 条 unverified→consistent 升级建议与 afterReviewProjection 70/64/2/183） | 8 条 |
+| `l7-classify.json` | **正式产物**（S2.3 试运行 ST-C01 生成）：reviewed 8/319，l7 verified 3 / verification_required 5 / decision_required 0 / not_applicable 0，l7Approved 全 0 | 8 条 |
 
 ## T0.4 局部验收结果（逐条对照需求）
 
@@ -79,11 +83,21 @@
   - `4-review-difference.js`：复核五规则 pending 建议（reviewRule 前缀白名单）→ **merge-verify-output.mjs** 确定性装配闸门 → classify-l7 CLI 重算 → **verify-output-spec check-l7 CLI 新子模式**（五道闸门 + 报告，不触碰 v2 基线目录）→ l7 统计回读
 - **确定性脚本**（`.opencode-workflows/scripts/`，均带 example 全绿）：
   - `prepare-verify-atoms.mjs`（example 30 项）：分片输入生成 + 旧分片清理 + manifest
-  - `merge-verify-output.mjs`（example 63 项，含 merge→classify→check-l7 全链端到端）：双写闸门/覆盖闸门/SVE 形状与幂等（同 id 同原子原位替换、跨原子 fail）/reviewRule 白名单/未处理阶段条目保全/reviewStatus 保全（同建议保持 approved、建议变化重置 pending）/classifyL7 矩阵回填 l7/effectiveDifference/l7Basis + baseline/afterReviewProjection/l7Projection 三统计块重算
+  - `merge-verify-output.mjs`（example 66 项，含 merge→classify→check-l7 全链端到端）：双写闸门/覆盖闸门/SVE 形状与幂等（同 id 同证据指针原位替换或去重放行、指针不同 fail）/reviewRule 白名单/未处理阶段条目保全/reviewStatus 保全（同建议保持 approved、建议变化重置 pending）/classifyL7 矩阵回填 l7/effectiveDifference/l7Basis + baseline/afterReviewProjection/l7Projection 三统计块重算
   - `verify-output-spec.mjs` 新增 `check-l7` CLI 子模式（example 场景 18）：只跑 L7 Sidecar 五道闸门（不跑维度 1-6、不写 specDir，v2 基线只读不触碰），报告写 `<reportOutDir>/l7-check-report.md`
 - 正式产物（本目录，无 _sample 后缀）：`scope-index.json` / `server-evidence.json` / `difference-review.json` / `l7-classify.json`（首跑起累积，人工样本只读不改）；中间产物 `runtime/verify-input|match-output|verify-output|review-output/` + `runtime/spec-check/l7-check-report.md`
 - 生成前问询结论：速度优先（质量靠确定性闸门兜底）+ 分析模型 deepseek flash + 并发 16；五脚本 wf-syntax-check 全过；六 example 全绿（build-symbol-index / classify-l7 / prepare-planner-doc-input / prepare-verify-atoms / merge-verify-output / verify-output-spec）
 - **试运行验收口径**（ST-C01 单阶段，用户触发）：正式四件生成 + 五道闸门通过 + 与人工样本 ST-C01 八原子条目对照（scope 结论/SVE 摘录方向一致即链路贯通；分歧条目人工复核）
+
+### S2.3 试运行结果（ST-C01，2026-11-14，链路贯通 ✓）
+
+- **执行**：runId `run-mwg3hayc-12`（三轮修复后贯通）：6 agent（4 journal 回放 + 2 新跑），wall 133s，tokens 1042（deepseek flash；结构化输出因网关 thinking 模式不支持 json_schema tool_choice 自动降级 prompt JSON 模式）
+- **三轮卡点与修复**（详见 `dev-docs/experience/server-rule-verify试运行agent输出漂移与闸门容差.md`）：① match 摘要 partFile 回完整路径 → prompt/schema 明确格式 + 校验归一化；② 落判证据引用萧山变体文件（xiaoshanmj_server，三根目录之外）→ prompt 加三根目录硬约束（chunanmj/hzmj2r/tonglumj/xiaoshanmj 变体目录与其他玩法目录禁止引用）；③ 共享证据同 id 跨原子复制 + 摘录截断漂移 → merge 判等基准收窄为证据指针（layer/file/location/symbol/configKeys，摘录不计入），同 id 同指针去重放行保留首个 + prompt 共享证据只写一条；example 补用例 C2（66 项全绿）
+- **产物**：正式四件落盘（`scope-index.json` 8 条：active 3/conditional 5/unknown 0/inactive 0；`server-evidence.json` 29 条；`difference-review.json` 8 条全 pending，afterReviewProjection 70/64/2/183（5 条 unverified→consistent 升级建议）；`l7-classify.json` reviewed 8/319、l7 3/5/0/0、l7Approved 全 0）；五道闸门通过（`runtime/spec-check/l7-check-report.md`）
+- **与人工样本对照**（ST-C01 八原子）：**完全一致 4**（C01-001/005/006/007，scope 与 l7 均一致）；**样本未覆盖 2**（C01-003/008 的 l7 样本 DR 无条目，正式版为中性 pending/升级建议，非分歧）；**真分歧 2**：
+  - AT-ST-C01-002（掷骰、发牌前确定庄家）：l7 样本 verification_required → 正式 verified（pending）——agent 依 mah_frame/com_basic/com_ju.cpp:43/166（Step 链 AddNext 执行顺序）建议 unverified→consistent，与 S2.1 人工落判结论（定庄先于骰子 Step 链直证）方向一致，属补上样本 DR 缺失的升级建议，待人工批准
+  - AT-ST-C01-004（庄家自摸连庄）：scope 样本 conditional → 正式 active——样本以 rotate_banker_type 两分支连庄口径不同（type=1 分支好友房不可达）保守判 conditional，agent 以 com_ju.cpp:168 / com_result.cpp:358 / base_data.cpp:950 / com_context.cpp:456 四条证据判可达口径统一 active；均属可辩护区间，转 S3 人工裁决（reviewStatus pending 保证未批准前不进正式索引）
+- **结论**：链路贯通验收通过；scope 真分歧率 1/8，升级建议质量与 S2.1 人工结论对齐；S4 全量跑（12 Stage / 311 原子）可复用本链路
 
 ## 关键发现摘要（详见调查报告）
 

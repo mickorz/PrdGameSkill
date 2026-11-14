@@ -19,6 +19,9 @@
 | `server-evidence.json` | **正式产物**（S2.3 试运行 ST-C01 生成）：三根目录真实 file:line 证据 | 29 条 |
 | `difference-review.json` | **正式产物**（S2.3 试运行 ST-C01 生成）：ST-C01 全部 8 原子复核条目（pending；含 5 条 unverified→consistent 升级建议与 afterReviewProjection 70/64/2/183） | 8 条 |
 | `l7-classify.json` | **正式产物**（S2.3 试运行 ST-C01 生成）：reviewed 8/319，l7 verified 3 / verification_required 5 / decision_required 0 / not_applicable 0，l7Approved 全 0 | 8 条 |
+| `规则待验证报告.md` | **S4.3 交付报告**（build-verify-reports.mjs 确定性生成）：verification_required 129 条全清单，三类归档（配置确认 69 / 证据缺口 12 / 待补证 48），含 139 条 active 升级建议与 34 条 conditional 升级建议交叉注记 | 129 条 |
+| `服务端证据索引.md` | **S4.3 交付报告**（build-verify-reports.mjs 确定性生成）：server-evidence 全量索引（按阶段，SVE 定位/符号/位置/配置项），供复核与追溯 | 875 条 |
+| `需求差异裁决清单.md` | **S4.3 全量收口**：条目一/二（conflict，已裁决 B 改需求 approved）+ 条目三（C10-021 inactive）+ 附 A（173 条升级建议全量批量批准表，按阶段分节）+ 附 A 注记（人工样本对照分歧 10 条 + 同证 3 条）+ 附 B 复核规则速查 + 附 C 证据缺口/不可达/配置确认交叉引用 | 361+ 行 |
 
 ## T0.4 局部验收结果（逐条对照需求）
 
@@ -117,6 +120,14 @@
   - scope：**一致 16 / 分歧 9**（全部为样本 conditional → 正式 active，agent 以多条直接证据判可达口径恒定；分歧原子：C02-008（conflict 原子 evidenceScopes 正确保留 client-visual，仅服务端侧 scope 表述收窄）/009/010/011（财神吃碰杠）、C04-005/006/007/009/010（多人胡/近者优先/顺延）；批准相关 DR 建议即采正式 active 口径，需保守 conditional 请在裁决清单备注——同 C01-004 注记模式）
   - DR：样本覆盖条目一致 3 / 分歧 5（正式更进取：C02-006/007/009、C04-001/012 建议 partial/unverified→consistent，其中 C04-001 优先级次序与 S2.1 裁决链证据（macros.h:203-206 级别常量）方向一致）；样本未覆盖 17 条为正式新增建议
 - **S3.2 partial 复核进度**：v2 的 64 条 partial 中已复核 3 条（证据就位三阶段 ST-C01/02/04），2 条建议升级（C02-006、C04-012）；其余 partial 原子随 S4.1 分批补证时逐阶段复核
+
+## S4.3 三份交付报告（2026-11-14）
+
+- **生成器**：`build-verify-reports.mjs`（+ example 15 断言全绿）：从正式四件 + v2 基线确定性生成三产物，计数闸门（报告行数 = l7 stats verification_required / SVE 总数 / 建议总数，不符清产物 fail）
+- **报告 1《规则待验证报告》**：verification_required 129 条全清单，三类归档——配置确认 69（conditional 作用域，configCondition 口径）/ 证据缺口 12（服务端三根零实现，客户端壳/纯表现交互）/ 待补证 48（active 无建议维持 unverified/partial，说明走 callPath 兜底）；交叉注记：139 条 active 升级建议批准后即转已验证（不在本报告）、34 条 conditional 升级建议批准后仍需配置确认（在报告且在裁决清单附 A）
+- **报告 2《服务端证据索引》**：SVE 875 条按阶段全量索引（SVE/原子/层/符号/位置/配置项；层分布 common_game / hzmj_server / mah_frame），供复核与追溯
+- **裁决清单全量收口**：条目一/二（conflict）标注已裁决 B 改需求（reviewStatus approved 已落）；新增条目三（C10-021 inactive，禁张对补进牌数据上不可达，待裁决）；附 A 换脚本生成的 173 条全量批量批准表（按阶段 15 节）；附 A 注记保留人工样本对照（scope 分歧 10 条 + S2.1 同证 3 条 + 未出建议维持原子）；新增附 C（证据缺口 12 / 配置确认 69 / 待补证 48 / 不可达 1 交叉引用《规则待验证报告》）
+- **产物消费路径**：策划裁决 → 落 reviewStatus（approved/rejected）→ `assemble-output-spec-index.mjs v3` 合并 → v3 策划版重投影
 
 ## S4.2 策划版 v3 重新投影（plannerOnly 全量，2026-11-14）
 

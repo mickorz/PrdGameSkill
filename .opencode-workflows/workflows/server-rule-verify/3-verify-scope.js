@@ -3,7 +3,9 @@
 // 职责：agent 按分片并行——读分片输入（verify-input）与匹配候选（match-output），
 //       需要时补查符号索引与源码行段，逐原子作用域落判（active/conditional/inactive/
 //       unknown + configCondition/callPath + SVE 证据条目 + DR 复核字段双写），
-//       落盘 runtime/verify-output/<stageId>-p<NN>.json（含落盘闸门）。
+//       落盘 runtime/verify-output/<stageId>-p<NN>.json（含落盘闸门），
+//       再经确定性重算闸门（recount-verify-parts.mjs：覆盖率/重复/枚举/分布，
+//       agent 摘要计数仅告警）聚合 scopeStats。
 //
 // 由主 workflow 经显式路径调用（本目录不在注册表扫描范围）：
 //   await workflow({ scriptPath: './.opencode-workflows/workflows/server-rule-verify/3-verify-scope.js', label: '作用域落判' }, childArgs + { symbolIndexPath, stages })
@@ -173,8 +175,65 @@ for (const p of partFiles) {
   }
 }
 
+// 确定性重算闸门（S4.1 第三批坑 6：agent 返回的摘要计数可手误，
+// 以落判分片文件为准重算覆盖率/重复/枚举/分布；agent 摘要仅用于告警）
+const filesCsv = partFiles.map((p) => p.file).join(',')
+const recountPath = outDir + '/runtime/verify-recount.json'
+const recountCmd =
+  'node ".opencode-workflows/scripts/recount-verify-parts.mjs" "' + outDir + '" "' +
+  filesCsv + '" "' + recountPath + '"'
+const recountOk = await commandSuccess(recountCmd, 120000)
+if (!recountOk) {
+  throw new Error(
+    '落判分片重算闸门未通过（期望原子缺条目/混入外来原子/重复/枚举非法等问题，明细重跑：' +
+      recountCmd
+  )
+}
+
+// 重算结果回读（聚合口径以 recount 文件为准）
+const recount = await agent(
+  [
+    '你是落判重算结果回读器，工作目录为项目根目录。只做读取与转写，不做解读。',
+    '',
+    '任务：用 read 工具读取文件 ' + recountPath + '（全文），原样返回其中数字字段：',
+    'partCount / atomCount / sveCount / active / conditional / unknown / inactive。',
+    '只输出结构化结果。',
+  ].join('\n'),
+  withModel({
+    label: '回读落判重算',
+    schema: {
+      type: 'object',
+      properties: {
+        partCount: { type: 'number' },
+        atomCount: { type: 'number' },
+        sveCount: { type: 'number' },
+        active: { type: 'number' },
+        conditional: { type: 'number' },
+        unknown: { type: 'number' },
+        inactive: { type: 'number' },
+      },
+      required: ['partCount', 'atomCount', 'sveCount', 'active', 'conditional', 'unknown', 'inactive'],
+    },
+    timeoutMs: 600000,
+    retries: 2,
+  })
+)
+if (
+  !recount ||
+  recount.partCount !== partFiles.length ||
+  !Number.isInteger(recount.atomCount) ||
+  recount.atomCount < partFiles.length
+) {
+  throw new Error('落判重算回读异常：' + JSON.stringify(recount))
+}
+
 const parts = []
-const scopeStats = { active: 0, conditional: 0, unknown: 0, inactive: 0 }
+const scopeStats = {
+  active: recount.active,
+  conditional: recount.conditional,
+  unknown: recount.unknown,
+  inactive: recount.inactive,
+}
 for (let i = 0; i < partFiles.length; i++) {
   const r = verifyResults[i]
   if (!r || !partFileMatches(r.partFile, partFiles[i].file)) {
@@ -184,15 +243,12 @@ for (let i = 0; i < partFiles.length; i++) {
   }
   const sum = (r.active || 0) + (r.conditional || 0) + (r.unknown || 0) + (r.inactive || 0)
   if (sum !== r.atomCount) {
-    throw new Error(
-      '落判摘要计数不自洽：' + r.partFile + ' 四类合计=' + sum + ' atomCount=' + r.atomCount
+    log(
+      '告警：agent 摘要计数不自洽（' + r.partFile + ' 四类合计=' + sum +
+        ' atomCount=' + r.atomCount + '），以分片重算为准'
     )
   }
   parts.push(r)
-  scopeStats.active += r.active || 0
-  scopeStats.conditional += r.conditional || 0
-  scopeStats.unknown += r.unknown || 0
-  scopeStats.inactive += r.inactive || 0
 }
 
 log(

@@ -1,6 +1,6 @@
 {
  "schemaVersion": 1,
- "sampleNote": "OSG-W4 正式产物：server-rule-verify workflow 生成（人工样本见 server-evidence_sample.json）；run 2026-11-14：ST-C01 落判 8 条（新增 8 / 替换 0，SVE 新增 29）；run 2026-11-14：ST-C01 落判 8 条（新增 0 / 替换 8，SVE 新增 0）；run 2026-11-14：ST-C02,ST-C04 落判 25 条（新增 25 / 替换 0，SVE 新增 69）；run 2026-11-14：ST-C02,ST-C04 落判 25 条（新增 0 / 替换 25，SVE 新增 0）；run 2026-11-14：ST-C13,ST-C14,ST-C15 落判 72 条（新增 72 / 替换 0，SVE 新增 200）；run 2026-11-14：ST-C05,ST-C06,ST-C07,ST-C08,ST-C09,ST-C10 落判 110 条（新增 110 / 替换 0，SVE 新增 303）",
+ "sampleNote": "OSG-W4 正式产物：server-rule-verify workflow 生成（人工样本见 server-evidence_sample.json）；run 2026-11-14：ST-C01 落判 8 条（新增 8 / 替换 0，SVE 新增 29）；run 2026-11-14：ST-C01 落判 8 条（新增 0 / 替换 8，SVE 新增 0）；run 2026-11-14：ST-C02,ST-C04 落判 25 条（新增 25 / 替换 0，SVE 新增 69）；run 2026-11-14：ST-C02,ST-C04 落判 25 条（新增 0 / 替换 25，SVE 新增 0）；run 2026-11-14：ST-C13,ST-C14,ST-C15 落判 72 条（新增 72 / 替换 0，SVE 新增 200）；run 2026-11-14：ST-C05,ST-C06,ST-C07,ST-C08,ST-C09,ST-C10 落判 110 条（新增 110 / 替换 0，SVE 新增 303）；run 2026-11-14：ST-C03,ST-C11,ST-C12 落判 104 条（新增 104 / 替换 0，SVE 新增 274）",
  "sourceRepos": {
   "common_game": "E:/WorkProjects/xc-flow/.xflow/xc/xcodeDev/game-mahjong/server/Logic/mahjong_server/src/game_hzmj/common_game",
   "hzmj_server": "E:/WorkProjects/xc-flow/.xflow/xc/xcodeDev/game-mahjong/server/Logic/mahjong_server/src/game_hzmj/hzmj_server",
@@ -6314,6 +6314,2841 @@
    "location": "common_game/com_game/common_game_com_play.cpp:235",
    "symbol": "BoxWaitStep::Judge",
    "excerpt": "bool BoxWaitStep::Judge() {\n    // hzmj 无报听机制，永不授予「听」权限，framework MakePower 因此返回 kPowerIdNone\n    return false;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-01",
+   "atomId": "AT-ST-C03-001",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_ju.cpp",
+   "location": "mah_frame/com_basic/com_ju.cpp:216",
+   "symbol": "ChipStep::MixMah",
+   "excerpt": "// seat 开牌位置(庄位置+2颗骰子之和)--开牌位置都以4人计算\nint16_t seat = (GetSvrData()->GetZhuang() + (chip_num - 1) % MAX_PLAYER_COUNT) % MAX_PLAYER_COUNT;\n...\n// 索引从开牌位置下家最左上面一墩为最小索引\n// 索引为逆时针计数\nuint8_t ascidx = startidx - 1 - (chip_num) * 2;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-02",
+   "atomId": "AT-ST-C03-001",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_data.cpp",
+   "location": "mah_frame/base/base_data.cpp:727",
+   "symbol": "BaseData::TakeAsc",
+   "excerpt": "TMah BaseData::TakeAsc() {\n    uint8_t asc = GetAsc();\n    TMah mah = PopWall();\n    SetAsc(GetNextAsc(asc));\n    return mah;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-03",
+   "atomId": "AT-ST-C03-001",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_data.cpp",
+   "location": "mah_frame/base/base_data.cpp:755",
+   "symbol": "BaseData::GetNextAsc",
+   "excerpt": "uint8_t BaseData::GetNextAsc(uint8_t nowasc) {\n    uint8_t next;\n    if (nowasc > 0) {\n        next = nowasc - 1;\n    } else {\n        next = GetWallAll() - 1;\n    }\n    return next;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-04",
+   "atomId": "AT-ST-C03-002",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_ju.cpp",
+   "location": "mah_frame/com_basic/com_ju.cpp:279",
+   "symbol": "TakeFirstStep::TakeFirst",
+   "excerpt": "for (int16_t iseat = 0; iseat < GetSvrData()->GetPlayerCount(); iseat++) {\n    hands.clear();\n    GetSvrData()->GetHands(iseat, hands);\n    uint32_t size = hands.size();\n    if (size > GetSvrCfg()->GetFirstCount() - 1) { continue; }\n    for (uint32_t mm = size; mm < GetSvrCfg()->GetFirstCount() - 1; mm++) {\n        GetSvrData()->AddHand(iseat, GetSvrData()->TakeAsc());\n    }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-05",
+   "atomId": "AT-ST-C03-002",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_data.cpp",
+   "location": "mah_frame/base/base_data.cpp:498",
+   "symbol": "BaseData::AddHand",
+   "excerpt": "bool BaseData::AddHand(int16_t seat, TMah mah) {\n    TMahs hands = GetHands(seat);\n    hands.push_back(mah);\n    SetHands(seat, hands);\n    return true;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-06",
+   "atomId": "AT-ST-C03-003",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_config.cpp",
+   "location": "mah_frame/base/base_config.cpp:6",
+   "symbol": "BaseConfig::BaseConfig",
+   "excerpt": "first_count_ = DEF_FIRST_COUNT;  // DEF_FIRST_COUNT 见 mah_frame/base/macros.h:213 = 14",
+   "configKeys": [
+    "first_count"
+   ]
+  },
+  {
+   "id": "SVE-ST-C03-P01-07",
+   "atomId": "AT-ST-C03-003",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_context.cpp",
+   "location": "mah_frame/base/base_context.cpp:269",
+   "symbol": "BaseContext::SendTakeFirst",
+   "excerpt": "void BaseContext::SendTakeFirst(int16_t seat, const GameClock &clock) {\n    ...\n    for (int16_t iseat = 0; iseat < GetSvrData()->GetPlayerCount(); iseat++) {\n        lml_protocol::MsgTakeFirst msg;\n        msg.set_seat(iseat);\n        GetSvrData()->GetHands(iseat, hands);\n        if (iseat == seat || GetSvrCfg()->GetIsOpenCard()) {\n            for (size_t i = 0; i < hands.size(); i++) { msg.add_hands(hands[i]); }\n        } else {\n            for (size_t i = 0; i < hands.size(); i++) { msg.add_hands(MV_BACK); }\n        }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-08",
+   "atomId": "AT-ST-C03-004",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_take.cpp",
+   "location": "mah_frame/com_basic/com_take.cpp:259",
+   "symbol": "ZhuangSelfTakeStep::Execute",
+   "excerpt": "void ZhuangSelfTakeStep::Execute() {\n    Step::Execute();\n    uint8_t dir = TakeDir::kTDAscTake;\n    TMah mah = CheckTake(take_seat_);\n    ...\n    GetContext()->SendTake(mah, dir, GetSvrCfg()->GetTakeCount(), TakeFlag::kTFBanker, take_seat_);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-09",
+   "atomId": "AT-ST-C03-004",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_ju.cpp",
+   "location": "common_game/com_game/common_game_com_ju.cpp:288",
+   "symbol": "BoxZhuangSelfTakeStep::Execute",
+   "excerpt": "void BoxZhuangSelfTakeStep::Execute() {\n    // 牌库干预（GanYu）开启且庄家已由做牌发满 14 张（danfang 已设）时，跳过摸牌，\n    // 仅下发第 14 张并进入等待；否则走框架正常摸第 14 张。\n    if (GetSvrCfg()->GetGanYuEnable() && GetSvrData()->CountDanFang(take_seat_) > 0) {\n        ...\n        GetContext()->SendTake(mah, TakeDir::kTDAscTake, GetSvrCfg()->GetTakeCount(), TakeFlag::kTFBanker, take_seat_);\n        ...\n        return;\n    }\n    ZhuangSelfTakeStep::Execute();\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-10",
+   "atomId": "AT-ST-C03-004",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_ju.cpp",
+   "location": "common_game/com_game/common_game_com_ju.cpp:116",
+   "symbol": "BoxZhuangStep::JudgeZhuang",
+   "excerpt": "void BoxZhuangStep::JudgeZhuang() {\n    if (GetSvrData()->GetJuCount() == 1) {\n        JudgeDingZhuang();\n    } else {\n        JudgeHuanZhuang();\n    }\n}\n...\nif (GetSvrCfg()->GetFirstBankerType() == 1) { zhuang_seat = static_cast<uint8_t>(GetSvrData()->GetHostChairId()); } else { zhuang_seat = static_cast<uint8_t>(rand() % GetSvrData()->GetPlayerCount()); }",
+   "configKeys": [
+    "first_banker_type",
+    "rotate_banker_type",
+    "draw_continue_banker"
+   ]
+  },
+  {
+   "id": "SVE-ST-C03-P01-11",
+   "atomId": "AT-ST-C03-005",
+   "layer": "common_game",
+   "file": "common_game/common_game_logic.cpp",
+   "location": "common_game/common_game_logic.cpp:477",
+   "symbol": "CommonGameLogic::InitTableData",
+   "excerpt": "GetSvrData()->SetPlayerCount(static_cast<int16_t>(GetTablePtr()->GetChairCount()));",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-12",
+   "atomId": "AT-ST-C03-006",
+   "layer": "common_game",
+   "file": "common_game/common_game_context.cpp",
+   "location": "common_game/common_game_context.cpp:59",
+   "symbol": "CommonGameContext::FillMsgWallMah",
+   "excerpt": "void CommonGameContext::FillMsgWallMah(int16_t seat, lml_protocol::MsgWallMah* wall_mah) {\n    BaseContext::FillMsgWallMah(seat, wall_mah);\n    // wall_left 口径 = 实际剩余牌墙数（不含荒局张数扣减），流局时客户端应看到剩 DrawnCnt 张\n    wall_mah->set_wall_left(GetSvrData()->CountWalls());\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-13",
+   "atomId": "AT-ST-C03-006",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_data.cpp",
+   "location": "mah_frame/base/base_data.cpp:257",
+   "symbol": "BaseData::CountWalls",
+   "excerpt": "uint8_t BaseData::CountWalls() {\n    return (uint8_t)walls_.size();\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-14",
+   "atomId": "AT-ST-C03-006",
+   "layer": "common_game",
+   "file": "common_game/common_game_init.cpp",
+   "location": "common_game/common_game_init.cpp:57",
+   "symbol": "CommonGameInit::InitData",
+   "excerpt": "// 缺一色：仅 2/3 人可开，开启后剔除万字花色（需求 §2/§6.1）\nbool drop_wan = svr_cfg->GetEnableTwoSuit() && svr_data->GetPlayerCount() <= 3;\n// 去风：开启后剔除风牌花色，且箭牌仅保留白板（红中/发财 剔除）\nbool del_feng = svr_cfg->GetDelFeng();\n...\nif (!drop_wan) { suits.push_back(kMSWan); }",
+   "configKeys": [
+    "enable_two_suit",
+    "del_feng"
+   ]
+  },
+  {
+   "id": "SVE-ST-C03-P01-15",
+   "atomId": "AT-ST-C03-007",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_take.cpp",
+   "location": "common_game/com_game/common_game_com_take.cpp:21",
+   "symbol": "BoxFirstWaitStep::Execute",
+   "excerpt": "void BoxFirstWaitStep::Execute() {\n    Step::Execute();\n    ...\n    // 庄家 14 张起手同阶段下发「打哪张 → 听什么牌」听牌提示。\n    CalcBankerFirstWait();\n    GetContext()->SendWaitInfos(GetSvrData()->GetZhuang());\n    GetSvrData()->AddAllState(kHzmjStateFirstWait);\n    // hzmj 起手不做报听；...此处直接以庄家座位为基准分发到 action\n    ChangeNextStep(GetSvrData()->GetZhuang(), GetNextStep());\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-16",
+   "atomId": "AT-ST-C03-007",
+   "layer": "common_game",
+   "file": "common_game/common_game_init.cpp",
+   "location": "common_game/common_game_init.cpp:193",
+   "symbol": "CommonGameInit::InitStepForBox",
+   "excerpt": "take_first_step->AddNext(zhuang_self_step);\nzhuang_self_step->AddNext(first_wait_step);\n\n// ── 连接：正常摸打循环 ──────────────────────────────────────────\nfirst_wait_step->AddNexts(action_step, {play_step, ckong_step, tkong_step, hu_step, wait_step});",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-17",
+   "atomId": "AT-ST-C03-009",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:259",
+   "symbol": "BoxHuStep::Judge",
+   "excerpt": "switch (state) {\n    case kMahStateTake:\n    case kHzmjStateFirstWait:\n        ...\n        // kHzmjStateFirstWait：庄家首摸（起手）自摸胡，状态 503 视同 kMahStateTake\n        seat = GetSvrData()->GetNowSeat();\n        df = GetSvrData()->GetJustTake();\n        ...\n        GetSvrData()->SetNextHuType(kHtSelf);\n        ret = JudgeSelf(seat);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-18",
+   "atomId": "AT-ST-C03-009",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:402",
+   "symbol": "BoxHuStep::TestHu",
+   "excerpt": "bool BoxHuStep::TestHu(int16_t seat, bool is_xun_limit_hu) {\n    ...\n    if (hand_hu_able) {\n        ...\n        if (!sfs.empty()) {\n            GetSvrData()->SetHuSepHands(seat, sfs);\n            GetSvrData()->AddHuPowerSeats(seat);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-19",
+   "atomId": "AT-ST-C03-010",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:983",
+   "symbol": "ActionStep::SendPowerToClient",
+   "excerpt": "void ActionStep::SendPowerToClient() {\n    ...\n    for (int16_t iseat = 0; iseat < GetSvrData()->GetPlayerCount(); iseat++) {\n        int16_t power = GetSvrData()->GetActionPower(iseat);\n        ...\n        if (GetSvrData()->IsNeedSendPowerToClient(iseat)) {\n            ...\n            GetContext()->SendPower(iseat, clock);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-20",
+   "atomId": "AT-ST-C03-010",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:816",
+   "symbol": "ActionStep::GetPowerAndCombs",
+   "excerpt": "if (have_play) {\n    if (power != kPowerIdPlay) { power |= kPowerIdCancelC; }\n} else if (!have_play && power > 0) {\n    power |= kPowerIdCancelS;\n    AddConAction(MAKEKEY(seat, kPowerIdCancelS), kStepLevelCancelS, false);\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-21",
+   "atomId": "AT-ST-C03-010",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:40",
+   "symbol": "BoxActionStep::OnMsgCancel",
+   "excerpt": "bool BoxActionStep::OnMsgCancel(const int16_t chair_id, const std::string& message, int32_t ask_id) {\n    ...\n    return ActionStep::OnMsgCancel(chair_id, message, ask_id);\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-22",
+   "atomId": "AT-ST-C03-011",
+   "layer": "common_game",
+   "file": "common_game/common_game_fan_type.cpp",
+   "location": "common_game/common_game_fan_type.cpp:250",
+   "symbol": "CommonGameFanType::IsFanTypeBaoTou",
+   "excerpt": "bool CommonGameFanType::IsFanTypeBaoTou(const TFanFuncParams* p) {\n    if (!IsSelfTake(p)) { return false; }\n    ...\n    if (p->hu_df_ == MV_ALL) { return hp->is_qiao_xiang; }\n    return IsDanFangWithCai(p);\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-23",
+   "atomId": "AT-ST-C03-011",
+   "layer": "common_game",
+   "file": "common_game/common_game_fan_type.cpp",
+   "location": "common_game/common_game_fan_type.cpp:23",
+   "symbol": "CommonGameFanType::IsDanFangWithCai",
+   "excerpt": "// danfang 是财神 → 将须为财神+财神（kCMFJokJiang；3N2 与 2N 均落在 combs_）\nif (danfang == cai_shen) {\n    for (const auto& c : p->combs_) {\n        if (c.flag == kCMFJokJiang) { return true; }\n    }\n    return false;\n}\n// danfang 非财神 → 将须为 danfang+财神（kCMFSglJiang，org_dbl.mahs[0] 为真实牌）。\n...\nfor (const auto& c : p->orgs_) {\n    if (c.flag == kCMFSglJiang && !c.mahs.empty() && c.mahs[0] == expect) { return true; }\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-24",
+   "atomId": "AT-ST-C03-011",
+   "layer": "common_game",
+   "file": "common_game/common_game_init.cpp",
+   "location": "common_game/common_game_init.cpp:359",
+   "symbol": "CommonGameInit::AddFanType",
+   "excerpt": "{kFTHzmjBaoTou,           \"爆头\",         2,  CommonGameFanType::IsFanTypeBaoTou},",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-25",
+   "atomId": "AT-ST-C03-012",
+   "layer": "common_game",
+   "file": "common_game/common_game_fan_type.cpp",
+   "location": "common_game/common_game_fan_type.cpp:332",
+   "symbol": "CommonGameFanType::IsFanTypeQiDui",
+   "excerpt": "bool CommonGameFanType::IsFanTypeQiDui(const TFanFuncParams* p) {\n    if (p->sep_type_ != kSepType2N) { return false; }\n    const HzmjFanFuncParams* hp = AsHzmj(p);\n    if (hp == nullptr || hp->cai_shen_count_in_hand <= 0) { return false; }\n    ...\n    return CountQuadPairGroups(p) == 0;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-26",
+   "atomId": "AT-ST-C03-012",
+   "layer": "common_game",
+   "file": "common_game/common_game_fan_type.cpp",
+   "location": "common_game/common_game_fan_type.cpp:63",
+   "symbol": "CommonGameFanType::CountQuadPairGroups",
+   "excerpt": "int32_t CommonGameFanType::CountQuadPairGroups(const TFanFuncParams* p) {\n    const HzmjFanFuncParams* hp = AsHzmj(p);\n    const bool cai_for_hao_qi = hp != nullptr && hp->cai_for_hao_qi;\n    // combs_ 频率（含被财神具体化的张数）\n    std::map<TMah, int32_t> freq;\n    for (const auto& c : p->combs_) {\n        for (TMah m : c.mahs) { freq[m]++; }\n    }",
+   "configKeys": [
+    "cai_for_hao_qi"
+   ]
+  },
+  {
+   "id": "SVE-ST-C03-P01-27",
+   "atomId": "AT-ST-C03-012",
+   "layer": "common_game",
+   "file": "common_game/common_game_fan_type.h",
+   "location": "common_game/common_game_fan_type.h:35",
+   "symbol": "HzmjFanType",
+   "excerpt": "// ---- 七对系列·带财神（与基础/杠开互斥；可与财神系列叠加（即七客））----\nkFTHzmjQiDui = 2410,         // 七对            2x",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-28",
+   "atomId": "AT-ST-C03-012",
+   "layer": "common_game",
+   "file": "common_game/common_game_init.cpp",
+   "location": "common_game/common_game_init.cpp:345",
+   "symbol": "CommonGameInit::AddFanType",
+   "excerpt": "{kFTHzmjQiDui,            \"七对\",         2,  CommonGameFanType::IsFanTypeQiDui},",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-29",
+   "atomId": "AT-ST-C03-012",
+   "layer": "common_game",
+   "file": "common_game/common_game_algorithm.cpp",
+   "location": "common_game/common_game_algorithm.cpp:187",
+   "symbol": "CommonGameAlgorithm::TestFan",
+   "excerpt": "// 财神系列（互斥）\nstatic const std::vector<int32_t> kCaiIdsDesc = {kFTHzmjTripleCaiPiao, kFTHzmjDoubleCaiPiao, kFTHzmjCaiPiao,\n                                                  kFTHzmjBaoTou};\nTestExclusiveGroup(kCaiIdsDesc, params, ftcnts);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C03-P01-30",
+   "atomId": "AT-ST-C03-012",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:433",
+   "symbol": "BoxHuStep::TestHu",
+   "excerpt": "// 有财必拷响（需求 §6.7）：手牌含财神时，仅自摸且敲响（爆头/财飘/杠爆/杠飘/七客）可胡，\n// 放炮/抢杠一律禁胡。十风已在顶部早返回，天然豁免。",
+   "configKeys": [
+    "must_bao_tou_with_cai"
+   ]
+  },
+  {
+   "id": "SVE-ST-C11-P01-01",
+   "atomId": "AT-ST-C11-001",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:234",
+   "symbol": "ActionStep::OnMsgPlayC",
+   "excerpt": "int16_t power = GetSvrData()->GetActionPower(req.seat());\n    if (!power) { ... SendActionNotify(ActionFlag::kAFPlayNoPower, ...); return false; }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-02",
+   "atomId": "AT-ST-C11-001",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:242",
+   "symbol": "ActionStep::OnMsgPlayC",
+   "excerpt": "if (!HaveActPower(req.seat(), kPowerIdPlay)) {\n        ... GetContext()->SendActionNotify(ActionFlag::kAFPlayNoPower, chair_id, chair_id);\n        return false;\n    }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-03",
+   "atomId": "AT-ST-C11-001",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:266",
+   "symbol": "ActionStep::OnMsgPlayC",
+   "excerpt": "if (Algorithm::IsLimitMah(req.mah(), play_limit, Algorithm::IsSubMah(dfs, req.mah()))) {\n        ... SendActionNotify(ActionFlag::kAFPlayNoLimit, chair_id, chair_id);\n        return false;\n    }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-04",
+   "atomId": "AT-ST-C11-001",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_play.cpp",
+   "location": "mah_frame/com_basic/com_play.cpp:139",
+   "symbol": "PlayStep::MakePower",
+   "excerpt": "if (Judge()) {\n        int16_t seat = just_play_seat_;\n        power |= kPowerIdPlay;\n        TPower tmp; tmp.seat = seat; tmp.combs.clear(); pow.push_back(tmp);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-05",
+   "atomId": "AT-ST-C11-001",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/algorithm.cpp",
+   "location": "mah_frame/base/algorithm.cpp:380",
+   "symbol": "Algorithm::IsLimitMah",
+   "excerpt": "bool Algorithm::IsLimitMah(const TMah &mah, const TPlayLimit &play_limit, bool is_danfang) {\n    if (is_danfang) { if (IsSubMah(play_limit.dfs, mah)) { return true; } }\n    else { if (IsSubMah(play_limit.hands, mah)) { return true; } }\n    return false;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-06",
+   "atomId": "AT-ST-C11-001",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_play.cpp",
+   "location": "mah_frame/com_basic/com_play.cpp:269",
+   "symbol": "PlayStep::JudgeJustPlay",
+   "excerpt": "if (Algorithm::IsSubMah(mahs, mah)) {\n        TPlayLimit play_limit; GetSvrData()->GetPlayLimit(seat, play_limit);\n        TMahs dfs = GetSvrData()->GetDanFang(seat);\n        if (!Algorithm::IsLimitMah(mah, play_limit, Algorithm::IsSubMah(dfs, mah))) { return true; }\n    }\n    return false;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-07",
+   "atomId": "AT-ST-C11-002",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:797",
+   "symbol": "ActionStep::GetPowerAndCombs",
+   "excerpt": "for (it = con_combs_.begin(); it != con_combs_.end(); it++) {\n        int16_t temp_seat = GETSEAT(it->first);\n        if (temp_seat != seat) { continue; }\n        int16_t temp_power = GETPOWER(it->first);\n        power |= temp_power;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-08",
+   "atomId": "AT-ST-C11-002",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:952",
+   "symbol": "ActionStep::SetActionPower",
+   "excerpt": "for (int16_t iseat = 0; iseat < GetSvrData()->GetPlayerCount(); iseat++) {\n        int16_t power = kPowerIdNone; TCombs combs;\n        if (GetPowerAndCombs(iseat, power, combs)) { GetSvrData()->SetActionPower(iseat, power); ... }\n    }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-09",
+   "atomId": "AT-ST-C11-002",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:1015",
+   "symbol": "ActionStep::HaveActPower",
+   "excerpt": "for (it = step_power_step_con_action_.begin(); it != step_power_step_con_action_.end(); it++) {\n        if (seat == GETSEAT(it->first)) { n_my_power |= GETPOWER(it->first); }\n    }\n    return n_my_power & power ? true : false;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-10",
+   "atomId": "AT-ST-C11-003",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:182",
+   "symbol": "ActionStep::OnMsgChowC",
+   "excerpt": "if (!HaveActPower(req.seat(), kPowerIdChow)) {\n        ... GetContext()->SendActionNotify(ActionFlag::kAFChowNoPower, chair_id, chair_id);\n        return false;\n    }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-11",
+   "atomId": "AT-ST-C11-003",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:201",
+   "symbol": "ActionStep::OnMsgChowC",
+   "excerpt": "TCombs combs = GetCombsMap(key);\n    if (combs.empty() || !Algorithm::IsSubComb(combs, chow_comb)) {\n        ... SendActionNotify(ActionFlag::kAFChowNoComb, chair_id, chair_id);\n        return false;\n    }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-12",
+   "atomId": "AT-ST-C11-003",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:595",
+   "symbol": "ActionStep::DoActionChowC",
+   "excerpt": "ChowStep* chow_step = dynamic_cast<ChowStep*>(pstep);\n    if (chow_step != nullptr) { chow_step->SetWillChowComb(comb); } ...\n    SetNextActionStep(chow_step);\n    DoActionEnd();",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-13",
+   "atomId": "AT-ST-C11-003",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:735",
+   "symbol": "ActionStep::InitPowerStepConAction",
+   "excerpt": "TPowers tpow;\n            int32_t power = temp_power_step->MakePower(tpow);\n            if (power == 0) { ... continue; }\n            ... uint32_t key = MAKEKEY(tpow[j].seat, temp_power_step->GetPower());\n            AddPowerStepMap(key, tpow[j].combs, temp_power_step); ... AddConAction(key, GetConActionWeight(tpow[j].seat, temp_power_step->GetLevel()), false);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-14",
+   "atomId": "AT-ST-C11-004",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_kong.cpp",
+   "location": "common_game/com_game/common_game_com_kong.cpp:121",
+   "symbol": "BoxMKongStep::Execute",
+   "excerpt": "// 触发下游（SelfTake → Action → Judge），必须在杠链+1之后...\n    ChangeNextStep(mkong_seat_, GetNextStep());",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-15",
+   "atomId": "AT-ST-C11-004",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_take.cpp",
+   "location": "mah_frame/com_basic/com_take.cpp:19",
+   "symbol": "TakeStep::TakeAfterKong",
+   "excerpt": "// 杠后抓KongTakeCount张\n    // 是从牌墙正序开始还是从牌墙末尾开始\n    ...\n    danfang.emplace_back(mah);\n    GetSvrData()->SetDanFang(seat, danfang);\n    GetSvrData()->SetJustTake(danfang[0]);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-16",
+   "atomId": "AT-ST-C11-004",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_take.cpp",
+   "location": "mah_frame/com_basic/com_take.cpp:219",
+   "symbol": "SelfTakeStep::Execute",
+   "excerpt": "if ((state >> 8) & kMahStateKong) {\n        dir = GetSvrCfg()->GetIsKongTakeAsc() ? TakeDir::kTDAscTake : TakeDir::kTDDescTake;\n        mah = TakeAfterKong(take_seat_, dir);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-17",
+   "atomId": "AT-ST-C11-004",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_take.cpp",
+   "location": "mah_frame/com_basic/com_take.cpp:237",
+   "symbol": "SelfTakeStep::Execute",
+   "excerpt": "CheckSpecf();\n    ChangeNextStep(take_seat_, GetNextStep());",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-18",
+   "atomId": "AT-ST-C11-005",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_hu.cpp",
+   "location": "mah_frame/com_basic/com_hu.cpp:51",
+   "symbol": "HuStep::Execute",
+   "excerpt": "GetSvrData()->AddAllState(kMahStateHu);\n    ...\n    ChangeNextStep(GetSvrData()->GetPreSeat(), GetNextStep());",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-19",
+   "atomId": "AT-ST-C11-005",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_take.cpp",
+   "location": "mah_frame/com_basic/com_take.cpp:209",
+   "symbol": "SelfTakeStep::Execute",
+   "excerpt": "if (IsDrawn()) {\n        ... GetSvrData()->SetEndType(kEtDrawn);\n        OnEndResult();\n        return;\n    }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-20",
+   "atomId": "AT-ST-C11-005",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/step.cpp",
+   "location": "mah_frame/base/step.cpp:117",
+   "symbol": "Step::OnEndResult",
+   "excerpt": "void Step::OnEndResult() {\n    ...\n    JumpToStep(static_cast<int16_t>(GameState::kGameStateResult));\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-21",
+   "atomId": "AT-ST-C11-005",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_ju.cpp",
+   "location": "mah_frame/com_basic/com_ju.cpp:338",
+   "symbol": "ResultStep::OnResult",
+   "excerpt": "// 小结算入口\nvoid ResultStep::OnResult(uint8_t end_type) {\n    std::map<uint8_t, int64_t> result;\n    GetSvrData()->AddAllState(kMahStateEnd);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-22",
+   "atomId": "AT-ST-C11-005",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:17",
+   "symbol": "BoxResultStep::Execute",
+   "excerpt": "void BoxResultStep::Execute() {\n    Step::Execute();\n    OnResult(GetSvrData()->GetEndType());\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-23",
+   "atomId": "AT-ST-C11-006",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/con_action.cpp",
+   "location": "mah_frame/base/con_action.cpp:40",
+   "symbol": "ConAction::OnConAction",
+   "excerpt": "int32_t maxkey = -1;\n    int32_t maxweight = 0;\n    for (it = step_power_step_con_action_.begin(); it != step_power_step_con_action_.end(); it++) {\n        if (it->second.level > maxweight) { maxkey = it->first; maxweight = it->second.level; }\n        else if (it->second.level == maxweight) { if (it->second.is_respond == false) { maxkey = it->first; maxweight = it->second.level; } }\n    }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-24",
+   "atomId": "AT-ST-C11-006",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/con_action.cpp",
+   "location": "mah_frame/base/con_action.cpp:57",
+   "symbol": "ConAction::OnConAction",
+   "excerpt": "if (step_power_step_con_action_[maxkey].is_respond == false) { return false; }\n\n    DoConAction(maxkey, GETPOWER(maxkey), step_power_step_con_action_[maxkey].level, ...);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-25",
+   "atomId": "AT-ST-C11-006",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:826",
+   "symbol": "ActionStep::GetConActionWeight",
+   "excerpt": "int16_t ActionStep::GetConActionWeight(int16_t seat, int16_t level) {\n    if (!GetSvrCfg()->IsDuoXiang()) { if (level == kStepLevelHu) { level = kStepLevelHu + GetSeatWeight(seat); } }\n    return level;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-26",
+   "atomId": "AT-ST-C11-006",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:834",
+   "symbol": "ActionStep::GetSeatWeight",
+   "excerpt": "uint8_t mpcnt = GetSvrData()->GetPlayerCount();\n    uint8_t whoplay = GetSvrData()->GetNowSeat();\n    return (mpcnt - (n_seat - whoplay + mpcnt) % mpcnt);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-27",
+   "atomId": "AT-ST-C11-006",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_hu.h",
+   "location": "mah_frame/com_basic/com_hu.h:53",
+   "symbol": "HuStep::GetLevel",
+   "excerpt": "virtual int16_t GetLevel() {\n        return kStepLevelHu;\n    };",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-28",
+   "atomId": "AT-ST-C11-006",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/macros.h",
+   "location": "mah_frame/base/macros.h:206",
+   "symbol": "kStepLevelHu",
+   "excerpt": "kStepLevelPlay = 1,     // 出\n    ...\n    kStepLevelChow = 2,     // 吃\n    kStepLevelPung = 3,     // 碰\n    kStepLevelKong = 3,     // 杠\n    kStepLevelHu = 4,       // 胡",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-29",
+   "atomId": "AT-ST-C11-007",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_chow.cpp",
+   "location": "mah_frame/com_basic/com_chow.cpp:105",
+   "symbol": "ChowStep::CheckChow",
+   "excerpt": "// 处理出牌池标志\n    GetSvrData()->SetLastOutStay(seat, comb.ins[0], false);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-30",
+   "atomId": "AT-ST-C11-007",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_pung.cpp",
+   "location": "mah_frame/com_basic/com_pung.cpp:132",
+   "symbol": "PungStep::CheckPung",
+   "excerpt": "// 处理出牌池标志\n    GetSvrData()->SetLastOutStay(GetSvrData()->GetJustPlaySeat(), comb.ins[0], false);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-31",
+   "atomId": "AT-ST-C11-007",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_kong.cpp",
+   "location": "mah_frame/com_basic/com_kong.cpp:137",
+   "symbol": "MKongStep::CheckMKong",
+   "excerpt": "// 处理出牌池标志\n    GetSvrData()->SetLastOutStay(GetSvrData()->GetJustPlaySeat(), comb.ins[0], false);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-32",
+   "atomId": "AT-ST-C11-007",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_hu.cpp",
+   "location": "mah_frame/com_basic/com_hu.cpp:316",
+   "symbol": "HuStep::CheckHu",
+   "excerpt": "// 处理出牌池标志\n            GetSvrData()->SetLastOutStay(hu_info.from_seat, df, false);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-33",
+   "atomId": "AT-ST-C11-007",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:561",
+   "symbol": "BoxHuStep::CheckHu",
+   "excerpt": "GetSvrData()->AddForceHuSeats(seat, GetSvrData()->GetJustPlaySeat());\n        GetSvrData()->SetLastOutStay(hu_info.from_seat, df, false);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-34",
+   "atomId": "AT-ST-C11-007",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_data.cpp",
+   "location": "mah_frame/base/base_data.cpp:625",
+   "symbol": "BaseData::SetLastOutStay",
+   "excerpt": "bool BaseData::SetLastOutStay(int16_t seat, TMah mah, bool stay) {\n    TOutMahs outs = GetOuts(seat);\n    size_t count = outs.size();\n    if (count > 0) {\n        if (outs[count - 1].mah == mah) {\n            outs[count - 1].stay = stay;\n            SetOuts(seat, outs);\n            return true;\n        }\n    }\n    return false;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-35",
+   "atomId": "AT-ST-C11-008",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/typedef.h",
+   "location": "mah_frame/base/typedef.h:68",
+   "symbol": "TOutMah",
+   "excerpt": "struct TOutMah {\n    bool stay;  // 是否在牌池\n    TMah mah;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-36",
+   "atomId": "AT-ST-C11-009",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/con_action.cpp",
+   "location": "mah_frame/base/con_action.cpp:59",
+   "symbol": "ConAction::OnConAction",
+   "excerpt": "DoConAction(maxkey, GETPOWER(maxkey), step_power_step_con_action_[maxkey].level,\n                step_power_step_con_action_[maxkey].msg_id, step_power_step_con_action_[maxkey].message);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-37",
+   "atomId": "AT-ST-C11-009",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:573",
+   "symbol": "ActionStep::DoConAction",
+   "excerpt": "case lml_protocol::MLXY_CANCEL:\n            DoActionCancel(message, key, power);\n            break;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-38",
+   "atomId": "AT-ST-C11-009",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:712",
+   "symbol": "ActionStep::DoActionCancel",
+   "excerpt": "void ActionStep::DoActionCancel(const std::string& message, int32_t key, int32_t power) {\n    ...\n    SetNextActionStep(GetDragonMah()->GetStep(con_max_server_step_state_));\n    DoActionEnd();\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P01-39",
+   "atomId": "AT-ST-C11-009",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_play.cpp",
+   "location": "mah_frame/com_basic/com_play.cpp:249",
+   "symbol": "PlayStep::CheckPlay",
+   "excerpt": "TOutMah out;\n    out.mah = mah;\n    out.stay = true;\n    GetSvrData()->AddOut(seat, out);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-01",
+   "atomId": "AT-ST-C11-010",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:813",
+   "symbol": "ActionStep::GetPowerAndCombs",
+   "excerpt": "        int16_t temp_power = GETPOWER(it->first);\n        power |= temp_power;\n        if (power == kPowerIdPlay) { have_play = true; }\n\n        combs.insert(combs.end(), it->second.begin(), it->second.end());\n    ...\n    if (have_play) {\n        if (power != kPowerIdPlay) { power |= kPowerIdCancelC; }\n    } else if (!have_play && power > 0) {\n        power |= kPowerIdCancelS;\n        AddConAction(MAKEKEY(seat, kPowerIdCancelS), kStepLevelCancelS, false);\n    }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-02",
+   "atomId": "AT-ST-C11-010",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:242",
+   "symbol": "ActionStep::OnMsgPlayC",
+   "excerpt": "    if (!HaveActPower(req.seat(), kPowerIdPlay)) {\n        LOGD(Algorithm::FormatR(GetSvrData()->GetRoundID(),\n                                \"ActionStep::OnMsgPlayC HaveActPower kPowerIdPlay error:seat=%d\", req.seat()));\n        GetContext()->SendActionNotify(ActionFlag::kAFPlayNoPower, chair_id, chair_id);\n        return false;\n    }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-03",
+   "atomId": "AT-ST-C11-010",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/macros.h",
+   "location": "mah_frame/base/macros.h:175",
+   "symbol": "kPowerIdCancelC",
+   "excerpt": "    kPowerIdCancelC = 0x0001,  // 过(无需发回给服务端)\t1\n    kPowerIdCancelS = 0x0002,  // 过(需发回给服务端)\t2",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-04",
+   "atomId": "AT-ST-C11-011",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:999",
+   "symbol": "ActionStep::SendPowerToClient",
+   "excerpt": "    for (int16_t iseat = 0; iseat < GetSvrData()->GetPlayerCount(); iseat++) {\n        int16_t power = GetSvrData()->GetActionPower(iseat);\n        GameClock& clock = player_clocks[iseat];\n        ...\n        if (GetSvrData()->IsNeedSendPowerToClient(iseat)) {\n            ...\n            GetSvrData()->SetMaxClock(iseat, GetSvrCfg()->GetPowerTime());\n            GetContext()->SendPower(iseat, clock);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-05",
+   "atomId": "AT-ST-C11-011",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_context.cpp",
+   "location": "mah_frame/base/base_context.cpp:537",
+   "symbol": "BaseContext::SendPower",
+   "excerpt": "    lml_protocol::MsgPower msg;\n    FillMsgPower(seat, &msg);\n    ...\n    SendMessage(msg.ID, msg, 0, seat, clock, msg.power() != kPowerIdNone);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-06",
+   "atomId": "AT-ST-C11-011",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_data.cpp",
+   "location": "mah_frame/base/base_data.cpp:942",
+   "symbol": "BaseData::IsNeedSendPowerToClient",
+   "excerpt": "bool BaseData::IsNeedSendPowerToClient(int16_t seat) {\n    return st_send_p2_cli_[seat];\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-07",
+   "atomId": "AT-ST-C11-012",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:355",
+   "symbol": "ActionStep::OnMsgCancel",
+   "excerpt": "    if (!HaveActPower(req.seat(), kPowerIdCancelS)) {\n        LOGD(Algorithm::FormatR(GetSvrData()->GetRoundID(),\n                                \"ActionStep::OnMsgCancel HaveActPower kPowerIdCancelS error:seat=%d\", req.seat()));\n        GetContext()->SendActionNotify(ActionFlag::kAFCancelNoPower, chair_id, chair_id);\n        return false;\n    }\n    ...\n    if (!OnConAction(req.seat(), kPowerIdCancelS, kStepLevelCancelS, req.ID, message)) {}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-08",
+   "atomId": "AT-ST-C11-012",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:712",
+   "symbol": "ActionStep::DoActionCancel",
+   "excerpt": "void ActionStep::DoActionCancel(const std::string& message, int32_t key, int32_t power) {\n    ...\n    LOGD(Algorithm::FormatR(GetSvrData()->GetRoundID(), \"ActionStep::DoActionCancel,maxserverstep state=%d\",\n                            con_max_server_step_state_));\n    SetNextActionStep(GetDragonMah()->GetStep(con_max_server_step_state_));\n    DoActionEnd();\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-09",
+   "atomId": "AT-ST-C11-012",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:40",
+   "symbol": "BoxActionStep::OnMsgCancel",
+   "excerpt": "bool BoxActionStep::OnMsgCancel(const int16_t chair_id, const std::string& message, int32_t ask_id) {\n    // 无条件群发过牌 notice（含非法请求也发，seat 取实际发送者 chair_id）\n    GetContext()->SendCancelNotice(chair_id);\n    return ActionStep::OnMsgCancel(chair_id, message, ask_id);\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-10",
+   "atomId": "AT-ST-C11-013",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_kong.cpp",
+   "location": "common_game/com_game/common_game_com_kong.cpp:143",
+   "symbol": "BoxCKongStep::Judge",
+   "excerpt": "    TMahs stands;\n    GetSvrData()->GetStands(ckong_seat_, stands);\n    TCombs retcombs;\n    if (GetAlgorithm()->TestCKong(GetSvrData()->GetCKongGroups(), stands, ckong_seat_, retcombs)) {\n        ckong_combs_ = retcombs;\n        return true;\n    }\n    return false;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-11",
+   "atomId": "AT-ST-C11-014",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_kong.cpp",
+   "location": "common_game/com_game/common_game_com_kong.cpp:215",
+   "symbol": "BoxTKongStep::Judge",
+   "excerpt": "    TCombs combs = GetSvrData()->GetAllCombs(tkong_seat_);\n    TMahs stands;\n    GetSvrData()->GetStands(tkong_seat_, stands);\n    TCombs retcombs;\n    if (GetAlgorithm()->TestTKong(GetSvrData()->GetTKongGroups(), combs, stands, retcombs)) {\n        tkong_combs_ = retcombs;\n    } else {\n        return false;\n    }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-12",
+   "atomId": "AT-ST-C11-015",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/con_action.cpp",
+   "location": "mah_frame/base/con_action.cpp:70",
+   "symbol": "ConAction::ClearUserConAction",
+   "excerpt": "void ConAction::ClearUserConAction(int16_t seat) {\n    std::map<uint32_t, ConActionLevel>::iterator it;\n    it = step_power_step_con_action_.begin();\n    while (it != step_power_step_con_action_.end()) {\n        if (seat == GETSEAT(it->first)) {\n            step_power_step_con_action_.erase(it);\n            it = step_power_step_con_action_.begin();\n        } else {\n            it++;\n        }\n    }\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-13",
+   "atomId": "AT-ST-C11-016",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:23",
+   "symbol": "ActionStep::Init",
+   "excerpt": "bool ActionStep::Init(std::vector<Step*>& cur_power_steps) {\n    Step::Init(cur_power_steps);\n\n    RemoveConAction();\n    ClearAllMap();\n    return true;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-14",
+   "atomId": "AT-ST-C11-016",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:761",
+   "symbol": "ActionStep::InitPowerStepConAction",
+   "excerpt": "            TPowers tpow;\n            int32_t power = temp_power_step->MakePower(tpow);\n            if (power == 0) { ... continue; }\n            is_find_power = true;\n            for (size_t j = 0; j < tpow.size(); j++) {\n                uint32_t key = MAKEKEY(tpow[j].seat, temp_power_step->GetPower());\n                ...\n                AddPowerStepMap(key, tpow[j].combs, temp_power_step);\n                AddCombsMap(key, tpow[j].combs);\n                AddConAction(key, GetConActionWeight(tpow[j].seat, temp_power_step->GetLevel()), false);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-15",
+   "atomId": "AT-ST-C11-016",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:68",
+   "symbol": "BoxChowStep::Judge",
+   "excerpt": "    TMah mah = GetSvrData()->GetJustPlay();\n    TMahs hands;\n    GetSvrData()->GetHands(seat, hands);\n    ...\n    if (GetAlgorithm()->TestChow(GetSvrData()->GetChowGroups(), hands, mah, discard_seat, retcombs)) {",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-16",
+   "atomId": "AT-ST-C11-016",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_kong.cpp",
+   "location": "common_game/com_game/common_game_com_kong.cpp:40",
+   "symbol": "BoxMKongStep::Judge",
+   "excerpt": "        TMah mah = GetSvrData()->GetJustPlay();\n        TCombs retcombs;\n        if (GetAlgorithm()->TestMKong(GetSvrData()->GetMKongGroups(), hands, mah, GetSvrData()->GetPreSeat(),\n                                       retcombs)) {",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-17",
+   "atomId": "AT-ST-C11-017",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/con_action.cpp",
+   "location": "mah_frame/base/con_action.cpp:19",
+   "symbol": "ConAction::OnConAction",
+   "excerpt": "bool ConAction::OnConAction(int16_t seat, int16_t power, int16_t level, uint16_t msg_id, const std::string& message) {\n    uint32_t key = MAKEKEY(seat, power);\n    ...\n    it = step_power_step_con_action_.find(key);\n    if (it == step_power_step_con_action_.end()) { return false; }\n\n    ClearUserConAction(seat);\n\n    it = step_power_step_con_action_.find(key);\n    if (it != step_power_step_con_action_.end()) { return false; }\n    ...\n    step_power_step_con_action_[key] = temp;\n    had_resp_[seat] = true;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-18",
+   "atomId": "AT-ST-C11-017",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:45",
+   "symbol": "ActionStep::Execute",
+   "excerpt": "    if (action_power_step_.size() > 0 && InitPowerStepConAction(action_power_step_)) {\n        SetActionPower();\n        SendPowerToClient();\n    } else {",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-19",
+   "atomId": "AT-ST-C11-018",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:952",
+   "symbol": "ActionStep::SetActionPower",
+   "excerpt": "void ActionStep::SetActionPower() {\n    for (int16_t iseat = 0; iseat < GetSvrData()->GetPlayerCount(); iseat++) {\n        int16_t power = kPowerIdNone;\n        TCombs combs;\n        if (GetPowerAndCombs(iseat, power, combs)) {\n            GetSvrData()->SetActionPower(iseat, power);\n            if (combs.size() > 0) { GetSvrData()->SetCombsList(iseat, combs); }\n            ...",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-20",
+   "atomId": "AT-ST-C11-018",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_context.cpp",
+   "location": "mah_frame/base/base_context.cpp:885",
+   "symbol": "BaseContext::FillMsgPower",
+   "excerpt": "        power->set_seat(seat);\n        power->set_power(act_power);\n        power->set_hu_mah(GetSvrData()->GetNextHuMah());\n        power->set_hu_point(GetSvrData()->GetNextHuPoint(seat));\n        power->set_askid(GetSvrData()->GetAskid());\n        power->set_hu_type(GetSvrData()->GetNextHuType());\n\n        TCombs combs = GetSvrData()->GetCombsList(seat);\n        for (size_t i = 0; i < combs.size(); i++) {\n            lml_protocol::CombInfo *comb_info = power->add_combs();\n            Algorithm::TcombToMsgComb(combs[i], comb_info);\n        }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-21",
+   "atomId": "AT-ST-C11-019",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:826",
+   "symbol": "ActionStep::GetConActionWeight",
+   "excerpt": "int16_t ActionStep::GetConActionWeight(int16_t seat, int16_t level) {\n    if (!GetSvrCfg()->IsDuoXiang()) {\n        if (level == kStepLevelHu) { level = kStepLevelHu + GetSeatWeight(seat); }\n    }\n\n    return level;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-22",
+   "atomId": "AT-ST-C11-020",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:278",
+   "symbol": "BoxHuStep::Judge",
+   "excerpt": "            seat = GetSvrData()->GetNowSeat();\n            df = GetSvrData()->GetJustTake();\n            GetSvrData()->SetNextHuMah(df);\n            GetSvrData()->SetNextHuFromSeat(seat);\n            GetSvrData()->SetNextHuType(kHtSelf);\n            ret = JudgeSelf(seat);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-23",
+   "atomId": "AT-ST-C11-020",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:343",
+   "symbol": "BoxHuStep::Judge",
+   "excerpt": "            int64_t banker_mult = CommonGameAlgorithm::BankerMult(GetSvrData()->GetBankerLevel());\n            point *= banker_mult;\n            ...\n            GetSvrData()->SetNextHuPoint(temp_seats[i], point);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-24",
+   "atomId": "AT-ST-C11-021",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:840",
+   "symbol": "ActionStep::GetPlayerPowerTime",
+   "excerpt": "bool ActionStep::GetPlayerPowerTime(int16_t seat, GameClock& clock) {\n    clock.time = GetSvrCfg()->GetPowerTime();\n    clock.time_ms = GetSvrCfg()->GetPowerTimeMs();\n    clock.action = GetSvrCfg()->GetPowerTime();\n    clock.bot_time = GetSvrCfg()->GetPowerTime();\n    int16_t power = GetSvrData()->GetActionPower(seat);\n    if (power > kPowerIdNone) {\n        if (GetSvrData()->GetTrust(seat)) {\n            clock.time = GetSvrCfg()->GetBotWaitTime();",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P02-25",
+   "atomId": "AT-ST-C11-021",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:62",
+   "symbol": "ActionStep::DealTimeOutAction",
+   "excerpt": "bool ActionStep::DealTimeOutAction(int16_t seat) {\n    ...\n    if (TestAutoHu(seat)) {\n        ...\n        HandleMessage(seat, lml_protocol::MsgHuC::ID, req.SerializeAsString(), GetSvrData()->GetAskid());\n    } else if (TestAutoPlay(seat, mah)) {\n        ...\n        HandleMessage(seat, lml_protocol::MsgPlayC::ID, req.SerializeAsString(), GetSvrData()->GetAskid());\n    } else if (TestAutoCancel(seat)) {\n        ...\n        HandleMessage(seat, lml_protocol::MsgCancel::ID, req.SerializeAsString(), GetSvrData()->GetAskid());\n    }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-01",
+   "atomId": "AT-ST-C11-022",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_hu.cpp",
+   "location": "mah_frame/com_basic/com_hu.cpp:165",
+   "symbol": "HuStep::MakePower",
+   "excerpt": "int16_t HuStep::MakePower(TPowers& pow) {\n    int32_t power = 0;\n    if (Judge()) {\n        std::vector<int16_t> hu_power_seats = GetSvrData()->GetHuPowerSeats();\n        power |= kPowerIdHu;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-02",
+   "atomId": "AT-ST-C11-022",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:259",
+   "symbol": "BoxHuStep::Judge",
+   "excerpt": "bool BoxHuStep::Judge() {\n    switch (state) {\n        case kMahStateTake: ... ret = JudgeSelf(seat);\n        case kMahStatePlay: ... ret = JudgeDiscard(seat);\n        case kMahStateTKong: ... ret = JudgeRobKong(seat);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-03",
+   "atomId": "AT-ST-C11-022",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_context.cpp",
+   "location": "mah_frame/base/base_context.cpp:876",
+   "symbol": "BaseContext::FillMsgPower",
+   "excerpt": "power->set_power(act_power);\npower->set_hu_mah(GetSvrData()->GetNextHuMah());\npower->set_hu_point(GetSvrData()->GetNextHuPoint(seat));\npower->set_hu_type(GetSvrData()->GetNextHuType());\nTCombs combs = GetSvrData()->GetCombsList(seat);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-04",
+   "atomId": "AT-ST-C11-023",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:797",
+   "symbol": "ActionStep::GetPowerAndCombs",
+   "excerpt": "for (it = con_combs_.begin(); it != con_combs_.end(); it++) {\n    if (temp_seat != seat) { continue; }\n    int16_t temp_power = GETPOWER(it->first);\n    power |= temp_power;\n    combs.insert(combs.end(), it->second.begin(), it->second.end());",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-05",
+   "atomId": "AT-ST-C11-023",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:54",
+   "symbol": "BoxChowStep::Judge",
+   "excerpt": "if (GetAlgorithm()->TestChow(GetSvrData()->GetChowGroups(), hands, mah, discard_seat, retcombs)) {\n        ... chow_combs_ = retcombs;\n        chow_seat_ = seat;\n        return true;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-06",
+   "atomId": "AT-ST-C11-023",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_pung.cpp",
+   "location": "common_game/com_game/common_game_com_pung.cpp:13",
+   "symbol": "BoxPungStep::Judge",
+   "excerpt": "if (GetAlgorithm()->TestPung(GetSvrData()->GetPungGroups(), hands, mah, GetSvrData()->GetPreSeat(), retcombs)) {\n            ... pung_combs_ = retcombs;\n            pung_seat_ = iseat;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-07",
+   "atomId": "AT-ST-C11-023",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_kong.cpp",
+   "location": "common_game/com_game/common_game_com_kong.cpp:15",
+   "symbol": "BoxMKongStep::Judge",
+   "excerpt": "if (GetAlgorithm()->TestMKong(GetSvrData()->GetMKongGroups(), hands, mah, GetSvrData()->GetPreSeat(), retcombs)) {\n            mkong_combs_ = retcombs;\n            mkong_seat_ = iseat;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-08",
+   "atomId": "AT-ST-C11-024",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_context.cpp",
+   "location": "mah_frame/base/base_context.cpp:327",
+   "symbol": "BaseContext::SendPlayerMah",
+   "excerpt": "for (int16_t iseat = 0; iseat < GetSvrData()->GetPlayerCount(); iseat++) {\n        FillMsgPlayerMah(iseat, iseat == seat || GetSvrCfg()->GetIsOpenCard(), &msg);\n        ... SendMessage(msg.ID, msg, 0, iseat, clock, iseat == seat);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-09",
+   "atomId": "AT-ST-C11-024",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_context.cpp",
+   "location": "mah_frame/base/base_context.cpp:852",
+   "symbol": "BaseContext::FillMsgPlayerMah",
+   "excerpt": "if (is_open) {\n        ... for (size_t i = 0; i < hands.size(); i++) { player_mah->add_hands(hands[i]); }\n    } else {\n        if (df.size() == 1) { player_mah->add_dan_fang(MV_BACK); }\n        for (size_t i = 0; i < hands.size(); i++) { player_mah->add_hands(MV_BACK); }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-10",
+   "atomId": "AT-ST-C11-024",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_context.cpp",
+   "location": "mah_frame/base/base_context.cpp:529",
+   "symbol": "BaseContext::SendPower",
+   "excerpt": "lml_protocol::MsgPower msg;\n    FillMsgPower(seat, &msg);\n    ... SendMessage(msg.ID, msg, 0, seat, clock, msg.power() != kPowerIdNone);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-11",
+   "atomId": "AT-ST-C11-024",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:983",
+   "symbol": "ActionStep::SendPowerToClient",
+   "excerpt": "for (int16_t iseat = 0; iseat < GetSvrData()->GetPlayerCount(); iseat++) {\n        ... if (GetSvrData()->IsNeedSendPowerToClient(iseat)) {\n            ... GetContext()->SendPower(iseat, clock);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-12",
+   "atomId": "AT-ST-C11-025",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_data.cpp",
+   "location": "mah_frame/base/base_data.cpp:465",
+   "symbol": "BaseData::GetStands",
+   "excerpt": "bool BaseData::GetStands(int16_t seat, TMahs &mahs) {\n    mahs.clear();\n    GetHands(seat, mahs);\n    TMahs df = GetDanFang(seat);\n    if (df.size() == 1) { mahs.push_back(df[0]); }\n    return mahs.size() > 0;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-13",
+   "atomId": "AT-ST-C11-025",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_kong.cpp",
+   "location": "common_game/com_game/common_game_com_kong.cpp:132",
+   "symbol": "BoxCKongStep::Judge",
+   "excerpt": "TMahs stands;\n    GetSvrData()->GetStands(ckong_seat_, stands);\n    TCombs retcombs;\n    if (GetAlgorithm()->TestCKong(GetSvrData()->GetCKongGroups(), stands, ckong_seat_, retcombs)) {\n        ckong_combs_ = retcombs;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-14",
+   "atomId": "AT-ST-C11-025",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_kong.cpp",
+   "location": "common_game/com_game/common_game_com_kong.cpp:202",
+   "symbol": "BoxTKongStep::Judge",
+   "excerpt": "TCombs combs = GetSvrData()->GetAllCombs(tkong_seat_);\n    TMahs stands;\n    GetSvrData()->GetStands(tkong_seat_, stands);\n    TCombs retcombs;\n    if (GetAlgorithm()->TestTKong(GetSvrData()->GetTKongGroups(), combs, stands, retcombs)) {\n        tkong_combs_ = retcombs;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-15",
+   "atomId": "AT-ST-C11-025",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/macros.h",
+   "location": "mah_frame/base/macros.h:203",
+   "symbol": "kStepLevelChow/kStepLevelPung/kStepLevelKong/kStepLevelHu",
+   "excerpt": "kStepLevelChow = 2,     // 吃\n    kStepLevelPung = 3,     // 碰\n    kStepLevelKong = 3,     // 杠\n    kStepLevelHu = 4,       // 胡",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-16",
+   "atomId": "AT-ST-C11-027",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/con_action.cpp",
+   "location": "mah_frame/base/con_action.cpp:19",
+   "symbol": "ConAction::OnConAction",
+   "excerpt": "if (it == step_power_step_con_action_.end()) { return false; }\n    ClearUserConAction(seat);\n    ... temp.is_respond = true;\n    step_power_step_con_action_[key] = temp;\n    had_resp_[seat] = true;\n    ... if (step_power_step_con_action_[maxkey].is_respond == false) { return false; }\n    DoConAction(maxkey, GETPOWER(maxkey), ...);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-17",
+   "atomId": "AT-ST-C11-027",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:153",
+   "symbol": "ActionStep::OnMsgChowC",
+   "excerpt": "if (!OnConAction(req.seat(), kPowerIdChow, kStepLevelChow, req.ID, message)) {}\n    return true;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-18",
+   "atomId": "AT-ST-C11-027",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:62",
+   "symbol": "ActionStep::DealTimeOutAction",
+   "excerpt": "if (HadRespConAction(seat)) {\n        LOGD(..., \"ActionStep::DealTimeOutAction seat=%d, had resp con action\", seat);\n        return false;\n    }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-19",
+   "atomId": "AT-ST-C11-027",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.h",
+   "location": "common_game/com_game/common_game_com_action.h:3",
+   "symbol": "BoxActionStep (头注释)",
+   "excerpt": "//   BoxActionStep : 吃/碰/杠/胡/过 多路分发（框架已按 GetLevel() 通用实现优先级仲裁：\n//                   自摸/放铳(Hu=4) > 碰/杠(Pung/Kong=3) > 吃(Chow=2)，本类无需重写）",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-26",
+   "atomId": "AT-ST-C11-027",
+   "layer": "common_game",
+   "file": "common_game/common_game_server_config.cpp",
+   "location": "common_game/common_game_server_config.cpp:11",
+   "symbol": "CommonGameServerConfig::Reset",
+   "excerpt": "SetDuoXiang(false);      // hzmj 无「一炮多响」：胡牌按打牌者逆时针近者优先",
+   "configKeys": [
+    "enable_duo_xiang(硬编码 false)"
+   ]
+  },
+  {
+   "id": "SVE-ST-C11-P03-27",
+   "atomId": "AT-ST-C11-027",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:826",
+   "symbol": "ActionStep::GetConActionWeight",
+   "excerpt": "int16_t ActionStep::GetConActionWeight(int16_t seat, int16_t level) {\n    if (!GetSvrCfg()->IsDuoXiang()) {\n        if (level == kStepLevelHu) { level = kStepLevelHu + GetSeatWeight(seat); }\n    }\n    return level;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-20",
+   "atomId": "AT-ST-C11-028",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/con_action.cpp",
+   "location": "mah_frame/base/con_action.cpp:70",
+   "symbol": "ConAction::ClearUserConAction",
+   "excerpt": "while (it != step_power_step_con_action_.end()) {\n        if (seat == GETSEAT(it->first)) {\n            step_power_step_con_action_.erase(it);\n            it = step_power_step_con_action_.begin();\n        } else { it++; }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-21",
+   "atomId": "AT-ST-C11-028",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:546",
+   "symbol": "ActionStep::DoConAction",
+   "excerpt": "ConAction::DoConAction(key, power, level, msg_id, message);\n    ... switch (msg_id) {\n        case lml_protocol::MLXY_CHOW_C: DoActionChowC(message, key, power); break;\n        ... case lml_protocol::MLXY_HU_C: DoActionHuC(message, key, power); break;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-22",
+   "atomId": "AT-ST-C11-028",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:712",
+   "symbol": "ActionStep::DoActionCancel",
+   "excerpt": "void ActionStep::DoActionCancel(const std::string& message, int32_t key, int32_t power) {\n    ... SetNextActionStep(GetDragonMah()->GetStep(con_max_server_step_state_));\n    DoActionEnd();",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-23",
+   "atomId": "AT-ST-C11-029",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:325",
+   "symbol": "ActionStep::OnMsgCancel",
+   "excerpt": "if (!HaveActPower(req.seat(), kPowerIdCancelS)) { ... return false; }\n    ... if (!OnConAction(req.seat(), kPowerIdCancelS, kStepLevelCancelS, req.ID, message)) {}\n    return true;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-24",
+   "atomId": "AT-ST-C11-029",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:735",
+   "symbol": "ActionStep::InitPowerStepConAction",
+   "excerpt": "AddPowerStepMap(key, tpow[j].combs, temp_power_step);\n                AddCombsMap(key, tpow[j].combs);\n                AddConAction(key, GetConActionWeight(tpow[j].seat, temp_power_step->GetLevel()), false);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P03-25",
+   "atomId": "AT-ST-C11-029",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:584",
+   "symbol": "ActionStep::DoActionEnd",
+   "excerpt": "if (next_action_step_state_ != 0) {\n        Step* next_step = GetDragonMah()->GetStep(next_action_step_state_);\n        ... ChangeNextStep(GetSvrData()->GetPreSeat(), next_step);\n    } else { LOGE(...); }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P04-01",
+   "atomId": "AT-ST-C11-030",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:82",
+   "symbol": "BoxChowStep::Judge",
+   "excerpt": "if (GetAlgorithm()->TestChow(GetSvrData()->GetChowGroups(), hands, mah, discard_seat, retcombs)) {\n        // ... 过滤分支 ...\n        chow_combs_ = retcombs;\n        chow_seat_ = seat;\n        return true;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P04-02",
+   "atomId": "AT-ST-C11-030",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_chow.cpp",
+   "location": "mah_frame/com_basic/com_chow.cpp:80",
+   "symbol": "ChowStep::MakePower",
+   "excerpt": "int16_t ChowStep::MakePower(TPowers& pow) {\n    int32_t power = 0;\n    if (Judge()) {\n        power |= kPowerIdChow;\n        TPower tmp;\n        tmp.combs = chow_combs_;\n        tmp.seat = chow_seat_;\n        pow.push_back(tmp);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P04-03",
+   "atomId": "AT-ST-C11-030",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_context.cpp",
+   "location": "mah_frame/base/base_context.cpp:876",
+   "symbol": "BaseContext::FillMsgPower",
+   "excerpt": "TCombs combs = GetSvrData()->GetCombsList(seat);\n        for (size_t i = 0; i < combs.size(); i++) {\n            lml_protocol::CombInfo *comb_info = power->add_combs();\n            Algorithm::TcombToMsgComb(combs[i], comb_info);\n        }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P04-04",
+   "atomId": "AT-ST-C11-030",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:75",
+   "symbol": "BoxChowStep::Judge",
+   "excerpt": "// 只碰不吃（需求 §2）：本可吃但被禁止 → 提示规则 toast（简洁模式抑制）\n    if (GetSvrCfg()->GetOnlyPungNoChow()) {\n        if (GetAlgorithm()->TestChow(...)) {\n            GetContext()->SendNotifyInfo(kNIFExOnlyPungNoChow, seat);\n        }\n        return false;\n    }",
+   "configKeys": [
+    "only_pung_no_chow"
+   ]
+  },
+  {
+   "id": "SVE-ST-C11-P04-05",
+   "atomId": "AT-ST-C11-030",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:112",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// only_pung_no_chow | bool | true/false | false | 只碰不吃，仅2/3人可开，开后禁止吃牌\n    if (config.contains(\"only_pung_no_chow\")) {\n        svr_cfg->SetOnlyPungNoChow(CommonUtils::SafeGetJsonInt64(config, \"only_pung_no_chow\") > 0);\n    }",
+   "configKeys": [
+    "only_pung_no_chow"
+   ]
+  },
+  {
+   "id": "SVE-ST-C11-P04-06",
+   "atomId": "AT-ST-C11-030",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:117",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// rule_chi_peng | int8 | 0不开启/1限制2次只能碰不能吃/2限制2次可吃碰 | 0 | 吃碰次数限制，每玩家每小局吃+碰合计≤2\n    if (config.contains(\"rule_chi_peng\") && !svr_cfg->GetEnableThreeTanBao() ) {\n        int8_t rule = static_cast<int8_t>(CommonUtils::SafeGetJsonInt64(config, \"rule_chi_peng\"));\n        svr_cfg->SetRuleChiPeng(rule);\n        if (rule == 1) { svr_cfg->SetOnlyPungNoChow(true); }  // 只能碰不能吃：复用只碰不吃开关关掉吃",
+   "configKeys": [
+    "rule_chi_peng",
+    "only_pung_no_chow"
+   ]
+  },
+  {
+   "id": "SVE-ST-C11-P04-07",
+   "atomId": "AT-ST-C11-030",
+   "layer": "common_game",
+   "file": "common_game/common_game_algorithm.cpp",
+   "location": "common_game/common_game_algorithm.cpp:79",
+   "symbol": "CommonGameAlgorithm::IsChiPengExceeded",
+   "excerpt": "bool CommonGameAlgorithm::IsChiPengExceeded(CommonGameServerData* data, CommonGameServerConfig* cfg,\n                                            int16_t seat, int16_t target_seat) {\n    if (cfg == nullptr || data == nullptr) { return false; }\n    if (cfg->GetRuleChiPeng() <= 0) { return false; }  // 规则未开启，不限制\n    return data->GetChiPengCount(...) >= 2;",
+   "configKeys": [
+    "rule_chi_peng"
+   ]
+  },
+  {
+   "id": "SVE-ST-C11-P04-08",
+   "atomId": "AT-ST-C11-030",
+   "layer": "common_game",
+   "file": "common_game/common_game_algorithm.cpp",
+   "location": "common_game/common_game_algorithm.cpp:86",
+   "symbol": "CommonGameAlgorithm::IsXianXianTanFull",
+   "excerpt": "if (!cfg->GetEnableThreeTanBao()) { return false; }  // 三摊承包未开启，不限制\n    ...\n    return data->GetTanCount(static_cast<int8_t>(actor_seat), static_cast<int8_t>(target_seat)) >= 2;",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ]
+  },
+  {
+   "id": "SVE-ST-C11-P04-09",
+   "atomId": "AT-ST-C11-030",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:86",
+   "symbol": "BoxChowStep::Judge",
+   "excerpt": "if (GetSvrCfg()->GetEnableChowForbid()) {\n            TCombs safe_combs;\n            for (const TComb& comb : retcombs) {\n                if (CanPlayAfterChow(seat, comb)) { safe_combs.push_back(comb); }\n            }\n            if (safe_combs.empty()) { ... return false; }\n            retcombs.swap(safe_combs);\n        }",
+   "configKeys": [
+    "enable_chow_forbid"
+   ]
+  },
+  {
+   "id": "SVE-ST-C11-P04-10",
+   "atomId": "AT-ST-C11-030",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:130",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// enable_chow_forbid | bool | true/false | true | 吃禁手，吃后下次摸牌前禁打指定牌（吃中间禁打中间，吃两边禁打两边）\n    if (config.contains(\"enable_chow_forbid\")) {\n        svr_cfg->SetEnableChowForbid(CommonUtils::SafeGetJsonInt64(config, \"enable_chow_forbid\") > 0);\n    }",
+   "configKeys": [
+    "enable_chow_forbid"
+   ]
+  },
+  {
+   "id": "SVE-ST-C11-P04-11",
+   "atomId": "AT-ST-C11-031",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_data.cpp",
+   "location": "mah_frame/base/base_data.cpp:772",
+   "symbol": "BaseData::AddShunGroup",
+   "excerpt": "void BaseData::AddShunGroup(TMah mah) {\n    TMahs shun;\n    shun.push_back(mah);\n    shun.push_back(mah + 1);\n    shun.push_back(mah + 2);\n    shun_group_.push_back(shun);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P04-12",
+   "atomId": "AT-ST-C11-031",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/algorithm.cpp",
+   "location": "mah_frame/base/algorithm.cpp:3261",
+   "symbol": "Algorithm::TestChow",
+   "excerpt": "TGroups tmpgroups = chow_groups[mah];\n    ...\n    TMahs group = tmpgroups[i];\n    TMahs tmp = group;\n    DelMah(tmp, mah);\n    if (IsSubMahs(hand, tmp)) {\n        TComb tmpcomb;\n        tmpcomb.mahs = group;   // 原始 group 原样输出，不重排",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P04-13",
+   "atomId": "AT-ST-C11-031",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/algorithm.cpp",
+   "location": "mah_frame/base/algorithm.cpp:515",
+   "symbol": "Algorithm::TcombToMsgComb",
+   "excerpt": "comb_2->set_flag(comb_1.flag);\n    comb_2->set_from_seat(comb_1.from);\n    for (size_t k = 0; k < comb_1.ins.size(); k++) { comb_2->add_in_mahs(comb_1.ins[k]); }\n    for (size_t k = 0; k < comb_1.mahs.size(); k++) { comb_2->add_mahs(comb_1.mahs[k]); }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P04-14",
+   "atomId": "AT-ST-C11-032",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:797",
+   "symbol": "ActionStep::GetPowerAndCombs",
+   "excerpt": "if (have_play) {\n        if (power != kPowerIdPlay) { power |= kPowerIdCancelC; }\n    } else if (!have_play && power > 0) {\n        power |= kPowerIdCancelS;\n        AddConAction(MAKEKEY(seat, kPowerIdCancelS), kStepLevelCancelS, false);\n    }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P04-15",
+   "atomId": "AT-ST-C11-032",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:325",
+   "symbol": "ActionStep::OnMsgCancel",
+   "excerpt": "if (!HaveActPower(req.seat(), kPowerIdCancelS)) {\n        ... SendActionNotify(ActionFlag::kAFCancelNoPower, chair_id, chair_id);\n        return false;\n    }\n    ...\n    if (!OnConAction(req.seat(), kPowerIdCancelS, kStepLevelCancelS, req.ID, message)) {}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P04-16",
+   "atomId": "AT-ST-C11-033",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_chow.cpp",
+   "location": "mah_frame/com_basic/com_chow.cpp:98",
+   "symbol": "ChowStep::CheckChow",
+   "excerpt": "GetSvrData()->SetJustChow(comb);\n    GetSvrData()->SetChowCombs(seat, comb);\n    GetSvrData()->AddAllCombs(seat, comb);\n    ...\n    GetSvrData()->AddState(seat, kMahStateChow);\n    GetSvrData()->AddAllState(kMahStateChow);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P04-17",
+   "atomId": "AT-ST-C11-033",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_context.cpp",
+   "location": "mah_frame/base/base_context.cpp:475",
+   "symbol": "BaseContext::SendChow",
+   "excerpt": "lml_protocol::MsgChowS msg;\n    msg.set_seat(seat);\n    auto *proto_comb = msg.mutable_comb();\n    ... for (size_t k = 0; k < comb.mahs.size(); k++) { proto_comb->add_mahs(comb.mahs[k]); }\n    SendMessage(msg.ID, msg, 0, INVALID_ID, clock);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P04-18",
+   "atomId": "AT-ST-C11-033",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:983",
+   "symbol": "ActionStep::SendPowerToClient",
+   "excerpt": "int16_t power = GetSvrData()->GetActionPower(iseat);\n        ...\n        if (GetSvrData()->IsNeedSendPowerToClient(iseat)) {\n            ...\n            GetContext()->SendPower(iseat, clock);\n            if (IsSendWaitInfo(iseat)) { GetContext()->SendWaitInfos(iseat); }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P04-19",
+   "atomId": "AT-ST-C11-035",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:712",
+   "symbol": "ActionStep::DoActionCancel",
+   "excerpt": "LOGD(..., \"ActionStep::DoActionCancel,maxserverstep state=%d\", con_max_server_step_state_);\n    SetNextActionStep(GetDragonMah()->GetStep(con_max_server_step_state_));\n    DoActionEnd();",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P04-20",
+   "atomId": "AT-ST-C11-035",
+   "layer": "common_game",
+   "file": "common_game/common_game_context.cpp",
+   "location": "common_game/common_game_context.cpp:100",
+   "symbol": "CommonGameContext::SendCancelNotice",
+   "excerpt": "lml_protocol::MsgNotifyInfo msg;\n    msg.set_seat(seat);\n    msg.set_flag(kNIFExCancelPass);\n    ...\n    SendMessage(msg.ID, msg, 0, INVALID_ID, GameClock(), false);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P04-21",
+   "atomId": "AT-ST-C11-036",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:153",
+   "symbol": "ActionStep::OnMsgChowC",
+   "excerpt": "if (combs.empty() || !Algorithm::IsSubComb(combs, chow_comb)) {\n        ... SendActionNotify(ActionFlag::kAFChowNoComb, chair_id, chair_id);\n        return false;\n    }\n    ...\n    if (!OnConAction(req.seat(), kPowerIdChow, kStepLevelChow, req.ID, message)) {}\n    return true;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P04-22",
+   "atomId": "AT-ST-C11-036",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:595",
+   "symbol": "ActionStep::DoActionChowC",
+   "excerpt": "TComb comb;\n    Algorithm::MsgCombToTcomb(&(req.comb()), comb);\n    Step* pstep = GetPowerStepMap(key, comb.flag);\n    ChowStep* chow_step = dynamic_cast<ChowStep*>(pstep);\n    if (chow_step != nullptr) { chow_step->SetWillChowComb(comb); }\n    ...\n    SetNextActionStep(chow_step);\n    DoActionEnd();",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P04-23",
+   "atomId": "AT-ST-C11-036",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_chow.cpp",
+   "location": "mah_frame/com_basic/com_chow.cpp:21",
+   "symbol": "ChowStep::Execute",
+   "excerpt": "if (!Algorithm::IsSubComb(chow_combs_, will_chow_comb_)) {\n        ... will_chow_comb_ = chow_combs_[rand() % chow_combs_.size()];\n    }\n    // 吃\n    CheckChow(chow_seat_, will_chow_comb_);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P05-01",
+   "atomId": "AT-ST-C11-037",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:797",
+   "symbol": "ActionStep::GetPowerAndCombs",
+   "excerpt": "int16_t temp_power = GETPOWER(it->first);\n        power |= temp_power;\n        if (power == kPowerIdPlay) { have_play = true; }\n\n        combs.insert(combs.end(), it->second.begin(), it->second.end());\n    }\n\n    if (have_play) {\n        if (power != kPowerIdPlay) { power |= kPowerIdCancelC; }\n    } else if (!have_play && power > 0) {\n        power |= kPowerIdCancelS;      // 杠等动作旁同时挂『过』权限\n        AddConAction(MAKEKEY(seat, kPowerIdCancelS), kStepLevelCancelS, false);\n    }\n    return power > 0;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P05-02",
+   "atomId": "AT-ST-C11-037",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_context.cpp",
+   "location": "mah_frame/base/base_context.cpp:876",
+   "symbol": "BaseContext::FillMsgPower",
+   "excerpt": "power->set_seat(seat);\n        power->set_power(act_power);\n        power->set_hu_mah(GetSvrData()->GetNextHuMah());\n        power->set_hu_type(GetSvrData()->GetNextHuType());\n\n        TCombs combs = GetSvrData()->GetCombsList(seat);\n        for (size_t i = 0; i < combs.size(); i++) {\n            lml_protocol::CombInfo *comb_info = power->add_combs();\n            Algorithm::TcombToMsgComb(combs[i], comb_info);\n        }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P05-03",
+   "atomId": "AT-ST-C11-038",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_kong.cpp",
+   "location": "mah_frame/com_basic/com_kong.cpp:116",
+   "symbol": "MKongStep::MakePower",
+   "excerpt": "int16_t MKongStep::MakePower(TPowers& pow) {\n    int32_t power = 0;\n    if (Judge()) {\n        power |= kPowerIdKong;\n        TPower tmp;\n        tmp.combs = mkong_combs_;\n        tmp.seat = mkong_seat_;\n        pow.push_back(tmp);\n    }\n    return power;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P05-04",
+   "atomId": "AT-ST-C11-038",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_kong.cpp",
+   "location": "mah_frame/com_basic/com_kong.cpp:261",
+   "symbol": "CKongStep::MakePower",
+   "excerpt": "int16_t CKongStep::MakePower(TPowers& pow) {\n    int32_t power = 0;\n    if (Judge()) {\n        power |= kPowerIdKong;   // 暗杠与明杠同用 kPowerIdKong，进入同一候选池\n        TPower tmp;\n        tmp.combs = ckong_combs_;\n        tmp.seat = ckong_seat_;\n        pow.push_back(tmp);\n    }\n    return power;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P05-05",
+   "atomId": "AT-ST-C11-038",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_kong.cpp",
+   "location": "mah_frame/com_basic/com_kong.cpp:438",
+   "symbol": "TKongStep::MakePower",
+   "excerpt": "int16_t TKongStep::MakePower(TPowers& pow) {\n    int32_t power = 0;\n    if (Judge()) {\n        power |= kPowerIdKong;   // 加杠同样用 kPowerIdKong\n        TPower tmp;\n        tmp.combs = tkong_combs_;\n        tmp.seat = tkong_seat_;\n        pow.push_back(tmp);\n    }\n    return power;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P05-06",
+   "atomId": "AT-ST-C11-038",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:914",
+   "symbol": "ActionStep::AddCombsMap",
+   "excerpt": "void ActionStep::AddCombsMap(uint32_t key, TCombs combs) {\n    size_t comb_size = combs.size();\n    std::map<uint32_t, TCombs>::iterator it;\n    it = con_combs_.find(key);\n    if (it != con_combs_.end()) {\n        TCombs temp_combs = it->second;\n\n        for (size_t i = 0; i < comb_size; i++) { temp_combs.push_back(combs[i]); }  // 仅追加，无排序\n        it->second = temp_combs;\n    } else {\n        con_combs_[key] = combs;\n    }\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P05-07",
+   "atomId": "AT-ST-C11-039",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:62",
+   "symbol": "ActionStep::DealTimeOutAction",
+   "excerpt": "if (TestAutoHu(seat)) {\n        lml_protocol::MsgHuC req; ... HandleMessage(seat, lml_protocol::MsgHuC::ID, req.SerializeAsString(), GetSvrData()->GetAskid());\n    } else if (TestAutoPlay(seat, mah)) {\n        lml_protocol::MsgPlayC req; ... HandleMessage(seat, lml_protocol::MsgPlayC::ID, ...);\n    } else if (TestAutoCancel(seat)) {\n        lml_protocol::MsgCancel req; ... HandleMessage(seat, lml_protocol::MsgCancel::ID, ...);\n    }\n    return true;   // 倒计时到点仅触发服务端代操作，不封锁上行",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P05-08",
+   "atomId": "AT-ST-C11-039",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:840",
+   "symbol": "ActionStep::GetPlayerPowerTime",
+   "excerpt": "bool ActionStep::GetPlayerPowerTime(int16_t seat, GameClock& clock) {\n    clock.time = GetSvrCfg()->GetPowerTime();\n    clock.time_ms = GetSvrCfg()->GetPowerTimeMs();\n    clock.action = GetSvrCfg()->GetPowerTime();\n    clock.bot_time = GetSvrCfg()->GetPowerTime();",
+   "configKeys": [
+    "power_time"
+   ]
+  },
+  {
+   "id": "SVE-ST-C11-P05-09",
+   "atomId": "AT-ST-C11-040",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:325",
+   "symbol": "ActionStep::OnMsgCancel",
+   "excerpt": "if (req.seat() != chair_id) { ... return false; }\n    if (req.askid() != GetSvrData()->GetAskid()) { ... return false; }\n    int16_t power = GetSvrData()->GetActionPower(req.seat());\n    if (!power) { ... return false; }\n    if (!HaveActPower(req.seat(), kPowerIdCancelS)) { ... return false; }\n    if (!OnConAction(req.seat(), kPowerIdCancelS, kStepLevelCancelS, req.ID, message)) {}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P05-10",
+   "atomId": "AT-ST-C11-040",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/con_action.cpp",
+   "location": "mah_frame/base/con_action.cpp:19",
+   "symbol": "ConAction::OnConAction",
+   "excerpt": "bool ConAction::OnConAction(int16_t seat, int16_t power, int16_t level, uint16_t msg_id, const std::string& message) {\n    uint32_t key = MAKEKEY(seat, power);\n    it = step_power_step_con_action_.find(key);\n    if (it == step_power_step_con_action_.end()) { return false; }\n\n    ClearUserConAction(seat);   // 清空该座位全部待响应动作（含已挂起的自摸胡）\n\n    it = step_power_step_con_action_.find(key);\n    if (it != step_power_step_con_action_.end()) { return false; }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P05-11",
+   "atomId": "AT-ST-C11-040",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:712",
+   "symbol": "ActionStep::DoActionCancel",
+   "excerpt": "void ActionStep::DoActionCancel(const std::string& message, int32_t key, int32_t power) {\n    lml_protocol::MsgCancel req;\n    req.ParseFromString(message);\n    SetNextActionStep(GetDragonMah()->GetStep(con_max_server_step_state_));   // 直接跳到最高服务端步骤\n    DoActionEnd();\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P05-12",
+   "atomId": "AT-ST-C11-041",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:431",
+   "symbol": "ActionStep::OnMsgKongC",
+   "excerpt": "bool ActionStep::OnMsgKongC(const int16_t chair_id, const std::string& message, int32_t ask_id) {\n    lml_protocol::MsgKongC req;\n    req.ParseFromString(message);\n    if (req.seat() != chair_id) { ... }\n    if (req.askid() != GetSvrData()->GetAskid()) { ... }\n    if (!HaveActPower(req.seat(), kPowerIdKong)) { ... }\n    if (!req.has_comb()) { ... }\n    TComb kong_comb;\n    Algorithm::MsgCombToTcomb(&(req.comb()), kong_comb);\n    uint32_t key = MAKEKEY(req.seat(), kPowerIdKong);\n    TCombs combs = GetCombsMap(key);\n    if (combs.empty() || !Algorithm::IsSubComb(combs, kong_comb)) { ... return false; }\n    if (!OnConAction(req.seat(), kPowerIdKong, kStepLevelKong, req.ID, message)) {}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P05-13",
+   "atomId": "AT-ST-C11-041",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/algorithm.cpp",
+   "location": "mah_frame/base/algorithm.cpp:185",
+   "symbol": "Algorithm::IsSubComb",
+   "excerpt": "bool Algorithm::IsSubComb(const TCombs &combs, const TComb &comb) {\n    size_t size = combs.size();\n    for (size_t i = 0; i < size; i++) {\n        TComb tmp = combs[i];\n        if (tmp == comb) { return true; }\n    }\n    return false;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P05-14",
+   "atomId": "AT-ST-C11-041",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:655",
+   "symbol": "ActionStep::DoActionKongC",
+   "excerpt": "TComb comb;\n    Algorithm::MsgCombToTcomb(&(req.comb()), comb);\n    Step* pstep = GetPowerStepMap(key, comb.flag);\n    KongStep* kong_step = dynamic_cast<KongStep*>(pstep);\n\n    if (kong_step != nullptr) {\n        kong_step->SetWillKongComb(comb);   // 只提交所选的一组\n    } else {\n        LOGE(\"ActionStep::doActionKongC False : kongstep is nullptr\", 0);\n    }\n    SetNextActionStep(kong_step);\n    DoActionEnd();",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P05-15",
+   "atomId": "AT-ST-C11-041",
+   "layer": "mah_frame",
+   "file": "mah_frame/protocol/lml_protocol.proto",
+   "location": "mah_frame/protocol/lml_protocol.proto:385",
+   "symbol": "MsgKongC.comb",
+   "excerpt": "message MsgKongC {\n    enum MSGID {\n        NONE = 0;\n        ID = 792;                // 消息ID (MLXY_KONG_C)\n    }\n    int32 seat = 1;             // 座位\n    CombInfo comb = 2;           // 牌组（单个，无 repeated）\n    int32 askid = 3;             // 请求协议号（每次递增）\n    int32 flag = 4;              // 标志\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P05-16",
+   "atomId": "AT-ST-C11-042",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_action.cpp",
+   "location": "mah_frame/com_basic/com_action.cpp:948",
+   "symbol": "ActionStep::GetCombsMap",
+   "excerpt": "TCombs ActionStep::GetCombsMap(uint32_t key) {\n    return con_combs_[key];\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P05-17",
+   "atomId": "AT-ST-C11-043",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/macros.h",
+   "location": "mah_frame/base/macros.h:326",
+   "symbol": "HuType 枚举（kHtSelf/kHtDiscard/kHtRobKong）",
+   "excerpt": "enum {\n    kHtNone = 0,\n    kHtSelf,         // 自摸\n    kHtDiscard,      // 点炮\n    kHtRobKong,      // 抢杠\n    kHtDianGangHua,  // 点杠花\n};",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P05-18",
+   "atomId": "AT-ST-C11-043",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/macros.h",
+   "location": "mah_frame/base/macros.h:173",
+   "symbol": "行牌权限枚举（kPowerIdHu，无抢杠位）",
+   "excerpt": "enum {\n    kPowerIdNone = 0x0000,     // 无\n    kPowerIdCancelC = 0x0001,  // 过(无需发回给服务端)\n    kPowerIdCancelS = 0x0002,  // 过(需发回给服务端)\n    kPowerIdPlay = 0x0004,     // 出\n    kPowerIdChow = 0x0008,     // 吃\n    kPowerIdPung = 0x0010,     // 碰\n    kPowerIdHu = 0x0020,       // 和（点炮/抢杠/自摸共用，无独立抢杠权限位）\n    kPowerIdKong = 0x0040,     // 杠\n    ...\n};",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P05-19",
+   "atomId": "AT-ST-C11-043",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:383",
+   "symbol": "BoxHuStep::JudgeRobKong",
+   "excerpt": "bool BoxHuStep::JudgeRobKong(int16_t seat) {\n    if (!GetSvrCfg()->IsRobKong()) { return false; }\n    if (!CanDiscardHu()) { return false; }  // 抢杠胡绑定点炮门槛（开关关/未三牢均禁抢杠）\n\n    bool ret = false;\n    for (int16_t iseat = 0; iseat < GetSvrData()->GetPlayerCount(); iseat++) {\n        if (iseat == seat) { continue; }\n        if (TestHu(iseat)) {\n            GetSvrData()->SetXunLimitHuMahs(...);\n            GetSvrData()->SetXunLimitFlag(...);\n            ret = true;   // 抢杠只授予胡权限，复用统一胡上行\n        }\n    }\n    return ret;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P05-20",
+   "atomId": "AT-ST-C11-043",
+   "layer": "mah_frame",
+   "file": "mah_frame/protocol/lml_protocol.proto",
+   "location": "mah_frame/protocol/lml_protocol.proto:228",
+   "symbol": "MsgPower.hu_type",
+   "excerpt": "message MsgPower {\n    ...\n    int32 power = 3;             // 权限\n    repeated CombInfo combs = 4; // 供选列表\n    uint32 hu_mah = 5;           // 胡的牌(power == POWER_ID_HU 时有效)\n    int64 hu_point = 6;          // 胡牌倍数\n    uint32 hu_type = 7;          // 和牌类型（自摸/点炮/抢杠同走一个胡按钮）\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P05-21",
+   "atomId": "AT-ST-C11-044",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/macros.h",
+   "location": "mah_frame/base/macros.h:175",
+   "symbol": "kPowerIdCancelC/kPowerIdCancelS",
+   "excerpt": "kPowerIdCancelC = 0x0001,  // 过(无需发回给服务端)\nkPowerIdCancelS = 0x0002,  // 过(需发回给服务端)",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P05-22",
+   "atomId": "AT-ST-C11-045",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:40",
+   "symbol": "BoxActionStep::OnMsgCancel",
+   "excerpt": "bool BoxActionStep::OnMsgCancel(const int16_t chair_id, const std::string& message, int32_t ask_id) {\n    // 无条件群发过牌 notice（含非法请求也发，seat 取实际发送者 chair_id）\n    GetContext()->SendCancelNotice(chair_id);\n    return ActionStep::OnMsgCancel(chair_id, message, ask_id);\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P05-23",
+   "atomId": "AT-ST-C11-048",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_play.cpp",
+   "location": "mah_frame/com_basic/com_play.cpp:135",
+   "symbol": "PlayStep::MakePower",
+   "excerpt": "int16_t PlayStep::MakePower(TPowers &pow) {\n    int32_t power = 0;\n    if (Judge()) {\n        int16_t seat = just_play_seat_;\n        power |= kPowerIdPlay;      // 出牌权独立授予，不与杠权限互斥\n        TPower tmp;\n        tmp.seat = seat;\n        tmp.combs.clear();\n        pow.push_back(tmp);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P05-24",
+   "atomId": "AT-ST-C11-048",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_play.cpp",
+   "location": "common_game/com_game/common_game_com_play.cpp:18",
+   "symbol": "BoxPlayStep::MakePower",
+   "excerpt": "int16_t BoxPlayStep::MakePower(TPowers& pow) {\n    // 飘财窗口：受限座位（非财神所有者）只能打摸进来的牌（抓打），其余手牌全部进黑名单。\n    int16_t seat = just_play_seat_;\n    if (seat != INVALID_ID && GetSvrData()->IsPiaoRestricted(seat) && GetSvrData()->CountDanFang(seat) > 0) {\n        TPlayLimit play_limit;\n        GetSvrData()->GetHands(seat, play_limit.hands);\n        GetSvrData()->SetPlayLimit(seat, play_limit);\n        ...\n    }\n    return PlayStep::MakePower(pow);   // 仍照常授予出牌权",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P06-01",
+   "atomId": "AT-ST-C11-049",
+   "layer": "common_game",
+   "file": "common_game/common_game_algorithm.cpp",
+   "location": "common_game/common_game_algorithm.cpp:30",
+   "symbol": "CommonGameAlgorithm::IsQiaoXiang",
+   "excerpt": "// 万能听：任一拆牌方案的等待列表含 MV_ALL（财神将/财神面），即摸任意牌都能胡；if (std::find(comb.mahs.begin(), comb.mahs.end(), MV_ALL) != comb.mahs.end()) { return true; }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P06-02",
+   "atomId": "AT-ST-C11-049",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_play.cpp",
+   "location": "common_game/com_game/common_game_com_play.cpp:342",
+   "symbol": "BoxWaitStep::CalculateWaitFan",
+   "excerpt": "// 补「打出财神 → 万能听」建议：…注入 play=财神、wait=MV_ALL（胡任意牌/敲响）条目，供客户端据此标飘；if (GetAlgorithm()->IsQiaoXiang(play_stands, combs, jokers, instd_jokers, sep_types, is_all_hu)) { map_waits[cai_shen].push_back(MV_ALL); }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P06-03",
+   "atomId": "AT-ST-C11-049",
+   "layer": "common_game",
+   "file": "common_game/common_game_init.cpp",
+   "location": "common_game/common_game_init.cpp:359",
+   "symbol": "CommonGameInit::AddFanType",
+   "excerpt": "// 固定倍数：hzmj 番型倍数由规则本身决定，无好友房/金币场配置差异；{kFTHzmjBaoTou, \"爆头\", 2, CommonGameFanType::IsFanTypeBaoTou},",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P06-04",
+   "atomId": "AT-ST-C11-049",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_context.cpp",
+   "location": "mah_frame/base/base_context.cpp:687",
+   "symbol": "BaseContext::SendWaitInfos",
+   "excerpt": "p_wait_infos->set_play_mah(wait_infos[i].play_mah); p_wait_info->set_mah(wait_infos[i].wait_fan_items[j].hu_mah); p_wait_info->set_point(wait_infos[i].wait_fan_items[j].point); p_wait_info->add_fan_ids(wait_infos[i].wait_fan_items[j].fan_ids[k]);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P06-05",
+   "atomId": "AT-ST-C11-050",
+   "layer": "common_game",
+   "file": "common_game/common_game_fan_type.cpp",
+   "location": "common_game/common_game_fan_type.cpp:250",
+   "symbol": "CommonGameFanType::IsFanTypeBaoTou",
+   "excerpt": "if (hp->piao_level != 0) { return false; } … if (p->hu_df_ == MV_ALL) { return hp->is_qiao_xiang; } return IsDanFangWithCai(p);  // 飘等级为 0 时判「爆头」",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P06-06",
+   "atomId": "AT-ST-C11-050",
+   "layer": "common_game",
+   "file": "common_game/common_game_fan_type.cpp",
+   "location": "common_game/common_game_fan_type.cpp:261",
+   "symbol": "CommonGameFanType::IsFanTypeCaiPiao",
+   "excerpt": "if (hp->piao_level != 1) { return false; } … if (p->hu_df_ == MV_ALL) { return hp->is_qiao_xiang; }  // 飘等级为 1 时判「财飘」，与爆头互斥",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P06-07",
+   "atomId": "AT-ST-C11-050",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_play.cpp",
+   "location": "common_game/com_game/common_game_com_play.cpp:63",
+   "symbol": "BoxPlayStep::CheckPlay",
+   "excerpt": "if (cai_shen != MV_NONE && mah == cai_shen) { SetPiaoOwnerSeat(seat); SetPiaoCount(seat, GetPiaoCount(seat) + 1); GetContext()->BroadcastPiao(seat); if (IsQiaoXiangNow(seat)) { SetPiaoLevel(seat, GetPiaoLevel(seat) + 1); } else { SetPiaoLevel(seat, 0); … } } else { SetPiaoLevel(seat, 0); }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P06-08",
+   "atomId": "AT-ST-C11-050",
+   "layer": "common_game",
+   "file": "common_game/common_game_context.cpp",
+   "location": "common_game/common_game_context.cpp:93",
+   "symbol": "CommonGameContext::BroadcastPiao",
+   "excerpt": "hzmj_protocol::MsgPiao msg; msg.set_seat(seat); msg.set_piao_count(GetSvrData()->GetPiaoCount(seat)); SendMessage(msg.ID, msg, 0);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P06-09",
+   "atomId": "AT-ST-C11-050",
+   "layer": "common_game",
+   "file": "common_game/common_game_server_config.h",
+   "location": "common_game/common_game_server_config.h:45",
+   "symbol": "CommonGameServerConfig",
+   "excerpt": "AutoProperty(bool, must_bao_tou_with_cai, MustBaoTouWithCai);      // 有财必拷响",
+   "configKeys": [
+    "must_bao_tou_with_cai"
+   ]
+  },
+  {
+   "id": "SVE-ST-C11-P06-10",
+   "atomId": "AT-ST-C11-050",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/server_config.cpp",
+   "location": "hzmj_server/server_config.cpp:22",
+   "symbol": "ServerConfig::InitConfigByBox",
+   "excerpt": "SetMustBaoTouWithCai(false);  // 创房默认：有财必敲响关闭",
+   "configKeys": [
+    "must_bao_tou_with_cai"
+   ]
+  },
+  {
+   "id": "SVE-ST-C11-P06-11",
+   "atomId": "AT-ST-C11-052",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_data.cpp",
+   "location": "mah_frame/base/base_data.cpp:772",
+   "symbol": "BaseData::AddShunGroup",
+   "excerpt": "TMahs shun; shun.push_back(mah); shun.push_back(mah + 1); shun.push_back(mah + 2); shun_group_.push_back(shun);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P06-12",
+   "atomId": "AT-ST-C11-052",
+   "layer": "common_game",
+   "file": "common_game/common_game_init.cpp",
+   "location": "common_game/common_game_init.cpp:104",
+   "symbol": "CommonGameInit::InitData",
+   "excerpt": "if (has_shun) { for (TMah mah = kDefMahStartPos[suit]; mah <= kDefMahEndPos[suit] - 2; ++mah) { svr_data->AddShunGroup(mah); } }  // 顺子组按起始牌升序逐一生成",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P06-13",
+   "atomId": "AT-ST-C11-052",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/algorithm.cpp",
+   "location": "mah_frame/base/algorithm.cpp:3261",
+   "symbol": "Algorithm::TestChow",
+   "excerpt": "TMahs group = tmpgroups[i]; … if (IsSubMahs(hand, tmp)) { tmpcomb.mahs = group; tmpcomb.ins.push_back(mah); tmpcomb.from = who; tmpcomb.flag = kCMFChow; }  // 组合牌序直接取升序顺子组，ins 为被吃的那张牌",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P06-14",
+   "atomId": "AT-ST-C11-052",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_context.cpp",
+   "location": "mah_frame/base/base_context.cpp:475",
+   "symbol": "BaseContext::SendChow",
+   "excerpt": "proto_comb->set_flag(comb.flag); proto_comb->set_from_seat(comb.from); for (size_t k = 0; k < comb.mahs.size(); k++) { proto_comb->add_mahs(comb.mahs[k]); } for (size_t k = 0; k < comb.ins.size(); k++) { proto_comb->add_in_mahs(comb.ins[k]); }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P06-15",
+   "atomId": "AT-ST-C11-052",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:157",
+   "symbol": "BoxChowStep::Execute",
+   "excerpt": "CheckChow(chow_seat_, will_chow_comb_); … GetContext()->SendChow(will_chow_comb_, chow_seat_);  // hzmj 吃成立后立即下发新增副露",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P06-16",
+   "atomId": "AT-ST-C11-052",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_data.cpp",
+   "location": "mah_frame/base/base_data.cpp:980",
+   "symbol": "BaseData::SetChowCombs",
+   "excerpt": "void BaseData::SetChowCombs(int16_t seat, const TComb &comb) { chow_combs_[seat].push_back(comb); }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P06-17",
+   "atomId": "AT-ST-C11-052",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_data.cpp",
+   "location": "mah_frame/base/base_data.cpp:854",
+   "symbol": "BaseData::AddAllCombs",
+   "excerpt": "void BaseData::AddAllCombs(int16_t seat, const TComb &comb) { all_combs_[seat].push_back(comb); }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P06-18",
+   "atomId": "AT-ST-C11-053",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/algorithm.cpp",
+   "location": "mah_frame/base/algorithm.cpp:515",
+   "symbol": "Algorithm::TcombToMsgComb",
+   "excerpt": "comb_2->set_flag(comb_1.flag); comb_2->set_from_seat(comb_1.from); for (…) { comb_2->add_in_mahs(comb_1.ins[k]); } for (…) { comb_2->add_mahs(comb_1.mahs[k]); }  // 重连/补发同样保留来源座位与被吃牌",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P06-19",
+   "atomId": "AT-ST-C11-054",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/algorithm.cpp",
+   "location": "mah_frame/base/algorithm.cpp:3308",
+   "symbol": "Algorithm::TestPung",
+   "excerpt": "TMahs group = tmpgroups[i]; … if (IsSubMahs(hand, tmp)) { tmpcomb.mahs = group; tmpcomb.ins.push_back(mah); tmpcomb.from = who; tmpcomb.flag = kCMFPung; }  // 碰组合为三张同点数整组",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P06-20",
+   "atomId": "AT-ST-C11-054",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_context.cpp",
+   "location": "mah_frame/base/base_context.cpp:493",
+   "symbol": "BaseContext::SendPung",
+   "excerpt": "lml_protocol::MsgPungS msg; msg.set_seat(seat); proto_comb->set_flag(comb.flag); proto_comb->set_from_seat(comb.from); for (…) { proto_comb->add_mahs(comb.mahs[k]); } for (…) { proto_comb->add_in_mahs(comb.ins[k]); }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P06-21",
+   "atomId": "AT-ST-C11-054",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_pung.cpp",
+   "location": "mah_frame/com_basic/com_pung.cpp:125",
+   "symbol": "PungStep::CheckPung",
+   "excerpt": "GetSvrData()->SetJustPung(comb); GetSvrData()->SetPungCombs(seat, comb); GetSvrData()->AddAllCombs(seat, comb);  // 碰成立即写入副露数据",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P06-22",
+   "atomId": "AT-ST-C11-054",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_pung.cpp",
+   "location": "common_game/com_game/common_game_com_pung.cpp:107",
+   "symbol": "BoxPungStep::Execute",
+   "excerpt": "CheckPung(pung_seat_, will_pung_comb_); … GetContext()->SendPung(will_pung_comb_, pung_seat_);  // hzmj 碰成立后立即下发整组碰牌",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P06-23",
+   "atomId": "AT-ST-C11-056",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_data.cpp",
+   "location": "mah_frame/base/base_data.cpp:1546",
+   "symbol": "BaseData::SetPungCombs",
+   "excerpt": "void BaseData::SetPungCombs(int16_t seat, const TComb &comb) { pung_combs_[seat].push_back(comb); }  // 与吃/杠共享成立顺序语义",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P06-24",
+   "atomId": "AT-ST-C11-056",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_context.cpp",
+   "location": "mah_frame/base/base_context.cpp:855",
+   "symbol": "BaseContext::FillMsgPlayerMah",
+   "excerpt": "TCombs combs = GetSvrData()->GetAllCombs(seat); for (size_t j = 0; j < combs.size(); j++) { auto *proto_comb = player_mah->add_combs(); Algorithm::TcombToMsgComb(combs[j], proto_comb); }  // 按副露列表顺序逐组下发",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-01",
+   "atomId": "AT-ST-C11-057",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_kong.cpp",
+   "location": "common_game/com_game/common_game_com_kong.cpp:77",
+   "symbol": "BoxMKongStep::Execute",
+   "excerpt": "    // 明杠\n    CheckMKong(mkong_seat_, will_kong_comb_);\n\n    GetContext()->SendKong(will_kong_comb_, mkong_seat_);  // 发送明杠",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-02",
+   "atomId": "AT-ST-C11-057",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_context.cpp",
+   "location": "mah_frame/base/base_context.cpp:511",
+   "symbol": "BaseContext::SendKong",
+   "excerpt": "void BaseContext::SendKong(const TComb &comb, int16_t seat, const GameClock &clock) {\n    ...\n    lml_protocol::MsgKongS msg;\n    msg.set_seat(seat);\n\n    auto *proto_comb = msg.mutable_comb();\n    proto_comb->set_flag(comb.flag);\n    proto_comb->set_from_seat(comb.from);\n    for (size_t k = 0; k < comb.mahs.size(); k++) { proto_comb->add_mahs(comb.mahs[k]); }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-03",
+   "atomId": "AT-ST-C11-057",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/macros.h",
+   "location": "mah_frame/base/macros.h:133",
+   "symbol": "kCMFMKong/kCMFCKong/kCMFTKong",
+   "excerpt": "enum {\n    kCMFMKong = (kCMFKong << CMF_MOVE) | 0x01,  // 明杠\n    kCMFCKong = (kCMFKong << CMF_MOVE) | 0x02,  // 暗杠\n    kCMFTKong = (kCMFKong << CMF_MOVE) | 0x03,  // 补杠\n\n};",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-04",
+   "atomId": "AT-ST-C11-059",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_kong.cpp",
+   "location": "mah_frame/com_basic/com_kong.cpp:141",
+   "symbol": "MKongStep::CheckMKong",
+   "excerpt": "    GetSvrData()->SetJustMKong(comb);\n    GetSvrData()->SetJustMKongSeat(seat);\n    GetSvrData()->AddAllCombs(seat, comb);  // 明杠：碰杠区新增一组杠牌组\n    GetSvrData()->SetNowSeat(seat);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-05",
+   "atomId": "AT-ST-C11-059",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_kong.cpp",
+   "location": "mah_frame/com_basic/com_kong.cpp:282",
+   "symbol": "CKongStep::CheckCKong",
+   "excerpt": "    GetSvrData()->SetJustCKong(comb);\n    GetSvrData()->SetJustCKongSeat(seat);\n    GetSvrData()->AddAllCombs(seat, comb);  // 暗杠：碰杠区新增一组杠牌组\n    GetSvrData()->SetNowSeat(seat);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-06",
+   "atomId": "AT-ST-C11-059",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_kong.cpp",
+   "location": "mah_frame/com_basic/com_kong.cpp:494",
+   "symbol": "TKongStep::DelJustTKongFromHand",
+   "excerpt": "    TCombs tmpcombs = GetSvrData()->GetAllCombs(seat);\n    for (size_t i = 0; i < tmpcombs.size(); i++) {\n        if (tmpcombs[i].flag == kCMFPung && tmpcombs[i].mahs[0] == comb.mahs[0]) {\n            tmpcombs[i].flag = kCMFTKong;\n            tmpcombs[i].mahs.push_back(comb.mahs[0]);\n            tmpcombs[i].ins = comb.ins;\n            break;\n        }\n    }\n\n    GetSvrData()->SetAllCombs(seat, tmpcombs);  // 补杠：沿用原碰牌组，不新增组",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-07",
+   "atomId": "AT-ST-C11-059",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_kong.cpp",
+   "location": "common_game/com_game/common_game_com_kong.cpp:237",
+   "symbol": "BoxTKongStep::Execute",
+   "excerpt": "void BoxTKongStep::Execute() {\n    ...\n    // 补杠\n    CheckTKong(tkong_seat_, will_kong_comb_);\n\n    GetSvrData()->AddAllOuts(will_kong_comb_.mahs[0]);\n\n    GetContext()->SendKong(will_kong_comb_, tkong_seat_);  // 发送补杠",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-08",
+   "atomId": "AT-ST-C11-060",
+   "layer": "mah_frame",
+   "file": "mah_frame/com_basic/com_take.cpp",
+   "location": "mah_frame/com_basic/com_take.cpp:224",
+   "symbol": "SelfTakeStep::Execute",
+   "excerpt": "    if ((state >> 8) & kMahStateKong) {\n        dir = GetSvrCfg()->GetIsKongTakeAsc() ? TakeDir::kTDAscTake : TakeDir::kTDDescTake;\n        mah = TakeAfterKong(take_seat_, dir);\n        ...\n        GetContext()->SendTake(mah, dir, GetSvrCfg()->GetKongTakeCount(), TakeFlag::kTFKong, take_seat_);\n    } else {",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-09",
+   "atomId": "AT-ST-C11-060",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_context.cpp",
+   "location": "mah_frame/base/base_context.cpp:359",
+   "symbol": "BaseContext::SendTake",
+   "excerpt": "void BaseContext::SendTake(TMah mah, uint8_t dir, uint8_t dircnt, uint8_t flag, int16_t seat, const GameClock &clock) {\n    ...\n    lml_protocol::MsgTake msg;\n    msg.set_seat(seat);\n    msg.set_dir(dir);\n    msg.set_tcnt(dircnt);\n    msg.set_flag(flag);  // 补牌仅靠 flag=kTFKong 区分，无落位槽位字段",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-10",
+   "atomId": "AT-ST-C11-062",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_context.cpp",
+   "location": "mah_frame/base/base_context.cpp:475",
+   "symbol": "BaseContext::SendChow",
+   "excerpt": "void BaseContext::SendChow(const TComb &comb, int16_t seat, const GameClock &clock) {\n    ...\n    lml_protocol::MsgChowS msg;\n    msg.set_seat(seat);\n\n    auto *proto_comb = msg.mutable_comb();\n    proto_comb->set_flag(comb.flag);\n    proto_comb->set_from_seat(comb.from);\n    ...\n    SendMessage(msg.ID, msg, 0, INVALID_ID, clock);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-11",
+   "atomId": "AT-ST-C11-062",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_context.cpp",
+   "location": "mah_frame/base/base_context.cpp:493",
+   "symbol": "BaseContext::SendPung",
+   "excerpt": "void BaseContext::SendPung(const TComb &comb, int16_t seat, const GameClock &clock) {\n    ...\n    lml_protocol::MsgPungS msg;\n    msg.set_seat(seat);\n\n    auto *proto_comb = msg.mutable_comb();\n    proto_comb->set_flag(comb.flag);\n    proto_comb->set_from_seat(comb.from);\n    ...\n    SendMessage(msg.ID, msg, 0, INVALID_ID, clock);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-12",
+   "atomId": "AT-ST-C11-062",
+   "layer": "common_game",
+   "file": "common_game/common_game_context.cpp",
+   "location": "common_game/common_game_context.cpp:157",
+   "symbol": "CommonGameContext::FillMsgResultHu",
+   "excerpt": "            lml_protocol::MsgHuItem* proto_item = msg->add_hu_items();\n            proto_item->set_hu_seat(static_cast<int32_t>(hu_seat));\n            proto_item->set_hu_type(static_cast<uint32_t>(sdata->GetHuType(hu_seat)));",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-13",
+   "atomId": "AT-ST-C11-063",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:643",
+   "symbol": "BoxHuStep::CheckHu",
+   "excerpt": "    if (GetSvrData()->GetFirstHuSeat() == INVALID_ID) { GetSvrData()->SetFirstHuSeat(seat); }\n    GetSvrData()->SetHuSeat(seat);\n    GetSvrData()->SetEndType(kEtHu);  // 自摸成立即标记本局胡牌结束",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-14",
+   "atomId": "AT-ST-C11-063",
+   "layer": "common_game",
+   "file": "common_game/common_game_context.cpp",
+   "location": "common_game/common_game_context.cpp:146",
+   "symbol": "CommonGameContext::FillMsgResultHu",
+   "excerpt": "    // end_type\n    msg->set_end_type(sdata->GetEndType());\n\n    // hu_items: 遍历所有 HuInfo, 逐条写入胡牌玩家明细; 结算全桌亮牌。",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-15",
+   "atomId": "AT-ST-C11-063",
+   "layer": "common_game",
+   "file": "common_game/common_game_context.cpp",
+   "location": "common_game/common_game_context.cpp:200",
+   "symbol": "CommonGameContext::FillMsgResultHu",
+   "excerpt": "    // player_hands: 全桌手牌亮牌（结算阶段展示）\n    FillMsgPlayerHands(msg->mutable_player_hands());",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-16",
+   "atomId": "AT-ST-C11-063",
+   "layer": "common_game",
+   "file": "common_game/common_game_context.cpp",
+   "location": "common_game/common_game_context.cpp:789",
+   "symbol": "CommonGameContext::GetSettleHands",
+   "excerpt": "void CommonGameContext::GetSettleHands(int16_t seat, TMahs& out) {\n    out.clear();\n    if (IsTenWindWinner(seat)) {\n        // 十风赢家：结算手牌用出牌区（连续字牌序列）替换手牌，客户端按出牌区展示\n        for (const auto& out_mah : GetSvrData()->GetOuts(seat)) { out.push_back(out_mah.mah); }\n        return;\n    }\n    GetSvrData()->GetHands(seat, out);\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-17",
+   "atomId": "AT-ST-C11-064",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:573",
+   "symbol": "BoxHuStep::CheckHu",
+   "excerpt": "    GetSvrData()->SetHuDanFang(seat, df);\n    GetSvrData()->SetHuDfFrom(seat, hu_info.from_seat);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-18",
+   "atomId": "AT-ST-C11-064",
+   "layer": "common_game",
+   "file": "common_game/common_game_context.cpp",
+   "location": "common_game/common_game_context.cpp:161",
+   "symbol": "CommonGameContext::FillMsgResultHu",
+   "excerpt": "            proto_item->set_df_from(static_cast<uint32_t>(hu_info.from_seat));\n            if (!IsTenWindWinner(hu_seat)) { proto_item->set_dan_fang(static_cast<uint32_t>(hu_info.df_mah)); }\n            proto_item->set_df_stay(df_stay);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-19",
+   "atomId": "AT-ST-C11-064",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:462",
+   "symbol": "BoxResultStep::GetResultJson",
+   "excerpt": "        sdata->GetHands(seat, hands);\n        TMah df = sdata->GetHuDanFang(seat);\n        if (df != MV_NONE) { hands.push_back(df); }  // 补胡牌进张（单放），凑齐 14 张\n    }\n    TMahs rets;\n    if (is_ten_wind) {\n        rets = hands;  // 十风按打出顺序，不排序，对齐 1286 结算协议\n    } else {\n        Algorithm::SortMahs(hands, rets);\n    }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-20",
+   "atomId": "AT-ST-C11-065",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:291",
+   "symbol": "BoxHuStep::Judge",
+   "excerpt": "        case kMahStateTKong:\n            seat = GetSvrData()->GetNowSeat();\n            df = GetSvrData()->GetJustTKong().mahs[0];\n            GetSvrData()->SetNextHuMah(df);\n            GetSvrData()->SetNextHuFromSeat(seat);\n            GetSvrData()->SetNextHuType(kHtRobKong);\n            ret = JudgeRobKong(seat);\n            break;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-21",
+   "atomId": "AT-ST-C11-065",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:354",
+   "symbol": "BoxHuStep::CanDiscardHu",
+   "excerpt": "bool BoxHuStep::CanDiscardHu() {\n    if (!GetSvrCfg()->IsDiscard()) { return false; }\n    if (!GetSvrCfg()->GetEnableBankerDiscardHu()) { return false; }\n    if (GetSvrData()->GetBankerLevel() < 3) { return false; }\n    return true;\n}",
+   "configKeys": [
+    "enable_banker_discard_hu",
+    "banker_level_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C11-P07-22",
+   "atomId": "AT-ST-C11-065",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:384",
+   "symbol": "BoxHuStep::JudgeRobKong",
+   "excerpt": "bool BoxHuStep::JudgeRobKong(int16_t seat) {\n    if (!GetSvrCfg()->IsRobKong()) { return false; }\n    if (!CanDiscardHu()) { return false; }  // 抢杠胡绑定点炮门槛（开关关/未三牢均禁抢杠）",
+   "configKeys": [
+    "rob_kong",
+    "enable_banker_discard_hu",
+    "banker_level_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C11-P07-23",
+   "atomId": "AT-ST-C11-065",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:57",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "    // banker_level_type | int8 | 0平庄起/1笃二老庄/2笃三老庄 | 0 | 牢庄起算档位，决定庄闲倍率起点（2/4/8倍）\n    if (config.contains(\"banker_level_type\")) {\n        svr_cfg->SetBankerLevelType(static_cast<int8_t>(CommonUtils::SafeGetJsonInt64(config, \"banker_level_type\")));\n    }",
+   "configKeys": [
+    "banker_level_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C11-P07-24",
+   "atomId": "AT-ST-C11-065",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:61",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "    // enable_banker_discard_hu | bool | true/false | true | 庄闲放铳，仅三牢时庄闲可互相点炮，闲家之间不可点炮\n    if (config.contains(\"enable_banker_discard_hu\")) {\n        svr_cfg->SetEnableBankerDiscardHu(CommonUtils::SafeGetJsonInt64(config, \"enable_banker_discard_hu\") > 0);\n    }",
+   "configKeys": [
+    "enable_banker_discard_hu"
+   ]
+  },
+  {
+   "id": "SVE-ST-C11-P07-25",
+   "atomId": "AT-ST-C11-065",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_ju.cpp",
+   "location": "common_game/com_game/common_game_com_ju.cpp:191",
+   "symbol": "BoxZhuangStep::GetConfiguredBankerLevel",
+   "excerpt": "int8_t BoxZhuangStep::GetConfiguredBankerLevel() {\n    int8_t level = static_cast<int8_t>(GetSvrCfg()->GetBankerLevelType() + 1);\n    if (level < 1) { return 1; }\n    if (level > 3) { return 3; }\n    return level;\n}",
+   "configKeys": [
+    "banker_level_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C11-P07-26",
+   "atomId": "AT-ST-C11-066",
+   "layer": "common_game",
+   "file": "common_game/common_game_context.cpp",
+   "location": "common_game/common_game_context.cpp:160",
+   "symbol": "CommonGameContext::FillMsgResultHu",
+   "excerpt": "            proto_item->set_df_from(static_cast<uint32_t>(hu_info.from_seat));\n            if (!IsTenWindWinner(hu_seat)) { proto_item->set_dan_fang(static_cast<uint32_t>(hu_info.df_mah)); }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-27",
+   "atomId": "AT-ST-C11-067",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:603",
+   "symbol": "BoxHuStep::CheckHu",
+   "excerpt": "    GetSvrData()->SetHuFancnts(seat, hftcnts);\n    GetSvrData()->SetHuFanPoint(seat, point);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-28",
+   "atomId": "AT-ST-C11-067",
+   "layer": "common_game",
+   "file": "common_game/common_game_context.cpp",
+   "location": "common_game/common_game_context.cpp:167",
+   "symbol": "CommonGameContext::FillMsgResultHu",
+   "excerpt": "            TFanCnts fan_cnts;\n            sdata->GetHuFancnts(hu_seat, fan_cnts);\n            for (const auto& fc : fan_cnts) { proto_item->add_fan_ids(static_cast<uint32_t>(fc.id)); }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-29",
+   "atomId": "AT-ST-C11-068",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_play.cpp",
+   "location": "common_game/com_game/common_game_com_play.cpp:63",
+   "symbol": "BoxPlayStep::CheckPlay",
+   "excerpt": "    if (cai_shen != MV_NONE && mah == cai_shen) {\n        GetSvrData()->SetPiaoOwnerSeat(seat);  // 打出财神 → 开启（或切换）窗口（需求 §6.4）\n        GetSvrData()->SetPiaoCount(seat, GetSvrData()->GetPiaoCount(seat) + 1);\n        GetContext()->BroadcastPiao(seat);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-30",
+   "atomId": "AT-ST-C11-068",
+   "layer": "common_game",
+   "file": "common_game/common_game_context.cpp",
+   "location": "common_game/common_game_context.cpp:93",
+   "symbol": "CommonGameContext::BroadcastPiao",
+   "excerpt": "void CommonGameContext::BroadcastPiao(int16_t seat) {\n    hzmj_protocol::MsgPiao msg;\n    msg.set_seat(seat);\n    msg.set_piao_count(GetSvrData()->GetPiaoCount(seat));\n    SendMessage(msg.ID, msg, 0);\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-P07-31",
+   "atomId": "AT-ST-C11-068",
+   "layer": "common_game",
+   "file": "common_game/common_game_context.cpp",
+   "location": "common_game/common_game_context.cpp:562",
+   "symbol": "CommonGameContext::FillMsgRelinkOnAction",
+   "excerpt": "    for (int16_t seat = 0; seat < player_count; ++seat) { msg->add_piao_counts(GetSvrData()->GetPiaoCount(seat)); }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P01-01",
+   "atomId": "AT-ST-C12-001",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:134",
+   "symbol": "BoxChowStep::Execute",
+   "excerpt": "// 记摊：吃方(chow_seat_) 对 被吃方(上家) 记 1 摊（需求 §6.3；吃摊不受 pung_as_tan 影响，那只管碰）\nint16_t from_seat = GetSvrData()->GetPreSeat();\nGetSvrData()->SetTanCount(chow_seat_, from_seat, GetSvrData()->GetTanCount(chow_seat_, from_seat) + 1);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P01-02",
+   "atomId": "AT-ST-C12-001",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_pung.cpp",
+   "location": "common_game/com_game/common_game_com_pung.cpp:126",
+   "symbol": "BoxPungStep::Execute",
+   "excerpt": "// 记摊：pung_as_tan=true 时，碰方(pung_seat_) 对 被碰方(打出者) 记 1 摊（需求 §6.3）\nif (GetSvrCfg()->GetPungAsTan()) {\n    int16_t from_seat = GetSvrData()->GetJustPlaySeat();\n    GetSvrData()->SetTanCount(pung_seat_, from_seat, GetSvrData()->GetTanCount(pung_seat_, from_seat) + 1);",
+   "configKeys": [
+    "pung_as_tan"
+   ]
+  },
+  {
+   "id": "SVE-ST-C12-P01-03",
+   "atomId": "AT-ST-C12-001",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_kong.cpp",
+   "location": "common_game/com_game/common_game_com_kong.cpp:97",
+   "symbol": "BoxMKongStep::Execute",
+   "excerpt": "// 记摊：明杠是对外操作（需求 §6.3）；受 pung_as_tan 约束（明杠与碰同约束）\nint16_t from_seat = GetSvrData()->GetJustPlaySeat();\nif (GetSvrCfg()->GetPungAsTan()) {\n    GetSvrData()->SetTanCount(mkong_seat_, from_seat, GetSvrData()->GetTanCount(mkong_seat_, from_seat) + 1);",
+   "configKeys": [
+    "pung_as_tan"
+   ]
+  },
+  {
+   "id": "SVE-ST-C12-P01-04",
+   "atomId": "AT-ST-C12-001",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:84",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// pung_as_tan | bool | true/false | true | 碰算摊，碰记1摊（吃不受此开关影响，吃恒记摊）\nif (config.contains(\"pung_as_tan\")) {\n    svr_cfg->SetPungAsTan(CommonUtils::SafeGetJsonInt64(config, \"pung_as_tan\") > 0);",
+   "configKeys": [
+    "pung_as_tan"
+   ]
+  },
+  {
+   "id": "SVE-ST-C12-P01-05",
+   "atomId": "AT-ST-C12-002",
+   "layer": "common_game",
+   "file": "common_game/common_game_server_data.h",
+   "location": "common_game/common_game_server_data.h:61",
+   "symbol": "CommonGameServerData::GetTanCount",
+   "excerpt": "// 摊/承包（局级，二维定向计数，A→B 与 B→A 各自独立）\nint8_t GetTanCount(int8_t from, int8_t to) const { return tan_count_[from][to]; }\nvoid SetTanCount(int8_t from, int8_t to, int8_t v) { tan_count_[from][to] = v; }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P01-06",
+   "atomId": "AT-ST-C12-003",
+   "layer": "common_game",
+   "file": "common_game/common_game_server_data.cpp",
+   "location": "common_game/common_game_server_data.cpp:47",
+   "symbol": "CommonGameServerData::ResetRound",
+   "excerpt": "for (int a = 0; a < MAX_PLAYER_COUNT; ++a) {\n    for (int b = 0; b < MAX_PLAYER_COUNT; ++b) {\n        SetTanCount(a, b, 0);\n        SetBaoRelation(a, b, 0);\n        SetChiPengCount(a, b, 0);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P01-07",
+   "atomId": "AT-ST-C12-003",
+   "layer": "common_game",
+   "file": "common_game/common_game_context.cpp",
+   "location": "common_game/common_game_context.cpp:78",
+   "symbol": "CommonGameContext::FillMsgTanItems",
+   "excerpt": "for (int16_t from = 0; from < player_count; ++from) {\n    for (int16_t to = 0; to < player_count; ++to) {\n        if (from == to) { continue; }\n        int8_t tan_count = GetSvrData()->GetTanCount(static_cast<int8_t>(from), static_cast<int8_t>(to));",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P01-08",
+   "atomId": "AT-ST-C12-004",
+   "layer": "common_game",
+   "file": "common_game/common_game_server_data.h",
+   "location": "common_game/common_game_server_data.h:96",
+   "symbol": "piao_count",
+   "excerpt": "AutoPropertyBySeat(int8_t, piao_count, PiaoCount);                  // 玩家打出财神进入飘的次数\nAutoPropertyBySeat(int8_t, piao_level, PiaoLevel);                  // 敲响状态下连续打出财神等级",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P01-09",
+   "atomId": "AT-ST-C12-004",
+   "layer": "common_game",
+   "file": "common_game/common_game_server_data.h",
+   "location": "common_game/common_game_server_data.h:110",
+   "symbol": "CommonGameServerData::IsPiaoRestricted",
+   "excerpt": "// 该座位是否处于飘财受限状态（窗口激活且非所有者 → 禁吃碰杠，只能摸打）\nbool IsPiaoRestricted(int16_t seat) const {\n    return GetPiaoOwnerSeat() != -1 && seat != GetPiaoOwnerSeat();",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P01-10",
+   "atomId": "AT-ST-C12-004",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:60",
+   "symbol": "BoxChowStep::Judge",
+   "excerpt": "if (GetSvrData()->IsPiaoRestricted(seat)) { return false; }  // 飘财窗口受限：只能摸打，禁吃",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P01-11",
+   "atomId": "AT-ST-C12-004",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_pung.cpp",
+   "location": "common_game/com_game/common_game_com_pung.cpp:16",
+   "symbol": "BoxPungStep::Judge",
+   "excerpt": "if (GetSvrData()->IsPiaoRestricted(iseat)) { continue; }  // 飘财窗口受限：只能摸打，禁碰",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P01-12",
+   "atomId": "AT-ST-C12-005",
+   "layer": "common_game",
+   "file": "common_game/common_game_algorithm.cpp",
+   "location": "common_game/common_game_algorithm.cpp:86",
+   "symbol": "CommonGameAlgorithm::IsXianXianTanFull",
+   "excerpt": "bool CommonGameAlgorithm::IsXianXianTanFull(CommonGameServerData* data, CommonGameServerConfig* cfg,\n                                            int16_t actor_seat, int16_t target_seat) {\n    if (!cfg->GetEnableThreeTanBao()) { return false; }  // 三摊承包未开启，不限制\n    int16_t zhuang = data->GetZhuang();\n    if (actor_seat == zhuang || target_seat == zhuang) { return false; }  // 庄闲不限\n    return data->GetTanCount(static_cast<int8_t>(actor_seat), static_cast<int8_t>(target_seat)) >= 2;",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ]
+  },
+  {
+   "id": "SVE-ST-C12-P01-13",
+   "atomId": "AT-ST-C12-005",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:308",
+   "symbol": "BoxResultStep::ApplyBaoContracts",
+   "excerpt": "// 闲家与闲家之间不触发承包，仅限庄闲之间\nif (win_seat != zhuang && opp != zhuang) { continue; }",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ]
+  },
+  {
+   "id": "SVE-ST-C12-P01-14",
+   "atomId": "AT-ST-C12-005",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:66",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// enable_three_tan_bao | bool | true/false | false | 三摊承包，庄闲之间累计3摊后触发承包/倒承包；=0 时默认限制吃碰2次（仅3/4人局）\nif (enable && player_count <= 2) {  // 创房安全判断：三摊承包仅 3/4 人局可开\n    ...\n    enable = false;",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ]
+  },
+  {
+   "id": "SVE-ST-C12-P01-15",
+   "atomId": "AT-ST-C12-005",
+   "layer": "common_game",
+   "file": "common_game/common_game_server_data.h",
+   "location": "common_game/common_game_server_data.h:67",
+   "symbol": "CommonGameServerData::GetBaoRelation",
+   "excerpt": "int8_t GetBaoRelation(int8_t from, int8_t to) const {\n    return bao_relation_[from][to];\n}\nvoid SetBaoRelation(int8_t from, int8_t to, int8_t v) {\n    bao_relation_[from][to] = v;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P01-16",
+   "atomId": "AT-ST-C12-006",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:66",
+   "symbol": "BoxChowStep::Judge",
+   "excerpt": "// 三摊承包开启时，闲闲之间吃/碰/明杠最多2摊（第3次拦截，需求 §6.3）\nif (CommonGameAlgorithm::IsXianXianTanFull(GetSvrData(), GetSvrCfg(), seat, discard_seat)) { return false; }",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ]
+  },
+  {
+   "id": "SVE-ST-C12-P01-17",
+   "atomId": "AT-ST-C12-006",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_pung.cpp",
+   "location": "common_game/com_game/common_game_com_pung.cpp:24",
+   "symbol": "BoxPungStep::Judge",
+   "excerpt": "// 碰不算摊(pung_as_tan=false)时碰不累计摊数，不受2摊上限拦截\nif (GetSvrCfg()->GetPungAsTan() &&\n    CommonGameAlgorithm::IsXianXianTanFull(GetSvrData(), GetSvrCfg(), iseat,\n                                           GetSvrData()->GetJustPlaySeat())) {\n    continue;",
+   "configKeys": [
+    "pung_as_tan",
+    "enable_three_tan_bao"
+   ]
+  },
+  {
+   "id": "SVE-ST-C12-P01-18",
+   "atomId": "AT-ST-C12-006",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_kong.cpp",
+   "location": "common_game/com_game/common_game_com_kong.cpp:30",
+   "symbol": "BoxMKongStep::Judge",
+   "excerpt": "// 碰不算摊(pung_as_tan=false)时明杠不累计摊数，不受2摊上限拦截\nif (GetSvrCfg()->GetPungAsTan() &&\n    CommonGameAlgorithm::IsXianXianTanFull(GetSvrData(), GetSvrCfg(), iseat,\n                                           GetSvrData()->GetJustPlaySeat())) {\n    continue;",
+   "configKeys": [
+    "pung_as_tan",
+    "enable_three_tan_bao"
+   ]
+  },
+  {
+   "id": "SVE-ST-C12-P01-19",
+   "atomId": "AT-ST-C12-008",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:144",
+   "symbol": "BoxChowStep::Execute",
+   "excerpt": "// 三摊承包：开启时实时广播摊数/承包关系。吃方吃满对方3摊即记承包(1)；\nif (GetSvrCfg()->GetEnableThreeTanBao()) {\n    if (GetSvrData()->GetTanCount(chow_seat_, from_seat) >= 3) {\n        GetSvrData()->SetBaoRelation(chow_seat_, from_seat, 1);",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ]
+  },
+  {
+   "id": "SVE-ST-C12-P01-20",
+   "atomId": "AT-ST-C12-008",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_pung.cpp",
+   "location": "common_game/com_game/common_game_com_pung.cpp:133",
+   "symbol": "BoxPungStep::Execute",
+   "excerpt": "if (GetSvrCfg()->GetEnableThreeTanBao()) {\n    if (GetSvrData()->GetTanCount(pung_seat_, from_seat) >= 3) {\n        GetSvrData()->SetBaoRelation(pung_seat_, from_seat, 1);",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ]
+  },
+  {
+   "id": "SVE-ST-C12-P01-21",
+   "atomId": "AT-ST-C12-008",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_kong.cpp",
+   "location": "common_game/com_game/common_game_com_kong.cpp:103",
+   "symbol": "BoxMKongStep::Execute",
+   "excerpt": "if (GetSvrCfg()->GetEnableThreeTanBao()) {\n    if (GetSvrData()->GetTanCount(mkong_seat_, from_seat) >= 3) {\n        GetSvrData()->SetBaoRelation(mkong_seat_, from_seat, 1);",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ]
+  },
+  {
+   "id": "SVE-ST-C12-P01-22",
+   "atomId": "AT-ST-C12-008",
+   "layer": "common_game",
+   "file": "common_game/protocol/hzmj_protocol.proto",
+   "location": "common_game/protocol/hzmj_protocol.proto:73",
+   "symbol": "TanItem.bao_relation",
+   "excerpt": "int32 bao_relation = 4;  // 承包关系（0=无 / 1=承包 / 2=倒承包，具体枚举由任务C 定）",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P01-23",
+   "atomId": "AT-ST-C12-009",
+   "layer": "common_game",
+   "file": "common_game/common_game_context.cpp",
+   "location": "common_game/common_game_context.cpp:65",
+   "symbol": "CommonGameContext::BroadcastTanUpdate",
+   "excerpt": "void CommonGameContext::BroadcastTanUpdate(int16_t from_seat, int16_t to_seat) {\n    hzmj_protocol::MsgTanUpdate msg;\n    ...\n    item->set_tan_count(GetSvrData()->GetTanCount(...));\n    item->set_bao_relation(GetSvrData()->GetBaoRelation(...));\n    SendMessage(msg.ID, msg, 0);",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ]
+  },
+  {
+   "id": "SVE-ST-C12-P01-24",
+   "atomId": "AT-ST-C12-009",
+   "layer": "common_game",
+   "file": "common_game/protocol/hzmj_protocol.proto",
+   "location": "common_game/protocol/hzmj_protocol.proto:80",
+   "symbol": "MsgTanUpdate",
+   "excerpt": "// 触发时机：吃/碰/明杠 Step 更新摊数矩阵后，由 CommonGameContext::BroadcastTanUpdate 广播\nmessage MsgTanUpdate {\n    enum MSGID { NONE = 0; ID = 1282; }\n    repeated TanItem tan_items = 1;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P01-25",
+   "atomId": "AT-ST-C12-009",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:165",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// simple_mode | bool | true/false | false | 简洁模式：开启后不提示规则类 notice（跟庄/守庄/巡限碰/吃禁手），客户端同时抑制三摊落地动画/摸财神动效\nif (config.contains(\"simple_mode\")) {\n    svr_cfg->SetSimpleMode(CommonUtils::SafeGetJsonInt64(config, \"simple_mode\") > 0);",
+   "configKeys": [
+    "simple_mode"
+   ]
+  },
+  {
+   "id": "SVE-ST-C12-P01-26",
+   "atomId": "AT-ST-C12-010",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:336",
+   "symbol": "BoxResultStep::ApplyBaoContracts",
+   "excerpt": "hzmj_protocol::BaoSettleItem settle;\nsettle.set_from_seat(opp);        // 赔付方（承包方）\nsettle.set_to_seat(win_seat);     // 胡牌方（被承包方）\nsettle.set_score(opp_pay);\nsettle.set_relation(relation);\nbao_settles_.push_back(settle);",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ]
+  },
+  {
+   "id": "SVE-ST-C12-P01-27",
+   "atomId": "AT-ST-C12-010",
+   "layer": "common_game",
+   "file": "common_game/common_game_context.cpp",
+   "location": "common_game/common_game_context.cpp:117",
+   "symbol": "CommonGameContext::SendResultHu",
+   "excerpt": "void CommonGameContext::SendResultHu(const std::vector<hzmj_protocol::BaoSettleItem>& bao_settles, int16_t seat,\n                                     const GameClock& clock) {\n    ...\n    hzmj_protocol::MsgResultHu msg;\n    FillMsgResultHu(&msg, bao_settles, seat);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P01-28",
+   "atomId": "AT-ST-C12-011",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:159",
+   "symbol": "BoxChowStep::Execute",
+   "excerpt": "GetContext()->SendChow(will_chow_comb_, chow_seat_);\n\nChangeNextStep(chow_seat_, GetNextStep());",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P01-29",
+   "atomId": "AT-ST-C12-011",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_pung.cpp",
+   "location": "common_game/com_game/common_game_com_pung.cpp:109",
+   "symbol": "BoxPungStep::Execute",
+   "excerpt": "GetContext()->SendPung(will_pung_comb_, pung_seat_);\n\nChangeNextStep(pung_seat_, GetNextStep());",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P01-30",
+   "atomId": "AT-ST-C12-011",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_kong.cpp",
+   "location": "common_game/com_game/common_game_com_kong.cpp:121",
+   "symbol": "BoxMKongStep::Execute",
+   "excerpt": "// 触发下游（SelfTake → Action → Judge），必须在杠链+1之后，保证胡权限倍数拿到正确 gang_chain\nChangeNextStep(mkong_seat_, GetNextStep());",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P02-01",
+   "atomId": "AT-ST-C12-012",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:289",
+   "symbol": "BoxResultStep::ApplyBaoContracts",
+   "excerpt": "void BoxResultStep::ApplyBaoContracts(int16_t win_seat, std::map<int16_t, int64_t>& payments) {\n    if (!GetSvrCfg()->GetEnableThreeTanBao()) { return; }\n    // 承包基数（\"三家钱\"）：全部输家应付总和（负值）\n    int64_t total = 0;\n    for (const auto& kv : payments) { total += kv.second; }\n    // 链式承包：只结算胡牌方本人参与的承包对，与胡牌方无关的对不结算；\n    // 胡牌方可同时收多对，未参与任何对的玩家不付。\n    std::map<int16_t, int64_t> bao_payments;\n    for (int16_t opp = 0; opp < player_count; ++opp) {\n        if (opp == win_seat) { continue; }",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ]
+  },
+  {
+   "id": "SVE-ST-C12-P02-02",
+   "atomId": "AT-ST-C12-012",
+   "layer": "common_game",
+   "file": "common_game/common_game_server_data.h",
+   "location": "common_game/common_game_server_data.h:61",
+   "symbol": "CommonGameServerData::GetTanCount",
+   "excerpt": "// 摊/承包（局级，二维定向计数，A→B 与 B→A 各自独立）\nint8_t GetTanCount(int8_t from, int8_t to) const {\n    return tan_count_[from][to];\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P02-03",
+   "atomId": "AT-ST-C12-012",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:67",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// enable_three_tan_bao | bool | true/false | false | 三摊承包，庄闲之间累计3摊后触发承包/倒承包；=0 时默认限制吃碰2次（仅3/4人局）\nif (config.contains(\"enable_three_tan_bao\")) {\n    int64_t v = CommonUtils::SafeGetJsonInt64(config, \"enable_three_tan_bao\");\n    bool enable = v > 0;\n    if (enable && player_count <= 2) {  // 创房安全判断：三摊承包仅 3/4 人局可开\n        ...\n        enable = false;\n    }\n    if (enable) { svr_cfg->SetEnableThreeTanBao(true); }\n    else { svr_cfg->SetEnableThreeTanBao(false); svr_cfg->SetRuleChiPeng(2); }",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ]
+  },
+  {
+   "id": "SVE-ST-C12-P02-04",
+   "atomId": "AT-ST-C12-013",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:82",
+   "symbol": "BoxResultStep::CalcFinalWinLost",
+   "excerpt": "void BoxResultStep::CalcFinalWinLost() {\n    ...\n    } else {\n        // 自摸（含杠上开花，hu_type_ 统一记 kHtSelf）\n        for (int16_t seat = 0; seat < GetSvrData()->GetPlayerCount(); ++seat) {\n            if (seat == win_seat) { continue; }\n            ...\n            payments[seat] = -pay;\n        }\n    }\n    // 承包/倒承包改写付款人（链式承包，规则见头文件注释）\n    ApplyBaoContracts(win_seat, payments);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P02-05",
+   "atomId": "AT-ST-C12-014",
+   "layer": "common_game",
+   "file": "common_game/common_game_server_data.h",
+   "location": "common_game/common_game_server_data.h:70",
+   "symbol": "CommonGameServerData::SetBaoRelation",
+   "excerpt": "int8_t GetBaoRelation(int8_t from, int8_t to) const {\n    return bao_relation_[from][to];\n}\nvoid SetBaoRelation(int8_t from, int8_t to, int8_t v) {\n    bao_relation_[from][to] = v;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P02-06",
+   "atomId": "AT-ST-C12-014",
+   "layer": "common_game",
+   "file": "common_game/protocol/hzmj_protocol.proto",
+   "location": "common_game/protocol/hzmj_protocol.proto:353",
+   "symbol": "BaoSettleItem",
+   "excerpt": "// 摊/承包结算明细（内嵌于 MsgResultHu）\nmessage BaoSettleItem {\n    int32 from_seat = 1;  // 承包方座位（赔付方）\n    int32 to_seat   = 2;  // 被承包方座位（触发承包关系的另一方）\n    int64 score     = 3;  // 承包结算分数\n    int32 relation  = 4;  // 承包关系（0=无 / 1=承包 / 2=倒承包，与 TanItem.bao_relation 同枚举）\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P02-07",
+   "atomId": "AT-ST-C12-016",
+   "layer": "common_game",
+   "file": "common_game/common_game_server_data.h",
+   "location": "common_game/common_game_server_data.h:67",
+   "symbol": "CommonGameServerData::GetBaoRelation",
+   "excerpt": "int8_t GetBaoRelation(int8_t from, int8_t to) const {\n    return bao_relation_[from][to];\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P02-08",
+   "atomId": "AT-ST-C12-018",
+   "layer": "common_game",
+   "file": "common_game/common_game_context.cpp",
+   "location": "common_game/common_game_context.cpp:117",
+   "symbol": "CommonGameContext::SendResultHu",
+   "excerpt": "void CommonGameContext::SendResultHu(const std::vector<hzmj_protocol::BaoSettleItem>& bao_settles, int16_t seat,\n                                     const GameClock& clock) {\n    ...\n    hzmj_protocol::MsgResultHu msg;\n    FillMsgResultHu(&msg, bao_settles, seat);\n    ...\n    SendMessage(msg.ID, msg, 0, seat, clock);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P02-09",
+   "atomId": "AT-ST-C12-019",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_data.cpp",
+   "location": "mah_frame/base/base_data.cpp:1114",
+   "symbol": "BaseData::GetHuType",
+   "excerpt": "uint8_t BaseData::GetHuType(int16_t seat) {\n    std::map<uint8_t, HuData>::iterator it = hu_mess_.find(seat);\n    if (it != hu_mess_.end()) { return it->second.hutype; }\n    return 0;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P02-10",
+   "atomId": "AT-ST-C12-021",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.h",
+   "location": "common_game/com_game/common_game_com_result.h:69",
+   "symbol": "BoxResultStep::IsRobKongSettleAsDiscard",
+   "excerpt": "// 抢杠胡结算口径钩子：默认 false = 杭麻原生（杠牌者付\"三家钱\" + 承包独立叠加）。\n// 子游戏覆写为 true：抢杠胡按点炮单一赔付（仅杠牌者付一份），且不触发三摊承包。\n// 淳安(chunanmj)覆写为 true；杭麻/hzmj2r/桐庐/萧山保持默认不变。\nvirtual bool IsRobKongSettleAsDiscard() const { return false; }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P03-01",
+   "atomId": "AT-ST-C12-023",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:289",
+   "symbol": "BoxResultStep::ApplyBaoContracts",
+   "excerpt": "void BoxResultStep::ApplyBaoContracts(int16_t win_seat, std::map<int16_t, int64_t>& payments) {\n    if (!GetSvrCfg()->GetEnableThreeTanBao()) { return; }\n    ...\n    // 承包基数（\"三家钱\"）：全部输家应付总和（负值）\n    int64_t total = 0;\n    for (const auto& kv : payments) { total += kv.second; }\n    ...\n        int32_t relation = 1;\n        int64_t opp_pay = total;\n        if (tan_opp_win >= 3) {\n            relation = 2;\n            opp_pay = total * 2;\n            GetSvrData()->SetBaoRelation(opp, win_seat, 2);\n        } else {\n            GetSvrData()->SetBaoRelation(win_seat, opp, 1);\n        }\n        bao_payments[opp] = opp_pay;\n    ...\n    } else {\n        payments = bao_payments;  // 承包整体改写付款人，未参与者不付\n    }",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ]
+  },
+  {
+   "id": "SVE-ST-C12-P03-02",
+   "atomId": "AT-ST-C12-023",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:82",
+   "symbol": "BoxResultStep::CalcFinalWinLost",
+   "excerpt": "void BoxResultStep::CalcFinalWinLost() {\n    std::vector<int16_t> hu_seats = GetSvrData()->GetSureHuSeat();\n    ...\n    } else {\n        // 自摸（含杠上开花，hu_type_ 统一记 kHtSelf）\n        for (int16_t seat = 0; seat < GetSvrData()->GetPlayerCount(); ++seat) {\n            if (seat == win_seat) { continue; }\n            int64_t pay;\n            if (is_banker_win) {\n                // 庄家自摸：三闲家均按牢数番支付\n                pay = base_score * fan_mult * banker_mult * win_double_mult;\n            } else {\n                // 闲家自摸：庄家按牢数番支付；其余闲家只按番型倍数（不乘牢数番）\n                pay = (seat == zhuang) ? base_score * fan_mult * banker_mult * win_double_mult\n                                       : base_score * fan_mult * win_double_mult;\n            }\n            payments[seat] = -pay;\n        }\n    }\n    // 承包/倒承包改写付款人（链式承包，规则见头文件注释）\n    ApplyBaoContracts(win_seat, payments);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P03-03",
+   "atomId": "AT-ST-C12-023",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:93",
+   "symbol": "BoxResultStep::CalcFinalWinLost",
+   "excerpt": "int64_t base_score = GetSvrCfg()->GetBaseScore();\nint64_t fan_mult = GetSvrData()->GetHuFanPoint(win_seat);\nint8_t banker_level = GetSvrData()->GetBankerLevel();\nif (banker_level < 1) { banker_level = 1; }\nint64_t banker_mult = static_cast<int64_t>(1) << banker_level;  // 1牢=2 2牢=4 3牢=8",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P03-04",
+   "atomId": "AT-ST-C12-023",
+   "layer": "common_game",
+   "file": "common_game/common_game_server_data.h",
+   "location": "common_game/common_game_server_data.h:61",
+   "symbol": "CommonGameServerData::GetTanCount",
+   "excerpt": "// 摊/承包（局级，二维定向计数，A→B 与 B→A 各自独立）\nint8_t GetTanCount(int8_t from, int8_t to) const {\n    return tan_count_[from][to];\n}\nvoid SetTanCount(int8_t from, int8_t to, int8_t v) {\n    tan_count_[from][to] = v;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P03-05",
+   "atomId": "AT-ST-C12-023",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:67",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// enable_three_tan_bao | bool | true/false | false | 三摊承包，庄闲之间累计3摊后触发承包/倒承包；=0 时默认限制吃碰2次（仅3/4人局）\nif (config.contains(\"enable_three_tan_bao\")) {\n    int64_t v = CommonUtils::SafeGetJsonInt64(config, \"enable_three_tan_bao\");\n    bool enable = v > 0;\n    if (enable && player_count <= 2) {  // 创房安全判断：三摊承包仅 3/4 人局可开\n        ...\n        enable = false;\n    }\n    if (enable) {\n        svr_cfg->SetEnableThreeTanBao(true);\n    } else {\n        svr_cfg->SetEnableThreeTanBao(false);\n        svr_cfg->SetRuleChiPeng(2);  // 三摊承包关闭 → 默认限制吃碰2次（1对1）\n    }\n}",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ]
+  },
+  {
+   "id": "SVE-ST-C12-P03-06",
+   "atomId": "AT-ST-C12-023",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:57",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// banker_level_type | int8 | 0平庄起/1笃二老庄/2笃三老庄 | 0 | 牢庄起算档位，决定庄闲倍率起点（2/4/8倍）\nif (config.contains(\"banker_level_type\")) {\n    svr_cfg->SetBankerLevelType(static_cast<int8_t>(CommonUtils::SafeGetJsonInt64(config, \"banker_level_type\")));\n}",
+   "configKeys": [
+    "banker_level_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C12-P03-07",
+   "atomId": "AT-ST-C12-023",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:23",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// base_score | int64 | >0 | 1 | 底分（非法值打日志并保持默认 1）\nif (config.contains(\"base_score\")) {\n    int64_t base_score = CommonUtils::SafeGetJsonInt64(config, \"base_score\");\n    if (base_score > 0) {\n        svr_cfg->SetBaseScore(base_score);\n    } else { ... }\n}",
+   "configKeys": [
+    "base_score"
+   ]
+  },
+  {
+   "id": "SVE-ST-C12-P03-08",
+   "atomId": "AT-ST-C12-023",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:377",
+   "symbol": "BoxResultStep::UpdateBankerLevel",
+   "excerpt": "} else {\n    // 换庄：按 banker_level_type 起算档位重置（0平庄起=1牢；1笃二=2牢；2笃三=3牢）\n    int8_t start_level = static_cast<int8_t>(GetSvrCfg()->GetBankerLevelType() + 1);\n    if (start_level < 1) { start_level = 1; }\n    if (start_level > 3) { start_level = 3; }\n    GetSvrData()->SetBankerLevel(start_level);\n    GetSvrData()->SetBankerContinueCount(0);\n}",
+   "configKeys": [
+    "banker_level_type"
+   ]
+  },
+  {
+   "id": "SVE-ST-C12-P03-09",
+   "atomId": "AT-ST-C12-023",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_data.cpp",
+   "location": "mah_frame/base/base_data.cpp:1088",
+   "symbol": "BaseData::GetHuFanPoint",
+   "excerpt": "int64_t BaseData::GetHuFanPoint(int16_t seat) {\n    std::map<uint8_t, HuData>::iterator it = hu_mess_.find(seat);\n    if (it != hu_mess_.end()) { return it->second.huftpoint; }\n    return -1;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P03-10",
+   "atomId": "AT-ST-C12-024",
+   "layer": "common_game",
+   "file": "common_game/common_game_server_data.h",
+   "location": "common_game/common_game_server_data.h:67",
+   "symbol": "CommonGameServerData::GetBaoRelation",
+   "excerpt": "int8_t GetBaoRelation(int8_t from, int8_t to) const {\n    return bao_relation_[from][to];\n}\nvoid SetBaoRelation(int8_t from, int8_t to, int8_t v) {\n    bao_relation_[from][to] = v;\n}",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C12-P03-11",
+   "atomId": "AT-ST-C12-024",
+   "layer": "common_game",
+   "file": "common_game/protocol/hzmj_protocol.proto",
+   "location": "common_game/protocol/hzmj_protocol.proto:353",
+   "symbol": "BaoSettleItem",
+   "excerpt": "// 摊/承包结算明细（内嵌于 MsgResultHu）\nmessage BaoSettleItem {\n    int32 from_seat = 1;  // 承包方座位（赔付方）\n    int32 to_seat   = 2;  // 被承包方座位（触发承包关系的另一方）\n    int64 score     = 3;  // 承包结算分数\n    int32 relation  = 4;  // 承包关系（0=无 / 1=承包 / 2=倒承包，与 TanItem.bao_relation 同枚举）\n}",
    "configKeys": []
   }
  ]

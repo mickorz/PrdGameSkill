@@ -57,3 +57,15 @@
 **解决方案**：① 机械修复（已核验 ground truth 后）：file = location 冒号前路径部分，直接改分片 JSON，resume 续跑全回放 20s 收口（不改 prompt 保证 journal 回放）；② prompt 加固（防复发）：3-verify-scope.js 规则块补「file 必须与 location 冒号前路径逐字符一致（含 com_game 等中间目录），闸门逐条比对，漏写整轮合并失败」，后续批次生效。
 
 **预防/注意**：修复 agent 产物前必须先到 symbol-index/源码核验正确值，机械修复仅限「字段间可互相推导且闸门只查内部一致性」的场景；prompt 修复与续跑回放互斥——改了 prompt 该类 agent 全部重跑，赶时间先机械修复续跑收口、prompt 加固留给下一批。
+
+## 坑 6：agent 返回的结构化摘要计数手误（分片文件正确，摘要报错）
+
+**问题现象**：S4.1 第三批（ST-C03/11/12，run-mwgbqusi-2 首轮）在子流程 3 的摘要闸门失败：「落判摘要计数不自洽：ST-C11-p06.json 四类合计=9 atomCount=8」。dump 分片文件核对：条目数 8、分布 6/1/1/0、atomId 无重复全覆盖——**分片文件本身完全正确**，错在 agent 返回的结构化摘要（四类合计手误报 9）。
+
+**排查过程**：读 `runtime/verify-output/ST-C11-p06.json` 逐项核对（条目数/atomId 清单/分布/重复检查）；再读 `runtime/verify-input/ST-C11-p06.json` 的 atomCount=8 与 featureGroups 展开一致，确认文件侧无任何问题。
+
+**根因**：闸门信任 agent 返回的摘要计数（`r.active+r.conditional+r.unknown+r.inactive === r.atomCount`），而 agent 摘要是「转写产物」——LLM 对自己刚写的文件做算术汇总时会手误；文件才是权威产物。且该闸门失败发生在 agent 调用之后，resume 会原样回放失败的返回，不改闸门就永远卡死。
+
+**解决方案**：新增确定性重算闸门 `.opencode-workflows/scripts/recount-verify-parts.mjs`（example 16 断言）：以落判分片文件为准，对照 verify-input 期望原子清单重算——全覆盖（缺失/混入外来原子均 fail）、atomId 不重复、applicability 枚举合法、四类分布与 sveCount 重算，成功写 `runtime/verify-recount.json`；子流程 3 用 `commandSuccess` 跑该脚本做闸门 + 新增「回读落判重算」agent 聚合 scopeStats（agent 摘要计数只 log 告警不再 fail）。改闸门属非 agent 调用逻辑，不影响 journal 回放——续跑 24 agent 全回放 253s 收口。
+
+**预防/注意**：凡「agent 返回值只用于校验/统计」的闸门，都要能退到「以落盘文件确定性重算」的口径——agent 摘要最多做告警与交叉提示；分片文件与期望清单（verify-input）的对照交给纯代码闸门。新增 agent 调用（回读重算）追加在既有调用之后，resume 时既有调用照常回放、新调用正常新跑，位置不要插到既有调用前面（会改变调用序列导致回放错位）。

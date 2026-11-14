@@ -118,6 +118,18 @@
   - DR：样本覆盖条目一致 3 / 分歧 5（正式更进取：C02-006/007/009、C04-001/012 建议 partial/unverified→consistent，其中 C04-001 优先级次序与 S2.1 裁决链证据（macros.h:203-206 级别常量）方向一致）；样本未覆盖 17 条为正式新增建议
 - **S3.2 partial 复核进度**：v2 的 64 条 partial 中已复核 3 条（证据就位三阶段 ST-C01/02/04），2 条建议升级（C02-006、C04-012）；其余 partial 原子随 S4.1 分批补证时逐阶段复核
 
+## S4.1 第三批 + 全量收口（ST-C03/11/12，2026-11-14）
+
+- **执行**：runId `run-mwgbqusi-2`（一轮卡点修复后续跑贯通）：37 agent（24 journal 回放 + 13 新跑），253s；104 原子（发牌 12/1 片、出牌与响应 68/7 片、三摊承包 24/3 片）；卡点：ST-C11-p06 agent 返回摘要计数手误（四类合计 9 ≠ atomCount 8，分片文件本身正确 8/8）→ 新增确定性重算闸门 `recount-verify-parts.mjs`（以分片文件为准：全覆盖/无重复/枚举合法/分布重算 + 回读 agent 聚合，agent 摘要降级为告警；example 16 断言全绿），续跑收口（详见 experience 坑 6）
+- **本批产物**：scope active 71/conditional 24/unknown 9/inactive 0；建议 47 条 pending
+- **全量收口（15/15 Stage，319/319 原子全部落判 + 复核）**：
+  - scope 319：active 237 / conditional 69 / unknown 12 / inactive 1
+  - SVE 875 条；DR 319 条（pending 317 / approved 2 / rejected 0；升级建议 173 条待裁决）
+  - l7：verified 187 / verification_required 129 / decision_required 2 / not_applicable 1
+  - effectiveDifference 65/64/2/188（与 v2 基线一致——除 2 条 approved 维持 conflict 外全部 pending，生效差异按基线）
+  - unknown 12 条分布：C11 出牌与响应 9 条（爆飘箭头/杠字叠放/倒计时归零/暗杠资格等 UI 表现与动画类）+ C15 结算 2 条（长按小结算/准备与下一小局——客户端公共壳）+ C10 吃碰禁手 1 条（提起横滑虚影）——均诚实 unknown → verification_required，S4.3 规则待验证报告浮出
+  - inactive 1 条（C10-021 禁张对补进牌，见第二批节）+ conflict 2 条（C02-008/C15-018 已裁决 B 改需求 approved）
+
 ## S4.1 第二批：行牌 复核（ST-C05~C10，2026-11-14）
 
 - **执行**：runId `run-mwg8iegw-1`：39 agent（一次贯通零卡点，3-verify prompt file 字段加固生效），wall 4868s / 12127 tok；110 原子（吃碰杠 28、杠后补牌 14、胡 15、飘财 20、杠开杠飘 12、吃碰禁手 21），12 片

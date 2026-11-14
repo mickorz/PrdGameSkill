@@ -17,11 +17,11 @@
  "note": "仅覆盖已复核原子，未复核原子无 L7 分类（待 S3 复核），消费方按无数据处理；l7 为业务分类、reviewStatus 为审批状态，二者独立；未批准条目 l7 仅为 proposed 建议（l7Basis），正式索引只消费 approved 条目（stats.l7Approved）",
  "stats": {
   "atomCount": 319,
-  "reviewedCount": 215,
-  "unreviewedCount": 104,
+  "reviewedCount": 319,
+  "unreviewedCount": 0,
   "l7": {
-   "verified": 133,
-   "verification_required": 79,
+   "verified": 187,
+   "verification_required": 129,
    "decision_required": 2,
    "not_applicable": 1
   },
@@ -32,13 +32,13 @@
    "not_applicable": 0
   },
   "effectiveDifference": {
-   "consistent": 19,
-   "partial": 46,
+   "consistent": 65,
+   "partial": 64,
    "conflict": 2,
-   "unverified": 148
+   "unverified": 188
   },
   "reviewStatus": {
-   "pending": 213,
+   "pending": 317,
    "approved": 2,
    "rejected": 0
   }
@@ -4224,6 +4224,1986 @@
     "SVE-ST-C10-P02-29"
    ],
    "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C03-001",
+   "stageId": "ST-C03",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C03-P01-01",
+    "SVE-ST-C03-P01-02",
+    "SVE-ST-C03-P01-03"
+   ],
+   "reviewRule": "evidence-is-not-consistency（服务端确证头部取牌与逆时针索引，但开牌位置含骰子偏移，与「庄家起」存在细节差异，维持 partial）",
+   "reviewReason": "需求语义：从牌墙头部、庄家起、按逆时针发牌。服务端实现：mah_frame/com_basic/com_ju.cpp:216 开牌位置 seat=(GetZhuang()+(chip_num-1)%4)%4，以庄位为基准叠加骰子和偏移；mah_frame/base/base_data.cpp:727 TakeAsc 恒从 walls_.front() 取牌（头部成立）；mah_frame/base/base_data.cpp:755 GetNextAsc 递减且 com_ju.cpp:216 注释「索引为逆时针计数」（逆时针成立）。头部取牌与逆时针可被服务端确证，但起点由骰子偏移决定而非严格「庄家起」，属细节差异。"
+  },
+  {
+   "atomId": "AT-ST-C03-002",
+   "stageId": "ST-C03",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C03-P01-04",
+    "SVE-ST-C03-P01-05"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C03-003",
+   "stageId": "ST-C03",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C03-P01-04",
+    "SVE-ST-C03-P01-06",
+    "SVE-ST-C03-P01-07"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：再每人 1 张，各 13 张。服务端实现：com_ju.cpp:279 TakeFirstStep::TakeFirst 以 GetFirstCount()-1 为上限逐座位补牌（SVE-ST-C03-P01-04）；mah_frame/base/base_config.cpp:6 + macros.h:213 DEF_FIRST_COUNT=14，故每人补到 13 张（SVE-ST-C03-P01-06）；base_context.cpp:269 BaseContext::SendTakeFirst 将各座位 hands 原样下发（SVE-ST-C03-P01-07）。四人局每人 13 张与规则同构。"
+  },
+  {
+   "atomId": "AT-ST-C03-004",
+   "stageId": "ST-C03",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C03-P01-06",
+    "SVE-ST-C03-P01-08",
+    "SVE-ST-C03-P01-09",
+    "SVE-ST-C03-P01-10"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：再给庄家 1 张，庄家 14 张、三名闲家各 13 张。服务端实现：mah_frame/com_basic/com_take.cpp:259 ZhuangSelfTakeStep::Execute 以 TakeFlag::kTFBanker 为庄家再取 1 张并下发（SVE-ST-C03-P01-08）；common_game/com_game/common_game_com_ju.cpp:288 BoxZhuangSelfTakeStep::Execute 走同一庄家摸牌路径（SVE-ST-C03-P01-09）；庄位由 com_ju.cpp:116 BoxZhuangStep::JudgeZhuang 确定（SVE-ST-C03-P01-10）。庄 14 / 闲 13 恒定，与规则同构。"
+  },
+  {
+   "atomId": "AT-ST-C03-005",
+   "stageId": "ST-C03",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C03-P01-04",
+    "SVE-ST-C03-P01-08",
+    "SVE-ST-C03-P01-11"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级；53 张以 4 人局为口径）",
+   "reviewReason": "需求语义：共发出 53 张。服务端实现：com_ju.cpp:279 TakeFirstStep::TakeFirst 按 GetPlayerCount 逐座位发 13 张（SVE-ST-C03-P01-04）+ com_take.cpp:259 庄家额外 1 张（SVE-ST-C03-P01-08）；common_game/common_game_logic.cpp:477 InitTableData 取 GetChairCount 设玩家数，创房默认 4 人（SVE-ST-C03-P01-11）。4 人局共发出 13×4+1=53 张，与规则同构（2/3 人局为 40/27 张，属参数口径差异）。"
+  },
+  {
+   "atomId": "AT-ST-C03-006",
+   "stageId": "ST-C03",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C03-P01-12",
+    "SVE-ST-C03-P01-13",
+    "SVE-ST-C03-P01-14"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C03-007",
+   "stageId": "ST-C03",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C03-P01-15",
+    "SVE-ST-C03-P01-16"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：庄家用这 14 张直接进入首轮。服务端实现：common_game/com_game/common_game_com_take.cpp:21 BoxFirstWaitStep::Execute 在庄家 14 张起手阶段即下发听牌提示并以 ChangeNextStep(GetSvrData()->GetZhuang(), GetNextStep()) 分发到 action（SVE-ST-C03-P01-15）；common_game/common_game_init.cpp:193 InitStepForBox 中 first_wait_step 直连 action_step（SVE-ST-C03-P01-16）。步骤链与规则同构。"
+  },
+  {
+   "atomId": "AT-ST-C03-008",
+   "stageId": "ST-C03",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C03-P01-08",
+    "SVE-ST-C03-P01-09",
+    "SVE-ST-C03-P01-16"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：庄家首轮不再摸牌。服务端实现：com_take.cpp:259 ZhuangSelfTakeStep::Execute 一次取完第 14 张（SVE-ST-C03-P01-08），common_game_com_ju.cpp:288 BoxZhuangSelfTakeStep::Execute 取后即进入等待（SVE-ST-C03-P01-09）；common_game_init.cpp:193 步骤链 take_first→zhuang_self→first_wait→action，首轮前无 NextTakeStep（SVE-ST-C03-P01-16）。与规则同构。"
+  },
+  {
+   "atomId": "AT-ST-C03-009",
+   "stageId": "ST-C03",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C03-P01-09",
+    "SVE-ST-C03-P01-17",
+    "SVE-ST-C03-P01-18"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：理牌后若已满足自摸，立即给出【自摸】。服务端实现：common_game/com_game/common_game_com_action.cpp:259 BoxHuStep::Judge 将起手状态 kHzmjStateFirstWait 视同 kMahStateTake 走自摸判胡（SVE-ST-C03-P01-17），common_game_com_action.cpp:402 BoxHuStep::TestHu 成牌即 AddHuPowerSeats 授胡权限（SVE-ST-C03-P01-18）；起手状态由 common_game_com_take.cpp:21 first_wait 直接进入（SVE-ST-C03-P01-15），发牌结束即判无需等待额外时机，与「立即」同构。"
+  },
+  {
+   "atomId": "AT-ST-C03-010",
+   "stageId": "ST-C03",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C03-P01-19",
+    "SVE-ST-C03-P01-20",
+    "SVE-ST-C03-P01-21"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：同时给出【过】。服务端实现：mah_frame/com_basic/com_action.cpp:816 ActionStep::GetPowerAndCombs 在非出牌权限且 power>0 时追加 kPowerIdCancelS（SVE-ST-C03-P01-20），com_action.cpp:983 ActionStep::SendPowerToClient 将权限与时钟同批下发（SVE-ST-C03-P01-19），common_game_com_action.cpp:40 BoxActionStep::OnMsgCancel 处理过（SVE-ST-C03-P01-21）。过与胡权限同批下发，与「同时给出」同构。"
+  },
+  {
+   "atomId": "AT-ST-C03-011",
+   "stageId": "ST-C03",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C03-P01-22",
+    "SVE-ST-C03-P01-23",
+    "SVE-ST-C03-P01-24"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：爆头按其余 13 张判断。服务端实现：common_game/common_game_fan_type.cpp:250 IsFanTypeBaoTou 要求自摸且以进张（danfang）与财神成将（SVE-ST-C03-P01-22），common_game_fan_type.cpp:23 IsDanFangWithCai 以 danfang+财神为将、其余手牌按 3N2/2N 拆解判定（SVE-ST-C03-P01-23），common_game_init.cpp:359 AddFanType 恒注册爆头番型（SVE-ST-C03-P01-24）。即先扣除进张再判其余手牌，与「按其余 13 张判断」同构。"
+  },
+  {
+   "atomId": "AT-ST-C03-012",
+   "stageId": "ST-C03",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C03-P01-22",
+    "SVE-ST-C03-P01-25",
+    "SVE-ST-C03-P01-26",
+    "SVE-ST-C03-P01-27",
+    "SVE-ST-C03-P01-28",
+    "SVE-ST-C03-P01-29",
+    "SVE-ST-C03-P01-30"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-001",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P01-01",
+    "SVE-ST-C11-P01-02",
+    "SVE-ST-C11-P01-03",
+    "SVE-ST-C11-P01-04",
+    "SVE-ST-C11-P01-05",
+    "SVE-ST-C11-P01-06"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-002",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P01-02",
+    "SVE-ST-C11-P01-07",
+    "SVE-ST-C11-P01-08",
+    "SVE-ST-C11-P01-09"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-003",
+   "stageId": "ST-C11",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P01-10",
+    "SVE-ST-C11-P01-11",
+    "SVE-ST-C11-P01-12",
+    "SVE-ST-C11-P01-13"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级；实现以选择窗口不下发出牌权限位达成禁出）",
+   "reviewReason": "需求语义：正在选择组合时不能出牌。服务端实现：选择场景仅登记 kPowerIdChow（mah_frame/com_basic/com_action.cpp:182、com_action.cpp:735，SVE-ST-C11-P01-10/13），而出牌入口 ActionStep::OnMsgPlayC 强制 HaveActPower(seat, kPowerIdPlay)（com_action.cpp:242，SVE-ST-C11-P01-02），选择方不持有 kPowerIdPlay 即被 kAFPlayNoPower 拒绝；该权限按座位逐一下发（com_action.cpp:952）且无配置开关，基线所述“依赖此时不具备出牌位”的机制已被确证，行为与规则同构。"
+  },
+  {
+   "atomId": "AT-ST-C11-004",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P01-14",
+    "SVE-ST-C11-P01-15",
+    "SVE-ST-C11-P01-16",
+    "SVE-ST-C11-P01-17"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-005",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P01-18",
+    "SVE-ST-C11-P01-19",
+    "SVE-ST-C11-P01-20",
+    "SVE-ST-C11-P01-21",
+    "SVE-ST-C11-P01-22"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-006",
+   "stageId": "ST-C11",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P01-23",
+    "SVE-ST-C11-P01-24",
+    "SVE-ST-C11-P01-25",
+    "SVE-ST-C11-P01-26",
+    "SVE-ST-C11-P01-27",
+    "SVE-ST-C11-P01-28"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：弃牌可被吃、碰、直杠或点炮胡时先裁决。服务端实现：所有响应统一登记后在 ConAction::OnConAction 中按 level 取最大者，最高权重未响应则继续等待（mah_frame/base/con_action.cpp:40、57，SVE-ST-C11-P01-23/24），层级常量为 出1 < 吃2 < 碰3 = 杠3 < 胡4（mah_frame/base/macros.h:201-206，SVE-ST-C11-P01-28），胡权重另叠加座次权重（com_action.cpp:826/834），即响应执行前必先完成优先级裁决，与规则同构。"
+  },
+  {
+   "atomId": "AT-ST-C11-007",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P01-29",
+    "SVE-ST-C11-P01-30",
+    "SVE-ST-C11-P01-31",
+    "SVE-ST-C11-P01-32",
+    "SVE-ST-C11-P01-33",
+    "SVE-ST-C11-P01-34"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-008",
+   "stageId": "ST-C11",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P01-35",
+    "SVE-ST-C11-P01-34",
+    "SVE-ST-C11-P01-29"
+   ],
+   "reviewRule": "ui-conflict-stands-alone（服务端仅确证牌池状态下发，不消解浮标清除的客户端表现缺口）",
+   "reviewReason": "需求语义：成立后清除被响应牌的浮标和放大显示（ui_requirement 仅“清除浮标和放大显示”）。服务端实现：仅以 TOutMah.stay 字段（mah_frame/base/typedef.h:68，SVE-ST-C11-P01-35）配合 SetLastOutStay(...false)（mah_frame/base/base_data.cpp:625，SVE-ST-C11-P01-34）；吃/碰/明杠/点炮胡四条路径均置 stay=false（chow/pung/kong/hu 各处），但浮标隐藏、放大复位的客户端实现仍不在本仓库，基线缺失点未被服务端证据消解，维持 partial。"
+  },
+  {
+   "atomId": "AT-ST-C11-009",
+   "stageId": "ST-C11",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P01-23",
+    "SVE-ST-C11-P01-36",
+    "SVE-ST-C11-P01-37",
+    "SVE-ST-C11-P01-38",
+    "SVE-ST-C11-P01-39"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-010",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "unknown",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P02-01",
+    "SVE-ST-C11-P02-02",
+    "SVE-ST-C11-P02-03"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-011",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P02-04",
+    "SVE-ST-C11-P02-05",
+    "SVE-ST-C11-P02-06"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-012",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "unknown",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P02-07",
+    "SVE-ST-C11-P02-08",
+    "SVE-ST-C11-P02-09"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-013",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "unknown",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P02-10",
+    "SVE-ST-C11-P02-01"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-014",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "unknown",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P02-11",
+    "SVE-ST-C11-P02-01"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-015",
+   "stageId": "ST-C11",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P02-08",
+    "SVE-ST-C11-P02-09",
+    "SVE-ST-C11-P02-12"
+   ],
+   "reviewRule": "evidence-is-not-consistency（查到服务端实现不等于需求一致，客户端预览收起未证，维持 partial）",
+   "reviewReason": "需求语义：点【过】只放弃这一次提示，收起本次按钮和预览。服务端实现：过牌结束本次操作机会（SVE-ST-C11-P02-08 DoActionCancel 回到最大 server step）、只清本座位待办（SVE-ST-C11-P02-12 ClearUserConAction）、并由服务端下发过牌通知供客户端收起（SVE-ST-C11-P02-09 common_game_com_action.cpp:40 SendCancelNotice）。服务端侧仅到「结束本次机会并发通知」，按钮与预览的实际渲染收起仍属客户端，基线未证的「预览清除」未被服务端证据覆盖，细节差异维持原判。"
+  },
+  {
+   "atomId": "AT-ST-C11-016",
+   "stageId": "ST-C11",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P02-13",
+    "SVE-ST-C11-P02-14",
+    "SVE-ST-C11-P02-15",
+    "SVE-ST-C11-P02-16"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：点过后别人再打出相同牌，按新弃牌重新判断。服务端实现：每次进入操作机会即 RemoveConAction/ClearAllMap 清空聚合表（SVE-ST-C11-P02-13 com_action.cpp:23）、重新 MakePower 授予权限（SVE-ST-C11-P02-14 com_action.cpp:761），吃与明杠每次均取最新 GetJustPlay 重新判定（SVE-ST-C11-P02-15 common_game_com_action.cpp:68、SVE-ST-C11-P02-16 common_game_com_kong.cpp:40），不存在跨机会的已过张缓存。服务端重算机制与规则同构。"
+  },
+  {
+   "atomId": "AT-ST-C11-017",
+   "stageId": "ST-C11",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P02-17",
+    "SVE-ST-C11-P02-12",
+    "SVE-ST-C11-P02-18",
+    "SVE-ST-C11-P02-14"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：放弃杠后同一次操作机会内不再出现【杠】，下一次拿到操作机会再判断。服务端实现：任一回应先 ClearUserConAction 清空该座位本机会全部待办（含杠）后只回插已响应项（SVE-ST-C11-P02-17 con_action.cpp:19、SVE-ST-C11-P02-12 con_action.cpp:70），同一机会内不再重发 power（SVE-ST-C11-P02-18 com_action.cpp:45 仅在 Init 成功时 SetActionPower/SendPowerToClient），下次机会才由 InitPowerStepConAction 重新授予（SVE-ST-C11-P02-14）。服务端抑制与重算时机与规则同构。"
+  },
+  {
+   "atomId": "AT-ST-C11-018",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P02-19",
+    "SVE-ST-C11-P02-01",
+    "SVE-ST-C11-P02-04",
+    "SVE-ST-C11-P02-20"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-019",
+   "stageId": "ST-C11",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P02-01",
+    "SVE-ST-C11-P02-04",
+    "SVE-ST-C11-P02-21"
+   ],
+   "reviewRule": "evidence-is-not-consistency（服务端证据不覆盖排列与配色细节，维持 partial）",
+   "reviewReason": "需求语义：按钮从左到右为【吃】【碰】【杠】【胡】，蓝色【过】固定最右，只显示本次可做项。服务端实现：只聚合本次实际存在的 power 位与组合并按座位下发（SVE-ST-C11-P02-01 com_action.cpp:813、SVE-ST-C11-P02-04 com_action.cpp:999），GetConActionWeight 仅定义动作优先级不含 UI 顺序（SVE-ST-C11-P02-21 com_action.cpp:826），故「只显示可做项」成立；但顺序、过/过2 并存时最右归属、蓝色皮肤仍属客户端且基线未验证，维持 partial。"
+  },
+  {
+   "atomId": "AT-ST-C11-020",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P02-22",
+    "SVE-ST-C11-P02-23",
+    "SVE-ST-C11-P02-20"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-021",
+   "stageId": "ST-C11",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P02-24",
+    "SVE-ST-C11-P02-04",
+    "SVE-ST-C11-P02-25"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-022",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P03-02",
+    "SVE-ST-C11-P03-01",
+    "SVE-ST-C11-P03-03"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-023",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P03-04",
+    "SVE-ST-C11-P03-05",
+    "SVE-ST-C11-P03-06",
+    "SVE-ST-C11-P03-07",
+    "SVE-ST-C11-P03-03"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-024",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P03-11",
+    "SVE-ST-C11-P03-10",
+    "SVE-ST-C11-P03-03",
+    "SVE-ST-C11-P03-08",
+    "SVE-ST-C11-P03-09"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-025",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P03-12",
+    "SVE-ST-C11-P03-13",
+    "SVE-ST-C11-P03-14",
+    "SVE-ST-C11-P03-15",
+    "SVE-ST-C11-P03-03"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-026",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P03-12",
+    "SVE-ST-C11-P03-13",
+    "SVE-ST-C11-P03-14",
+    "SVE-ST-C11-P03-03"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-027",
+   "stageId": "ST-C11",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P03-16",
+    "SVE-ST-C11-P03-17",
+    "SVE-ST-C11-P03-18",
+    "SVE-ST-C11-P03-19",
+    "SVE-ST-C11-P03-26",
+    "SVE-ST-C11-P03-27"
+   ],
+   "reviewRule": "evidence-is-not-consistency（服务端仲裁挂起已确证，但“等待”界面状态缺失属客户端渲染差异，维持原判）",
+   "reviewReason": "需求语义：较低优先级先提交时本端收起按钮并“等待”。服务端实现确证请求只登记不执行——OnMsgChowC 校验通过后仅调 OnConAction 登记 kStepLevelChow（mah_frame/com_basic/com_action.cpp:153-210，SVE-ST-C11-P03-17），ConAction::OnConAction 写 had_resp_ 并在最高等级未响应时 return false 挂起（mah_frame/base/con_action.cpp:19-61，SVE-ST-C11-P03-16），DealTimeOutAction 对已响应座位不代打（com_action.cpp:62-80，SVE-ST-C11-P03-18）。但基线 partial 的缺口在客户端：“等待”无专门界面状态、仅表现为操作区关闭，服务端只证明挂起机制存在，无法补上该界面语义，故维持 partial。"
+  },
+  {
+   "atomId": "AT-ST-C11-028",
+   "stageId": "ST-C11",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P03-16",
+    "SVE-ST-C11-P03-19",
+    "SVE-ST-C11-P03-20",
+    "SVE-ST-C11-P03-21",
+    "SVE-ST-C11-P03-22"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：更高优先级成立后结束等待并取消已提交请求。服务端 ConAction::OnConAction 每次响应先 ClearUserConAction(seat) 按座位擦除全部旧候选再重算 maxkey（mah_frame/base/con_action.cpp:19-61、:70-81，SVE-ST-C11-P03-16/20），最高等级已响应即 DoConAction 只切换到胜出者对应 Step 并结束等待（mah_frame/com_basic/com_action.cpp:546-582、con_action.cpp:98-100，SVE-ST-C11-P03-21），非胜出请求不再执行；DoActionCancel 走独立分支（com_action.cpp:712-722，SVE-ST-C11-P03-22）。清理旧提交 + 结束等待 + 不执行落败请求与规则同构，基线 unverified 可升 consistent。"
+  },
+  {
+   "atomId": "AT-ST-C11-029",
+   "stageId": "ST-C11",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P03-16",
+    "SVE-ST-C11-P03-19",
+    "SVE-ST-C11-P03-23",
+    "SVE-ST-C11-P03-24",
+    "SVE-ST-C11-P03-25"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：更高优先级都放弃后再执行已提交的较低优先级请求。服务端过牌以 kPowerIdCancelS/kStepLevelCancelS(=1) 登记（mah_frame/com_basic/com_action.cpp:325-367，SVE-ST-C11-P03-23），候选先以 isrespond=false 登记并带权重（com_action.cpp:735-783，SVE-ST-C11-P03-24），OnConAction 取最大 level 且已响应者执行（con_action.cpp:43-61，SVE-ST-C11-P03-16）；等级常量 过1<吃2<碰/杠3<胡4（mah_frame/base/macros.h:203-206，SVE-ST-C11-P03-19），因此高档放弃后先前已提交的低档请求成为最大已响应项被 DoConAction 执行并推进牌局（com_action.cpp:584-593，SVE-ST-C11-P03-25）。与规则同构，基线 unverified 可升 consistent。"
+  },
+  {
+   "atomId": "AT-ST-C11-030",
+   "stageId": "ST-C11",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P04-01",
+    "SVE-ST-C11-P04-02",
+    "SVE-ST-C11-P04-03",
+    "SVE-ST-C11-P04-04",
+    "SVE-ST-C11-P04-05",
+    "SVE-ST-C11-P04-06",
+    "SVE-ST-C11-P04-07",
+    "SVE-ST-C11-P04-08",
+    "SVE-ST-C11-P04-09",
+    "SVE-ST-C11-P04-10"
+   ],
+   "reviewRule": "no-server-evidence-is-not-conflict（服务端仅证候选集合下发与配置门控，未覆盖界面位置，维持原判）",
+   "reviewReason": "需求：点【吃】后在手牌上方展开可选顺子（含相对手牌的上下位置）；服务端仅证候选集合下发路径 BoxChowStep::Judge→TestChow（common_game/com_game/common_game_com_action.cpp:82，SVE-ST-C11-P04-01）、ChowStep::MakePower 写 TPower.combs（mah_frame/com_basic/com_chow.cpp:80，SVE-ST-C11-P04-02）、BaseContext::FillMsgPower 下发 MsgPower.combs（mah_frame/base/base_context.cpp:876，SVE-ST-C11-P04-03），并受 rule_chi_peng/only_pung_no_chow/enable_three_tan_bao/enable_chow_forbid 门控（SVE-ST-C11-P04-04~10），全程未覆盖客户端面板相对手牌的位置，维持 partial。"
+  },
+  {
+   "atomId": "AT-ST-C11-031",
+   "stageId": "ST-C11",
+   "previousDifference": "partial",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P04-11",
+    "SVE-ST-C11-P04-12",
+    "SVE-ST-C11-P04-13"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求：每组三张按牌面从小到大；服务端 BaseData::AddShunGroup 固定以 mah/mah+1/mah+2 升序构造顺子组（mah_frame/base/base_data.cpp:772，SVE-ST-C11-P04-11），Algorithm::TestChow 把 group 原样赋给 comb.mahs 不重排（mah_frame/base/algorithm.cpp:3261，SVE-ST-C11-P04-12），Algorithm::TcombToMsgComb 按 comb.mahs 下标原序写协议（mah_frame/base/algorithm.cpp:515，SVE-ST-C11-P04-13），下发候选牌序恒为升序，与规则同构。"
+  },
+  {
+   "atomId": "AT-ST-C11-032",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P04-14",
+    "SVE-ST-C11-P04-15"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-033",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P04-16",
+    "SVE-ST-C11-P04-17",
+    "SVE-ST-C11-P04-18"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-034",
+   "stageId": "ST-C11",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "scopeApplicability": "unknown",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-035",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P04-19",
+    "SVE-ST-C11-P04-20",
+    "SVE-ST-C11-P04-14"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-036",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P04-21",
+    "SVE-ST-C11-P04-22",
+    "SVE-ST-C11-P04-23"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-037",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P05-01",
+    "SVE-ST-C11-P05-02"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-038",
+   "stageId": "ST-C11",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P05-03",
+    "SVE-ST-C11-P05-04",
+    "SVE-ST-C11-P05-05",
+    "SVE-ST-C11-P05-06",
+    "SVE-ST-C11-P05-02"
+   ],
+   "reviewRule": "evidence-is-not-consistency（服务端证据仅证混排、无排序分支，顺序细节未与规则同构，维持 partial）",
+   "reviewReason": "需求语义：暗杠与加杠混排，整体顺序为万、条、筒、东、南、西、北、中、发、白，同花色按点数升序。服务端实现：MKongStep/CKongStep/TKongStep::MakePower 均以 kPowerIdKong 追加 TPower 进同一候选池（SVE-ST-C11-P05-03 com_kong.cpp:116、SVE-ST-C11-P05-04 com_kong.cpp:261、SVE-ST-C11-P05-05 com_kong.cpp:438），混排机制成立；但 ActionStep::AddCombsMap 只 push_back 追加、无任何排序（SVE-ST-C11-P05-06 com_action.cpp:914），BaseContext::FillMsgPower 按 combs 原序下发（SVE-ST-C11-P05-02 base_context.cpp:890-894），源码无花色序列与点数排序分支，顺序实际取决于步骤注册与组合生成顺序。服务端仅证『混排』，未证『万条筒字牌 + 点数升序』，维持 partial。"
+  },
+  {
+   "atomId": "AT-ST-C11-039",
+   "stageId": "ST-C11",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P05-07",
+    "SVE-ST-C11-P05-08",
+    "SVE-ST-C11-P05-12"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-040",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P05-09",
+    "SVE-ST-C11-P05-10",
+    "SVE-ST-C11-P05-11"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-041",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P05-12",
+    "SVE-ST-C11-P05-13",
+    "SVE-ST-C11-P05-14",
+    "SVE-ST-C11-P05-15"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-042",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P05-12",
+    "SVE-ST-C11-P05-16"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-043",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P05-17",
+    "SVE-ST-C11-P05-18",
+    "SVE-ST-C11-P05-19",
+    "SVE-ST-C11-P05-20"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-044",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P05-21",
+    "SVE-ST-C11-P05-01"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-045",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P05-22",
+    "SVE-ST-C11-P05-09",
+    "SVE-ST-C11-P05-10",
+    "SVE-ST-C11-P05-11"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-046",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P05-01",
+    "SVE-ST-C11-P05-21"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-047",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P05-09",
+    "SVE-ST-C11-P05-11",
+    "SVE-ST-C11-P05-22"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-048",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P05-23",
+    "SVE-ST-C11-P05-24",
+    "SVE-ST-C11-P05-01"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-049",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P06-01",
+    "SVE-ST-C11-P06-02",
+    "SVE-ST-C11-P06-03",
+    "SVE-ST-C11-P06-04"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-050",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P06-05",
+    "SVE-ST-C11-P06-06",
+    "SVE-ST-C11-P06-07",
+    "SVE-ST-C11-P06-08",
+    "SVE-ST-C11-P06-09",
+    "SVE-ST-C11-P06-10",
+    "SVE-ST-C11-P06-02",
+    "SVE-ST-C11-P06-03"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-051",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "unknown",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-052",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P06-11",
+    "SVE-ST-C11-P06-12",
+    "SVE-ST-C11-P06-13",
+    "SVE-ST-C11-P06-14",
+    "SVE-ST-C11-P06-15",
+    "SVE-ST-C11-P06-16",
+    "SVE-ST-C11-P06-17"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-053",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P06-13",
+    "SVE-ST-C11-P06-14",
+    "SVE-ST-C11-P06-18",
+    "SVE-ST-C11-P06-15"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-054",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P06-19",
+    "SVE-ST-C11-P06-20",
+    "SVE-ST-C11-P06-21",
+    "SVE-ST-C11-P06-22",
+    "SVE-ST-C11-P06-17"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-055",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P06-19",
+    "SVE-ST-C11-P06-20",
+    "SVE-ST-C11-P06-18",
+    "SVE-ST-C11-P06-22"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-056",
+   "stageId": "ST-C11",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P06-17",
+    "SVE-ST-C11-P06-16",
+    "SVE-ST-C11-P06-23",
+    "SVE-ST-C11-P06-24"
+   ],
+   "reviewRule": "evidence-is-not-consistency（服务端仅确证成立顺序，左往右排布属客户端，细节差异维持原判）",
+   "reviewReason": "需求语义：吃/碰/直杠/暗杠的新牌组按成立顺序从左往右追加（含「从左往右」的客户端排布方向）。服务端实现：SVE-ST-C11-P06-16/17/23 证实各类副露统一 push_back 保证成立顺序（mah_frame/base/base_data.cpp:980/854/1546），SVE-ST-C11-P06-24 证实按列表顺序逐组下发（mah_frame/base/base_context.cpp:855），仅确证「成立顺序」这一半；「从左往右」排布方向由客户端/平台副露组件决定，服务端无该字段或排布逻辑。故维持 partial，服务端证据不足以覆盖方向语义。"
+  },
+  {
+   "atomId": "AT-ST-C11-057",
+   "stageId": "ST-C11",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P07-01",
+    "SVE-ST-C11-P07-02",
+    "SVE-ST-C11-P07-03"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-058",
+   "stageId": "ST-C11",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "scopeApplicability": "unknown",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-059",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P07-04",
+    "SVE-ST-C11-P07-05",
+    "SVE-ST-C11-P07-06",
+    "SVE-ST-C11-P07-07"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-060",
+   "stageId": "ST-C11",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "scopeApplicability": "unknown",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P07-08",
+    "SVE-ST-C11-P07-09"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-061",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "unknown",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-062",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P07-10",
+    "SVE-ST-C11-P07-11",
+    "SVE-ST-C11-P07-02",
+    "SVE-ST-C11-P07-12"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-063",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P07-13",
+    "SVE-ST-C11-P07-14",
+    "SVE-ST-C11-P07-15",
+    "SVE-ST-C11-P07-16"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-064",
+   "stageId": "ST-C11",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P07-17",
+    "SVE-ST-C11-P07-18",
+    "SVE-ST-C11-P07-19"
+   ],
+   "reviewRule": "evidence-is-not-consistency（服务端仅证数据可分离，客户端拼接布局细节差异维持原判）",
+   "reviewReason": "需求语义：胡牌张单独摆在胡牌者手牌右侧（可与手牌分隔）。服务端实现：SetHuDanFang 将胡牌进张单独存为 dan_fang 并在结算消息中以独立字段下发（SVE-ST-C11-P07-17 common_game/com_game/common_game_com_action.cpp:573、SVE-ST-C11-P07-18 common_game/common_game_context.cpp:161），数据层面确实可分离；但埋点 GetResultJson 又把胡张 push_back 到手牌末尾（SVE-ST-C11-P07-19 common_game/com_game/common_game_com_result.cpp:462），基线判定所指「拼接到手牌末尾、未见单列间隔」属客户端布局实现差异，服务端证据不足以证明与规则同构，维持 partial。"
+  },
+  {
+   "atomId": "AT-ST-C11-065",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P07-20",
+    "SVE-ST-C11-P07-21",
+    "SVE-ST-C11-P07-22",
+    "SVE-ST-C11-P07-23",
+    "SVE-ST-C11-P07-24",
+    "SVE-ST-C11-P07-25",
+    "SVE-ST-C11-P07-14"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-066",
+   "stageId": "ST-C11",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P07-17",
+    "SVE-ST-C11-P07-26",
+    "SVE-ST-C11-P07-19"
+   ],
+   "reviewRule": "evidence-is-not-consistency（位置与来源已证，描边颜色细节未证，维持原判）",
+   "reviewReason": "需求语义：胡牌张在胡牌者手牌尾端，带浅绿描边和来源箭头。服务端实现：SetHuDanFang/SetHuDfFrom 记录胡张与来源座位（SVE-ST-C11-P07-17 common_game/com_game/common_game_com_action.cpp:573），df_from 下发来源供绘制箭头（SVE-ST-C11-P07-26 common_game/common_game_context.cpp:160），胡张补在手牌末尾（SVE-ST-C11-P07-19 common_game/com_game/common_game_com_result.cpp:462），尾端与来源箭头可证；浅绿描边颜色无服务端下发字段，仍缺客户端牌面资源证据，维持 partial。"
+  },
+  {
+   "atomId": "AT-ST-C11-067",
+   "stageId": "ST-C11",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P07-27",
+    "SVE-ST-C11-P07-28",
+    "SVE-ST-C11-P07-26"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C11-068",
+   "stageId": "ST-C11",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C11-P07-29",
+    "SVE-ST-C11-P07-30",
+    "SVE-ST-C11-P07-31"
+   ],
+   "reviewRule": "evidence-is-not-consistency（按座位飘分已证，正黄/负灰配色为客户端字体资源，维持原判）",
+   "reviewReason": "需求语义：随后按座位飘分，正分黄色、负分灰色。服务端实现：打出财神时按座位 SetPiaoCount+1 并 BroadcastPiao（SVE-ST-C11-P07-29 common_game/com_game/common_game_com_play.cpp:63），MsgPiao 带 seat 与 piao_count（SVE-ST-C11-P07-30 common_game/common_game_context.cpp:93），重连逐座位补发 piao_counts（SVE-ST-C11-P07-31 common_game/common_game_context.cpp:562），按座位飘分数值成立；正黄/负灰由客户端 fnt_win/fnt_lose 字体资源决定，基线所指「仅按正负切换字体验证不了颜色」未被服务端证据覆盖，维持 partial。"
+  },
+  {
+   "atomId": "AT-ST-C12-001",
+   "stageId": "ST-C12",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P01-01",
+    "SVE-ST-C12-P01-02",
+    "SVE-ST-C12-P01-03",
+    "SVE-ST-C12-P01-04"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C12-002",
+   "stageId": "ST-C12",
+   "previousDifference": "partial",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P01-01",
+    "SVE-ST-C12-P01-05"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求「A 吃 B 的牌，A 对 B 加 1 摊」；服务端 BoxChowStep::Execute 在 common_game/com_game/common_game_com_action.cpp:134 对 (chow_seat_, GetPreSeat()) 自增 1 摊，且无任何配置分支（SVE-ST-C12-P01-01），CommonGameServerData::GetTanCount/SetTanCount 以 from/to 定向读写（SVE-ST-C12-P01-05, common_game/common_game_server_data.h:61），计数与方向均与规则同构。"
+  },
+  {
+   "atomId": "AT-ST-C12-003",
+   "stageId": "ST-C12",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P01-05",
+    "SVE-ST-C12-P01-06",
+    "SVE-ST-C12-P01-07"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求「两个方向分开计」；服务端 tan_count_ 为二维定向矩阵 tan_count_[from][to]，读写均带双下标（SVE-ST-C12-P01-05, common_game/com_game/common_game_server_data.h:61），ResetRound 逐 (a,b) 清零（SVE-ST-C12-P01-06, common_game/common_game_server_data.cpp:47），FillMsgTanItems 以 from×to 全组合下发（SVE-ST-C12-P01-07, common_game/common_game_context.cpp:78），两方向独立存储与下发，与规则同构。"
+  },
+  {
+   "atomId": "AT-ST-C12-004",
+   "stageId": "ST-C12",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P01-08",
+    "SVE-ST-C12-P01-09",
+    "SVE-ST-C12-P01-10",
+    "SVE-ST-C12-P01-11"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C12-005",
+   "stageId": "ST-C12",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P01-12",
+    "SVE-ST-C12-P01-13",
+    "SVE-ST-C12-P01-14",
+    "SVE-ST-C12-P01-15"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级；前提 enable_three_tan_bao 开启）",
+   "reviewReason": "需求「只有庄家和闲家之间能承包」；服务端 CommonGameAlgorithm::IsXianXianTanFull 对庄闲直接返回 false（SVE-ST-C12-P01-12, common_game/common_game_algorithm.cpp:91），BoxResultStep::ApplyBaoContracts 对胡牌方与赔付方均非庄家的组合 continue 不结算承包（SVE-ST-C12-P01-13, common_game/com_game/common_game_com_result.cpp:308），闲闲只做 2 摊吃碰限制而不产生承包，与规则同构；前提 enable_three_tan_bao 开启（创房默认 1）。"
+  },
+  {
+   "atomId": "AT-ST-C12-006",
+   "stageId": "ST-C12",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P01-16",
+    "SVE-ST-C12-P01-17",
+    "SVE-ST-C12-P01-18",
+    "SVE-ST-C12-P01-12"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级；前提 enable_three_tan_bao 开启）",
+   "reviewReason": "需求「两名闲家之间，同一方向最多 2 摊」；服务端 IsXianXianTanFull 在双方均非庄家且 GetTanCount(actor,target)>=2 时返回 true（SVE-ST-C12-P01-12, common_game/common_game_algorithm.cpp:92），吃/碰/明杠三处 Judge 命中即拦截（SVE-ST-C12-P01-16/17/18），阈值与方向口径同构；前提 enable_three_tan_bao 开启（创房默认 1）。"
+  },
+  {
+   "atomId": "AT-ST-C12-007",
+   "stageId": "ST-C12",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P01-16",
+    "SVE-ST-C12-P01-12"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级；前提 enable_three_tan_bao 开启）",
+   "reviewReason": "需求「已经有 2 摊时，再吃这一家的牌不成立，不给出【吃】」；服务端 BoxChowStep::Judge 在 IsXianXianTanFull 命中时直接 return false（SVE-ST-C12-P01-16, common_game/com_game/common_game_com_action.cpp:66），不下发吃权限，客户端无从显示【吃】，与规则同构；前提 enable_three_tan_bao 开启（创房默认 1）。"
+  },
+  {
+   "atomId": "AT-ST-C12-008",
+   "stageId": "ST-C12",
+   "previousDifference": "partial",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P01-19",
+    "SVE-ST-C12-P01-20",
+    "SVE-ST-C12-P01-21",
+    "SVE-ST-C12-P01-22",
+    "SVE-ST-C12-P01-14"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级；前提 enable_three_tan_bao 开启）",
+   "reviewReason": "需求「某一方向计到第 3 摊时记承包」；服务端吃/碰/明杠三处 Execute 均在 tan>=3 时 SetBaoRelation(from,to,1)（SVE-ST-C12-P01-19/20/21, common_game/com_game/common_game_com_action.cpp:144、common_game_com_pung.cpp:133、common_game_com_kong.cpp:103），承包关系经 TanItem.bao_relation 下发（SVE-ST-C12-P01-22），与规则同构；前提 enable_three_tan_bao 开启。"
+  },
+  {
+   "atomId": "AT-ST-C12-009",
+   "stageId": "ST-C12",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P01-23",
+    "SVE-ST-C12-P01-24",
+    "SVE-ST-C12-P01-25",
+    "SVE-ST-C12-P01-14"
+   ],
+   "reviewRule": "ui-conflict-stands-alone（服务端广播仅覆盖数据下发，客户端表现差异独立成立，维持原判）",
+   "reviewReason": "需求「四端播放三摊落地，可与吃牌字效同时显示」；服务端 BroadcastTanUpdate 以 SendMessage(msg.ID, msg, 0) 全桌广播（SVE-ST-C12-P01-23, common_game/common_game_context.cpp:65-73），仅证明数据到达所有端，不决定客户端是否按座位播放；客户端为单个居中节点、未按座位定位，且 simple_mode 抑制落地动效（SVE-ST-C12-P01-25, hzmj_server/game_logic.cpp:165），视觉与同屏条件仍未满足，维持 partial。"
+  },
+  {
+   "atomId": "AT-ST-C12-010",
+   "stageId": "ST-C12",
+   "previousDifference": "consistent",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "consistent",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P01-26",
+    "SVE-ST-C12-P01-27",
+    "SVE-ST-C12-P01-23"
+   ],
+   "reviewReason": "本轮未出复核建议，维持基线差异"
+  },
+  {
+   "atomId": "AT-ST-C12-011",
+   "stageId": "ST-C12",
+   "previousDifference": "partial",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "active",
+   "scopeSource": "review-field",
+   "l7": "verified",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P01-28",
+    "SVE-ST-C12-P01-29",
+    "SVE-ST-C12-P01-30"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求「提示期间，获权玩家可以继续提牌、出牌」；服务端吃/碰/明杠三处 Execute 在记摊广播后立即 ChangeNextStep，无等待/输入锁步骤（SVE-ST-C12-P01-28/29/30, common_game/com_game/common_game_com_action.cpp:159、common_game_com_pung.cpp:109、common_game_com_kong.cpp:121），不阻塞后续摸打，与规则同构。"
+  },
+  {
+   "atomId": "AT-ST-C12-012",
+   "stageId": "ST-C12",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P02-01",
+    "SVE-ST-C12-P02-02",
+    "SVE-ST-C12-P02-03"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：自摸只结算胡牌方自己参与的承包对。服务端实现：ApplyBaoContracts（common_game/com_game/common_game_com_result.cpp:289）:305-306 遍历对手时跳过 win_seat，:302-303 注释明示「只结算胡牌方本人参与的承包对，与胡牌方无关的对不结算」，与规则同构（SVE-ST-C12-P02-01/02/03，enable_three_tan_bao=1 且 3/4 人局生效）。"
+  },
+  {
+   "atomId": "AT-ST-C12-013",
+   "stageId": "ST-C12",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P02-04",
+    "SVE-ST-C12-P02-01"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：摊方胡，对方付三家输分合计。服务端实现：CalcFinalWinLost 自摸分支 :135-147 逐家生成负值 payments → ApplyBaoContracts :298-300 total=Σpayments（三家钱）→ :325/:334 opp_pay=total 单条写入 → :354 payments=bao_payments 由承包方一人代付（SVE-ST-C12-P02-04/01）。"
+  },
+  {
+   "atomId": "AT-ST-C12-014",
+   "stageId": "ST-C12",
+   "previousDifference": "partial",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P02-01",
+    "SVE-ST-C12-P02-05",
+    "SVE-ST-C12-P02-06"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：被摊方胡，摊方付该合计的 2 倍。服务端实现：ApplyBaoContracts :326-329 tan_opp_win>=3 → relation=2、opp_pay=total*2、SetBaoRelation(opp,win_seat,2)，经 BaoSettleItem.relation=2/score 下发（SVE-ST-C12-P02-05/06）；客户端只显示关系名称与图标属展示层分工，不影响结算规则同构。"
+  },
+  {
+   "atomId": "AT-ST-C12-015",
+   "stageId": "ST-C12",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P02-01",
+    "SVE-ST-C12-P02-02"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：双向都满 3 摊时只按倒承包的 2 倍，不两笔叠加。服务端实现：ApplyBaoContracts :316-317 同时读取 A→B 与 B→A 摊数，:326-328 tan_opp_win>=3 走倒承包 ×2 单分支（:323 注释「双向互满3摊时…按倒承包×2」），每对手仅 :334 一次写入 bao_payments，不产生两笔。"
+  },
+  {
+   "atomId": "AT-ST-C12-016",
+   "stageId": "ST-C12",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P02-01",
+    "SVE-ST-C12-P02-04",
+    "SVE-ST-C12-P02-07"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：承包为 B 支付三家原应赔分合计 S，另外两家本局 0 分。服务端实现：CalcFinalWinLost :298-300 total 为三家合计 → ApplyBaoContracts :324-334 仅被摊方入 bao_payments 付 total → :354 payments=bao_payments 整体改写，未入 map 座位即 0 分（SVE-ST-C12-P02-01/04/07）。"
+  },
+  {
+   "atomId": "AT-ST-C12-017",
+   "stageId": "ST-C12",
+   "previousDifference": "partial",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P02-01",
+    "SVE-ST-C12-P02-05",
+    "SVE-ST-C12-P02-06"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：反承包为同一关系下 B 自摸时 A 支付 2×S。服务端实现：ApplyBaoContracts :326-329 被摊方自摸 → relation=2、opp_pay=total*2 → :336-341 组 BaoSettleItem(score=2S,relation=2) 经 SendResultHu 下发（SVE-ST-C12-P02-01/05/06）；2 倍金额由服务端计算，客户端展示链路完整。"
+  },
+  {
+   "atomId": "AT-ST-C12-018",
+   "stageId": "ST-C12",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P02-01",
+    "SVE-ST-C12-P02-02",
+    "SVE-ST-C12-P02-08"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：链式承包 B 付 S、C 付 2×S、A 实收 3×S、第四家 0 分。服务端实现：ApplyBaoContracts :305-342 逐对手独立结算并累加 bao_payments → :354 payments=bao_payments（B 付 S、C 付 2S，第四家不在 map），total_win 由 :219-224 反算得 3S，经 SendResultHu 整包下发（SVE-ST-C12-P02-01/02/08）。"
+  },
+  {
+   "atomId": "AT-ST-C12-019",
+   "stageId": "ST-C12",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P02-01",
+    "SVE-ST-C12-P02-04",
+    "SVE-ST-C12-P02-09"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：点炮只在放铳者本人是承包对方时改写，基数为原点炮分而非三家之和。服务端实现：CalcFinalWinLost 点炮分支 :107-112 仅放铳者一笔 -base*fan*banker → ApplyBaoContracts :312-314 仅当 opp==GetJustPlaySeat 才进入改写，:316-318 基数仍为该单笔（SVE-ST-C12-P02-01/04/09）。"
+  },
+  {
+   "atomId": "AT-ST-C12-020",
+   "stageId": "ST-C12",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P02-01",
+    "SVE-ST-C12-P02-02"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：别人的承包关系不赔，放铳者仍按原点炮付。服务端实现：ApplyBaoContracts :310-314 注释「第三方点炮时 A-B 承包不成立，A 不应赔付」，代码 continue 跳过非放铳者；:344 无承包对时保持原 payments，放铳者按 :107-112 原点炮付（SVE-ST-C12-P02-01/02）。"
+  },
+  {
+   "atomId": "AT-ST-C12-021",
+   "stageId": "ST-C12",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P02-01",
+    "SVE-ST-C12-P02-10"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：抢杠胡不替换杠牌者赔付，承包额再叠加。服务端实现：CalcFinalWinLost 抢杠分支 :113-132 杠牌者付三家钱 → ApplyBaoContracts :346-352 kHtRobKong 时 payments[kv.first] += kv.second 叠加而非替换，且 hzmj 保持 IsRobKongSettleAsDiscard()=false（common_game_com_result.h:69，SVE-ST-C12-P02-10）。"
+  },
+  {
+   "atomId": "AT-ST-C12-022",
+   "stageId": "ST-C12",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P02-01",
+    "SVE-ST-C12-P02-04",
+    "SVE-ST-C12-P02-10"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：杠牌者若同时是承包方，两笔都付。服务端实现：CalcFinalWinLost :113-132 以 GetLastKongSeat 为唯一付款方算三家钱 → ApplyBaoContracts :347 注释「杠牌者若同时是承包方，则在杠赔付上叠加承包额」、:350-352 以 += 实现叠加（SVE-ST-C12-P02-01/04/10）。"
+  },
+  {
+   "atomId": "AT-ST-C12-023",
+   "stageId": "ST-C12",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P03-01",
+    "SVE-ST-C12-P03-02",
+    "SVE-ST-C12-P03-03",
+    "SVE-ST-C12-P03-04",
+    "SVE-ST-C12-P03-05",
+    "SVE-ST-C12-P03-06",
+    "SVE-ST-C12-P03-07",
+    "SVE-ST-C12-P03-08",
+    "SVE-ST-C12-P03-09"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：庄家平胡自摸，三闲家各赔 8（S=24），承包方付 24，另有上家对庄家的承包时上家再付 48，庄家实收 72。服务端实现：CalcFinalWinLost 庄家自摸分支按 base_score(1)*fan_mult(1)*banker_mult(8)=8 逐闲家扣款（common_game/com_game/common_game_com_result.cpp:138-140、:93 牢数倍率 1<<banker_level），ApplyBaoContracts 取 total=Σpayments=24（:298-300），正承包付 total=24（:324-325）、tan_opp_win>=3 时 relation=2 付 total*2=48（:326-329），最终 payments=bao_payments，两对分别付 24 与 48、庄家实收 72（:334-354）（SVE-ST-C12-P03-01/02/03/08/09）。金额 8/24/48/72 与触发条件均与规则同构；仅 relation=2 在实现中标注为“倒承包”，属协议枚举措辞差异，不影响金额口径。"
+  },
+  {
+   "atomId": "AT-ST-C12-024",
+   "stageId": "ST-C12",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "scopeApplicability": "conditional",
+   "scopeSource": "review-field",
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed",
+   "evidenceIds": [
+    "SVE-ST-C12-P03-01",
+    "SVE-ST-C12-P03-02",
+    "SVE-ST-C12-P03-03",
+    "SVE-ST-C12-P03-04",
+    "SVE-ST-C12-P03-05",
+    "SVE-ST-C12-P03-06",
+    "SVE-ST-C12-P03-07",
+    "SVE-ST-C12-P03-08",
+    "SVE-ST-C12-P03-09",
+    "SVE-ST-C12-P03-10",
+    "SVE-ST-C12-P03-11"
+   ],
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "reviewReason": "需求语义：庄家对闲家成立承包，闲家平胡自摸，三家原应赔 8、1、1，庄家按反承包付 20。服务端实现：闲家自摸分支下庄家付 base_score(1)*fan_mult(1)*banker_mult(8)=8、其余闲家各付 base_score*fan_mult=1，total=10（common_game/com_game/common_game_com_result.cpp:141-145、:93），ApplyBaoContracts 读双向摊数（:316-317），tan_opp_win(庄家→闲家)>=3 命中后 relation=2、opp_pay=total*2=20 并 SetBaoRelation(opp,win_seat,2)（:326-329），随后写入 BaoSettleItem(relation=2) 随 MsgResultHu 下发（:334-341；protocol/hzmj_protocol.proto:353 relation 2=倒承包）（SVE-ST-C12-P03-01/02/03/10/11）。8/1/1 与反承包 20 的金额与方向均与规则同构。"
   }
  ]
 }

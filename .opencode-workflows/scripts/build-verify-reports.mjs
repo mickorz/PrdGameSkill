@@ -78,9 +78,11 @@ export function buildVerifyReports({ baselineIndexPath, verifyDir, date }) {
       'verification_required 条目数 ' + vrAtoms.length + ' != l7 stats ' + (l7Stats.verification_required || 0)
     )
   }
-  const suggestionAtoms = [...drByAtom.values()].filter(
-    (e) => e.reviewStatus === 'pending' && e.reviewedDifference !== e.previousDifference
+  const suggestionAll = [...drByAtom.values()].filter(
+    (e) => e.reviewedDifference !== e.previousDifference && e.reviewStatus !== 'rejected'
   )
+  // 附录只列 pending（approved 建议的最终记录在《需求差异裁决清单》附 A）
+  const suggestionAtoms = suggestionAll.filter((e) => e.reviewStatus === 'pending')
   const drStats = drAll.stats || {}
   if (drStats.reviewStatus && (drStats.reviewStatus.pending || 0) >= 0) {
     // pending 升级建议数与 DR stats 交叉校验（pending 总数含维持型无建议条目，只校验建议计数>=0）
@@ -124,13 +126,15 @@ export function buildVerifyReports({ baselineIndexPath, verifyDir, date }) {
     byStageVr.get(sid).push(e)
   }
   const scopeByAtomForSug = new Map()
-  for (const e of suggestionAtoms) {
+  for (const e of suggestionAll) {
     const sc = scopeByAtom.get(e.atomId)
     const k = sc ? sc.applicability : '?'
     scopeByAtomForSug.set(k, (scopeByAtomForSug.get(k) || 0) + 1)
   }
   const activeSug = scopeByAtomForSug.get('active') || 0
   const condSug = scopeByAtomForSug.get('conditional') || 0
+  // S5 后口径：升级建议含 approved 与 pending（批准状态感知措辞；附录仍只列 pending——approved 见裁决清单附 A）
+  const sugPending = suggestionAtoms.length
 
   // ---------- 报告 1：规则待验证报告 ----------
   const catTotal = { [CAT_GAP]: 0, [CAT_COND]: 0, [CAT_MORE]: 0 }
@@ -148,9 +152,16 @@ export function buildVerifyReports({ baselineIndexPath, verifyDir, date }) {
       'v2 基线 ' + (baseline.atom_count || (baseline.features || []).length) + ' 原子（只读）。'
   )
   vrLines.push(
-    '- **不在本报告**：' + activeSug + ' 条 active 作用域升级建议（批准后即转已验证，见《需求差异裁决清单》附 A）；' +
+    '- **不在本报告**：' + activeSug + ' 条 active 作用域升级建议（' +
+      (sugPending === 0 ? '已全部批准转已验证' : '批准后即转已验证') +
+      '，见《需求差异裁决清单》附 A）；' +
       '冲突类（decision_required）与不可达类（not_applicable）见同清单条目区；' +
-      condSug + ' 条 conditional 作用域升级建议批准后仍需配置确认（已列入本报告「配置确认」，同时见附 A）。'
+      condSug + ' 条 conditional 作用域升级建议' +
+      (sugPending === 0 ? '已批准但仍需配置确认（已列入本报告「配置确认」，同时见附 A）' : '批准后仍需配置确认（已列入本报告「配置确认」，同时见附 A）') + '。'
+  )
+  vrLines.push(
+    '- **配套签认件**：本报告「配置确认」类的创房默认口径签认表为《配置确认表》' +
+      '（build-config-confirm-table.mjs 生成，同目录 配置确认表.md）——conditional 条目全部并入签认表。'
   )
   vrLines.push('')
   vrLines.push('## 分类概览')

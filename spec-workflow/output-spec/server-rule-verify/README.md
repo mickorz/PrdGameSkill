@@ -22,6 +22,7 @@
 | `规则待验证报告.md` | **S4.3 交付报告**（build-verify-reports.mjs 确定性生成）：verification_required 129 条全清单，三类归档（配置确认 69 / 证据缺口 12 / 待补证 48），含 139 条 active 升级建议与 34 条 conditional 升级建议交叉注记 | 129 条 |
 | `服务端证据索引.md` | **S4.3 交付报告**（build-verify-reports.mjs 确定性生成）：server-evidence 全量索引（按阶段，SVE 定位/符号/位置/配置项），供复核与追溯 | 875 条 |
 | `需求差异裁决清单.md` | **S4.3 全量收口 + S5 裁决闭环**：条目一/二/三（conflict×2 + inactive×1，均 B 接受现状/改需求 approved）+ 附 A（173 条升级建议全量批量批准表，**S5 委托决策全部 approved**）+ 附 A 注记（人工样本对照分歧 10 条 + 同证 3 条）+ 附 B 复核规则速查 + 附 C 证据缺口/不可达/配置确认交叉引用 | 361+ 行 |
+| `配置确认表.md` | **S6 签认件**（build-config-confirm-table.mjs 生成）：conditional 69 条创房默认口径签认表（配置项/默认/取值行为/差异现状/确认栏），差异现状 consistent 45 / unverified 17 / partial 7 | 69 条 |
 
 ## T0.4 局部验收结果（逐条对照需求）
 
@@ -120,6 +121,13 @@
   - scope：**一致 16 / 分歧 9**（全部为样本 conditional → 正式 active，agent 以多条直接证据判可达口径恒定；分歧原子：C02-008（conflict 原子 evidenceScopes 正确保留 client-visual，仅服务端侧 scope 表述收窄）/009/010/011（财神吃碰杠）、C04-005/006/007/009/010（多人胡/近者优先/顺延）；批准相关 DR 建议即采正式 active 口径，需保守 conditional 请在裁决清单备注——同 C01-004 注记模式）
   - DR：样本覆盖条目一致 3 / 分歧 5（正式更进取：C02-006/007/009、C04-001/012 建议 partial/unverified→consistent，其中 C04-001 优先级次序与 S2.1 裁决链证据（macros.h:203-206 级别常量）方向一致）；样本未覆盖 17 条为正式新增建议
 - **S3.2 partial 复核进度**：v2 的 64 条 partial 中已复核 3 条（证据就位三阶段 ST-C01/02/04），2 条建议升级（C02-006、C04-012）；其余 partial 原子随 S4.1 分批补证时逐阶段复核
+
+## S6 配置确认表（2026-11-14，余量跟踪第一项）
+
+- **生成器**：`build-config-confirm-table.mjs`（+ example 20 断言全绿）：从 scope-index conditional 条目 + v2 基线 + difference-review 确定性生成签认件；闸门——表行数 = conditional 总数、configVerified 全 true、unresolved 全零（签认前置：客户端默认值均已证据核验）、回读行数复核
+- **产物《配置确认表》**：69 条（12 阶段），每条配置项 / 创房默认 / 取值行为摘要 / 差异现状（consistent 45 / unverified 17 / partial 7；approved 34 / pending 35）/ 确认栏；整体签认行（全部确认默认口径 / 逐条调整）
+- **签认语义**：确认默认口径 = 好友房按创房默认值运行（consistent 45 即闭环，unverified 17 / partial 7 转服务端补证跟踪）；需调整 = 改创房默认下发值或修订需求文本
+- **报告联动**：`build-verify-reports.mjs` 措辞状态感知化（升级建议含 approved：139 已全部批准转已验证 / 34 已批准但仍需配置确认）+ 「配套签认件」交叉引用行；三报告重生成闸门全过
 
 ## S5 裁决落地与 v3 收口（2026-11-14，OSG-W4 全部完成）
 

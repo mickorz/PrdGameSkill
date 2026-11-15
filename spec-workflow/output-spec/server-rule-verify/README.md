@@ -122,6 +122,17 @@
   - DR：样本覆盖条目一致 3 / 分歧 5（正式更进取：C02-006/007/009、C04-001/012 建议 partial/unverified→consistent，其中 C04-001 优先级次序与 S2.1 裁决链证据（macros.h:203-206 级别常量）方向一致）；样本未覆盖 17 条为正式新增建议
 - **S3.2 partial 复核进度**：v2 的 64 条 partial 中已复核 3 条（证据就位三阶段 ST-C01/02/04），2 条建议升级（C02-006、C04-012）；其余 partial 原子随 S4.1 分批补证时逐阶段复核
 
+## S8 证据缺口 12 条客户端侧查证（2026-11-14，余量跟踪第三项完成）
+
+- **设计增补（L7 设计文档第 7 节）**：作用域新值 `client`（服务端三根零实现角色 + 客户端已定位或系统性检索未果）+ L7 矩阵 client 列（**consistent×client=verified** / conflict×client=decision_required / partial·unverified×client=verification_required）+ 证据层 `client_code`（source-code/client/Code）/`client_fgui`（source-code/client/Fgui，file=layer+/+相对根路径）+ SVE id 方案 `SVE-<stageId>-PC<partNo>-NN`（PC 代际隔离，坑 8 教训）+ 报告证据缺口语义（client 非闭环=双端零实现）
+- **脚本扩展（examples 全绿）**：classify-l7（矩阵 4×5 全枚举 + conflict 证据级 client 分支 → scope=client）/ merge-verify-output（层白名单 + 作用域枚举 + 用例 K client 全链端到端）/ recount-verify-parts（枚举 + counts，**修聚合漏 client**：part/scopeStats 累加与成功行均补 client）/ build-verify-reports（catOf client→证据缺口，note 取 unresolved||callPath）/ 4-review-difference clientMode 复核提示
+- **新链路**：`prepare-client-verify-input.mjs`（example 14 断言：选取=scope unknown ∧ l7 verification_required 12 条，3 分片 `-pc` 命名，gapNotes 服务端零实现缺口内嵌 + clientRoots 双根）+ `3-verify-scope-client.js`（客户端检索落判子流程：grep/glob/read 双根检索 → 诚实落判（定位/相反/未果三态）+ client 层 SVE + DR 双写 + 落盘闸门 + recount 闸门；**conflict 相反实现须附 evidenceScopes**）
+- **执行**：runId `run-mwi4nzjl-9`（3 agent / 606s，3/3 分片全过）：**11/12 定位到客户端实现、1 条未果**，25 条 client 层 SVE（PC 段）；runId `run-mwi53nj6-10`（4-review-difference clientMode + incremental + stageIds ALL）卡点闸门 4：C10-016 conflict 建议缺证据级 evidenceScopes（prompt 缺口 + classify resolveScope 缺 client 分支）→ 补 prompt 指令 + resolveScope client 分支（scopeSource=evidence-level-client）+ part 分片数据回补（2 条 evidenceScopes）后确定性链重跑
+- **产物（正式四件累积）**：scope 319（active 237 / conditional 69 / **unknown 12→0** / inactive 1 / **client 12**，configConfirm 69/69 保全）；SVE 941（+25，PC 段 25）；DR 319（pending 109 / approved 210）；l7 214/101/3/1（verified +8：**6 条基线 consistent 原子经 scope unknown→client 直接闭环（consistent×client=verified，无建议无需裁决）**+ 2 条 approved；decision +1 conflict），l7Approved 160/46/3/1，effectiveDifference 271/27/3/18；《规则待验证报告》101 条（已闭环 57 / 证据缺口 **12→3** / 配置确认 0 / 待补证 41）
+- **维持证据缺口 3 条**（client 非闭环）：C11-058（杠标记叠第 4 张——副露组件包在仓外平台模块，双端零实现）/ C11-060（补牌最右分隔位与杠字叠加——通用取牌不等价）/ C15-025（继续游戏回调为空，不等价/相反待复验）
+- **裁决落地（委托决策延续附 A 口径）**：裁决清单**条目四**（C10-016 conflict：客户端禁打牌 touchable 置灰即禁交互 vs 需求「仍能提起横滑出虚影」→ **B 改需求**，循条目一/二先例）+ **附 A-3** 3 条全部 approved（C10-016 conflict + C11-034/C15-024 consistent）——reviewStatus 207→210 / pending 112→109，effectiveDifference 269/27/2/21→271/27/3/18，l7Approved 158/46/2/1→160/46/3/1；v3 重合并（approvedTransitions 207，v2 hash 不变）+ check-l7 `--verified=v3` 五道闸门全过（conflictTotal 3 全带 evidenceScopes）
+- **v3-planner 手术式更新（免重投影）**：删 8 条已闭环「规则待验证」行（6 条 client 闭环 + 2 条 approved）；C10-016 行转「已裁决（2026-11-14，B 改需求）」；C11-058/060/C15-025 三行更新为客户端查证结论（首次落笔带 file:line/类名被 planner-only 泄漏闸门拦截 → 改纯行为语言）；产物 599 行（规则待验证 94 / 已裁决 3 / 待策划裁决 0），planner-only 校验放行（泄漏零 / AT-ID 覆盖 100%）
+
 ## S7 待补证 72 条第二轮补证（2026-11-14，余量跟踪第二项完成）
 
 - **retry 输入**：`prepare-retry-input.mjs`（example 16 断言）构造第二轮分片——选取口径与《规则待验证报告》待补证分类一致（active vr 48 + conditional 签认非一致 24 = 72），15 分片（`-r` 命名）；原分片归档 `runtime/archive/pre-s7-retry/`；retryHint 内嵌第一轮缺口（callPath/unresolved/configCondition/reviewReason）+ existingScopeEntries/existingSve 幂等复用口径；l7 stats 独立交叉闸门 + 原子全覆盖闸门

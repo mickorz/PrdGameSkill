@@ -8,10 +8,10 @@
  "feature_count": 93,
  "atom_count": 319,
  "difference_stats": {
-  "consistent": 269,
+  "consistent": 271,
   "partial": 27,
-  "conflict": 2,
-  "unverified": 21,
+  "conflict": 3,
+  "unverified": 18,
   "unmarked_v1": 0
  },
  "stages": [
@@ -9023,7 +9023,7 @@
       "action": "",
       "result": ""
      },
-     "difference": "unverified",
+     "difference": "conflict",
      "difference_detail": "",
      "verification": {
       "business_rule_verified": false,
@@ -9032,15 +9032,19 @@
      },
      "schema_marked": true,
      "difference_v2": "unverified",
-     "review_status": "pending",
-     "reviewed_difference": "unverified",
-     "review_reason": "本轮未出复核建议，维持基线差异",
-     "l7": "verification_required",
-     "l7_basis": "baseline",
-     "scope_applicability": "unknown",
-     "scope_source": "review-field",
+     "review_status": "approved",
+     "reviewed_difference": "conflict",
+     "review_rule": "ui-conflict-stands-alone（客户端证据显示禁打牌 touchable=false、提牌与横滑虚影均不成立，基线 unverified 升判 conflict）",
+     "review_reason": "需求语义：禁打压暗的牌「仍能提起，也能横滑出虚影」（spec_stage_ST-C10.md:273、:335）。客户端实现：applyPlayLmtsGray 对命中禁打名单/单放牌值的牌项执行 item.touchable = !forbid（BoxHzmjPlayerHandCards.ts:108，SVE-ST-C10-PC01-01），禁打牌 touchable=false，且第 91 行 setUnTouchValues({}) 先清空基类不可触摸集合后由 item.touchable 排除触摸命中（SVE-ST-C10-PC01-02）；虚影节点 KW_Ghost_Hand 仅在本家手牌组件接入（BoxHzmjMah2DView.ts:139/144，SVE-ST-C10-PC01-03/04），虚影只在触摸命中可打牌后由手牌基类显示。禁打牌被排除触摸命中，实际不可提起、无横滑虚影，与规则表述相反；本轮客户端证据已定位到相反实现，基线 unverified 应按规则 4 升判 conflict。｜策划裁决（2026-11-14）：B 改需求（接受现状实现——禁打牌置灰后不可提起、无横滑虚影，需求侧「仍能提起，也能横滑出虚影」表述修订待上游）",
+     "l7": "decision_required",
+     "l7_basis": "approved",
+     "scope_applicability": "client",
+     "scope_source": "evidence-level-client",
      "evidence_ids": [
-      "SVE-ST-C10-P02-06"
+      "SVE-ST-C10-PC01-01",
+      "SVE-ST-C10-PC01-02",
+      "SVE-ST-C10-PC01-03",
+      "SVE-ST-C10-PC01-04"
      ]
     }
    ]
@@ -9915,14 +9919,13 @@
      "review_status": "pending",
      "reviewed_difference": "consistent",
      "review_reason": "本轮未出复核建议，维持基线差异",
-     "l7": "verification_required",
+     "l7": "verified",
      "l7_basis": "baseline",
-     "scope_applicability": "unknown",
+     "scope_applicability": "client",
      "scope_source": "review-field",
      "evidence_ids": [
-      "SVE-ST-C11-P02-01",
-      "SVE-ST-C11-P02-02",
-      "SVE-ST-C11-P02-03"
+      "SVE-ST-C11-PC01-01",
+      "SVE-ST-C11-PC01-02"
      ]
     },
     {
@@ -10011,14 +10014,14 @@
      "review_status": "pending",
      "reviewed_difference": "consistent",
      "review_reason": "本轮未出复核建议，维持基线差异",
-     "l7": "verification_required",
+     "l7": "verified",
      "l7_basis": "baseline",
-     "scope_applicability": "unknown",
+     "scope_applicability": "client",
      "scope_source": "review-field",
      "evidence_ids": [
-      "SVE-ST-C11-P02-07",
-      "SVE-ST-C11-P02-08",
-      "SVE-ST-C11-P02-09"
+      "SVE-ST-C11-PC01-03",
+      "SVE-ST-C11-PC01-04",
+      "SVE-ST-C11-PC01-05"
      ]
     },
     {
@@ -10066,13 +10069,13 @@
      "review_status": "pending",
      "reviewed_difference": "consistent",
      "review_reason": "本轮未出复核建议，维持基线差异",
-     "l7": "verification_required",
+     "l7": "verified",
      "l7_basis": "baseline",
-     "scope_applicability": "unknown",
+     "scope_applicability": "client",
      "scope_source": "review-field",
      "evidence_ids": [
-      "SVE-ST-C11-P02-10",
-      "SVE-ST-C11-P02-01"
+      "SVE-ST-C11-PC01-06",
+      "SVE-ST-C11-PC01-07"
      ]
     },
     {
@@ -10116,13 +10119,12 @@
      "review_status": "pending",
      "reviewed_difference": "consistent",
      "review_reason": "本轮未出复核建议，维持基线差异",
-     "l7": "verification_required",
+     "l7": "verified",
      "l7_basis": "baseline",
-     "scope_applicability": "unknown",
+     "scope_applicability": "client",
      "scope_source": "review-field",
      "evidence_ids": [
-      "SVE-ST-C11-P02-11",
-      "SVE-ST-C11-P02-01"
+      "SVE-ST-C11-PC01-08"
      ]
     }
    ]
@@ -11186,7 +11188,7 @@
       "action": "面板保持可点击",
       "result": "读秒归零后玩家仍能选中候选牌"
      },
-     "difference": "unverified",
+     "difference": "consistent",
      "difference_detail": "",
      "verification": {
       "business_rule_verified": false,
@@ -11195,14 +11197,18 @@
      },
      "schema_marked": true,
      "difference_v2": "unverified",
-     "review_status": "pending",
-     "reviewed_difference": "unverified",
-     "review_reason": "本轮未出复核建议，维持基线差异",
-     "l7": "verification_required",
-     "l7_basis": "baseline",
-     "scope_applicability": "unknown",
+     "review_status": "approved",
+     "reviewed_difference": "consistent",
+     "review_rule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+     "review_reason": "需求：倒计时归零后面板仍可操作。客户端实现：BoxHzmjMah2DView.ts:710-714 归零分支只把 KW_Clock_Num 置 \"00\" 并停表，无任何按钮 touchable/visible 变更；操作面板显隐仅由 power 位驱动（BoxHzmjMainView.ts:534-540、577-585），按钮回调（:1236/:1128/:1149/:1188）无时钟判断，canPutCard 只随 power 下发更新（:536），客户端不存在「归零禁用面板」路径（SVE-ST-C11-PC01-09、SVE-ST-C11-PC01-10，client_code）。基线原为 unverified（缺正向禁用/可操作证据），客户端证据确证与规则同构，按规则 2 升级。",
+     "l7": "verified",
+     "l7_basis": "approved",
+     "scope_applicability": "client",
      "scope_source": "review-field",
-     "evidence_ids": []
+     "evidence_ids": [
+      "SVE-ST-C11-PC01-09",
+      "SVE-ST-C11-PC01-10"
+     ]
     },
     {
      "id": "AT-ST-C11-035",
@@ -12105,11 +12111,13 @@
      "review_status": "pending",
      "reviewed_difference": "consistent",
      "review_reason": "本轮未出复核建议，维持基线差异",
-     "l7": "verification_required",
+     "l7": "verified",
      "l7_basis": "baseline",
-     "scope_applicability": "unknown",
+     "scope_applicability": "client",
      "scope_source": "review-field",
-     "evidence_ids": []
+     "evidence_ids": [
+      "SVE-ST-C11-PC01-11"
+     ]
     }
    ]
   },
@@ -12488,7 +12496,7 @@
      "review_reason": "本轮未出复核建议，维持基线差异",
      "l7": "verification_required",
      "l7_basis": "baseline",
-     "scope_applicability": "unknown",
+     "scope_applicability": "client",
      "scope_source": "review-field",
      "evidence_ids": []
     },
@@ -12576,11 +12584,12 @@
      "review_reason": "本轮未出复核建议，维持基线差异",
      "l7": "verification_required",
      "l7_basis": "baseline",
-     "scope_applicability": "unknown",
+     "scope_applicability": "client",
      "scope_source": "review-field",
      "evidence_ids": [
-      "SVE-ST-C11-P07-08",
-      "SVE-ST-C11-P07-09"
+      "SVE-ST-C11-PC01-12",
+      "SVE-ST-C11-PC01-13",
+      "SVE-ST-C11-PC01-14"
      ]
     },
     {
@@ -12624,11 +12633,14 @@
      "review_status": "pending",
      "reviewed_difference": "consistent",
      "review_reason": "本轮未出复核建议，维持基线差异",
-     "l7": "verification_required",
+     "l7": "verified",
      "l7_basis": "baseline",
-     "scope_applicability": "unknown",
+     "scope_applicability": "client",
      "scope_source": "review-field",
-     "evidence_ids": []
+     "evidence_ids": [
+      "SVE-ST-C11-PC01-15",
+      "SVE-ST-C11-PC01-16"
+     ]
     }
    ]
   },
@@ -18646,7 +18658,7 @@
       "action": "客户端派发查桌事件，桌面显示终局牌桌并高亮财神，松手后派发恢复事件",
       "result": "玩家按住时看到终局牌桌，松手回到原来的小结算"
      },
-     "difference": "unverified",
+     "difference": "consistent",
      "difference_detail": "",
      "verification": {
       "business_rule_verified": false,
@@ -18655,14 +18667,18 @@
      },
      "schema_marked": true,
      "difference_v2": "unverified",
-     "review_status": "pending",
-     "reviewed_difference": "unverified",
-     "review_reason": "本轮未出复核建议，维持基线差异",
-     "l7": "verification_required",
-     "l7_basis": "baseline",
-     "scope_applicability": "unknown",
+     "review_status": "approved",
+     "reviewed_difference": "consistent",
+     "review_rule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+     "review_reason": "需求语义：底部栏按住 500 毫秒临时收起小结算、按本家视角查看终局牌桌、松手恢复同一张小结算；原子 notes 已界定 500ms 判定与收起/恢复小结算本体由公共壳实现，本工程只提供事件出口与桌面财神高亮。客户端实现：BoxHzmjResultView.onPressShowTable/onPressHideTable（Code/layer/BoxHzmjResultView.ts:98/103）分别 dispatch onResultShowTable/onResultHideTable，BoxHzmjMah2DView.onResultShowTable/onResultHideTable（Code/layer/BoxHzmjMah2DView.ts:1151/1160）消费事件执行 showSpecialMah(joker) 高亮本家视角桌面财神、松手 showSpecialMah(0) 清除（SVE-ST-C15-PC01-01/02），事件名定义见 Code/config/FguiViewDefine.ts:358-361。事件出口与高亮职责与 notes 划定的本工程边界逐项对应，无相反语义，属规则 2 可升级情形。",
+     "l7": "verified",
+     "l7_basis": "approved",
+     "scope_applicability": "client",
      "scope_source": "review-field",
-     "evidence_ids": []
+     "evidence_ids": [
+      "SVE-ST-C15-PC01-01",
+      "SVE-ST-C15-PC01-02"
+     ]
     },
     {
      "id": "AT-ST-C15-025",
@@ -18716,21 +18732,16 @@
      "difference_v2": "partial",
      "review_status": "pending",
      "reviewed_difference": "partial",
-     "review_rule": "no-server-evidence-is-not-conflict（准备-开局链路与第 8 局末局/返回大厅缺服务端证据，维持 partial 原判，不改判 conflict）",
-     "review_reason": "需求侧：点击【继续游戏】后本端收起小结算、清除上一局手牌/碰杠区/牌河、保留座位与累计积分、本家显示「已准备」，四人均准备后自动开下一小局；第 8 局按钮为【返回大厅】并退出房间。服务端侧：OnGameStart→OnResetGameStart（common_game/common_game_logic.cpp:37/454）→CommonGameServerData::ResetRound（common_game_server_data.cpp:30）+BaseData::ResetRound（mah_frame/base/base_data.cpp:35，清 hands_/chow_groups_/outs_/ke_group_/kong_group_/shun_groups_）可确证清手牌、碰杠、牌河；跨局累计由 CommonGameServerData::Reset 的 ClearMatchAccStats 仅在整局清零（common_game_server_data.cpp:25，SVE-ST-C15-P03-12），配合 DragonMah::Start 的 AddJuCount（dragon_mah.cpp:38）与 WriteFinalScores（common_game_com_result.cpp:386）可对应保留座位与累计积分；但「本家显示已准备/四人准备自动开下一小局」的 Ready 消息处理在三根目录零命中，第 8 局末局判定与返回大厅也由房间层决定、本片无证据，故仅部分同构，维持 partial。",
+     "review_rule": "evidence-is-not-consistency（细节差异，维持 partial）",
+     "review_reason": "需求语义：非末局底部中央【继续游戏】点击后本端收起小结算、清除上一局手牌/碰杠区/牌河、保留座位与累计积分、本家显示「已准备」，四人均准备自动开下一小局；第 8 局按钮为【返回大厅】并退出房间。客户端实现：BoxHzmjResultView.onContinueResult 在游戏层为空实现、onResultContinue/onResetUI 派发被注释（Code/layer/BoxHzmjResultView.ts:119-122，SVE-ST-C15-PC01-03），继续按钮的清桌与准备表现改由壳层/房间准备链路承担——gameController.playerReadyBack 在准备成功（flag===0）时 dispatch onResetUI 并 onShowActionSign(SELF_LOCAL_SEAT, kReady)（Code/controller/gameController.ts:177-182），BoxHzmjMainView.playAgain 监听壳层 onPlayAgain 派发 onResetUI（Code/layer/BoxHzmjMainView.ts:372-375），resetUI 经 GameData.clearData 清局内数据（:399-401）；「已准备」控件与显示逻辑存在（Code/layer/BoxHzmjPlayerView.ts:528-565，C_Ready pages 0/hide,1/none,2/ready 与 KW_ICON_READY 见 Fgui/assets/box_hzmj_player/component/PlayerSelfBase.xml:5/14-16，SVE-ST-C15-PC01-04/05）。因此实现并非与需求相反，而是清桌/准备由准备回包与 onPlayAgain 驱动、与继续按钮的直连被显式置空；末局判定与【返回大厅】退出房间在 Code/Fgui 两根目录零命中、由房间层承担（C_IsLastRound 仅见 Code/config/FguiViewDefine.ts:364 说明与 BoxHzmjResultView.ts:147 转发注释）。细节差异与未知项尚存，维持 partial。",
      "l7": "verification_required",
      "l7_basis": "baseline",
-     "scope_applicability": "unknown",
+     "scope_applicability": "client",
      "scope_source": "review-field",
      "evidence_ids": [
-      "SVE-ST-C15-P03-05",
-      "SVE-ST-C15-P03-06",
-      "SVE-ST-C15-P03-07",
-      "SVE-ST-C15-P03-08",
-      "SVE-ST-C15-P03-09",
-      "SVE-ST-C15-P03-10",
-      "SVE-ST-C15-P03-11",
-      "SVE-ST-C15-P03-12"
+      "SVE-ST-C15-PC01-03",
+      "SVE-ST-C15-PC01-04",
+      "SVE-ST-C15-PC01-05"
      ]
     }
    ]
@@ -18741,9 +18752,9 @@
   "verifyDir": "spec-workflow/output-spec/server-rule-verify",
   "date": "2026-11-14",
   "reviewStatus": {
-   "approved": 207,
+   "approved": 210,
    "rejected": 0,
-   "pending": 112
+   "pending": 109
   },
   "transitions": [
    {
@@ -19707,12 +19718,22 @@
     "to": "consistent"
    },
    {
+    "atomId": "AT-ST-C10-016",
+    "from": "unverified",
+    "to": "conflict"
+   },
+   {
     "atomId": "AT-ST-C11-008",
     "from": "partial",
     "to": "consistent"
    },
    {
     "atomId": "AT-ST-C11-009",
+    "from": "unverified",
+    "to": "consistent"
+   },
+   {
+    "atomId": "AT-ST-C11-034",
     "from": "unverified",
     "to": "consistent"
    },
@@ -19765,6 +19786,11 @@
     "atomId": "AT-ST-C15-008",
     "from": "partial",
     "to": "consistent"
+   },
+   {
+    "atomId": "AT-ST-C15-024",
+    "from": "unverified",
+    "to": "consistent"
    }
   ],
   "baseline_stats": {
@@ -19774,10 +19800,10 @@
    "unverified": 188
   },
   "v3_stats": {
-   "consistent": 269,
+   "consistent": 271,
    "partial": 27,
-   "conflict": 2,
-   "unverified": 21,
+   "conflict": 3,
+   "unverified": 18,
    "unmarked_v1": 0
   },
   "note": "S3.3 approved 合并：approved 条目 difference 采 reviewedDifference，pending/rejected 维持 v2 基线；l7 为终局矩阵视图（scope × 终局 difference）"

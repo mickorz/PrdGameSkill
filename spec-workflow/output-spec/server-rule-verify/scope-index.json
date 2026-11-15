@@ -1,6 +1,6 @@
 {
  "schemaVersion": 1,
- "sampleNote": "OSG-W4 正式产物：server-rule-verify workflow 生成（人工样本见 scope-index_sample.json）。stats 由 merge-verify-output.mjs 重算，禁止手工填写；判定规则见 dev-docs/design/2026-11-14-OSG-W4-L7分类与玩法配置作用域设计.md；run 2026-11-14：ST-C01 落判 8 条（新增 8 / 替换 0，SVE 新增 29）；run 2026-11-14：ST-C01 落判 8 条（新增 0 / 替换 8，SVE 新增 0）；run 2026-11-14：ST-C02,ST-C04 落判 25 条（新增 25 / 替换 0，SVE 新增 69）；run 2026-11-14：ST-C02,ST-C04 落判 25 条（新增 0 / 替换 25，SVE 新增 0）；run 2026-11-14：ST-C13,ST-C14,ST-C15 落判 72 条（新增 72 / 替换 0，SVE 新增 200）；run 2026-11-14：ST-C05,ST-C06,ST-C07,ST-C08,ST-C09,ST-C10 落判 110 条（新增 110 / 替换 0，SVE 新增 303）；run 2026-11-14：ST-C03,ST-C11,ST-C12 落判 104 条（新增 104 / 替换 0，SVE 新增 274）；run 2026-11-14：ST-C01,ST-C03,ST-C04,ST-C05,ST-C07,ST-C08,ST-C09,ST-C10,ST-C11,ST-C12,ST-C13,ST-C14,ST-C15 落判 72 条（新增 0 / 替换 72，SVE 新增 41）",
+ "sampleNote": "OSG-W4 正式产物：server-rule-verify workflow 生成（人工样本见 scope-index_sample.json）。stats 由 merge-verify-output.mjs 重算，禁止手工填写；判定规则见 dev-docs/design/2026-11-14-OSG-W4-L7分类与玩法配置作用域设计.md；run 2026-11-14：ST-C01 落判 8 条（新增 8 / 替换 0，SVE 新增 29）；run 2026-11-14：ST-C01 落判 8 条（新增 0 / 替换 8，SVE 新增 0）；run 2026-11-14：ST-C02,ST-C04 落判 25 条（新增 25 / 替换 0，SVE 新增 69）；run 2026-11-14：ST-C02,ST-C04 落判 25 条（新增 0 / 替换 25，SVE 新增 0）；run 2026-11-14：ST-C13,ST-C14,ST-C15 落判 72 条（新增 72 / 替换 0，SVE 新增 200）；run 2026-11-14：ST-C05,ST-C06,ST-C07,ST-C08,ST-C09,ST-C10 落判 110 条（新增 110 / 替换 0，SVE 新增 303）；run 2026-11-14：ST-C03,ST-C11,ST-C12 落判 104 条（新增 104 / 替换 0，SVE 新增 274）；run 2026-11-14：ST-C01,ST-C03,ST-C04,ST-C05,ST-C07,ST-C08,ST-C09,ST-C10,ST-C11,ST-C12,ST-C13,ST-C14,ST-C15 落判 72 条（新增 0 / 替换 72，SVE 新增 41）；run 2026-11-14：ST-C01,ST-C03,ST-C04,ST-C05,ST-C07,ST-C08,ST-C09,ST-C10,ST-C11,ST-C12,ST-C13,ST-C14,ST-C15 落判 84 条（新增 0 / 替换 84，SVE 新增 25）；run 2026-11-14：ST-C01,ST-C03,ST-C04,ST-C05,ST-C07,ST-C08,ST-C09,ST-C10,ST-C11,ST-C12,ST-C13,ST-C14,ST-C15 落判 84 条（新增 0 / 替换 84，SVE 新增 0）",
  "scopeTarget": {
   "game": "hzmj",
   "roomType": "friend",
@@ -9,8 +9,9 @@
  "stats": {
   "active": 237,
   "conditional": 69,
-  "unknown": 12,
-  "inactive": 1
+  "unknown": 0,
+  "inactive": 1,
+  "client": 12
  },
  "entries": [
   {
@@ -1709,34 +1710,32 @@
   },
   {
    "atomId": "AT-ST-C15-024",
-   "applicability": "unknown",
-   "configVerified": false,
-   "callPathVerified": false,
+   "applicability": "client",
+   "configVerified": true,
+   "callPathVerified": true,
    "configCondition": "",
-   "callPath": "",
-   "evidenceIds": [],
-   "unresolved": "缺 500 毫秒按住判定、临时收起/松手恢复小结算、按本家视角查看终局牌桌的服务端证据：三根目录内 LongPress/长按相关实现零命中，该交互时序由客户端公共壳实现（原子 notes 亦注明本工程只提供事件出口与桌面高亮）。服务端仅下发结算态数据（CommonGameContext::SendSceneOnRelinkResult at common_game/common_game_context.cpp:775、GetSettleHands at :789），与本规则的按住/收起时序无对应实现，无法落判作用域，缺客户端公共壳长按实现证据。",
+   "callPath": "BoxHzmjResultView.onPressShowTable（Code/layer/BoxHzmjResultView.ts:98）dispatch GameEventBoxHzmj.onResultShowTable -> BoxHzmjMah2DView.onResultShowTable（Code/layer/BoxHzmjMah2DView.ts:1151）-> this.showSpecialMah(joker) 按本家视角高亮桌面财神；松手 BoxHzmjResultView.onPressHideTable（Code/layer/BoxHzmjResultView.ts:103）dispatch onResultHideTable -> BoxHzmjMah2DView.onResultHideTable（Code/layer/BoxHzmjMah2DView.ts:1160）-> showSpecialMah(0) 清除高亮。事件名定义于 Code/config/FguiViewDefine.ts:358-361（onResultShowTable/onResultHideTable）。500 毫秒按住判定与临时收起/恢复小结算本体由公共壳 BoxRoomMahResultNewViewBase 实现（该基类不在两根目录内），游戏侧仅提供事件出口与桌面财神高亮，与原子 notes 描述一致。",
+   "evidenceIds": [
+    "SVE-ST-C15-PC01-01",
+    "SVE-ST-C15-PC01-02"
+   ],
+   "unresolved": "",
    "noServerEvidence": true
   },
   {
    "atomId": "AT-ST-C15-025",
-   "applicability": "unknown",
+   "applicability": "client",
    "configVerified": true,
-   "callPathVerified": false,
-   "configCondition": "",
-   "callPath": "CommonGameLogic::OnGameStart（common_game/common_game_logic.cpp:37）-> OnResetGameStart（common_game/common_game_logic.cpp:454）-> CommonGameServerData::ResetRound（common_game/common_game_server_data.cpp:30）+ BaseData::ResetRound（mah_frame/base/base_data.cpp:35）清空 hands_/chow_groups_/outs_ 等局内数据 -> DragonMah::Start（mah_frame/dragon_mah.cpp:38）AddJuCount 累计局数 -> BoxResultStep::OnResult（common_game/com_game/common_game_com_result.cpp:22）WriteFinalScores 写分（:386）并 SendEndGame/EndGame（:78-79）",
+   "callPathVerified": true,
+   "configCondition": "客户端读取房间/大厅下发的玩家准备态字段 BoxLobbyProtocol.PlayerInfoNotify.actionState（kSit/kReady/kPlay/kStatusInvalid）与 RoomPlayerData.playState，用于设置 C_Ready 控制器显示「已准备」标识；两个字段均非服务端玩法配置项，无服务端配置依赖。",
+   "callPath": "BoxHzmjResultView.onContinueResult（Code/layer/BoxHzmjResultView.ts:119）为空实现，原 dispatch(onResultContinue)/dispatch(onResetUI) 已被注释（:120-121），点击【继续游戏】在本端不触发清手牌/碰杠区/牌河与准备表现；准备标识另由 BoxHzmjPlayerView.onShowActionSign（Code/layer/BoxHzmjPlayerView.ts:528）处理：type=kReady 时 actionNode.visible=true 并置 KW_BasePlayer.C_Ready.selectedIndex=type（:563），该路径由房间/大厅准备消息驱动，与继续按钮无连接（全仓 Code 内 sendReady 仅出现于匹配场解散重进与测试视图：gameController.ts:191、BoxHzmjMainView.ts:392、BoxHzmjTestView.ts:1203）；「返回大厅/末局」按钮处理在 Code 与 Fgui 两根内零命中（KW_BTN_BACK/KW_BTN_GOON/C_IsLastRound 仅 FguiViewDefine.ts:364 注释与 BoxHzmjResultView.ts:147 转发注释）。",
    "evidenceIds": [
-    "SVE-ST-C15-P03-05",
-    "SVE-ST-C15-P03-06",
-    "SVE-ST-C15-P03-07",
-    "SVE-ST-C15-P03-08",
-    "SVE-ST-C15-P03-09",
-    "SVE-ST-C15-P03-10",
-    "SVE-ST-C15-P03-11",
-    "SVE-ST-C15-P03-12"
+    "SVE-ST-C15-PC01-03",
+    "SVE-ST-C15-PC01-04",
+    "SVE-ST-C15-PC01-05"
    ],
-   "unresolved": "缺「本家显示已准备 / 四人均准备后自动开下一小局」与「第 8 局末局判定、返回大厅」的证据：三根目录内 Ready/准备 消息处理零命中，无准备计数与全员就绪触发开局的实现；下一小局由外层房间/框架再次调用 OnGameStart 驱动、末局与返回大厅由房间层判定，均超出本片证据范围。已证部分仅为局内状态清理（ResetRound 清手牌/碰杠/牌河、保留座位与累计积分）与局数累计（AddJuCount、WriteScore/CalcTotalScore），关键链路（准备→开局、末局判定）存在未证缺口。",
-   "noServerEvidence": false
+   "unresolved": "客户端表现为相反/不等价：继续游戏回调 BoxHzmjResultView.onContinueResult 为空（Code/layer/BoxHzmjResultView.ts:119-122），规则要求的「点击后本端收起小结算、清除上一局手牌/碰杠区/牌河」未在客户端本类触发（仅 onCloseResult:111 派发 onResultClose 走壳层关闭路径）；「本家显示已准备」的 UI 控件存在（C_Ready ready 页 + KW_ICON_READY，PlayerSelfBase.xml:5/14-16），但只由房间准备态 actionState.kReady 驱动（BoxHzmjPlayerView.ts:528/563），非继续按钮触发；第 8 局末局文案与【返回大厅】退出房间在两根目录零实现，由公共壳/房间层承担。复核轮可据此按规则 4 出 conflict 建议。",
+   "noServerEvidence": true
   },
   {
    "atomId": "AT-ST-C05-001",
@@ -3427,16 +3426,33 @@
   },
   {
    "atomId": "AT-ST-C10-016",
-   "applicability": "unknown",
+   "applicability": "client",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "",
-   "callPath": "ActionStep::OnMsgPlayC（mah_frame/com_basic/com_action.cpp:213 起仅在收到 MsgPlayC 时解析 seat/askid/power/手牌并做禁打校验，第 266 行 IsLimitMah 命中即拒绝）",
+   "configCondition": "无配置表依赖；读取服务端下发 MsgPlayLmts.hands（禁打手牌牌值）与 MsgPlayLmts.dang_fang（禁打单放牌值），用于逐张置灰并设置触摸属性（GamePlayLmtsCmd.ts:33-35、GameData.getPlayLimitMahs/getPlayLimitDanFang）",
+   "callPath": "MsgPlayLmts → GamePlayLmtsCmd.execute（controller/cmd/gameCmd/GamePlayLmtsCmd.ts:45 写缓存）→ GameEventBoxHzmj.onPlayLmtsUpdate → BoxHzmjMainView.onPlayLmtsUpdate（layer/BoxHzmjMainView.ts:1277）→ BoxHzmjPlayerHandCards.applyPlayLmtsGray（layer/BoxHzmjPlayerHandCards.ts:84-115：第 91 行 setUnTouchValues({}) 清空基类不可触摸集合、第 108 行 item.touchable = !forbid）→ 手牌基类 TouchHandCardsBase_Box.getTouchMah/hitTest（gamePlatformModule，仓外）按 item.touchable 命中判定",
    "evidenceIds": [
-    "SVE-ST-C10-P02-06"
+    "SVE-ST-C10-PC01-01",
+    "SVE-ST-C10-PC01-02",
+    "SVE-ST-C10-PC01-03",
+    "SVE-ST-C10-PC01-04"
    ],
-   "unresolved": "缺「提起/横滑出虚影」的客户端实现证据：服务端只在出牌消息 OnMsgPlayC（mah_frame/com_basic/com_action.cpp:213-274）阶段校验，无提起、拖动、横滑虚影相关消息处理或状态位，也无触摸开关（基线 notes 指向的手牌基类 touch=false 不在本仓库/本服务端目录），因此无法用服务端证明或否定「仍能提起并横滑出虚影」。",
-   "noServerEvidence": false
+   "unresolved": "客户端实现与规则相反：禁打牌在 applyPlayLmtsGray 中被置为 item.touchable=false（第 108 行），且第 91 行先清空 setUnTouchValues，使禁打牌在 fgui hitTest 的 _touchable 判定中被排除，手牌基类 getTouchMah 无法命中该牌，因而不能提起；虚影节点 KW_Ghost_Hand 仅在本家手牌组件接入，虚影只在触摸命中可打牌后由基类 onTouchMove/_handleSlidePlay 显示，禁打牌不会产生提牌与横滑虚影。与「这些牌仍能提起，也能横滑出虚影」相反，复核轮应按规则 4 出 conflict 建议。",
+   "noServerEvidence": true,
+   "evidenceScopes": [
+    {
+     "ref": "SVE-ST-C10-PC01-01",
+     "layer": "client",
+     "applicability": "client",
+     "note": "冲突产生证据：applyPlayLmtsGray 对禁打牌 item.touchable=false（BoxHzmjPlayerHandCards.ts:108），与需求「禁打牌仍能提起并横滑出虚影」相反"
+    },
+    {
+     "ref": "SVE-ST-C10-PC01-02",
+     "layer": "client",
+     "applicability": "client",
+     "note": "冲突产生证据：setUnTouchValues({}) 清空基类不可触摸集合后由 item.touchable 排除触摸命中（BoxHzmjPlayerHandCards.ts:91），禁打牌不可提起"
+    }
+   ]
   },
   {
    "atomId": "AT-ST-C10-017",
@@ -3882,17 +3898,16 @@
   },
   {
    "atomId": "AT-ST-C11-010",
-   "applicability": "unknown",
+   "applicability": "client",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "",
-   "callPath": "ActionStep::InitPowerStepConAction（mah_frame/com_basic/com_action.cpp:761 各权限步骤 MakePower 聚合成 power 位）→ ActionStep::GetPowerAndCombs（mah_frame/com_basic/com_action.cpp:813 有出牌位且另有自摸/杠位时只追加 kPowerIdCancelC）→ ActionStep::OnMsgPlayC（mah_frame/com_basic/com_action.cpp:242 只校验 kPowerIdPlay 位即受理出牌）",
+   "configCondition": "实现读取 MsgPower 下发的 power 位（POWER_ID_HU/KONG/PONG/CHOW）判断是否存在自摸/杠等提示态，无独立配置项",
+   "callPath": "BoxHzmjPlayerHandCards extends TouchHandCardsBase_Box；BoxHzmjMainView.ts:339 把 canPlayMahCheck 注入 _selfHand.canPlayMahCheck 作为出牌前统一校验 → BoxHzmjMainView.ts:1429 canPlayMahCheck：读 GameData.getPower()，power 含 HU/KONG/PONG/CHOW 任一位且 C_BtnState=PENG_GANG_HU 且非暗杠置灰场景时弹「点“过”才能出牌」并 return false（BoxHzmjMainView.ts:1445-1460）→ 同函数另含禁打校验（1431-1435），拦截发生在出牌请求 sendPlay 之前",
    "evidenceIds": [
-    "SVE-ST-C11-P02-01",
-    "SVE-ST-C11-P02-02",
-    "SVE-ST-C11-P02-03"
+    "SVE-ST-C11-PC01-01",
+    "SVE-ST-C11-PC01-02"
    ],
-   "unresolved": "服务端不存在「未点过不得出牌」的校验：出牌请求只要求 kPowerIdPlay 位（mah_frame/com_basic/com_action.cpp:242），play 与自摸/杠并存时只追加 kPowerIdCancelC（mah_frame/com_basic/com_action.cpp:813，mah_frame/base/macros.h:175 注释「过(无需发回给服务端)」），拦截只能由客户端完成；缺客户端出牌前置校验（单击/双击/滑动统一拦截）证据，三根目录内无对应实现。",
+   "unresolved": "",
    "noServerEvidence": true
   },
   {
@@ -3912,45 +3927,44 @@
   },
   {
    "atomId": "AT-ST-C11-012",
-   "applicability": "unknown",
+   "applicability": "client",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "",
-   "callPath": "BoxActionStep::OnMsgCancel（common_game/com_game/common_game_com_action.cpp:40 先发过牌 notice）→ ActionStep::OnMsgCancel（mah_frame/com_basic/com_action.cpp:355 只受理含 kPowerIdCancelS 的取消请求）→ ConAction::OnConAction（mah_frame/base/con_action.cpp:19 记录已响应）→ ActionStep::DoActionCancel（mah_frame/com_basic/com_action.cpp:712 回到最大 server step 结束本次机会）",
+   "configCondition": "读取 MsgPower 的 power 位驱动「过」按钮显隐（POWER_ID_CANCEL_S/POWER_ID_CANCEL_C）与出牌门禁，无独立配置项",
+   "callPath": "BoxHzmjMainView.ts:1453 出牌门禁（提示「点“过”才能出牌」并 return false）→ 点【过】：KW_BTN_Guo 绑 onBtnGuo（BoxHzmjMainView.ts:1236 sendCancel + C_BtnState=EMPTY + 清灰）／CANCEL_C 场景 onBtnGuo2（1246 本地收起，不发协议）→ 提交吃/碰/杠/胡或取消同样把 C_BtnState 置 EMPTY 退出提示页签（1103/1134/1156/1182/1189/1177）",
    "evidenceIds": [
-    "SVE-ST-C11-P02-07",
-    "SVE-ST-C11-P02-08",
-    "SVE-ST-C11-P02-09"
+    "SVE-ST-C11-PC01-03",
+    "SVE-ST-C11-PC01-04",
+    "SVE-ST-C11-PC01-05"
    ],
-   "unresolved": "服务端不强制「先过后出牌」：出牌只校验 kPowerIdPlay 位（mah_frame/com_basic/com_action.cpp:242），而取消请求只受理 kPowerIdCancelS（mah_frame/com_basic/com_action.cpp:355），出牌+自摸/杠场景服务端下发的却是 kPowerIdCancelC（mah_frame/com_basic/com_action.cpp:813，macros.h:175「过(无需发回给服务端)」），即该场景的「过」根本不经过服务端；缺客户端「须先点过才能继续出牌」的门禁证据。",
+   "unresolved": "",
    "noServerEvidence": true
   },
   {
    "atomId": "AT-ST-C11-013",
-   "applicability": "unknown",
+   "applicability": "client",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "",
-   "callPath": "BoxCKongStep::Judge（common_game/com_game/common_game_com_kong.cpp:143 以 GetStands 全立牌做 TestCKong，不看是否刚摸/补牌）→ BoxCKongStep::Execute（common_game/com_game/common_game_com_kong.cpp:165 CheckCKong 后发杠）→ ActionStep::GetPowerAndCombs（mah_frame/com_basic/com_action.cpp:813 暗杠位与出牌位并存时只追加 kPowerIdCancelC）",
+   "configCondition": "读取 MsgPower 的 combs（可杠组合 mahs）与 MsgTake 摸牌位 moCard，用于判定可杠组合是否与刚摸牌相关，无独立配置项",
+   "callPath": "BoxHzmjMainView.ts:535 setPower → _updateGangOffMoCard（692-701）：读 moCard，若所有可杠组合 mahs[0] 都不等于刚摸牌则 _isGangOffMoCard=true → _updatePowerGray 提前 onClearGray 不置灰手牌（713-717）→ canPlayMahCheck 的「点过才能出牌」门禁因 !_isGangOffMoCard 不成立而放行（1453）",
    "evidenceIds": [
-    "SVE-ST-C11-P02-10",
-    "SVE-ST-C11-P02-01"
+    "SVE-ST-C11-PC01-06",
+    "SVE-ST-C11-PC01-07"
    ],
-   "unresolved": "服务端暗杠资格取自立牌全集（common_game/com_game/common_game_com_kong.cpp:143 GetStands + TestCKong），不区分「摸牌/补牌前已在手」，也没有「暗杠时放行出牌」的门禁分支；出牌是否被拦属客户端判定（服务端 play 位照发，见 mah_frame/com_basic 路径 com_action.cpp:813/242）。缺客户端「可杠组合是否等于刚摸牌」的判定证据。",
+   "unresolved": "",
    "noServerEvidence": true
   },
   {
    "atomId": "AT-ST-C11-014",
-   "applicability": "unknown",
+   "applicability": "client",
    "configVerified": true,
    "callPathVerified": true,
-   "configCondition": "",
-   "callPath": "BoxTKongStep::Judge（common_game/com_game/common_game_com_kong.cpp:215 由碰组合+立牌算补杠）→ ActionStep::GetPowerAndCombs（mah_frame/com_basic 路径：mah_frame/com_basic/com_action.cpp:813 出牌位与补杠位并存时只追加 kPowerIdCancelC）→ ActionStep::OnMsgPlayC（mah_frame/com_basic/com_action.cpp:242 只校验出牌位）",
+   "configCondition": "读取 PlayerCardsData.moCard（MsgTake 摸牌位；碰后无摸牌为 0）与 MsgPower 的 combs，无独立配置项",
+   "callPath": "碰后（无摸牌）: moCard<=0 → _updateGangOffMoCard 在 BoxHzmjMainView.ts:696 直接 return，_isGangOffMoCard 保持 false → canPlayMahCheck（1453）仍以 !_isGangOffMoCard 成立拦住直接出牌，须先点过（onBtnGuo 1236 解除）",
    "evidenceIds": [
-    "SVE-ST-C11-P02-11",
-    "SVE-ST-C11-P02-01"
+    "SVE-ST-C11-PC01-08"
    ],
-   "unresolved": "服务端只判定补杠资格并在同一 MsgPower 下发 play+补杠+CancelC（common_game/com_game/common_game_com_kong.cpp:215；com_action.cpp:813/242），不区分「碰后加杠」是否需要先过，也未强制先过；「仍须先过」的拦截在客户端，缺客户端针对碰后加杠的提示门禁证据。",
+   "unresolved": "",
    "noServerEvidence": true
   },
   {
@@ -4265,13 +4279,16 @@
   },
   {
    "atomId": "AT-ST-C11-034",
-   "applicability": "unknown",
-   "configVerified": false,
-   "callPathVerified": false,
-   "configCondition": "",
-   "callPath": "",
-   "evidenceIds": [],
-   "unresolved": "缺少『倒计时归零后仍受理吃请求』的正向服务端实现证据：ActionStep::OnMsgChowC 只校验 seat/askid/power/comb，无任何时间戳或超时判定（mah_frame/com_basic/com_action.cpp:153-211），但超时处理 Step::DealTimeOutAction 在等待态即 SetEndWait 并推进步骤（mah_frame/base/step.cpp:72-83），askid 随步骤推进变化，导致归零后的请求会被 askid 校验拒绝；还需客户端倒计时到点后按钮仍可点、以及服务端超时与客户端时钟的时序证据才能落判。",
+   "applicability": "client",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "读取 MsgPower 的 power 位驱动操作按钮显隐与可出牌态、Clock.remain_sec 仅用于倒计时文本，无时钟门禁配置",
+   "callPath": "倒计时渲染 BoxHzmjMah2DView.setClock（674-715）：归零分支 time==0 仅把 KW_Clock_Num 置 \"00\"，不改任何按钮 touchable/visible（710-714）；操作面板可用性只由 BoxHzmjMainView.setPower 的 power 位决定（536/549-585），按钮回调（1236/1128/1149/1188）无任何时钟判断；仅动作/步骤消息触发 closeOperate（492-503）",
+   "evidenceIds": [
+    "SVE-ST-C11-PC01-09",
+    "SVE-ST-C11-PC01-10"
+   ],
+   "unresolved": "",
    "noServerEvidence": true
   },
   {
@@ -4525,13 +4542,15 @@
   },
   {
    "atomId": "AT-ST-C11-051",
-   "applicability": "unknown",
-   "configVerified": false,
-   "callPathVerified": false,
-   "configCondition": "",
-   "callPath": "",
-   "evidenceIds": [],
-   "unresolved": "服务端无「存在爆/飘候选时其余听牌只留箭头」的语义与下发字段：CalculateWaitFan/SendWaitInfos 全量下发每个 play_mah 及其进张/点数/番 id（mah_frame/base/base_context.cpp:727-737），无裁剪标记；匹配候选对 WaitInfo/Piao/MV_ALL 检索无相关命中。该规则属纯客户端展示聚合，缺少服务端证据，需查客户端 RuleHzmj/听牌详情组件确认。",
+   "applicability": "client",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "读取听牌详情 tingValues 的 tingInfo 进张（万能听 MAH_VALUE_ALL/0xff）与 jokerMah，仅作展示裁剪，无配置依赖",
+   "callPath": "BoxHzmjPlayerHandCards.showTingArrow（173-206）：先扫 tingValues 判定是否存在爆/飘（万能听 card==MAH_VALUE_ALL 或 0xff）→ hasBaoOrPiao=true；随后逐张渲染时其余可听牌 tingType 强制降为 TingType.TYPE_COMMON（只留普通箭头），有爆/飘的牌自身仍打 TYPE_BAO/TYPE_PIAO 标记 → 调用点 BoxHzmjMainView.ts:1521 showTingArrow(canTing)",
+   "evidenceIds": [
+    "SVE-ST-C11-PC01-11"
+   ],
+   "unresolved": "",
    "noServerEvidence": true
   },
   {
@@ -4636,13 +4655,13 @@
   },
   {
    "atomId": "AT-ST-C11-058",
-   "applicability": "unknown",
+   "applicability": "client",
    "configVerified": true,
    "callPathVerified": false,
    "configCondition": "",
-   "callPath": "",
+   "callPath": "检索：关键词「杠标记/标记/箭头/补/手掌/n4/mah3/4mah/C_IsAnGan/C_Hu」于 Code/layer（含 comp、fgui_uideclare）、Fgui/assets 全量 XML，零命中杠标记叠放实现；仅命中结算用 comboSefl 的 4 张页布局（Fgui/assets/box_hzmj_result/component/comboSefl.xml 第 4 张 mah3 xy=44,5 居中置顶）与结算角标按索引打标（BoxHzmjResultMid.ts:557/587），运行时副露组件 ui://game_mah/comboSefl（Mah2DCombo_Box）不在两根目录",
    "evidenceIds": [],
-   "unresolved": "缺「标记叠在杠组最上方居中第 4 张」的服务端证据：服务端只下发杠牌组牌值数组 comb.mahs 与 flag（mah_frame/base/base_context.cpp:518-522），杠组第四张的叠放层级与居中位置属客户端副露组件渲染，三根目录内无对应字段或绘制代码，服务端既不能证明也不能否证",
+   "unresolved": "客户端亦未定位实现（双端零实现，检索范围：Code/layer、Code/layer/comp、Code/fgui_uideclare、Fgui/assets 全部 XML）。杠类型标记（直杠来源箭头/加杠「补」/暗杠手掌）在副露组上的叠放锚定由平台副露组件 Mah2DCombo_Box（ui://game_mah/comboSefl）绘制，该包与代码不在 source-code/client/Code 与 source-code/client/Fgui 两根目录；仓库内仅结算页 comboSefl 定义了 4 张组第 4 张居中置顶的几何，不构成「杠标记叠在第 4 张」的实现定位。",
    "noServerEvidence": true
   },
   {
@@ -4663,27 +4682,31 @@
   },
   {
    "atomId": "AT-ST-C11-060",
-   "applicability": "unknown",
+   "applicability": "client",
    "configVerified": true,
-   "callPathVerified": false,
-   "configCondition": "",
-   "callPath": "SelfTakeStep::Execute（mah_frame/com_basic/com_take.cpp:219-224 杠后以 TakeFlag::kTFKong 下发 SendTake）→ BaseContext::SendTake（mah_frame/base/base_context.cpp:359-384 组 MsgTake：seat/dir/tcnt/flag/mah）",
+   "callPathVerified": true,
+   "configCondition": "读取 MsgTake 的 mah/dir/tcnt/flag（杠后补牌沿用通用取牌消息）与 MsgKongS.comb.flag（触发杠字效），无配置依赖",
+   "callPath": "杠后补牌走通用取牌：GameTakeCmd._updateTakeData（controller/cmd/gameCmd/GameTakeCmd.ts:73 getPlayerCardsData(localSeat)?.setTakeMah(data.mah)）→ PlayerCardsData.setTakeMah（data/PlayerCardsData.ts:51-56 把上一张摸牌并回手牌、新牌置为 _moCard）→ getHandCards/Mah2DView.setHandCard（layer/BoxHzmjMah2DView.ts:1035 cards=moCard?cards.concat(moCard):cards.concat()）把手牌末位留作单放/摸牌位；同时杠字效由 GameKongCmd.ts:61 dispatch onMsgPlayPengGang → BoxHzmjTipAniView.onMsgPlayPengGang（483-533）在独立座位字效节点播放，取牌与字效互不关闭（hidePengGangAni 仅在胡/点炮时调用，879/925）",
    "evidenceIds": [
-    "SVE-ST-C11-P07-08",
-    "SVE-ST-C11-P07-09"
+    "SVE-ST-C11-PC01-12",
+    "SVE-ST-C11-PC01-13",
+    "SVE-ST-C11-PC01-14"
    ],
-   "unresolved": "缺「补牌落入手牌最右分隔位」与「与杠字同时叠加」的服务端证据：SVE-ST-C11-P07-08/09 只证明杠后补牌以 kTFKong 标记下发取牌消息（seat/dir/tcnt/flag），消息内无落位槽位（最右分隔位）字段，也无「杠」字字效叠加下发；落位与字效叠加在客户端手牌/副露组件，三根目录内无对应实现",
-   "noServerEvidence": false
+   "unresolved": "",
+   "noServerEvidence": true
   },
   {
    "atomId": "AT-ST-C11-061",
-   "applicability": "unknown",
+   "applicability": "client",
    "configVerified": true,
-   "callPathVerified": false,
-   "configCondition": "",
-   "callPath": "",
-   "evidenceIds": [],
-   "unresolved": "缺「连续杠时新杠字覆盖仍在播放的上一个」的服务端证据：该规则完全属于客户端字效节点复用/覆盖的动画行为，服务端杠执行体只做杠链累加（common_game/com_game/common_game_com_kong.cpp:116/274 PushGangChain）与 MsgKongS 下发，无字效节点、播放时长或覆盖控制字段，三根目录内无对应实现，无法判定",
+   "callPathVerified": true,
+   "configCondition": "读取 MsgKongS.comb.flag 选择动作字效皮肤（KONG/MKONG/CKONG/TKONG→gang），无配置依赖",
+   "callPath": "GameKongCmd.ts:49-61 按 comb.flag 取 kongType 后 dispatch onMsgPlayPengGang → BoxHzmjTipAniView.onMsgPlayPengGang（483-536）：每座位只取一个 _pengGangAni[localSeat] 节点（Fgui HzmjTipAniComponent.xml 每座位仅一个 KW_Ani_PengGang_i），直接改 skinName/url 后 PlaySpineAni（config/FguiViewDefine.ts:398-411 sp.setAnimation(0, aniName, false)）在同一 skeleton 上重置播放，未先停止上一段动画 → 新杠字顶替仍在播放的旧字",
+   "evidenceIds": [
+    "SVE-ST-C11-PC01-15",
+    "SVE-ST-C11-PC01-16"
+   ],
+   "unresolved": "",
    "noServerEvidence": true
   },
   {

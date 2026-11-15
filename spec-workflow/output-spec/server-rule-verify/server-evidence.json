@@ -1,6 +1,6 @@
 {
  "schemaVersion": 1,
- "sampleNote": "OSG-W4 正式产物：server-rule-verify workflow 生成（人工样本见 server-evidence_sample.json）；run 2026-11-14：ST-C01 落判 8 条（新增 8 / 替换 0，SVE 新增 29）；run 2026-11-14：ST-C01 落判 8 条（新增 0 / 替换 8，SVE 新增 0）；run 2026-11-14：ST-C02,ST-C04 落判 25 条（新增 25 / 替换 0，SVE 新增 69）；run 2026-11-14：ST-C02,ST-C04 落判 25 条（新增 0 / 替换 25，SVE 新增 0）；run 2026-11-14：ST-C13,ST-C14,ST-C15 落判 72 条（新增 72 / 替换 0，SVE 新增 200）；run 2026-11-14：ST-C05,ST-C06,ST-C07,ST-C08,ST-C09,ST-C10 落判 110 条（新增 110 / 替换 0，SVE 新增 303）；run 2026-11-14：ST-C03,ST-C11,ST-C12 落判 104 条（新增 104 / 替换 0，SVE 新增 274）；run 2026-11-14：ST-C01,ST-C03,ST-C04,ST-C05,ST-C07,ST-C08,ST-C09,ST-C10,ST-C11,ST-C12,ST-C13,ST-C14,ST-C15 落判 72 条（新增 0 / 替换 72，SVE 新增 41）",
+ "sampleNote": "OSG-W4 正式产物：server-rule-verify workflow 生成（人工样本见 server-evidence_sample.json）；run 2026-11-14：ST-C01 落判 8 条（新增 8 / 替换 0，SVE 新增 29）；run 2026-11-14：ST-C01 落判 8 条（新增 0 / 替换 8，SVE 新增 0）；run 2026-11-14：ST-C02,ST-C04 落判 25 条（新增 25 / 替换 0，SVE 新增 69）；run 2026-11-14：ST-C02,ST-C04 落判 25 条（新增 0 / 替换 25，SVE 新增 0）；run 2026-11-14：ST-C13,ST-C14,ST-C15 落判 72 条（新增 72 / 替换 0，SVE 新增 200）；run 2026-11-14：ST-C05,ST-C06,ST-C07,ST-C08,ST-C09,ST-C10 落判 110 条（新增 110 / 替换 0，SVE 新增 303）；run 2026-11-14：ST-C03,ST-C11,ST-C12 落判 104 条（新增 104 / 替换 0，SVE 新增 274）；run 2026-11-14：ST-C01,ST-C03,ST-C04,ST-C05,ST-C07,ST-C08,ST-C09,ST-C10,ST-C11,ST-C12,ST-C13,ST-C14,ST-C15 落判 72 条（新增 0 / 替换 72，SVE 新增 41）；run 2026-11-14：ST-C01,ST-C03,ST-C04,ST-C05,ST-C07,ST-C08,ST-C09,ST-C10,ST-C11,ST-C12,ST-C13,ST-C14,ST-C15 落判 84 条（新增 0 / 替换 84，SVE 新增 25）；run 2026-11-14：ST-C01,ST-C03,ST-C04,ST-C05,ST-C07,ST-C08,ST-C09,ST-C10,ST-C11,ST-C12,ST-C13,ST-C14,ST-C15 落判 84 条（新增 0 / 替换 84，SVE 新增 0）",
  "sourceRepos": {
   "common_game": "E:/WorkProjects/xc-flow/.xflow/xc/xcodeDev/game-mahjong/server/Logic/mahjong_server/src/game_hzmj/common_game",
   "hzmj_server": "E:/WorkProjects/xc-flow/.xflow/xc/xcodeDev/game-mahjong/server/Logic/mahjong_server/src/game_hzmj/hzmj_server",
@@ -9589,6 +9589,256 @@
    "location": "common_game/common_game_context.cpp:82",
    "symbol": "CommonGameContext::FillMsgTanItems",
    "excerpt": "int8_t tan_count = GetSvrData()->GetTanCount(static_cast<int8_t>(from), static_cast<int8_t>(to));\nint8_t bao_relation = GetSvrData()->GetBaoRelation(static_cast<int8_t>(from), static_cast<int8_t>(to));\nif (tan_count <= 0 && bao_relation <= 0) { continue; }\nhzmj_protocol::TanItem* item = list->Add();\nitem->set_from_seat(from);\nitem->set_to_seat(to);\nitem->set_tan_count(tan_count);\nitem->set_bao_relation(bao_relation);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C10-PC01-01",
+   "atomId": "AT-ST-C10-016",
+   "layer": "client_code",
+   "file": "client_code/layer/BoxHzmjPlayerHandCards.ts",
+   "location": "client_code/layer/BoxHzmjPlayerHandCards.ts:108",
+   "symbol": "BoxHzmjPlayerHandCards.applyPlayLmtsGray",
+   "excerpt": "item.touchable = !forbid;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C10-PC01-02",
+   "atomId": "AT-ST-C10-016",
+   "layer": "client_code",
+   "file": "client_code/layer/BoxHzmjPlayerHandCards.ts",
+   "location": "client_code/layer/BoxHzmjPlayerHandCards.ts:91",
+   "symbol": "BoxHzmjPlayerHandCards.applyPlayLmtsGray",
+   "excerpt": "this.setUnTouchValues({});",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C10-PC01-03",
+   "atomId": "AT-ST-C10-016",
+   "layer": "client_code",
+   "file": "client_code/layer/BoxHzmjMah2DView.ts",
+   "location": "client_code/layer/BoxHzmjMah2DView.ts:139",
+   "symbol": "BoxHzmjMah2DView.initUI",
+   "excerpt": "this.selfHand = new BoxHzmjPlayerHandCards(\n            view.KW_HandMah_0,\n            view.KW_Ghost_Hand as any,\n            \"ui://game_mah/mahHandSelf\",\n            \"ui://game_mah/FanPai\"\n        );",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C10-PC01-04",
+   "atomId": "AT-ST-C10-016",
+   "layer": "client_code",
+   "file": "client_code/layer/BoxHzmjMah2DView.ts",
+   "location": "client_code/layer/BoxHzmjMah2DView.ts:144",
+   "symbol": "BoxHzmjMah2DView.initUI",
+   "excerpt": "this.selfHand.setTouchArea(view.KW_Desk_Image as fgui.GObject);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-PC01-01",
+   "atomId": "AT-ST-C11-010",
+   "layer": "client_code",
+   "file": "client_code/layer/BoxHzmjMainView.ts",
+   "location": "client_code/layer/BoxHzmjMainView.ts:1445",
+   "symbol": "BoxHzmjMainView.canPlayMahCheck",
+   "excerpt": "        // 有吃/碰/杠/胡操作按钮时，不能直接出牌，必须先点“过”（暗杠置灰场景同理）\n        const power = GameData.getPower();\n        const showAction =\n            (power & BoxMahDefine.PowerType.POWER_ID_HU) > 0 ||\n            (power & BoxMahDefine.PowerType.POWER_ID_KONG) > 0 ||\n            (power & BoxMahDefine.PowerType.POWER_ID_PONG) > 0 ||\n            (power & BoxMahDefine.PowerType.POWER_ID_CHOW) > 0;\n        const btnState = this.view.KW_Main.KW_Handler.C_BtnState;\n        if (showAction && btnState.selectedIndex == BtnState.PENG_GANG_HU && !this._isGangOffMoCard) {\n            pfbm.uiFgui(fui.FuiCommonViewDefine.MessageSimpleBoxListView).showFgui<MessageSimpleBoxListDataType>({\n                text: `点“过”才能出牌`,\n                time: 3,\n                type: 0,\n            });\n            return false;\n        }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-PC01-02",
+   "atomId": "AT-ST-C11-010",
+   "layer": "client_code",
+   "file": "client_code/layer/BoxHzmjMainView.ts",
+   "location": "client_code/layer/BoxHzmjMainView.ts:339",
+   "symbol": "BoxHzmjMainView.initUI/_selfHand.canPlayMahCheck",
+   "excerpt": "        this._selfHand.canPlayMahCheck = this.canPlayMahCheck.bind(this);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-PC01-03",
+   "atomId": "AT-ST-C11-012",
+   "layer": "client_code",
+   "file": "client_code/layer/BoxHzmjMainView.ts",
+   "location": "client_code/layer/BoxHzmjMainView.ts:1453",
+   "symbol": "BoxHzmjMainView.canPlayMahCheck",
+   "excerpt": "        if (showAction && btnState.selectedIndex == BtnState.PENG_GANG_HU && !this._isGangOffMoCard) {\n            pfbm.uiFgui(fui.FuiCommonViewDefine.MessageSimpleBoxListView).showFgui<MessageSimpleBoxListDataType>({\n                text: `点“过”才能出牌`,\n                time: 3,\n                type: 0,\n            });\n            return false;\n        }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-PC01-04",
+   "atomId": "AT-ST-C11-012",
+   "layer": "client_code",
+   "file": "client_code/layer/BoxHzmjMainView.ts",
+   "location": "client_code/layer/BoxHzmjMainView.ts:1236",
+   "symbol": "BoxHzmjMainView.onBtnGuo / onBtnGuo2",
+   "excerpt": "    /**过 */\n    onBtnGuo(): void {\n        GameController.instance.sendCancel();\n        this.view.KW_Main.KW_Handler.C_BtnState.selectedIndex = BtnState.EMPTY;\n        this._hideMoreSelect();\n        this._selfHand.selectChiCb = null;\n        this._clearPowerHandGray();\n        this.cancelAuto();\n    }\n...\n    onBtnGuo2(): void {\n        ...\n        if (this.view.KW_Main.KW_Handler.C_BtnState.selectedIndex == BtnState.PENG_GANG_HU) {\n            this.view.KW_Main.KW_Handler.C_BtnState.selectedIndex = BtnState.EMPTY;\n        }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-PC01-05",
+   "atomId": "AT-ST-C11-012",
+   "layer": "client_code",
+   "file": "client_code/layer/BoxHzmjMainView.ts",
+   "location": "client_code/layer/BoxHzmjMainView.ts:1128",
+   "symbol": "BoxHzmjMainView.onBtnPeng / onBtnChooseGang / onBtnHu / onBtnCancel",
+   "excerpt": "    /**碰 */\n    onBtnPeng(): void {\n        ...\n        GameController.instance.sendPung(comb);\n        this.view.KW_Main.KW_Handler.C_BtnState.selectedIndex = BtnState.EMPTY;\n...\n    onBtnChooseGang(): void {\n        ...\n        GameController.instance.sendKong(comb);\n        this._selfHand.canPutCard = false;\n        this.view.KW_Main.KW_Handler.C_BtnState.selectedIndex = BtnState.EMPTY;\n...\n    onBtnCancel(): void {\n        this.showChooseChi(false);\n        this.showChooseGang(false);\n        this.onBtnGuo();\n    }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-PC01-06",
+   "atomId": "AT-ST-C11-013",
+   "layer": "client_code",
+   "file": "client_code/layer/BoxHzmjMainView.ts",
+   "location": "client_code/layer/BoxHzmjMainView.ts:692",
+   "symbol": "BoxHzmjMainView._updateGangOffMoCard",
+   "excerpt": "    private _updateGangOffMoCard(powerState: IPowerShowState, PowerData: IPower): void {\n        this._isGangOffMoCard = false;\n        if (!powerState.showGang || powerState.showHu) return;\n        const moCard = GameData.getPlayerCardsData(SELF_LOCAL_SEAT)?.moCard ?? 0;\n        if (moCard <= 0) return;\n        const hasGangOnMoCard = (PowerData.combs ?? []).some(\n            (comb) => this._isGangComb(comb.flag) && (comb.mahs?.[0] ?? 0) === moCard\n        );\n        if (hasGangOnMoCard) return;\n        this._isGangOffMoCard = true;\n    }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-PC01-07",
+   "atomId": "AT-ST-C11-013",
+   "layer": "client_code",
+   "file": "client_code/layer/BoxHzmjMainView.ts",
+   "location": "client_code/layer/BoxHzmjMainView.ts:713",
+   "symbol": "BoxHzmjMainView._updatePowerGray",
+   "excerpt": "        if (this._isGangOffMoCard) {\n            this.onClearGray();\n            this._selfHand.selectChiCb = null;\n            return;\n        }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-PC01-08",
+   "atomId": "AT-ST-C11-014",
+   "layer": "client_code",
+   "file": "client_code/layer/BoxHzmjMainView.ts",
+   "location": "client_code/layer/BoxHzmjMainView.ts:695",
+   "symbol": "BoxHzmjMainView._updateGangOffMoCard",
+   "excerpt": "        const moCard = GameData.getPlayerCardsData(SELF_LOCAL_SEAT)?.moCard ?? 0;\n        if (moCard <= 0) return;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-PC01-09",
+   "atomId": "AT-ST-C11-034",
+   "layer": "client_code",
+   "file": "client_code/layer/BoxHzmjMah2DView.ts",
+   "location": "client_code/layer/BoxHzmjMah2DView.ts:710",
+   "symbol": "BoxHzmjMah2DView.setClock",
+   "excerpt": "        } else if (time == 0) {\n            clockStr.text = \"00\";\n            clockStr.font = fgui.UIPackage.getItemURL(PackageBoxHzmjView.PackageGameMah2D, \"Fntdaojishi02-export\");\n            this._clockCountDownTime?.stop();\n        }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-PC01-10",
+   "atomId": "AT-ST-C11-034",
+   "layer": "client_code",
+   "file": "client_code/layer/BoxHzmjMainView.ts",
+   "location": "client_code/layer/BoxHzmjMainView.ts:577",
+   "symbol": "BoxHzmjMainView._setPowerButtonsVisible",
+   "excerpt": "    private _setPowerButtonsVisible(powerState: IPowerShowState): void {\n        this.view.KW_Main.KW_Handler.KW_BTN_Chi.visible = powerState.showChi;\n        this.view.KW_Main.KW_Handler.KW_BTN_Peng.visible = powerState.showPeng;\n        this.view.KW_Main.KW_Handler.KW_BTN_Gang.visible = powerState.showGang;\n        this.view.KW_Main.KW_Handler.KW_BTN_Guo.visible = powerState.showGuo;\n        this.view.KW_Main.KW_Handler.KW_BTN_Guo2.visible = powerState.showGuo2;\n        this.view.KW_Main.KW_Handler.KW_BTN_Hu.visible = powerState.showHu;\n    }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-PC01-11",
+   "atomId": "AT-ST-C11-051",
+   "layer": "client_code",
+   "file": "client_code/layer/BoxHzmjPlayerHandCards.ts",
+   "location": "client_code/layer/BoxHzmjPlayerHandCards.ts:173",
+   "symbol": "BoxHzmjPlayerHandCards.showTingArrow",
+   "excerpt": "    showTingArrow(tingValues: { [key: number]: TingMahInfos }): void {\n        const jokerMah = GameData.jokerMah;\n        // 只要存在飘/爆（万能听），其它可听牌点不再展示大/多/优\n        let hasBaoOrPiao = false;\n        for (const key in tingValues) {\n            const info = tingValues[key];\n            if (info?.tingInfo?.some((t) => t.card === BoxMahDefine.MAH_VALUE_ALL || t.card === 0xff)) {\n                hasBaoOrPiao = true;\n                break;\n            }\n        }\n...\n            } else if (info !== undefined) {\n                // 有飘/爆时只保留普通箭头；否则用 calcCanTingInfo 的大/多/优\n                const tingType = hasBaoOrPiao ? TingType.TYPE_COMMON : info.tingType;\n                Mah2DBase.setCardTing(item, true, tingType);\n                showFlag[item.mahValue] = true;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-PC01-12",
+   "atomId": "AT-ST-C11-060",
+   "layer": "client_code",
+   "file": "client_code/data/PlayerCardsData.ts",
+   "location": "client_code/data/PlayerCardsData.ts:51",
+   "symbol": "PlayerCardsData.setTakeMah",
+   "excerpt": "    public setTakeMah(nMah: number): void {\n        if (this._moCard) {\n            this._cards.push(this._moCard);\n            this.sortSelfHandCard();\n        }\n        this._moCard = nMah;",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-PC01-13",
+   "atomId": "AT-ST-C11-060",
+   "layer": "client_code",
+   "file": "client_code/layer/BoxHzmjMah2DView.ts",
+   "location": "client_code/layer/BoxHzmjMah2DView.ts:1035",
+   "symbol": "BoxHzmjMah2DView.setHandCard",
+   "excerpt": "    setHandCard(localSeat: number, cards: number[], moCard: number, combo: ComboData[], isShow: boolean): void {\n        cards = moCard ? cards.concat(moCard) : cards.concat();\n        this.hands[localSeat].state = isShow ? CardState_Box.Up : CardState_Box.Stand;\n        this.resetHandCards(localSeat, cards);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-PC01-14",
+   "atomId": "AT-ST-C11-060",
+   "layer": "client_code",
+   "file": "client_code/layer/BoxHzmjTipAniView.ts",
+   "location": "client_code/layer/BoxHzmjTipAniView.ts:483",
+   "symbol": "BoxHzmjTipAniView.onMsgPlayPengGang",
+   "excerpt": "    @gf.listen(GameEventBoxHzmj.onMsgPlayPengGang)\n    onMsgPlayPengGang(type: number, localSeat: number): void {\n        const actionAniNode = this._pengGangAni[localSeat];\n        ...\n        case BoxMahDefine.ActionAniType.TYPE_KONG:\n        case BoxMahDefine.ActionAniType.TYPE_MKONG:\n            actionSkinName = \"gang\";\n        ...\n        actionAniNode.skinName = actionSkinName;\n        actionAniNode.visible = true;\n        ...\n        PlaySpineAni(actionAniNode, actionAniName, () => {\n            actionAniNode.visible = false;\n        });",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-PC01-15",
+   "atomId": "AT-ST-C11-061",
+   "layer": "client_code",
+   "file": "client_code/layer/BoxHzmjTipAniView.ts",
+   "location": "client_code/layer/BoxHzmjTipAniView.ts:486",
+   "symbol": "BoxHzmjTipAniView.onMsgPlayPengGang",
+   "excerpt": "        // 座位对应碰杠/飘动画节点\n        const actionAniNode = this._pengGangAni[localSeat];\n        if (actionAniNode == null) {\n            return;\n        }\n...\n        actionAniNode.skinName = actionSkinName;\n        actionAniNode.visible = true;\n        if (actionAniNode.name == \"KW_Ani_PengGang_ZI\") {\n            actionAniNode.url = \"ui://box_hzmj_tipAni/guafenxiayu_02\";\n        } else {\n            actionAniNode.url = \"ui://box_hzmj_tipAni/Paixing_wz03\";\n        }\n        PlaySpineAni(actionAniNode, actionAniName, () => {\n            actionAniNode.visible = false;\n        });",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C11-PC01-16",
+   "atomId": "AT-ST-C11-061",
+   "layer": "client_code",
+   "file": "client_code/config/FguiViewDefine.ts",
+   "location": "client_code/config/FguiViewDefine.ts:398",
+   "symbol": "PlaySpineAni",
+   "excerpt": "export function PlaySpineAni(\n    KW_Ani: fairygui.GLoader3D,\n    aniName: string,\n    onComplete?: () => void,\n    attachToBone?: { path: string; node: fgui.GObject }[]\n): void {\n    KW_Ani.playing = true;\n    gf.sp.onSpineLoaded(KW_Ani, (sp: gf.sp.Spine) => {\n        sp.premultipliedAlpha = false;\n        sp.setAnimation(0, aniName, false);",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C15-PC01-01",
+   "atomId": "AT-ST-C15-024",
+   "layer": "client_code",
+   "file": "client_code/layer/BoxHzmjResultView.ts",
+   "location": "client_code/layer/BoxHzmjResultView.ts:98",
+   "symbol": "BoxHzmjResultView.onPressShowTable",
+   "excerpt": "/** 长按看桌：派发游戏内扩展事件 */\n    protected onPressShowTable(): void {\n        this.dispatch(GameEventBoxHzmj.onResultShowTable);\n    }\n\n    /** 松手恢复：派发游戏内扩展事件 */\n    protected onPressHideTable(): void {\n        this.dispatch(GameEventBoxHzmj.onResultHideTable);\n    }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C15-PC01-02",
+   "atomId": "AT-ST-C15-024",
+   "layer": "client_code",
+   "file": "client_code/layer/BoxHzmjMah2DView.ts",
+   "location": "client_code/layer/BoxHzmjMah2DView.ts:1151",
+   "symbol": "BoxHzmjMah2DView.onResultShowTable",
+   "excerpt": "/** 小结算长按看桌：高亮桌上财神 */\n    @gf.listen(GameEventBoxHzmj.onResultShowTable)\n    onResultShowTable(): void {\n        const joker = GameData.jokerMah;\n        if (joker > 0) {\n            this.showSpecialMah(joker);\n        }\n    }\n\n    /** 小结算松手：清除财神高亮 */\n    @gf.listen(GameEventBoxHzmj.onResultHideTable)\n    onResultHideTable(): void {\n        this.showSpecialMah(0);\n    }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C15-PC01-03",
+   "atomId": "AT-ST-C15-025",
+   "layer": "client_code",
+   "file": "client_code/layer/BoxHzmjResultView.ts",
+   "location": "client_code/layer/BoxHzmjResultView.ts:119",
+   "symbol": "BoxHzmjResultView.onContinueResult",
+   "excerpt": "/**\n     * 继续游戏：派发游戏内扩展事件\n     */\n    protected onContinueResult(): void {\n        // this.dispatch(GameEventBoxHzmj.onResultContinue);\n        // this.dispatch(GameEventBoxHzmj.onResetUI);\n    }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C15-PC01-04",
+   "atomId": "AT-ST-C15-025",
+   "layer": "client_code",
+   "file": "client_code/layer/BoxHzmjPlayerView.ts",
+   "location": "client_code/layer/BoxHzmjPlayerView.ts:528",
+   "symbol": "BoxHzmjPlayerView.onShowActionSign",
+   "excerpt": "@gf.listen(GameEventBoxHzmj.onShowActionSign)\n    onShowActionSign(localSeat: number, type: number = BoxLobbyProtocol.PlayerInfoNotify.actionState.kStatusInvalid): void {\n        ...\n        actionNode.visible =\n            type === BoxLobbyProtocol.PlayerInfoNotify.actionState.kSit || type === BoxLobbyProtocol.PlayerInfoNotify.actionState.kReady;\n        ...\n        this.scheduleOnce(() => {\n            if (this?._players?.[localSeat]?.KW_BasePlayer?.C_Ready) {\n                this._players[localSeat].KW_BasePlayer.C_Ready.selectedIndex = type;\n            }\n        }, delay);\n    }",
+   "configKeys": []
+  },
+  {
+   "id": "SVE-ST-C15-PC01-05",
+   "atomId": "AT-ST-C15-025",
+   "layer": "client_fgui",
+   "file": "client_fgui/assets/box_hzmj_player/component/PlayerSelfBase.xml",
+   "location": "client_fgui/assets/box_hzmj_player/component/PlayerSelfBase.xml:5",
+   "symbol": "PlayerSelfBase.C_Ready",
+   "excerpt": "<controller name=\"C_Ready\" pages=\"0,hide,1,none,2,ready\" selected=\"0\"/>\n...\n<loader id=\"n36_tyib\" name=\"KW_ICON_READY\" xy=\"-7,155\" pivot=\"0.5,0.5\" size=\"122,45\" group=\"n40_imuh\" scale=\"0.8,0.8\" touchable=\"false\" url=\"ui://hzpl2330tyib3h\" autoSize=\"true\">\n      <gearDisplay controller=\"C_Ready\" pages=\"1,2\"/>\n      <gearIcon controller=\"C_Ready\" pages=\"1\" values=\"ui://hzpl2330bmvv53\" default=\"ui://hzpl2330tyib3h\"/>\n    </loader>",
    "configKeys": []
   }
  ]

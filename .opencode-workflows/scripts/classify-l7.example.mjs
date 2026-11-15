@@ -205,6 +205,26 @@ const expectFail = (r, keyword) => {
   // 分布自检：20 格（S8 client 列并入）中 verified 2 / not_applicable 3 / decision_required 5 / verification_required 10
   assert.deepEqual(r.summary.l7, { verified: 2, verification_required: 10, decision_required: 5, not_applicable: 3 })
 
+  // S8：conflict 条目证据级 evidenceScopes 含 client 层（设计 7.2）→ scope=client、l7=decision_required
+  const rClientConflict = runData(
+    synthBase([{ id: 'AT-T-C01', difference: 'unverified' }]),
+    synthScope([
+      {
+        atomId: 'AT-T-C01', applicability: 'client',
+        evidenceScopes: [{ ref: 'SVE-T-C01', layer: 'client', applicability: 'client', note: '客户端实现相反（冲突产生证据）' }],
+      },
+    ]),
+    synthEvidence([{ id: 'SVE-T-C01', atomId: 'AT-T-C01' }]),
+    synthReview([
+      { atomId: 'AT-T-C01', previousDifference: 'unverified', reviewedDifference: 'conflict', reviewStatus: 'pending', evidenceIds: ['SVE-T-C01'] },
+    ])
+  )
+  assert.equal(rClientConflict.ok, true, 'client conflict 应通过：' + (rClientConflict.problems || []).join(' | '))
+  const eClientConflict = rClientConflict.output.entries[0]
+  assert.equal(eClientConflict.scopeApplicability, 'client', 'client 证据级 scope 应判 client')
+  assert.equal(eClientConflict.scopeSource, 'evidence-level-client')
+  assert.equal(eClientConflict.l7, 'decision_required', 'conflict × client = decision_required（设计 7.2）')
+
   // consistent×inactive（review-field 直填）→ not_applicable；非冲突条目不受 evidenceScopes 影响
   const r2 = runData(
     synthBase([{ id: 'AT-T-021', difference: 'unverified' }]),

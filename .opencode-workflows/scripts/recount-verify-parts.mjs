@@ -114,6 +114,7 @@ export function recountVerifyParts({ outDir, partFiles, recountPath }) {
       conditional: counts.conditional,
       unknown: counts.unknown,
       inactive: counts.inactive,
+      client: counts.client,
       sveCount,
     }
     parts.push(part)
@@ -123,6 +124,7 @@ export function recountVerifyParts({ outDir, partFiles, recountPath }) {
     scopeStats.conditional += counts.conditional
     scopeStats.unknown += counts.unknown
     scopeStats.inactive += counts.inactive
+    scopeStats.client += counts.client
   }
 
   const ok = problems.length === 0
@@ -177,6 +179,7 @@ function cliMain(argv) {
       ' / conditional ' + r.summary.scopeStats.conditional +
       ' / unknown ' + r.summary.scopeStats.unknown +
       ' / inactive ' + r.summary.scopeStats.inactive +
+      ' / client ' + r.summary.scopeStats.client +
       ' -> ' + recountPath
   )
   process.exit(0)

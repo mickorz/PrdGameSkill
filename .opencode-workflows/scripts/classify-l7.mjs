@@ -109,6 +109,14 @@ function resolveScope(reviewEntry, scopeEntry) {
         scopeNote: '全部证据已确认 inactive，冲突产生证据必然 inactive，判 not_applicable',
       }
     }
+    // S8（设计 7.2）：冲突产生证据为客户端实现证据（client 层）——冲突载体在客户端，判 client
+    if (scopes.some((s) => s.applicability === 'client')) {
+      return {
+        scope: 'client',
+        scopeSource: 'evidence-level-client',
+        scopeNote: '冲突判定采用证据级 scope：冲突产生证据为客户端实现证据（client 层），冲突载体在客户端（设计 7.2 conflict × client = decision_required）',
+      }
+    }
     return {
       scope: scopes.some((s) => s.applicability === 'active') ? 'active' : 'conditional',
       scopeSource: 'evidence-level-no-elimination',

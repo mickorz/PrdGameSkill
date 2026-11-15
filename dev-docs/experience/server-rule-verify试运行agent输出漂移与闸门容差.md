@@ -81,3 +81,15 @@
 **解决方案**：① plannerDocRules 加固：verified/not_applicable 分支显式补「界面表现行照常适用下一条」「差异行不写≠原子项不写」；转写硬规则新增第 6 条覆盖硬规则（本章每个原子 id 必须至少出现在一条补充行，一条语句多原子可合并多 id 一行，全空原子例外；最终装配逐 AT-ID 校验，漏写任一 id 整个装配失败）。② 分片已删只能补最终文档：一次性补写 workflow（单 agent，按 evidence 的 rule 字段定位原文语句锚点，insert 22 条「  - 界面表现：…（id）」子列表行），重跑 build-output-spec 全套闸门（泄漏/覆盖/乱码）确认全过。锚点可定位性：原文规则语句按 prompt 规则 2 逐字保留在文档中，用 rule 文本前缀 grep 即可命中。
 
 **预防/注意**：「分支规则说『不写 X』时必须显式说明同位置其他行类是否照写」——LLM 对否定分支的执行范围容易扩大化；「按类省略」的规则必须配「按实例校验」的闸门（逐 AT-ID 覆盖），且闸门要能在产物合并后兜底修复（merge 删除分片后，补写目标只剩最终文档，锚点靠逐字保留的原文语句）。
+
+## 坑 8：retry 分片 partNo 命名空间复用——agent 新增 SVE 占原分片 id 段（S7，id 劫持闸门整轮拦截）
+
+**问题现象**：S7 待补证 72 条第二轮重跑（retryMode），`4-review-difference.js` 在 merge 闸门失败：「SVE id 与正式既有冲突且内容不同」16 条（SVE-ST-C01-P01-27/28/29、SVE-ST-C03-P01-06~12、SVE-ST-C08-P01-01~05、SVE-ST-C09-P01-24）——同 id、不同原子、不同证据指针（id 劫持），整轮装配拦截、产物未写。
+
+**排查过程**：对撞 id 逐条对比正式 server-evidence 与 retry 分片（如 SVE-ST-C01-P01-27 正式属 AT-ST-C01-008 / common_game_com_result.cpp:369，retry 分片里挂在 AT-ST-C01-003 / common_game_logic.cpp:68）→ 不是 agent 抄错，是编号空间撞车：`prepare-retry-input.mjs` 生成的 retry 分片 `partNo` 沿用 `'01'`（与原 `ST-C01-p01` 同段），agent 按模板 `SVE-<stageId>-P<partNo>-NN` 给**新增**证据编号时落进原分片已占用的 id 段（原 p01 的 27/28/29 已被 AT-ST-C01-008 的证据占用）。
+
+**根因**：retry 分片的**文件名**用了 `-r01` 隔离，但 `partNo` **字段**仍是 `'01'`——SVE 编号模板只吃 partNo，命名空间没跟着隔离；merge 的 id 劫持闸门（同 id 不同原子且不同证据指针 → fail）按设计正确拦截。
+
+**解决方案**：① 机械改号：按 merge 闸门同口径识别 16 条劫持 id → 改号 `SVE-<stageId>-PR<partNo>-NN`（PR 前缀隔离），同条目 evidenceIds/evidenceScopes/文本字段引用 + review-output 的 reviewReason 文本引用同步替换（临时 node 脚本一次性）；② prompt 规则覆盖：`3-verify-scope.js` retryLines 增补「本轮专用编号规则——新增 SVE 一律 `SVE-<stageId>-PR<partNo>-NN`，复用既有 id 仅限同一原子的既有条目」；③ 剩余确定性链（merge/classify/check-l7/报告）手动顺序执行（失败的 4 号 workflow 不 resume，规避 journal 回放对已改号分片的不确定性）。
+
+**预防/注意**：**分片重跑（retry/增量轮）必须给编号命名空间做代际隔离**——文件名隔离不够，凡进 agent 编号模板的字段（partNo）都要带代际前缀；「同 id 不同主体」类闸门被触发时，先对比新旧条目的归属与指针再定性（agent 抄错 vs 编号空间撞车），后者是构造方（输入生成器）的 bug，不是 agent 的。

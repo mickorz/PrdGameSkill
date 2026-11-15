@@ -19,8 +19,8 @@
 | `server-evidence.json` | **正式产物**（S2.3 试运行 ST-C01 生成）：三根目录真实 file:line 证据 | 29 条 |
 | `difference-review.json` | **正式产物**（S2.3 试运行 ST-C01 生成）：ST-C01 全部 8 原子复核条目（pending；含 5 条 unverified→consistent 升级建议与 afterReviewProjection 70/64/2/183） | 8 条 |
 | `l7-classify.json` | **正式产物**（S2.3 试运行 ST-C01 生成）：reviewed 8/319，l7 verified 3 / verification_required 5 / decision_required 0 / not_applicable 0，l7Approved 全 0 | 8 条 |
-| `规则待验证报告.md` | **S4.3 交付报告**（build-verify-reports.mjs 确定性生成）：verification_required 129 条全清单，三类归档（配置确认 69 / 证据缺口 12 / 待补证 48），含 139 条 active 升级建议与 34 条 conditional 升级建议交叉注记 | 129 条 |
-| `服务端证据索引.md` | **S4.3 交付报告**（build-verify-reports.mjs 确定性生成）：server-evidence 全量索引（按阶段，SVE 定位/符号/位置/配置项），供复核与追溯 | 875 条 |
+| `规则待验证报告.md` | **S4.3 交付 + S7 第二轮更新**（build-verify-reports.mjs 确定性生成）：verification_required 110 条全清单，四类归档（已闭环 45 / 证据缺口 12 / 配置确认 0 / 待补证 53），含 139 条 active 升级建议与 34 条 conditional 升级建议交叉注记 | 110 条 |
+| `服务端证据索引.md` | **S4.3 交付 + S7 第二轮更新**（build-verify-reports.mjs 确定性生成）：server-evidence 全量索引（按阶段，SVE 定位/符号/位置/配置项），供复核与追溯 | 916 条 |
 | `需求差异裁决清单.md` | **S4.3 全量收口 + S5 裁决闭环**：条目一/二/三（conflict×2 + inactive×1，均 B 接受现状/改需求 approved）+ 附 A（173 条升级建议全量批量批准表，**S5 委托决策全部 approved**）+ 附 A 注记（人工样本对照分歧 10 条 + 同证 3 条）+ 附 B 复核规则速查 + 附 C 证据缺口/不可达/配置确认交叉引用 | 361+ 行 |
 | `配置确认表.md` | **S6 签认件**（build-config-confirm-table.mjs 生成）：conditional 69 条创房默认口径签认表（配置项/默认/取值行为/差异现状/确认栏），差异现状 consistent 45 / unverified 17 / partial 7 | 69 条 |
 
@@ -121,6 +121,15 @@
   - scope：**一致 16 / 分歧 9**（全部为样本 conditional → 正式 active，agent 以多条直接证据判可达口径恒定；分歧原子：C02-008（conflict 原子 evidenceScopes 正确保留 client-visual，仅服务端侧 scope 表述收窄）/009/010/011（财神吃碰杠）、C04-005/006/007/009/010（多人胡/近者优先/顺延）；批准相关 DR 建议即采正式 active 口径，需保守 conditional 请在裁决清单备注——同 C01-004 注记模式）
   - DR：样本覆盖条目一致 3 / 分歧 5（正式更进取：C02-006/007/009、C04-001/012 建议 partial/unverified→consistent，其中 C04-001 优先级次序与 S2.1 裁决链证据（macros.h:203-206 级别常量）方向一致）；样本未覆盖 17 条为正式新增建议
 - **S3.2 partial 复核进度**：v2 的 64 条 partial 中已复核 3 条（证据就位三阶段 ST-C01/02/04），2 条建议升级（C02-006、C04-012）；其余 partial 原子随 S4.1 分批补证时逐阶段复核
+
+## S7 待补证 72 条第二轮补证（2026-11-14，余量跟踪第二项完成）
+
+- **retry 输入**：`prepare-retry-input.mjs`（example 16 断言）构造第二轮分片——选取口径与《规则待验证报告》待补证分类一致（active vr 48 + conditional 签认非一致 24 = 72），15 分片（`-r` 命名）；原分片归档 `runtime/archive/pre-s7-retry/`；retryHint 内嵌第一轮缺口（callPath/unresolved/configCondition/reviewReason）+ existingScopeEntries/existingSve 幂等复用口径；l7 stats 独立交叉闸门 + 原子全覆盖闸门
+- **执行**：runId `run-mwhx3hlp-6`（3-verify-scope retryMode）：16 agent / 2431s，15/15 分片全过，72 原子重判（active 48 / conditional 24 / unknown 0）；第二轮定位策略（调用链深挖 / Grep 关键词全文检索 / 邻近扫描 / 配置入口核对）+ 诚实落判（无直证维持第一轮）
+- **卡点（坑 8）**：4-review-difference merge 闸门拦截 16 条 SVE id 劫持——retry 分片 partNo 沿用 `'01'` 命名空间，agent 新增证据按模板编号撞原分片已占 id 段 → 机械改号 `SVE-<stageId>-PR<partNo>-NN`（PR 代际隔离）+ 3-verify-scope retryLines 编号规则覆盖 + 剩余确定性链手动顺序执行（merge/classify/check-l7/报告），详见 experience 坑 8
+- **产物**（正式四件累积）：SVE 916（+41，PR 段 16）；scope 319 维持（active 237 / conditional 69 / unknown 12 / inactive 1，**configConfirm 人工签认 69/69 全保全**——增量 merge 携带语义生效）；DR 319（pending 143 / approved 176）；**新升级建议 31 条 pending**（unverified→consistent 23 / partial→consistent 8；active 19 条 l7 已转 verified、conditional 12 条仍 vr 待裁决后配置确认）
+- **收口口径**：l7 206/110/2/1（verified +19），l7Approved 139/34/2/1（新建议 pending 不入正式索引），effectiveDifference 238/35/2/44（pending 建议生效差异按基线），check-l7 `--verified=v3` 五道闸门全过；《规则待验证报告》110 条（已闭环 45 / 证据缺口 12 / 配置确认 0 / 待补证 53——第二轮后余 53 = 72 − 19 条 active 升级出vr）
+- **待办**：31 条新建议待策划裁决（裁决清单附 A-2 生成 + 批准回传 → v3 重合并 → v3-planner 重投影判定）
 
 ## S6 配置确认表与口径签认落地（2026-11-14，余量跟踪第一项完成）
 

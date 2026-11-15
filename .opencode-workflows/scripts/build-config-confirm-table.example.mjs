@@ -41,6 +41,10 @@ function writeJson(p, obj) {
   fs.writeFileSync(p, JSON.stringify(obj, null, 1), 'utf8')
 }
 
+function readJson(p) {
+  return JSON.parse(fs.readFileSync(p, 'utf8'))
+}
+
 function runCli(args, expectOk) {
   try {
     const out = execFileSync('node', [SCRIPT, ...args], { encoding: 'utf8' })
@@ -151,6 +155,39 @@ fixtureBaseline()
 fixtureSidecars({ cond4: { unresolved: '创房 UI 未核对' } })
 r = buildConfigConfirmTable({ baselineIndexPath: path.join(TMP, 'feature_index.json'), verifyDir: TMP, date: '2026-11-14' })
 check('D1 unresolved 非空 -> fail', !r.ok && r.problems.some((p) => p.includes('unresolved 未清零')))
+
+// G. 签认态渲染（configConfirm=default）
+reset()
+fixtureBaseline()
+fixtureSidecars()
+const siG = readJson(path.join(TMP, 'scope-index.json'))
+for (const e of siG.entries) {
+  if (e.applicability === 'conditional') {
+    e.configConfirm = 'default'
+    e.configConfirmDate = '2026-11-14'
+  }
+}
+writeJson(path.join(TMP, 'scope-index.json'), siG)
+r = buildConfigConfirmTable({ baselineIndexPath: path.join(TMP, 'feature_index.json'), verifyDir: TMP, date: '2026-11-14' })
+check('G1 全部签认生成成功 + configConfirm 统计', r.ok && r.summary.configConfirm.default === 4 && r.summary.configConfirm.unconfirmed === 0)
+text = fs.readFileSync(outPath(), 'utf8')
+check('G2 行内确认列已确认态', text.includes('| 已确认默认口径（2026-11-14） |'))
+check('G3 整体签认 ☑ 全部确认', text.includes('☑ 全部确认默认口径（4 条，2026-11-14') && !text.includes('☐ 全部确认默认口径'))
+check('G4 头部签认状态全部确认', text.includes('全部确认默认口径（4 条，2026-11-14）') && text.includes('consistent 2 条即闭环'))
+
+// G5. 部分签认（1 条 default 其余未签）-> 混合态
+reset()
+fixtureBaseline()
+fixtureSidecars()
+const siG5 = readJson(path.join(TMP, 'scope-index.json'))
+const g5e = siG5.entries.find((e) => e.atomId === 'AT-ST-C01-001')
+g5e.configConfirm = 'default'
+g5e.configConfirmDate = '2026-11-14'
+writeJson(path.join(TMP, 'scope-index.json'), siG5)
+r = buildConfigConfirmTable({ baselineIndexPath: path.join(TMP, 'feature_index.json'), verifyDir: TMP, date: '2026-11-14' })
+check('G5 部分签认 -> 待签认态 + 计数', r.ok && r.summary.configConfirm.default === 1 && r.summary.configConfirm.unconfirmed === 3)
+text = fs.readFileSync(outPath(), 'utf8')
+check('G6 混合态整体签认保留选项 + 头部待签认', text.includes('☐ 全部确认默认口径') && text.includes('待签认——3 条未确认 / 1 条已确认默认口径'))
 
 // E. CLI 成功与失败
 reset()

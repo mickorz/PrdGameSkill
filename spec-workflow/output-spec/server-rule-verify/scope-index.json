@@ -26,7 +26,9 @@
     "SVE-ST-C01-P01-03"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C01-002",
@@ -56,7 +58,9 @@
     "SVE-ST-C01-P01-09"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C01-004",
@@ -90,7 +94,9 @@
     "SVE-ST-C01-P01-19"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C01-006",
@@ -106,7 +112,9 @@
     "SVE-ST-C01-P01-23"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C01-007",
@@ -122,7 +130,9 @@
     "SVE-ST-C01-P01-23"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C01-008",
@@ -153,7 +163,9 @@
     "SVE-ST-C02-P01-04"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C02-002",
@@ -169,7 +181,9 @@
     "SVE-ST-C02-P01-03"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C02-003",
@@ -185,7 +199,9 @@
     "SVE-ST-C02-P01-07"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C02-004",
@@ -200,7 +216,9 @@
     "SVE-ST-C02-P01-12"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C02-005",
@@ -215,7 +233,9 @@
     "SVE-ST-C02-P01-15"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C02-006",
@@ -576,7 +596,9 @@
     "SVE-ST-C13-P01-07"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C13-003",
@@ -592,7 +614,9 @@
     "SVE-ST-C13-P01-10"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C13-004",
@@ -640,7 +664,9 @@
     "SVE-ST-C13-P01-22"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C13-007",
@@ -717,7 +743,9 @@
     "SVE-ST-C13-P01-42"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C13-012",
@@ -735,7 +763,9 @@
     "SVE-ST-C13-P01-41"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C13-013",
@@ -750,7 +780,9 @@
     "SVE-ST-C13-P02-03"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C13-014",
@@ -765,7 +797,9 @@
     "SVE-ST-C13-P02-06"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C13-015",
@@ -781,7 +815,9 @@
     "SVE-ST-C13-P02-09"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C13-016",
@@ -797,7 +833,9 @@
     "SVE-ST-C13-P02-10"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C13-017",
@@ -951,7 +989,9 @@
     "SVE-ST-C14-P01-18"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C14-011",
@@ -965,7 +1005,9 @@
     "SVE-ST-C14-P01-19"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C14-012",
@@ -1151,7 +1193,9 @@
     "SVE-ST-C14-P03-03"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C14-025",
@@ -1167,7 +1211,9 @@
     "SVE-ST-C14-P03-07"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C14-026",
@@ -1183,7 +1229,9 @@
     "SVE-ST-C14-P03-11"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C14-027",
@@ -1198,7 +1246,9 @@
     "SVE-ST-C14-P03-14"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C14-028",
@@ -1214,7 +1264,9 @@
     "SVE-ST-C14-P03-18"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C14-029",
@@ -1474,7 +1526,9 @@
     "SVE-ST-C15-P02-08"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C15-015",
@@ -1573,7 +1627,9 @@
     "SVE-ST-C15-P02-26"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C15-021",
@@ -1589,7 +1645,9 @@
     "SVE-ST-C15-P02-29"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C15-022",
@@ -1604,7 +1662,9 @@
     "SVE-ST-C15-P02-31"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C15-023",
@@ -1620,7 +1680,9 @@
     "SVE-ST-C15-P03-04"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C15-024",
@@ -1705,7 +1767,9 @@
     "SVE-ST-C05-P01-16"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C05-004",
@@ -1775,7 +1839,9 @@
     "SVE-ST-C05-P01-35"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C05-008",
@@ -1913,7 +1979,9 @@
     "SVE-ST-C05-P02-28"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C05-016",
@@ -2400,7 +2468,9 @@
     "SVE-ST-C07-P01-13"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C07-006",
@@ -2416,7 +2486,9 @@
     "SVE-ST-C07-P01-16"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C07-007",
@@ -2431,7 +2503,9 @@
     "SVE-ST-C07-P01-09"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C07-008",
@@ -2445,7 +2519,9 @@
     "SVE-ST-C07-P01-17"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C07-009",
@@ -2458,7 +2534,9 @@
     "SVE-ST-C07-P01-17"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C07-010",
@@ -2472,7 +2550,9 @@
     "SVE-ST-C07-P01-02"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C07-011",
@@ -2504,7 +2584,9 @@
     "SVE-ST-C07-P02-05"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C07-013",
@@ -2552,7 +2634,9 @@
     "SVE-ST-C07-P02-15"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C08-001",
@@ -2679,7 +2763,9 @@
     "SVE-ST-C08-P01-23"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C08-009",
@@ -2696,7 +2782,9 @@
     "SVE-ST-C08-P01-27"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C08-010",
@@ -3292,7 +3380,9 @@
     "SVE-ST-C10-P02-05"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C10-016",
@@ -3471,7 +3561,9 @@
     "SVE-ST-C03-P01-11"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C03-006",
@@ -3486,7 +3578,9 @@
     "SVE-ST-C03-P01-14"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C03-007",
@@ -4067,7 +4161,9 @@
     "SVE-ST-C11-P04-10"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C11-031",
@@ -4369,7 +4465,9 @@
     "SVE-ST-C11-P06-03"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C11-051",
@@ -4597,7 +4695,9 @@
     "SVE-ST-C11-P07-14"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C11-066",
@@ -4658,7 +4758,9 @@
     "SVE-ST-C12-P01-04"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C12-002",
@@ -4719,7 +4821,9 @@
     "SVE-ST-C12-P01-15"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C12-006",
@@ -4735,7 +4839,9 @@
     "SVE-ST-C12-P01-12"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C12-007",
@@ -4749,7 +4855,9 @@
     "SVE-ST-C12-P01-12"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C12-008",
@@ -4766,7 +4874,9 @@
     "SVE-ST-C12-P01-14"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C12-009",
@@ -4782,7 +4892,9 @@
     "SVE-ST-C12-P01-14"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C12-010",
@@ -4827,7 +4939,9 @@
     "SVE-ST-C12-P02-03"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C12-013",
@@ -4841,7 +4955,9 @@
     "SVE-ST-C12-P02-01"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C12-014",
@@ -4856,7 +4972,9 @@
     "SVE-ST-C12-P02-06"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C12-015",
@@ -4870,7 +4988,9 @@
     "SVE-ST-C12-P02-02"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C12-016",
@@ -4885,7 +5005,9 @@
     "SVE-ST-C12-P02-07"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C12-017",
@@ -4900,7 +5022,9 @@
     "SVE-ST-C12-P02-06"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C12-018",
@@ -4915,7 +5039,9 @@
     "SVE-ST-C12-P02-08"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C12-019",
@@ -4930,7 +5056,9 @@
     "SVE-ST-C12-P02-09"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C12-020",
@@ -4944,7 +5072,9 @@
     "SVE-ST-C12-P02-02"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C12-021",
@@ -4958,7 +5088,9 @@
     "SVE-ST-C12-P02-10"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C12-022",
@@ -4973,7 +5105,9 @@
     "SVE-ST-C12-P02-10"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C12-023",
@@ -4994,7 +5128,9 @@
     "SVE-ST-C12-P03-09"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   },
   {
    "atomId": "AT-ST-C12-024",
@@ -5017,7 +5153,9 @@
     "SVE-ST-C12-P03-11"
    ],
    "unresolved": "",
-   "noServerEvidence": false
+   "noServerEvidence": false,
+   "configConfirm": "default",
+   "configConfirmDate": "2026-11-14"
   }
  ]
 }

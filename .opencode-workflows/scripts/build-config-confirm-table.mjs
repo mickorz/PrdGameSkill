@@ -94,6 +94,13 @@ export function buildConfigConfirmTable({ baselineIndexPath, verifyDir, date }) 
     effDist[d.effectiveDifference] = (effDist[d.effectiveDifference] || 0) + 1
     rsDist[d.reviewStatus] = (rsDist[d.reviewStatus] || 0) + 1
   }
+  // 口径签认状态（S6 签认落地后 configConfirm=default/adjust）
+  const confirmedDefault = cond.filter((e) => e.configConfirm === 'default').length
+  const confirmedAdjust = cond.filter((e) => e.configConfirm === 'adjust').length
+  const unconfirmed = cond.length - confirmedDefault - confirmedAdjust
+  const allDefaultDate = confirmedDefault === cond.length && cond.length > 0
+    ? cond[0].configConfirmDate || ''
+    : ''
 
   // ---------- 生成 ----------
   const lines = []
@@ -119,6 +126,15 @@ export function buildConfigConfirmTable({ baselineIndexPath, verifyDir, date }) 
     '- **签认口径**：「确认默认口径」= 好友房按创房默认值运行，本表取值行为摘要即最终口径；' +
       '「需调整」= 改创房默认下发值或修订需求文本（转需求/实现变更流程）。'
   )
+  lines.push(
+    '- **签认状态**：' +
+      (unconfirmed === 0
+        ? '全部确认默认口径（' + confirmedDefault + ' 条' + (allDefaultDate ? '，' + allDefaultDate : '') +
+          (confirmedAdjust ? '；另调整 ' + confirmedAdjust + ' 条' : '') +
+          '）——好友房按创房默认值运行；consistent ' + (effDist.consistent || 0) +
+          ' 条即闭环，unverified ' + (effDist.unverified || 0) + ' / partial ' + (effDist.partial || 0) + ' 条转服务端补证跟踪。'
+        : '待签认——' + unconfirmed + ' 条未确认 / ' + confirmedDefault + ' 条已确认默认口径 / ' + confirmedAdjust + ' 条已调整。')
+  )
   lines.push('')
 
   const byStage = new Map()
@@ -129,6 +145,11 @@ export function buildConfigConfirmTable({ baselineIndexPath, verifyDir, date }) 
   }
   const orderedStages = [...byStage.keys()].sort((a, b) => stageOrder.indexOf(a) - stageOrder.indexOf(b))
   let rowCount = 0
+  const confirmCell = (e) => {
+    if (e.configConfirm === 'default') return '已确认默认口径（' + (e.configConfirmDate || '') + '）'
+    if (e.configConfirm === 'adjust') return '已调整（' + trimText(e.configConfirmNote, 20) + '）'
+    return '☐ 确认默认口径 ☐ 需调整：____'
+  }
   for (const sid of orderedStages) {
     const list = byStage.get(sid)
     lines.push('## ' + sid + ' ' + (stageName.get(sid) || '') + '（' + list.length + ' 条）')
@@ -143,7 +164,7 @@ export function buildConfigConfirmTable({ baselineIndexPath, verifyDir, date }) 
           ' | ' + defaultOf(e.configCondition) +
           ' | ' + trimText(e.configCondition, 90) +
           ' | ' + (d ? d.effectiveDifference + (d.reviewStatus === 'approved' ? '（approved）' : '') : '-') +
-          ' | ☐ 确认默认口径 ☐ 需调整：____ |'
+          ' | ' + confirmCell(e) + ' |'
       )
       rowCount++
     }
@@ -153,8 +174,15 @@ export function buildConfigConfirmTable({ baselineIndexPath, verifyDir, date }) 
   lines.push('')
   lines.push('## 整体签认')
   lines.push('')
-  lines.push('- ☐ 全部确认默认口径（' + cond.length + ' 条，好友房按创房默认值运行）')
-  lines.push('- ☐ 逐条调整（备注原子 id 与期望默认值/口径）：__________')
+  if (unconfirmed === 0) {
+    lines.push('- ☑ 全部确认默认口径（' + confirmedDefault + ' 条' +
+      (allDefaultDate ? '，' + allDefaultDate : '') +
+      (confirmedAdjust ? '；另调整 ' + confirmedAdjust + ' 条' : '') +
+      '——好友房按创房默认值运行）')
+  } else {
+    lines.push('- ☐ 全部确认默认口径（' + cond.length + ' 条，好友房按创房默认值运行）')
+    lines.push('- ☐ 逐条调整（备注原子 id 与期望默认值/口径）：__________')
+  }
   lines.push('')
   lines.push(
     '签认后由开发侧落 scope-index 口径确认记录并同步《规则待验证报告》；' +
@@ -185,6 +213,7 @@ export function buildConfigConfirmTable({ baselineIndexPath, verifyDir, date }) 
     stages: orderedStages.length,
     effectiveDifference: effDist,
     reviewStatus: rsDist,
+    configConfirm: { default: confirmedDefault, adjust: confirmedAdjust, unconfirmed: unconfirmed },
   }
   return { ok: true, problems: [], summary: summary }
 }

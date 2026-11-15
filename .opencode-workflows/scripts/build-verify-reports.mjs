@@ -98,13 +98,24 @@ export function buildVerifyReports({ baselineIndexPath, verifyDir, date }) {
   // ---------- 分类 ----------
   // l7 口径（classify-l7.mjs L250）：l7 = matrix(reviewedDifference, scope)——升级建议按「批准后」
   // 分类展示（active 作用域建议原子显示 verified，不进本报告；conditional 建议原子批准后仍需配置确认，进本报告）
+  // S6 签认闭环口径：conditional 且 configConfirm=default（口径已签认）——
+  //   effectiveDifference=consistent 的闭环出报告（配置口径+实现一致双确认）；
+  //   unverified/partial 转待补证（配置口径已定，余量是服务端证据缺口）
   const CAT_GAP = '证据缺口'
   const CAT_COND = '配置确认'
   const CAT_MORE = '待补证'
+  const CAT_CLOSED = '已闭环'
   const catOf = (atomId) => {
     const sc = scopeByAtom.get(atomId)
+    const dr = drByAtom.get(atomId)
     if (sc && sc.applicability === 'unknown') return CAT_GAP
-    if (sc && sc.applicability === 'conditional') return CAT_COND
+    if (sc && sc.applicability === 'conditional') {
+      if (sc.configConfirm === 'default' || sc.configConfirm === 'adjust') {
+        if (sc.configConfirm === 'default' && dr && dr.effectiveDifference === 'consistent') return CAT_CLOSED
+        return CAT_MORE
+      }
+      return CAT_COND
+    }
     return CAT_MORE
   }
   const noteOf = (atomId) => {
@@ -137,8 +148,18 @@ export function buildVerifyReports({ baselineIndexPath, verifyDir, date }) {
   const sugPending = suggestionAtoms.length
 
   // ---------- 报告 1：规则待验证报告 ----------
-  const catTotal = { [CAT_GAP]: 0, [CAT_COND]: 0, [CAT_MORE]: 0 }
+  const catTotal = { [CAT_GAP]: 0, [CAT_COND]: 0, [CAT_MORE]: 0, [CAT_CLOSED]: 0 }
   for (const e of vrAtoms) catTotal[catOf(e.atomId)]++
+  // S6 闭环口径：已闭环（conditional 口径确认 + effectiveDifference=consistent）不进报告正文，
+  // 保留分类计数与头部说明；报告正文行数闸门同步按闭环数折减
+  const closedCount = catTotal[CAT_CLOSED]
+  const vrListed = vrAtoms.filter((e) => catOf(e.atomId) !== CAT_CLOSED)
+  const byStageVrListed = new Map()
+  for (const e of vrListed) {
+    const sid = e.stageId || atomStage.get(e.atomId)
+    if (!byStageVrListed.has(sid)) byStageVrListed.set(sid, [])
+    byStageVrListed.get(sid).push(e)
+  }
   const vrLines = []
   vrLines.push('# 规则待验证报告（杭州麻将 42320 好友房）')
   vrLines.push('')
@@ -159,6 +180,13 @@ export function buildVerifyReports({ baselineIndexPath, verifyDir, date }) {
       condSug + ' 条 conditional 作用域升级建议' +
       (sugPending === 0 ? '已批准但仍需配置确认（已列入本报告「配置确认」，同时见附 A）' : '批准后仍需配置确认（已列入本报告「配置确认」，同时见附 A）') + '。'
   )
+  if (closedCount > 0) {
+    vrLines.push(
+      '- **已闭环（不在正文）**：' + closedCount + ' 条 conditional 原子口径已签认（configConfirm=default）且复核一致' +
+        '（effectiveDifference=consistent）——配置口径与实现双确认，闭环跟踪见《配置确认表》；' +
+        '另 conditional 口径已签认但证据不足的条目并入「待补证」。'
+    )
+  }
   vrLines.push(
     '- **配套签认件**：本报告「配置确认」类的创房默认口径签认表为《配置确认表》' +
       '（build-config-confirm-table.mjs 生成，同目录 配置确认表.md）——conditional 条目全部并入签认表。'
@@ -170,12 +198,15 @@ export function buildVerifyReports({ baselineIndexPath, verifyDir, date }) {
   vrLines.push('|---|---|---|---|')
   vrLines.push('| ' + CAT_COND + ' | ' + catTotal[CAT_COND] + ' | 行为依赖玩法配置，需确认配置口径 | 按 configCondition 确认创房配置 |')
   vrLines.push('| ' + CAT_GAP + ' | ' + catTotal[CAT_GAP] + ' | 服务端三根无实现证据（客户端壳/纯表现交互） | 客户端侧验证或明确不适用 |')
-  vrLines.push('| ' + CAT_MORE + ' | ' + catTotal[CAT_MORE] + ' | 服务端证据不足判一致，也未判冲突 | 补证或对局验证 |')
+  vrLines.push('| ' + CAT_MORE + ' | ' + catTotal[CAT_MORE] + ' | 服务端证据不足判一致，也未判冲突（含 conditional 已签认口径但证据不足） | 补证或对局验证 |')
+  if (closedCount > 0) {
+    vrLines.push('| ' + CAT_CLOSED + '（不在正文） | ' + closedCount + ' | conditional 口径已签认且复核一致 | 已闭环，跟踪见《配置确认表》 |')
+  }
   vrLines.push('')
   vrLines.push('> 冲突类（decision_required）与不可达类（not_applicable）见《需求差异裁决清单》。')
   vrLines.push('')
-  for (const sid of [...byStageVr.keys()].sort()) {
-    const list = byStageVr.get(sid)
+  for (const sid of [...byStageVrListed.keys()].sort()) {
+    const list = byStageVrListed.get(sid)
     vrLines.push('## ' + sid + ' ' + (stageName.get(sid) || '') + '（' + list.length + ' 条）')
     vrLines.push('')
     vrLines.push('| 原子 | 名称 | 作用域 | 分类 | 待验证说明 | 证据 |')
@@ -278,8 +309,11 @@ export function buildVerifyReports({ baselineIndexPath, verifyDir, date }) {
 
   // ---------- 计数闸门 ----------
   const vrRows = vrLines.filter((l) => l.startsWith('| AT-ST-C')).length
-  if (vrRows !== vrAtoms.length) {
-    problems.push('规则待验证报告行数 ' + vrRows + ' != verification_required ' + vrAtoms.length)
+  if (vrRows !== vrListed.length) {
+    problems.push(
+      '规则待验证报告行数 ' + vrRows + ' != 正文条目 ' + vrListed.length +
+        '（verification_required ' + vrAtoms.length + ' - 已闭环 ' + closedCount + '）'
+    )
   }
   const evRows = evLines.filter((l) => l.startsWith('| SVE-')).length
   if (evRows !== (sveAll.entries || []).length) {

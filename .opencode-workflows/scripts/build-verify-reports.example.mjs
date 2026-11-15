@@ -130,7 +130,11 @@ reset()
 fixture()
 const rA = buildVerifyReports({ baselineIndexPath: path.join(TMP, 'feature_index.json'), verifyDir: TMP, date: '2026-11-14' })
 check('A1 生成成功', rA.ok === true && rA.problems.length === 0)
-check('A2 分类正确（配置确认 1 / 证据缺口 1 / 待补证 1）', JSON.stringify(rA.summary.vrCategories) === JSON.stringify({ 证据缺口: 1, 配置确认: 1, 待补证: 1 }))
+check(
+  'A2 分类正确（配置确认 1 / 证据缺口 1 / 待补证 1 / 已闭环 0）',
+  rA.summary.vrCategories.配置确认 === 1 && rA.summary.vrCategories.证据缺口 === 1 &&
+    rA.summary.vrCategories.待补证 === 1 && (rA.summary.vrCategories.已闭环 || 0) === 0
+)
 const vrText = fs.readFileSync(rA.summary.verificationReportPath, 'utf8')
 check('A3 报告含分类概览与阶段表', vrText.includes('## 分类概览') && vrText.includes('## ST-C01 阶段一（2 条）') && vrText.includes('## ST-C02 阶段二（1 条）'))
 check('A4 证据缺口说明取 unresolved', vrText.includes('缺交互证据'))
@@ -170,6 +174,43 @@ sveC.stats.total = 8
 writeJson(svep, sveC)
 const rC = buildVerifyReports({ baselineIndexPath: path.join(TMP, 'feature_index.json'), verifyDir: TMP, date: '2026-11-14' })
 check('C SVE 原子不在基线 fail', rC.ok === false && rC.problems.some((p) => p.includes('SVE 原子不在基线')))
+
+// ---------- 用例 F：S6 口径签认闭环（configConfirm=default）----------
+
+// F1：conditional 已签认 + effectiveDifference=consistent -> 已闭环出正文
+reset()
+fixture()
+const siF = readJson(path.join(TMP, 'scope-index.json'))
+siF.entries.find((e) => e.atomId === 'AT-ST-C01-002').configConfirm = 'default'
+siF.entries.find((e) => e.atomId === 'AT-ST-C01-002').configConfirmDate = '2026-11-14'
+writeJson(path.join(TMP, 'scope-index.json'), siF)
+const drF1 = readJson(path.join(TMP, 'difference-review.json'))
+const drF1e = drF1.entries.find((e) => e.atomId === 'AT-ST-C01-002')
+drF1e.reviewedDifference = 'consistent'
+drF1e.effectiveDifference = 'consistent'
+drF1e.reviewStatus = 'approved'
+writeJson(path.join(TMP, 'difference-review.json'), drF1)
+const rF1 = buildVerifyReports({ baselineIndexPath: path.join(TMP, 'feature_index.json'), verifyDir: TMP, date: '2026-11-14' })
+check('F1 签认+一致 -> 闭环出正文且闸门过', rF1.ok === true && rF1.summary.vrCategories.已闭环 === 1 && rF1.summary.vrCategories.配置确认 === 0)
+const vrTextF1 = fs.readFileSync(rF1.summary.verificationReportPath, 'utf8')
+check('F2 正文不含闭环原子 + 头部闭环说明', !vrTextF1.includes('| AT-ST-C01-002 |') && vrTextF1.includes('已闭环（不在正文）') && vrTextF1.includes('1 条 conditional 原子口径已签认'))
+
+// F2：conditional 已签认 + unverified -> 并入待补证
+reset()
+fixture()
+const siF2 = readJson(path.join(TMP, 'scope-index.json'))
+siF2.entries.find((e) => e.atomId === 'AT-ST-C01-002').configConfirm = 'default'
+siF2.entries.find((e) => e.atomId === 'AT-ST-C01-002').configConfirmDate = '2026-11-14'
+writeJson(path.join(TMP, 'scope-index.json'), siF2)
+const drF2 = readJson(path.join(TMP, 'difference-review.json'))
+const drE = drF2.entries.find((e) => e.atomId === 'AT-ST-C01-002')
+drE.effectiveDifference = 'unverified'
+drE.reviewedDifference = 'unverified'
+writeJson(path.join(TMP, 'difference-review.json'), drF2)
+const rF2 = buildVerifyReports({ baselineIndexPath: path.join(TMP, 'feature_index.json'), verifyDir: TMP, date: '2026-11-14' })
+check('F3 签认+证据不足 -> 待补证', rF2.ok === true && rF2.summary.vrCategories.已闭环 === 0 && rF2.summary.vrCategories.待补证 === 2 && rF2.summary.vrCategories.配置确认 === 0)
+const vrTextF2 = fs.readFileSync(rF2.summary.verificationReportPath, 'utf8')
+check('F4 正文含该原子且分类为待补证', vrTextF2.includes('| AT-ST-C01-002 |') && vrTextF2.includes('| conditional | 待补证 |'))
 
 // ---------- 用例 D：CLI ----------
 

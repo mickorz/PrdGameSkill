@@ -122,12 +122,14 @@
   - DR：样本覆盖条目一致 3 / 分歧 5（正式更进取：C02-006/007/009、C04-001/012 建议 partial/unverified→consistent，其中 C04-001 优先级次序与 S2.1 裁决链证据（macros.h:203-206 级别常量）方向一致）；样本未覆盖 17 条为正式新增建议
 - **S3.2 partial 复核进度**：v2 的 64 条 partial 中已复核 3 条（证据就位三阶段 ST-C01/02/04），2 条建议升级（C02-006、C04-012）；其余 partial 原子随 S4.1 分批补证时逐阶段复核
 
-## S6 配置确认表（2026-11-14，余量跟踪第一项）
+## S6 配置确认表与口径签认落地（2026-11-14，余量跟踪第一项完成）
 
-- **生成器**：`build-config-confirm-table.mjs`（+ example 20 断言全绿）：从 scope-index conditional 条目 + v2 基线 + difference-review 确定性生成签认件；闸门——表行数 = conditional 总数、configVerified 全 true、unresolved 全零（签认前置：客户端默认值均已证据核验）、回读行数复核
-- **产物《配置确认表》**：69 条（12 阶段），每条配置项 / 创房默认 / 取值行为摘要 / 差异现状（consistent 45 / unverified 17 / partial 7；approved 34 / pending 35）/ 确认栏；整体签认行（全部确认默认口径 / 逐条调整）
+- **生成器**：`build-config-confirm-table.mjs`（+ example 26 断言全绿）：从 scope-index conditional 条目 + v2 基线 + difference-review 确定性生成签认件；闸门——表行数 = conditional 总数、configVerified 全 true、unresolved 全零（签认前置：客户端默认值均已证据核验）、回读行数复核
+- **产物《配置确认表》**：69 条（12 阶段），每条配置项 / 创房默认 / 取值行为摘要 / 差异现状（consistent 45 / unverified 17 / partial 7；approved 34 / pending 35）/ 确认栏；整体签认行
+- **签认落地（2026-11-14，用户确认默认口径）**：scope-index 69 条 conditional 落 `configConfirm=default`（+configConfirmDate）；配置确认表重生成渲染确认态（行内「已确认默认口径（2026-11-14）」+ 整体签认 ☑ 全部确认默认口径）
+- **报告闭环语义**：`build-verify-reports.mjs`（example 19 断言）分类闭环——已闭环（conditional 口径签认 + effectiveDifference=consistent）45 条出正文转《配置确认表》跟踪；配置确认 0；待补证 72 = 原 48 + 24 条已签认但证据不足；证据缺口 12；正文行数闸门按闭环折减；三报告重生成全过
 - **签认语义**：确认默认口径 = 好友房按创房默认值运行（consistent 45 即闭环，unverified 17 / partial 7 转服务端补证跟踪）；需调整 = 改创房默认下发值或修订需求文本
-- **报告联动**：`build-verify-reports.mjs` 措辞状态感知化（升级建议含 approved：139 已全部批准转已验证 / 34 已批准但仍需配置确认）+ 「配套签认件」交叉引用行；三报告重生成闸门全过
+- **check-l7 复跑**：五道闸门通过（scope-index 新增 configConfirm 字段不影响 l7 口径——l7 = matrix(reviewedDifference, scope) 固定矩阵，闭环经报告分类跟踪）
 
 ## S5 裁决落地与 v3 收口（2026-11-14，OSG-W4 全部完成）
 

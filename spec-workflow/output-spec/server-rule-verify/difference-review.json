@@ -5571,9 +5571,9 @@
     "SVE-ST-C01-PR01-02"
    ],
    "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C01-006",
@@ -5594,9 +5594,9 @@
     "SVE-ST-C01-P01-28"
    ],
    "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C01-007",
@@ -5617,9 +5617,9 @@
     "SVE-ST-C01-P01-28"
    ],
    "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C03-001",
@@ -5636,9 +5636,9 @@
     "SVE-ST-C03-PR01-01"
    ],
    "l7": "verified",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C03-002",
@@ -5680,9 +5680,9 @@
     "SVE-ST-C03-P01-22"
    ],
    "l7": "verified",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C04-003",
@@ -5701,9 +5701,9 @@
     "SVE-ST-C04-P01-29"
    ],
    "l7": "verified",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C04-004",
@@ -5721,9 +5721,9 @@
     "SVE-ST-C04-P01-29"
    ],
    "l7": "verified",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C04-005",
@@ -5742,9 +5742,9 @@
     "SVE-ST-C04-P01-34"
    ],
    "l7": "verified",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C04-011",
@@ -5764,9 +5764,9 @@
     "SVE-ST-C04-P01-31"
    ],
    "l7": "verified",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C05-003",
@@ -5788,9 +5788,9 @@
     "SVE-ST-C05-P01-16"
    ],
    "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C05-004",
@@ -5807,9 +5807,9 @@
     "SVE-ST-C05-P01-20"
    ],
    "l7": "verified",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C05-007",
@@ -5852,9 +5852,9 @@
     "SVE-ST-C05-P02-11"
    ],
    "l7": "verified",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C05-018",
@@ -5887,9 +5887,9 @@
     "SVE-ST-C05-P02-04"
    ],
    "l7": "verified",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C07-005",
@@ -5906,9 +5906,9 @@
     "SVE-ST-C07-P01-13"
    ],
    "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C07-010",
@@ -5924,9 +5924,9 @@
     "SVE-ST-C07-P01-15"
    ],
    "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C07-012",
@@ -6003,9 +6003,9 @@
     "SVE-ST-C08-P01-23"
    ],
    "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C08-016",
@@ -6024,9 +6024,9 @@
     "SVE-ST-C08-PR01-05"
    ],
    "l7": "verified",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C09-010",
@@ -6044,9 +6044,9 @@
     "SVE-ST-C09-P01-16"
    ],
    "l7": "verified",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C10-010",
@@ -6071,9 +6071,9 @@
     "SVE-ST-C10-P01-35"
    ],
    "l7": "verified",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C10-013",
@@ -6114,9 +6114,9 @@
     "SVE-ST-C11-P01-33"
    ],
    "l7": "verified",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C11-009",
@@ -6135,9 +6135,9 @@
     "SVE-ST-C11-P01-41"
    ],
    "l7": "verified",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C11-015",
@@ -6402,9 +6402,9 @@
     "SVE-ST-C12-P01-32"
    ],
    "l7": "verified",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C12-009",
@@ -6442,9 +6442,9 @@
     "SVE-ST-C13-P01-04"
    ],
    "l7": "verified",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C13-002",
@@ -6461,9 +6461,9 @@
     "SVE-ST-C13-P01-07"
    ],
    "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C13-003",
@@ -6480,9 +6480,9 @@
     "SVE-ST-C13-P01-10"
    ],
    "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C13-006",
@@ -6500,9 +6500,9 @@
     "SVE-ST-C13-P01-22"
    ],
    "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C13-008",
@@ -6518,9 +6518,9 @@
     "SVE-ST-C13-P01-27"
    ],
    "l7": "verified",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C13-009",
@@ -6535,9 +6535,9 @@
     "SVE-ST-C13-P01-28"
    ],
    "l7": "verified",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C13-011",
@@ -6593,9 +6593,9 @@
     "SVE-ST-C13-P02-06"
    ],
    "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C14-001",
@@ -6628,9 +6628,9 @@
     "SVE-ST-C14-P01-21"
    ],
    "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C14-011",
@@ -6765,9 +6765,9 @@
     "SVE-ST-C15-P01-10"
    ],
    "l7": "verified",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C15-009",

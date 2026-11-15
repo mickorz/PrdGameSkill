@@ -19,10 +19,10 @@
 | `server-evidence.json` | **正式产物**（S2.3 试运行 ST-C01 生成）：三根目录真实 file:line 证据 | 29 条 |
 | `difference-review.json` | **正式产物**（S2.3 试运行 ST-C01 生成）：ST-C01 全部 8 原子复核条目（pending；含 5 条 unverified→consistent 升级建议与 afterReviewProjection 70/64/2/183） | 8 条 |
 | `l7-classify.json` | **正式产物**（S2.3 试运行 ST-C01 生成）：reviewed 8/319，l7 verified 3 / verification_required 5 / decision_required 0 / not_applicable 0，l7Approved 全 0 | 8 条 |
-| `规则待验证报告.md` | **S4.3 交付 + S7 第二轮更新**（build-verify-reports.mjs 确定性生成）：verification_required 110 条全清单，四类归档（已闭环 45 / 证据缺口 12 / 配置确认 0 / 待补证 53），含 139 条 active 升级建议与 34 条 conditional 升级建议交叉注记 | 110 条 |
+| `规则待验证报告.md` | **S4.3 交付 + S7 两轮更新**（build-verify-reports.mjs 确定性生成）：verification_required 110 条全清单，四类归档（已闭环 57 / 证据缺口 12 / 配置确认 0 / 待补证 41） | 110 条 |
 | `服务端证据索引.md` | **S4.3 交付 + S7 第二轮更新**（build-verify-reports.mjs 确定性生成）：server-evidence 全量索引（按阶段，SVE 定位/符号/位置/配置项），供复核与追溯 | 916 条 |
-| `需求差异裁决清单.md` | **S4.3 全量收口 + S5 裁决闭环**：条目一/二/三（conflict×2 + inactive×1，均 B 接受现状/改需求 approved）+ 附 A（173 条升级建议全量批量批准表，**S5 委托决策全部 approved**）+ 附 A 注记（人工样本对照分歧 10 条 + 同证 3 条）+ 附 B 复核规则速查 + 附 C 证据缺口/不可达/配置确认交叉引用 | 361+ 行 |
-| `配置确认表.md` | **S6 签认件**（build-config-confirm-table.mjs 生成）：conditional 69 条创房默认口径签认表（配置项/默认/取值行为/差异现状/确认栏），差异现状 consistent 45 / unverified 17 / partial 7 | 69 条 |
+| `需求差异裁决清单.md` | **S4.3 全量收口 + S5/S7 两轮裁决闭环**：条目一/二/三（conflict×2 + inactive×1，均 B 接受现状/改需求 approved）+ 附 A（第一轮 173 条升级建议批量批准表，S5 委托决策全部 approved）+ 附 A-2（S7 第二轮 31 条升级建议批量批准表，委托决策全部 approved）+ 附 A 注记（人工样本对照分歧 10 条 + 同证 3 条）+ 附 B 复核规则速查 + 附 C 证据缺口/不可达/配置确认交叉引用 | 489 行 |
+| `配置确认表.md` | **S6 签认件（S7 二轮更新）**（build-config-confirm-table.mjs 生成）：conditional 69 条创房默认口径签认表（配置项/默认/取值行为/差异现状/确认栏），差异现状 consistent 57 / unverified 6 / partial 6（approved 46 / pending 23），S6 整体签认 ☑ 全部确认默认口径 | 69 条 |
 
 ## T0.4 局部验收结果（逐条对照需求）
 
@@ -129,7 +129,7 @@
 - **卡点（坑 8）**：4-review-difference merge 闸门拦截 16 条 SVE id 劫持——retry 分片 partNo 沿用 `'01'` 命名空间，agent 新增证据按模板编号撞原分片已占 id 段 → 机械改号 `SVE-<stageId>-PR<partNo>-NN`（PR 代际隔离）+ 3-verify-scope retryLines 编号规则覆盖 + 剩余确定性链手动顺序执行（merge/classify/check-l7/报告），详见 experience 坑 8
 - **产物**（正式四件累积）：SVE 916（+41，PR 段 16）；scope 319 维持（active 237 / conditional 69 / unknown 12 / inactive 1，**configConfirm 人工签认 69/69 全保全**——增量 merge 携带语义生效）；DR 319（pending 143 / approved 176）；**新升级建议 31 条 pending**（unverified→consistent 23 / partial→consistent 8；active 19 条 l7 已转 verified、conditional 12 条仍 vr 待裁决后配置确认）
 - **收口口径**：l7 206/110/2/1（verified +19），l7Approved 139/34/2/1（新建议 pending 不入正式索引），effectiveDifference 238/35/2/44（pending 建议生效差异按基线），check-l7 `--verified=v3` 五道闸门全过；《规则待验证报告》110 条（已闭环 45 / 证据缺口 12 / 配置确认 0 / 待补证 53——第二轮后余 53 = 72 − 19 条 active 升级出vr）
-- **待办**：31 条新建议待策划裁决（裁决清单附 A-2 生成 + 批准回传 → v3 重合并 → v3-planner 重投影判定）
+- **待办 → 已完成（裁决落地 2026-11-14，委托决策延续附 A 口径）**：附 A-2 全部 31 条 approved（19 active + 12 conditional）——approved 176→207 / pending 143→112；l7Approved 139/34/2/1→158/46/2/1；effectiveDifference 238/35/2/44→269/27/2/21；v3 重合并（204 条生效迁移，v2 hash 不变）+ check-l7 `--verified=v3` 五道闸门全过；《规则待验证报告》待补证 53→41（12 条 conditional 建议批准即闭环 → 已闭环 45→57）、《配置确认表》consistent 45→57；v3-planner 重投影随后执行
 
 ## S6 配置确认表与口径签认落地（2026-11-14，余量跟踪第一项完成）
 

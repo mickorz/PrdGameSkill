@@ -34,6 +34,8 @@ const symbolIndexPath = A.symbolIndexPath || outDir + '/symbol-index.json'
 const analysisModel =
   A.analysisModel === undefined ? 'biangfeng-gateway/deepseek-v4.1-flash-official' : A.analysisModel
 const stages = Array.isArray(A.stages) ? A.stages : []
+// 补证重跑模式（S7 待补证 72 条）：第二轮定位策略 + retryHint 输入口径
+const retryMode = A.retryMode === true
 
 setConcurrency(A.concurrency || 16)
 
@@ -78,6 +80,24 @@ const CLIENT_DEFAULTS = [
 ].join('；')
 
 function verifyPrompt(partFile) {
+  const retryLines = retryMode
+    ? [
+        '',
+        '本轮为待补证第二轮重跑（S7）：分片原子均为第一轮证据不足（active 无直证 / conditional 口径已签认但证据不足）。',
+        '原子带 retryHint 字段 = 第一轮缺口摘要（现状结论 + callPath + 复核理由），先读它再定位。',
+        '',
+        '第二轮定位策略（按序尝试，命中即止）：',
+        'a. 调用链深挖：按既有 callPath / match 候选的 file:line 读完整函数实现（offset 命中行 - 50，limit 200），',
+        '   并在符号索引搜该函数名追其调用方与被调方（上游判定入口 / 下游实际行为）。',
+        'b. 关键词全文检索：用 Grep 工具（path = 服务端源码根下三根目录，include *.cpp/*.h）按规则关键词 /',
+        '   配置 key / 枚举名（ET_/kEt 前缀）/ 常量名（C_/KW_ 前缀）检索，命中行段用 read 读上下文。',
+        'c. 邻近扫描：第一轮同阶段其他原子找到证据的文件（见 match 候选与既有 SVE），整读相关函数区域。',
+        'd. 配置入口核对（conditional）：搜配置 key 的解析点与消费点，确认默认分支行为与可选值分支。',
+        '',
+        '诚实落判：找到直证才升级结论（出新 SVE + dr.scopeNote 写升级依据）；仍不足时维持第一轮结论，',
+        '复用既有条目字段与既有 SVE id（幂等重跑口径），不要为凑证据放宽判定标准。',
+      ]
+    : []
   return [
     '你是服务端规则补证的作用域落判员，工作目录为项目根目录。判定证据必须真实：file:line 来自符号索引或实读源码，禁止编造。',
     '服务端源码根（只读）：' + serverSrcRoot,
@@ -95,6 +115,7 @@ function verifyPrompt(partFile) {
     '',
     '客户端创房下发值口径（S2.2 已核对，conditional 条件的默认值以此为准，引用写 client: RuleHzmj.ts）：',
     CLIENT_DEFAULTS,
+    ...retryLines,
     '',
     '步骤：',
     '1. 读取 ' + outDir + '/runtime/verify-input/' + partFile + '（原子业务字段 + 既有正式条目 existingScopeEntries /',

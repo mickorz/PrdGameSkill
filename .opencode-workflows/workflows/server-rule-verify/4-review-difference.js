@@ -42,6 +42,12 @@ const date = A.date || '2026-11-14'
 const analysisModel =
   A.analysisModel === undefined ? 'biangfeng-gateway/deepseek-v4.1-flash-official' : A.analysisModel
 const stages = Array.isArray(A.stages) ? A.stages : []
+// 合并后正式索引（S5 起五道闸门之审批状态独立校验用；空串 = 回退基线——全 pending 阶段口径）
+const verifiedIndexPath = A.verifiedIndexPath || ''
+// 增量合并模式（S7 待补证重跑：目标原子 = 分片覆盖原子，不要求阶段全覆盖）
+const incremental = A.incremental === true
+// 补证重跑模式（S7）：复核输入含 retryHint（第一轮缺口）
+const retryMode = A.retryMode === true
 
 setConcurrency(A.concurrency || 16)
 
@@ -97,8 +103,17 @@ const L7_STATS_SCHEMA = {
 }
 
 function reviewPrompt(partFile) {
+  const retryNote = retryMode
+    ? [
+        '',
+        '本轮为待补证第二轮重跑（S7）：原子带 retryHint（第一轮缺口）与子流程 3 的第二轮落判证据。',
+        '第二轮证据确证与规则同构时可按规则 2 出升级建议（unverified/partial -> consistent）；',
+        '仍不足则不出条目（merge 自动维持基线差异），不要为凑结论放宽复核标准。',
+      ]
+    : []
   return [
     '你是服务端规则补证的差异复核员，工作目录为项目根目录。只对有把握的原子出建议；建议一律 pending（人工批准前不生效），不要自行改判生效。',
+    ...retryNote,
     '',
     '复核规则（reviewRule 前缀白名单，四选一可带补充说明括号）：',
     '1. no-server-evidence-is-not-conflict：缺服务端证据不改判 conflict（维持 unverified/partial 原判）',
@@ -186,7 +201,8 @@ phase('装配与校验')
 // 1. merge-verify-output.mjs：合并 scope/SVE/DR（双写闸门 + classifyL7 矩阵回填 + 全量复核）
 const mergeCmd =
   'node ".opencode-workflows/scripts/merge-verify-output.mjs" "' +
-  featureIndexPath + '" "' + outDir + '" "' + date + '" "' + stageIds + '"'
+  featureIndexPath + '" "' + outDir + '" "' + date + '" "' + stageIds + '"' +
+  (incremental ? ' incremental' : '')
 const mergeOk = await commandSuccess(mergeCmd, 120000)
 if (!mergeOk) {
   throw new Error('落判合并失败（merge-verify-output.mjs 退出码非 0，问题明细见其输出；产物未写）')
@@ -203,11 +219,13 @@ if (!classifyOk) {
 }
 
 // 3. verify-output-spec.mjs check-l7：五道闸门（不触碰 v2 基线目录；报告 runtime/spec-check/）
+//    verifiedIndexPath（S5 起合并后正式索引）非空时传 --verified（闸门 5 审批状态独立校验用）
 const checkCmd =
   'node ".opencode-workflows/scripts/verify-output-spec.mjs" check-l7 "' +
   featureIndexPath + '" "' + traceIndexPath + '" "' + outDir + '/scope-index.json" "' +
   outDir + '/server-evidence.json" "' + outDir + '/difference-review.json" "' +
-  outDir + '/l7-classify.json" "' + outDir + '/runtime/spec-check"'
+  outDir + '/l7-classify.json" "' + outDir + '/runtime/spec-check"' +
+  (verifiedIndexPath ? ' "--verified=' + verifiedIndexPath + '"' : '')
 const checkOk = await commandSuccess(checkCmd, 120000)
 if (!checkOk) {
   throw new Error(

@@ -9,10 +9,14 @@
 //
 // 校验闸门（任一命中 fail，不写产物）：
 //   1. 落判条目：atomId 在基线且其基线阶段属目标范围；applicability 枚举合法；
-//      已处理阶段原子全覆盖（每原子恰一条，缺/重皆 fail）；目标阶段一条落判条目
-//      都没有 fail；分片按 stageId 过滤——非目标阶段分片为上次运行遗留，跳过不消费
+//      全量模式：已处理阶段原子全覆盖（每原子恰一条，缺/重皆 fail）；
+//      增量模式（incremental，S7 待补证重跑）：目标原子 = 分片覆盖原子（重复闸门
+//      保证恰一条），不要求阶段全覆盖，未覆盖原子保全正式产物；
+//      目标阶段一条落判条目都没有 fail；分片按 stageId 过滤——非目标阶段分片为上次运行遗留，跳过不消费
 //      （正式条目已在正式产物中，summary.skippedVerifyParts 记录）；分片含非目标
 //      阶段原子仍 fail（跨阶段混入）
+//   1b. 口径签认保全（S6）：既有 configConfirm* 人工签认记录在 upsert 时保全
+//      （本轮仍 conditional 且新条目未带签认时原样携带；作用域变化时不携带）
 //   2. 双写闸门（S2.1 经验：scope 优先级 复核字段 > scope-index Atom 级）：
 //      落判条目 dr.scopeApplicability 必须等于 applicability
 //      （既有条目带 evidenceScopes 的 conflict 证据级原子除外——
@@ -78,6 +82,9 @@ export function mergeVerifyOutput(input) {
   const outDir = I.outDir || ''
   const date = I.date || ''
   const stageIdsCsv = I.stageIds || 'ALL'
+  // 增量模式（S7 待补证重跑）：目标原子 = 分片覆盖原子（每原子恰一条由重复闸门保证），
+  // 不要求已处理阶段原子全覆盖（增量分片只含部分原子，其余原子保全正式产物）
+  const incremental = I.incremental === true
   if (!featureIndexPath) bad('featureIndexPath 缺失')
   if (!outDir) bad('outDir 缺失')
   if (problems.length > 0) return { ok: false, problems: problems, summary: null }
@@ -159,10 +166,12 @@ export function mergeVerifyOutput(input) {
     }
   }
 
-  // 已处理阶段原子全覆盖
-  for (const stageId of processedStages) {
-    for (const id of stageAtoms.get(stageId) || []) {
-      if (!judgeByAtom.has(id)) bad('阶段原子缺落判条目：' + stageId + ' / ' + id)
+  // 已处理阶段原子全覆盖（全量模式；增量模式跳过——目标原子以分片覆盖为准，重复闸门已保证恰一条）
+  if (!incremental) {
+    for (const stageId of processedStages) {
+      for (const id of stageAtoms.get(stageId) || []) {
+        if (!judgeByAtom.has(id)) bad('阶段原子缺落判条目：' + stageId + ' / ' + id)
+      }
     }
   }
   // 目标阶段一条落判条目都没有（分片全缺或全为非目标遗留）→ fail
@@ -358,6 +367,23 @@ export function mergeVerifyOutput(input) {
       evidenceIds: Array.isArray(e.evidenceIds) ? e.evidenceIds : [],
       unresolved: e.unresolved || '',
       noServerEvidence: e.noServerEvidence === true,
+    }
+    // 口径签认保全（S6）：人工签认记录（configConfirm*）不随 agent 重跑覆盖——
+    // 既有签认且本轮仍为 conditional 且新条目未带 configConfirm 时原样携带；
+    // 作用域变化（conditional -> active/inactive 等）时签认不再适用，不携带
+    if (
+      existing &&
+      existing.configConfirm &&
+      e.applicability === 'conditional' &&
+      !e.configConfirm
+    ) {
+      merged.configConfirm = existing.configConfirm
+      if (existing.configConfirmDate) merged.configConfirmDate = existing.configConfirmDate
+      if (existing.configConfirmNote) merged.configConfirmNote = existing.configConfirmNote
+    } else if (e.configConfirm) {
+      merged.configConfirm = e.configConfirm
+      if (e.configConfirmDate) merged.configConfirmDate = e.configConfirmDate
+      if (e.configConfirmNote) merged.configConfirmNote = e.configConfirmNote
     }
     if (scopeEntryHasEvidenceScopes) merged.evidenceScopes = finalScopes
     if (existing) replacedScopeCount++
@@ -559,8 +585,8 @@ export function mergeVerifyOutput(input) {
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const argv = process.argv.slice(2)
-  if (argv.length < 3 || argv.length > 4) {
-    console.error('用法：node merge-verify-output.mjs <featureIndexPath> <outDir> <date> [stageIdsCsv|ALL]')
+  if (argv.length < 3 || argv.length > 5) {
+    console.error('用法：node merge-verify-output.mjs <featureIndexPath> <outDir> <date> [stageIdsCsv|ALL] [incremental]')
     process.exit(1)
   }
   const r = mergeVerifyOutput({
@@ -568,6 +594,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     outDir: argv[1],
     date: argv[2],
     stageIds: argv[3] || 'ALL',
+    incremental: argv[4] === 'incremental',
   })
   if (!r.ok) {
     console.error('[失败] 落判合并未通过，共 ' + r.problems.length + ' 项问题（不写产物）：')

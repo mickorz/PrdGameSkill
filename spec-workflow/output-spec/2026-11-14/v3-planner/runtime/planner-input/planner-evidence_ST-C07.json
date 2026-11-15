@@ -92,7 +92,7 @@
     "result": "胡牌者结算显示点炮胡，放铳者显示点炮标记与放炮流水"
    },
    "l7": "verification_required",
-   "l7Reason": "本轮未出复核建议，维持基线差异"
+   "l7Reason": "需求语义：本期固定采用「庄闲放铳（庄3）」，三牢局中出牌者与胡牌者一方为庄、另一方为闲才可点炮，庄家出牌时闲家可胡、闲家出牌时仅庄家可胡（source-prd 2.3.2.7）。服务端实现：创房下发 enable_banker_discard_hu=1（input-ui/xuanwulobby/assets/scripts/common/config/boxRoomRuleConfig/RuleHzmj.ts:31，default 取 items[1]「庄闲放铳(庄三)」），好友房默认 true（hzmj_server/server_config.cpp:19，SVE-ST-C07-P01-11），解析入口 hzmj_server/game_logic.cpp:60-63（SVE-ST-C07-P01-10）；BoxHuStep::CanDiscardHu 第 355 行开关门控 + 第 356 行三牢门控（common_game/com_game/common_game_com_action.cpp:353-357，SVE-ST-C07-P01-12），JudgeDiscard 第 370-372 行硬编码「出牌者与胡牌者必须一庄一闲」的互斥过滤、第 361 行门控失败直接返回 false（common_game_com_action.cpp:360-381），放铳结算单笔 payer=放铳者（common_game_com_result.cpp:107-112）。enable_banker_discard_hu 可下发 0（自摸胡）属跨玩法通用开关，按创房下发值口径（本玩法默认 1）好友房启用庄闲放铳，庄闲互斥语义无配置分支，与规则同构。"
   },
   {
    "id": "AT-ST-C07-006",
@@ -177,7 +177,7 @@
     "result": ""
    },
    "l7": "verification_required",
-   "l7Reason": "本轮未出复核建议，维持基线差异"
+   "l7Reason": "需求语义：点炮不成立（未形成一庄一闲的庄闲关系）时，该牌不能被点炮胡，胡牌方式仅剩自摸（source-prd 2.3.2.7 + 算分规则「点炮胡只算赢家与放铳者之间的一笔」）。服务端实现：BoxHuStep::JudgeDiscard 第 370-372 行以 is_banker_discard == is_banker_hu 判定，同庄或同闲的组合直接 continue，不进入 TestHu（common_game/com_game/common_game_com_action.cpp:367-379，SVE-ST-C07-P02-03）；CanDiscardHu 第 354-356 行 IsDiscard/GetEnableBankerDiscardHu/GetBankerLevel()<3 任一不满足即返回 false，JudgeDiscard 第 361 行据此无点炮入口（common_game_com_action.cpp:353-361，SVE-ST-C07-P01-12/SVE-ST-C07-P02-02）；自摸入口 BoxHuStep::Judge 第 271-281 行 kMahStateTake 直调 JudgeSelf、不经上述门控，HuStep::JudgeSelf 仅做 TestHu（common_game_com_action.cpp:271-282，SVE-ST-C07-P01-02 mah_frame/com_basic/com_hu.cpp:189）。故未形成庄闲对时点炮通道全关、自摸通道不受限，与规则同构。"
   },
   {
    "id": "AT-ST-C07-011",

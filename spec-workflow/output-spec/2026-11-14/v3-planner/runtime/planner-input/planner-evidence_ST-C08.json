@@ -143,7 +143,7 @@
     "result": "自己看到大部分手牌变灰不能点"
    },
    "l7": "verification_required",
-   "l7Reason": "需求语义：其余手牌压暗，只在自己界面显示。服务端实现：受限方不可打牌以 GetHands 全手牌黑名单表达（common_game/com_game/common_game_com_play.cpp:23-26，SVE-ST-C08-P01-16），BaseContext::SendPlayLmts 按单个 seat 下发（mah_frame/base/base_context.cpp:594，SVE-ST-C08-P01-20），手牌下发仅 seat == chair_id 或 is_open_card 时成立（common_game/common_game_context.cpp:546，SVE-ST-C08-P01-21），重连补发出一律只取 chair_id 视角（:565，SVE-ST-C08-P01-22），is_open_card 基线默认 false（mah_frame/base/base_config.cpp:23，SVE-ST-C08-P01-23）、好友房下发口径未含该项。但「压暗」本身仍是客户端染灰渲染，服务端证据只能确证禁打集合与视角口径，不能确证视觉压暗；且可见性随 is_open_card 可配（true 即真实下发他家手牌），细节差异维持原判。"
+   "l7Reason": "需求语义：其余手牌压暗、只在自己界面显示。服务端实现：BaseContext::SendTakeFirst（mah_frame/base/base_context.cpp:284-288，SVE-ST-C08-PR01-01）与 BaseContext::FillMsgPlayerMah（mah_frame/base/base_context.cpp:863-869，SVE-ST-C08-PR01-03）在 is_open=false 时对 non-own seat 一律下发 MV_BACK、仅 iseat==seat 下发真牌；BaseContext::SendPlayerMah（base_context.cpp:332，SVE-ST-C08-PR01-02）与重连路径 CommonGameContext::FillMsgRelinkOnAction（common_game/common_game_context.cpp:546，SVE-ST-C08-P01-21）同口径；is_open_card 基线默认 false（mah_frame/base/base_config.cpp:23，SVE-ST-C08-P01-23），好友房创房下发值口径解析入口 hzmj_server/game_logic.cpp:193-195（SVE-ST-C08-PR01-04）中无该项，故好友房恒 false，手牌仅本家可见，与规则同构。"
   },
   {
    "id": "AT-ST-C08-009",
@@ -278,8 +278,8 @@
     "action": "吃碰杠流程不改动飘次数",
     "result": "吃碰杠后飘字与次数保持原样"
    },
-   "l7": "verification_required",
-   "l7Reason": "需求：吃、碰、杠都不清飘档。服务端：吃/碰执行体只调 ClearGangChain、全程不写 piao_level/piao_count（common_game/com_game/common_game_com_action.cpp:130、common_game/com_game/common_game_com_pung.cpp:147），明杠仅 PushGangChain 与只读 GetPiaoLevel 判断、未清零（common_game/com_game/common_game_com_kong.cpp:116），并有「吃/碰/杠不打断」注释（common_game/com_game/common_game_com_play.cpp:68）（SVE-ST-C08-P02-12/13/14/15）。吃、碰与明杠已确证不触碰飘档，但杠分支仅取证到明杠 BoxMKongStep，暗杠/补杠未取证，无法确证「杠」全部类型不清飘档，细节覆盖不足，维持 partial。"
+   "l7": "verified",
+   "l7Reason": "需求语义：吃、碰、杠不清飘档。服务端实现：BoxChowStep::Execute（common_game/com_game/common_game_com_action.cpp:130，SVE-ST-C08-P02-13）与 BoxPungStep::Execute（common_game/com_game/common_game_com_pung.cpp:147，SVE-ST-C08-P02-14）只调 ClearGangChain（common_game/common_game_server_data.h:84，仅清杠链与暗杠标记）；BoxMKongStep::Execute（common_game/com_game/common_game_com_kong.cpp:115-118，SVE-ST-C08-P02-15）仅 PushGangChain + 只读 GetPiaoLevel 写入 PiaoBeforeGang，均不触碰 piao_level/piao_count；全局 piao 写入点仅 BoxPlayStep::CheckPlay（common_game/com_game/common_game_com_play.cpp:60-79，打出财神累加/他牌归零，SVE-ST-C08-P02-12）与 CommonGameServerData::ResetRound（common_game/common_game_server_data.cpp:53-55，小局重置，SVE-ST-C08-PR01-05），与规则同构。"
   },
   {
    "id": "AT-ST-C08-017",

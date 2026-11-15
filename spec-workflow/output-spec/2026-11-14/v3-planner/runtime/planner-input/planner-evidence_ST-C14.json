@@ -177,7 +177,7 @@
     "result": "玩家看到豪华、双豪华或三豪华的番型名"
    },
    "l7": "verification_required",
-   "l7Reason": "本轮未出复核建议，维持基线差异"
+   "l7Reason": "需求语义：某种非财神牌面有 4 张实牌，计 1 组豪华。服务端实现：cai_for_hao_qi 由创房 JSON 解析（hzmj_server/game_logic.cpp:103，SVE-ST-C14-P01-20）并经 MakeFanFuncParams 注入（common_game/common_game_algorithm.cpp:263，SVE-ST-C14-P01-21）；默认 0 分支 CountQuadPairGroups（common_game/common_game_fan_type.cpp:63，SVE-ST-C14-P01-18）按 real = freq - joker_filled >= 4 计 1 组，即只认 4 张真实非财神牌，与规则同构；创房默认 cai_for_hao_qi=0（configConfirm=default，2026-11-14）。"
   },
   {
    "id": "AT-ST-C14-011",
@@ -500,7 +500,7 @@
     "result": "玩家看到红色的财神牌，牌上没有任何角标，未禁打时可正常点出"
    },
    "l7": "verification_required",
-   "l7Reason": "需求语义：财神牌面染红、可点击、无角标（纯客户端表现）。服务端实现：仅确认财神牌值固定下发（common_game_context.cpp:49，SVE-ST-C14-P03-19）、财神可正常打出并被 CheckPlay 受理（common_game_com_play.cpp:63，SVE-ST-C14-P03-20）；但 MakePower 在飘财受限座位下发禁打黑名单（common_game_com_play.cpp:23，SVE-ST-C14-P03-21），说明“可点击”仍受服务端禁打数据约束，染色与角标本属客户端表现、服务端无对应实现，维持原判。"
+   "l7Reason": "需求语义：财神牌面染红、可点击、没有角标（客户端表现）。服务端实现：仅固定下发财神牌值与 open 标记（common_game/common_game_context.cpp:49，SVE-ST-C14-P03-19），财神打出由 CheckPlay 正常受理（common_game/common_game_com_play.cpp:63，SVE-ST-C14-P03-20）；但 MakePower（common_game/common_game_com_play.cpp:23，SVE-ST-C14-P03-21）在飘财受限座位下发禁打黑名单，'可点击'仍受服务端受限，且染色/角标无服务端可核证据，细节差异维持 partial。"
   },
   {
    "id": "AT-ST-C14-030",

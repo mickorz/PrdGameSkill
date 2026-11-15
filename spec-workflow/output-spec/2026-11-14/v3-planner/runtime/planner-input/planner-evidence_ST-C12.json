@@ -74,8 +74,8 @@
     "action": "记录并播放飘状态变化，不修改摊数",
     "result": "玩家看到飘状态变化的动效与提示"
    },
-   "l7": "verification_required",
-   "l7Reason": "本轮未出复核建议，维持基线差异"
+   "l7": "verified",
+   "l7Reason": "需求语义：摊计数与飘财数据相互独立（其他操作形成的飘不改摊数，摊数也不改飘状态，结算路径同样不耦合）。服务端实现：piao_count/piao_level 与 tan_count_ 为独立字段（common_game/common_game_server_data.h:96-97，SVE-ST-C12-P01-08）；飘写入点仅 BoxPlayStep::CheckPlay 写 piao_owner_seat/piao_count/piao_level 并 BroadcastPiao（common_game/com_game/common_game_com_play.cpp:60-79，SVE-ST-C12-P01-32），不触碰摊计数（全仓 SetTanCount 仅初始化与吃/碰/明杠三处：common_game/common_game_server_data.cpp:47、common_game_com_action.cpp:134、common_game_com_pung.cpp:128、common_game_com_kong.cpp:98）；飘状态仅在 Judge 中拦截吃/碰权限（common_game/common_game_com_action.cpp:60、common_game_com_pung.cpp:16，SVE-ST-C12-P01-10/11），不改写摊矩阵；结算 ApplyBaoContracts 只 GetTanCount 判定并回写 bao_relation（common_game/com_game/common_game_com_result.cpp:316-318，SVE-ST-C12-P01-31），不读写飘字段。第二轮补证闭合第一轮「结算时两者是否互相影响」缺口，实现与规则同构。"
   },
   {
    "id": "AT-ST-C12-005",
@@ -160,7 +160,7 @@
     "result": "玩家看到居中的三摊落地动效，可与吃牌字效同时出现"
    },
    "l7": "verification_required",
-   "l7Reason": "需求「四端播放三摊落地，可与吃牌字效同时显示」；服务端 BroadcastTanUpdate 以 SendMessage(msg.ID, msg, 0) 全桌广播（SVE-ST-C12-P01-23, common_game/common_game_context.cpp:65-73），仅证明数据到达所有端，不决定客户端是否按座位播放；客户端为单个居中节点、未按座位定位，且 simple_mode 抑制落地动效（SVE-ST-C12-P01-25, hzmj_server/game_logic.cpp:165），视觉与同屏条件仍未满足，维持 partial。"
+   "l7Reason": "需求语义：四端播放「三摊落地」，且可与吃牌字效同时显示。服务端实现：吃/碰/明杠记摊后 BroadcastTanUpdate 以 SendMessage(msg.ID, msg, 0)（chair_id 缺省 INVALID_ID）全桌广播（common_game/common_game_context.cpp:65-73，SVE-ST-C12-P01-23；mah_frame/interface/game_interface.h:22-26，SVE-ST-C12-P01-33）；吃牌路径 BroadcastTanUpdate 与 SendChow 同函数先后下发（common_game/com_game/common_game_com_action.cpp:143-157，SVE-ST-C12-P01-34），二者无互斥；但 MsgTanUpdate 只带 from_seat/to_seat/tan_count/bao_relation，不含落点/方位字段（common_game/protocol/hzmj_protocol.proto:68-93，SVE-ST-C12-P01-24）。「四端按方位播放」仍取决于客户端单居中节点（未按座位定位）与 simple_mode 表现抑制（hzmj_server/game_logic.cpp:164-166，SVE-ST-C12-P01-25），服务端广播仅证明数据到达所有端，不决定客户端落点与是否抑制，第一轮缺口未闭合，维持 partial。"
   },
   {
    "id": "AT-ST-C12-010",

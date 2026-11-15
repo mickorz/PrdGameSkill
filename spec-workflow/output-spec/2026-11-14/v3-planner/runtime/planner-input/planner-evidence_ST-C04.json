@@ -57,8 +57,8 @@
     "action": "",
     "result": ""
    },
-   "l7": "verification_required",
-   "l7Reason": "本轮未出复核建议，维持基线差异"
+   "l7": "verified",
+   "l7Reason": "需求语义：多名玩家同时能对同一张弃牌碰或直杠时，不分碰/直杠，按座位号小者先裁决。服务端实现：hzmj 实际注册 BoxPungStep/BoxMKongStep（common_game/common_game_init.cpp:172-173，SVE-ST-C04-P01-27）；两步骤 GetLevel 同为 3（mah_frame/base/macros.h:204-205，SVE-ST-C04-P01-01）；权限按 key=MAKEKEY(seat,power) 注册（mah_frame/com_basic/com_action.cpp:771，SVE-ST-C04-P01-10）；ConAction::OnConAction 仅在最大 level 内按 key 升序取最小 key 裁决（mah_frame/base/con_action.cpp:43-60，SVE-ST-C04-P01-11），即碰/直杠同级、座位号小者先执行；BoxPungStep/BoxMKongStep 的 Judge 均为座位 0 升序 TestPung/TestMKong 命中即写座位并 return（common_game/common_game_com_pung.cpp:13-68、common_game/common_game_com_kong.cpp:15-54，SVE-ST-C04-P01-28/29）。与规则同构。"
   },
   {
    "id": "AT-ST-C04-004",
@@ -74,8 +74,8 @@
     "action": "客户端只给那一家弹出碰或杠按钮，其他三家界面不出现这些按钮",
     "result": "能操作的那一家看到碰或杠按钮，其余玩家看不到"
    },
-   "l7": "verification_required",
-   "l7Reason": "本轮未出复核建议，维持基线差异"
+   "l7": "verified",
+   "l7Reason": "需求语义：碰与直杠权限只下发给确实能成立、且能成立者中座位号最小的一家。服务端实现：BoxPungStep::Judge / BoxMKongStep::Judge 座位 0 升序遍历，首个 TestPung/TestMKong 成立即写 pung_seat_/mkong_seat_ 并 return（common_game/common_game_com_pung.cpp:36-65、common_game/common_game_com_kong.cpp:42-51，SVE-ST-C04-P01-28/29）；MakePower 仅向 pow 推入该唯一座位的一条 TPower（mah_frame/com_basic/com_pung.cpp:106-119、com_kong.cpp:116-128，SVE-ST-C04-P01-12/13），Box 子类未覆写 MakePower（common_game_com_pung.h:18-22、common_game_com_kong.h:17-28）；按座位注册（com_action.cpp:770-778）后 SetActionPower 逐座位仅汇总本座位条目（com_action.cpp:797-823、952-962），SendPowerToClient 逐座位下发各自 power（com_action.cpp:991-1012）。与规则同构。"
   },
   {
    "id": "AT-ST-C04-005",
@@ -91,8 +91,8 @@
     "action": "客户端给每个能胡的玩家各弹一个胡按钮",
     "result": "能胡的玩家各自看到自己的胡按钮，几家同时都可点胡，不立刻分出胜负"
    },
-   "l7": "verification_required",
-   "l7Reason": "本轮未出复核建议，维持基线差异"
+   "l7": "verified",
+   "l7Reason": "需求语义：多名玩家对同一张弃牌都能胡时，每家都收到胡的操作提示。服务端实现：BoxHuStep::JudgeDiscard 遍历除出牌者外全部座位，TestHu 命中时逐个 AddHuPowerSeats(seat)（common_game/common_game_com_action.cpp:368-379、:500，SVE-ST-C04-P01-32/33）；BoxHuStep::Judge 汇总 SetHuPowerSeats（:304-349，SVE-ST-C04-P01-34）；HuStep::MakePower 为 hu_power_seats 中每个座位各推一条 TPower（mah_frame/com_basic/com_hu.cpp:165-179，SVE-ST-C04-P01-15）；按座位注册（com_action.cpp:777）并由 SendPowerToClient 逐座位下发（com_action.cpp:991-1012，SVE-ST-C04-P01-16），且 HuStep::InitPower 先清空 hu_power_seats（com_hu.cpp:59-65）无跨轮残留。注：hzmj 点炮胡另有牢庄/放铳开关准入闸（common_game_com_action.cpp:353-364），仅影响可胡资格判定，不改变可胡者逐座位下发口径。与规则同构。"
   },
   {
    "id": "AT-ST-C04-006",
@@ -193,8 +193,8 @@
     "action": "客户端只把这次操作报上去并收起面板，不在本地先变牌",
     "result": "玩家点了吃或碰后不会马上看到副露摆出，要等服务端确认后才出现"
    },
-   "l7": "verification_required",
-   "l7Reason": "需求：低优先级先提交时不立即执行，需先等待全部更高优先级玩家手动放弃后才执行。服务端：OnConAction 在当前最大 level 候选 is_respond==false 时 return false 挂起、仅在最大者回应后 DoConAction（mah_frame/base/con_action.cpp:57-60，SVE-ST-C04-P01-23），等级差由 macros.h:203-206 与注册链路保证（SVE-ST-C04-P01-01/06）。服务端实现只证实「等待当前最大 level 者回应」，不等于「等待全部更高优先级玩家放弃」，且客户端仍无等待态提示，维持 partial。"
+   "l7": "verified",
+   "l7Reason": "需求语义：低优先级操作先提交不立即执行，需等全部更高优先级玩家手动放弃后才执行。服务端实现：等级 吃2/碰杠3/胡4（mah_frame/base/macros.h:203-206，SVE-ST-C04-P01-01）；胡/碰/杠分别按 kStepLevelHu/Pung/Kong 提交（mah_frame/com_basic/com_action.cpp:320、426、488，SVE-ST-C04-P01-30/31）；ConAction::OnConAction 记录回应后重算 maxkey，只取最大 level，最大者 is_respond==false 即 return false 不执行（mah_frame/base/con_action.cpp:40-60，SVE-ST-C04-P01-23）；高优先级放弃走取消项 kStepLevelCancelS=1（macros.h:200；com_action.cpp:816-817、364），ClearUserConAction 先清除该座位高等级条目并以 1 级重登记（con_action.cpp:26、70-81），故全部高等级条目降级后 maxkey 回落到低优先级已回应条目才 DoConAction。与规则同构。"
   },
   {
    "id": "AT-ST-C04-012",

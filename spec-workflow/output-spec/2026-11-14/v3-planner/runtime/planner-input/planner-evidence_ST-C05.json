@@ -58,7 +58,7 @@
     "result": "玩家看到自己副露多出一组顺子，箭头指向被吃的那张牌"
    },
    "l7": "verification_required",
-   "l7Reason": "需求语义：上家刚打出的 1 张非财神与手中 2 张非财神组成同花色连续顺子。服务端实现：BoxChowStep::Judge(common_game/com_game/common_game_com_action.cpp:56) 吃仅限上家，ChowStep::DelJustChowFromHand(mah_frame/com_basic/com_chow.cpp:122) 复核 GetJustPlay/GetJustPlaySeat，InitJokerChows(base_data.cpp:1826) 剔除财神；但 only_pung_no_chow(game_logic.cpp:113-120) 可整段禁吃、enable_chow_forbid 默认 true(game_logic.cpp:131-133) 额外过滤无可打牌的吃法(common_game_com_action.cpp:86-100)，存在规则外附加条件，不能确证同构，维持原判。"
+   "l7Reason": "需求语义：上家刚打出的 1 张非财神 + 手中 2 张非财神组成同花色连续顺子才可吃。服务端实现：BoxChowStep::Judge(common_game/com_game/common_game_com_action.cpp:56，SVE-ST-C05-P01-10) 吃座固定为 next(preSeat) 仅限上家；Algorithm::TestChow(mah_frame/base/algorithm.cpp:3265/3274，SVE-ST-C05-P01-03/17) 取该牌值的顺子组并要求手牌含组内剩余两张；ChowStep::DelJustChowFromHand(mah_frame/com_basic/com_chow.cpp:122，SVE-ST-C05-P01-11) 复核 GetJustPlay()==comb.ins[0] 且 GetJustPlaySeat()==comb.from；BaseData::InitJokerChows(mah_frame/base/base_data.cpp:1826，SVE-ST-C05-P01-12) 在 BoxJokerStep::Execute(common_game_com_ju.cpp:254，SVE-ST-C05-P01-13) 定财神后删除含财神的顺子组。创房下发值口径已核实：only_pung_no_chow=false、rule_chi_peng=0（server_config.cpp:27/28，game_logic.cpp:113-121，SVE-ST-C05-P01-14/16），吃不因配置被关闭也不受吃碰次数限制；enable_chow_forbid=true 的吃禁手过滤属 ST-C10 独立规则，不改变本原子成立条件。四项条件均与服务端实现同构。"
   },
   {
    "id": "AT-ST-C05-004",
@@ -74,8 +74,8 @@
     "action": "客户端列出每组三张供选择，点选后只发送这一组",
     "result": "玩家看到多组三张顺子备选，点选一组即完成吃牌"
    },
-   "l7": "verification_required",
-   "l7Reason": "需求语义：多种合法组合时展示多组备选并选 1 组。服务端实现：Algorithm::TestChow(algorithm.cpp:3269-3281) 枚举全部合法组合，ChowStep::MakePower(com_chow.cpp:80-87) 整组下发，ActionStep::OnMsgChowC(com_action.cpp:201) 仅接受候选集内选择，BoxChowStep::Execute(common_game_com_action.cpp:123-125) 缺省回退单组。服务端选择机制成立，但客户端备选展示复用多杠组件 ChooseGang 的细节差异未由服务端证据消除，维持 partial。"
+   "l7": "verified",
+   "l7Reason": "需求语义：同一进张存在多种合法吃法时展示多组备选、一次只发送并执行 1 组。服务端实现：Algorithm::TestChow(mah_frame/base/algorithm.cpp:3269-3281，SVE-ST-C05-P01-17) 把每个合法组合 push 进 retcombs；ChowStep::MakePower(mah_frame/com_basic/com_chow.cpp:80-87，SVE-ST-C05-P01-18) 将整组 chow_combs_ 放入 TPower.combs 一次下发；ActionStep::OnMsgChowC(mah_frame/com_basic/com_action.cpp:201，SVE-ST-C05-P01-19) 以 IsSubComb 只接受候选集内选择，越界回 kAFChowNoComb；BoxChowStep::Execute(common_game/com_game/common_game_com_action.cpp:123-125，SVE-ST-C05-P01-20) 未选/非法时回退随机一组，最终只执行单一 will_chow_comb_。基线 partial 的缺口（服务端是否一次下发全部合法吃法）已由 SVE-ST-C05-P01-18 确证，选项池复用 ChooseGang 展示亦为规格原文所述，与规则同构。"
   },
   {
    "id": "AT-ST-C05-005",
@@ -210,8 +210,8 @@
     "action": "",
     "result": ""
    },
-   "l7": "verification_required",
-   "l7Reason": "本轮未出复核建议，维持基线差异"
+   "l7": "verified",
+   "l7Reason": "需求语义：直杠需与同一张弃牌上的其他响应按优先级裁决后才成立（客户端不做本地裁决）。服务端实现：kStepLevelKong=3(mah_frame/base/macros.h:205，SVE-ST-C05-P02-05)、kStepLevelHu=4(mah_frame/base/macros.h:206，SVE-ST-C05-P02-06)；ActionStep::OnMsgKongC(mah_frame/com_basic/com_action.cpp:488，SVE-ST-C05-P02-08) 以 kStepLevelKong 参与 ConAction::OnConAction(mah_frame/base/con_action.cpp:19，SVE-ST-C05-P02-07) 取最大 level 者胜出，胡(4)压杠(3)，仅高优先级放弃时杠才落地；KongStep::GetLevel(mah_frame/com_basic/com_kong.h:29，SVE-ST-C05-P02-09)、HuStep::GetLevel(mah_frame/com_basic/com_hu.h:53，SVE-ST-C05-P02-10) 为固定枚举；同等级胡再叠座位权重(mah_frame/com_basic/com_action.cpp:826，SVE-ST-C05-P02-11) 保证裁决确定。优先级为固定机制、无配置分支，与规则同构。"
   },
   {
    "id": "AT-ST-C05-013",
@@ -363,8 +363,8 @@
     "action": "客户端把每个杠组合列成一个可杠项，多时展示列表",
     "result": "玩家看到杠按钮和可选的可杠牌"
    },
-   "l7": "verification_required",
-   "l7Reason": "本轮未出复核建议，维持基线差异"
+   "l7": "verified",
+   "l7Reason": "需求语义：手中四张相同（非财神）即可杠，暗杠/明杠/补杠统一判定。服务端实现：Algorithm::TestCKong(mah_frame/base/algorithm.cpp:3190-3197，SVE-ST-C05-P02-31) counts[m]!=4 continue，仅四张同值入候选；Algorithm::TestMKong(mah_frame/base/algorithm.cpp:3164，SVE-ST-C05-P02-02) 手中 3 张 + 打出 1 张凑满四张；Algorithm::TestTKong(mah_frame/base/algorithm.cpp:3220，SVE-ST-C05-P02-19) 已碰 3 张 + 手中 1 张，counts!=1 continue；BaseData::InitJokerKongs(mah_frame/base/base_data.cpp:1868，SVE-ST-C05-P02-04) 在定财神后把财神杠组从三类候选剔除，吻合规格「四张相同（非财神）」。计数判定无配置分支，与规则同构。"
   },
   {
    "id": "AT-ST-C05-022",

@@ -176,8 +176,8 @@
     "action": "界面按名单逐张比对置灰，不区分该牌是否为财神",
     "result": "若名单含财神，财神也会被压暗，界面没有额外的财神豁免表现"
    },
-   "l7": "verification_required",
-   "l7Reason": "本轮未出复核建议，维持基线差异"
+   "l7": "verified",
+   "l7Reason": "需求语义：禁张不含财神，吃完仍可打财神（验收口径「服务端名单不含财神牌值时，吃完后财神手牌不置灰、可正常打出」）。服务端实现：禁张只由吃组结构构造——claimed / x-1 / z+1（common_game/com_game/common_game_com_action.cpp:162-207，SVE-ST-C10-P01-23/:170、SVE-ST-C10-P01-01/:162、SVE-ST-C10-P01-08/:194、SVE-ST-C10-P01-09/:195），而吃组合牌值域仅万/条/筒顺子组（common_game/common_game_init.cpp:102-106，SVE-ST-C10-P01-33；mah_frame/base/algorithm.cpp:3265-3281 comb.mahs 直接取顺子组，SVE-ST-C10-P01-34），默认 cai_shen_type=0 时财神即白板 83（common_game/com_game/common_game_com_ju.cpp:229-232/247-257，SVE-ST-C10-P01-35）且白板不入任何顺子组，故白板财神模式禁张恒不含财神；翻财神模式下即便禁张算得财神值也反归一化为物理替身白板（common_game_com_action.cpp:201-205，SVE-ST-C10-P01-24；:163-165 注释「财神本身不进黑名单」，SVE-ST-C10-P01-22），财神本身不进 hands 名单。出牌判定 Algorithm::IsLimitMah 非 dangfang 时只拦 play_limit.hands 名单内牌，财神不在名单即放行（mah_frame/base/algorithm.cpp:380-388，SVE-ST-C10-P01-12）；吃后兜底 BoxChowStep::CanPlayAfterChow 同样以 IsSubMah(forbids, m) 比对剩余手牌（common_game/com_game/common_game_com_action.cpp:207-229），财神不被命中。吃禁手在好友房默认开启（hzmj_server/server_config.cpp:31 SetEnableChowForbid(true)，SVE-ST-C10-P01-04；hzmj_server/game_logic.cpp:132 仅在创房下发含该键时覆盖），机制恒生效。实现与规则同构，原 unverified 可升级。"
   },
   {
    "id": "AT-ST-C10-011",
@@ -228,7 +228,7 @@
     "result": "玩家看到该牌明显变暗但仍能认出是原来的牌"
    },
    "l7": "verification_required",
-   "l7Reason": "需求语义：禁打牌压暗后牌面仍可辨认，核心是压暗着色后的视觉可辨认性。服务端实现：禁打牌值（hands 黑名单）恒打包并单发给禁打所属座位，BaseContext::SendPlayLmts（mah_frame/base/base_context.cpp:594）无配置分支，BaseContext::FillMsgPlayLmts（mah_frame/base/base_context.cpp:900）按 seat 组 hands/dfs（SVE-ST-C10-P02-01/02）。服务端只证明「禁打牌值恒下发」，压暗与压暗后能否辨认属客户端牌面组件着色能力，本次无客户端证据，缺陷/差异无法被服务端证据消解，维持 partial。"
+   "l7Reason": "需求语义：禁打牌压暗，牌面仍可辨认（验收明确「辨认效果需实机确认」），核心是客户端牌面组件压暗着色后的视觉可辨认性。服务端实现：仅产出禁打牌值并按座位单发——BaseData::SetPlayLimit 名单变化置 LimitChange（mah_frame/base/base_data.cpp:1493-1505，SVE-ST-C10-P01-16）→ PlayStep::MakePower LimitChange 时 SendPlayLmts（mah_frame/com_basic/com_play.cpp:158-161，SVE-ST-C10-P01-14）→ BaseContext::SendPlayLmts 以该 seat 为目标单发、无配置分支（mah_frame/base/base_context.cpp:594-617，SVE-ST-C10-P02-01）→ BaseContext::FillMsgPlayLmts 只按 hands/dfs 组包（base_context.cpp:900-924，SVE-ST-C10-P02-02）；名单写入来源见 common_game/com_game/common_game_com_action.cpp:151-155（SVE-ST-C10-P01-06）。服务端证据只确证「名单下发到本家」这一前提，不覆盖压暗着色与压暗后可辨认性，缺乏客户端/实机证据，维持 partial。"
   },
   {
    "id": "AT-ST-C10-014",
@@ -364,7 +364,7 @@
     "result": "玩家无法打出这张刚摸进的牌，点了会提示「该牌被禁打」"
    },
    "l7": "not_applicable",
-   "l7Reason": "本轮未出复核建议，维持基线差异"
+   "l7Reason": "本轮未出复核建议，维持基线差异｜策划裁决（2026-11-14，委托决策）：B 接受现状（补进牌不受禁打名单约束，接受 inactive/not_applicable 口径）"
   }
  ]
 }

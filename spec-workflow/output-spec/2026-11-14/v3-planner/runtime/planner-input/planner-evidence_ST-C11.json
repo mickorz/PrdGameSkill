@@ -142,8 +142,8 @@
     "action": "关闭放大牌面显示",
     "result": "牌桌上的大牌提示消失，只保留正常牌河或副露展示"
    },
-   "l7": "verification_required",
-   "l7Reason": "需求语义：成立后清除被响应牌的浮标和放大显示（ui_requirement 仅“清除浮标和放大显示”）。服务端实现：仅以 TOutMah.stay 字段（mah_frame/base/typedef.h:68，SVE-ST-C11-P01-35）配合 SetLastOutStay(...false)（mah_frame/base/base_data.cpp:625，SVE-ST-C11-P01-34）；吃/碰/明杠/点炮胡四条路径均置 stay=false（chow/pung/kong/hu 各处），但浮标隐藏、放大复位的客户端实现仍不在本仓库，基线缺失点未被服务端证据消解，维持 partial。"
+   "l7": "verified",
+   "l7Reason": "需求语义：响应成立后清除该被响应牌的浮标与放大显示（ui_requirement 仅「清除浮标和放大显示」）。服务端实现：吃 ChowStep::CheckChow（mah_frame/com_basic/com_chow.cpp:105，SVE-ST-C11-P01-29）、碰 PungStep::CheckPung（mah_frame/com_basic/com_pung.cpp:132，SVE-ST-C11-P01-30）、明杠 MKongStep::CheckMKong（mah_frame/com_basic/com_kong.cpp:137，SVE-ST-C11-P01-31）、点炮胡 HuStep::CheckHu（mah_frame/com_basic/com_hu.cpp:316，SVE-ST-C11-P01-32）与 hzmj BoxHuStep::CheckHu（common_game/com_game/common_game_com_action.cpp:561，SVE-ST-C11-P01-33）四条响应路径统一调 SetLastOutStay(...,false)，把该座位最后一手出牌的 TOutMah.stay（mah_frame/base/typedef.h:68，SVE-ST-C11-P01-35）置 false（mah_frame/base/base_data.cpp:630，SVE-ST-C11-P01-34），再由 BaseContext::FillMsgOutMah 逐张下发 stays=stay?1:0（mah_frame/base/base_context.cpp:937，SVE-ST-C11-P01-40），全流程无配置分支；客户端侧浮标锚点即最后打出牌（GamePlayCmd.ts:70 setLastCard，吃/碰/杠/胡 GameChowCmd.ts:35、GamePungCmd.ts:35、GameKongCmd.ts:38、GameResultHuCmd.ts:188 均 setLastCard(null)），放大牌面在同一组命令中 onHidePutCardUi（GameChowCmd.ts:42 等），重连出牌区按 stays 过滤（RecoverOutsCmd.ts:27），与规则同构。"
   },
   {
    "id": "AT-ST-C11-009",
@@ -159,8 +159,8 @@
     "action": "",
     "result": ""
    },
-   "l7": "verification_required",
-   "l7Reason": "本轮未出复核建议，维持基线差异"
+   "l7": "verified",
+   "l7Reason": "需求语义：全部放弃则牌留在牌河，再轮到下家摸牌。服务端实现：全员响应后 ConAction::OnConAction 取最大权重项（mah_frame/base/con_action.cpp:40，SVE-ST-C11-P01-23），过牌项经 DoConAction（con_action.cpp:59，SVE-ST-C11-P01-36）分发 MLXY_CANCEL（mah_frame/com_basic/com_action.cpp:573，SVE-ST-C11-P01-37），DoActionCancel 只 SetNextActionStep(GetStep(con_max_server_step_state_)) 并 DoActionEnd（com_action.cpp:712-720，SVE-ST-C11-P01-38），全程不触碰牌河；牌河仅在 PlayStep::CheckPlay 以 stay=true 加入（mah_frame/com_basic/com_play.cpp:249，SVE-ST-C11-P01-39），故无人响应时该牌 stay 保持 true 留在牌河。下一步取并发服务端步骤中最高权重，即 play_step 注册的 next_take_step（common_game/common_game_init.cpp:200-201，SVE-ST-C11-P01-41；设计口径见 3-design/server/dd_step_hu.md:144），NextTakeStep 以 GetPreSeat 顺延取下一非坏线座位摸牌并无条件 SendTake（com_take.cpp:139-149/166，dd_step_next_take.md:19/22），即轮到下家摸牌，与规则同构。"
   },
   {
    "id": "AT-ST-C11-010",
@@ -262,7 +262,7 @@
     "result": "界面回到无提示状态，等待下一次操作机会"
    },
    "l7": "verification_required",
-   "l7Reason": "需求语义：点【过】只放弃这一次提示，收起本次按钮和预览。服务端实现：过牌结束本次操作机会（SVE-ST-C11-P02-08 DoActionCancel 回到最大 server step）、只清本座位待办（SVE-ST-C11-P02-12 ClearUserConAction）、并由服务端下发过牌通知供客户端收起（SVE-ST-C11-P02-09 common_game_com_action.cpp:40 SendCancelNotice）。服务端侧仅到「结束本次机会并发通知」，按钮与预览的实际渲染收起仍属客户端，基线未证的「预览清除」未被服务端证据覆盖，细节差异维持原判。"
+   "l7Reason": "需求语义：点【过】只放弃这一次提示，收起本次按钮和预览。服务端实现：BoxActionStep::OnMsgCancel 先群发过牌通知（common_game/com_game/common_game_com_action.cpp:40-44，SVE-ST-C11-P02-09），CommonGameContext::SendCancelNotice 下发 MsgNotifyInfo flag=kNIFExCancelPass（common_game/com_game/common_game_context.cpp:100-105），随后 ConAction::ClearUserConAction 只清本座位待办（mah_frame/base/con_action.cpp:70，SVE-ST-C11-P02-12）、DoActionCancel 结束本次操作窗口回 con_max_server_step_state_（com_action.cpp:712，SVE-ST-C11-P02-08），「只放弃本次」已确证；但本轮证据与首轮同一组 SVE 无新增，且该通知在本端客户端被显式忽略（GameNotifyInfoCmd.ts:36-38「点击过通知不触发客户端提示」），按钮与预览的收起仍在平台层完成，缺口未补，维持 partial。"
   },
   {
    "id": "AT-ST-C11-016",
@@ -330,7 +330,7 @@
     "result": "玩家看到的按钮顺序固定，做不了的项不出现"
    },
    "l7": "verification_required",
-   "l7Reason": "需求语义：按钮从左到右为【吃】【碰】【杠】【胡】，蓝色【过】固定最右，只显示本次可做项。服务端实现：只聚合本次实际存在的 power 位与组合并按座位下发（SVE-ST-C11-P02-01 com_action.cpp:813、SVE-ST-C11-P02-04 com_action.cpp:999），GetConActionWeight 仅定义动作优先级不含 UI 顺序（SVE-ST-C11-P02-21 com_action.cpp:826），故「只显示可做项」成立；但顺序、过/过2 并存时最右归属、蓝色皮肤仍属客户端且基线未验证，维持 partial。"
+   "l7Reason": "需求语义：按钮从左到右【吃】【碰】【杠】【胡】，蓝色【过】固定最右，只显示本次可做的项。服务端实现：GetPowerAndCombs 只聚合本座位 con_combs_ 中实际存在的 power 位与组合、无权限不返回（mah_frame/com_basic/com_action.cpp:797-823，SVE-ST-C11-P02-01），SetActionPower 逐座位写入（com_action.cpp:952-957）后 SendPowerToClient 按座位下发可做项（com_action.cpp:983-1005，SVE-ST-C11-P02-04），「只显示可做项」成立；GetConActionWeight 只定义吃/碰/杠/胡仲裁等级（com_action.cpp:826-832，SVE-ST-C11-P02-21），MsgPower 无按钮顺序、配色或【过】置右字段，这些属客户端排版渲染，服务端证据不覆盖，维持 partial。"
   },
   {
    "id": "AT-ST-C11-020",
@@ -466,7 +466,7 @@
     "result": "玩家只能等待裁决结果，无法继续操作"
    },
    "l7": "verification_required",
-   "l7Reason": "需求语义：较低优先级先提交时本端收起按钮并“等待”。服务端实现确证请求只登记不执行——OnMsgChowC 校验通过后仅调 OnConAction 登记 kStepLevelChow（mah_frame/com_basic/com_action.cpp:153-210，SVE-ST-C11-P03-17），ConAction::OnConAction 写 had_resp_ 并在最高等级未响应时 return false 挂起（mah_frame/base/con_action.cpp:19-61，SVE-ST-C11-P03-16），DealTimeOutAction 对已响应座位不代打（com_action.cpp:62-80，SVE-ST-C11-P03-18）。但基线 partial 的缺口在客户端：“等待”无专门界面状态、仅表现为操作区关闭，服务端只证明挂起机制存在，无法补上该界面语义，故维持 partial。"
+   "l7Reason": "需求语义：较低优先级先提交时，本端收起自己的按钮并等待。服务端实现：OnMsgChowC 校验通过后只调 OnConAction 登记 kStepLevelChow（mah_frame/com_basic/com_action.cpp:153-210，SVE-ST-C11-P03-17），ConAction::OnConAction 写 had_resp_ 并重算最大权重、最高等级未响应即 return false 挂起（mah_frame/base/con_action.cpp:19-61，SVE-ST-C11-P03-16），GetConActionWeight 仅在非一炮多响时给胡叠加座位权重（com_action.cpp:826-832，SVE-ST-C11-P03-27），hzmj 固定 SetDuoXiang(false)（common_game/com_game/common_game_server_config.cpp:11，SVE-ST-C11-P03-26），DealTimeOutAction 对已响应座位直接返回不代打（com_action.cpp:62-80，SVE-ST-C11-P03-18），框架按 GetLevel 通用优先级仲裁（common_game/com_game/common_game_com_action.h:3-11，SVE-ST-C11-P03-19）；「等待/不执行」机制已确证，但收起按钮与等待的界面状态属客户端渲染，本轮无新增客户端证据，维持 partial。"
   },
   {
    "id": "AT-ST-C11-028",
@@ -517,7 +517,7 @@
     "result": "玩家看到多组可吃的顺子"
    },
    "l7": "verification_required",
-   "l7Reason": "需求：点【吃】后在手牌上方展开可选顺子（含相对手牌的上下位置）；服务端仅证候选集合下发路径 BoxChowStep::Judge→TestChow（common_game/com_game/common_game_com_action.cpp:82，SVE-ST-C11-P04-01）、ChowStep::MakePower 写 TPower.combs（mah_frame/com_basic/com_chow.cpp:80，SVE-ST-C11-P04-02）、BaseContext::FillMsgPower 下发 MsgPower.combs（mah_frame/base/base_context.cpp:876，SVE-ST-C11-P04-03），并受 rule_chi_peng/only_pung_no_chow/enable_three_tan_bao/enable_chow_forbid 门控（SVE-ST-C11-P04-04~10），全程未覆盖客户端面板相对手牌的位置，维持 partial。"
+   "l7Reason": "需求语义：点【吃】后在手牌上方展开可选顺子（含相对手牌的上下位置）。服务端实现：BoxChowStep::Judge 调 TestChow 生成候选 chow_combs_（common_game/com_game/common_game_com_action.cpp:82，SVE-ST-C11-P04-01）→ ChowStep::MakePower 把候选整体写入 TPower.combs（mah_frame/com_basic/com_chow.cpp:80，SVE-ST-C11-P04-02）→ BaseContext::FillMsgPower 逐条 TcombToMsgComb 写 MsgPower.combs（mah_frame/base/base_context.cpp:876，SVE-ST-C11-P04-03），并受 only_pung_no_chow（common_game_com_action.cpp:75-80，SVE-ST-C11-P04-04；hzmj_server/game_logic.cpp:112，SVE-ST-C11-P04-05）、rule_chi_peng 次数限制（common_game_algorithm.cpp:79，SVE-ST-C11-P04-07）、三摊承包（common_game_algorithm.cpp:86，SVE-ST-C11-P04-08）与 enable_chow_forbid（common_game_com_action.cpp:86-100，SVE-ST-C11-P04-09）门控；消息仅承载 comb 数据，无面板相对手牌位置字段，位置语义不在服务端可证范围，维持 partial。"
   },
   {
    "id": "AT-ST-C11-031",
@@ -653,7 +653,7 @@
     "result": "玩家看到一组混排候选牌"
    },
    "l7": "verification_required",
-   "l7Reason": "需求语义：暗杠与加杠混排，整体顺序为万、条、筒、东、南、西、北、中、发、白，同花色按点数升序。服务端实现：MKongStep/CKongStep/TKongStep::MakePower 均以 kPowerIdKong 追加 TPower 进同一候选池（SVE-ST-C11-P05-03 com_kong.cpp:116、SVE-ST-C11-P05-04 com_kong.cpp:261、SVE-ST-C11-P05-05 com_kong.cpp:438），混排机制成立；但 ActionStep::AddCombsMap 只 push_back 追加、无任何排序（SVE-ST-C11-P05-06 com_action.cpp:914），BaseContext::FillMsgPower 按 combs 原序下发（SVE-ST-C11-P05-02 base_context.cpp:890-894），源码无花色序列与点数排序分支，顺序实际取决于步骤注册与组合生成顺序。服务端仅证『混排』，未证『万条筒字牌 + 点数升序』，维持 partial。"
+   "l7Reason": "需求语义：暗杠与加杠混排，整体顺序为万、条、筒、东、南、西、北、中、发、白，同花色按点数升序。服务端实现：MKongStep/CKongStep/TKongStep::MakePower 均以 kPowerIdKong 追加 TPower 进同一候选池（mah_frame/com_basic/com_kong.cpp:116/261/438，SVE-ST-C11-P05-03/04/05），「混排」成立；但 ActionStep::AddCombsMap 只 push_back 追加、无任何排序（mah_frame/com_basic/com_action.cpp:914-927，SVE-ST-C11-P05-06），BaseContext::FillMsgPower 按 combs 原序下发（mah_frame/base/base_context.cpp:890-894，SVE-ST-C11-P05-02），源码无花色序列与点数升序分支，顺序实际由步骤注册与组合生成顺序决定，未与规则同构，维持 partial。"
   },
   {
    "id": "AT-ST-C11-039",
@@ -959,7 +959,7 @@
     "result": "玩家看到新的组牌出现在后面，顺序与成立先后一致"
    },
    "l7": "verification_required",
-   "l7Reason": "需求语义：吃/碰/直杠/暗杠的新牌组按成立顺序从左往右追加（含「从左往右」的客户端排布方向）。服务端实现：SVE-ST-C11-P06-16/17/23 证实各类副露统一 push_back 保证成立顺序（mah_frame/base/base_data.cpp:980/854/1546），SVE-ST-C11-P06-24 证实按列表顺序逐组下发（mah_frame/base/base_context.cpp:855），仅确证「成立顺序」这一半；「从左往右」排布方向由客户端/平台副露组件决定，服务端无该字段或排布逻辑。故维持 partial，服务端证据不足以覆盖方向语义。"
+   "l7Reason": "需求语义：吃/碰/直杠/暗杠的新牌组按成立顺序从左往右追加。服务端实现：SetChowCombs（mah_frame/base/base_data.cpp:980，SVE-ST-C11-P06-16）、AddAllCombs（mah_frame/base/base_data.cpp:854，SVE-ST-C11-P06-17）、SetPungCombs（mah_frame/base/base_data.cpp:1546，SVE-ST-C11-P06-23）均 push_back 追加，ChowStep::CheckChow（mah_frame/com_basic/com_chow.cpp:108-109）/PungStep::CheckPung（mah_frame/com_basic/com_pung.cpp:135-136）成立即写入，BaseContext::FillMsgPlayerMah 按 GetAllCombs 列表顺序逐组下发（mah_frame/base/base_context.cpp:855-859，SVE-ST-C11-P06-24），「成立顺序」成立；消息数组无左右方向字段，往左/往右排布由客户端副露组件决定，维持 partial。"
   },
   {
    "id": "AT-ST-C11-057",
@@ -1095,7 +1095,7 @@
     "result": "玩家看到胡牌张在手牌最右侧"
    },
    "l7": "verification_required",
-   "l7Reason": "需求语义：胡牌张单独摆在胡牌者手牌右侧（可与手牌分隔）。服务端实现：SetHuDanFang 将胡牌进张单独存为 dan_fang 并在结算消息中以独立字段下发（SVE-ST-C11-P07-17 common_game/com_game/common_game_com_action.cpp:573、SVE-ST-C11-P07-18 common_game/common_game_context.cpp:161），数据层面确实可分离；但埋点 GetResultJson 又把胡张 push_back 到手牌末尾（SVE-ST-C11-P07-19 common_game/com_game/common_game_com_result.cpp:462），基线判定所指「拼接到手牌末尾、未见单列间隔」属客户端布局实现差异，服务端证据不足以证明与规则同构，维持 partial。"
+   "l7Reason": "需求语义：胡牌张单独摆在胡牌者手牌右侧（与手牌分隔）。服务端实现：BoxHuStep::CheckHu 用 SetHuDanFang/SetHuDfFrom 单独记录胡牌进张与来源（common_game/com_game/common_game_com_action.cpp:573，SVE-ST-C11-P07-17），FillMsgResultHu 以独立 dan_fang 字段下发（common_game/common_game_context.cpp:161，SVE-ST-C11-P07-18），数据层确实可分离；但埋点 BoxResultStep::GetResultJson 仍把胡张 push_back 到手牌末尾凑 14 张（common_game/com_game/common_game_com_result.cpp:462，SVE-ST-C11-P07-19），与手牌的分隔/右侧单列摆放属客户端布局，服务端证据不足以证明与规则同构，维持 partial。"
   },
   {
    "id": "AT-ST-C11-065",
@@ -1129,7 +1129,7 @@
     "result": "玩家看到尾端那张胡牌带来源箭头"
    },
    "l7": "verification_required",
-   "l7Reason": "需求语义：胡牌张在胡牌者手牌尾端，带浅绿描边和来源箭头。服务端实现：SetHuDanFang/SetHuDfFrom 记录胡张与来源座位（SVE-ST-C11-P07-17 common_game/com_game/common_game_com_action.cpp:573），df_from 下发来源供绘制箭头（SVE-ST-C11-P07-26 common_game/common_game_context.cpp:160），胡张补在手牌末尾（SVE-ST-C11-P07-19 common_game/com_game/common_game_com_result.cpp:462），尾端与来源箭头可证；浅绿描边颜色无服务端下发字段，仍缺客户端牌面资源证据，维持 partial。"
+   "l7Reason": "需求语义：胡牌张位于胡牌者手牌尾端，带浅绿描边与来源箭头。服务端实现：CheckHu 无条件 SetHuDanFang/SetHuDfFrom（common_game/com_game/common_game_com_action.cpp:573-574，SVE-ST-C11-P07-17）；FillMsgResultHu 恒下发 df_from 与 dan_fang（common_game/common_game_context.cpp:160-161，SVE-ST-C11-P07-26/18），胡张单独下发、供客户端补在手牌尾端并画来源箭头；结算侧胡张补入手牌后仍走 SortMahs 排序（common_game/com_game/common_game_com_result.cpp:461-464，SVE-ST-C11-P07-19）。故“来源箭头数据链路”确证，但“尾端位置”依赖客户端用 dan_fang 追加的渲染口径、浅绿描边属牌面组件资源，二者无服务端证据，第一轮缺口未闭合。"
   },
   {
    "id": "AT-ST-C11-067",
@@ -1163,7 +1163,7 @@
     "result": "玩家看到正分与负分以不同颜色飘出"
    },
    "l7": "verification_required",
-   "l7Reason": "需求语义：随后按座位飘分，正分黄色、负分灰色。服务端实现：打出财神时按座位 SetPiaoCount+1 并 BroadcastPiao（SVE-ST-C11-P07-29 common_game/com_game/common_game_com_play.cpp:63），MsgPiao 带 seat 与 piao_count（SVE-ST-C11-P07-30 common_game/common_game_context.cpp:93），重连逐座位补发 piao_counts（SVE-ST-C11-P07-31 common_game/common_game_context.cpp:562），按座位飘分数值成立；正黄/负灰由客户端 fnt_win/fnt_lose 字体资源决定，基线所指「仅按正负切换字体验证不了颜色」未被服务端证据覆盖，维持 partial。"
+   "l7Reason": "需求语义：随后按座位飘分，正分黄色、负分灰色。服务端实现：打出财神即 SetPiaoCount(seat)+1 并 BroadcastPiao（common_game/com_game/common_game_com_play.cpp:62-66，SVE-ST-C11-P07-29），MsgPiao 带 seat 与 piao_count 按座位下发（common_game/com_game/common_game_context.cpp:93-98，SVE-ST-C11-P07-30），重连按座位补发 piao_counts 数组（common_game/common_game_context.cpp:562，SVE-ST-C11-P07-31），“按座位飘分”确证。但正黄/负灰由客户端 fnt_win/fnt_lose 字体资源决定，服务端只下发数值无颜色信息，第一轮缺口（颜色）未闭合。"
   }
  ]
 }

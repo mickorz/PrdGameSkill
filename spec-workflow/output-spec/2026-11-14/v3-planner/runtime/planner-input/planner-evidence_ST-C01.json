@@ -58,7 +58,7 @@
     "result": "玩家看到上一局胡牌的人头像上出现庄家标记"
    },
    "l7": "verification_required",
-   "l7Reason": "本轮未出复核建议，维持基线差异"
+   "l7Reason": "需求：有人胡牌时，下一小局由胡牌者坐庄。服务端：rotate_banker_type 创房恒下发 0（client: RuleHzmj.ts，UI 未暴露；InitConfigByBox 默认 0，SVE-ST-C01-P01-09）→ BoxZhuangStep::JudgeHuanZhuang 在 ==0 分支直接 SetZhuang(winner_seat)（common_game/com_game/common_game_com_ju.cpp:166-174，SVE-ST-C01-P01-07），winner_seat 取唯一胡牌座位（hzmj 关闭一炮多响，common_game_com_result.cpp:84 注释与 Reset 的 SetDuoXiang(false)），原庄自胡即 AddLianZhuang 连庄；创房入口与每局判定入口由本轮 SVE-ST-C01-PR01-01（common_game/common_game_logic.cpp:68 InitConfigByBox+LoadBoxJsonConfig）/SVE-ST-C01-PR01-02（mah_frame/com_basic/com_ju.cpp:46 ZhuangStep::Execute→JudgeZhuang）直证。首轮缺口（上游调用链未证实）已补齐，与规则同构。"
   },
   {
    "id": "AT-ST-C01-004",
@@ -109,7 +109,7 @@
     "result": "玩家看到庄家标记显示当前牢庄档位图标"
    },
    "l7": "verification_required",
-   "l7Reason": "本轮未出复核建议，维持基线差异"
+   "l7Reason": "需求：首庄、新庄、连庄都是三牢。服务端：banker_level_type 创房下发 2（client: RuleHzmj.ts，可选 0 平庄起/1 笃二），BoxZhuangStep::GetConfiguredBankerLevel = type+1 钳制 1..3 → 首庄档位 3（common_game/com_game/common_game_com_ju.cpp:191-196，SVE-ST-C01-P01-20；JudgeDingZhuang 写入 SVE-ST-C01-P01-21），换庄由 UpdateBankerLevel 按同配置重置起始档位 3（common_game/com_game/common_game_com_result.cpp:377-381，SVE-ST-C01-P01-22）；连庄分支仅 level<3 时 ++level（common_game_com_result.cpp:369-370，SVE-ST-C01-PR01-03），且 hzmj 层无 banker_continue_type 解析入口、Reset 恒 0（common_game/common_game_server_config.cpp:12，SVE-ST-C01-P01-30）。故默认配置下首庄/新庄/连庄三者均为三牢，与规则同构（限定好友房创房默认配置口径）。"
   },
   {
    "id": "AT-ST-C01-007",
@@ -126,7 +126,7 @@
     "result": "玩家看到按庄闲关系算出的分数，界面不单独显示固定8倍"
    },
    "l7": "verification_required",
-   "l7Reason": "本轮未出复核建议，维持基线差异"
+   "l7Reason": "需求：庄闲倍数固定 8 倍。服务端：庄闲倍数 = 1<<banker_level（common_game/common_game_algorithm.cpp:95-97，SVE-ST-C01-P01-24；结算 common_game_com_result.cpp:93，SVE-ST-C01-P01-25；胡点统一乘入 common_game_com_action.cpp:334-335，SVE-ST-C01-P01-26），实现为档位左移而非字面写死 8；但创房默认 banker_level_type=2 → 起手档位 3（SVE-ST-C01-P01-20/22），连庄 banker_continue_type 恒 0 封顶 3（SVE-ST-C01-PR01-03/30），档位恒为 3，庄闲倍数恒 1<<3 = 8 倍，行为结果与规则同构（限定好友房创房默认配置口径）。"
   },
   {
    "id": "AT-ST-C01-008",

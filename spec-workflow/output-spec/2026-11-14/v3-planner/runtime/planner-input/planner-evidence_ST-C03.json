@@ -23,8 +23,8 @@
     "action": "从牌墙靠前的一端连续取走整副要发的牌，并按座位轮流把牌发到四家",
     "result": "玩家先看到掷骰动画，再看到四个座位依次收到牌，牌墙靠前的一段被取走"
    },
-   "l7": "verification_required",
-   "l7Reason": "需求语义：从牌墙头部、庄家起、按逆时针发牌。服务端实现：mah_frame/com_basic/com_ju.cpp:216 开牌位置 seat=(GetZhuang()+(chip_num-1)%4)%4，以庄位为基准叠加骰子和偏移；mah_frame/base/base_data.cpp:727 TakeAsc 恒从 walls_.front() 取牌（头部成立）；mah_frame/base/base_data.cpp:755 GetNextAsc 递减且 com_ju.cpp:216 注释「索引为逆时针计数」（逆时针成立）。头部取牌与逆时针可被服务端确证，但起点由骰子偏移决定而非严格「庄家起」，属细节差异。"
+   "l7": "verified",
+   "l7Reason": "需求语义：从牌墙头部、庄家起、按逆时针发牌。服务端实现：ChipStep::MixMah 以庄位+骰子算开牌位置 seat=(GetZhuang()+(chip_num-1)%MAX_PLAYER_COUNT)%MAX_PLAYER_COUNT 并由该位置推 startidx/ascidx，注释明示「索引为逆时针计数」（mah_frame/com_basic/com_ju.cpp:217-226，SVE-ST-C03-P01-01）；TakeAsc 恒调 PopWall（mah_frame/base/base_data.cpp:727-731，SVE-ST-C03-P01-02），PopWall 取 walls_.front() 并 erase front（base_data.cpp:265-272，SVE-ST-C03-PR01-01）即牌墙头部；GetNextAsc 每张 asc-1、归零回绕 WallAll-1（base_data.cpp:755-762，SVE-ST-C03-P01-03）；TakeFirstStep::TakeFirst 逐座位连续 TakeAsc 补至 GetFirstCount()-1（com_ju.cpp:279-286，SVE-ST-C03-P01-04）。牌墙头部/庄位基准起点/逆时针递减三段均有直证且无配置分支，需求语义与服务端判定同构。"
   },
   {
    "id": "AT-ST-C03-002",
@@ -210,8 +210,8 @@
     "action": "",
     "result": ""
    },
-   "l7": "verification_required",
-   "l7Reason": "本轮未出复核建议，维持基线差异"
+   "l7": "verified",
+   "l7Reason": "需求语义：庄家持14张时，七客按其余13张（不含额外那张）判断。服务端实现：摸牌 TakeStep::CheckTake 把进张写入 danfang 并 SetJustTake、未入 hands（mah_frame/com_basic/com_take.cpp:57-83），HuStep::Judge 自摸分支 df=GetJustTake() 置 NextHuMah 为单放（mah_frame/com_basic/com_hu.cpp:82，SVE-ST-C03-PR01-06）；MakeFanFuncParams hands_=GetHands(seat) 为进张前手牌、hu_df_=GetNextHuMah()（mah_frame/base/algorithm.cpp:3341-3346，SVE-ST-C03-PR01-04），common_game/common_game_algorithm.cpp:266-267 注释直陈「parms.hands_ 为进张前手牌（自摸时进张仍在 danfang 未入 hands）」（SVE-ST-C03-PR01-05）；七对 IsFanTypeQiDui 要求 sep_type_==kSepType2N 且手牌有财神（common_game/common_game_fan_type.cpp:332-340，SVE-ST-C03-P01-25），CountFan 逐拆解令 params->combs_=shs[i].combs（common_game_algorithm.cpp:454）对 13 张手牌拆 2N，CountQuadPairGroups 统计四张组（fan_type.cpp:63，SVE-ST-C03-P01-26），七客=七对×财神系列（fan_type.h:35 SVE-ST-C03-P01-27、common_game_algorithm.cpp:187-189 SVE-ST-C03-P01-29）。判定基数确为不含额外那张的其余13张，栈顶无配置分支，需求语义与服务端判定同构。"
   }
  ]
 }

@@ -23,8 +23,8 @@
     "action": "读取每家本局分数并显示在结算行",
     "result": "玩家看到自己和其余三家各自加减了多少分"
    },
-   "l7": "verification_required",
-   "l7Reason": "本轮未出复核建议，维持基线差异"
+   "l7": "verified",
+   "l7Reason": "需求语义：原应赔分 = 底分 × 番型倍数 × 这一笔的庄闲倍数。服务端实现：BoxResultStep::CalcFinalWinLost 取 base_score（common_game/common_game_com_result.cpp:89，SVE-ST-C13-P01-01）、fan_mult（同处 GetHuFanPoint，SVE-ST-C13-P01-04）、banker_mult = 1<<banker_level（common_game_com_result.cpp:93，SVE-ST-C13-P01-02），单笔 pay = base_score × fan_mult × banker_mult × win_double_mult（common_game_com_result.cpp:111，SVE-ST-C13-P01-03）；win_double_mult 为加倍因子，好友房 SetEnableDouble(false)（hzmj_server/server_config.cpp:48）且未选加倍时 GetDoubleMult 恒返回 1（common_game/common_game_server_data.h:152-154），故好友房口径为三因子相乘，与规则同构。"
   },
   {
    "id": "AT-ST-C13-002",
@@ -41,7 +41,7 @@
     "result": "玩家在房间信息处看到底分数值"
    },
    "l7": "verification_required",
-   "l7Reason": "本轮未出复核建议，维持基线差异"
+   "l7Reason": "需求语义：底分为 1，作为每笔赔分的基础值。服务端实现：BaseConfig::Reset 置 base_score_ = 1（mah_frame/base/base_config.cpp:36，SVE-ST-C13-P01-05），好友房 ServerConfig::InitConfigByBox 不覆写底分（hzmj_server/server_config.cpp:9-10，SVE-ST-C13-P01-06），仅创房 JSON base_score > 0 时覆写（hzmj_server/game_logic.cpp:24-27，SVE-ST-C13-P01-07）；结算按 GetBaseScore 读取并参与乘算（common_game_com_result.cpp:89/111，SVE-ST-C13-P01-01/03）。创房默认下发 base_score = 1（input-ui/xuanwulobby/assets/scripts/common/config/boxRoomRuleConfig/RuleHzmj.ts:19），好友房默认口径与“底分为 1”同构（2/5 为房间可选覆盖项，非默认值）。"
   },
   {
    "id": "AT-ST-C13-003",
@@ -58,7 +58,7 @@
     "result": "玩家看出哪位是庄、这局是几庄，从而知道庄闲赔付更重"
    },
    "l7": "verification_required",
-   "l7Reason": "本轮未出复核建议，维持基线差异"
+   "l7Reason": "需求语义：赢家与这一笔赔付者有一方是庄家则庄闲倍数为 8，两边都是闲家为 1。服务端实现：起算牢庄 = banker_level_type + 1（common_game/com_game/common_game_com_ju.cpp:191-196，SVE-ST-C13-P01-08），banker_mult = 1<<banker_level（common_game_com_result.cpp:93，SVE-ST-C13-P01-02），换庄按配置重置、连庄封顶 3 牢（common_game_com_result.cpp:366-383）；好友房创房默认 banker_level_type = 2（RuleHzmj.ts:29）→ 起手 3 牢 → 8 倍，闲家对闲家的付款笔不乘 banker_mult（common_game_com_result.cpp:143-144，SVE-ST-C13-P01-28）即为 1 倍，与规则同构。"
   },
   {
    "id": "AT-ST-C13-004",
@@ -109,7 +109,7 @@
     "result": "玩家看到规则提示为无封顶，番数与输赢不设上限"
    },
    "l7": "verification_required",
-   "l7Reason": "本轮未出复核建议，维持基线差异"
+   "l7Reason": "需求语义：倍数与输赢不设上限（无封顶）。服务端实现：好友房 InitConfigByBox 置 score_limit = 0（hzmj_server/server_config.cpp:43，SVE-ST-C13-P01-22），CalcFinalWinLost 仅在 score_limit > 0 时执行单局输分封顶截断（common_game/common_game_com_result.cpp:204-213，SVE-ST-C13-P01-19），倍数封顶 banker_mult_limit_ 基线 0（common_game/common_game_server_config.cpp:19）、max_mult_ = -1（mah_frame/base/base_config.cpp:37，SVE-ST-C13-P01-21）；封顶为金币场通用能力，好友房创房默认 score_limit = 0「无封顶」（RuleHzmj.ts:33/449），与规则同构。"
   },
   {
    "id": "AT-ST-C13-007",
@@ -142,8 +142,8 @@
     "action": "在庄家行标出庄家档位并显示三家赔付金额",
     "result": "玩家看到三家输家都扣分、庄家一次收三家之和"
    },
-   "l7": "verification_required",
-   "l7Reason": "本轮未出复核建议，维持基线差异"
+   "l7": "verified",
+   "l7Reason": "需求语义：庄家自摸，三家三笔都乘 8。服务端实现：is_banker_win = (win_seat == zhuang)（common_game/common_game_com_result.cpp:97，SVE-ST-C13-P01-26），自摸分支遍历所有非胡座位逐笔 pay = base_score × fan_mult × banker_mult × win_double_mult（common_game_com_result.cpp:135-140，SVE-ST-C13-P01-27），banker_mult = 1<<banker_level（common_game_com_result.cpp:93，创房默认笃三老庄 3 牢 = 8），好友房加倍关闭故 win_double_mult = 1（hzmj_server/server_config.cpp:48、common_game_server_data.h:152-154），三笔同乘 8，与规则同构。"
   },
   {
    "id": "AT-ST-C13-009",
@@ -159,8 +159,8 @@
     "action": "分别显示庄家与两名闲家各自要付的分数",
     "result": "玩家看到庄家扣得最多，另两名闲家只扣很少"
    },
-   "l7": "verification_required",
-   "l7Reason": "本轮未出复核建议，维持基线差异"
+   "l7": "verified",
+   "l7Reason": "需求语义：闲家自摸，庄家那一笔乘 8，另两名闲家各乘 1。服务端实现：闲家自摸分支按付款方是否为庄家分叉，seat == zhuang 付 base_score × fan_mult × banker_mult × win_double_mult，其余闲家付 base_score × fan_mult × win_double_mult（common_game/common_game_com_result.cpp:141-145，SVE-ST-C13-P01-28）；banker_mult = 1<<banker_level（common_game_com_result.cpp:93，创房默认 3 牢 = 8），好友房加倍关闭 win_double_mult = 1（hzmj_server/server_config.cpp:48），即庄家那笔 ×8、其余闲家 ×1，与规则同构。"
   },
   {
    "id": "AT-ST-C13-010",
@@ -194,7 +194,7 @@
     "result": "玩家看到只有点炮的人扣分、胡牌的人加同样多分，另两家不变"
    },
    "l7": "verification_required",
-   "l7Reason": "需求语义：点炮胡、抢杠胡无承包时只算赢家与赔付者一笔、该笔按庄闲 8 倍、另两家 0。服务端实现：点炮分支确为单一付款方 pay = base×fan×banker_mult×win_double_mult（common_game_com_result.cpp:107，SVE-ST-C13-P01-32，与规则同构）；但抢杠胡同为分支即使 IsRobKongSettleAsDiscard 默认 false（common_game_com_result.h:69，SVE-ST-C13-P01-34），仍按三家钱折算 pay = base×fan×(banker_mult×opp_count 或 banker_mult+opp_count-1)（common_game_com_result.cpp:113，SVE-ST-C13-P01-33），4 人局庄家胡达 24 倍，与“这一笔按 8 倍”不同构；且整体受 enable_banker_discard_hu 与 banker_level>=3 门控（common_game_com_action.cpp:353，SVE-ST-C13-P01-42）。仅可确认部分实现，维持原判。"
+   "l7Reason": "需求语义：点炮胡、抢杠胡无承包时只算赢家与赔付者一笔，该笔按庄闲 8 倍，另两家 0 分。服务端实现：点炮分支为单一付款方 pay = base_score × fan_mult × banker_mult × win_double_mult（common_game/common_game_com_result.cpp:107-112，SVE-ST-C13-P01-32），与规则同构；但抢杠分支默认 IsRobKongSettleAsDiscard = false（common_game/common_game_com_result.h:69，SVE-ST-C13-P01-34），按三家钱总额计付（庄家胡 pay = base×fan×banker_mult×opp_count，4 人局 24 倍；闲家胡 pay = base×fan×(banker_mult+opp_count-1)，SVE-ST-C13-P01-33），并非单笔 8 倍，赔付口径细节差异维持 partial。"
   },
   {
    "id": "AT-ST-C13-012",
@@ -245,7 +245,7 @@
     "result": "玩家看到四家本局都是0分，本场累计分不变"
    },
    "l7": "verification_required",
-   "l7Reason": "本轮未出复核建议，维持基线差异"
+   "l7Reason": "需求语义：黄庄（流局）时四家本局得分都是 0，本场累计分不变。服务端实现：OnResult 在 end_type == kEtDrawn 时只调 SyncWinLostItems（common_game/common_game_com_result.cpp:40-43，SVE-ST-C13-P02-04），SyncWinLostItems 逐座取 GetWinLostBySeat 下发（common_game_com_result.cpp:229-249，SVE-ST-C13-P02-05），未写入座位返回 0（mah_frame/base/base_data.cpp:882，SVE-ST-C13-P02-06）；局末跟庄状态兜底重置（common_game_com_result.cpp:28-31），好友房创房默认 follow_banker = 0（hzmj_server/server_config.cpp:35、RuleHzmj.ts:48，好友房未开放跟庄配置），无跟庄赔付写入，四家 WinLost 均为 0，与规则同构。"
   },
   {
    "id": "AT-ST-C13-015",

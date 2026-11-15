@@ -92,7 +92,7 @@
     "result": "玩家看到四家手牌全部摊开，桌面中央出现「对局结束」"
    },
    "l7": "verification_required",
-   "l7Reason": "需求语义「原牌桌亮出四家手牌、桌面中央显示对局结束」 vs 服务端实现：FillMsgPlayerHands 对 0~player_count-1 无条件下发每座 hands/combs（SVE-ST-C15-P01-16, common_game/common_game_context.cpp:405），胡家另取 GetSettleHands（SVE-ST-C15-P01-17），SendEndGame 的 flag=end_type 无条件下发（SVE-ST-C15-P01-04），亮牌侧已确证；但「对局结束」为图片资源（页 1 hu 图标），仓库无图源文件、文案无法逐字核验，维持 partial。"
+   "l7Reason": "需求语义：在原牌桌亮出四家手牌，桌面中央显示「对局结束」。服务端实现：FillMsgPlayerHands 对 0..player_count-1 无条件下发每座 hands/combs/dan_fang（common_game/common_game_context.cpp:405-420，SVE-ST-C15-P01-16），胡家手牌另取 GetSettleHands（common_game_context.cpp:789，SVE-ST-C15-P01-17），SendEndGame 以 end_type 作结束信号（mah_frame/base/base_context.cpp:188，SVE-ST-C15-P01-04）；亮牌与结束信号链路已确证，但「对局结束」为客户端图标资源，仓库内无图源、无服务端可核证据，细节差异维持 partial。"
   },
   {
    "id": "AT-ST-C15-006",
@@ -109,7 +109,7 @@
     "result": "玩家看到「黄庄」提示和四家手牌，桌面牌面与余牌数仍在"
    },
    "l7": "verification_required",
-   "l7Reason": "需求语义「黄庄亮四家手牌、中央显示黄庄、保留牌河财神与余牌数 20」 vs 服务端实现：TakeStep::IsDrawn 判定 CountWalls()<=GetDrawnCnt（SVE-ST-C15-P01-18, mah_frame/com_basic/com_take.cpp:118），InitConfigByBox 固定 SetDrawnCnt(20) 且 2/3/4 人一致（SVE-ST-C15-P01-19, hzmj_server/server_config.cpp:33），SetEndType(kEtDrawn)→OnEndResult 转结算（SVE-ST-C15-P01-20），FillMsgRemainingWallCards 逐张下发剩余牌墙（SVE-ST-C15-P01-21, common_game/com_game_context.cpp:423）；余牌阈值与亮牌侧确证，但中央「黄庄」提示图内容无法逐字验证，维持 partial。"
+   "l7Reason": "需求语义：黄庄亮四家手牌、中央显示「黄庄」，保留终局牌河、财神与余牌数 20。服务端实现：TakeStep::IsDrawn 以 CountWalls()<=GetDrawnCnt() 判定（mah_frame/com_basic/com_take.cpp:118，SVE-ST-C15-P01-18），InitConfigByBox 固定 SetDrawnCnt(20) 且 2/3/4 人同值（hzmj_server/server_config.cpp:33，SVE-ST-C15-P01-19），NextTakeStep 置 kEtDrawn 并走结算（com_take.cpp:151，SVE-ST-C15-P01-20），FillMsgRemainingWallCards 逐张下发余牌（common_game_context.cpp:423，SVE-ST-C15-P01-21）；阈值 20 与余牌下发与规则同构，但「黄庄」提示图文及牌河/财神保留展示属客户端，无服务端证据，维持 partial。"
   },
   {
    "id": "AT-ST-C15-007",
@@ -126,7 +126,7 @@
     "result": "玩家看到胡牌那一家位置上出现番型演出，播完自动消失"
    },
    "l7": "verification_required",
-   "l7Reason": "需求语义「对局结束仍在时，胡牌者方位播放番型字效」 vs 服务端实现：CountFan 对各座位拆解取最高番产出 fan 列表（SVE-ST-C15-P01-23, mah_frame/base/algorithm.cpp:1811），FillMsgFanDetails/FillMsgResultHu 按 hu_seat 无条件下发 fan_ids（SVE-ST-C15-P01-22, common_game/com_game_context.cpp:389；SVE-ST-C15-P01-10），座位绑定确证；但「结束字样仅保持 1 秒」与字效时长属客户端演出时序，服务端仅固定消息顺序，重叠关系未验证，维持 partial。"
+   "l7Reason": "需求语义：「对局结束」仍在时，胡牌者方位播放番型字效。服务端实现：CheckHu 经 CountFan 取最高番拆解写 HuFancnts（mah_frame/base/algorithm.cpp:1811，SVE-ST-C15-P01-23），FillMsgResultHu 按 hu_seat 无条件 add_fan_ids 并下发番明细（common_game/common_game_context.cpp:165-167、:389-402，SVE-ST-C15-P01-22/10）；番型数据链路已确证，但「对局结束仍在时」的时序重叠与字效时长（结束字样仅 1 秒）属客户端时序表现，无服务端证据，维持 partial。"
   },
   {
    "id": "AT-ST-C15-008",
@@ -142,8 +142,8 @@
     "action": "客户端在放铳那一家方位播放「点炮」表现",
     "result": "玩家看到放铳者位置上出现「点炮」"
    },
-   "l7": "verification_required",
-   "l7Reason": "需求语义「点炮胡与抢杠胡在放铳方位显示点炮，抢杠放铳者为加杠者」 vs 服务端实现：BoxTKongStep 记录 SetLastKongSeat(加杠者)（SVE-ST-C15-P01-24, common_game/com_game/common_game_com_kong.cpp:271），CheckHu 点炮 from_seat=GetJustPlaySeat、抢杠 from_seat=GetJustTKongSeat（SVE-ST-C15-P01-06），FillMsgResultHu set_df_from 下发放铳座位（SVE-ST-C15-P01-10），CalcFinalWinLost 抢杠付款取 GetLastKongSeat（SVE-ST-C15-P01-25, common_game/com_game/common_game_com_result.cpp:113）；映射确证，但点炮/抢杠可达性受 enable_banker_discard_hu 与三牢门槛约束、「点炮」字效为客户端资源，维持 partial。"
+   "l7": "verified",
+   "l7Reason": "需求语义：点炮胡与抢杠胡都在放铳方位显示「点炮」，抢杠胡的放铳者为加杠者。服务端实现：CheckHu 点炮 hu_info.from_seat=GetJustPlaySeat（common_game/common_game_com_action.cpp:559），抢杠 hu_info.from_seat=GetJustTKongSeat 并 SetLastKongSeat（common_game_com_action.cpp:568-569，SVE-ST-C15-P01-06/24），df_from 经 FillMsgResultHu 下发（common_game_context.cpp:160，SVE-ST-C15-P01-10），结算侧抢杠付款方同取 GetLastKongSeat（common_game_com_result.cpp:113-115，SVE-ST-C15-P01-25），且加杠记录点 BoxTKongStep::Execute 写 tkong_seat_（common_game_com_kong.cpp:271）；放铳座位口径与规则同构，第一轮缺口（抢杠付款方是否即加杠者）已闭合。"
   },
   {
    "id": "AT-ST-C15-009",
@@ -177,7 +177,7 @@
     "result": "玩家看到非 0 分的座位飘出分数，0 分座位没有飘分"
    },
    "l7": "verification_required",
-   "l7Reason": "需求语义「仅本局得分非 0 座位飘分，正分金黄、负分浅蓝灰带减号」 vs 服务端实现：CalcFinalWinLost 以负值记付款方、正值记胡家（SVE-ST-C15-P01-30, common_game/com_game/common_game_com_result.cpp:82），SyncWinLostItems 逐座写 score（SVE-ST-C15-P01-29, result.cpp:229），FillAllWinLosts 对全部座位下发 score（0 也下发，SVE-ST-C15-P01-28, common_game/com_game_context.cpp:285），座位与非 0/正负号口径确证；但正负字图 fnt_win/fnt_lose 实际颜色不在仓库内，视觉样式无法验证，维持 partial。"
+   "l7Reason": "需求语义：仅本局得分非 0 的座位内侧飘分，正分金黄、负分浅蓝灰带减号。服务端实现：CalcFinalWinLost 付款方记负值、胡家记 total_win（common_game/com_game/common_game_com_result.cpp:112/132/:224，SVE-ST-C15-P01-30），SyncWinLostItems 逐座写带符号 score（common_game_com_result.cpp:234，SVE-ST-C15-P01-29），FillAllWinLosts 对全部座位下发 score（未参与座为 0）（common_game/common_game_context.cpp:290-295，SVE-ST-C15-P01-28）；非 0 过滤与正负配色由客户端 fnt_win/fnt_lose 字图决定，无服务端证据，维持 partial。"
   },
   {
    "id": "AT-ST-C15-011",
@@ -194,7 +194,7 @@
     "result": "玩家先看到终局牌桌停留片刻，然后出现小结算"
    },
    "l7": "verification_required",
-   "l7Reason": "需求语义「飘分淡出后短暂保留终局牌桌，再打开小结算」 vs 服务端实现：OnResult 内先 SendResultHu 群发 1286（SVE-ST-C15-P01-31, common_game/com_game/common_game_context.cpp:117）后 SendEndGame 群发 770（SVE-ST-C15-P01-02/04），服务端不做延时或等待、顺序固定；但客户端小结算以结算消息起的固定延迟打开、不以飘分淡出完成为条件，停留时长存在偏离，维持 partial。"
+   "l7Reason": "需求语义：飘分淡出后短暂保留终局牌桌，再打开小结算。服务端实现：BoxResultStep::OnResult 内 :50 SendResultHu 群发 1286、:78 SendEndGame 群发 770（common_game/com_game/common_game_com_result.cpp:50/78，SVE-ST-C15-P01-31/02/04），两消息间无 sleep/定时/等待，服务端时序固定；牌桌停留与打开小结算由客户端按固定延迟消费，是否以飘分淡出完成为条件无服务端证据（基线亦指出固定延迟与淡出无耦合），维持 partial。"
   },
   {
    "id": "AT-ST-C15-012",
@@ -211,7 +211,7 @@
     "result": "玩家看到自己在第一行并被高亮，其下依次是下家、对家、上家"
    },
    "l7": "verification_required",
-   "l7Reason": "需求：面板覆盖终局牌桌，行序为本家→下家→对家→上家，本家行置顶并高亮。服务端：SVE-ST-C15-P02-01 FillAllWinLosts 恒按座位 0..n-1 升序下发全桌 win_losts（common_game_context.cpp:290），SVE-ST-C15-P02-02 按 seat 下发全桌手牌（common_game_context.cpp:405），仅确证全桌数据齐备；置顶旋转与高亮在客户端，未获客户端证据。维持 partial。"
+   "l7Reason": "需求语义：小结算盖在终局牌桌上，各端以本家为第一行，本家行置顶并高亮。服务端实现：FillAllWinLosts 恒按座位 0..GetPlayerCount()-1 升序下发全桌 win_losts（common_game/common_game_context.cpp:290，SVE-ST-C15-P02-01），FillMsgPlayerHands 同序下发全桌手牌（common_game_context.cpp:407，SVE-ST-C15-P02-02），服务端不做本家旋转/置顶；行序旋转、置顶高亮与遮罩均属客户端表现（玩家列表数据源不在本工程），无服务端证据，维持 partial。"
   },
   {
    "id": "AT-ST-C15-013",
@@ -228,7 +228,7 @@
     "result": "玩家看到自己这边是获胜、失败或黄庄的主题"
    },
    "l7": "verification_required",
-   "l7Reason": "需求：胡牌局按本端净得分切主题，≥0 为「恭喜获胜」、<0 为「遗憾失败」，黄庄四端为「黄庄」。服务端：SVE-ST-C15-P02-03 WriteFinalScores 以 final_score>0→kWin、<0→kLose、其余（含 0）→kDraw（common_game_com_result.cpp:395-398），0 分边界实现判流局而需求判获胜；SVE-ST-C15-P02-04 仅提供带符号分数。细节差异仍在，维持 partial。"
+   "l7Reason": "需求语义：胡牌局按本端净得分切主题，大于等于 0 为「恭喜获胜」、小于 0 为「遗憾失败」，黄庄四端为「黄庄」。服务端实现：WriteFinalScores 以 final_score>0→kWin、<0→kLose、其余含 0→kDraw 逐座写分（common_game/com_game/common_game_com_result.cpp:395-399，SVE-ST-C15-P02-03/04），0 分边界（点炮局两家旁观座位为 0）标为 kDraw，与需求 >=0 判获胜的字面口径不一致；但主题文案与标记到页面的映射在公共壳，无客户端证据可判定实际呈现，暂维持 partial。"
   },
   {
    "id": "AT-ST-C15-014",
@@ -262,7 +262,7 @@
     "result": "玩家看到碰杠区与手牌的摆法，以及被标为胡的那张牌"
    },
    "l7": "verification_required",
-   "l7Reason": "需求：碰杠区在左、手牌在右，杠第 4 张垒上方、暗杠顶张正面，胡入张标绿色「胡」。服务端：SVE-ST-C15-P02-09 GetResultJson 按 combs 分组并在暗杠 kCMFCKong 追加 1、明杠/补杠追加 0 作第 4 张标记（common_game_com_result.cpp:444-451），SVE-ST-C15-P02-11 下发 dan_fang 胡入张（common_game_context.cpp:161）；角标颜色与摆布属客户端资源，未获证据。维持 partial。"
+   "l7Reason": "需求语义：碰杠区在左、手牌在右，杠第 4 张垒上方、暗杠顶张正面，胡入张在所属组合内标绿色「胡」。服务端实现：GetResultJson 按 combs 逐组下发 mahs/flag，暗杠 kCMFCKong 追加 1、明杠/补杠追加 0 作第 4 张标记（common_game/com_game/common_game_com_result.cpp:444-451，SVE-ST-C15-P02-09），kCMFMKong/kCMFCKong/kCMFTKong 区分三杠（mah_frame/base/macros.h:133，SVE-ST-C15-P02-10），dan_fang 单放胡入张（common_game_context.cpp:161，SVE-ST-C15-P02-11），GetSettleHands 取结算手牌（common_game_context.cpp:789，SVE-ST-C15-P02-12）；分组与第 4 张标记确证，但左右摆布与绿色「胡」角标属客户端资源（ico_hu.png 颜色仓库内不可验），维持 partial。"
   },
   {
    "id": "AT-ST-C15-016",
@@ -279,7 +279,7 @@
     "result": "玩家看到每家的本局得分，正分带加号、0 就是 0、负分带减号"
    },
    "l7": "verification_required",
-   "l7Reason": "需求：右侧为本局净得分，正分带加号、0 显示「0」、负分带减号。服务端：SVE-ST-C15-P02-13 FillAllWinLosts 原样下发带符号 wl.score（common_game_context.cpp:295），可支撑减号；加号与黄/浅蓝灰配色在客户端 win/lose 字图内，未获证据。维持 partial。"
+   "l7Reason": "需求语义：右侧显示本局净得分，正分带加号、0 分显示「0」、负分带减号。服务端实现：SyncWinLostItems 写入带符号 score（common_game/com_game/common_game_com_result.cpp:234，SVE-ST-C15-P02-04），FillAllWinLosts 原样 set_score 不取绝对值（common_game/common_game_context.cpp:295，SVE-ST-C15-P02-13），减号与 0 由数值本身承载；加号及黄色/浅蓝灰配色属客户端 win/lose 字图，仓库内不可读，无服务端证据，维持 partial。"
   },
   {
    "id": "AT-ST-C15-017",
@@ -296,7 +296,7 @@
     "result": "玩家看到赢家牌型上方写着本次命中的番型名称"
    },
    "l7": "verification_required",
-   "l7Reason": "需求：赢家牌组上方写实际命中番型名称，多组并列，双财飘/双豪华七对/二连杠直接写全名。服务端：SVE-ST-C15-P02-14 逐条下发全部 fan_id（common_game_context.cpp:167），SVE-ST-C15-P02-15 GetFanName 取 ft_defs_.name（algorithm.cpp:1772），服务端只给离散番名；拼接写法（「七对杠飘」「杠飘（二连杠）」）在客户端，与「直接写全名」的差异未消。维持 partial。"
+   "l7Reason": "需求：赢家牌组上方写出实际命中的番型名称，同时命中多组时都写上，双财飘/双豪华七对/二连杠直接写全名。服务端：SVE-ST-C15-P02-14 FillMsgResultHu 无配置分支、无条件遍历 fan_cnts 逐条 add_fan_ids（common_game_context.cpp:165-167），SVE-ST-C15-P02-15 GetFanName 取 ft_defs_.name（mah_frame/base/algorithm.cpp:1772），SVE-ST-C15-P02-16 同源下发 max_multi（common_game_com_result.cpp:431）——服务端下发的是离散 fan_id 全集，可支撑「多组都写」；但「并列分隔 / 直接写全名」的呈现由客户端拼接决定（基线记录为空串拼接「七对杠飘」、二/三连杠写成「杠飘（二连杠）」），本轮无服务端证据改变该客户端写法，细节差异维持 partial。"
   },
   {
    "id": "AT-ST-C15-018",
@@ -347,7 +347,7 @@
     "result": "玩家看到赢家标着承包，赔付方那一行带承包标记"
    },
    "l7": "verification_required",
-   "l7Reason": "需求：三摊承包时赢家标黄色「承包」，赔付者得分右侧标「三摊承包」。服务端：SVE-ST-C15-P02-23/24 ApplyBaoContracts 在 tan>=3 时生成 BaoSettleItem(from=赔付方,to=胡牌方,relation=1)（common_game_com_result.cpp:316/336-338），SVE-ST-C15-P02-26 由 enable_three_tan_bao 控制且客户端创房默认下发 1，能力确为启用态。服务端只确证承包关系与金额，客户端「三摊承包」文案与黄色未获证据。维持 partial。"
+   "l7Reason": "需求：三摊承包时赢家标黄色「承包」，赔付者得分右侧标「三摊承包」。服务端：SVE-ST-C15-P02-23 GetTanCount 双向 ≥3 判定（common_game_com_result.cpp:316-318），SVE-ST-C15-P02-24 BaoSettleItem(from=赔付方, to=胡牌方, relation=1, score=total) 进 bao_settles_（common_game_com_result.cpp:336-341），SVE-ST-C15-P02-26 enable_three_tan_bao 守卫及好友房默认 false / >2 人局才可开的创房口径（hzmj_server/game_logic.cpp:66-83）——承包关系与赔付金额语义成立，适用性为 conditional；但「黄色」与「三摊承包」文案/角标属客户端渲染，本工程未见该文案，服务端证据无法消解该显示缺口，维持 partial。"
   },
   {
    "id": "AT-ST-C15-021",
@@ -364,7 +364,7 @@
     "result": "玩家看到赢家和赔付方都标着反承包"
    },
    "l7": "verification_required",
-   "l7Reason": "需求：反承包时赢家标「反承包」、赔付者标「反承包」。服务端：SVE-ST-C15-P02-27 在 tan_opp_win>=3 时 relation=2、opp_pay=total*2 并 SetBaoRelation(opp,win_seat,2)（common_game_com_result.cpp:326-329），关系生成正确；客户端同一座位同时命中两条关系时角标只取第一条（提前返回）的边缘情况仍在。维持 partial。"
+   "l7Reason": "需求：反承包时赢家与赔付者都显示「反承包」。服务端：SVE-ST-C15-P02-27 在 tan_opp_win>=3 时 relation=2、opp_pay=total*2 并 SetBaoRelation(opp, win_seat, 2)（common_game_com_result.cpp:326-332），SVE-ST-C15-P02-32 FillMsgTanItems 逐对下发 bao_relation（common_game_context.cpp:76-91）——反承包关系生成与下发语义正确；但同一座位同时命中两条关系时客户端角标只取第一条（基线 notes），属客户端渲染细节，服务端证据不改判，维持 partial。"
   },
   {
    "id": "AT-ST-C15-022",
@@ -381,7 +381,7 @@
     "result": "玩家看到赢家同时带承包和反承包，赔付方各带一种关系标记"
    },
    "l7": "verification_required",
-   "l7Reason": "需求：链式承包赢家同时标「承包」「反承包」、番型只写一次；付 S 方标「三摊承包」，付 2×S 方标「反承包」。服务端：SVE-ST-C15-P02-30 逐对手独立结算胡牌方参与的庄闲对（common_game_com_result.cpp:305-342），relation=1 收 total / relation=2 收 total×2（SVE-ST-C15-P02-27），可同时产生双向关系；客户端仍只有承包/反承包角标，未见按 S 与 2×S 区分「三摊承包」的文案。维持 partial。"
+   "l7Reason": "需求：链式承包赢家同时标「承包」「反承包」且番型只写一次；付 S 的一方标「三摊承包」，付 2×S 的一方标「反承包」。服务端：SVE-ST-C15-P02-30 只结算胡牌方参与的庄闲对且逐对独立（common_game_com_result.cpp:305-318），每对独立定档 relation=1 收 total / relation=2 收 total×2（common_game_com_result.cpp:324-334），SVE-ST-C15-P02-31 抢杠叠加 / 点炮自摸整体改写（common_game_com_result.cpp:349-355）——链式双向关系与金额区分成立；但赢家双标呈现及赔付方「三摊承包 / 反承包」文案区分仍依赖客户端，基线未见按 S 与 2×S 区分文案，维持 partial。"
   },
   {
    "id": "AT-ST-C15-023",

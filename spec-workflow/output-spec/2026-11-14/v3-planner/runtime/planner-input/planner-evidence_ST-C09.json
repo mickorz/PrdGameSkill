@@ -176,8 +176,8 @@
     "action": "以“杠飘”作为牌型名播放专属动效与语音",
     "result": "玩家看到“杠飘”动效与语音，结算流水显示“杠飘”"
    },
-   "l7": "verification_required",
-   "l7Reason": "需求语义：杠发生时飘档为 0 记杠飘。服务端实现：piao_level==0 时 piao_before_gang 为假，TestFan 落 2419 杠飘（common_game_algorithm.cpp:205，SVE-ST-C09-P01-15；common_game_com_kong.cpp:118/188，SVE-ST-C09-P01-22/23），服务端判定确定且与规则同构；但客户端拆分模式注释“fan_ids 顺序不可靠”并默认按杠飘展示（基线 difference_detail 引用的客户端代码），真实为飘杠时展示仍可能不一致，该客户端细节差异未被服务端证据消解，维持 partial。"
+   "l7": "verified",
+   "l7Reason": "需求语义：杠发生时飘档未大于 0（即 0），记杠飘。服务端实现：明杠 BoxMKongStep::Execute（common_game/com_game/common_game_com_kong.cpp:118，SVE-ST-C09-P01-22）、暗杠 BoxCKongStep::Execute（同文件:188，SVE-ST-C09-P01-23）、补杠 BoxTKongStep::Execute（同文件:276，SVE-ST-C09-PR01-01）均在杠执行时 SetPiaoBeforeGang(seat, GetPiaoLevel(seat) > 0)，飘档为 0 即写 false；MakeFanFuncParams 注入 hp->piao_before_gang（common_game/common_game_algorithm.cpp:245）；TestFan 在 2406 杠上开花（gang_chain==1，common_game_fan_type.cpp:304-308）与 2403 财飘（piao_level==1，common_game_fan_type.cpp:261-264）同时命中时按 hp->piao_before_gang 取 2420 飘杠 / 2419 杠飘（common_game_algorithm.cpp:199-208、205，SVE-ST-C09-P01-15；common_game_fan_type.h:54-55，SVE-ST-C09-P01-16），杠时飘档 0 → false → 落 2419 杠飘，三种杠为固定机制无配置分支。基线所忧的拆分下发（仅 2406+2403、无 2419/2420）被同一段逻辑排除：命中时先 erase 2406/2403 再落单一 2419/2420，客户端 fan_ids 兜底分支不会触发。需求语义与服务端判定同构。"
   },
   {
    "id": "AT-ST-C09-011",

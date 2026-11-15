@@ -642,16 +642,21 @@ if (invokedDirectly) {
   // check-l7 模式（OSG-W4 S2.3）：只跑 L7 Sidecar 五道闸门，不跑维度 1-6、
   // 不写 specDir（v2 基线只读）；报告写 <reportOutDir>/l7-check-report.md
   // （缺省 l7-classify 同级 runtime/spec-check/）。
-  // 用法：node verify-output-spec.mjs check-l7 <baselineIndex> <traceIndex> <scopeIndex> <serverEvidence> <differenceReview> <l7Classify> [reportOutDir]
+  // 用法：node verify-output-spec.mjs check-l7 <baselineIndex> <traceIndex> <scopeIndex> <serverEvidence> <differenceReview> <l7Classify> [reportOutDir] [--verified=<合并后正式索引>]
+  // --verified：OSG-W4 S3.3 起可选；approved 条目按 effectiveDifference 合并后的 v3 索引
+  // （闸门 5 审批状态独立校验用；不传时回退 baselineIndex——全 pending 阶段两者一致）。
   if (argv[0] === 'check-l7') {
-    const [mode, baselineIndexPath, traceIndexPath, scopeIndexPath, serverEvidencePath, differenceReviewPath, l7ClassifyPath, reportOutDir] = argv
+    const verifiedFlag = argv.find((a) => a && a.startsWith('--verified=')) || ''
+    const verifiedIndexPath = verifiedFlag ? verifiedFlag.slice('--verified='.length) : ''
+    const positional = argv.filter((a) => a !== '--check-l7' && a !== verifiedFlag)
+    const [mode, baselineIndexPath, traceIndexPath, scopeIndexPath, serverEvidencePath, differenceReviewPath, l7ClassifyPath, reportOutDir] = positional
     if (!baselineIndexPath || !traceIndexPath || !scopeIndexPath || !serverEvidencePath || !differenceReviewPath || !l7ClassifyPath) {
-      console.error('用法: node verify-output-spec.mjs check-l7 <baselineIndex> <traceIndex> <scopeIndex> <serverEvidence> <differenceReview> <l7Classify> [reportOutDir]')
+      console.error('用法: node verify-output-spec.mjs check-l7 <baselineIndex> <traceIndex> <scopeIndex> <serverEvidence> <differenceReview> <l7Classify> [reportOutDir] [--verified=<合并后正式索引>]')
       process.exit(1)
     }
     const r = checkL7Sidecars({
       baselineIndexPath: baselineIndexPath,
-      verifiedIndexPath: baselineIndexPath,
+      verifiedIndexPath: verifiedIndexPath || baselineIndexPath,
       traceIndexPath: traceIndexPath,
       scopeIndexPath: scopeIndexPath,
       serverEvidencePath: serverEvidencePath,
@@ -663,6 +668,7 @@ if (invokedDirectly) {
     const reportPath = path.join(reportDir, 'l7-check-report.md')
     const lines = ['# L7 Sidecar 五道闸门校验报告（check-l7 模式，OSG-W4 S2.3）', '']
     lines.push('- 基线：' + baselineIndexPath)
+    lines.push('- 正式索引（闸门 5 审批状态独立校验）：' + (verifiedIndexPath || baselineIndexPath))
     lines.push('- Sidecar：scope-index / server-evidence / difference-review / l7-classify（' + path.dirname(path.resolve(l7ClassifyPath)) + '）')
     if (r.summary) {
       const s = r.summary

@@ -21,7 +21,7 @@
 | `l7-classify.json` | **正式产物**（S2.3 试运行 ST-C01 生成）：reviewed 8/319，l7 verified 3 / verification_required 5 / decision_required 0 / not_applicable 0，l7Approved 全 0 | 8 条 |
 | `规则待验证报告.md` | **S4.3 交付报告**（build-verify-reports.mjs 确定性生成）：verification_required 129 条全清单，三类归档（配置确认 69 / 证据缺口 12 / 待补证 48），含 139 条 active 升级建议与 34 条 conditional 升级建议交叉注记 | 129 条 |
 | `服务端证据索引.md` | **S4.3 交付报告**（build-verify-reports.mjs 确定性生成）：server-evidence 全量索引（按阶段，SVE 定位/符号/位置/配置项），供复核与追溯 | 875 条 |
-| `需求差异裁决清单.md` | **S4.3 全量收口**：条目一/二（conflict，已裁决 B 改需求 approved）+ 条目三（C10-021 inactive）+ 附 A（173 条升级建议全量批量批准表，按阶段分节）+ 附 A 注记（人工样本对照分歧 10 条 + 同证 3 条）+ 附 B 复核规则速查 + 附 C 证据缺口/不可达/配置确认交叉引用 | 361+ 行 |
+| `需求差异裁决清单.md` | **S4.3 全量收口 + S5 裁决闭环**：条目一/二/三（conflict×2 + inactive×1，均 B 接受现状/改需求 approved）+ 附 A（173 条升级建议全量批量批准表，**S5 委托决策全部 approved**）+ 附 A 注记（人工样本对照分歧 10 条 + 同证 3 条）+ 附 B 复核规则速查 + 附 C 证据缺口/不可达/配置确认交叉引用 | 361+ 行 |
 
 ## T0.4 局部验收结果（逐条对照需求）
 
@@ -120,6 +120,14 @@
   - scope：**一致 16 / 分歧 9**（全部为样本 conditional → 正式 active，agent 以多条直接证据判可达口径恒定；分歧原子：C02-008（conflict 原子 evidenceScopes 正确保留 client-visual，仅服务端侧 scope 表述收窄）/009/010/011（财神吃碰杠）、C04-005/006/007/009/010（多人胡/近者优先/顺延）；批准相关 DR 建议即采正式 active 口径，需保守 conditional 请在裁决清单备注——同 C01-004 注记模式）
   - DR：样本覆盖条目一致 3 / 分歧 5（正式更进取：C02-006/007/009、C04-001/012 建议 partial/unverified→consistent，其中 C04-001 优先级次序与 S2.1 裁决链证据（macros.h:203-206 级别常量）方向一致）；样本未覆盖 17 条为正式新增建议
 - **S3.2 partial 复核进度**：v2 的 64 条 partial 中已复核 3 条（证据就位三阶段 ST-C01/02/04），2 条建议升级（C02-006、C04-012）；其余 partial 原子随 S4.1 分批补证时逐阶段复核
+
+## S5 裁决落地与 v3 收口（2026-11-14，OSG-W4 全部完成）
+
+- **裁决落地**：条目三 C10-021 选 B 接受现状（inactive/not_applicable 口径确认）；附 A 173 条升级建议经**委托决策全部 approved**（依据：全部为 evidence-is-not-consistency 建议——真实 SVE 证据过符号索引核验、复核规则白名单与五道闸门全过；139 条 active 批准即转已验证，34 条 conditional 批准后仍留《规则待验证报告》配置确认类，不冒进）。批量落 reviewStatus/l7Basis approved + effectiveDifference/l7 按矩阵回填（node 批量脚本），`classify-l7.mjs` 重算复跑通过。
+- **check-l7 CLI 扩展**：新增 `--verified=<合并后正式索引>` 可选参（原实现写于全 pending 阶段，verified 硬编码 = baseline；approved 合并后两闸门口径分离——闸门 1-4 用 v2 基线复核、闸门 5 审批状态独立校验用合并后索引）。复跑五道闸门全过：l7 187/129/2/1，l7Approved 139/34/2/1，effectiveDifference 238/35/2/44，reviewStatus pending 143 / approved 176 / rejected 0。
+- **v3 索引合并**：`assemble-output-spec-index.mjs v3` → `../v3-spec/feature_index.json`（schema_version 3 + v3_merge 来源块；319 原子，173 条生效迁移 65/64/2/188 → 238/35/2/44，v2 hash 不变）。
+- **重投影取舍（关键分析）**：planner-input 只内嵌 l7 + l7Reason（reviewStatus/effectiveDifference/l7Basis 过程状态不进写作上下文），而 l7 = matrix(reviewedDifference, scope) **不随审批变化**——S4.2 投影跑在 C02-008/C15-018 批准之后，两条待策划裁决行已含裁决记录转写；173 条建议中 139 条 active 的 l7 投影前已是 verified（不写差异行）、34 条 conditional 仍需配置确认（规则待验证行保留正确）。全量重投影（约 1h/19 agent）仅改 2 行前缀 → **外科手术式更新**：两条「待策划裁决」前缀改「已裁决（2026-11-14，B 改需求）」+ 复跑 `build-output-spec.mjs` planner-only 校验（幂等跳过合并，trace 319 重建、泄漏零命中、AT-ID 覆盖 100% 全过）。
+- **最终状态**：319/319 原子闭环——approved 176（含 173 升级建议 + 2 conflict + 1 inactive）、pending 143（复核维持基线差异，无升级建议，不需裁决）、rejected 0；未决余量全部转《规则待验证报告》三类（配置确认 69 / 证据缺口 12 / 待补证 48）跟踪。
 
 ## S4.3 三份交付报告（2026-11-14）
 

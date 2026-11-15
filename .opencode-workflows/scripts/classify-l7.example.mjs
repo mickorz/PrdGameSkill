@@ -108,7 +108,7 @@ const readJson = (p) => JSON.parse(fs.readFileSync(p, 'utf8'))
   // 人工预期（二审修订 + S1.3 补据）钉死，样本数据变化必须显式更新此锚点
   const siSample = readJson(path.join(SAMPLE_DIR, 'scope-index_sample.json'))
   assert.equal(siSample.entries.length, 34)
-  assert.deepEqual(siSample.stats, { active: 14, conditional: 20, unknown: 0, inactive: 0 }) // S2.1 深查落判后（23 条 unknown 全部升级）
+  assert.deepEqual({ ...siSample.stats, client: siSample.stats.client || 0 }, { active: 14, conditional: 20, unknown: 0, inactive: 0, client: 0 }) // S2.1 深查落判后（23 条 unknown 全部升级）；S8 client 键兼容缺省
 
   // 关键口径逐条
   const find = (id) => out.entries.find((e) => e.atomId === id)
@@ -145,7 +145,7 @@ const synthBase = (atoms) => {
   }
 }
 const synthScope = (entries) => {
-  const stats = { active: 0, conditional: 0, unknown: 0, inactive: 0 }
+  const stats = { active: 0, conditional: 0, unknown: 0, inactive: 0, client: 0 }
   for (const e of entries) stats[e.applicability]++
   return { schemaVersion: 1, scopeTarget: { game: 't', roomType: 'friend', gameId: '0' }, stats, entries }
 }
@@ -158,13 +158,13 @@ const expectFail = (r, keyword) => {
 }
 
 // ============================================================
-// B. 矩阵 4×4 全枚举（scope-index Atom 级路径）
+// B. 矩阵 4×4 全枚举（scope-index Atom 级路径）+ S8 client 列（设计 7.2）
 // ============================================================
 {
   const EXPECT = {
-    consistent: { active: 'verified', conditional: 'verification_required', unknown: 'verification_required', inactive: 'not_applicable' },
-    partial: { active: 'verification_required', conditional: 'verification_required', unknown: 'verification_required', inactive: 'not_applicable' },
-    unverified: { active: 'verification_required', conditional: 'verification_required', unknown: 'verification_required', inactive: 'not_applicable' },
+    consistent: { active: 'verified', conditional: 'verification_required', unknown: 'verification_required', inactive: 'not_applicable', client: 'verified' },
+    partial: { active: 'verification_required', conditional: 'verification_required', unknown: 'verification_required', inactive: 'not_applicable', client: 'verification_required' },
+    unverified: { active: 'verification_required', conditional: 'verification_required', unknown: 'verification_required', inactive: 'not_applicable', client: 'verification_required' },
   }
   const atoms = []
   const scopeEntries = []
@@ -172,7 +172,7 @@ const expectFail = (r, keyword) => {
   const cells = []
   let n = 0
   for (const diff of ['consistent', 'partial', 'conflict', 'unverified']) {
-    for (const sc of ['active', 'conditional', 'unknown', 'inactive']) {
+    for (const sc of ['active', 'conditional', 'unknown', 'inactive', 'client']) {
       n++
       const id = 'AT-T-M' + String(n).padStart(2, '0')
       atoms.push({ id, difference: 'unverified' })
@@ -183,7 +183,7 @@ const expectFail = (r, keyword) => {
   }
   const r = runData(synthBase(atoms), synthScope(scopeEntries), synthEvidence([]), synthReview(reviewEntries))
   assert.equal(r.ok, true, '矩阵枚举应通过：' + (r.problems || []).join(' | '))
-  assert.equal(r.output.entries.length, 16)
+  assert.equal(r.output.entries.length, 20)
   for (const c of cells) {
     const e = r.output.entries.find((x) => x.atomId === c.id)
     if (c.diff === 'conflict' && c.sc === 'inactive') {
@@ -202,8 +202,8 @@ const expectFail = (r, keyword) => {
       }
     }
   }
-  // 分布自检：16 格中 verified 1 / not_applicable 3 / decision_required 4 / verification_required 8
-  assert.deepEqual(r.summary.l7, { verified: 1, verification_required: 8, decision_required: 4, not_applicable: 3 })
+  // 分布自检：20 格（S8 client 列并入）中 verified 2 / not_applicable 3 / decision_required 5 / verification_required 10
+  assert.deepEqual(r.summary.l7, { verified: 2, verification_required: 10, decision_required: 5, not_applicable: 3 })
 
   // consistent×inactive（review-field 直填）→ not_applicable；非冲突条目不受 evidenceScopes 影响
   const r2 = runData(

@@ -6,7 +6,7 @@
 //   对照准备输入（runtime/verify-input/<同名>.json）逐分片重算：
 //   - 条目对期望原子全覆盖（缺失/混入外来原子均 fail）
 //   - 分片内 atomId 不重复
-//   - applicability ∈ {active, conditional, inactive, unknown}
+//   - applicability ∈ {active, conditional, inactive, unknown, client}（S8 扩展）
 //   - 重算四类分布与 sveCount（不信任 agent 返回的摘要计数，摘要仅告警）
 //   成功时把重算结果写入 recountPath（供 workflow 回读聚合）。
 //
@@ -14,7 +14,7 @@
 //   partFiles: [{ stageId, file }, ...]（目标阶段分片清单，来自子流程 2 透传）
 //   返回 { ok, problems, summary }：
 //     summary = { partCount, atomCount, sveCount, scopeStats, parts }
-//     parts = [{ stageId, file, atomCount, active, conditional, unknown, inactive, sveCount }]
+//     parts = [{ stageId, file, atomCount, active, conditional, unknown, inactive, client, sveCount }]
 //
 // CLI：node recount-verify-parts.mjs <outDir> <partFilesCsv> <recountPath>
 //   partFilesCsv：逗号分隔分片文件名（不含目录，与 verify-output 下同名）
@@ -25,7 +25,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-const APPLICABILITY_SET = new Set(['active', 'conditional', 'inactive', 'unknown'])
+const APPLICABILITY_SET = new Set(['active', 'conditional', 'inactive', 'unknown', 'client'])
 
 function readJsonSafe(p) {
   try {
@@ -46,7 +46,7 @@ function expectedAtomIdsOfInput(input) {
 export function recountVerifyParts({ outDir, partFiles, recountPath }) {
   const problems = []
   const parts = []
-  const scopeStats = { active: 0, conditional: 0, unknown: 0, inactive: 0 }
+  const scopeStats = { active: 0, conditional: 0, unknown: 0, inactive: 0, client: 0 }
   let atomTotal = 0
   let sveTotal = 0
 
@@ -96,7 +96,7 @@ export function recountVerifyParts({ outDir, partFiles, recountPath }) {
           ' atomCount=' + input.atomCount + ' 实际=' + expected.length
       )
     }
-    const counts = { active: 0, conditional: 0, unknown: 0, inactive: 0 }
+    const counts = { active: 0, conditional: 0, unknown: 0, inactive: 0, client: 0 }
     let sveCount = 0
     for (const e of entries) {
       if (!APPLICABILITY_SET.has(e.applicability)) {

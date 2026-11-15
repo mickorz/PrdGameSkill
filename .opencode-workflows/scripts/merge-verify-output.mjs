@@ -53,9 +53,11 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { classifyL7 } from './classify-l7.mjs'
 
-const SCOPE_VALUES = ['active', 'conditional', 'unknown', 'inactive']
+// S8 扩展（设计 7.1）：作用域增 client（纯客户端实现载体，客户端证据层 SVE 定位/未果）
+const SCOPE_VALUES = ['active', 'conditional', 'unknown', 'inactive', 'client']
 const DIFF_VALUES = ['consistent', 'partial', 'conflict', 'unverified']
-const LAYER_DIRS = ['common_game', 'hzmj_server', 'mah_frame']
+// S8 扩展（设计 7.3）：证据层增 client_code（source-code/client/Code）/ client_fgui（source-code/client/Fgui）
+const LAYER_DIRS = ['common_game', 'hzmj_server', 'mah_frame', 'client_code', 'client_fgui']
 const REVIEW_RULE_PREFIXES = [
   'no-server-evidence-is-not-conflict',
   'evidence-is-not-consistency',
@@ -233,7 +235,7 @@ export function mergeVerifyOutput(input) {
       sampleNote:
         'OSG-W4 正式产物：server-rule-verify workflow 生成（人工样本见 scope-index_sample.json）。stats 由 merge-verify-output.mjs 重算，禁止手工填写；判定规则见 dev-docs/design/2026-11-14-OSG-W4-L7分类与玩法配置作用域设计.md',
       scopeTarget: (sampleScope && sampleScope.scopeTarget) || { game: 'hzmj', roomType: 'friend', gameId: 42320 },
-      stats: { active: 0, conditional: 0, unknown: 0, inactive: 0 },
+      stats: { active: 0, conditional: 0, unknown: 0, inactive: 0, client: 0 },
       entries: [],
     }
   }
@@ -467,7 +469,7 @@ export function mergeVerifyOutput(input) {
 
   // stats 与 SVE 先装配进内存对象（classifyL7 交叉校验需要自洽输入：
   // scope-index.stats 与条目重算一致、DR evidenceIds ⊆ server-evidence ids）
-  const scopeStats = { active: 0, conditional: 0, unknown: 0, inactive: 0 }
+  const scopeStats = { active: 0, conditional: 0, unknown: 0, inactive: 0, client: 0 }
   for (const e of scopeEntries) if (isScope(e.applicability)) scopeStats[e.applicability]++
   const assembledScope = Object.assign({}, scopeIndex, { entries: scopeEntries, stats: scopeStats })
   const sveEntriesFinal = [...(serverEvidence.entries || [])]

@@ -108,7 +108,9 @@ export function buildVerifyReports({ baselineIndexPath, verifyDir, date }) {
   const catOf = (atomId) => {
     const sc = scopeByAtom.get(atomId)
     const dr = drByAtom.get(atomId)
-    if (sc && sc.applicability === 'unknown') return CAT_GAP
+    // S8（设计 7.4）：client 作用域仍未闭环（unverified/partial）= 双端零实现，留证据缺口类；
+    //   client × consistent 为 verified 不进 vrAtoms（下方分类自然不到达）；note 用客户端检索结论
+    if (sc && (sc.applicability === 'unknown' || sc.applicability === 'client')) return CAT_GAP
     if (sc && sc.applicability === 'conditional') {
       if (sc.configConfirm === 'default' || sc.configConfirm === 'adjust') {
         if (sc.configConfirm === 'default' && dr && dr.effectiveDifference === 'consistent') return CAT_CLOSED
@@ -122,7 +124,7 @@ export function buildVerifyReports({ baselineIndexPath, verifyDir, date }) {
     const sc = scopeByAtom.get(atomId)
     const dr = drByAtom.get(atomId)
     const cat = catOf(atomId)
-    if (cat === CAT_GAP) return trimText(sc && sc.unresolved, 120)
+    if (cat === CAT_GAP) return trimText((sc && (sc.unresolved || sc.callPath)) || '', 120)
     if (cat === CAT_COND) return trimText(sc && sc.configCondition, 120)
     const reason = trimText(dr && dr.reviewReason, 110)
     // 待补证：复核理由是「维持基线差异」类空话时退回 scope 调用链

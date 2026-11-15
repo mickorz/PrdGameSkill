@@ -212,6 +212,50 @@ check('F3 签认+证据不足 -> 待补证', rF2.ok === true && rF2.summary.vrCa
 const vrTextF2 = fs.readFileSync(rF2.summary.verificationReportPath, 'utf8')
 check('F4 正文含该原子且分类为待补证', vrTextF2.includes('| AT-ST-C01-002 |') && vrTextF2.includes('| conditional | 待补证 |'))
 
+// ---------- 用例 G：S8 client 作用域分类（设计 7.4） ----------
+// client × unverified -> 证据缺口（双端零实现）；client × consistent -> verified 不进正文
+{
+  reset()
+  const atom = (id) => ({ id, name: '原子' + id, rule: '规则' + id, ui_requirement: '', verdict: 'confirmed', difference: 'unverified', difference_detail: '', notes: '' })
+  writeJson(path.join(TMP, 'feature_index.json'), {
+    schema_version: 2, atom_count: 2,
+    difference_stats: { consistent: 0, partial: 0, conflict: 0, unverified: 2 },
+    stages: [{ id: 'ST-C11', name: '出牌与响应', chapter: 'c' }],
+    features: [{ stage_id: 'ST-C11', stage_name: '出牌与响应', feature_id: 'F1', feature_name: 'f1', atoms: [atom('AT-ST-C11-001'), atom('AT-ST-C11-002')] }],
+  })
+  writeJson(path.join(TMP, 'scope-index.json'), {
+    schemaVersion: 1, stats: { total: 2, active: 0, conditional: 0, unknown: 0, inactive: 0, client: 2 },
+    entries: [
+      { atomId: 'AT-ST-C11-001', applicability: 'client', configVerified: true, callPathVerified: true, configCondition: '', callPath: '客户端检索：字效组件未定位（检索范围 layer/ + fgui/）', evidenceIds: [], unresolved: '客户端亦未定位字效实现（双端零实现）', noServerEvidence: true },
+      { atomId: 'AT-ST-C11-002', applicability: 'client', configVerified: true, callPathVerified: true, configCondition: '', callPath: '客户端实现链：GameMahView.onKongEffect', evidenceIds: ['SVE-ST-C11-PC01-01'], unresolved: '', noServerEvidence: false },
+    ],
+  })
+  writeJson(path.join(TMP, 'server-evidence.json'), {
+    schemaVersion: 1, stats: { total: 1 },
+    entries: [{ id: 'SVE-ST-C11-PC01-01', atomId: 'AT-ST-C11-002', layer: 'client_code', file: 'client_code/layer/GameMahView.ts', location: 'client_code/layer/GameMahView.ts:112', symbol: 'onKongEffect', excerpt: '杠字动画播放', configKeys: [] }],
+  })
+  writeJson(path.join(TMP, 'difference-review.json'), {
+    schemaVersion: 1, stats: { total: 2, reviewStatus: { pending: 2, approved: 0, rejected: 0 } },
+    entries: [
+      { atomId: 'AT-ST-C11-001', previousDifference: 'unverified', reviewedDifference: 'unverified', reviewRule: '', reviewReason: '双端零实现，维持基线差异', reviewStatus: 'pending', effectiveDifference: 'unverified' },
+      { atomId: 'AT-ST-C11-002', previousDifference: 'unverified', reviewedDifference: 'consistent', reviewRule: 'evidence-is-not-consistency', reviewReason: '客户端实现与规则一致', reviewStatus: 'pending', effectiveDifference: 'unverified' },
+    ],
+  })
+  writeJson(path.join(TMP, 'l7-classify.json'), {
+    schemaVersion: 1, atomCount: 2, reviewedCount: 2,
+    stats: { atomCount: 2, reviewedCount: 2, unreviewedCount: 0, l7: { verified: 1, verification_required: 1, decision_required: 0, not_applicable: 0 }, l7Approved: { verified: 0, verification_required: 0, decision_required: 0, not_applicable: 0 }, effectiveDifference: { consistent: 0, partial: 0, conflict: 0, unverified: 2 }, reviewStatus: { pending: 2, approved: 0, rejected: 0 } },
+    entries: [
+      { atomId: 'AT-ST-C11-001', stageId: 'ST-C11', previousDifference: 'unverified', reviewedDifference: 'unverified', scopeApplicability: 'client', scopeSource: 'scope-index-atom', l7: 'verification_required', reviewStatus: 'pending', effectiveDifference: 'unverified', l7Basis: 'baseline', evidenceIds: [] },
+      { atomId: 'AT-ST-C11-002', stageId: 'ST-C11', previousDifference: 'unverified', reviewedDifference: 'consistent', scopeApplicability: 'client', scopeSource: 'scope-index-atom', l7: 'verified', reviewStatus: 'pending', effectiveDifference: 'unverified', l7Basis: 'baseline', evidenceIds: ['SVE-ST-C11-PC01-01'] },
+    ],
+  })
+  const rG = buildVerifyReports({ baselineIndexPath: path.join(TMP, 'feature_index.json'), verifyDir: TMP, date: '2026-11-14' })
+  check('G1 client 分类：证据缺口 1 / 正文 1 条', rG.ok === true && rG.summary.vrCategories.证据缺口 === 1 && rG.summary.vrCount === 1)
+  const vrTextG = fs.readFileSync(rG.summary.verificationReportPath, 'utf8')
+  check('G2 client 未闭环进证据缺口 + 说明取检索结论', vrTextG.includes('| AT-ST-C11-001 |') && vrTextG.includes('| client | 证据缺口 |') && vrTextG.includes('客户端亦未定位'))
+  check('G3 client 已闭环（verified）不进正文', !vrTextG.includes('| AT-ST-C11-002 |'))
+}
+
 // ---------- 用例 D：CLI ----------
 
 reset()

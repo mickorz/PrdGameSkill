@@ -11,6 +11,8 @@
 //      atomId 基线）/ 本轮 SVE id 重复 / evidenceIds 不在 SVE / reviewRule 白名单 / evidenceScopes 坏 ref
 //   G. 未处理阶段 DR 条目保全（分片移除后重跑，既有条目原样保留且全链闸门仍过）
 //   H. CLI 成功与失败路径（退出码 0/1）
+//   K. S8 client 作用域 + 客户端证据层：applicability=client + SVE layer=client_code（file 前缀门）+
+//      consistent x client -> l7 verified（设计 7.2/7.3 矩阵列）+ classify CLI 重算确认
 
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
@@ -178,7 +180,7 @@ function fullChain(outDir, label) {
   const r = mergeRun(outDir)
   check('用例A 合并成功', r.ok && r.problems.length === 0)
   check('用例A 汇总计数', r.summary.judgeCount === 4 && r.summary.newScopeEntries === 4 && r.summary.newSve === 4 && r.summary.drTotal === 4)
-  check('用例A scopeStats 重算', JSON.stringify(r.summary.scopeStats) === JSON.stringify({ active: 2, conditional: 2, unknown: 0, inactive: 0 }))
+  check('用例A scopeStats 重算', JSON.stringify(r.summary.scopeStats) === JSON.stringify({ active: 2, conditional: 2, unknown: 0, inactive: 0, client: 0 }))
 
   const si = readJson(path.join(outDir, 'scope-index.json'))
   check('用例A scope 条目 4 条 + stats 一致', si.entries.length === 4 && JSON.stringify(si.stats) === JSON.stringify(si.stats) && si.stats.active === 2 && si.stats.conditional === 2)
@@ -517,6 +519,46 @@ function fullChain(outDir, label) {
   const c02Before = drBefore.filter((e) => e.atomId.startsWith('AT-ST-C02'))
   check('用例G 未处理阶段条目原样保全', JSON.stringify(c02Before) === JSON.stringify(c02After))
   fullChain(outDir, '用例G')
+}
+
+// ---------- 用例 K：S8 client 作用域 + 客户端证据层 ----------
+{
+  reset()
+  const outDirK = path.join(TMP, 'k')
+  const baseK = path.join(TMP, 'k-baseline.json')
+  const atomK = {
+    id: 'AT-ST-C11-001', name: '原子K', rule: '规则K。', ui_requirement: '', owner: 'client',
+    verdict: 'confirmed', client_logic: '', ui_interaction: '', messages: [], evidence: [],
+    notes: '', difference: 'unverified', difference_detail: '', schema_marked: true,
+  }
+  writeJson(baseK, {
+    schema_version: 2, atom_count: 1,
+    difference_stats: { consistent: 0, partial: 0, conflict: 0, unverified: 1 },
+    stages: [{ id: 'ST-C11', name: '出牌与响应' }],
+    features: [{ id: 'FP-K', stage_id: 'ST-C11', stage_name: '出牌与响应', name: '链路K', atoms: [atomK] }],
+  })
+  writeJson(path.join(TMP, 'k-trace.json'), { entries: [{ atomId: 'AT-ST-C11-001' }] })
+  const sveK = sve('SVE-ST-C11-PC01-01', 'AT-ST-C11-001', 'client_code', 'client_code/layer/GameMahView.ts', 112, 'onKongEffect')
+  const entryK = verifyEntry('AT-ST-C11-001', 'client', {
+    configCondition: '', callPath: '客户端字效链：GameMahView.onKongEffect 播放杠字动画（client_code/layer/GameMahView.ts:112）',
+    evidenceIds: ['SVE-ST-C11-PC01-01'], sve: [sveK],
+    unresolved: '', dr: { scopeApplicability: 'client', scopeNote: '客户端实现证据定位（复核依据）' },
+  })
+  writePart(outDirK, 'verify-output', 'ST-C11', 'ST-C11-pc01.json', [entryK])
+  writePart(outDirK, 'review-output', 'ST-C11', 'ST-C11-p01.json', [
+    { atomId: 'AT-ST-C11-001', reviewedDifference: 'consistent', reviewReason: '客户端实现与规则一致（SVE-ST-C11-PC01-01）', reviewRule: 'evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）' },
+  ])
+  const rK = mergeVerifyOutput({ featureIndexPath: baseK, outDir: outDirK, date: '2026-11-14', stageIds: 'ALL' })
+  check('用例K client 合并成功', rK.ok && rK.problems.length === 0)
+  check('用例K scopeStats client 计数', rK.ok && rK.summary.scopeStats.client === 1)
+  const siK = readJson(path.join(outDirK, 'scope-index.json'))
+  const svK = readJson(path.join(outDirK, 'server-evidence.json'))
+  const drK = readJson(path.join(outDirK, 'difference-review.json'))
+  const aK = drK.entries.find((e) => e.atomId === 'AT-ST-C11-001')
+  check('用例K client 证据层 SVE 入库（file 前缀门）', svK.entries.length === 1 && svK.entries[0].layer === 'client_code' && svK.entries[0].file === 'client_code/layer/GameMahView.ts')
+  check('用例K consistent x client -> l7 verified（pending 不生效）', aK.l7 === 'verified' && aK.reviewStatus === 'pending' && aK.effectiveDifference === 'unverified')
+  const clsOut = runCli(CLASSIFY, [baseK, path.join(outDirK, 'scope-index.json'), path.join(outDirK, 'server-evidence.json'), path.join(outDirK, 'difference-review.json'), path.join(outDirK, 'l7-classify.json'), '2026-11-14'], true)
+  check('用例K classify CLI 重算（verified 1）', clsOut.includes('[成功]') && clsOut.includes('verified 1 /'))
 }
 
 // ---------- 用例 H：CLI 成功与失败路径 ----------

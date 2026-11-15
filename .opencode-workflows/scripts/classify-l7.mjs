@@ -55,14 +55,16 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+// S8 扩展（设计 7）：矩阵增 client 列——client × consistent = verified（客户端证据闭环即已验证），
+// client × conflict = decision_required，client × partial/unverified = verification_required
 const L7_MATRIX = {
-  consistent: { active: 'verified', conditional: 'verification_required', unknown: 'verification_required', inactive: 'not_applicable' },
-  partial: { active: 'verification_required', conditional: 'verification_required', unknown: 'verification_required', inactive: 'not_applicable' },
-  conflict: { active: 'decision_required', conditional: 'decision_required', unknown: 'decision_required', inactive: 'not_applicable' },
-  unverified: { active: 'verification_required', conditional: 'verification_required', unknown: 'verification_required', inactive: 'not_applicable' },
+  consistent: { active: 'verified', conditional: 'verification_required', unknown: 'verification_required', inactive: 'not_applicable', client: 'verified' },
+  partial: { active: 'verification_required', conditional: 'verification_required', unknown: 'verification_required', inactive: 'not_applicable', client: 'verification_required' },
+  conflict: { active: 'decision_required', conditional: 'decision_required', unknown: 'decision_required', inactive: 'not_applicable', client: 'decision_required' },
+  unverified: { active: 'verification_required', conditional: 'verification_required', unknown: 'verification_required', inactive: 'not_applicable', client: 'verification_required' },
 }
 const DIFF_VALUES = ['consistent', 'partial', 'conflict', 'unverified']
-const SCOPE_VALUES = ['active', 'conditional', 'unknown', 'inactive']
+const SCOPE_VALUES = ['active', 'conditional', 'unknown', 'inactive', 'client']
 const L7_VALUES = ['verified', 'verification_required', 'decision_required', 'not_applicable']
 const REVIEW_STATUS_VALUES = ['pending', 'approved', 'rejected']
 const L7_BASIS_BY_STATUS = { pending: 'proposed', approved: 'approved', rejected: 'rejected' }
@@ -166,7 +168,7 @@ export function classifyL7(data, opts = {}) {
 
   // 3. scope-index：atomId 唯一且在基线、applicability 合法、evidenceScopes 合法、stats 重算
   const scopeMap = new Map()
-  const scopeStats = { active: 0, conditional: 0, unknown: 0, inactive: 0 }
+  const scopeStats = { active: 0, conditional: 0, unknown: 0, inactive: 0, client: 0 }
   for (const e of scopeIndex.entries || []) {
     if (scopeMap.has(e.atomId)) bad('scope-index 条目 atomId 重复：' + e.atomId)
     if (!atomMap.has(e.atomId)) bad('scope-index atomId 不在基线：' + e.atomId)
@@ -181,8 +183,9 @@ export function classifyL7(data, opts = {}) {
   }
   if (scopeIndex.stats) {
     for (const k of SCOPE_VALUES) {
-      if (scopeIndex.stats[k] !== scopeStats[k]) {
-        bad('scope-index.stats 与条目重算不一致：' + k + ' 手写=' + scopeIndex.stats[k] + ' 重算=' + scopeStats[k])
+      // S8：client 为新增枚举，旧 stats 块缺 key 按 0 兼容（写回时补齐）
+      if ((scopeIndex.stats[k] || 0) !== scopeStats[k]) {
+        bad('scope-index.stats 与条目重算不一致：' + k + ' 手写=' + (scopeIndex.stats[k] || 0) + ' 重算=' + scopeStats[k])
       }
     }
   }

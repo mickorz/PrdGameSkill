@@ -49,6 +49,9 @@ const incremental = A.incremental === true
 // 补证重跑模式（S7）：复核输入含 retryHint（第一轮缺口）
 const retryMode = A.retryMode === true
 
+// S8 客户端侧查证（设计 7）：复核提示注入客户端证据口径（client_code/client_fgui 层、client 作用域）
+const clientMode = A.clientMode === true
+
 setConcurrency(A.concurrency || 16)
 
 function withModel(opts) {
@@ -111,9 +114,20 @@ function reviewPrompt(partFile) {
         '仍不足则不出条目（merge 自动维持基线差异），不要为凑结论放宽复核标准。',
       ]
     : []
+  const clientNote = clientMode
+    ? [
+        '',
+        '本轮为客户端侧查证（S8，设计 7）：verify-output 条目为客户端落判——',
+        'SVE 证据层为 client_code（source-code/client/Code）/ client_fgui（source-code/client/Fgui），作用域为 client。',
+        '客户端证据确证与规则同构时可按规则 2 出升级建议（unverified/partial -> consistent，client x consistent 即已验证）；',
+        '客户端实现与需求相反时按规则 4 出 conflict 建议（客户端冲突独立成立，ui-conflict-stands-alone）；',
+        '客户端亦未定位（unresolved 注明双端零实现）不出条目（merge 自动维持基线差异）。',
+      ]
+    : []
   return [
     '你是服务端规则补证的差异复核员，工作目录为项目根目录。只对有把握的原子出建议；建议一律 pending（人工批准前不生效），不要自行改判生效。',
     ...retryNote,
+    ...clientNote,
     '',
     '复核规则（reviewRule 前缀白名单，四选一可带补充说明括号）：',
     '1. no-server-evidence-is-not-conflict：缺服务端证据不改判 conflict（维持 unverified/partial 原判）',

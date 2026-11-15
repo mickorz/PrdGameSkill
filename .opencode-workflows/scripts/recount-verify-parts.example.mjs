@@ -126,7 +126,7 @@ const rA = recountVerifyParts({ outDir: TMP, partFiles: partFilesA, recountPath:
 check('A1 正常重算 ok', rA.ok === true && rA.problems.length === 0)
 check(
   'A2 四类分布正确',
-  JSON.stringify(rA.summary.scopeStats) === JSON.stringify({ active: 2, conditional: 1, unknown: 1, inactive: 1 })
+  JSON.stringify(rA.summary.scopeStats) === JSON.stringify({ active: 2, conditional: 1, unknown: 1, inactive: 1, client: 0 })
 )
 check('A3 原子/SVE 合计正确', rA.summary.atomCount === 5 && rA.summary.sveCount === 4)
 check('A4 分片计数正确', rA.summary.parts[0].atomCount === 3 && rA.summary.parts[1].sveCount === 1)

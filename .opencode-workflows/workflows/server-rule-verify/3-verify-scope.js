@@ -34,8 +34,14 @@ const symbolIndexPath = A.symbolIndexPath || outDir + '/symbol-index.json'
 const analysisModel =
   A.analysisModel === undefined ? 'biangfeng-gateway/deepseek-v4.1-flash-official' : A.analysisModel
 const stages = Array.isArray(A.stages) ? A.stages : []
-// 补证重跑模式（S7 待补证 72 条）：第二轮定位策略 + retryHint 输入口径
+// 补证重跑模式（S7 第二轮 / S9+ 第三轮起）：重跑定位策略 + retryHint 输入口径
+// retry 代际（坑 8 教训）：round 2 = S7（SVE 前缀 PR）；round 3+ = S9+（SVE 前缀 PR2/PR3…，与原 P 段及前代 retry 段隔离）
 const retryMode = A.retryMode === true
+const retryRound = retryMode ? Number(A.retryRound) || 2 : 0
+const retrySvePrefix = retryRound >= 3 ? 'PR' + (retryRound - 1) : 'PR'
+const retryRoundCn = { 2: '二', 3: '三', 4: '四', 5: '五' }[retryRound] || String(retryRound)
+const retryStageTag = String(A.retryStageTag || '').trim() || (retryRound === 2 ? 'S7' : 'S' + (2 * retryRound + 3))
+const retryGapDesc = retryRound === 2 ? '第一轮' : '前' + (retryRound === 3 ? '两' : String(retryRound - 1)) + '轮'
 
 setConcurrency(A.concurrency || 16)
 
@@ -83,23 +89,23 @@ function verifyPrompt(partFile) {
   const retryLines = retryMode
     ? [
         '',
-        '本轮为待补证第二轮重跑（S7）：分片原子均为第一轮证据不足（active 无直证 / conditional 口径已签认但证据不足）。',
-        '原子带 retryHint 字段 = 第一轮缺口摘要（现状结论 + callPath + 复核理由），先读它再定位。',
+        '本轮为待补证第' + retryRoundCn + '轮重跑（' + retryStageTag + '）：分片原子均为' + retryGapDesc + '证据不足（active 无直证 / conditional 口径已签认但证据不足）。',
+        '原子带 retryHint 字段 = ' + retryGapDesc + '缺口摘要（现状结论 + callPath + 复核理由），先读它再定位。',
         '',
-        '第二轮定位策略（按序尝试，命中即止）：',
+        '本轮定位策略（按序尝试，命中即止）：',
         'a. 调用链深挖：按既有 callPath / match 候选的 file:line 读完整函数实现（offset 命中行 - 50，limit 200），',
         '   并在符号索引搜该函数名追其调用方与被调方（上游判定入口 / 下游实际行为）。',
         'b. 关键词全文检索：用 Grep 工具（path = 服务端源码根下三根目录，include *.cpp/*.h）按规则关键词 /',
         '   配置 key / 枚举名（ET_/kEt 前缀）/ 常量名（C_/KW_ 前缀）检索，命中行段用 read 读上下文。',
-        'c. 邻近扫描：第一轮同阶段其他原子找到证据的文件（见 match 候选与既有 SVE），整读相关函数区域。',
+        'c. 邻近扫描：' + retryGapDesc + '同阶段其他原子找到证据的文件（见 match 候选与既有 SVE），整读相关函数区域。',
         'd. 配置入口核对（conditional）：搜配置 key 的解析点与消费点，确认默认分支行为与可选值分支。',
         '',
-        '诚实落判：找到直证才升级结论（出新 SVE + dr.scopeNote 写升级依据）；仍不足时维持第一轮结论，',
+        '诚实落判：找到直证才升级结论（出新 SVE + dr.scopeNote 写升级依据）；仍不足时维持前轮结论，',
         '复用既有条目字段与既有 SVE id（幂等重跑口径），不要为凑证据放宽判定标准。',
         '',
-        '编号规则覆盖（本轮专用）：新增 SVE 一律编号 SVE-<stageId>-PR<partNo>-NN（NN 两位从 01 递增），',
-        'PR 前缀与原 P 命名空间隔离——原分片已占用 SVE-<stageId>-P<partNo>-NN 段，',
-        '新增证据占用原段 id 会撞既有条目（同 id 不同原子不同指针 = id 劫持，合并闸门整轮失败）；',
+        '编号规则覆盖（本轮专用）：新增 SVE 一律编号 SVE-<stageId>-' + retrySvePrefix + '<partNo>-NN（NN 两位从 01 递增），',
+        retrySvePrefix + ' 前缀与原 P 命名空间及前代 retry 段隔离——原分片已占用 SVE-<stageId>-P<partNo>-NN 段',
+        '（前代 retry 亦已占用 PR* 段），新增证据占用已占 id 会撞既有条目（同 id 不同原子不同指针 = id 劫持，合并闸门整轮失败）；',
         '复用既有证据仅限同一原子的既有条目（保持原 id，摘录可更新）。',
       ]
     : []

@@ -192,6 +192,35 @@ check('E3 CLI 失败退出 + 明细', badOut.includes('[失败]') && badOut.incl
 const usageOut = runCli([], false)
 check('E4 缺参用法提示', usageOut.includes('用法'))
 
+// F. 第三轮（S9）：原件已归档在历史 tag + 陈旧 -r/-pc 代际分片清理 + -r2 命名
+reset()
+fixture()
+r = prepareRetryInput({ featureIndexPath: path.join(TMP, 'feature_index.json'), outDir: TMP, date: '2026-11-14' })
+check('F1 前置：第二轮归档完成', r.ok && fs.existsSync(path.join(archiveDir(), 'match-output', 'ST-C01-p01.json')))
+// 模拟 S8 客户端代际分片（-pc）残留在四目录
+for (const d of ['verify-input', 'match-output', 'verify-output', 'review-output']) {
+  writeJson(path.join(TMP, 'runtime', d, 'ST-C10-pc01.json'), { schemaVersion: 1, stageId: 'ST-C10', partNo: '01', entries: [] })
+}
+const rF = prepareRetryInput({ featureIndexPath: path.join(TMP, 'feature_index.json'), outDir: TMP, date: '2026-11-14', round: 3 })
+check('F2 第三轮成功且选取一致', rF.ok && rF.summary.atomCount === 3 && rF.summary.partCount === 2)
+check('F3 陈旧 -r/-pc 分片已清理（四目录仅余原件与本代 -r2 分片）', ['verify-input', 'match-output', 'verify-output', 'review-output'].every((d) => {
+  const files = fs.readdirSync(path.join(TMP, 'runtime', d)).filter((f) =>
+    f.endsWith('.json') && !/-p\d+\.json$/.test(f) && !/-r2\d+\.json$/.test(f))
+  return files.length === 0
+}))
+check('F4 新分片 -r2 命名 + manifest', rF.ok &&
+  JSON.stringify(rF.summary.stages[0].partFiles) === JSON.stringify(['ST-C01-r201.json']) &&
+  fs.existsSync(path.join(viDir(), 'ST-C01-r201.json')) && fs.existsSync(path.join(moDir(), 'ST-C01-r201.json')))
+check('F5 原件未再归档（无 pre-s9-retry 目录）', !fs.existsSync(path.join(TMP, 'runtime', 'archive', 'pre-s9-retry')))
+const viDocF = JSON.parse(fs.readFileSync(path.join(viDir(), 'ST-C01-r201.json'), 'utf8'))
+const moDocF = JSON.parse(fs.readFileSync(path.join(moDir(), 'ST-C01-r201.json'), 'utf8'))
+check('F6 match 原件从历史 archive 读取（2 条带候选）', moDocF.entries.length === 2 && moDocF.entries[0].matches.length === 1)
+check('F7 retryHint 第三轮口径', viDocF.retry.reason.includes('待补证第三轮') &&
+  viDocF.featureGroups[0].atoms[0].retryHint.reason.includes('前两轮证据不足') &&
+  viDocF.generatedBy.includes('S9'))
+const rBad = prepareRetryInput({ featureIndexPath: path.join(TMP, 'feature_index.json'), outDir: TMP, date: '2026-11-14', round: 1 })
+check('F8 round 非法（<2）-> fail', !rBad.ok && rBad.problems.some((p) => p.includes('round 非法')))
+
 fs.rmSync(TMP, { recursive: true, force: true })
 console.log('')
 if (fail === 0) {

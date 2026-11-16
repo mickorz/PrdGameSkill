@@ -46,8 +46,12 @@ const stages = Array.isArray(A.stages) ? A.stages : []
 const verifiedIndexPath = A.verifiedIndexPath || ''
 // 增量合并模式（S7 待补证重跑：目标原子 = 分片覆盖原子，不要求阶段全覆盖）
 const incremental = A.incremental === true
-// 补证重跑模式（S7）：复核输入含 retryHint（第一轮缺口）
+// 补证重跑模式（S7 第二轮 / S9+ 第三轮起）：复核输入含 retryHint（前轮缺口）
 const retryMode = A.retryMode === true
+const retryRound = retryMode ? Number(A.retryRound) || 2 : 0
+const retryRoundCn = { 2: '二', 3: '三', 4: '四', 5: '五' }[retryRound] || String(retryRound)
+const retryStageTag = String(A.retryStageTag || '').trim() || (retryRound === 2 ? 'S7' : 'S' + (2 * retryRound + 3))
+const retryGapDesc = retryRound === 2 ? '第一轮' : '前' + (retryRound === 3 ? '两' : String(retryRound - 1)) + '轮'
 
 // S8 客户端侧查证（设计 7）：复核提示注入客户端证据口径（client_code/client_fgui 层、client 作用域）
 const clientMode = A.clientMode === true
@@ -109,8 +113,8 @@ function reviewPrompt(partFile) {
   const retryNote = retryMode
     ? [
         '',
-        '本轮为待补证第二轮重跑（S7）：原子带 retryHint（第一轮缺口）与子流程 3 的第二轮落判证据。',
-        '第二轮证据确证与规则同构时可按规则 2 出升级建议（unverified/partial -> consistent）；',
+        '本轮为待补证第' + retryRoundCn + '轮重跑（' + retryStageTag + '）：原子带 retryHint（' + retryGapDesc + '缺口）与子流程 3 的本轮落判证据。',
+        '本轮证据确证与规则同构时可按规则 2 出升级建议（unverified/partial -> consistent）；',
         '仍不足则不出条目（merge 自动维持基线差异），不要为凑结论放宽复核标准。',
       ]
     : []

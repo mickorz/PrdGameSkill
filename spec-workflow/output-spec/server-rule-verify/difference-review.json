@@ -1,6 +1,6 @@
 {
  "schemaVersion": 1,
- "sampleNote": "OSG-W4 正式产物：server-rule-verify workflow 生成（人工样本见 difference-review_sample.json）。baseline / afterReviewProjection / l7Projection 与条目 l7/effectiveDifference/l7Basis 由 merge-verify-output.mjs 确定性重算，禁止手工填写；run 2026-11-14：ST-C01 落判 8 条（新增 8 / 替换 0，SVE 新增 29）；run 2026-11-14：ST-C01 落判 8 条（新增 0 / 替换 8，SVE 新增 0）；run 2026-11-14：ST-C02,ST-C04 落判 25 条（新增 25 / 替换 0，SVE 新增 69）；run 2026-11-14：ST-C02,ST-C04 落判 25 条（新增 0 / 替换 25，SVE 新增 0）；run 2026-11-14：ST-C13,ST-C14,ST-C15 落判 72 条（新增 72 / 替换 0，SVE 新增 200）；run 2026-11-14：ST-C05,ST-C06,ST-C07,ST-C08,ST-C09,ST-C10 落判 110 条（新增 110 / 替换 0，SVE 新增 303）；run 2026-11-14：ST-C03,ST-C11,ST-C12 落判 104 条（新增 104 / 替换 0，SVE 新增 274）；run 2026-11-14：ST-C01,ST-C03,ST-C04,ST-C05,ST-C07,ST-C08,ST-C09,ST-C10,ST-C11,ST-C12,ST-C13,ST-C14,ST-C15 落判 72 条（新增 0 / 替换 72，SVE 新增 41）；run 2026-11-14：ST-C01,ST-C03,ST-C04,ST-C05,ST-C07,ST-C08,ST-C09,ST-C10,ST-C11,ST-C12,ST-C13,ST-C14,ST-C15 落判 84 条（新增 0 / 替换 84，SVE 新增 25）；run 2026-11-14：ST-C01,ST-C03,ST-C04,ST-C05,ST-C07,ST-C08,ST-C09,ST-C10,ST-C11,ST-C12,ST-C13,ST-C14,ST-C15 落判 84 条（新增 0 / 替换 84，SVE 新增 0）",
+ "sampleNote": "OSG-W4 正式产物：server-rule-verify workflow 生成（人工样本见 difference-review_sample.json）。baseline / afterReviewProjection / l7Projection 与条目 l7/effectiveDifference/l7Basis 由 merge-verify-output.mjs 确定性重算，禁止手工填写；run 2026-11-14：ST-C01 落判 8 条（新增 8 / 替换 0，SVE 新增 29）；run 2026-11-14：ST-C01 落判 8 条（新增 0 / 替换 8，SVE 新增 0）；run 2026-11-14：ST-C02,ST-C04 落判 25 条（新增 25 / 替换 0，SVE 新增 69）；run 2026-11-14：ST-C02,ST-C04 落判 25 条（新增 0 / 替换 25，SVE 新增 0）；run 2026-11-14：ST-C13,ST-C14,ST-C15 落判 72 条（新增 72 / 替换 0，SVE 新增 200）；run 2026-11-14：ST-C05,ST-C06,ST-C07,ST-C08,ST-C09,ST-C10 落判 110 条（新增 110 / 替换 0，SVE 新增 303）；run 2026-11-14：ST-C03,ST-C11,ST-C12 落判 104 条（新增 104 / 替换 0，SVE 新增 274）；run 2026-11-14：ST-C01,ST-C03,ST-C04,ST-C05,ST-C07,ST-C08,ST-C09,ST-C10,ST-C11,ST-C12,ST-C13,ST-C14,ST-C15 落判 72 条（新增 0 / 替换 72，SVE 新增 41）；run 2026-11-14：ST-C01,ST-C03,ST-C04,ST-C05,ST-C07,ST-C08,ST-C09,ST-C10,ST-C11,ST-C12,ST-C13,ST-C14,ST-C15 落判 84 条（新增 0 / 替换 84，SVE 新增 25）；run 2026-11-14：ST-C01,ST-C03,ST-C04,ST-C05,ST-C07,ST-C08,ST-C09,ST-C10,ST-C11,ST-C12,ST-C13,ST-C14,ST-C15 落判 84 条（新增 0 / 替换 84，SVE 新增 0）；run 2026-11-14：ST-C03,ST-C05,ST-C07,ST-C10,ST-C11,ST-C12,ST-C13,ST-C14,ST-C15 落判 41 条（新增 0 / 替换 41，SVE 新增 31）",
  "baseline": {
   "indexPath": "spec-workflow/output-spec/2026-11-14/1-spec/feature_index.json",
   "differenceStats": {
@@ -11,10 +11,10 @@
   }
  },
  "afterReviewProjection": {
-  "consistent": 271,
+  "consistent": 274,
   "partial": 27,
   "conflict": 3,
-  "unverified": 18,
+  "unverified": 15,
   "total": 319,
   "computedBy": "previousDifference→reviewedDifference 确定性迁移（假设全部 approved），merge-verify-output.mjs 重算，禁止手工填写预测值",
   "transitions": [
@@ -1052,12 +1052,27 @@
     "atomId": "AT-ST-C15-024",
     "from": "unverified",
     "to": "consistent"
+   },
+   {
+    "atomId": "AT-ST-C14-011",
+    "from": "unverified",
+    "to": "consistent"
+   },
+   {
+    "atomId": "AT-ST-C15-004",
+    "from": "unverified",
+    "to": "consistent"
+   },
+   {
+    "atomId": "AT-ST-C15-009",
+    "from": "unverified",
+    "to": "consistent"
    }
   ]
  },
  "l7Projection": {
-  "verified": 214,
-  "verification_required": 101,
+  "verified": 216,
+  "verification_required": 99,
   "decision_required": 3,
   "not_applicable": 1,
   "note": "merge-verify-output.mjs 按 classifyL7 矩阵确定性重算（设计 4.1），禁止手工填写"
@@ -5471,24 +5486,6 @@
    "l7Basis": "approved"
   },
   {
-   "atomId": "AT-ST-C03-002",
-   "previousDifference": "unverified",
-   "reviewedDifference": "unverified",
-   "reviewReason": "本轮未出复核建议，维持基线差异",
-   "scopeApplicability": "active",
-   "scopeNote": "升级依据：SVE-ST-C03-PR01-02/08 直证好友房走 BoxTakeFirstStep 且 hzmj 未覆写 first_count（缺省 14），SVE-ST-C03-P01-04 直证每家固定补到 GetFirstCount()-1=13 张，发牌张数由服务端常量决定无配置门控；服务端为逐座位一次性补满 13 张、无「4 张×3 轮」分轮结构（该差异属 difference 层面，不影响作用域判定）。",
-   "evidenceIds": [
-    "SVE-ST-C03-P01-04",
-    "SVE-ST-C03-P01-05",
-    "SVE-ST-C03-PR01-02",
-    "SVE-ST-C03-PR01-03"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
-  },
-  {
    "atomId": "AT-ST-C03-012",
    "previousDifference": "unverified",
    "reviewedDifference": "consistent",
@@ -5642,29 +5639,6 @@
    "l7Basis": "approved"
   },
   {
-   "atomId": "AT-ST-C05-007",
-   "previousDifference": "unverified",
-   "reviewedDifference": "unverified",
-   "reviewReason": "需求语义：任意他人刚打出的非财神与手中两张相同非财神组成刻子。服务端实现：BoxPungStep::Judge(common_game_com_pung.cpp:30,36) 仅排除出牌者并 TestPung，DelJustPungFromHand(com_pung.cpp:149) 复核刚打出。但 IsGuardDealerBlocked(common_game_algorithm.cpp:49-72) 在 guard_dealer 下禁碰，IsXianXianTanFull(:86-92) 在三摊闲闲满 2 摊时拦截，且 server_config.cpp:20 默认 SetEnableThreeTanBao(false) 与 client RuleHzmj.ts 默认 1 口径不一致，规则外限制未澄清，维持 unverified。",
-   "reviewRule": "evidence-is-not-consistency（查到实现但存在规则外拦截与创房默认值口径差异，维持原判）",
-   "scopeApplicability": "conditional",
-   "scopeNote": "实读 common_game_com_pung.cpp:13-69 确认碰仅排除出牌者(:30) 后被 guard_dealer(:38)/三摊承包(:24-28)/吃碰次数(:18-21) 三配置分支过滤，故为 conditional（SVE-ST-C05-P01-32/33/34/35）",
-   "evidenceIds": [
-    "SVE-ST-C05-P01-06",
-    "SVE-ST-C05-P01-09",
-    "SVE-ST-C05-P01-30",
-    "SVE-ST-C05-P01-31",
-    "SVE-ST-C05-P01-32",
-    "SVE-ST-C05-P01-33",
-    "SVE-ST-C05-P01-34",
-    "SVE-ST-C05-P01-35"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
-  },
-  {
    "atomId": "AT-ST-C05-012",
    "previousDifference": "unverified",
    "reviewedDifference": "consistent",
@@ -5685,22 +5659,6 @@
    "reviewStatus": "approved",
    "effectiveDifference": "consistent",
    "l7Basis": "approved"
-  },
-  {
-   "atomId": "AT-ST-C05-018",
-   "previousDifference": "unverified",
-   "reviewedDifference": "unverified",
-   "reviewReason": "本轮未出复核建议，维持基线差异",
-   "scopeApplicability": "active",
-   "scopeNote": "实读 common_game_com_kong.cpp:169 与 base_context.cpp:511-527，暗杠恒广播 4 张牌值给全桌且无配置分支；正反面渲染属客户端呈现（服务端协议不含朝向字段）",
-   "evidenceIds": [
-    "SVE-ST-C05-P02-33",
-    "SVE-ST-C05-P02-34"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
   },
   {
    "atomId": "AT-ST-C05-021",
@@ -5757,61 +5715,6 @@
    "reviewStatus": "approved",
    "effectiveDifference": "consistent",
    "l7Basis": "approved"
-  },
-  {
-   "atomId": "AT-ST-C07-012",
-   "previousDifference": "unverified",
-   "reviewedDifference": "unverified",
-   "reviewReason": "本轮未出复核建议，维持基线差异",
-   "scopeApplicability": "conditional",
-   "scopeNote": "实读 com_action.cpp:383-400 JudgeRobKong 第 384 行 IsRobKong、第 385 行复用 CanDiscardHu 门槛（开关关/牢庄<3 即禁抢杠），牢庄起点由 ju.cpp:191-196 依 banker_level_type 派生，故受两项配置共同约束（SVE-ST-C07-P02-01/02/04/05/15）",
-   "evidenceIds": [
-    "SVE-ST-C07-P02-01",
-    "SVE-ST-C07-P02-02",
-    "SVE-ST-C07-P02-03",
-    "SVE-ST-C07-P02-04",
-    "SVE-ST-C07-P02-05",
-    "SVE-ST-C07-P01-15"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
-  },
-  {
-   "atomId": "AT-ST-C07-014",
-   "previousDifference": "unverified",
-   "reviewedDifference": "unverified",
-   "reviewReason": "本轮未出复核建议，维持基线差异",
-   "scopeApplicability": "active",
-   "scopeNote": "实读 kong.cpp:271 与 com_action.cpp:569 两处置 LastKongSeat，com_result.cpp:113-132 抢杠分支唯一付款方取 GetLastKongSeat() 且 payments 只写该键，无任何配置分支（IsRobKongSettleAsDiscard 为虚钩子默认 false，杭麻未覆写），故恒实现（SVE-ST-C07-P02-10/11/12/13）",
-   "evidenceIds": [
-    "SVE-ST-C07-P02-10",
-    "SVE-ST-C07-P02-11",
-    "SVE-ST-C07-P02-12",
-    "SVE-ST-C07-P02-13"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
-  },
-  {
-   "atomId": "AT-ST-C07-015",
-   "previousDifference": "unverified",
-   "reviewedDifference": "unverified",
-   "reviewReason": "本轮未出复核建议，维持基线差异",
-   "scopeApplicability": "conditional",
-   "scopeNote": "实读 com_result.cpp:290 首行 GetEnableThreeTanBao 门控、:318 满 3 摊门槛、:349-352 抢杠叠加分支，以及 game_logic.cpp:67-83 的解析与 <=2 人强制关闭，是否有多人付款取决于该开关与人数（SVE-ST-C07-P02-14/15/12）",
-   "evidenceIds": [
-    "SVE-ST-C07-P02-12",
-    "SVE-ST-C07-P02-14",
-    "SVE-ST-C07-P02-15"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
   },
   {
    "atomId": "AT-ST-C08-008",
@@ -5906,26 +5809,6 @@
    "l7Basis": "approved"
   },
   {
-   "atomId": "AT-ST-C10-013",
-   "previousDifference": "partial",
-   "reviewedDifference": "partial",
-   "reviewReason": "需求语义：禁打牌压暗，牌面仍可辨认（验收明确「辨认效果需实机确认」），核心是客户端牌面组件压暗着色后的视觉可辨认性。服务端实现：仅产出禁打牌值并按座位单发——BaseData::SetPlayLimit 名单变化置 LimitChange（mah_frame/base/base_data.cpp:1493-1505，SVE-ST-C10-P01-16）→ PlayStep::MakePower LimitChange 时 SendPlayLmts（mah_frame/com_basic/com_play.cpp:158-161，SVE-ST-C10-P01-14）→ BaseContext::SendPlayLmts 以该 seat 为目标单发、无配置分支（mah_frame/base/base_context.cpp:594-617，SVE-ST-C10-P02-01）→ BaseContext::FillMsgPlayLmts 只按 hands/dfs 组包（base_context.cpp:900-924，SVE-ST-C10-P02-02）；名单写入来源见 common_game/com_game/common_game_com_action.cpp:151-155（SVE-ST-C10-P01-06）。服务端证据只确证「名单下发到本家」这一前提，不覆盖压暗着色与压暗后可辨认性，缺乏客户端/实机证据，维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（服务端证据仅对应下发链路，压暗后可辨认性属客户端视觉表现且无新证据，维持原判）",
-   "scopeApplicability": "active",
-   "scopeNote": "SVE-ST-C10-P02-01/02 直证禁打牌值按座位单发、组包只填 hands/dfs 且无配置分支；SVE-ST-C10-P01-14/16 补全 SetPlayLimit→LimitChange→SendPlayLmts 的下发链路，SVE-ST-C10-P01-06 为黑名单写入来源；服务端只提供禁打牌值，压暗着色与压暗后可辨认性属客户端牌面组件表现。",
-   "evidenceIds": [
-    "SVE-ST-C10-P02-01",
-    "SVE-ST-C10-P02-02",
-    "SVE-ST-C10-P01-06",
-    "SVE-ST-C10-P01-14",
-    "SVE-ST-C10-P01-16"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
-  },
-  {
    "atomId": "AT-ST-C10-016",
    "previousDifference": "unverified",
    "reviewedDifference": "conflict",
@@ -5942,8 +5825,7 @@
    "l7": "decision_required",
    "reviewStatus": "approved",
    "effectiveDifference": "conflict",
-   "l7Basis": "approved",
-   "approvedDate": "2026-11-14"
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C11-008",
@@ -6054,105 +5936,6 @@
    "l7Basis": "proposed"
   },
   {
-   "atomId": "AT-ST-C11-015",
-   "previousDifference": "partial",
-   "reviewedDifference": "partial",
-   "reviewReason": "需求语义：点【过】只放弃这一次提示，收起本次按钮和预览。服务端实现：BoxActionStep::OnMsgCancel 先群发过牌通知（common_game/com_game/common_game_com_action.cpp:40-44，SVE-ST-C11-P02-09），CommonGameContext::SendCancelNotice 下发 MsgNotifyInfo flag=kNIFExCancelPass（common_game/com_game/common_game_context.cpp:100-105），随后 ConAction::ClearUserConAction 只清本座位待办（mah_frame/base/con_action.cpp:70，SVE-ST-C11-P02-12）、DoActionCancel 结束本次操作窗口回 con_max_server_step_state_（com_action.cpp:712，SVE-ST-C11-P02-08），「只放弃本次」已确证；但本轮证据与首轮同一组 SVE 无新增，且该通知在本端客户端被显式忽略（GameNotifyInfoCmd.ts:36-38「点击过通知不触发客户端提示」），按钮与预览的收起仍在平台层完成，缺口未补，维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（查到服务端实现不等于需求一致，客户端预览收起未证，维持 partial）",
-   "scopeApplicability": "active",
-   "scopeNote": "过牌只清本座位待办（con_action.cpp:70）并结束本次动作窗口（com_action.cpp:720），同时发 kNIFExCancelPass 通知（common_game_context.cpp:100）供客户端收起，SVE-ST-C11-P02-08/09/12",
-   "evidenceIds": [
-    "SVE-ST-C11-P02-08",
-    "SVE-ST-C11-P02-09",
-    "SVE-ST-C11-P02-12"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
-  },
-  {
-   "atomId": "AT-ST-C11-019",
-   "previousDifference": "partial",
-   "reviewedDifference": "partial",
-   "reviewReason": "需求语义：按钮从左到右【吃】【碰】【杠】【胡】，蓝色【过】固定最右，只显示本次可做的项。服务端实现：GetPowerAndCombs 只聚合本座位 con_combs_ 中实际存在的 power 位与组合、无权限不返回（mah_frame/com_basic/com_action.cpp:797-823，SVE-ST-C11-P02-01），SetActionPower 逐座位写入（com_action.cpp:952-957）后 SendPowerToClient 按座位下发可做项（com_action.cpp:983-1005，SVE-ST-C11-P02-04），「只显示可做项」成立；GetConActionWeight 只定义吃/碰/杠/胡仲裁等级（com_action.cpp:826-832，SVE-ST-C11-P02-21），MsgPower 无按钮顺序、配色或【过】置右字段，这些属客户端排版渲染，服务端证据不覆盖，维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（服务端证据不覆盖排列与配色细节，维持 partial）",
-   "scopeApplicability": "active",
-   "scopeNote": "服务端按座位只聚合本次实际存在的 power/comb 下发（com_action.cpp:797-823、983-1005，SVE-ST-C11-P02-01/04），按钮从左到右与蓝色【过】置右属客户端渲染，SVE-ST-C11-P02-21",
-   "evidenceIds": [
-    "SVE-ST-C11-P02-01",
-    "SVE-ST-C11-P02-04",
-    "SVE-ST-C11-P02-21"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
-  },
-  {
-   "atomId": "AT-ST-C11-021",
-   "previousDifference": "unverified",
-   "reviewedDifference": "unverified",
-   "reviewReason": "本轮未出复核建议，维持基线差异",
-   "scopeApplicability": "active",
-   "scopeNote": "倒计时统一取服务端 power_time 生成 clock（com_action.cpp:841-844）随 MsgPower 下发（base_context.cpp:537），各端同源；归零后仍可点属客户端不禁用逻辑，SVE-ST-C11-P02-24/25/04",
-   "evidenceIds": [
-    "SVE-ST-C11-P02-24",
-    "SVE-ST-C11-P02-25",
-    "SVE-ST-C11-P02-04"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
-  },
-  {
-   "atomId": "AT-ST-C11-027",
-   "previousDifference": "partial",
-   "reviewedDifference": "partial",
-   "reviewReason": "需求语义：较低优先级先提交时，本端收起自己的按钮并等待。服务端实现：OnMsgChowC 校验通过后只调 OnConAction 登记 kStepLevelChow（mah_frame/com_basic/com_action.cpp:153-210，SVE-ST-C11-P03-17），ConAction::OnConAction 写 had_resp_ 并重算最大权重、最高等级未响应即 return false 挂起（mah_frame/base/con_action.cpp:19-61，SVE-ST-C11-P03-16），GetConActionWeight 仅在非一炮多响时给胡叠加座位权重（com_action.cpp:826-832，SVE-ST-C11-P03-27），hzmj 固定 SetDuoXiang(false)（common_game/com_game/common_game_server_config.cpp:11，SVE-ST-C11-P03-26），DealTimeOutAction 对已响应座位直接返回不代打（com_action.cpp:62-80，SVE-ST-C11-P03-18），框架按 GetLevel 通用优先级仲裁（common_game/com_game/common_game_com_action.h:3-11，SVE-ST-C11-P03-19）；「等待/不执行」机制已确证，但收起按钮与等待的界面状态属客户端渲染，本轮无新增客户端证据，维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（服务端仲裁挂起已确证，但“等待”界面状态缺失属客户端渲染差异，维持原判）",
-   "scopeApplicability": "active",
-   "scopeNote": "低等级提交只登记不执行，最高等级未响应即挂起等待（con_action.cpp:38-57），已响应座位到点也不代操作（com_action.cpp:76-80），SVE-ST-C11-P03-16/17/18/19/26/27",
-   "evidenceIds": [
-    "SVE-ST-C11-P03-16",
-    "SVE-ST-C11-P03-17",
-    "SVE-ST-C11-P03-18",
-    "SVE-ST-C11-P03-19",
-    "SVE-ST-C11-P03-26",
-    "SVE-ST-C11-P03-27"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
-  },
-  {
-   "atomId": "AT-ST-C11-030",
-   "previousDifference": "partial",
-   "reviewedDifference": "partial",
-   "reviewReason": "需求语义：点【吃】后在手牌上方展开可选顺子（含相对手牌的上下位置）。服务端实现：BoxChowStep::Judge 调 TestChow 生成候选 chow_combs_（common_game/com_game/common_game_com_action.cpp:82，SVE-ST-C11-P04-01）→ ChowStep::MakePower 把候选整体写入 TPower.combs（mah_frame/com_basic/com_chow.cpp:80，SVE-ST-C11-P04-02）→ BaseContext::FillMsgPower 逐条 TcombToMsgComb 写 MsgPower.combs（mah_frame/base/base_context.cpp:876，SVE-ST-C11-P04-03），并受 only_pung_no_chow（common_game_com_action.cpp:75-80，SVE-ST-C11-P04-04；hzmj_server/game_logic.cpp:112，SVE-ST-C11-P04-05）、rule_chi_peng 次数限制（common_game_algorithm.cpp:79，SVE-ST-C11-P04-07）、三摊承包（common_game_algorithm.cpp:86，SVE-ST-C11-P04-08）与 enable_chow_forbid（common_game_com_action.cpp:86-100，SVE-ST-C11-P04-09）门控；消息仅承载 comb 数据，无面板相对手牌位置字段，位置语义不在服务端可证范围，维持 partial。",
-   "reviewRule": "no-server-evidence-is-not-conflict（服务端仅证候选集合下发与配置门控，未覆盖界面位置，维持原判）",
-   "scopeApplicability": "conditional",
-   "scopeNote": "点吃后候选集合来自服务端 TestChow（common_game_com_action.cpp:82、com_chow.cpp:80、base_context.cpp:876）；是否生成吃权限受 rule_chi_peng/only_pung_no_chow/三摊/吃禁手多条件过滤（game_logic.cpp:112-133、common_game_algorithm.cpp:79-93、common_game_com_action.cpp:75-100），故 conditional",
-   "evidenceIds": [
-    "SVE-ST-C11-P04-01",
-    "SVE-ST-C11-P04-02",
-    "SVE-ST-C11-P04-03",
-    "SVE-ST-C11-P04-04",
-    "SVE-ST-C11-P04-05",
-    "SVE-ST-C11-P04-06",
-    "SVE-ST-C11-P04-07",
-    "SVE-ST-C11-P04-08",
-    "SVE-ST-C11-P04-09",
-    "SVE-ST-C11-P04-10"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
-  },
-  {
    "atomId": "AT-ST-C11-034",
    "previousDifference": "unverified",
    "reviewedDifference": "consistent",
@@ -6167,45 +5950,7 @@
    "l7": "verified",
    "reviewStatus": "approved",
    "effectiveDifference": "consistent",
-   "l7Basis": "approved",
-   "approvedDate": "2026-11-14"
-  },
-  {
-   "atomId": "AT-ST-C11-038",
-   "previousDifference": "partial",
-   "reviewedDifference": "partial",
-   "reviewReason": "需求语义：暗杠与加杠混排，整体顺序为万、条、筒、东、南、西、北、中、发、白，同花色按点数升序。服务端实现：MKongStep/CKongStep/TKongStep::MakePower 均以 kPowerIdKong 追加 TPower 进同一候选池（mah_frame/com_basic/com_kong.cpp:116/261/438，SVE-ST-C11-P05-03/04/05），「混排」成立；但 ActionStep::AddCombsMap 只 push_back 追加、无任何排序（mah_frame/com_basic/com_action.cpp:914-927，SVE-ST-C11-P05-06），BaseContext::FillMsgPower 按 combs 原序下发（mah_frame/base/base_context.cpp:890-894，SVE-ST-C11-P05-02），源码无花色序列与点数升序分支，顺序实际由步骤注册与组合生成顺序决定，未与规则同构，维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（服务端证据仅证混排、无排序分支，顺序细节未与规则同构，维持 partial）",
-   "scopeApplicability": "active",
-   "scopeNote": "明杠/暗杠/加杠 MakePower 均以 kPowerIdKong 进同一候选池（com_kong.cpp:116/261/438），AddCombsMap 只追加不排序（com_action.cpp:922），按列表原序下发（base_context.cpp:890-894）；万条筒点数排序未在服务端实现",
-   "evidenceIds": [
-    "SVE-ST-C11-P05-03",
-    "SVE-ST-C11-P05-04",
-    "SVE-ST-C11-P05-05",
-    "SVE-ST-C11-P05-06",
-    "SVE-ST-C11-P05-02"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
-  },
-  {
-   "atomId": "AT-ST-C11-039",
-   "previousDifference": "unverified",
-   "reviewedDifference": "unverified",
-   "reviewReason": "本轮未出复核建议，维持基线差异",
-   "scopeApplicability": "active",
-   "scopeNote": "倒计时到点仅触发服务端代操作（com_action.cpp:62-114，SVE-ST-C11-P05-07），上行入口无剩余时间校验（OnMsgKongC com_action.cpp:431-491，SVE-ST-C11-P05-12），SVE-ST-C11-P05-08 证实 clock 由服务端统一下发",
-   "evidenceIds": [
-    "SVE-ST-C11-P05-07",
-    "SVE-ST-C11-P05-08",
-    "SVE-ST-C11-P05-12"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
+   "l7Basis": "approved"
   },
   {
    "atomId": "AT-ST-C11-051",
@@ -6220,43 +5965,6 @@
    "l7": "verified",
    "reviewStatus": "pending",
    "effectiveDifference": "consistent",
-   "l7Basis": "proposed"
-  },
-  {
-   "atomId": "AT-ST-C11-056",
-   "previousDifference": "partial",
-   "reviewedDifference": "partial",
-   "reviewReason": "需求语义：吃/碰/直杠/暗杠的新牌组按成立顺序从左往右追加。服务端实现：SetChowCombs（mah_frame/base/base_data.cpp:980，SVE-ST-C11-P06-16）、AddAllCombs（mah_frame/base/base_data.cpp:854，SVE-ST-C11-P06-17）、SetPungCombs（mah_frame/base/base_data.cpp:1546，SVE-ST-C11-P06-23）均 push_back 追加，ChowStep::CheckChow（mah_frame/com_basic/com_chow.cpp:108-109）/PungStep::CheckPung（mah_frame/com_basic/com_pung.cpp:135-136）成立即写入，BaseContext::FillMsgPlayerMah 按 GetAllCombs 列表顺序逐组下发（mah_frame/base/base_context.cpp:855-859，SVE-ST-C11-P06-24），「成立顺序」成立；消息数组无左右方向字段，往左/往右排布由客户端副露组件决定，维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（服务端仅确证成立顺序，左往右排布属客户端，细节差异维持原判）",
-   "scopeApplicability": "active",
-   "scopeNote": "吃/碰/杠副露统一 push_back 追加（base_data.cpp:854/980/1546，SVE-ST-C11-P06-16/17/23），按列表顺序逐组下发（base_context.cpp:855-859，SVE-ST-C11-P06-24）；左右方向由客户端排布",
-   "evidenceIds": [
-    "SVE-ST-C11-P06-17",
-    "SVE-ST-C11-P06-16",
-    "SVE-ST-C11-P06-23",
-    "SVE-ST-C11-P06-24"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
-  },
-  {
-   "atomId": "AT-ST-C11-057",
-   "previousDifference": "unverified",
-   "reviewedDifference": "unverified",
-   "reviewReason": "本轮未出复核建议，维持基线差异",
-   "scopeApplicability": "active",
-   "scopeNote": "直杠/暗杠/补杠由 flag 三值固定区分（macros.h:133-135）并随 MsgKongS 下发（base_context.cpp:519-520），TestMKong/TestCKong/TestTKong 分别置 flag（algorithm.cpp:3182/3212/3251，SVE-ST-C11-P01-42）；补/手掌标记图像属客户端资源",
-   "evidenceIds": [
-    "SVE-ST-C11-P07-01",
-    "SVE-ST-C11-P07-02",
-    "SVE-ST-C11-P07-03",
-    "SVE-ST-C11-P01-42"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
    "l7Basis": "proposed"
   },
   {
@@ -6306,79 +6014,6 @@
    "l7Basis": "proposed"
   },
   {
-   "atomId": "AT-ST-C11-064",
-   "previousDifference": "partial",
-   "reviewedDifference": "partial",
-   "reviewReason": "需求语义：胡牌张单独摆在胡牌者手牌右侧（与手牌分隔）。服务端实现：BoxHuStep::CheckHu 用 SetHuDanFang/SetHuDfFrom 单独记录胡牌进张与来源（common_game/com_game/common_game_com_action.cpp:573，SVE-ST-C11-P07-17），FillMsgResultHu 以独立 dan_fang 字段下发（common_game/common_game_context.cpp:161，SVE-ST-C11-P07-18），数据层确实可分离；但埋点 BoxResultStep::GetResultJson 仍把胡张 push_back 到手牌末尾凑 14 张（common_game/com_game/common_game_com_result.cpp:462，SVE-ST-C11-P07-19），与手牌的分隔/右侧单列摆放属客户端布局，服务端证据不足以证明与规则同构，维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（服务端仅证数据可分离，客户端拼接布局细节差异维持原判）",
-   "scopeApplicability": "active",
-   "scopeNote": "胡牌进张单独存为 dan_fang（common_game_com_action.cpp:573）并以独立字段下发（common_game_context.cpp:161）；补在手牌末尾（common_game_com_result.cpp:462），与手牌的分隔/右侧摆放属客户端渲染",
-   "evidenceIds": [
-    "SVE-ST-C11-P07-17",
-    "SVE-ST-C11-P07-18",
-    "SVE-ST-C11-P07-19"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
-  },
-  {
-   "atomId": "AT-ST-C11-066",
-   "previousDifference": "partial",
-   "reviewedDifference": "partial",
-   "reviewReason": "需求语义：胡牌张位于胡牌者手牌尾端，带浅绿描边与来源箭头。服务端实现：CheckHu 无条件 SetHuDanFang/SetHuDfFrom（common_game/com_game/common_game_com_action.cpp:573-574，SVE-ST-C11-P07-17）；FillMsgResultHu 恒下发 df_from 与 dan_fang（common_game/common_game_context.cpp:160-161，SVE-ST-C11-P07-26/18），胡张单独下发、供客户端补在手牌尾端并画来源箭头；结算侧胡张补入手牌后仍走 SortMahs 排序（common_game/com_game/common_game_com_result.cpp:461-464，SVE-ST-C11-P07-19）。故“来源箭头数据链路”确证，但“尾端位置”依赖客户端用 dan_fang 追加的渲染口径、浅绿描边属牌面组件资源，二者无服务端证据，第一轮缺口未闭合。",
-   "reviewRule": "evidence-is-not-consistency（服务端已确证 df_from/dan_fang 下发，尾端位置与浅绿描边仍属客户端渲染细节，维持 partial）",
-   "scopeApplicability": "active",
-   "scopeNote": "复核实读 common_game_com_action.cpp:573-574 无条件记录胡张与来源座位、common_game_context.cpp:160-161 df_from/dan_fang 恒下发、common_game_com_result.cpp:461-462 胡张补入手牌（SVE-ST-C11-P07-17/18/26/19），无玩法配置分支，浅绿描边属客户端牌面资源渲染，维持 active。",
-   "evidenceIds": [
-    "SVE-ST-C11-P07-17",
-    "SVE-ST-C11-P07-18",
-    "SVE-ST-C11-P07-26",
-    "SVE-ST-C11-P07-19"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
-  },
-  {
-   "atomId": "AT-ST-C11-068",
-   "previousDifference": "partial",
-   "reviewedDifference": "partial",
-   "reviewReason": "需求语义：随后按座位飘分，正分黄色、负分灰色。服务端实现：打出财神即 SetPiaoCount(seat)+1 并 BroadcastPiao（common_game/com_game/common_game_com_play.cpp:62-66，SVE-ST-C11-P07-29），MsgPiao 带 seat 与 piao_count 按座位下发（common_game/com_game/common_game_context.cpp:93-98，SVE-ST-C11-P07-30），重连按座位补发 piao_counts 数组（common_game/common_game_context.cpp:562，SVE-ST-C11-P07-31），“按座位飘分”确证。但正黄/负灰由客户端 fnt_win/fnt_lose 字体资源决定，服务端只下发数值无颜色信息，第一轮缺口（颜色）未闭合。",
-   "reviewRule": "evidence-is-not-consistency（服务端已确证按座位 piao_count 下发，正黄/负灰配色属客户端字体资源，维持 partial）",
-   "scopeApplicability": "active",
-   "scopeNote": "复核实读 common_game_com_play.cpp:63-66 打出财神按座位累加 piao_count 并广播、common_game_context.cpp:93-98 MsgPiao 带 seat+piao_count、common_game_context.cpp:562 重连按座位补发 piao_counts（SVE-ST-C11-P07-29/30/31），飘分以座位为粒度恒实现，正黄/负灰由客户端 fnt_win/fnt_lose 字体决定，维持 active。",
-   "evidenceIds": [
-    "SVE-ST-C11-P07-29",
-    "SVE-ST-C11-P07-30",
-    "SVE-ST-C11-P07-31"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
-  },
-  {
-   "atomId": "AT-ST-C12-001",
-   "previousDifference": "unverified",
-   "reviewedDifference": "unverified",
-   "reviewReason": "本轮未出复核建议，维持基线差异",
-   "scopeApplicability": "conditional",
-   "scopeNote": "四源取摊仅吃/碰/明杠三处 SetTanCount（grep 全量确认），吃恒记摊、碰与明杠受 pung_as_tan 开关控制（SVE-ST-C12-P01-01/02/03/04），故记摊口径随创房配置变化",
-   "evidenceIds": [
-    "SVE-ST-C12-P01-01",
-    "SVE-ST-C12-P01-02",
-    "SVE-ST-C12-P01-03",
-    "SVE-ST-C12-P01-04"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
-  },
-  {
    "atomId": "AT-ST-C12-004",
    "previousDifference": "unverified",
    "reviewedDifference": "consistent",
@@ -6398,27 +6033,6 @@
    "reviewStatus": "approved",
    "effectiveDifference": "consistent",
    "l7Basis": "approved"
-  },
-  {
-   "atomId": "AT-ST-C12-009",
-   "previousDifference": "partial",
-   "reviewedDifference": "partial",
-   "reviewReason": "需求语义：四端播放「三摊落地」，且可与吃牌字效同时显示。服务端实现：吃/碰/明杠记摊后 BroadcastTanUpdate 以 SendMessage(msg.ID, msg, 0)（chair_id 缺省 INVALID_ID）全桌广播（common_game/common_game_context.cpp:65-73，SVE-ST-C12-P01-23；mah_frame/interface/game_interface.h:22-26，SVE-ST-C12-P01-33）；吃牌路径 BroadcastTanUpdate 与 SendChow 同函数先后下发（common_game/com_game/common_game_com_action.cpp:143-157，SVE-ST-C12-P01-34），二者无互斥；但 MsgTanUpdate 只带 from_seat/to_seat/tan_count/bao_relation，不含落点/方位字段（common_game/protocol/hzmj_protocol.proto:68-93，SVE-ST-C12-P01-24）。「四端按方位播放」仍取决于客户端单居中节点（未按座位定位）与 simple_mode 表现抑制（hzmj_server/game_logic.cpp:164-166，SVE-ST-C12-P01-25），服务端广播仅证明数据到达所有端，不决定客户端落点与是否抑制，第一轮缺口未闭合，维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（服务端仅确证全桌广播与同批下发，四端按方位落地与简洁模式抑制属客户端表现细节，维持 partial）",
-   "scopeApplicability": "conditional",
-   "scopeNote": "服务端以不带 chair_id 的 SendMessage 向全桌下发 MsgTanUpdate（SVE-ST-C12-P01-23/28），且与 SendChow 同函数先后发出可同屏（SVE-ST-C12-P01-34）；但消息是否产生受 enable_three_tan_bao 控制、表现是否抑制受 simple_mode 控制，故为 conditional",
-   "evidenceIds": [
-    "SVE-ST-C12-P01-23",
-    "SVE-ST-C12-P01-24",
-    "SVE-ST-C12-P01-25",
-    "SVE-ST-C12-P01-14",
-    "SVE-ST-C12-P01-33",
-    "SVE-ST-C12-P01-34"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
   },
   {
    "atomId": "AT-ST-C13-001",
@@ -6533,46 +6147,6 @@
    "l7Basis": "approved"
   },
   {
-   "atomId": "AT-ST-C13-011",
-   "previousDifference": "partial",
-   "reviewedDifference": "partial",
-   "reviewReason": "需求语义：点炮胡、抢杠胡无承包时只算赢家与赔付者一笔，该笔按庄闲 8 倍，另两家 0 分。服务端实现：点炮分支为单一付款方 pay = base_score × fan_mult × banker_mult × win_double_mult（common_game/common_game_com_result.cpp:107-112，SVE-ST-C13-P01-32），与规则同构；但抢杠分支默认 IsRobKongSettleAsDiscard = false（common_game/common_game_com_result.h:69，SVE-ST-C13-P01-34），按三家钱总额计付（庄家胡 pay = base×fan×banker_mult×opp_count，4 人局 24 倍；闲家胡 pay = base×fan×(banker_mult+opp_count-1)，SVE-ST-C13-P01-33），并非单笔 8 倍，赔付口径细节差异维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（点炮分支同构，但抢杠按三家钱总额而非单笔 8 倍，细节差异维持原判）",
-   "scopeApplicability": "conditional",
-   "scopeNote": "SVE-ST-C13-P01-32/35/42 直证点炮为单一付款方单笔（com_result.cpp:107-112），抢杠/放铳入口受 enable_banker_discard_hu 与三牢门槛门控（com_action.cpp:353-357、383-399），conditional",
-   "evidenceIds": [
-    "SVE-ST-C13-P01-32",
-    "SVE-ST-C13-P01-33",
-    "SVE-ST-C13-P01-34",
-    "SVE-ST-C13-P01-35",
-    "SVE-ST-C13-P01-42"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
-  },
-  {
-   "atomId": "AT-ST-C13-012",
-   "previousDifference": "unverified",
-   "reviewedDifference": "unverified",
-   "reviewReason": "本轮未出复核建议，维持基线差异",
-   "scopeApplicability": "conditional",
-   "scopeNote": "SVE-ST-C13-P01-36/40 直证 ApplyBaoContracts 由 enable_three_tan_bao 门控并整体改写 payments（com_result.cpp:290,354；game_logic.cpp:67-83），conditional",
-   "evidenceIds": [
-    "SVE-ST-C13-P01-36",
-    "SVE-ST-C13-P01-37",
-    "SVE-ST-C13-P01-38",
-    "SVE-ST-C13-P01-39",
-    "SVE-ST-C13-P01-40",
-    "SVE-ST-C13-P01-41"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
-  },
-  {
    "atomId": "AT-ST-C13-014",
    "previousDifference": "unverified",
    "reviewedDifference": "consistent",
@@ -6591,23 +6165,6 @@
    "l7Basis": "approved"
   },
   {
-   "atomId": "AT-ST-C14-001",
-   "previousDifference": "unverified",
-   "reviewedDifference": "unverified",
-   "reviewReason": "本轮未出复核建议，维持基线差异",
-   "scopeApplicability": "active",
-   "scopeNote": "SVE-ST-C14-P01-01/02 直证 Judge(:270-298) 按状态机写 NextHuType 再分派，TestHu 先拆牌型(:444)再 TestFan 判番(:488)，胡牌方式经 IsSelfTake(fan_type.cpp:15，SVE-ST-C14-P01-06) 参与番型判定，无配置依赖。",
-   "evidenceIds": [
-    "SVE-ST-C14-P01-01",
-    "SVE-ST-C14-P01-02",
-    "SVE-ST-C14-P01-06"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
-  },
-  {
    "atomId": "AT-ST-C14-010",
    "previousDifference": "unverified",
    "reviewedDifference": "consistent",
@@ -6624,123 +6181,6 @@
    "reviewStatus": "approved",
    "effectiveDifference": "consistent",
    "l7Basis": "approved"
-  },
-  {
-   "atomId": "AT-ST-C14-011",
-   "previousDifference": "unverified",
-   "reviewedDifference": "unverified",
-   "reviewReason": "本轮未出复核建议，维持基线差异",
-   "scopeApplicability": "conditional",
-   "scopeNote": "SVE-ST-C14-P01-22/23/24 补证：cai_shen_type==0 时 cai_shen=MV_BAI_BAN 并 AddJoker(com_ju.cpp:229/253)，有财神即走 JokerTestHu 并在拆解前剥离为 joker_count(algorithm.cpp:2048/3293)，SVE-ST-C14-P01-18/19 直证 CountQuadPairGroups 无白板排除分支，故默认白板不计豪华、翻财神时按实牌计。",
-   "evidenceIds": [
-    "SVE-ST-C14-P01-18",
-    "SVE-ST-C14-P01-19",
-    "SVE-ST-C14-P01-22",
-    "SVE-ST-C14-P01-23",
-    "SVE-ST-C14-P01-24"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
-  },
-  {
-   "atomId": "AT-ST-C14-029",
-   "previousDifference": "partial",
-   "reviewedDifference": "partial",
-   "reviewReason": "需求语义：财神牌面染红、可点击、没有角标（客户端表现）。服务端实现：仅固定下发财神牌值与 open 标记（common_game/common_game_context.cpp:49，SVE-ST-C14-P03-19），财神打出由 CheckPlay 正常受理（common_game/common_game_com_play.cpp:63，SVE-ST-C14-P03-20）；但 MakePower（common_game/common_game_com_play.cpp:23，SVE-ST-C14-P03-21）在飘财受限座位下发禁打黑名单，'可点击'仍受服务端受限，且染色/角标无服务端可核证据，细节差异维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（服务端证据未证明可点击无条件成立，细节差异维持原判）",
-   "scopeApplicability": "active",
-   "scopeNote": "SVE-ST-C14-P03-19/20/21/22 直证服务端只下发财神牌值与 open 标记（常见表现属客户端）、财神打出正常受理，仅飘财受限座位 common_game_com_play.cpp:23 下发禁打黑名单；SVE-ST-C14-P01-22 补证财神牌值来源固定。",
-   "evidenceIds": [
-    "SVE-ST-C14-P03-19",
-    "SVE-ST-C14-P03-20",
-    "SVE-ST-C14-P03-21",
-    "SVE-ST-C14-P03-22",
-    "SVE-ST-C14-P01-22"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
-  },
-  {
-   "atomId": "AT-ST-C15-004",
-   "previousDifference": "unverified",
-   "reviewedDifference": "unverified",
-   "reviewReason": "本轮未出复核建议，维持基线差异",
-   "scopeApplicability": "active",
-   "scopeNote": "实读确认 StartWait(step.cpp:296-311) 为全桌 player clock 唯一重设点，Step::End(:24) 仅置 wait 标志，结算以 SendEndGame(:188) 为结束信号，固定机制无配置分支（SVE-ST-C15-P01-12/13/14/15）",
-   "evidenceIds": [
-    "SVE-ST-C15-P01-12",
-    "SVE-ST-C15-P01-13",
-    "SVE-ST-C15-P01-14",
-    "SVE-ST-C15-P01-15",
-    "SVE-ST-C15-P01-04"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "unverified",
-   "l7Basis": "proposed"
-  },
-  {
-   "atomId": "AT-ST-C15-005",
-   "previousDifference": "partial",
-   "reviewedDifference": "partial",
-   "reviewReason": "需求语义：在原牌桌亮出四家手牌，桌面中央显示「对局结束」。服务端实现：FillMsgPlayerHands 对 0..player_count-1 无条件下发每座 hands/combs/dan_fang（common_game/common_game_context.cpp:405-420，SVE-ST-C15-P01-16），胡家手牌另取 GetSettleHands（common_game_context.cpp:789，SVE-ST-C15-P01-17），SendEndGame 以 end_type 作结束信号（mah_frame/base/base_context.cpp:188，SVE-ST-C15-P01-04）；亮牌与结束信号链路已确证，但「对局结束」为客户端图标资源，仓库内无图源、无服务端可核证据，细节差异维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（服务端已确证全桌亮牌与结束信号，「对局结束」图文属客户端资源，细节差异维持原判）",
-   "scopeApplicability": "active",
-   "scopeNote": "FillMsgPlayerHands(context.cpp:407-420) 对 0..n-1 无条件写 seat/hands/combs，FillMsgResultHu:200 恒调用，胡家另取出牌区（:789），好友房无开关分支（SVE-ST-C15-P01-16/17）",
-   "evidenceIds": [
-    "SVE-ST-C15-P01-16",
-    "SVE-ST-C15-P01-17",
-    "SVE-ST-C15-P01-10",
-    "SVE-ST-C15-P01-04"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
-  },
-  {
-   "atomId": "AT-ST-C15-006",
-   "previousDifference": "partial",
-   "reviewedDifference": "partial",
-   "reviewReason": "需求语义：黄庄亮四家手牌、中央显示「黄庄」，保留终局牌河、财神与余牌数 20。服务端实现：TakeStep::IsDrawn 以 CountWalls()<=GetDrawnCnt() 判定（mah_frame/com_basic/com_take.cpp:118，SVE-ST-C15-P01-18），InitConfigByBox 固定 SetDrawnCnt(20) 且 2/3/4 人同值（hzmj_server/server_config.cpp:33，SVE-ST-C15-P01-19），NextTakeStep 置 kEtDrawn 并走结算（com_take.cpp:151，SVE-ST-C15-P01-20），FillMsgRemainingWallCards 逐张下发余牌（common_game_context.cpp:423，SVE-ST-C15-P01-21）；阈值 20 与余牌下发与规则同构，但「黄庄」提示图文及牌河/财神保留展示属客户端，无服务端证据，维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（阈值 20 与余牌数据已确证，「黄庄」图文与保留展示属客户端，细节差异维持原判）",
-   "scopeApplicability": "active",
-   "scopeNote": "IsDrawn(com_take.cpp:118-121) 阈值唯一来源 server_config.cpp:33 SetDrawnCnt(20)，LoadBoxJsonConfig 无 drawn_cnt 键（2/3/4 人同值），余牌数由 FillMsgRemainingWallCards:423 逐张下发，无配置依赖",
-   "evidenceIds": [
-    "SVE-ST-C15-P01-18",
-    "SVE-ST-C15-P01-19",
-    "SVE-ST-C15-P01-20",
-    "SVE-ST-C15-P01-21",
-    "SVE-ST-C15-P01-04"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
-  },
-  {
-   "atomId": "AT-ST-C15-007",
-   "previousDifference": "partial",
-   "reviewedDifference": "partial",
-   "reviewReason": "需求语义：「对局结束」仍在时，胡牌者方位播放番型字效。服务端实现：CheckHu 经 CountFan 取最高番拆解写 HuFancnts（mah_frame/base/algorithm.cpp:1811，SVE-ST-C15-P01-23），FillMsgResultHu 按 hu_seat 无条件 add_fan_ids 并下发番明细（common_game/common_game_context.cpp:165-167、:389-402，SVE-ST-C15-P01-22/10）；番型数据链路已确证，但「对局结束仍在时」的时序重叠与字效时长（结束字样仅 1 秒）属客户端时序表现，无服务端证据，维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（番型数据已确证，时序重叠与字效时长属客户端，细节差异维持原判）",
-   "scopeApplicability": "active",
-   "scopeNote": "CheckHu(com_action.cpp:591-603) 以 CountFan(algorithm.cpp:1811) 最高番写 HuFancnts，FillMsgResultHu:165-167 按 hu_seat 无条件 add_fan_ids，FillMsgFanDetails:396-401 逐条下发 mult，无配置分支（SVE-ST-C15-P01-22/23）",
-   "evidenceIds": [
-    "SVE-ST-C15-P01-06",
-    "SVE-ST-C15-P01-22",
-    "SVE-ST-C15-P01-23",
-    "SVE-ST-C15-P01-10",
-    "SVE-ST-C15-P01-31"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
   },
   {
    "atomId": "AT-ST-C15-008",
@@ -6763,17 +6203,54 @@
    "l7Basis": "approved"
   },
   {
-   "atomId": "AT-ST-C15-009",
+   "atomId": "AT-ST-C15-024",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "reviewReason": "需求语义：底部栏按住 500 毫秒临时收起小结算、按本家视角查看终局牌桌、松手恢复同一张小结算；原子 notes 已界定 500ms 判定与收起/恢复小结算本体由公共壳实现，本工程只提供事件出口与桌面财神高亮。客户端实现：BoxHzmjResultView.onPressShowTable/onPressHideTable（Code/layer/BoxHzmjResultView.ts:98/103）分别 dispatch onResultShowTable/onResultHideTable，BoxHzmjMah2DView.onResultShowTable/onResultHideTable（Code/layer/BoxHzmjMah2DView.ts:1151/1160）消费事件执行 showSpecialMah(joker) 高亮本家视角桌面财神、松手 showSpecialMah(0) 清除（SVE-ST-C15-PC01-01/02），事件名定义见 Code/config/FguiViewDefine.ts:358-361。事件出口与高亮职责与 notes 划定的本工程边界逐项对应，无相反语义，属规则 2 可升级情形。",
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "scopeApplicability": "client",
+   "scopeNote": "定位到客户端实现：小结算视图提供长按/松手事件出口（BoxHzmjResultView.ts:98/103），牌桌视图消费事件做桌面财神高亮与清除（BoxHzmjMah2DView.ts:1151/1160）；按住 500ms 时序与面板收起恢复在公共壳基类（不在两根目录）内，属壳层职责，游戏侧实现与规则语义同构。",
+   "evidenceIds": [
+    "SVE-ST-C15-PC01-01",
+    "SVE-ST-C15-PC01-02"
+   ],
+   "l7": "verified",
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved"
+  },
+  {
+   "atomId": "AT-ST-C15-025",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求语义：非末局底部中央【继续游戏】点击后本端收起小结算、清除上一局手牌/碰杠区/牌河、保留座位与累计积分、本家显示「已准备」，四人均准备自动开下一小局；第 8 局按钮为【返回大厅】并退出房间。客户端实现：BoxHzmjResultView.onContinueResult 在游戏层为空实现、onResultContinue/onResetUI 派发被注释（Code/layer/BoxHzmjResultView.ts:119-122，SVE-ST-C15-PC01-03），继续按钮的清桌与准备表现改由壳层/房间准备链路承担——gameController.playerReadyBack 在准备成功（flag===0）时 dispatch onResetUI 并 onShowActionSign(SELF_LOCAL_SEAT, kReady)（Code/controller/gameController.ts:177-182），BoxHzmjMainView.playAgain 监听壳层 onPlayAgain 派发 onResetUI（Code/layer/BoxHzmjMainView.ts:372-375），resetUI 经 GameData.clearData 清局内数据（:399-401）；「已准备」控件与显示逻辑存在（Code/layer/BoxHzmjPlayerView.ts:528-565，C_Ready pages 0/hide,1/none,2/ready 与 KW_ICON_READY 见 Fgui/assets/box_hzmj_player/component/PlayerSelfBase.xml:5/14-16，SVE-ST-C15-PC01-04/05）。因此实现并非与需求相反，而是清桌/准备由准备回包与 onPlayAgain 驱动、与继续按钮的直连被显式置空；末局判定与【返回大厅】退出房间在 Code/Fgui 两根目录零命中、由房间层承担（C_IsLastRound 仅见 Code/config/FguiViewDefine.ts:364 说明与 BoxHzmjResultView.ts:147 转发注释）。细节差异与未知项尚存，维持 partial。",
+   "reviewRule": "evidence-is-not-consistency（细节差异，维持 partial）",
+   "scopeApplicability": "client",
+   "scopeNote": "定位于客户端但实现与规则不等价：继续按钮回调在游戏层被显式置空（BoxHzmjResultView.ts:119-122），局内清桌与准备由壳层/房间准备消息另行驱动；准备标识控件与显示逻辑已存在（BoxHzmjPlayerView.ts:528-565、Fgui PlayerSelfBase.xml:5/14-16），末局判定与返回大厅在两根目录检索零命中，故落 client 相反实现。",
+   "evidenceIds": [
+    "SVE-ST-C15-PC01-03",
+    "SVE-ST-C15-PC01-04",
+    "SVE-ST-C15-PC01-05"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C03-002",
    "previousDifference": "unverified",
    "reviewedDifference": "unverified",
    "reviewReason": "本轮未出复核建议，维持基线差异",
    "scopeApplicability": "active",
-   "scopeNote": "FillMsgResultHu:197 内嵌 FillMsgPlayerScore，好友房口径 base_context.cpp:986-989 逐座累加，grep 确认 SendPlayerScore(:748) 无调用点，头像积分随 1286 单路径下发（SVE-ST-C15-P01-26/27）",
+   "scopeNote": "复核实读：TakeFirstStep::TakeFirst(mah_frame/com_basic/com_ju.cpp:279-286) 恒以 FirstCount-1 一次性逐张补满每家，FirstCount 由 base_config.cpp:6 取 DEF_FIRST_COUNT=14 且好友房 BoxTakeFirstStep(common_game/com_game/common_game_com_ju.cpp:276) 不覆写，无玩法配置分支，固定发牌机制恒实现；“4 张×3 轮”的分轮节奏为客户端表现，服务端不实现轮次结构，故 scope 结论维持 active（SVE-ST-C03-P01-04/PR01-02/PR201-01/PR201-02）。",
    "evidenceIds": [
-    "SVE-ST-C15-P01-26",
-    "SVE-ST-C15-P01-27",
-    "SVE-ST-C15-P01-10",
-    "SVE-ST-C15-P01-02"
+    "SVE-ST-C03-P01-04",
+    "SVE-ST-C03-P01-05",
+    "SVE-ST-C03-PR01-02",
+    "SVE-ST-C03-PR01-03",
+    "SVE-ST-C03-PR201-01",
+    "SVE-ST-C03-PR201-02"
    ],
    "l7": "verification_required",
    "reviewStatus": "pending",
@@ -6781,13 +6258,619 @@
    "l7Basis": "proposed"
   },
   {
+   "atomId": "AT-ST-C05-007",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：任意他人刚打出的非财神与手中两张相同非财神组成刻子。服务端实现：BoxPungStep::Judge(common_game_com_pung.cpp:30,36) 仅排除出牌者并 TestPung，DelJustPungFromHand(com_pung.cpp:149) 复核刚打出。但 IsGuardDealerBlocked(common_game_algorithm.cpp:49-72) 在 guard_dealer 下禁碰，IsXianXianTanFull(:86-92) 在三摊闲闲满 2 摊时拦截，且 server_config.cpp:20 默认 SetEnableThreeTanBao(false) 与 client RuleHzmj.ts 默认 1 口径不一致，规则外限制未澄清，维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（查到实现但存在规则外拦截与创房默认值口径差异，维持原判）",
+   "scopeApplicability": "conditional",
+   "scopeNote": "复核实读：碰的基础条件恒由 BoxPungStep::Judge(common_game_com_pung.cpp:30,36)+TestPung+DelJustPungFromHand(:149) 保证，财神刻子经 InitJokerPungs(base_data.cpp:1855) 剔除；附加限制全部来自条件分支，配置解析已直证 SVE-ST-C05-PR201-01（game_logic.cpp:151-161 guard_dealer，≤2 人强制关闭）、PR201-02（:67-83 三摊承包，≤2 人强制关闭）、PR201-03（:117-121 rule_chi_peng）、PR201-04（:86 pung_as_tan），配合 SVE-ST-C05-P01-32/33/34/35 的消费点与 server_config.cpp:39/20-21/28 基线默认，故维持 conditional（SVE-ST-C05-P01-30/31/32/33/34/35、PR201-01/02/03/04）。",
+   "evidenceIds": [
+    "SVE-ST-C05-P01-06",
+    "SVE-ST-C05-P01-09",
+    "SVE-ST-C05-P01-30",
+    "SVE-ST-C05-P01-31",
+    "SVE-ST-C05-P01-32",
+    "SVE-ST-C05-P01-33",
+    "SVE-ST-C05-P01-34",
+    "SVE-ST-C05-P01-35",
+    "SVE-ST-C05-PR201-01",
+    "SVE-ST-C05-PR201-02",
+    "SVE-ST-C05-PR201-03",
+    "SVE-ST-C05-PR201-04"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C05-018",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "reviewReason": "本轮未出复核建议，维持基线差异",
+   "scopeApplicability": "active",
+   "scopeNote": "复核实读：SVE-ST-C05-P02-33（common_game_com_kong.cpp:169）恒调用 SendKong，SVE-ST-C05-P02-34（base_context.cpp:511-527）以 MsgKongS 向 INVALID_ID 广播 comb.mahs 全量牌值，新增 SVE-ST-C05-PR201-05（algorithm.cpp:3210-3212）直证暗杠组合 tmpcomb.mahs=tmp（4 张同值）且 flag=kCMFCKong；服务端无配置分支恒下发 4 张牌面，3 背 + 顶张正面属客户端渲染，故维持 active。",
+   "evidenceIds": [
+    "SVE-ST-C05-P02-33",
+    "SVE-ST-C05-P02-34",
+    "SVE-ST-C05-PR201-05"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C07-012",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "reviewReason": "本轮未出复核建议，维持基线差异",
+   "scopeApplicability": "conditional",
+   "scopeNote": "S9 复核实读 common_game_com_action.cpp:291-298（补杠态才置 kHtRobKong）、:383-400（抢杠门槛复用 CanDiscardHu，:353-357 依赖 enable_banker_discard_hu 与 GetBankerLevel()<3）、:360-381（放铳额外做庄闲互斥）与 game_logic.cpp:57-63 配置解析点，确认抢杠可达性由 enable_banker_discard_hu/banker_level_type 决定，维持 conditional（SVE-ST-C07-P02-01/02/03/04/05、SVE-ST-C07-P01-15）",
+   "evidenceIds": [
+    "SVE-ST-C07-P02-01",
+    "SVE-ST-C07-P02-02",
+    "SVE-ST-C07-P02-03",
+    "SVE-ST-C07-P02-04",
+    "SVE-ST-C07-P02-05",
+    "SVE-ST-C07-P01-15"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C07-014",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "reviewReason": "本轮未出复核建议，维持基线差异",
+   "scopeApplicability": "active",
+   "scopeNote": "S9 复核实读 common_game_com_result.cpp:113-132：kHtRobKong 分支无论 IsRobKongSettleAsDiscard() 真假，payer 恒取 GetLastKongSeat() 且只写 payments[payer]，而 last_kong_seat 为单值槽位（common_game_server_data.h:171，SVE-ST-C07-PR201-01）且 hzmj 三根目录无该钩子覆写（结果默认 false，common_game_com_result.h:69），付款方逻辑不受任何玩法配置影响，维持 active",
+   "evidenceIds": [
+    "SVE-ST-C07-P02-10",
+    "SVE-ST-C07-P02-11",
+    "SVE-ST-C07-P02-12",
+    "SVE-ST-C07-P02-13",
+    "SVE-ST-C07-PR201-01"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C07-015",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "reviewReason": "本轮未出复核建议，维持基线差异",
+   "scopeApplicability": "conditional",
+   "scopeNote": "S9 复核实读 common_game_com_result.cpp:289-356：ApplyBaoContracts 在 :290 以 GetEnableThreeTanBao() 直接短路，:349-352 抢杠时把承包方追加进 payments（其他人也付），未开或未满 3 摊则只有杠牌者；另 :178 杠分钩子默认 0（common_game_com_result.h:74，SVE-ST-C07-PR201-02）不引入其他付款方，故“其他人不付”受 enable_three_tan_bao 控制，维持 conditional",
+   "evidenceIds": [
+    "SVE-ST-C07-P02-12",
+    "SVE-ST-C07-P02-14",
+    "SVE-ST-C07-P02-15",
+    "SVE-ST-C07-PR201-02"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C10-013",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求语义：禁打牌压暗、牌面仍可辨认，验收明文「辨认效果需实机确认」，属客户端牌面组件着色后的视觉可辨别性。服务端实现：仅产出禁打牌值并按座位单发，SetPlayLimit 名单变化置 LimitChange（mah_frame/base/base_data.cpp:1493-1505，SVE-ST-C10-P01-16）→ PlayStep::MakePower 触发 SendPlayLmts（mah_frame/com_basic/com_play.cpp:158-161，SVE-ST-C10-P01-14）→ BaseContext::SendPlayLmts 单发（mah_frame/base/base_context.cpp:594-617，SVE-ST-C10-P02-01）→ FillMsgPlayLmts 组 hands/dfs（mah_frame/base/base_context.cpp:900-924，SVE-ST-C10-P02-02）；BoxPlayStep::MakePower 注释明示「服务端…与客户端置灰都只放行摸进牌」（common_game/com_game/common_game_com_play.cpp:19-29，SVE-ST-C10-PR201-01）。本轮证据仅确证服务端下发禁打牌值口径，未触及压暗着色与压暗后可辨认度，客户端证据无变化，维持 partial。",
+   "reviewRule": "evidence-is-not-consistency（复核后确认服务端实现仅产出禁打牌值，压暗辨认属客户端视觉且无本轮客户端证据，维持原判）",
+   "scopeApplicability": "active",
+   "scopeNote": "SVE-ST-C10-PR201-01（common_game_com_play.cpp:19-21）注释直证「手牌全禁 → 服务端 … 与客户端置灰都只放行摸进牌」，且该黑名单写入仅由 IsPiaoRestricted 状态触发、无玩法配置分支，配合 SVE-ST-C10-P02-01/02 的 MsgPlayLmts 单发与组包，说明服务端恒产出禁打牌值、压暗辨认属客户端牌面组件行为",
+   "evidenceIds": [
+    "SVE-ST-C10-PR201-01",
+    "SVE-ST-C10-P02-01",
+    "SVE-ST-C10-P02-02",
+    "SVE-ST-C10-P01-06",
+    "SVE-ST-C10-P01-14",
+    "SVE-ST-C10-P01-16"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C11-015",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求：点【过】只放弃这一次提示，收起本次按钮和预览。服务端：SVE-ST-C11-PR201-01 SendCancelNotice（common_game/com_game/common_game_context.cpp:100-105）在过牌时恒下发 MsgNotifyInfo flag=kNIFExCancelPass，SVE-ST-C11-P02-12 ClearUserConAction（mah_frame/base/con_action.cpp:70）只清本座位待办；服务端仅下发通用过牌标记，无「预览」状态可证，预览清除仍属客户端表现。",
+   "reviewRule": "evidence-is-not-consistency（服务端仅下发通用过牌标记，预览清除无服务端证据，细节差异维持 partial）",
+   "scopeApplicability": "active",
+   "scopeNote": "SVE-ST-C11-PR201-01（common_game_context.cpp:100-105）过牌时恒下发 flag=kNIFExCancelPass 的 MsgNotifyInfo 供客户端收起按钮与预览，SVE-ST-C11-P02-12 只清本座位本次待办、SVE-ST-C11-P02-08 只结束本次操作回到最大 server step，三者均无玩法配置分支",
+   "evidenceIds": [
+    "SVE-ST-C11-PR201-01",
+    "SVE-ST-C11-P02-08",
+    "SVE-ST-C11-P02-09",
+    "SVE-ST-C11-P02-12"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C11-019",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求：按钮从左到右【吃】【碰】【杠】【胡】，蓝色【过】固定最右，只显示本次可做的项。服务端：SVE-ST-C11-P02-01 GetPowerAndCombs（mah_frame/com_basic/com_action.cpp:813）只聚合 con_combs_ 中实际存在的 power 位，SVE-ST-C11-PR201-02 SetActionPower（com_action.cpp:952）与 SVE-ST-C11-P02-04 SendPowerToClient（com_action.cpp:999）按座位下发；「只显示可做项」已证，但按钮顺序与蓝色皮肤服务端未定义（SVE-ST-C11-P02-21 仅仲裁等级）。",
+   "reviewRule": "evidence-is-not-consistency（只显示可做项已证，按钮顺序/配色无服务端定义，细节差异维持 partial）",
+   "scopeApplicability": "active",
+   "scopeNote": "SVE-ST-C11-P02-01 只把 con_combs_ 中实际存在的 power 位与 comb 聚合、SVE-ST-C11-PR201-02 按座位写入 action_power/combs_list，SVE-ST-C11-P02-04 再按同一份数据下发，全程无配置分支；按钮左右顺序服务端未定义（SVE-ST-C11-P02-21 只给仲裁等级）",
+   "evidenceIds": [
+    "SVE-ST-C11-PR201-02",
+    "SVE-ST-C11-P02-01",
+    "SVE-ST-C11-P02-04",
+    "SVE-ST-C11-P02-21"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C11-021",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "reviewReason": "本轮未出复核建议，维持基线差异",
+   "scopeApplicability": "active",
+   "scopeNote": "SVE-ST-C11-P02-24 为各座位取同一 GetPowerTime()/GetPowerTimeMs() 组钟、SVE-ST-C11-PR201-03 把该 clock 随 MsgPower 下发，SVE-ST-C11-P02-25 到点只做服务端代胡/代打/代过，上行入口无剩余时间校验，故归零后按钮仍可点",
+   "evidenceIds": [
+    "SVE-ST-C11-P02-24",
+    "SVE-ST-C11-P02-25",
+    "SVE-ST-C11-PR201-03"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C11-027",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求：较低优先级先提交时，本端收起自己的按钮并等待。服务端：SVE-ST-C11-P03-17 吃提交只调 OnConAction 登记，SVE-ST-C11-P03-16 OnConAction（mah_frame/base/con_action.cpp:19）先 ClearUserConAction(seat) 再写 had_resp_，最高等级未响应即 return false 挂起，SVE-ST-C11-P03-18 超时对已响应座位不代操作；按钮收起与挂起等待的逻辑已证，但「等待」无独立界面状态，仍仅表现为操作区关闭。",
+   "reviewRule": "evidence-is-not-consistency（提交后清本座位候选并挂起的仲裁逻辑已证，等待态无独立 UI，细节差异维持 partial）",
+   "scopeApplicability": "active",
+   "scopeNote": "SVE-ST-C11-P03-16（con_action.cpp:37-57）提交即登记 had_resp_ 并在最高等级候选未响应时 return false 挂起，SVE-ST-C11-P03-17 吃提交只登记不执行，SVE-ST-C11-P03-18 超时对已响应座位不代操作，仲裁逻辑无玩法配置分支（SVE-ST-C11-P03-26 恒 SetDuoXiang(false)）",
+   "evidenceIds": [
+    "SVE-ST-C11-P03-16",
+    "SVE-ST-C11-P03-17",
+    "SVE-ST-C11-P03-18",
+    "SVE-ST-C11-P03-19",
+    "SVE-ST-C11-P03-26",
+    "SVE-ST-C11-P03-27"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C11-030",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求：点【吃】后在手牌上方展开可选顺子。服务端：SVE-ST-C11-P04-01 BoxChowStep::Judge 经 TestChow 生成 chow_combs_（common_game/com_game/common_game_com_action.cpp:82），SVE-ST-C11-P04-02 ChowStep::MakePower（mah_frame/com_basic/com_chow.cpp:80）写入 TPower.combs，SVE-ST-C11-P04-03 FillMsgPower（base_context.cpp:876）逐条下发；候选生成与下发已证且受 rule_chi_peng/only_pung_no_chow 配置约束（SVE-ST-C11-P04-06 game_logic.cpp:117-120），相对手牌的展示位置属客户端。",
+   "reviewRule": "evidence-is-not-consistency（吃候选生成下发与配置口径已核实，手牌上方位置属客户端，细节差异维持 partial）",
+   "scopeApplicability": "conditional",
+   "scopeNote": "SVE-ST-C11-P04-06（game_logic.cpp:117-120）显示 rule_chi_peng=1 时置 only_pung_no_chow 恒禁吃（SVE-ST-C11-P04-04 分支直接 return false 不生成吃权限），默认 0 时 SVE-ST-C11-P04-01/02/03 正常生成并下发候选顺子，故吃候选面板受玩法配置影响",
+   "evidenceIds": [
+    "SVE-ST-C11-P04-01",
+    "SVE-ST-C11-P04-02",
+    "SVE-ST-C11-P04-03",
+    "SVE-ST-C11-P04-04",
+    "SVE-ST-C11-P04-05",
+    "SVE-ST-C11-P04-06",
+    "SVE-ST-C11-P04-07",
+    "SVE-ST-C11-P04-08",
+    "SVE-ST-C11-P04-09",
+    "SVE-ST-C11-P04-10"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C11-038",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求：暗杠与加杠混排，顺序为万、条、筒、东、南、西、北、中、发、白，同花色按点数升序。服务端：SVE-ST-C11-P05-03/04/05 三种杠均以 kPowerIdKong 追加同一候选池（mah_frame/com_basic/com_kong.cpp:116/261/438），SVE-ST-C11-P05-06 AddCombsMap（com_action.cpp:914）对同 key 只 push_back 追加、全函数无排序，SVE-ST-C11-P05-02 FillMsgPower（base_context.cpp:876）按原序下发；混排已证，花色点数排序服务端未实现，顺序差异未消除。",
+   "reviewRule": "evidence-is-not-consistency（混排已证但服务端仅追加不排序，排序口径差异维持 partial）",
+   "scopeApplicability": "active",
+   "scopeNote": "SVE-ST-C11-P05-03/04/05 三种杠都以 kPowerIdKong 入同一权限池，SVE-ST-C11-P05-06 AddCombsMap 对同 key 只 push_back 追加、全函数无排序，SVE-ST-C11-P05-02 再按该数组原序下发，故暗杠与加杠混排成立但服务端不按万条筒点数重排",
+   "evidenceIds": [
+    "SVE-ST-C11-P05-03",
+    "SVE-ST-C11-P05-04",
+    "SVE-ST-C11-P05-05",
+    "SVE-ST-C11-P05-06",
+    "SVE-ST-C11-P05-02"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C11-039",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "reviewReason": "本轮未出复核建议，维持基线差异",
+   "scopeApplicability": "active",
+   "scopeNote": "SVE-ST-C11-P05-08 的 clock 仅取自 power_time 用于下发展示，SVE-ST-C11-P05-07 到点只触发服务端代操作，SVE-ST-C11-P05-12 显示 OnMsgKongC 只校验 seat/askid/power/候选 comb、无剩余时间判断，故归零后仍可选择",
+   "evidenceIds": [
+    "SVE-ST-C11-P05-07",
+    "SVE-ST-C11-P05-08",
+    "SVE-ST-C11-P05-12"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C11-056",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求：吃、碰、直杠、暗杠的新牌组按成立顺序从左往右追加。服务端：SVE-ST-C11-PR201-04 ChowStep::CheckChow（mah_frame/com_basic/com_chow.cpp:108-109）成立即 SetChowCombs+AddAllCombs，SVE-ST-C11-P06-16/23/17 均 push_back 追加（base_data.cpp:980/1546/854），SVE-ST-C11-P06-24 FillMsgPlayerMah（base_context.cpp:855）按列表原序逐组下发；追加顺序已证，左右方向由副露组件排布，未在本仓库定义。",
+   "reviewRule": "evidence-is-not-consistency（成立顺序追加已证，左右方向无服务端定义，细节差异维持 partial）",
+   "scopeApplicability": "active",
+   "scopeNote": "SVE-ST-C11-PR201-04（com_chow.cpp:107-109）吃成立即 SetChowCombs+AddAllCombs，SVE-ST-C11-P06-16/23/17 三类副露均 push_back 追加、无插入或排序分支，SVE-ST-C11-P06-24 按 GetAllCombs 原序逐组下发，故新牌组恒按成立顺序追加",
+   "evidenceIds": [
+    "SVE-ST-C11-P06-17",
+    "SVE-ST-C11-P06-16",
+    "SVE-ST-C11-P06-23",
+    "SVE-ST-C11-P06-24",
+    "SVE-ST-C11-PR201-04"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C11-057",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "reviewReason": "本轮未出复核建议，维持基线差异",
+   "scopeApplicability": "active",
+   "scopeNote": "SVE-ST-C11-P07-03 以 kCMFMKong/kCMFCKong/kCMFTKong 三值区分直杠/暗杠/补杠，SVE-ST-C11-P01-42、PR201-05、PR201-06 分别在 TestMKong/TestCKong/TestTKong 写入对应 flag，SVE-ST-C11-P07-02 SendKong 恒下发 flag 与 from_seat，箭头/补字/手掌图形由客户端按 flag 声明",
+   "evidenceIds": [
+    "SVE-ST-C11-P07-01",
+    "SVE-ST-C11-P07-02",
+    "SVE-ST-C11-P07-03",
+    "SVE-ST-C11-P01-42",
+    "SVE-ST-C11-PR201-05",
+    "SVE-ST-C11-PR201-06"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C11-064",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求：胡牌张单独摆在胡牌者手牌右侧。服务端：SVE-ST-C11-P07-17 CheckHu 单独记录胡牌进张与来源（common_game/com_game/common_game_com_action.cpp:573），SVE-ST-C11-P07-18 FillMsgResultHu 以独立 dan_fang 字段下发（common_game_context.cpp:161），SVE-ST-C11-P07-19 仅在埋点里补到手牌末尾凑 14 张；「单列」数据基础已证，但客户端实际为拼接到手牌末尾、未留间隔，实现差异未消除。",
+   "reviewRule": "evidence-is-not-consistency（dan_fang 单独字段已证，客户端拼接到末尾的呈现差异维持 partial）",
+   "scopeApplicability": "active",
+   "scopeNote": "SVE-ST-C11-P07-17 无条件单独记录胡牌进张与来源，SVE-ST-C11-P07-18 以独立 dan_fang 字段（不混入手牌数组）下发，SVE-ST-C11-P07-19 仅在埋点里把手牌补到 14 张，胡牌张单列语义由 dan_fang 提供；右侧位置属客户端排布",
+   "evidenceIds": [
+    "SVE-ST-C11-P07-17",
+    "SVE-ST-C11-P07-18",
+    "SVE-ST-C11-P07-19"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C11-066",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求：胡牌张在胡牌者手牌尾端，带浅绿描边和来源箭头。服务端：SVE-ST-C11-P07-17 无条件 SetHuDanFang/SetHuDfFrom（common_game/com_game/common_game_com_action.cpp:573-574），SVE-ST-C11-P07-26/18 FillMsgResultHu 恒下发 df_from 与 dan_fang（common_game_context.cpp:160-161）；尾端位置与来源箭头数据服务端恒提供，浅绿描边无对应服务端字段，属牌面表现。",
+   "reviewRule": "evidence-is-not-consistency（尾端与来源箭头数据已证，描边配色属客户端牌面，细节差异维持 partial）",
+   "scopeApplicability": "active",
+   "scopeNote": "SVE-ST-C11-P07-26/18 恒下发 df_from（来源座位）与 dan_fang（胡牌张），SVE-ST-C11-P07-19 把胡张补在手牌末尾，尾端与来源箭头数据服务端恒提供；浅绿描边无对应服务端字段，属客户端牌面表现",
+   "evidenceIds": [
+    "SVE-ST-C11-P07-17",
+    "SVE-ST-C11-P07-18",
+    "SVE-ST-C11-P07-26",
+    "SVE-ST-C11-P07-19"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C11-068",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求：随后按座位飘分，正分黄色、负分灰色。服务端：SVE-ST-C11-P07-29 CheckPlay 打出财神即 SetPiaoCount(seat)+1 并 BroadcastPiao（common_game/com_game/common_game_com_play.cpp:63-66，无配置分支），SVE-ST-C11-P07-30 BroadcastPiao 下发 seat+piao_count（common_game_context.cpp:93-98），SVE-ST-C11-P07-31 重连逐座位补发；按座位飘分已证，正黄/负灰由客户端字体资源决定。",
+   "reviewRule": "evidence-is-not-consistency（按座位飘分已证，黄/灰配色由字体资源决定，细节差异维持 partial）",
+   "scopeApplicability": "active",
+   "scopeNote": "SVE-ST-C11-P07-29 打出财神即 SetPiaoCount(seat)+1 并广播（无配置分支），SVE-ST-C11-P07-30 MsgPiao 带 seat+piao_count、SVE-ST-C11-P07-31 重连逐座位补发；黄/灰配色由客户端字体资源决定",
+   "evidenceIds": [
+    "SVE-ST-C11-P07-29",
+    "SVE-ST-C11-P07-30",
+    "SVE-ST-C11-P07-31"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C12-001",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "reviewReason": "本轮未出复核建议，维持基线差异",
+   "scopeApplicability": "conditional",
+   "scopeNote": "吃恒记摊直证 common_game_com_action.cpp:132-134；碰/明杠记摊受 pung_as_tan 控制（common_game_com_pung.cpp:126、common_game_com_kong.cpp:97、game_logic.cpp:84-86）；本轮补齐服务端默认值证据 server_config.cpp:21 SetPungAsTan(true)，确认「只统计吃牌」仅在 pung_as_tan=0 时成立，维持 conditional（SVE-ST-C12-P01-01~04、SVE-ST-C12-PR201-01）",
+   "evidenceIds": [
+    "SVE-ST-C12-P01-01",
+    "SVE-ST-C12-P01-02",
+    "SVE-ST-C12-P01-03",
+    "SVE-ST-C12-P01-04",
+    "SVE-ST-C12-PR201-01"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C12-009",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求语义：四端播放「三摊落地」，可与吃牌字效同时显示。服务端实现：记摊后 BroadcastTanUpdate 以 SendMessage(msg.ID, msg, 0) 缺省 chair_id=INVALID_ID 全桌广播（common_game/common_game_context.cpp:65-73，SVE-ST-C12-P01-23），BaseContext::SendMessage 原样透传网关（mah_frame/base/base_context.cpp:19-36，SVE-ST-C12-PR201-03），吃牌字效 SendChow 与 BroadcastTanUpdate 在同一 BoxChowStep::Execute 内同批下发、无互斥（common_game/common_game_com_action.cpp:143-157，SVE-ST-C12-P01-34），落地表现开关经 FillMsgGameConfig 下发（common_game/common_game_context.cpp:438-443，SVE-ST-C12-PR201-02）。即四端客户端均能收到落地触发数据且可与吃牌字效同屏。但客户端表现为单个居中节点、未按座位定位（source-code/client/Code/layer/BoxHzmjTipAniView.ts:1662 基线证据），「四端=四个方位」仍不符，简洁模式下抑制亦未变；本轮无客户端证据变化，服务端证据不能消解客户端表现差异，维持 partial。",
+   "reviewRule": "evidence-is-not-consistency（复核后确认服务端广播与同批下发语义满足四端下发条件，但客户端单节点居中渲染「四端」方位差异仍存，细节差异维持原判）",
+   "scopeApplicability": "conditional",
+   "scopeNote": "落地数据由 BroadcastTanUpdate 全桌广播（common_game_context.cpp:65-73）+ base_context.cpp:36 透传 INVALID_ID，吃牌字效 SendChow 同 Execute 同批下发无互斥（common_game_com_action.cpp:143-157）；本轮补齐 FillMsgGameConfig 下发 enable_three_tan_bao/simple_mode（common_game_context.cpp:440-441）证明表现由创房配置决定，维持 conditional（SVE-ST-C12-P01-23/24/25/14/33/34、SVE-ST-C12-PR201-02/03）",
+   "evidenceIds": [
+    "SVE-ST-C12-P01-23",
+    "SVE-ST-C12-P01-24",
+    "SVE-ST-C12-P01-25",
+    "SVE-ST-C12-P01-14",
+    "SVE-ST-C12-P01-33",
+    "SVE-ST-C12-P01-34",
+    "SVE-ST-C12-PR201-02",
+    "SVE-ST-C12-PR201-03"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C13-011",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求语义：点炮胡、抢杠胡无承包时只算赢家与赔付者一笔，该笔按庄闲 8 倍，另两家 0 分（spec_stage_ST-C13.md:254）。服务端实现：点炮分支单一付款方 pay = base_score × fan_mult × banker_mult × win_double_mult（common_game/com_game/common_game_com_result.cpp:107-112，SVE-ST-C13-P01-32），banker_mult = 1<<banker_level 且三牢封顶即 8 倍（同文件:93、:370，SVE-ST-C13-PR201-01），未参与点炮的座位不写入 payments，由 SyncWinLostItems 逐座位下发保持 0（同文件:229-248，SVE-ST-C13-PR201-02），该分支与规则同构；但抢杠分支 IsRobKongSettleAsDiscard() 默认 false 走「三家钱」总额 pay = base_score × fan_mult × (banker_mult×opp_count 或 banker_mult+opp_count-1)（同文件:113-132，SVE-ST-C13-P01-33/P01-34），4 人局为庄家胡 24 倍、闲家胡 10 倍，并非「一笔按庄闲 8 倍」，抢杠与需求不同构，整条原子维持 partial。",
+   "reviewRule": "evidence-is-not-consistency（复核后确认点炮分支与规则同构，抢杠按三家钱 24/10 倍结算、与「一笔按庄闲 8 倍」不同构，维持 partial）",
+   "scopeApplicability": "conditional",
+   "scopeNote": "点炮单笔 8 倍与另两家 0 分由 SVE-ST-C13-PR201-01/02 直证，抢杠按三家钱见 SVE-ST-C13-P01-33，开关与三牢门槛见 SVE-ST-C13-P01-42 与 SVE-ST-C13-PR201-03/04",
+   "evidenceIds": [
+    "SVE-ST-C13-PR201-01",
+    "SVE-ST-C13-PR201-02",
+    "SVE-ST-C13-PR201-03",
+    "SVE-ST-C13-PR201-04",
+    "SVE-ST-C13-P01-32",
+    "SVE-ST-C13-P01-33",
+    "SVE-ST-C13-P01-34",
+    "SVE-ST-C13-P01-35",
+    "SVE-ST-C13-P01-42"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C13-012",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "reviewReason": "本轮未出复核建议，维持基线差异",
+   "scopeApplicability": "conditional",
+   "scopeNote": "承包改写付款人直证于 SVE-ST-C13-P01-36/37/38/39，摊数来源新增 SVE-ST-C13-PR201-06，开关缺省与人数门控见 SVE-ST-C13-PR201-05 与 SVE-ST-C13-P01-40",
+   "evidenceIds": [
+    "SVE-ST-C13-PR201-05",
+    "SVE-ST-C13-PR201-06",
+    "SVE-ST-C13-P01-36",
+    "SVE-ST-C13-P01-37",
+    "SVE-ST-C13-P01-38",
+    "SVE-ST-C13-P01-39",
+    "SVE-ST-C13-P01-40",
+    "SVE-ST-C13-P01-41"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C14-001",
+   "previousDifference": "unverified",
+   "reviewedDifference": "unverified",
+   "reviewReason": "本轮未出复核建议，维持基线差异",
+   "scopeApplicability": "active",
+   "scopeNote": "S9 复核实读 common_game_com_action.cpp:259-351 确认状态机先写 NextHuType 再判胡，:444 成牌拆解先于 :488 TestFan，且 IsSelfTake(common_game_fan_type.cpp:15) 按 hu_type_ 区分自摸/点炮/抢杠，规则无配置门控，维持 active",
+   "evidenceIds": [
+    "SVE-ST-C14-P01-01",
+    "SVE-ST-C14-P01-02",
+    "SVE-ST-C14-P01-06"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "unverified",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C14-011",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "reviewReason": "需求语义：统计豪华（七对杠子组）组数时白板牌面不计入。服务端实现：默认 cai_shen_type=0 时白板即财神（common_game/com_game/common_game_com_ju.cpp:229/247/253，SetCaiShen 后 AddJoker），Algorithm::TestHu 有财神数据即转 JokerTestHu（mah_frame/base/algorithm.cpp:3293），JokerSepJokerCount 先把手牌中的财神剥离（:2048），纯财神对为无 mahs 的 kCMFJokJiang（:2641）；CommonGameFanType::CountQuadPairGroups（common_game/common_game_fan_type.cpp:63）只按 combs_ 实牌频次减去 joker_filled 计 real>=4，白板作为 joker 不进 combs_ 频次、无实锚点的纯财神组也被跳过，故白板不会形成豪华组，与规则同构（SVE-ST-C14-P01-18/19/22/23/24；verify-output dr 维持 conditional，默认配置已确认 configConfirm=default）。翻财神模式下白板登记为替代牌而非财神，规则中“白板（财神）”的前提不成立，不影响本判定。",
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "scopeApplicability": "conditional",
+   "scopeNote": "S9 复核实读 common_game_fan_type.cpp:63-110 确认豪华组数统计只有 real>=4 与纯财神无锚点跳过两分支、无 MV_BAI_BAN 特判（全仓 MV_BAI_BAN 命中 11 处均不在豪华统计），而白板是否为财神取决于 cai_shen_type（common_game_com_ju.cpp:229/232），故维持 conditional",
+   "evidenceIds": [
+    "SVE-ST-C14-P01-18",
+    "SVE-ST-C14-P01-19",
+    "SVE-ST-C14-P01-22",
+    "SVE-ST-C14-P01-23",
+    "SVE-ST-C14-P01-24"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved",
+   "approvedDate": "2026-11-14"
+  },
+  {
+   "atomId": "AT-ST-C14-029",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求语义：财神牌面染红、可点击、没有角标，且“可点击”最终受服务端禁打数据约束。服务端实现：CommonGameContext::FillMsgJoker（common_game/common_game_context.cpp:49-55）仅下发 jokers/instds/open，染色与角标由客户端渲染；BoxPlayStep::CheckPlay（common_game/com_game/common_game_com_play.cpp:63）对财神打出正常受理并开飘窗口；BoxPlayStep::MakePower（common_game/com_game/common_game_com_play.cpp:23）在飘财受限座位 CountDanFang>0 时把整手牌下发禁打，确证“可点击”受服务端禁打约束、并非对财神无条件放行，细节差异维持 partial（SVE-ST-C14-P03-19/20/21）。",
+   "reviewRule": "evidence-is-not-consistency（服务端禁打约束确证存在，细节差异维持原判）",
+   "scopeApplicability": "active",
+   "scopeNote": "S9 复核实读 common_game_context.cpp:49-57 确认无条件下发 jokers/instds/open（染色与角标由客户端渲染），com_play.cpp:53-85 对财神打出无条件走正常受理分支，仅 MakePower(:23) 在飘财受限座位禁打部分手牌，无配置门控，维持 active",
+   "evidenceIds": [
+    "SVE-ST-C14-P03-19",
+    "SVE-ST-C14-P03-20",
+    "SVE-ST-C14-P03-21",
+    "SVE-ST-C14-P03-22",
+    "SVE-ST-C14-P01-22"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C15-004",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "reviewReason": "需求语义：结算阶段方位盘倒计时数字与方位灯停止，不再重设计时。服务端实现：player clock 唯一重设入口 Step::StartWait（mah_frame/base/step.cpp:296，SVE-ST-C15-P01-12）在结算路径不再调用，Step::End 仅置 wait 状态（step.cpp:24，SVE-ST-C15-P01-13），切步经 DragonMah::SetCurStep 调 last->End()（dragon_mah.cpp:96，SVE-ST-C15-P01-14），好友房 JSON 覆写清单无计时/停表键（hzmj_server/game_logic.cpp:18，SVE-ST-C15-PR201-01），且 BoxResultStep::OnResult 胡牌/流局两分支均下发 MsgEndGame（common_game/com_game/common_game_com_result.cpp:78 -> mah_frame/base/base_context.cpp:188，SVE-ST-C15-P01-04/PR201-02）；客户端 GameEndCmd.ts:33 派发 onGameEnd -> BoxHzmjMah2DView.ts:718 setClockHide 清空倒计时数字并 stop 计时器（:721-723）。全链确证与规则同构。",
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "scopeApplicability": "active",
+   "scopeNote": "StartWait 是全三根目录唯一 SendEndWait 调用点（step.cpp:296-310），结算步不再重设 clock、仅经 MsgEndGame 收尾（base_context.cpp:188），且 JSON 覆写无相关键（game_logic.cpp:18-200）——SVE-ST-C15-P01-12/14/15/PR201-01",
+   "evidenceIds": [
+    "SVE-ST-C15-P01-12",
+    "SVE-ST-C15-P01-13",
+    "SVE-ST-C15-P01-14",
+    "SVE-ST-C15-P01-15",
+    "SVE-ST-C15-P01-04",
+    "SVE-ST-C15-PR201-01"
+   ],
+   "l7": "verified",
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved",
+   "approvedDate": "2026-11-14"
+  },
+  {
+   "atomId": "AT-ST-C15-005",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求语义：原牌桌亮出四家手牌，桌面中央显示「对局结束」。服务端实现：FillMsgPlayerHands 遍历 0..GetPlayerCount()-1 无条件下发每座 hands/combs/dan_fang（common_game/common_game_context.cpp:405，SVE-ST-C15-P01-16），胡家手牌另经 GetSettleHands 取结算手牌（common_game_context.cpp:789，SVE-ST-C15-P01-17），1286 与 MsgEndGame 两分支均下发（common_game_com_result.cpp:48-50/:78，SVE-ST-C15-P01-04/PR201-02）。残差：「对局结束」为页 1 hu 图标资源，仓库内无图源，中央提示文案无法逐字校验，服务端证据不覆盖该客户端资源细节。",
+   "reviewRule": "evidence-is-not-consistency（服务端亮牌与结束消息已确证，终端图文文案为客户端资源，细节差异维持原判）",
+   "scopeApplicability": "active",
+   "scopeNote": "FillMsgPlayerHands 恒按 0..GetPlayerCount()-1 下发全桌手牌且无配置分支（common_game_context.cpp:405-420），结束提示由 MsgEndGame 无条件下发（result.cpp:48-50、base_context.cpp:188）——SVE-ST-C15-P01-16/04/PR201-02",
+   "evidenceIds": [
+    "SVE-ST-C15-P01-16",
+    "SVE-ST-C15-P01-17",
+    "SVE-ST-C15-P01-10",
+    "SVE-ST-C15-P01-04",
+    "SVE-ST-C15-PR201-02"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C15-006",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求语义：黄庄亮出四家手牌、中央「黄庄」，保留终局牌河、财神与余牌数 20。服务端实现：TakeStep::IsDrawn 以 CountWalls()<=GetDrawnCnt() 判定（mah_frame/com_basic/com_take.cpp:118，SVE-ST-C15-P01-18），InitConfigByBox 固定 SetDrawnCnt(20) 且 2/3/4 人同值（hzmj_server/server_config.cpp:33，SVE-ST-C15-P01-19），hzmj_server 内无 drawn_cnt 覆写（game_logic.cpp:18，SVE-ST-C15-PR201-01），流局 SetEndType(kEtDrawn) 后全桌亮牌并下发 remaining_wall_cards（com_take.cpp:151、common_game_context.cpp:423，SVE-ST-C15-P01-20/21）。残差：判定为 <=20，实际余牌可能少于 20，与「余牌数 20」不完全等价；「黄庄」提示图、牌河与财神展示属客户端资源，无法逐字/逐图校验。",
+   "reviewRule": "evidence-is-not-consistency（阈值与亮牌链已确证，余牌精确值与终端提示资源仍为细节差异，维持原判）",
+   "scopeApplicability": "active",
+   "scopeNote": "IsDrawn 以硬常量 20 判定（com_take.cpp:118 + server_config.cpp:33），hzmj_server 目录内无 drawn_cnt 覆写键（game_logic.cpp:18-200），余牌随 1286 下发（context.cpp:423）——SVE-ST-C15-P01-18/19/21/PR201-01",
+   "evidenceIds": [
+    "SVE-ST-C15-P01-18",
+    "SVE-ST-C15-P01-19",
+    "SVE-ST-C15-P01-20",
+    "SVE-ST-C15-P01-21",
+    "SVE-ST-C15-P01-04",
+    "SVE-ST-C15-PR201-01",
+    "SVE-ST-C15-PR201-02"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C15-007",
+   "previousDifference": "partial",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求语义：「对局结束」仍在时，胡牌者方位播放番型字效。服务端实现：BoxHuStep::CheckHu 经 Algorithm::CountFan 逐拆解取最高番（mah_frame/base/algorithm.cpp:1811，SVE-ST-C15-P01-23）-> SetHuFancnts（common_game/com_game/common_game_com_action.cpp:603，SVE-ST-C15-P01-06）-> FillMsgResultHu 按 hu_seat 无条件 add_fan_ids 并下发番明细（common_game_context.cpp:165-167/389，SVE-ST-C15-P02-14 同源），1286 先于 770 群发（result.cpp:50/:78，SVE-ST-C15-P01-31/04）。残差：结束字样仅 1 秒定时复位与番型字效时长的重叠关系属客户端时序，服务端证据不能确证「仍在时」的同步。",
+   "reviewRule": "evidence-is-not-consistency（番型数据链已确证，字效与结束字样的时间重叠为客户端时序细节，维持原判）",
+   "scopeApplicability": "active",
+   "scopeNote": "CheckHu 以 CountFan 结果无条件写 HuFancnts（algorithm.cpp:1811、com_action.cpp:603），1286 按 hu_seat 逐条下发番型 id（context.cpp:165-167）——SVE-ST-C15-P01-06/22/23",
+   "evidenceIds": [
+    "SVE-ST-C15-P01-06",
+    "SVE-ST-C15-P01-22",
+    "SVE-ST-C15-P01-23",
+    "SVE-ST-C15-P01-10",
+    "SVE-ST-C15-P01-31"
+   ],
+   "l7": "verification_required",
+   "reviewStatus": "pending",
+   "effectiveDifference": "partial",
+   "l7Basis": "proposed"
+  },
+  {
+   "atomId": "AT-ST-C15-009",
+   "previousDifference": "unverified",
+   "reviewedDifference": "consistent",
+   "reviewReason": "需求语义：先刷新头像旁累计积分（再出飘分）。服务端实现：1286 内先 FillAllWinLosts 再 FillMsgPlayerScore（common_game/common_game_context.cpp:194-197，SVE-ST-C15-P01-10），好友房恒走 BaseContext 口径 scores=GetUserScore+GetWinLostBySeat（common_game_context.cpp:335，SVE-ST-C15-P01-26；mah_frame/base/base_context.cpp:986，SVE-ST-C15-P01-27），且 BaseContext::SendPlayerScore(base_context.cpp:748) 全三根目录无调用点（仅定义），不存在第二条广播改变顺序。客户端在同一 1286 处理中第 5 步 _updatePlayerScore（GameResultHuCmd.ts:88）先于第 6 步 _playHuAnimations/飘分（:91）。全链确证与规则同构。",
+   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
+   "scopeApplicability": "active",
+   "scopeNote": "累计分在 1286 内紧随 win_losts 之后固定组装（common_game_context.cpp:194-197），好友房恒走 BaseContext 真实积分口径（base_context.cpp:986），无配置分支——SVE-ST-C15-P01-26/27/10",
+   "evidenceIds": [
+    "SVE-ST-C15-P01-26",
+    "SVE-ST-C15-P01-27",
+    "SVE-ST-C15-P01-10",
+    "SVE-ST-C15-P01-02",
+    "SVE-ST-C15-PR201-01"
+   ],
+   "l7": "verified",
+   "reviewStatus": "approved",
+   "effectiveDifference": "consistent",
+   "l7Basis": "approved",
+   "approvedDate": "2026-11-14"
+  },
+  {
    "atomId": "AT-ST-C15-010",
    "previousDifference": "partial",
    "reviewedDifference": "partial",
-   "reviewReason": "需求语义：仅本局得分非 0 的座位内侧飘分，正分金黄、负分浅蓝灰带减号。服务端实现：CalcFinalWinLost 付款方记负值、胡家记 total_win（common_game/com_game/common_game_com_result.cpp:112/132/:224，SVE-ST-C15-P01-30），SyncWinLostItems 逐座写带符号 score（common_game_com_result.cpp:234，SVE-ST-C15-P01-29），FillAllWinLosts 对全部座位下发 score（未参与座为 0）（common_game/common_game_context.cpp:290-295，SVE-ST-C15-P01-28）；非 0 过滤与正负配色由客户端 fnt_win/fnt_lose 字图决定，无服务端证据，维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（带符号得分已确证，非 0 过滤与正负配色属客户端字图，细节差异维持原判）",
+   "reviewReason": "需求语义：仅本局得分非 0 的座位内侧飘分，正分金黄、负分浅蓝灰带减号。服务端实现：CalcFinalWinLost 付款方按 payments 记负值、胡家记 total_win（common_game/com_game/common_game_com_result.cpp:112/132/219-224，SVE-ST-C15-P01-30），SyncWinLostItems 逐座写带符号 score（:229-247，SVE-ST-C15-P01-29），FillAllWinLosts 全桌下发（context.cpp:290-298，SVE-ST-C15-P01-28），未参与座为 0。残差：fnt_win/fnt_lose 字图配色不在仓库内，正负配色无法验证；0 分不飘分由客户端按 score 过滤，服务端不裁剪。",
+   "reviewRule": "evidence-is-not-consistency（带符号得分链已确证，配色字图与滤波属客户端资源，细节差异维持原判）",
    "scopeApplicability": "active",
-   "scopeNote": "CalcFinalWinLost(result.cpp:112/132/146 负值付款、:224 胡家正值) 经 SyncWinLostItems:234 落 WinLostItem，FillAllWinLosts:290-295 对全部座位下发带符号 score（无参与者 0），符号由数值本身决定（SVE-ST-C15-P01-30/29/28）",
+   "scopeNote": "CalcFinalWinLost 对付款方写负值、胡家写 total_win（result.cpp:112/146/224），SyncWinLostItems 逐座保留符号（result.cpp:234），全桌 score 无条件下发（context.cpp:290-298）——SVE-ST-C15-P01-30/29/28",
    "evidenceIds": [
     "SVE-ST-C15-P01-30",
     "SVE-ST-C15-P01-29",
@@ -6803,15 +6886,16 @@
    "atomId": "AT-ST-C15-011",
    "previousDifference": "partial",
    "reviewedDifference": "partial",
-   "reviewReason": "需求语义：飘分淡出后短暂保留终局牌桌，再打开小结算。服务端实现：BoxResultStep::OnResult 内 :50 SendResultHu 群发 1286、:78 SendEndGame 群发 770（common_game/com_game/common_game_com_result.cpp:50/78，SVE-ST-C15-P01-31/02/04），两消息间无 sleep/定时/等待，服务端时序固定；牌桌停留与打开小结算由客户端按固定延迟消费，是否以飘分淡出完成为条件无服务端证据（基线亦指出固定延迟与淡出无耦合），维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（服务端仅确证消息顺序与无延时，停留/淡出时序属客户端，细节差异维持原判）",
+   "reviewReason": "需求语义：飘分淡出后再短暂保留终局牌桌，再打开小结算。服务端实现：BoxResultStep::OnResult 内 :50 SendResultHu 群发 1286 -> :78 SendEndGame 群发 770（common_game/common_game_com_result.cpp:50/:78，SVE-ST-C15-P01-31/04/PR201-02），两消息间无 sleep/定时/等待，:48 注释明确 1286 为小结算协议。残差：牌桌停留与小结算开启由客户端按固定延迟消费，不以飘分淡出完成为条件，快节奏或长动画下停留时长与需求不完全等价。",
+   "reviewRule": "evidence-is-not-consistency（消息顺序已确证，停留触发条件为客户端延迟实现细节，维持原判）",
    "scopeApplicability": "active",
-   "scopeNote": "实读 OnResult(result.cpp:22-80)：:50 SendResultHu 与 :78 SendEndGame 连续同步执行，无延时/条件分支，服务端时序固定（SVE-ST-C15-P01-31）",
+   "scopeNote": "OnResult 内 1286（result.cpp:50）与 770（result.cpp:78）顺序固定、中间无定时/等待，注释直写小结算协议口径（result.cpp:48）——SVE-ST-C15-P01-31/02/PR201-02",
    "evidenceIds": [
     "SVE-ST-C15-P01-31",
     "SVE-ST-C15-P01-10",
     "SVE-ST-C15-P01-02",
-    "SVE-ST-C15-P01-04"
+    "SVE-ST-C15-P01-04",
+    "SVE-ST-C15-PR201-02"
    ],
    "l7": "verification_required",
    "reviewStatus": "pending",
@@ -6822,13 +6906,14 @@
    "atomId": "AT-ST-C15-012",
    "previousDifference": "partial",
    "reviewedDifference": "partial",
-   "reviewReason": "需求语义：小结算盖在终局牌桌上，各端以本家为第一行，本家行置顶并高亮。服务端实现：FillAllWinLosts 恒按座位 0..GetPlayerCount()-1 升序下发全桌 win_losts（common_game/common_game_context.cpp:290，SVE-ST-C15-P02-01），FillMsgPlayerHands 同序下发全桌手牌（common_game_context.cpp:407，SVE-ST-C15-P02-02），服务端不做本家旋转/置顶；行序旋转、置顶高亮与遮罩均属客户端表现（玩家列表数据源不在本工程），无服务端证据，维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（服务端仅确证全桌数据按座位升序下发，本家旋转/高亮属客户端，细节差异维持原判）",
+   "reviewReason": "需求语义：小结算盖在终局牌桌上，各端以本家为第一行（下家/对家/上家），本家行置顶高亮。服务端实现：FillAllWinLosts 恒按座位 0..GetPlayerCount()-1 升序组装 win_losts（common_game/common_game_context.cpp:290，SVE-ST-C15-P02-01），FillMsgPlayerHands 同序下发全桌手牌（:405，SVE-ST-C15-P02-02），好友房 JSON 覆写无行序/面板键（game_logic.cpp:18，SVE-ST-C15-PR201-01）。残差：各端行序依赖玩家列表本身按本地座位升序返回，该数据源不在本工程可查范围；面板遮罩由公共壳提供，覆盖关系未在本工程内确证。",
+   "reviewRule": "evidence-is-not-consistency（全桌下发顺序已确证，本家置顶与遮罩依赖工程外数据源/公共壳，维持原判）",
    "scopeApplicability": "active",
-   "scopeNote": "FillAllWinLosts:290 与 FillMsgPlayerHands:407 均按 0..n-1 升序无条件下发全桌数据，服务端不做本家旋转/置顶，固定机制（SVE-ST-C15-P02-01/02）",
+   "scopeNote": "FillAllWinLosts 与 FillMsgPlayerHands 均以 0..GetPlayerCount()-1 升序稳定下发（common_game_context.cpp:290、407），无配置分支——SVE-ST-C15-P02-01/02",
    "evidenceIds": [
     "SVE-ST-C15-P02-01",
-    "SVE-ST-C15-P02-02"
+    "SVE-ST-C15-P02-02",
+    "SVE-ST-C15-PR201-01"
    ],
    "l7": "verification_required",
    "reviewStatus": "pending",
@@ -6839,10 +6924,10 @@
    "atomId": "AT-ST-C15-013",
    "previousDifference": "partial",
    "reviewedDifference": "partial",
-   "reviewReason": "需求语义：胡牌局按本端净得分切主题，大于等于 0 为「恭喜获胜」、小于 0 为「遗憾失败」，黄庄四端为「黄庄」。服务端实现：WriteFinalScores 以 final_score>0→kWin、<0→kLose、其余含 0→kDraw 逐座写分（common_game/com_game/common_game_com_result.cpp:395-399，SVE-ST-C15-P02-03/04），0 分边界（点炮局两家旁观座位为 0）标为 kDraw，与需求 >=0 判获胜的字面口径不一致；但主题文案与标记到页面的映射在公共壳，无客户端证据可判定实际呈现，暂维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（0 分边界映射 kDraw 与需求 >=0 口径存在差异，主题落地属客户端，细节差异维持原判）",
+   "reviewReason": "需求语义：胡牌局按本端净得分切主题（>=0「恭喜获胜」，<0「遗憾失败」），黄庄四端「黄庄」。服务端实现：WriteFinalScores 以 final_score=GetWinLostBySeat 正负映射 kWin/kLose、其余含 0 映射 kDraw 逐座落地（common_game/com_game/common_game_com_result.cpp:392-399，SVE-ST-C15-P02-03），净得分带符号下发（:234、context.cpp:295，SVE-ST-C15-P02-04/13）。客户端按 win_lost.score>=0 记胜、end_type=ET_DRAWN 记流局（source-code/client/Code/util/BoxHzmjResultUtil.ts:36-38），与 >=0 口径一致。残差：「恭喜获胜」「遗憾失败」「黄庄」标题文案在公共壳，本工程无法逐字校验，故维持 partial。",
+   "reviewRule": "evidence-is-not-consistency（净得分与胜负/流局标记已确证且与 >=0 口径一致，标题文案属公共壳细节，维持原判）",
    "scopeApplicability": "active",
-   "scopeNote": "WriteFinalScores(result.cpp:392-400) 以 final_score>0→kWin、<0→kLose、其余含 0→kDraw 逐座写分，流局全员 0 分落 kDraw，固定分支（SVE-ST-C15-P02-03/04）",
+   "scopeNote": "WriteFinalScores 按座位净得分符号无条件映射 kWin/kLose/kDraw（result.cpp:392-400），无配置分支——SVE-ST-C15-P02-03/04",
    "evidenceIds": [
     "SVE-ST-C15-P02-03",
     "SVE-ST-C15-P02-04"
@@ -6856,10 +6941,10 @@
    "atomId": "AT-ST-C15-015",
    "previousDifference": "partial",
    "reviewedDifference": "partial",
-   "reviewReason": "需求语义：碰杠区在左、手牌在右，杠第 4 张垒上方、暗杠顶张正面，胡入张在所属组合内标绿色「胡」。服务端实现：GetResultJson 按 combs 逐组下发 mahs/flag，暗杠 kCMFCKong 追加 1、明杠/补杠追加 0 作第 4 张标记（common_game/com_game/common_game_com_result.cpp:444-451，SVE-ST-C15-P02-09），kCMFMKong/kCMFCKong/kCMFTKong 区分三杠（mah_frame/base/macros.h:133，SVE-ST-C15-P02-10），dan_fang 单放胡入张（common_game_context.cpp:161，SVE-ST-C15-P02-11），GetSettleHands 取结算手牌（common_game_context.cpp:789，SVE-ST-C15-P02-12）；分组与第 4 张标记确证，但左右摆布与绿色「胡」角标属客户端资源（ico_hu.png 颜色仓库内不可验），维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（分组与杠标记已确证，左右摆布与绿色角标属客户端资源，细节差异维持原判）",
+   "reviewReason": "需求语义：碰杠区在左、手牌在右；杠第 4 张垒上方、暗杠顶张正面；胡入牌在所属组合内标绿色「胡」。服务端实现：GetResultJson 按 GetAllCombs 逐组下发 combs/card_data，暗杠 kCMFCKong 追加 1、明杠/补杠追加 0 作第 4 张标记（common_game/com_game/common_game_com_result.cpp:444-451，SVE-ST-C15-P02-09；macros.h:133，SVE-ST-C15-P02-10），胡入张经 dan_fang 单放（common_game_context.cpp:161，SVE-ST-C15-P02-11），结算手牌取 GetSettleHands（:791，SVE-ST-C15-P02-12）。残差：胡角标图 ico_hu.png 是否为绿色在工程内无法验证，且胡张以 dan_fang 单放而非在组合内标注。",
+   "reviewRule": "evidence-is-not-consistency（牌组与杠标记下发已确证，角标配色与胡张归属为客户端资源/表现细节，维持原判）",
    "scopeApplicability": "active",
-   "scopeNote": "GetResultJson:444-452 逐 comb 下发 mahs/flag，暗杠追加 1、明/补杠追加 0（macros.h:133-135 区分三杠），FillMsgResultHu:161 单放胡入张，无配置分支（SVE-ST-C15-P02-09/10/11/12）",
+   "scopeNote": "GetResultJson 对每个 comb 按 flag 恒追加第 4 张标记（result.cpp:444-451），胡入张恒经 dan_fang 单放（context.cpp:161）——SVE-ST-C15-P02-09/10/11/12",
    "evidenceIds": [
     "SVE-ST-C15-P02-09",
     "SVE-ST-C15-P02-10",
@@ -6875,10 +6960,10 @@
    "atomId": "AT-ST-C15-016",
    "previousDifference": "partial",
    "reviewedDifference": "partial",
-   "reviewReason": "需求语义：右侧显示本局净得分，正分带加号、0 分显示「0」、负分带减号。服务端实现：SyncWinLostItems 写入带符号 score（common_game/com_game/common_game_com_result.cpp:234，SVE-ST-C15-P02-04），FillAllWinLosts 原样 set_score 不取绝对值（common_game/common_game_context.cpp:295，SVE-ST-C15-P02-13），减号与 0 由数值本身承载；加号及黄色/浅蓝灰配色属客户端 win/lose 字图，仓库内不可读，无服务端证据，维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（带符号得分已确证，加号与配色属客户端字图，细节差异维持原判）",
+   "reviewReason": "需求语义：右侧显示本局净得分，正分带加号、0 显示「0」、负分带减号。服务端实现：SyncWinLostItems 写 item.score=GetWinLostBySeat(seat) 保留符号（common_game/com_game/common_game_com_result.cpp:234，SVE-ST-C15-P02-04），FillAllWinLosts 以 wl_proto->set_score(wl.score) 原样下发、不取绝对值（common_game/common_game_context.cpp:295，SVE-ST-C15-P02-13）。残差：加号与配色渲染在客户端 win/lose 字图内，仓库内无法读取，正分加号是否由客户端拼接未逐字确证。",
+   "reviewRule": "evidence-is-not-consistency（带符号净得分下发已确证，符号渲染/配色字图属客户端资源，维持原判）",
    "scopeApplicability": "active",
-   "scopeNote": "SyncWinLostItems:234 与 FillAllWinLosts:295-297 均原样透传带符号 score（未取绝对值/未格式化），正负与 0 由数值本身决定（SVE-ST-C15-P02-13）",
+   "scopeNote": "净得分由 GetWinLostBySeat 原值写入并原样 set_score（result.cpp:234、context.cpp:295），不做符号归一——SVE-ST-C15-P02-04/13",
    "evidenceIds": [
     "SVE-ST-C15-P02-04",
     "SVE-ST-C15-P02-13"
@@ -6892,10 +6977,10 @@
    "atomId": "AT-ST-C15-017",
    "previousDifference": "partial",
    "reviewedDifference": "partial",
-   "reviewReason": "需求：赢家牌组上方写出实际命中的番型名称，同时命中多组时都写上，双财飘/双豪华七对/二连杠直接写全名。服务端：SVE-ST-C15-P02-14 FillMsgResultHu 无配置分支、无条件遍历 fan_cnts 逐条 add_fan_ids（common_game_context.cpp:165-167），SVE-ST-C15-P02-15 GetFanName 取 ft_defs_.name（mah_frame/base/algorithm.cpp:1772），SVE-ST-C15-P02-16 同源下发 max_multi（common_game_com_result.cpp:431）——服务端下发的是离散 fan_id 全集，可支撑「多组都写」；但「并列分隔 / 直接写全名」的呈现由客户端拼接决定（基线记录为空串拼接「七对杠飘」、二/三连杠写成「杠飘（二连杠）」），本轮无服务端证据改变该客户端写法，细节差异维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（服务端全量下发命中番 id 与规则数据语义同构，显示格式差异仍在客户端，未达升级条件）",
+   "reviewReason": "需求语义：赢家牌组上方写实际命中番型名称，多组并列都写，双财飘/双豪华七对/二连杠直接写全名。服务端实现：FillMsgResultHu 无配置分支、无条件遍历 GetHuFancnts 逐条 add_fan_ids（common_game/common_game_context.cpp:165-167，SVE-ST-C15-P02-14），番名取自 Algorithm::GetFanName 的 ft_defs_.name（mah_frame/base/algorithm.cpp:1772，SVE-ST-C15-P02-15），GetResultJson 同源下发倍数（common_game_com_result.cpp:431，SVE-ST-C15-P02-16）。残差：普通多番以空串拼接（如「七对杠飘」）、二/三连杠以「杠飘（二连杠）」括号形式给出，未等同于「直接写全名」的文案写法。",
+   "reviewRule": "evidence-is-not-consistency（番型 id 与番名映射已确证，多番拼接文案与规则写法存在细节差异，维持原判）",
    "scopeApplicability": "active",
-   "scopeNote": "复核实读 common_game_context.cpp:165-167 无任何配置分支即逐条下发全部命中 fan_id（多组并列），GetFanName(algorithm.cpp:1772) 内无配置依赖，恒实现 -> active",
+   "scopeNote": "FillMsgResultHu 无条件遍历 GetHuFancnts 逐条 add_fan_ids（context.cpp:165-167），番名取自 ft_defs_ 命名表（algorithm.cpp:1772-1776）——SVE-ST-C15-P02-14/15/16",
    "evidenceIds": [
     "SVE-ST-C15-P02-14",
     "SVE-ST-C15-P02-15",
@@ -6910,15 +6995,19 @@
    "atomId": "AT-ST-C15-020",
    "previousDifference": "partial",
    "reviewedDifference": "partial",
-   "reviewReason": "需求：三摊承包时赢家标黄色「承包」，赔付者得分右侧标「三摊承包」。服务端：SVE-ST-C15-P02-23 GetTanCount 双向 ≥3 判定（common_game_com_result.cpp:316-318），SVE-ST-C15-P02-24 BaoSettleItem(from=赔付方, to=胡牌方, relation=1, score=total) 进 bao_settles_（common_game_com_result.cpp:336-341），SVE-ST-C15-P02-26 enable_three_tan_bao 守卫及好友房默认 false / >2 人局才可开的创房口径（hzmj_server/game_logic.cpp:66-83）——承包关系与赔付金额语义成立，适用性为 conditional；但「黄色」与「三摊承包」文案/角标属客户端渲染，本工程未见该文案，服务端证据无法消解该显示缺口，维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（服务端关系与金额同构，UI 标识文案与颜色仍缺客户端证据；创房下发值口径已核，适用性 conditional 不判冲突）",
+   "reviewReason": "需求：三摊承包时赢家标黄色「承包」，赔付者得分右侧标「三摊承包」。服务端：SVE-ST-C15-PR202-01 ApplyBaoContracts 首行 GetEnableThreeTanBao 未开即 return（common_game_com_result.cpp:290），SVE-ST-C15-P02-23 双向 GetTanCount>=3 判定（common_game_com_result.cpp:316-318），SVE-ST-C15-P02-27 命中后 relation=1 且 SetBaoRelation(win_seat,opp,1)（common_game_com_result.cpp:330-331），SVE-ST-C15-P02-24 组装 BaoSettleItem(from=赔付方,to=胡牌方,score,relation) push 进 bao_settles_（common_game_com_result.cpp:336-341），SVE-ST-C15-PR202-04 随 1286 add_bao_settles 下发（common_game_context.cpp:272）。服务端仅确证承包关系、赔付方向与金额，未定义黄色及「三摊承包」文案；客户端角标控制器 C_ChengBao 仅 none/chengbao/fanchengbao 三页（ResultItem.xml:17-20），赔付方角标显示不出「三摊承包」，视觉口径缺口未消除。",
+   "reviewRule": "evidence-is-not-consistency（服务端已证承包结算关系与赔付方向，黄色与「三摊承包」文案属客户端且角标仅承包/反承包两页，细节差异维持 partial）",
    "scopeApplicability": "conditional",
-   "scopeNote": "实读 common_game_com_result.cpp:290 首行 if (!GetSvrCfg()->GetEnableThreeTanBao()) return，且 game_logic.cpp:66-82 该 key 默认 false、≤2 人强制关，承包关系仅在开关开启时生成 -> conditional",
+   "scopeNote": "SVE-ST-C15-PR202-01 直证 ApplyBaoContracts 首行 GetEnableThreeTanBao 未开即 return，SVE-ST-C15-PR202-02 直证好友房基线默认 false、由下发 JSON 覆盖，SVE-ST-C15-P02-23/24 直证 >=3 摊后组装 BaoSettleItem 随 1286 下发",
    "evidenceIds": [
     "SVE-ST-C15-P02-23",
     "SVE-ST-C15-P02-24",
     "SVE-ST-C15-P02-25",
-    "SVE-ST-C15-P02-26"
+    "SVE-ST-C15-P02-26",
+    "SVE-ST-C15-PR202-01",
+    "SVE-ST-C15-PR202-02",
+    "SVE-ST-C15-PR202-03",
+    "SVE-ST-C15-PR202-04"
    ],
    "l7": "verification_required",
    "reviewStatus": "pending",
@@ -6929,16 +7018,19 @@
    "atomId": "AT-ST-C15-021",
    "previousDifference": "partial",
    "reviewedDifference": "partial",
-   "reviewReason": "需求：反承包时赢家与赔付者都显示「反承包」。服务端：SVE-ST-C15-P02-27 在 tan_opp_win>=3 时 relation=2、opp_pay=total*2 并 SetBaoRelation(opp, win_seat, 2)（common_game_com_result.cpp:326-332），SVE-ST-C15-P02-32 FillMsgTanItems 逐对下发 bao_relation（common_game_context.cpp:76-91）——反承包关系生成与下发语义正确；但同一座位同时命中两条关系时客户端角标只取第一条（基线 notes），属客户端渲染细节，服务端证据不改判，维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（关系生成与下发同构，双标角标的客户端显示差异未解决）",
+   "reviewReason": "需求：反承包时赢家与赔付者都显示「反承包」。服务端：SVE-ST-C15-P02-27 tan_opp_win>=3 时 relation=2、opp_pay=total*2 并 SetBaoRelation(opp,win_seat,2)（common_game_com_result.cpp:326-329），SVE-ST-C15-P02-24 以 relation=2 写入 bao_settles_ 随 1286 下发，SVE-ST-C15-P02-32 FillMsgTanItems 按 from/to 逐对下发 bao_relation（common_game_context.cpp:82-89），SVE-ST-C15-PR202-01 整段受 enable_three_tan_bao 守卫（common_game_com_result.cpp:290），SVE-ST-C15-PR202-03 碰满 3 摊先行写 relation=1 并广播（common_game_com_pung.cpp:132-136）。服务端下发的单条 from→to 关系可驱动赢家文案与赔付方角标，但「同一座位命中多条关系时角标只取第一条即 return」的客户端边缘缺口（BoxHzmjResultMid.ts:206-216）本轮无服务端证据可消解。",
+   "reviewRule": "evidence-is-not-consistency（反承包关系与倍率下发已证，双关系同座位取首条的角标边缘缺口无服务端证据，细节差异维持 partial）",
    "scopeApplicability": "conditional",
-   "scopeNote": "实读 common_game_com_result.cpp:326-332 反承包 relation=2 写 SetBaoRelation(opp,win_seat,2)、common_game_context.cpp:82 逐对下发 bao_relation，但整段受 290 行 enable_three_tan_bao 守卫 -> conditional",
+   "scopeNote": "SVE-ST-C15-P02-27 直证 tan_opp_win>=3 时 relation=2、SetBaoRelation(opp,win_seat,2)，SVE-ST-C15-P02-32 直证按 from/to 双向下发 bao_relation，SVE-ST-C15-PR202-01 直证整段逻辑受 enable_three_tan_bao 守卫",
    "evidenceIds": [
     "SVE-ST-C15-P02-26",
     "SVE-ST-C15-P02-27",
     "SVE-ST-C15-P02-28",
     "SVE-ST-C15-P02-29",
-    "SVE-ST-C15-P02-32"
+    "SVE-ST-C15-P02-32",
+    "SVE-ST-C15-PR202-01",
+    "SVE-ST-C15-PR202-03",
+    "SVE-ST-C15-PR202-04"
    ],
    "l7": "verification_required",
    "reviewStatus": "pending",
@@ -6949,50 +7041,15 @@
    "atomId": "AT-ST-C15-022",
    "previousDifference": "partial",
    "reviewedDifference": "partial",
-   "reviewReason": "需求：链式承包赢家同时标「承包」「反承包」且番型只写一次；付 S 的一方标「三摊承包」，付 2×S 的一方标「反承包」。服务端：SVE-ST-C15-P02-30 只结算胡牌方参与的庄闲对且逐对独立（common_game_com_result.cpp:305-318），每对独立定档 relation=1 收 total / relation=2 收 total×2（common_game_com_result.cpp:324-334），SVE-ST-C15-P02-31 抢杠叠加 / 点炮自摸整体改写（common_game_com_result.cpp:349-355）——链式双向关系与金额区分成立；但赢家双标呈现及赔付方「三摊承包 / 反承包」文案区分仍依赖客户端，基线未见按 S 与 2×S 区分文案，维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（服务端逐对独立定档同构，客户端双标与按赔付额文案区分缺口未解决）",
+   "reviewReason": "需求：链式承包赢家同时标「承包」「反承包」且番型只写一次；付 S 的一方标「三摊承包」，付 2×S 的一方标「反承包」。服务端：SVE-ST-C15-P02-30 只结算胡牌方参与的庄闲对并逐对累计 bao_payments（common_game_com_result.cpp:305-308），SVE-ST-C15-P02-27 每对独立定档 relation=1 收 total / relation=2 收 total×2（common_game_com_result.cpp:326-332），SVE-ST-C15-P02-31 抢杠叠加、点炮/自摸整体改写（common_game_com_result.cpp:349-355），SVE-ST-C15-PR202-01 整体受 enable_three_tan_bao 守卫（common_game_com_result.cpp:290）。分向金额与关系已证，但「付 S 标三摊承包 / 付 2×S 标反承包」的差异文案、番型只写一次及角标只取首条（BoxHzmjResultMid.ts:206-216）仍属客户端呈现缺口。",
+   "reviewRule": "evidence-is-not-consistency（逐对独立定档与 total/2×total 金额已证，分向文案差异与番型只写一次属客户端，细节差异维持 partial）",
    "scopeApplicability": "conditional",
-   "scopeNote": "实读 common_game_com_result.cpp:302-342 链式逐对结算（每对独立 relation）、349-355 抢杠叠加/整体改写，整段以 290 行 enable_three_tan_bao 为前置守卫 -> conditional",
+   "scopeNote": "SVE-ST-C15-P02-30 直证只结算胡牌方参与的对且逐对独立累计 bao_payments，SVE-ST-C15-P02-27 直证每对独立 relation 1/2 与 total/2×total，SVE-ST-C15-PR202-01 直证整体受 enable_three_tan_bao 守卫",
    "evidenceIds": [
     "SVE-ST-C15-P02-26",
     "SVE-ST-C15-P02-30",
-    "SVE-ST-C15-P02-31"
-   ],
-   "l7": "verification_required",
-   "reviewStatus": "pending",
-   "effectiveDifference": "partial",
-   "l7Basis": "proposed"
-  },
-  {
-   "atomId": "AT-ST-C15-024",
-   "previousDifference": "unverified",
-   "reviewedDifference": "consistent",
-   "reviewReason": "需求语义：底部栏按住 500 毫秒临时收起小结算、按本家视角查看终局牌桌、松手恢复同一张小结算；原子 notes 已界定 500ms 判定与收起/恢复小结算本体由公共壳实现，本工程只提供事件出口与桌面财神高亮。客户端实现：BoxHzmjResultView.onPressShowTable/onPressHideTable（Code/layer/BoxHzmjResultView.ts:98/103）分别 dispatch onResultShowTable/onResultHideTable，BoxHzmjMah2DView.onResultShowTable/onResultHideTable（Code/layer/BoxHzmjMah2DView.ts:1151/1160）消费事件执行 showSpecialMah(joker) 高亮本家视角桌面财神、松手 showSpecialMah(0) 清除（SVE-ST-C15-PC01-01/02），事件名定义见 Code/config/FguiViewDefine.ts:358-361。事件出口与高亮职责与 notes 划定的本工程边界逐项对应，无相反语义，属规则 2 可升级情形。",
-   "reviewRule": "evidence-is-not-consistency（复核后确认实现与规则同构，允许升级）",
-   "scopeApplicability": "client",
-   "scopeNote": "定位到客户端实现：小结算视图提供长按/松手事件出口（BoxHzmjResultView.ts:98/103），牌桌视图消费事件做桌面财神高亮与清除（BoxHzmjMah2DView.ts:1151/1160）；按住 500ms 时序与面板收起恢复在公共壳基类（不在两根目录）内，属壳层职责，游戏侧实现与规则语义同构。",
-   "evidenceIds": [
-    "SVE-ST-C15-PC01-01",
-    "SVE-ST-C15-PC01-02"
-   ],
-   "l7": "verified",
-   "reviewStatus": "approved",
-   "effectiveDifference": "consistent",
-   "l7Basis": "approved",
-   "approvedDate": "2026-11-14"
-  },
-  {
-   "atomId": "AT-ST-C15-025",
-   "previousDifference": "partial",
-   "reviewedDifference": "partial",
-   "reviewReason": "需求语义：非末局底部中央【继续游戏】点击后本端收起小结算、清除上一局手牌/碰杠区/牌河、保留座位与累计积分、本家显示「已准备」，四人均准备自动开下一小局；第 8 局按钮为【返回大厅】并退出房间。客户端实现：BoxHzmjResultView.onContinueResult 在游戏层为空实现、onResultContinue/onResetUI 派发被注释（Code/layer/BoxHzmjResultView.ts:119-122，SVE-ST-C15-PC01-03），继续按钮的清桌与准备表现改由壳层/房间准备链路承担——gameController.playerReadyBack 在准备成功（flag===0）时 dispatch onResetUI 并 onShowActionSign(SELF_LOCAL_SEAT, kReady)（Code/controller/gameController.ts:177-182），BoxHzmjMainView.playAgain 监听壳层 onPlayAgain 派发 onResetUI（Code/layer/BoxHzmjMainView.ts:372-375），resetUI 经 GameData.clearData 清局内数据（:399-401）；「已准备」控件与显示逻辑存在（Code/layer/BoxHzmjPlayerView.ts:528-565，C_Ready pages 0/hide,1/none,2/ready 与 KW_ICON_READY 见 Fgui/assets/box_hzmj_player/component/PlayerSelfBase.xml:5/14-16，SVE-ST-C15-PC01-04/05）。因此实现并非与需求相反，而是清桌/准备由准备回包与 onPlayAgain 驱动、与继续按钮的直连被显式置空；末局判定与【返回大厅】退出房间在 Code/Fgui 两根目录零命中、由房间层承担（C_IsLastRound 仅见 Code/config/FguiViewDefine.ts:364 说明与 BoxHzmjResultView.ts:147 转发注释）。细节差异与未知项尚存，维持 partial。",
-   "reviewRule": "evidence-is-not-consistency（细节差异，维持 partial）",
-   "scopeApplicability": "client",
-   "scopeNote": "定位于客户端但实现与规则不等价：继续按钮回调在游戏层被显式置空（BoxHzmjResultView.ts:119-122），局内清桌与准备由壳层/房间准备消息另行驱动；准备标识控件与显示逻辑已存在（BoxHzmjPlayerView.ts:528-565、Fgui PlayerSelfBase.xml:5/14-16），末局判定与返回大厅在两根目录检索零命中，故落 client 相反实现。",
-   "evidenceIds": [
-    "SVE-ST-C15-PC01-03",
-    "SVE-ST-C15-PC01-04",
-    "SVE-ST-C15-PC01-05"
+    "SVE-ST-C15-P02-31",
+    "SVE-ST-C15-PR202-01"
    ],
    "l7": "verification_required",
    "reviewStatus": "pending",

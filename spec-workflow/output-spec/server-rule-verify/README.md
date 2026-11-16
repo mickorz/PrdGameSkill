@@ -122,6 +122,16 @@
   - DR：样本覆盖条目一致 3 / 分歧 5（正式更进取：C02-006/007/009、C04-001/012 建议 partial/unverified→consistent，其中 C04-001 优先级次序与 S2.1 裁决链证据（macros.h:203-206 级别常量）方向一致）；样本未覆盖 17 条为正式新增建议
 - **S3.2 partial 复核进度**：v2 的 64 条 partial 中已复核 3 条（证据就位三阶段 ST-C01/02/04），2 条建议升级（C02-006、C04-012）；其余 partial 原子随 S4.1 分批补证时逐阶段复核
 
+## S9 待补证 41 条第三轮补证（2026-11-14，余量跟踪第四项完成）
+
+- **工具链代际泛化**：`prepare-retry-input.mjs` round 参数（round 3+ → `-r2` 分片命名 + retryHint「第三轮（前两轮证据不足）」口径 + S9 标签）+ **原件判定改为仅首轮 `-p` 分片**（retry 代际分片不算原件）+ 原件从 `runtime/archive/*` 各历史 tag 扫描读取（先到先得）+ **陈旧 retry 代际分片四目录全清理**（-r/-pc 等已并入正式四件；防 stageIds=ALL 增量 merge 旧代际分片以旧盖新）；**选取交叉闸门补 client 项**（S8 作用域 fallout：vr − unknown − client − 已闭环，首次真实运行即拦截后修复）；`3-verify-scope.js`/`4-review-difference.js` retryRound 参数化（**SVE 前缀 PR2 代际隔离**——坑 8 教训，round N → PR{N-1}；本轮重跑提示按代际渲染）；example 24 断言（新增 F 用例：第三轮全链——历史归档原件 + 陈旧 -r/-pc 清理 + -r2 命名 + round 非法）
+- **执行（全链贯通，无闸门卡点）**：run-mwikzxco-11（3-verify-scope retryRound 3：11 agent/1089s，10/10 分片全过，41 原子重判 active 29 / conditional 12 / unknown 0）；run-mwilnw46-12（4-review-difference retryRound 3 + incremental + stageIds ALL：11 agent/1601s，复核 29 条目 + 增量合并 + classify + **check-l7 `--verified=v3` 五道闸门直接通过**）
+- **产物（正式四件累积）**：scope 319 维持（active 237 / conditional 69 / unknown 0 / inactive 1 / client 12，configConfirm 69/69 保全）；SVE 972（**+31 PR2 段**）；DR 319（pending 112→109→106 / approved 207→210→213）；l7 214→216/101→99/3/1（verified +2 reviewed 态）；effectiveDifference 271/27/3/18→274/27/3/15
+- **升级建议 3 条**（本轮复核 29 条目中 26 条为维持确认）：C14-011 白板不计豪华（conditional，cai_shen_type=0 默认白板财神）/ C15-004 方位盘停止倒计时（active，player clock 唯一重设入口）/ C15-009 先刷新头像旁累计积分（active，结算步骤序）——均 unverified→consistent
+- **裁决落地（委托决策延续附 A 口径）**：**附 A-4** 3 条全部 approved——reviewStatus 213/106、l7Approved 162/47/3/1（verified +2 active、vr +1 conditional）、effectiveDifference 274/27/3/15；v3 重合并（approvedTransitions 210，v2 hash 不变）+ check-l7 `--verified=v3` 五道闸门全过；报告重生成——**待补证 41→38、已闭环 57→58**（C14-011 conditional 已签认 + 批准即闭环）、《配置确认表》consistent 58（approved 47/pending 22、configConfirm 69/69 保全）、裁决附录清零
+- **v3-planner 手术式更新**：删 3 条已闭环「规则待验证」行（C14-011/C15-004/C15-009），599→596 行（规则待验证 91 / 已裁决 3 / 待策划裁决 0），planner-only 校验放行（泄漏零 / AT-ID 覆盖 100%）
+- **终态余量**：待补证 38（两轮重跑后服务端静态证据已尽力，余量偏时序/表现/实机观察类）+ 证据缺口 3（双端零实现/不等价）——静态分析收口口径，后续转对局验证/实机确认
+
 ## S8 证据缺口 12 条客户端侧查证（2026-11-14，余量跟踪第三项完成）
 
 - **设计增补（L7 设计文档第 7 节）**：作用域新值 `client`（服务端三根零实现角色 + 客户端已定位或系统性检索未果）+ L7 矩阵 client 列（**consistent×client=verified** / conflict×client=decision_required / partial·unverified×client=verification_required）+ 证据层 `client_code`（source-code/client/Code）/`client_fgui`（source-code/client/Fgui，file=layer+/+相对根路径）+ SVE id 方案 `SVE-<stageId>-PC<partNo>-NN`（PC 代际隔离，坑 8 教训）+ 报告证据缺口语义（client 非闭环=双端零实现）

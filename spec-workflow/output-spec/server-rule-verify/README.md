@@ -122,6 +122,15 @@
   - DR：样本覆盖条目一致 3 / 分歧 5（正式更进取：C02-006/007/009、C04-001/012 建议 partial/unverified→consistent，其中 C04-001 优先级次序与 S2.1 裁决链证据（macros.h:203-206 级别常量）方向一致）；样本未覆盖 17 条为正式新增建议
 - **S3.2 partial 复核进度**：v2 的 64 条 partial 中已复核 3 条（证据就位三阶段 ST-C01/02/04），2 条建议升级（C02-006、C04-012）；其余 partial 原子随 S4.1 分批补证时逐阶段复核
 
+## S10 策划版待确认消解——服务器补充行（2026-11-14，交付物收敛）
+
+- **诉求**：根路径策划版（output-spec-generate 默认交付位）为 W1~W3 时代产物（29 条「待确认：客户端未查到对应实现」行停在客户端查证态）；W4 服务端复核已完成但未回填——需收敛为服务器补充版、去除待确认项
+- **分布（确定性预处理 `s10-prep.js`）**：32 个待确认原子——**25 个 l7 verified + 5 个 conditional 已签认闭环**（服务端证据已到位）+ 2 个真开放（C11-058/060 证据缺口，其规则待验证行已承载现状）→ 27 行改写 + 2 行删除
+- **改写（mini workflow run-mwinfnr1-13，单 agent 只回 JSON 不写盘，规避坑 9 越权）**：读 `runtime/s10-pending-confirm.json`（29 行 + 每原子 rule/applicability/configCondition/reviewReason 服务端结论数据）→ 27 行改写为「**服务端已复核：**<纯行为语言服务器事实>。<结论口径>（AT-ST-…）」（conditional 附「受配置项影响，创房默认口径已签认」）；2 行（C11-058/060）置 null 删除
+- **卡点（agent 行号噪音）**：闸门挂「改写返回 lineNo 异常」——agent 按自己读文件的行号回传；splice 改为**按 atomIds 映射 + 原行全文匹配**（不依赖 lineNo），从 journal 提取 agent 结果直接消费（journal 结果与闸门判定无关的部分有效）
+- **splice 闸门**：原行全文匹配（行内容漂移兜底）+ 改写行泄漏扫描（file:line/类名标识零命中）+ 回读计数（待确认清零 / 服务端已复核 = 改写数）
+- **产物**：v3-planner 594 行（**待确认 29→0 / 服务端已复核 27 / 规则待验证 91 / 已裁决 3 / 待策划裁决 0**），planner-only 校验放行（泄漏零 / AT-ID 覆盖 100%）；根路径同步发布（默认交付位收敛）
+
 ## S9 待补证 41 条第三轮补证（2026-11-14，余量跟踪第四项完成）
 
 - **工具链代际泛化**：`prepare-retry-input.mjs` round 参数（round 3+ → `-r2` 分片命名 + retryHint「第三轮（前两轮证据不足）」口径 + S9 标签）+ **原件判定改为仅首轮 `-p` 分片**（retry 代际分片不算原件）+ 原件从 `runtime/archive/*` 各历史 tag 扫描读取（先到先得）+ **陈旧 retry 代际分片四目录全清理**（-r/-pc 等已并入正式四件；防 stageIds=ALL 增量 merge 旧代际分片以旧盖新）；**选取交叉闸门补 client 项**（S8 作用域 fallout：vr − unknown − client − 已闭环，首次真实运行即拦截后修复）；`3-verify-scope.js`/`4-review-difference.js` retryRound 参数化（**SVE 前缀 PR2 代际隔离**——坑 8 教训，round N → PR{N-1}；本轮重跑提示按代际渲染）；example 24 断言（新增 F 用例：第三轮全链——历史归档原件 + 陈旧 -r/-pc 清理 + -r2 命名 + round 非法）

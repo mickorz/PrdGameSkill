@@ -70,7 +70,7 @@
 庄家用这 14 张直接进入首轮，不再摸牌。理牌后若已满足自摸，立即给出【自摸】【过】。爆头、七客按其余 13 张判断。
   - 客户端实现：发牌动画结束后把牌桌状态切回“开始”、清除重连标记并上行等待结束，首出阶段由剩余张数识别并按自己是否庄家显示不同提示，出牌权限由服务端下发；开局第一次抓牌同时承担整体发牌动画，抓到的牌直接并入整手牌，不产生单独的摸牌表现，后续抓牌只在 flag 非首次时按正常摸牌流程处理；发牌动画结束后自动排序手牌并回到可行动状态，胡按钮是否出现、按自摸还是点炮样式显示取决于服务端下发的胡权限与胡牌类型，客户端不自行计算自摸；过按钮的显隐由权限中的放弃位决定，与其他操作按钮同组显示，点击后上行取消并收起操作区。（source-code/client/Code/layer/BoxHzmjMainView.ts:1352、source-code/client/Code/layer/BoxHzmjMainView.ts:1354、source-code/client/Code/controller/cmd/gameCmd/GamePowerCmd.ts:138、source-code/client/Code/controller/cmd/gameCmd/GamePowerCmd.ts:146、source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts:66、source-code/client/Code/layer/BoxHzmjMah2DView.ts:805、source-code/client/Code/layer/BoxHzmjMah2DView.ts:806、source-code/client/Code/layer/BoxHzmjMainView.ts:1351、source-code/client/Code/layer/BoxHzmjMainView.ts:583、source-code/client/Code/layer/BoxHzmjMainView.ts:665、source-code/client/Code/layer/BoxHzmjMainView.ts:675、source-code/client/Code/layer/BoxHzmjMainView.ts:1190、source-code/client/Code/layer/BoxHzmjMainView.ts:581、source-code/client/Code/layer/BoxHzmjMainView.ts:557、source-code/client/Code/layer/BoxHzmjMainView.ts:1237）
   - UI 交互：发牌结束立即出现首出提示（庄家/闲家两种文案）与出牌按钮，玩家可直接点牌打出；庄家发牌结束后没有额外的摸牌动画与摸牌位牌张；胡按钮出现时按胡牌类型切换表现，自摸类型显示为自摸样式，并在按钮上展示胡的牌与倍数；过按钮与胡按钮同时出现在操作按钮组中，点击过按钮后按钮收起、手牌灰态清除。
-  - 待确认：爆头、七客按其余 13 张判断，客户端代码未找到对应实现
+  - 服务端已复核：爆头要求自摸、以进张（danfang）与财神成将并按 3N2/2N 拆解其余手牌，七客要求 2N 结构且「4 张相同」组计数为 0、以进张前手牌判定（进张单放 danfang 不入 hands），二者均按其余 13 张的口径实现——服务端证据：common_game/common_game_fan_type.cpp:250（CommonGameFanType::IsFanTypeBaoTou）、common_game/common_game_fan_type.cpp:332（CommonGameFanType::IsFanTypeQiDui）等；与需求一致。客户端不实现该判断逻辑，由服务端下发/裁决（对应原子 AT-ST-C03-011、AT-ST-C03-012）
 
 ## 行牌
 
@@ -85,13 +85,13 @@
   - 客户端实现：玩家点「过」时客户端把放弃请求（带同一轮 askid）发给服务端并收起操作面板，之后是否轮到更远一家由服务端重新下发权限（source-code/client/Code/controller/gameController.ts:462）
   - UI 交互：操作面板切到「碰杠胡」页，吃、碰、杠、胡按钮同屏按水平排布自左向右显示，按钮带闪烁高亮动效，胡按钮额外显示所胡牌面与倍数；碰按钮与杠按钮在「碰杠胡」页同级并列显示，各自独立高亮，有多个杠可选时展开多杠选择列表
   - UI 交互：只有轮到自己那一条权限消息才会弹出碰或杠按钮，他人可操作时不出现其按钮，复盘模式例外，按座位逐家还原；点「过」后胡、碰按钮收起，手牌恢复可操作，放弃有需回包与仅本地收起两种按钮
-  - 待确认：碰与直杠并存时按座位号小者先裁决，客户端代码未找到对应实现
-  - 待确认：近者胡则远者不成立，客户端代码未找到对应实现
+  - 服务端已复核：hzmj 实际注册 BoxPungStep 与 BoxMKongStep，两者 GetLevel 同为 3（碰与直杠同级、不区分先后），权限按 key=MAKEKEY(seat,power) 登记并以座位号参与权重比较，座位号小者先裁决——服务端证据：mah_frame/com_basic/com_pung.cpp:66（PungStep::Judge）、mah_frame/com_basic/com_kong.cpp:86（MKongStep::Judge）等；与需求一致。客户端不实现该裁决，由服务端下发/裁决（对应原子 AT-ST-C04-003）
+  - 服务端已复核：hzmj 基线硬编码 SetDuoXiang(false) 不支持一炮多响，胡的权重叠加 GetSeatWeight（以打牌者 GetNowSeat 为基准按逆时针距离计算，越近权重越大），近者成立即胜出、远者不再成立——服务端证据：mah_frame/com_basic/com_action.cpp:834（ActionStep::GetSeatWeight）、common_game/common_game_server_config.cpp:11（CommonGameServerConfig::Reset）等；与需求一致。客户端不实现该裁决，由服务端下发/裁决（对应原子 AT-ST-C04-006）
 
 - 只允许一人胡，不一炮多响。多人可胡时，从出牌者起按逆时针，最近的可胡者优先；放弃后顺延。
   - 客户端实现：中局胡牌与结算按服务端胡牌明细处理，客户端以胡牌项条数大于一判定为一炮多响并播放对应动效，未在客户端做只允许一人胡的过滤（source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:144、source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:323）；玩家放弃后客户端上报过牌请求并收起操作面板，不本地决定谁胡，续位由服务端重新下发权限或直接下发结算（source-code/client/Code/layer/BoxHzmjMainView.ts:1237）
   - UI 交互：结算时若收到多条胡牌项，在放炮方位置播放「一炮多响」字效动画，只有一条时播放「点炮」动画；点「过」后操作按钮收起、手牌恢复可点，需回包的过会发请求，仅本地收起的过2 不发请求
-  - 待确认：多人可胡时从出牌者起按逆时针最近的可胡者优先，客户端代码未找到对应实现
+  - 服务端已复核：GetSeatWeight 以出牌者 GetNowSeat 为基准返回 mpcnt-(n_seat-whoplay+mpcnt)%mpcnt，逆时针越近权重越大，该权重经 GetConActionWeight 叠加到胡等级后由 ConAction 取最大者执行，即从出牌者起逆时针最近的可胡者优先——服务端证据：mah_frame/com_basic/com_action.cpp:834（ActionStep::GetSeatWeight）、mah_frame/base/con_action.cpp:43（ConAction::OnConAction）等；与需求一致。客户端不实现该裁决，由服务端下发/裁决（对应原子 AT-ST-C04-009）
 - 低优先级先提交时，先等全部更高优先级的玩家手动放弃，再执行。更高优先级一旦成立，其余响应取消。
   - 客户端实现：点吃、碰、杠、胡后客户端只发送请求并收起面板，不本地执行动作，副露表现要等服务端动作广播到达后才出现（source-code/client/Code/layer/BoxHzmjMainView.ts:1102、source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts:48）；收到吃、碰、杠、胡等动作成立的服务端广播后，客户端统一派发关闭操作事件，把操作面板复位、清空多选列表并撤销可出牌状态（source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts:44、source-code/client/Code/controller/cmd/gameCmd/GamePungCmd.ts:44、source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:46、source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:241、source-code/client/Code/layer/BoxHzmjMainView.ts:494）
   - UI 交互：点击吃、碰、杠后按钮收起、手牌置灰恢复，真正的副露摆放要等服务端广播回来才出现；他人的吃、碰、杠、胡一旦成立，自己面板上的吃碰杠胡按钮立即消失，手牌恢复为不可直接出牌状态，同时播放对应的动作动画
@@ -116,7 +116,7 @@
 - **直杠**：他人刚打出的 1 张非财神，与手中 3 张相同非财神。按优先级裁决后，从牌墙尾部补牌。
   - 客户端实现：收到明杠消息后生成四张副露，清空出牌放大展示，手牌扣三张（四张组合剔除进牌），并播放明杠动效与杠音效（source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:37、source-code/client/Code/data/PlayerCardsData.ts:789、source-code/client/Code/layer/BoxHzmjTipAniView.ts:504）；杠本身不发起摸牌，补牌由服务端下发抓牌消息，客户端按消息中的抓牌方向让牌墙对应位置的牌消失并播放摸牌动画，方向为反向时从牌墙另一端取牌（source-code/client/Code/data/GameData.ts:687、source-code/client/Code/data/GameData.ts:723、source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts:45）
   - UI 交互：副露区出现一组四张明杠，播放杠动画与杠音效，其他座位记牌器同步减少；杠后牌墙从另一端少一张，玩家补进一张牌并播放摸牌动画
-  - 待确认：直杠按优先级裁决后成立，客户端代码未找到对应实现
+  - 服务端已复核：直杠以 kStepLevelKong=3 登记、参与 ConAction 优先级裁决（胡为 kStepLevelHu=4），与其他响应同表比较权重、胜出后才成立——服务端证据：mah_frame/base/macros.h:205（kStepLevelKong）、mah_frame/base/con_action.cpp:19（ConAction::OnConAction）等；与需求一致。客户端不实现该裁决，由服务端下发/裁决（对应原子 AT-ST-C05-012）
 
 - **加杠**：出牌阶段，已碰出的刻子手里有第 4 张非财神。先征求抢杠胡。有人抢杠胡则加杠不成立、不补牌。无人胡再完成加杠并补牌。
   - 客户端实现：收到补杠消息后在已有副露中查找同牌值的碰组合，把该组原位替换为杠（不新增副露组），手牌扣一张，并重算该组相关的听牌信息（source-code/client/Code/data/PlayerCardsData.ts:99、source-code/client/Code/data/PlayerCardsData.ts:106、source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:64、source-code/client/Code/layer/BoxHzmjMah2DView.ts:910）；客户端有抢杠胡类型与「抢杠/被抢杠」文案，胡牌结果按抢杠胡走点炮式展示，另存在把补杠副露拆回碰的本地回滚函数，但当前代码中未被调用（source-code/client/Code/config/GameDefine.ts:149、source-code/client/Code/data/PlayerCardsData.ts:444、source-code/client/Code/util/BoxHzmjFlowUtil.ts:119、source-code/client/Code/layer/BoxHzmjMainView.ts:671）；无人抢杠时由服务端下发补杠消息，客户端完成碰升级为杠，随后的补牌同样由服务端下发抓牌消息，客户端只播动画（source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:63、source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts:288）
@@ -129,7 +129,7 @@
 - 吃或碰刚成立的当前回合，同样可以加杠、暗杠。四张相同就可以杠，杠完这条就不再按七对结算。
   - 客户端实现：与吃、碰条目共用同一机制，同一回合操作权限给出杠位即显示杠按钮并列出可杠牌，与摸牌无关的杠不置灰手牌且不必先点过（source-code/client/Code/layer/BoxHzmjMainView.ts:1445、source-code/client/Code/layer/BoxHzmjMainView.ts:701）；客户端按服务端给出的杠组合收集可杠牌值，暗杠、明杠、补杠统一进入可杠列表，多个可杠项时展示多杠列表供选择（source-code/client/Code/layer/BoxHzmjMainView.ts:639、source-code/client/Code/layer/BoxHzmjMainView.ts:835、source-code/client/Fgui/assets/box_hzmj_main/component/GangGrps.xml:4）
   - UI 交互：吃碰后同一回合出现杠按钮与多杠选项，相关手牌保持可点击；出现杠按钮时按可杠牌值展示单张或列表，点选某项即发送杠
-  - 待确认：杠完这条就不再按七对结算，客户端代码未找到对应实现
+  - 服务端已复核：IsFanTypeQiDui 要求 sep_type_==kSepType2N 且「4 张相同」组计数为 0，一旦出现杠子即转豪七系列，且杠子移出手牌后张数不再满足 2N，故杠后不再按七对结算——服务端证据：common_game/common_game_fan_type.cpp:332（CommonGameFanType::IsFanTypeQiDui）、common_game/common_game_fan_type.cpp:63（CommonGameFanType::CountQuadPairGroups）等；与需求一致。客户端不实现该判断逻辑，由服务端下发/裁决（对应原子 AT-ST-C05-022）
 
 - 受尚未解除的飘财限制时，不能吃、碰、直杠、加杠，仍可暗杠。暗杠后只能打尾墩刚补进的那一张。
   - 客户端实现：吃按钮是否出现完全由服务端操作权限的吃位决定，客户端只记录飘计数并驱动飘动效，没有基于飘状态隐藏吃按钮的逻辑（source-code/client/Code/controller/cmd/gameCmd/GamePiaoCmd.ts:21、source-code/client/Code/layer/BoxHzmjTipAniView.ts:1680、source-code/client/Code/layer/BoxHzmjMainView.ts:552）；碰按钮是否出现由服务端操作权限的碰位决定，客户端没有根据飘状态屏蔽碰按钮的逻辑（source-code/client/Code/layer/BoxHzmjMainView.ts:553、source-code/client/Code/layer/BoxHzmjMainView.ts:579）；杠按钮由服务端操作权限的杠位统一控制，可杠项按组合类型收集，客户端不按飘状态过滤明杠、补杠（source-code/client/Code/layer/BoxHzmjMainView.ts:639、source-code/client/Code/config/BoxMahDefine.ts:208、source-code/client/Code/layer/BoxHzmjMainView.ts:652、source-code/client/Code/layer/BoxHzmjMainView.ts:611）；可杠列表按服务端下发的杠组合类型生成，暗杠与明杠、补杠共用同一个入口，若服务端只给暗杠组合，客户端只列出暗杠项（source-code/client/Code/layer/BoxHzmjMainView.ts:636、source-code/client/Code/layer/BoxHzmjMainView.ts:654、source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:55）；客户端按出牌限制消息区分禁打手牌与禁打单放，被禁的牌置灰且不可点击，点击被禁的牌会提示「该牌被禁打」（source-code/client/Code/controller/cmd/gameCmd/GamePlayLmtsCmd.ts:33、source-code/client/Code/data/GameData.ts:1799、source-code/client/Code/layer/BoxHzmjMainView.ts:1432）
@@ -140,12 +140,12 @@
 每次杠从牌墙尾部补 1 张，余牌减 1。牌墙少于 21 张不能杠。剩 20 张及以下时，下一次摸牌前黄庄。
   - 客户端实现：杠后补牌没有独立事件，统一由抓牌通知驱动：抓牌命令使用通知中的方向与张数调用牌墙取牌，牌墙取牌方法区分正向抓牌与反向（尾部）抓牌两个分支，反向分支从尾部索引逐张取牌，并按本次取牌张数扣减剩余张数；抓牌命令随后广播牌墙剩余张数，牌墙右侧组件把新数值写入标题文本；客户端不判断黄庄时机，只在收到流局结局时按流局类型处理：小结算把自己标记为流局状态，结算流水不生成赢家明细。（source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts:88-91、source-code/client/Code/data/GameData.ts:723-726、source-code/client/Code/lib/proto_game_hzmj.d.ts:1151-1155、source-code/client/Code/data/GameData.ts:738、source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts:289、source-code/client/Code/layer/comp/BoxHzmjMahRightComp.ts:26-28、source-code/client/Code/controller/cmd/gameCmd/GameWallMahCmd.ts:43-44、source-code/client/Code/config/MatchTipConfig.ts:39、source-code/client/Code/util/BoxHzmjResultUtil.ts:35-39、source-code/client/Code/util/BoxHzmjFlowUtil.ts:29-31、source-code/client/Code/protocol/GameGlcProtocol.ts:114、source-code/client/Fgui/assets/box_hzmj_tipAni/package.xml:79）
   - UI 交互：取到的牌插入该家手牌并亮出，非自己时按手牌计数更新，同时刷新牌墙剩余张数；牌墙右侧数字在每次抓牌与补牌后刷新，重连恢复时也按剩余张数重刷，牌墙显示受对局内牌墙开关控制；匹配界面提示文案出现「剩余20张牌前无人胡牌则流局」，小结算按流局展示自己的输赢状态，提示动画包内打包了流局文字图。
-  - 待确认：牌墙少于 21 张不能杠，客户端代码未找到对应实现
+  - 服务端已复核：明杠、吃杠、加杠三类 Judge 统一以 CountWalls() < KongTakeCount + DrawnCnt 拦截（牌墙扣除荒局张数后不足补牌张数即不能杠，创房口径为 21 张门槛）——服务端证据：common_game/com_game/common_game_com_kong.cpp:17（BoxMKongStep::Judge）、common_game/com_game/common_game_com_kong.cpp:138（BoxCKongStep::Judge）等；与需求一致。客户端不实现该判断逻辑，由服务端下发/裁决（对应原子 AT-ST-C06-003）
 
 杠后可以继续杠，每次重新检查牌墙不少于 21 张。补牌可以自摸；不胡则继续杠或打出 1 张。明杠、暗杠、加杠都使杠链加 1。吃、碰，或打出非财神，或打出财神但打出后不再敲响，杠链归零。
   - 客户端实现：客户端不记录本回合是否已杠过，每次收到权限都按服务端给的可杠牌组重建可杠列表并据此显示杠按钮，杠后再次收到杠权限时照常给出杠入口，选中后发送杠请求；胡按钮按权限显示，胡牌类型为自摸时把胡按钮动画切成自摸字效，点胡后发送胡请求，胡牌类型枚举区分自摸、点炮、抢杠，杠后自摸另有专属番型字效；自己摸牌后客户端开启出牌任务与听牌按钮检查，点击手牌即按单张出牌发送出牌请求，同时保留杠入口供选择继续杠；客户端不维护杠链计数，收到明杠消息时按杠类型播明杠动作动画与明杠音效、清理出牌操作区并把杠组作为副露渲染，收到暗杠消息时按暗杠类型播暗杠动作与暗杠音效，并把暗杠按原有牌序作为副露渲染（牌背按原位），收到补杠消息时按补杠类型播补杠动作与补杠音效，并走独立的补杠渲染通道把第 4 张加到已有碰组上，杠链的实际效果只体现在杠后自摸时服务端下发的番型上；吃牌与碰牌处理只做副露渲染、动作动画与操作区关闭，没有任何杠链计数或连杠档位重置逻辑；出牌处理只更新牌河与手牌、刷新听牌提示并收起操作区，不区分财神与非财神的杠链效果，也没有杠链清零逻辑；对打出财神只有飘状态处理：收到飘状态通知后更新该座位的飘计数并重绘飘表现，客户端没有敲响判定，也没有杠链计数或清零逻辑。（source-code/client/Code/layer/BoxHzmjMainView.ts:601-611、source-code/client/Code/layer/BoxHzmjMainView.ts:1140-1154、source-code/client/Code/data/GameData.ts:881-884、source-code/client/Code/layer/BoxHzmjMainView.ts:663-666、source-code/client/Code/layer/BoxHzmjMainView.ts:670-675、source-code/client/Code/config/GameDefine.ts:421-431、source-code/client/Code/config/FanDefine.ts:25-29、source-code/client/Code/layer/BoxHzmjMainView.ts:1481-1482、source-code/client/Code/controller/cmd/gameCmd/GameTakeCmd.ts:290-294、source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:51-52、source-code/client/Code/layer/BoxHzmjTipAniView.ts:1132-1135、source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:54-55、source-code/client/Code/layer/BoxHzmjTipAniView.ts:509-512、source-code/client/Code/config/BoxMahDefine.ts:804-809、source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:57-58、source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:63-65、source-code/client/Code/layer/BoxHzmjMah2DView.ts:907-910、source-code/client/Code/controller/cmd/gameCmd/GamePungCmd.ts:43、source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts:43、source-code/client/Code/controller/cmd/gameCmd/GamePlayCmd.ts:67、source-code/client/Code/controller/cmd/gameCmd/GamePlayCmd.ts:89-96、source-code/client/Code/controller/cmd/gameCmd/GamePiaoCmd.ts:21-24、source-code/client/Code/layer/BoxHzmjTipAniView.ts:1675-1680）
   - UI 交互：杠按钮按权限显示并循环发光，存在多个可杠选项时弹出可杠牌列表供点选，选中后收起操作区并置灰手牌；胡按钮展示本次胡的牌与倍数，字效按胡牌类型切换（自摸显示自摸样式，点炮与抢杠显示胡样式）并循环发光，杠后自摸按番型播放杠上开花、二连杠、三连杠、四连杠等杠开系档位字效；点手牌出牌后收起操作区并清灰，杠按钮仍按权限显示，玩家可选择杠而非出牌；明杠、暗杠、补杠分别播放对应的动作动画与音效，桌面新增杠副露，补杠把已碰组的副露替换为杠组；吃、碰分别播放对应动作动画与音效，桌面新增副露组，操作区收起；出牌播放出牌动画与出牌音效，牌进入牌河，本回合操作区关闭；打出财神后播放飘的动作字效，飘计数按服务端下发值刷新。
-  - 待确认：杠后继续杠时，每次重新检查牌墙不少于 21 张，客户端代码未找到对应实现
+  - 服务端已复核：余牌门槛写在各杠步骤 Judge 内，每次动作分发均重新调用且无一次性缓存，CountWalls 实时取值，故续杠每次重新检查牌墙不少于 21 张——服务端证据：common_game/com_game/common_game_com_kong.cpp:17（BoxMKongStep::Judge）、mah_frame/base/base_data.cpp:257（BaseData::CountWalls）等；与需求一致。客户端不实现该判断逻辑，由服务端下发/裁决（对应原子 AT-ST-C06-006）
 
 ### 自摸、放铳、抢杠胡
 
@@ -159,15 +159,15 @@
   - UI 交互：胡牌时在被放炮的玩家位置播点炮或一炮多响动画，结算里胡牌者显示点炮胡、放铳者显示点炮标记。
   - 客户端实现：客户端保存牢庄等级（1 一牢、2 二牢、3 三牢），并据此提供庄闲倍数（2、4、8）的计算入口，该值由对局数据与结算数据更新；未见用牢庄等级判定是否允许点炮胡（source-code/client/Code/data/GameData.ts:1593、source-code/client/Code/data/GameData.ts:1664、source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:118）
   - UI 交互：结算与桌面能体现庄家牢庄档位信息；未见针对「三牢」变化的点炮资格提示。
-  - 待确认：客户端代码未找到对应实现（出牌者与胡牌者正好一边是庄、一边是闲且牌型合法才能点炮胡的判定）
-  - 待确认：客户端代码未找到对应实现（庄家打出的牌只有闲家可胡、闲家打出的牌只有庄家可胡）
-  - 待确认：客户端代码未找到对应实现（未形成庄闲关系时只能自摸）
+  - 服务端已复核：BoxHuStep::JudgeDiscard 先经 CanDiscardHu 门控（财神不能放铳），再以 is_banker_discard 与 is_banker_hu 相等即 continue 强制一庄一闲，随后才 TestHu 校验牌型，未形成一庄一闲不进入胡判定——服务端证据：common_game/com_game/common_game_com_action.cpp:360（BoxHuStep::JudgeDiscard）等；与需求一致。创房默认口径已签认（enable_banker_discard_hu=1 且 banker_level_type=2 起手三牢）（对应原子 AT-ST-C07-007）
+  - 服务端已复核：同一 JudgeDiscard 内取 GetZhuang 后按 is_banker_discard=(seat==zhuang)、is_banker_hu=(hu_seat==zhuang) 做相异过滤，庄家出牌时仅非庄座位可通过、闲家出牌时仅庄家座位可通过——服务端证据：common_game/com_game/common_game_com_action.cpp:367（BoxHuStep::JudgeDiscard）、common_game/com_game/common_game_com_action.cpp:371（BoxHuStep::JudgeDiscard）等；与需求一致。创房默认口径已签认（enable_banker_discard_hu=1 且 banker_level_type=2 起手三牢）（对应原子 AT-ST-C07-008、AT-ST-C07-009）
+  - 服务端已复核：同庄或同闲组合在 :370-372 直接 continue 不进入 TestHu，点炮胡不成立时唯一胡牌入口为 JudgeSelf 自摸——服务端证据：common_game/com_game/common_game_com_action.cpp:367（BoxHuStep::JudgeDiscard）、common_game/com_game/common_game_com_action.cpp:354（BoxHuStep::CanDiscardHu）等；与需求一致。创房默认口径已签认（enable_banker_discard_hu=1 且 banker_level_type=2 起点三牢时点炮与自摸两路并存，该兜底语义仅在放铳关闭或牢庄少于 3 时显式生效）（对应原子 AT-ST-C07-010）
   - 客户端实现：结算按服务端下发的座位得失分逐座位写入桌面分数，只对分数不为 0 的座位刷新并飘分；点炮场景下胡牌者得到点炮胡流水、放铳者得到放炮流水，其余两家没有胡相关流水，赔付主体与金额均由服务端计算（source-code/client/Code/config/FanDefine.ts:555、source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:206、source-code/client/Code/layer/BoxHzmjTipAniView.ts:703、source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:734）
   - UI 交互：结算时各座位依次飘出得分或失分，只有分数有变化的座位才飘；结算行里胡牌者显点炮胡、放铳者显放炮，其余两家无该流水。
 - **抢杠胡**：与放铳相同，只有三牢的庄闲之间可以抢。所加的第 4 张须使响应者合法胡牌。只由被抢的加杠者按放铳赔付，其他人不付。
   - 客户端实现：协议与枚举里存在独立的抢杠胡类型（自摸 1、点炮 2、抢杠 3），结算里会把抢杠识别为点炮类胡牌并把胡牌来源指向被抢者；客户端胡按钮对点炮与抢杠统一用「胡」贴图，自摸才用「自摸」贴图；仅限三牢庄闲的资格判断无客户端实现（source-code/client/Code/config/BoxMahDefine.ts:897、source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:339、source-code/client/Code/layer/BoxHzmjMainView.ts:671、source-code/client/Code/layer/BoxHzmjTipAniView.ts:929）
   - UI 交互：可以抢杠时与点炮一致，出现带「胡」贴图的按钮与牌面、倍数；胡牌后播点炮类动画，结算行显示吃胡。
-  - 待确认：客户端代码未找到对应实现（所加的第 4 张须使响应者合法胡牌）
+  - 服务端已复核：加杠组合由 TestTKong 取得含第 4 张的补杠组、SetJustTKong 落地，抢杠胡时 GetHuStands 对非加杠者以该第 4 张作为进张，须经 TestHu 判定合法胡牌才成立——服务端证据：common_game/com_game/common_game_com_kong.cpp:202（BoxTKongStep::Judge）、mah_frame/com_basic/com_kong.cpp:451（TKongStep::CheckTKong）等；与需求一致。客户端只展示杠组、不做校验，校验由服务端裁决（对应原子 AT-ST-C07-013）
   - 客户端实现：结算流水区分抢杠胡与被抢杠两类成对文案，抢杠被当作点炮类胡牌，胡牌来源座位指向被抢的加杠者，被抢者牌河里没有对应牌因此不做移除；结算会跳过被自摸、放炮、被抢杠这类输家流水类型，只为有分数变化的座位飘分与显示流水，因此抢杠场景下其余两家不会出现抢杠相关流水（source-code/client/Code/config/FanDefine.ts:557、source-code/client/Code/config/FanDefine.ts:639、source-code/client/Code/util/BoxHzmjFlowUtil.ts:119、source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:171、source-code/client/Code/layer/BoxHzmjMah2DView.ts:997、source-code/client/Code/config/FanDefine.ts:559、source-code/client/Code/util/BoxHzmjFlowUtil.ts:241、source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:206）
   - UI 交互：结算行里胡牌者显抢杠胡、被抢者显被抢杠，金额按点炮口径显示，桌面按座位飘分；抢杠结算时只有胡牌者与被抢者两个座位有分数浮动和胡相关流水，其余两家结算行不显示抢杠内容。
 
@@ -175,12 +175,12 @@
 
 全场同时只有一个飘财窗口。打出财神的玩家成为所有者，限制另外三家。之后再有人打出财神，窗口直接换到这个人，不叠加。受限玩家若被逼打出刚摸到的财神，窗口就转到他身上。
 
-  - 待确认：客户端代码未找到对应实现
+  - 服务端已复核：窗口由单标量 piao_owner_seat 承载，每小局 ResetRound 复位为 -1，打出财神时覆盖写 SetPiaoOwnerSeat(seat)；IsPiaoRestricted 定义为存在窗口且 seat 不等于所有者，受限集合恰为除所有者外的其他座位，并接入吃、碰等判定——服务端证据：common_game/common_game_server_data.h:107（CommonGameServerData::piao_owner_seat）、common_game/com_game/common_game_com_play.cpp:64（BoxPlayStep::CheckPlay）等；与需求一致。客户端不实现该状态，由服务端下发/裁决（对应原子 AT-ST-C08-001、AT-ST-C08-002）
   - 客户端实现：收到针对某座位的出牌限制后，按该座位缓存禁打手牌与禁打单放牌值，只有受限座位是自己时才驱动界面刷新（GamePlayLmtsCmd.ts:31；GamePlayLmtsCmd.ts:45；GameData.ts:1738-1741；GamePlayLmtsCmd.ts:10）
   - UI 交互：自己受限时手牌灰化并被拦截出牌，其他座位没有专属表现。
   - 客户端实现：新的限制内容整体覆盖上一份受限座位与禁打列表，不做累加；限制被清空时调用清空接口把座位重置为空（GameData.ts:1739-1741；GamePlayLmtsCmd.ts:37-38；GamePlayCmd.ts:72）
   - UI 交互：灰态按最新一份限制重算；限制包为空时解除缓存。
-  - 待确认：客户端代码未找到对应实现
+  - 服务端已复核：CheckPlay 对所有者座位先结束旧窗口（SetPiaoOwnerSeat(-1)），再在任何玩家打出财神时直接覆盖 SetPiaoOwnerSeat(seat)，无计数或叠加结构；受限座位经 MakePower 把全手牌写黑名单、仅留摸进牌可打，被逼打出财神时同样走覆盖写把窗口转到他身上——服务端证据：common_game/com_game/common_game_com_play.cpp:60（BoxPlayStep::CheckPlay）、common_game/com_game/common_game_com_play.cpp:23（BoxPlayStep::MakePower）等；与需求一致。客户端不实现该状态，由服务端下发/裁决（对应原子 AT-ST-C08-003、AT-ST-C08-004）
 
 - 受限时可以胡牌和暗杠，不能吃、碰、直杠、加杠。只能打刚摸进或最新补进的那一张，其余手牌压暗，只在自己界面显示。这份限制盖过吃碰禁手。
   - 客户端实现：胡与杠按钮只按服务端下发的权限位与可选组合显示，客户端没有飘财态下额外放开胡或暗杠的判断；吃、碰、杠按钮完全由服务端权限位与可选组合列表决定，客户端不自行做飘财相关的禁用判断（BoxHzmjMainView.ts:552-559；BoxHzmjMainView.ts:583；MatchTipConfig.ts:41；GamePowerCmd.ts:53；BoxHzmjMainView.ts:578-580；BoxHzmjMainView.ts:636-650）
@@ -194,7 +194,7 @@
 - 所有者自己下一次出牌时先关掉窗口。这张若又是财神，立刻重开。
   - 客户端实现：出牌处理中明确不清除禁打列表，只在本回合结束时清掉手牌灰态，真正解除依赖服务端新包或空包（GamePlayCmd.ts:72；GamePlayCmd.ts:123；BoxHzmjMainView.ts:1628-1636）
   - UI 交互：自己出牌后手牌恢复亮色，禁打数据仍保留，等待下一次限制内容刷新。
-  - 待确认：客户端代码未找到对应实现
+  - 服务端已复核：CheckPlay 先判 GetPiaoOwnerSeat()==seat 即 SetPiaoOwnerSeat(-1) 关窗，随后才判 mah==cai_shen 并立即 SetPiaoOwnerSeat(seat) 重开，同时累加飘次数并由 BroadcastPiao 广播，顺序固定为先关后判——服务端证据：common_game/com_game/common_game_com_play.cpp:61（BoxPlayStep::CheckPlay）、common_game/com_game/common_game_com_play.cpp:64（BoxPlayStep::CheckPlay）等；与需求一致。客户端不实现该状态，由服务端下发/裁决（对应原子 AT-ST-C08-010、AT-ST-C08-011）
 - 飘档只在打出财神、且打出后手牌仍然敲响时加 1。没敲响就打财神，飘档和杠链都归零。打出普通牌同样归零。各家飘档独立。吃、碰、杠不清飘档，吃和碰会清杠链。
   - 客户端实现：客户端不计算飘档，只保存服务端下发的飘次数，结算档位靠服务端下发的番型编号映射名称（GamePiaoCmd.ts:8-10；GamePiaoCmd.ts:21；FanDefine.ts:308-314）
   - UI 交互：次数大于 0 时播放飘字；结算时按档位显示财飘、双财飘、三财飘名称。
@@ -206,7 +206,7 @@
   - UI 交互：飘字动画按座位对应的碰杠节点播放，各家互不影响。
   - 客户端实现：飘次数的写入与清零只出现在飘状态处理与小局重置两个位置，吃碰杠处理流程不修改飘次数（GameData.ts:2019；GameData.ts:1699-1707；GameChowCmd.ts:32-34）
   - UI 交互：吃碰杠后飘字与飘次数保持不变。
-  - 待确认：客户端代码未找到对应实现
+  - 服务端已复核：CheckPlay 仅在打出财神时进入飘档分支，IsQiaoXiangNow(seat)（所用 GetHands 已是移除所打之牌后的手牌）为真才飘档加 1、否则飘档与杠链一并归零；打出普通牌同样 SetPiaoLevel(seat,0) 并 ClearGangChain；piao_level 按座位数组独立存储、只写当前出牌者座位；吃、碰仅 ClearGangChain，全程不触碰飘档——服务端证据：common_game/com_game/common_game_com_play.cpp:70（BoxPlayStep::CheckPlay）、common_game/common_game_server_data.h:97（CommonGameServerData::piao_level）等；与需求一致。客户端不实现该计数，由服务端下发/裁决（对应原子 AT-ST-C08-012、AT-ST-C08-013、AT-ST-C08-014、AT-ST-C08-015、AT-ST-C08-016、AT-ST-C08-017）
 - 飘次数本局累加，小局重置时清掉。次数大于 0 时，在该座位碰杠位播放「飘」字，没有常驻标签。
   - 客户端实现：保存服务端下发的累计飘次数，重连时用重连包中的数组恢复；小局重置（重置界面）时把四个座位计数一起清零（GamePiaoCmd.ts:21；GameData.ts:2015-2019；BoxHzmjMainView.ts:401；SceneActionCmd.ts:77-78）
   - UI 交互：新一局开始后不残留上一局的飘字与计数。
@@ -218,7 +218,7 @@
 - **杠上开花 / 二连杠 / 三连杠 / 四连杠**：自摸且杠链为 1 / 2 / 3 / 4 及以上，倍数 2 / 4 / 8 / 16。四连杠及以上都记 16 倍。杠链已断后再胡，不是杠开。
   - 客户端实现：番型层定义 2406~2409 四个杠开番型 ID 与中文名（杠上开花/二连杠/三连杠/四连杠），结算/动效层按主番型选择皮肤 gk/2lgk/3lgk/4lgk，客户端不自行统计杠链；杠开档位解析最多返回 4、只有到四连杠 2409 的档位，未见 5 次及以上连杠的额外档位或映射；是否自摸按 hu_type 判定（非点炮/抢杠/点杠花即自摸），据此选择胡牌表现与语音，另有“有杠牌且已有听牌”的杠开可行性辅助判断用于提示；客户端不参与倍数计算，倍数 2/4/8/16 只以番型代码注释与萧山动画候选比较表形式存在，实际总倍数取服务端下发的 fan_point（source-code/client/Code/config/FanDefine.ts:25、source-code/client/Code/config/FanDefine.ts:26、source-code/client/Code/config/FanDefine.ts:28、source-code/client/Code/config/FanDefine.ts:30、source-code/client/Code/config/FanDefine.ts:31、source-code/client/Code/config/FanDefine.ts:32、source-code/client/Code/config/FanDefine.ts:80、source-code/client/Code/config/FanDefine.ts:298、source-code/client/Code/config/XsmjFanConfig.ts:4、source-code/client/Code/layer/BoxHzmjTipAniView.ts:929、source-code/client/Code/layer/BoxHzmjTipAniView.ts:1132、source-code/client/Code/layer/BoxHzmjTipAniView.ts:1139、source-code/client/Code/config/GameSoundConfig.ts:432、source-code/client/Fgui/assets/box_hzmj_tipAni/effect/Paixing_wz04.json:1、source-code/client/Code/data/GameData.ts:411、source-code/client/Code/controller/cmd/gameCmd/GameWaitInfoCmd.ts:83、source-code/client/Code/config/GameDefine.ts:425）
   - UI 交互：胡牌后在胡牌座位播放牌型 Spine 动效（杠开系走 KW_Ani_Hu 特效节点）并播放对应番型语音，桌面与流水文案显示番型名，四连杠播放 4lgk 特效与四连杠语音，更高连杠没有独立动效资源、归到四连杠表现；自摸与点炮播放不同语音与表现，有杠权限且存在杠开可能时弹出提示气泡（气泡文案在外部平台模块）；好友房流水只显示番型名、不拼倍数，匹配场在流水文案后追加“N倍”，玩家最终看到的是结算分数。
-  - 待确认：杠链已断后再胡不是杠开，客户端代码未找到对应实现
+  - 服务端已复核：打出非财神牌时 ClearGangChain 把 gang_chain 置 0，吃、碰同样 ClearGangChain，杠链断后 GetGangKaiLevel 不再命中，故断链后胡牌不算杠开——服务端证据：common_game/common_game_server_data.h:84（CommonGameServerData::ClearGangChain）、common_game/com_game/common_game_com_play.cpp:78（BoxPlayStep::CheckPlay）等；与需求一致。客户端不实现该判断，由服务端下发/裁决（对应原子 AT-ST-C09-005）
 - **杠飘、飘杠**：只在同时命中杠上开花和财飘时拆出，倍数 8，再乘上基础番。杠发生时飘档已经大于 0，记飘杠；否则记杠飘。二连杠、双财飘及更高档不拆，仍按各组连乘。没有单独的杠爆、七客。
   - 客户端实现：番型判定函数把 2406-2409 与 2419/2420 视为杠系、2403-2405 与 2419/2420 视为财飘系，“杠系且财飘系”同时命中或直接命中 2419/2420 时归为杠飘组合档；2419 注释“先杠后飘”（杠时飘档为 0）、2420 注释“先飘后杠（财飘后杠开）”（杠时飘档已大于 0），结算时含 2419 不含 2420 按杠飘解析（皮肤 gp），只下发拆分番型（杠开+财飘）时也默认按杠飘解析，含 2420 不含 2419 按飘杠输出专属皮肤 pg 与专属语音；2407+2404 等高档组合仍归并为同一个杠飘组合动效档、不做分档拆分；2419/2420 在番型注释中标注 8 倍并出现在动画倍率比较表，代码注释说明最终倍数由基础/七对组、杠开组、财神组三组最高档连乘，但客户端不做倍数与连乘计算，只按下发番型拼文案、按下发分数展示；番型表没有杠爆、七客的独立番型 ID，只在“杠开×爆头”“七对×爆头/财飘”组合时以组合名选择动效与文案，不额外生成独立加分番型（source-code/client/Code/config/FanDefine.ts:12、source-code/client/Code/config/FanDefine.ts:51、source-code/client/Code/config/FanDefine.ts:52、source-code/client/Code/config/FanDefine.ts:53、source-code/client/Code/config/FanDefine.ts:54、source-code/client/Code/config/FanDefine.ts:136、source-code/client/Code/config/FanDefine.ts:146、source-code/client/Code/config/FanDefine.ts:158、source-code/client/Code/config/FanDefine.ts:256、source-code/client/Code/config/FanDefine.ts:257、source-code/client/Code/config/FanDefine.ts:350、source-code/client/Code/config/FanDefine.ts:351、source-code/client/Code/config/FanDefine.ts:364、source-code/client/Code/config/FanDefine.ts:367、source-code/client/Code/config/FanDefine.ts:389、source-code/client/Code/config/FanDefine.ts:404、source-code/client/Code/config/FanDefine.ts:424、source-code/client/Code/config/XsmjFanConfig.ts:24、source-code/client/Code/config/XsmjFanConfig.ts:25、source-code/client/Code/layer/BoxHzmjTipAniView.ts:1096、source-code/client/Code/layer/BoxHzmjTipAniView.ts:1097、source-code/client/Code/layer/BoxHzmjTipAniView.ts:1101、source-code/client/Code/layer/BoxHzmjTipAniView.ts:1102、source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:765、source-code/client/Code/config/GameSoundConfig.ts:444、source-code/client/Code/config/GameSoundConfig.ts:445、source-code/client/Fgui/assets/box_hzmj_tipAni/effect/Paixing_wz04.json:1）
   - UI 交互：胡牌时按组合档播放“杠飘”或“飘杠”特效动效与专属语音，结算流水显示组合名（不是杠开名与财飘名并列）；组合文案后用括号提示高档明细（如“杠飘（二连杠，双财飘）”），玩家只看到一个组合动效与一条组合文案，没有分档倍数展示，也不单独显示“8 倍”文字，最终看到的是结算分数与组合番型名；命中“杠开×爆头”“七对×爆头/财飘”时播放“杠爆”“七客”组合动效与语音，结算流水显示组合名，但没有独立的杠爆/七客番型项与倍数条目。
@@ -231,18 +231,18 @@
   - UI 交互：与禁打牌值相同的所有手牌压暗且不可点击，点击出牌弹出「该牌被禁打」
 
 - 用间隔一张的两张吃中间张：只禁被吃的那一张。用 1、3 吃 2，禁打 2。
-  - 待确认：客户端代码未找到对应实现
+  - 服务端已复核：CalcChowForbidMahs 在手上两张相差不为 1、或取出的手牌对不足 2 张时，禁张只含被吃的 claimed（用 1、3 吃 2 只禁 2），两面分支不会命中——服务端证据：common_game/com_game/common_game_com_action.cpp:196（BoxChowStep::CalcChowForbidMahs）、common_game/com_game/common_game_com_action.cpp:190（BoxChowStep::CalcChowForbidMahs）等；与需求一致。客户端不实现该禁张计算，由服务端下发/裁决（对应原子 AT-ST-C10-001）
 - 用相邻两张吃一端：禁打这两张在 1 至 9 内两端能接成顺子的牌。用 2、3 吃 1 或吃 4，都禁 1 和 4。用 1、2 吃 3，只禁 3。
-  - 待确认：客户端代码未找到对应实现
+  - 服务端已复核：相差 1 进两面分支后 other_side=(claimed==z)?x-1:z+1，禁张为 {claimed, other_side}，2、3 吃 1 得 {1,4}、吃 4 得 {4,1}；1、2 吃 3 时 other_side 取到花色间空档 16，IsSubMah 精确匹配不命中，实际只禁 3——服务端证据：common_game/com_game/common_game_com_action.cpp:194（BoxChowStep::CalcChowForbidMahs）、mah_frame/base/algorithm.cpp:145（Algorithm::IsSubMah）等；与需求一致。客户端不实现该禁张计算，由服务端下发/裁决（对应原子 AT-ST-C10-002、AT-ST-C10-003）
 - 碰成立后，禁打与被碰牌相同的牌。
   - 客户端实现：仅有通用的禁打名单处理，把名单内牌值的手牌置灰并禁止出牌，未见碰专属的禁张写入判断（source-code/client/Code/controller/cmd/gameCmd/GamePlayLmtsCmd.ts:33、source-code/client/Code/data/GameData.ts:1738）
   - UI 交互：与被碰牌相同牌值的手牌压暗，点击出牌被拦截并提示「该牌被禁打」
 
 手上两张相差 1 时，禁吃进的那张和另一侧延伸的那张。1、9 外侧不是牌，实际只禁吃进的一张。相差不是 1 时，只禁吃进的那张。只按最终选定的一组写禁张。吃完后剩余手牌全部落在禁张里的吃法不能吃，本家提示「吃禁手规则生效中」。禁张不含财神，吃完仍可打财神。
 
-  - 待确认：客户端代码未找到对应实现
-  - 待确认：客户端代码未找到对应实现
-  - 待确认：客户端代码未找到对应实现
+  - 服务端已复核：相差 1 判定后按 claimed 落在高档或低档推导另一侧延伸张，禁张为 {claimed, other_side} 二元组——服务端证据：common_game/com_game/common_game_com_action.cpp:192（BoxChowStep::CalcChowForbidMahs）、common_game/com_game/common_game_com_action.cpp:195（BoxChowStep::CalcChowForbidMahs）等；与需求一致。客户端不实现该禁张计算，由服务端下发/裁决（对应原子 AT-ST-C10-004）
+  - 服务端已复核：claimed==x 时 other_side 取 z+1（九万 25+1=26），落入花色间空档、非牌值，IsSubMah 精确相等匹配不命中，黑名单等效只含吃进张——服务端证据：common_game/com_game/common_game_com_action.cpp:194（BoxChowStep::CalcChowForbidMahs）、mah_frame/base/macros.h:44（MAH_DIVIDED）等；与需求一致。客户端不实现该禁张计算，由服务端下发/裁决（对应原子 AT-ST-C10-005）
+  - 服务端已复核：仅相差 1 才进两面分支，else 分支与张数不足兜底均只禁 claimed——服务端证据：common_game/com_game/common_game_com_action.cpp:196（BoxChowStep::CalcChowForbidMahs）、common_game/com_game/common_game_com_action.cpp:190（BoxChowStep::CalcChowForbidMahs）等；与需求一致。客户端不实现该禁张计算，由服务端下发/裁决（对应原子 AT-ST-C10-006）
   - 客户端实现：存在多组吃法时展示顺子选项池，玩家选定后只把选中的一组吃法上报，服务端据此计算禁张（source-code/client/Code/layer/BoxHzmjMainView.ts:1098、source-code/client/Code/layer/BoxHzmjMainView.ts:1102、source-code/client/Code/controller/gameController.ts:498）
   - UI 交互：弹出多组顺子供玩家选择，选定后其余选项收起，操作区回到空状态
   - 客户端实现：吃选项完全按服务端下发的吃组合展示，客户端不做吃法过滤，被拦下的吃法由服务端不授予，客户端接收专属通知；收到吃禁手专属通知后，仅当通知座位是本家时派发文字提示事件（source-code/client/Code/config/GameDefine.ts:469、source-code/client/Code/controller/cmd/gameCmd/GameNotifyInfoCmd.ts:58、source-code/client/Code/layer/BoxHzmjMainView.ts:1020、source-code/client/Code/controller/cmd/gameCmd/GameNotifyInfoCmd.ts:59、source-code/client/Code/layer/BoxHzmjTipAniView.ts:857、source-code/client/Code/config/GameDefine.ts:470）
@@ -280,15 +280,15 @@
 - 弃牌可被吃、碰、直杠或点炮胡时，先裁决。成立后各端从牌河取走该牌，并清除它的浮标和放大显示。全部放弃则牌留在牌河，再轮到下家摸牌。
   - 客户端实现：吃/碰/杠成立时把组合中的进牌从来源玩家的牌河弹出，并同步移除桌面牌河最后一张，胡牌成立时同样移除放铳者牌河最后一张；吃/碰/杠/胡消息到达时统一隐藏其他玩家出牌的放大牌面，指向最后打出牌的浮标由牌桌组件负责（source-code/client/Code/data/PlayerCardsData.ts:92、source-code/client/Code/layer/BoxHzmjMah2DView.ts:893、source-code/client/Code/layer/BoxHzmjMah2DView.ts:997、source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts:42、source-code/client/Code/controller/cmd/gameCmd/GamePungCmd.ts:42、source-code/client/Code/layer/BoxHzmjMainView.ts:1059）
   - UI 交互：牌河中被响应的那张牌消失，牌面并入副露或胡牌；被响应牌的放大牌卡消失
-  - 待确认：弃牌可被吃、碰、直杠或点炮胡时先裁决，客户端代码未找到对应实现
-  - 待确认：全部放弃则牌留在牌河、再轮到下家摸牌，客户端代码未找到对应实现
+  - 服务端已复核：所有响应统一登记后由 ConAction::OnConAction 按 level 取最大者、最高权重未响应则继续等待，层级为 出1<吃2<碰3=杠3<胡4，即响应执行前必先完成优先级裁决——服务端证据：mah_frame/base/con_action.cpp:40（ConAction::OnConAction）、mah_frame/base/con_action.cpp:57（ConAction::OnConAction）等；与需求一致。客户端不实现该裁决，由服务端下发/裁决（对应原子 AT-ST-C11-006）
+  - 服务端已复核：全部放弃时最大权重项为过牌项，经 DoConAction 分发 MLXY_CANCEL 到 DoActionCancel，只切到 con_max_server_step_state_ 对应步骤（下家摸牌）并结束，牌留在牌河——服务端证据：mah_frame/com_basic/com_action.cpp:712（ActionStep::DoActionCancel）、mah_frame/base/con_action.cpp:59（ConAction::OnConAction）等；与需求一致。客户端不实现该切换，由服务端下发/裁决（对应原子 AT-ST-C11-009）
 - 【自摸】还在，或本次杠提示必须先过时，双击或滑动出牌会被拦住，只在本家显示「点“过”才能出牌」。须先点【过】。例外：可杠的只是摸牌或补牌之前已经拿在手里的暗杠，可以直接出牌。碰之后又能杠的，仍须先过。
   - 客户端实现：出牌前检查当前可操作项是否含胡、杠、碰、吃，且操作区仍处于吃碰杠胡页签，则直接拦截本次出牌；拦截出牌时只向本家弹出通用提示框，文案为点“过”才能出牌；点击过后上送放弃请求并退出吃碰杠胡页签，操作区关闭后才允许再次出牌；若存在杠提示但无胡提示，且所有可杠组合的牌值都不等于刚摸的牌，则标记为与摸牌无关的杠，不压暗手牌且不要求点过；碰后手牌没有刚摸牌（摸牌值为 0），与摸牌无关的杠判定不成立，因此仍走必须先过的分支（source-code/client/Code/layer/BoxHzmjMainView.ts:1447、source-code/client/Code/layer/BoxHzmjMainView.ts:1453、source-code/client/Code/layer/BoxHzmjMainView.ts:1454、source-code/client/Code/layer/BoxHzmjMainView.ts:1236、source-code/client/Code/layer/BoxHzmjMainView.ts:697、source-code/client/Code/layer/BoxHzmjMainView.ts:701、source-code/client/Code/layer/BoxHzmjMainView.ts:713、source-code/client/Code/layer/BoxHzmjMainView.ts:695、source-code/client/Code/layer/BoxHzmjMainView.ts:696）
   - UI 交互：双击或滑动出的牌被拦下，手牌回到原位；本家屏幕中部弹出提示条，3 秒后消失，其他玩家不显示；点【过】后按钮收起，手牌恢复可按压；可杠的只是手中原有暗杠时，手牌保持正常亮度，可直接打出；碰之后又能杠时，手牌参与杠的牌保持亮度、其余压暗，出牌前需先点过
 - 点【过】只放弃这一次提示，收起本次按钮和预览。之后别人再打出相同牌，按新弃牌重新判断。放弃杠后，同一次操作机会内不再出现【杠】；下一次拿到操作机会再判断。
   - 客户端实现：点过时上送放弃请求、退出吃碰杠胡页签、隐藏多吃/多杠面板并清空选牌回调与压暗；点过后本地不保留本次提示状态，仅清空选择与压暗，后续是否再次提示完全由新的可操作项决定（source-code/client/Code/layer/BoxHzmjMainView.ts:1237、source-code/client/Code/layer/BoxHzmjMainView.ts:1239、source-code/client/Code/layer/BoxHzmjMainView.ts:1240）
   - UI 交互：操作按钮与候选面板收起，手牌恢复常态；下次同牌出现时按钮按新可操作项重新显示
-  - 待确认：放弃杠后同一次操作机会内不再出现【杠】、下一次拿到操作机会再判断，客户端代码未找到对应实现
+  - 服务端已复核：任一回应先 ClearUserConAction 清空该座位本机会全部待办（含杠）后只回插已响应项，同一机会内不再重发 power（Execute 仅在 InitPowerStepConAction 成功时 SetActionPower/SendPowerToClient），下一次拿到操作机会才由 InitPowerStepConAction 重新授予——服务端证据：mah_frame/base/con_action.cpp:70（ConAction::ClearUserConAction）、mah_frame/com_basic/com_action.cpp:45（ActionStep::Execute）等；与需求一致。客户端不实现该权限发放，由服务端下发/裁决（对应原子 AT-ST-C11-017）
 - 有操作资格的玩家在自己手牌右上方看到对应按钮和【过】。按钮从左到右为【吃】【碰】【杠】【胡】，蓝色【过】固定在最右，只显示本次可做的项。【胡】或【自摸】左侧显示胡牌张和预览倍数。各端使用同一个响应倒计时，归零后按钮仍可点。
   - 客户端实现：本家收到可操作项时按位显示吃、碰、杠、胡、过按钮，其他玩家到达时关闭本家操作区；按可操作项位逐个设置吃、碰、杠、胡、过按钮显隐，按钮在同一横向组内右对齐排列；具备胡权限时把胡牌张图片与倍数文案写入胡按钮内的左侧节点，并按胡牌类型切换胡或自摸皮肤；可操作项到达时按统一时钟值启动座位倒计时显示，倒计时结束仅把数字置为 00，不对按钮做禁用处理（source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:33、source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:35、source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:6、source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:15、source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:21、source-code/client/Code/layer/BoxHzmjMainView.ts:577、source-code/client/Code/layer/BoxHzmjMainView.ts:578、source-code/client/Code/layer/BoxHzmjMainView.ts:664、source-code/client/Code/layer/BoxHzmjMainView.ts:666、source-code/client/Fgui/assets/box_hzmj_main/component/HuActionBtn.xml:6、source-code/client/Fgui/assets/box_hzmj_main/component/HuActionBtn.xml:7、source-code/client/Code/controller/cmd/gameCmd/GamePowerCmd.ts:78、source-code/client/Code/layer/BoxHzmjMah2DView.ts:696、source-code/client/Code/layer/BoxHzmjMah2DView.ts:710）
   - UI 交互：按钮组出现在屏幕右侧靠本家手牌上方，按右侧对齐排布；按钮按吃、碰、杠、胡、过从左到右出现，未具备的项不显示；胡按钮左边显示具体胡牌张与“N倍”文本；中央倒计时统一显示秒数，最后 3 秒换字体并播提示音，归零显示 00
@@ -298,8 +298,8 @@
 - 较低优先级先提交时，本端收起自己的按钮并等待。更高优先级成立后，结束等待并取消该请求。更高优先级都放弃后，再执行已经提交的较低优先级请求。
   - 客户端实现：提交吃、碰、杠、胡后立即把操作区切回空白页签，本家不再显示可点按钮（source-code/client/Code/layer/BoxHzmjMainView.ts:1103、source-code/client/Code/layer/BoxHzmjMainView.ts:1134）
   - UI 交互：按钮收起，界面进入等待他人裁决的状态
-  - 待确认：更高优先级成立后结束等待并取消该请求，客户端代码未找到对应实现
-  - 待确认：更高优先级都放弃后再执行已经提交的较低优先级请求，客户端代码未找到对应实现
+  - 服务端已复核：每次响应先 ClearUserConAction(seat) 按座位擦除全部旧候选再重算 maxkey，最高等级已响应即 DoConAction 只切换到胜出者对应 Step 并结束等待，非胜出请求被取消——服务端证据：mah_frame/base/con_action.cpp:70（ConAction::ClearUserConAction）、mah_frame/com_basic/com_action.cpp:546（ActionStep::DoConAction）等；与需求一致。客户端不实现该裁决，由服务端下发/裁决（对应原子 AT-ST-C11-028）
+  - 服务端已复核：过牌以 kPowerIdCancelS/kStepLevelCancelS(=1) 登记，候选先以未响应带权重入表，OnConAction 取最大 level 且由已响应者执行，故更高优先级都放弃后才执行已提交的较低优先级请求——服务端证据：mah_frame/com_basic/com_action.cpp:325（ActionStep::OnMsgCancel）、mah_frame/com_basic/com_action.cpp:735（ActionStep::InitPowerStepConAction）等；与需求一致。客户端不实现该裁决，由服务端下发/裁决（对应原子 AT-ST-C11-029）
 - 多种吃法：点【吃】后，在手牌上方展开可选顺子，每组三张正面、按牌面从小到大，右侧为【取消】。原【吃】【过】退场，手牌恢复常态亮度。倒计时归零后面板仍可操作。点【取消】等于放弃自己对这张弃牌的全部操作，包括同时存在的胡。选中一组即提交。
   - 客户端实现：吃组合多于一组时打开候选面板，按每组完整顺子动态生成选项；每个选项固定填充三个牌槽，逐张设置牌面图与牌背状态；取消按钮与候选面板同属操作组，候选面板之后放置取消，取消在该页签可见；打开候选面板时切换操作区页签，使吃、过按钮不再显示，同时清空手牌置灰；候选面板的点击回调不绑定倒计时，倒计时结束只改变中央读秒显示；点取消时同时关闭吃与杠面板并执行点过逻辑，上送放弃请求；点击某个候选选项记录其下标，并立即上送该组吃牌组合并关闭操作区（source-code/client/Code/layer/BoxHzmjMainView.ts:1089、source-code/client/Code/layer/BoxHzmjMainView.ts:865、source-code/client/Code/layer/BoxHzmjMainView.ts:944、source-code/client/Code/layer/BoxHzmjMainView.ts:953、source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:30、source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:31、source-code/client/Fgui/assets/box_hzmj_main/component/Handler.xml:7、source-code/client/Code/layer/BoxHzmjMainView.ts:1119、source-code/client/Code/layer/BoxHzmjMainView.ts:907、source-code/client/Code/layer/BoxHzmjMainView.ts:1174、source-code/client/Code/layer/BoxHzmjMainView.ts:158、source-code/client/Code/layer/BoxHzmjMainView.ts:1113）
   - UI 交互：操作区出现多组顺子候选项，每组显示三张正面牌；候选面板右侧出现取消按钮；吃、过按钮消失，手牌恢复常态；读秒到 00 时候选牌仍可点；点取消后面板收起，本次所有可用操作一并作废；点击候选项后立即发出吃牌，面板消失
@@ -324,8 +324,8 @@
 - 直杠用来源箭头，加杠标记为【补】，暗杠用手掌标记。标记都叠在杠牌组最上方居中的第 4 张。直杠、暗杠在碰杠区新增一组；加杠补入原碰牌组，沿用原位置。补牌落入最右分隔位，可与「杠」字同时出现。连续杠时，新的「杠」字覆盖仍在播放的上一个。
   - 客户端实现：按杠组合类型分派，明杠、暗杠走新增副露，补杠走补入原碰牌组，并分别播放对应动作；补杠时找到同牌值的原碰牌组，用新组合替换该位置，其余杠类型直接追加新组；每个座位只有一个杠字效节点，新一次杠直接复用该节点重置皮肤并重新播放（source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:50、source-code/client/Code/controller/cmd/gameCmd/GameKongCmd.ts:63、source-code/client/Code/data/PlayerCardsData.ts:106、source-code/client/Code/layer/BoxHzmjMah2DView.ts:910、source-code/client/Code/layer/BoxHzmjTipAniView.ts:486、source-code/client/Code/layer/BoxHzmjTipAniView.ts:524）
   - UI 交互：直杠、补杠、暗杠三类杠在副露上呈现不同标记；加杠后原碰牌组就地变为杠组，不新增位置；连续杠时新的杠字立即顶替上一个仍在播放的杠字
-  - 待确认：标记都叠在杠牌组最上方居中的第 4 张，客户端代码未找到对应实现
-  - 待确认：补牌落入最右分隔位、可与「杠」字同时出现，客户端代码未找到对应实现
+  - 待对局验证：标记都叠在杠牌组最上方居中的第 4 张，这是客户端表现层的落位规则，但未定位到对应实现——客户端与服务端静态复核均未获确证（本轮未出复核建议，维持基线差异），转实际对局验证（对应原子 AT-ST-C11-058）
+  - 待对局验证：补牌落入最右分隔位、可与「杠」字同时出现，客户端仅按 MsgTake 的 mah/dir/tcnt/flag 与 MsgKongS.comb.flag 渲染，PlayerCardsData.setTakeMah 只把摸牌挂到 _moCard、无落位槽位信息——客户端与服务端静态复核均未获确证（本轮未出复核建议，维持基线差异），转实际对局验证（对应原子 AT-ST-C11-060）
 - 吃、碰、杠、胡成立时，在操作者对应方位播放对应字效。自摸确认后显示「对局结束」并亮出各家手牌，胡牌张单独摆在胡牌者手牌右侧。点炮胡、抢杠胡同样显示「对局结束」和亮牌；胡牌张在胡牌者手牌尾端，带浅绿描边和来源箭头。赢家方位显示番型，放铳者方位显示「点炮」。随后按座位飘分，正分黄色，负分灰色。
   - 客户端实现：吃、碰、杠按操作者座位取对应字效节点并按类型切换皮肤播放，胡按座位播放番型动画；结算消息到达时按结束类型切到对局结束页，并把所有玩家手牌翻到正面；摊牌时把胡牌张拼接在手牌末尾一并展示，并把本家手牌整体缩小；结束类型为胡牌时统一走对局结束与全桌亮牌流程，不区分自摸或点炮；胡牌张拼在手牌末尾，并按胡牌来源座位设置手牌的方向箭头来源；胡牌方按番型在本人方位播番型动画，放铳方按点炮或一炮多响类型在放铳者方位播点炮动画；番型动画完成后按座位逐个显示得失分，并按分数正负选择胜利或失败字体（source-code/client/Code/controller/cmd/gameCmd/GameChowCmd.ts:43、source-code/client/Code/layer/BoxHzmjTipAniView.ts:484、source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml:44、source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:84、source-code/client/Code/layer/BoxHzmjTipAniView.ts:1186、source-code/client/Code/layer/BoxHzmjMah2DView.ts:1059、source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml:3、source-code/client/Code/layer/BoxHzmjMah2DView.ts:984、source-code/client/Code/layer/BoxHzmjMah2DView.ts:1057、source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:83、source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:303、source-code/client/Code/layer/BoxHzmjMah2DView.ts:987、source-code/client/Code/layer/BoxHzmjMah2DView.ts:1062、source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:266、source-code/client/Code/layer/BoxHzmjTipAniView.ts:891、source-code/client/Code/layer/BoxHzmjTipAniView.ts:966、source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:276、source-code/client/Code/layer/BoxHzmjTipAniView.ts:567）
   - UI 交互：操作者所在方位弹出吃/碰/杠/胡字效；屏幕中央出现对局结束提示，四家手牌同时亮出；胡牌张出现在手牌最右侧；点炮或抢杠胡后同样出现对局结束并亮出各家手牌；尾端胡牌张上方出现来源方向箭头；赢家一侧显示番型字效，放铳者一侧显示点炮字效；各座位依次飘出分数，正分与负分使用不同字体表现
@@ -340,7 +340,7 @@
 - 只有庄家和闲家之间能承包。两名闲家之间，同一方向最多 2 摊，吃一成立就加 1。已经有 2 摊时，再吃这一家的牌不成立，不给出【吃】。与飘财无关。两个方向分开计。
   - 客户端实现：客户端不判断吃牌双方的庄闲身份与已有摊数，也没有按摊数拦截吃的代码，「吃」按钮显隐完全跟随系统下发的吃权限（source-code/client/Code/layer/BoxHzmjMainView.ts:552、source-code/client/Code/layer/BoxHzmjMainView.ts:578、source-code/client/Code/layer/BoxHzmjMainView.ts:752）；摊信息与飘计数分别存储，分别由摊更新与飘消息驱动，互不读取（source-code/client/Code/data/GameData.ts:1600、source-code/client/Code/layer/BoxHzmjTipAniView.ts:1673、source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts:21）；摊信息以玩家对为单位列成列表存储，同一玩家可同时存在多条不同对手的记录（source-code/client/Code/data/GameData.ts:1597、source-code/client/Code/layer/BoxHzmjTestView.ts:947、source-code/client/Code/layer/BoxHzmjTestView.ts:949）
   - UI 交互：有吃权限时显示「吃」按钮并高亮可吃组合手牌，无吃权限时按钮不出现、手牌不出现可吃组合高亮；飘状态更新走独立的碰杠类动效与计数提示，不改变摊提示表现
-  - 待确认：只有庄家和闲家之间能承包，客户端代码未找到对应实现
+  - 服务端已复核：IsXianXianTanFull 对庄闲组合直接返回 false，ApplyBaoContracts 对胡牌方与赔付方均非庄家的组合 continue 不结算承包，闲闲只做 2 摊吃碰限制而不产生承包——服务端证据：common_game/common_game_algorithm.cpp:86（CommonGameAlgorithm::IsXianXianTanFull）、common_game/com_game/common_game_com_result.cpp:308（BoxResultStep::ApplyBaoContracts）等；与需求一致。创房默认口径已签认（enable_three_tan_bao=1，仅 3/4 人局可开，player_count<=2 时服务端强制关闭）（对应原子 AT-ST-C12-005）
 - 某一方向计到第 3 摊时记承包，四端播放「三摊落地」，可与吃牌字效同时显示。不等到结算，当时没有承包角标。提示期间，获权玩家可以继续提牌、出牌。
   - 客户端实现：收到摊列表后逐条检查摊数，摊数为 3 时派发「三摊落地」事件并通知界面（source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts:24、source-code/client/Code/controller/cmd/gameCmd/GameTanUpdateCmd.ts:25、source-code/client/Code/layer/BoxHzmjTipAniView.ts:1650）；摊更新命令派发落地事件后，界面层播放独立的三摊落地 Spine 动效，吃牌动效在另一组按座位区分的节点上播放，二者互不抢占（source-code/client/Code/layer/BoxHzmjTipAniView.ts:1662、source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml:118、source-code/client/Code/layer/BoxHzmjTipAniView.ts:498、source-code/client/Code/controller/cmd/CmdDefine.ts:100）；对局中不渲染摊数或承包角标，承包角标只在小结算行内按承包关系设置（source-code/client/Code/layer/BoxHzmjTipAniView.ts:1793、source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:196、source-code/client/Fgui/assets/box_hzmj_result/component/ResultItem.xml:17）；三摊落地动效为不可点击的展示节点，播放时不加输入锁，也没有暂停或排队等待逻辑（source-code/client/Code/layer/BoxHzmjTipAniView.ts:1663、source-code/client/Fgui/assets/box_hzmj_tipAni/component/HzmjTipAniComponent.xml:118、source-code/client/Code/config/FguiViewDefine.ts:404）
   - UI 交互：达到 3 摊时在屏幕中央播放三摊落地动效，可与吃牌字效同时出现，简洁模式下不播放；对局桌面无承包角标，小结算在出承包方座位行显示「承包」或「反承包」图标；动效只覆盖显示层，播放期间玩家仍可继续点选并操作出牌与响应按钮
@@ -354,9 +354,9 @@
 
   - 客户端实现：结算流水对抢杠胡有独立类型文案，承包记录作为独立流水追加，二者互不覆盖（source-code/client/Code/util/BoxHzmjFlowUtil.ts:119、source-code/client/Code/util/BoxHzmjFlowUtil.ts:47、source-code/client/Code/controller/cmd/gameCmd/GameResultHuCmd.ts:339）
   - UI 交互：结算流水可同时出现抢杠胡文案与承包文案
-  - 待确认：点炮只在放铳者本人是承包对方时改写，客户端代码未找到对应实现
-  - 待确认：别人的承包关系不赔、放铳者仍按原点炮付，客户端代码未找到对应实现
-  - 待确认：杠牌者若同时是承包方两笔都付，客户端代码未找到对应实现
+  - 服务端已复核：CalcFinalWinLost 点炮分支只对放铳者记一笔 -base*fan*banker，ApplyBaoContracts 仅在 opp==GetJustPlaySeat 时进入改写、基数仍为该单笔，不取三家之和——服务端证据：common_game/com_game/common_game_com_result.cpp:308（BoxResultStep::ApplyBaoContracts）、mah_frame/base/base_data.cpp:1114（BaseData::GetHuType）等；与需求一致。创房默认口径已签认（enable_three_tan_bao=1，仅 3/4 人局生效）（对应原子 AT-ST-C12-019）
+  - 服务端已复核：ApplyBaoContracts 对非放铳者直接 continue（注释「第三方点炮时 A-B 承包不成立，A 不应赔付」），无承包对时保持原 payments，放铳者仍按原点炮一笔支付——服务端证据：common_game/com_game/common_game_com_result.cpp:310（BoxResultStep::ApplyBaoContracts）、common_game/com_game/common_game_com_result.cpp:344（BoxResultStep::ApplyBaoContracts）等；与需求一致。创房默认口径已签认（enable_three_tan_bao=1，仅 3/4 人局生效）（对应原子 AT-ST-C12-020）
+  - 服务端已复核：抢杠胡以 GetLastKongSeat 作唯一付款方算三家钱，ApplyBaoContracts 再以 += 在其上叠加承包额、两笔并存（hzmj 保持 IsRobKongSettleAsDiscard()=false）——服务端证据：common_game/com_game/common_game_com_result.cpp:347（BoxResultStep::ApplyBaoContracts）、common_game/com_game/common_game_com_result.cpp:113（BoxResultStep::CalcFinalWinLost）等；与需求一致。创房默认口径已签认（enable_three_tan_bao=1，仅 3/4 人局生效）（对应原子 AT-ST-C12-022）
 
 - **承包**：A 对 B 已成立，A 自摸。B 支付三家原应赔分的合计 S，另外两家本局 0 分。
   - 客户端实现：客户端按承包记录在出承包方座位打角标、在赢家流水追加「承包」文案（source-code/client/Code/layer/comp/BoxHzmjResultMid.ts:195、source-code/client/Code/util/BoxHzmjFlowUtil.ts:48、source-code/client/Code/util/BoxHzmjFlowUtil.ts:373）
@@ -370,11 +370,11 @@
 
 例：庄家平胡自摸，三名闲家各应赔 8，S = 24。承包方付 24。若同时存在上家对庄家的承包，上家再付 48，庄家得 72。
 
-  - 待确认：客户端代码未找到对应实现
+  - 服务端已复核：庄家自摸按 base_score(1)*fan_mult(1)*banker_mult(8)=8 逐闲家扣款，ApplyBaoContracts 取 total=Σpayments=24，正承包付 24、倒承包按 total*2 付 48，庄家合计 72——服务端证据：common_game/com_game/common_game_com_result.cpp:289（BoxResultStep::ApplyBaoContracts）、common_game/com_game/common_game_com_result.cpp:93（BoxResultStep::CalcFinalWinLost）等；与需求一致。创房默认口径已签认（enable_three_tan_bao=1、banker_level_type=2 起手三牢、base_score=1，仅 3/4 人局生效）（对应原子 AT-ST-C12-023）
 
 例：庄家对闲家成立承包，闲家平胡自摸，三家原应赔 8、1、1。庄家按反承包付 20。
 
-  - 待确认：客户端代码未找到对应实现
+  - 服务端已复核：闲家自摸下庄家付 base*fan*banker_mult=8、其余闲家各付 1，total=10；ApplyBaoContracts 读双向摊数，庄家对闲家摊数达 3 时判定倒承包 relation=2、opp_pay=total*2=20 并按 BaoSettleItem 下发——服务端证据：common_game/common_game_server_data.h:67（CommonGameServerData::GetBaoRelation）、common_game/protocol/hzmj_protocol.proto:353（BaoSettleItem）等；与需求一致。创房默认口径已签认（enable_three_tan_bao=1、banker_level_type=2、base_score=1，仅 3/4 人局生效）（对应原子 AT-ST-C12-024）
 
 ## 算分
 
@@ -396,7 +396,7 @@
   - UI 交互：黄庄结算每行显示0分、不飘分；自己所在行按“输/平局”暗色底样式显示。
 
 闲家以 2 倍番型自摸：庄家付 16，两名闲家各付 2，赢家得 20。平胡点炮：赢家 +8，放铳者 −8，另两家 0。
-  - 待确认：客户端代码未找到对应实现
+  - 服务端已复核：闲家自摸时庄家付款乘 banker_mult、闲家不乘，付款额=base_score×番型倍数（CalcFanPoint 连乘、GetHuFanPoint 取 huftpoint）；点炮分支只有一个付款方记负、其余两家为 0——服务端证据：common_game/common_game_algorithm.cpp:283（CommonGameAlgorithm::CalcFanPoint）、common_game/com_game/common_game_com_result.cpp:82（BoxResultStep::CalcFinalWinLost）等；与需求一致。创房默认口径已签认（base_score=1、banker_level_type=2 三牢 8 倍、4 人局）（对应原子 AT-ST-C13-015、AT-ST-C13-016）
 
 本场积分从 0 起，每小局加上实际净得分。赢家加实收，赔付者扣实付。
   - 客户端实现：本场累计分直接用服务端下发的每家累计分数覆盖写入玩家数据，玩家头像按该值刷新；客户端不做加总，也不负责起始归零（GameResultHuCmd.ts:230、GamePlayerScoreCmd.ts:31、BoxHzmjPlayerView.ts:514）
@@ -422,7 +422,7 @@
 
   - 客户端实现：七对系有七对与各豪华档位的番型 ID 与名称，并把七对系叠加爆头或财飘时改名为七客，未见“至少一张财神”的判定（source-code/client/Code/config/FanDefine.ts:34、source-code/client/Code/config/FanDefine.ts:83、source-code/client/Code/config/FanDefine.ts:420）；四档七对分别有番型 ID、名称与字效皮肤，倍数只在注释中标注，展示取服务端倍数（source-code/client/Code/config/FanDefine.ts:35、source-code/client/Code/config/FanDefine.ts:39、source-code/client/Code/layer/BoxHzmjTipAniView.ts:1143、source-code/client/Code/config/FanDefine.ts:104）；豪华只有豪华、双豪华、三豪华三档名称与档位字效，没有按四张实牌统计豪华组数的逻辑（source-code/client/Code/config/FanDefine.ts:36、source-code/client/Code/config/FanDefine.ts:437、source-code/client/Code/config/FanDefine.ts:441）
   - UI 交互：结算文案显示七对、豪华七对、双豪华七对、三豪华七对，叠加爆头时显示七客系名称；四档七对分别播不同的番型字效（七对、豪华、双豪华、三豪华），七客档位另用 hhqk、2hhqk、3hhqk 等皮肤；命中的豪华档位在结算文案与字效中体现
-  - 待确认：客户端代码未找到对应实现
+  - 服务端已复核：财飘/双财飘/三财飘均先 IsSelfTake，再按 piao_level==1/==2/>=3 精确档位判定并复用 IsDanFangWithCai；注册倍数 4/8/16，财神系列按 kCaiIdsDesc 由高到低互斥、命中即 break，3 档以上不会落回低档——服务端证据：common_game/common_game_fan_type.cpp:261（CommonGameFanType::IsFanTypeCaiPiao）、common_game/common_game_init.cpp:360（CommonGameInit::AddFanType）等；与需求一致。客户端不实现该判断，由服务端下发/裁决（对应原子 AT-ST-C14-020、AT-ST-C14-021）
 
   - 客户端实现：清七对及三档豪华清七对有番型 ID 与名称，未见“手里没有财神”的判定（source-code/client/Code/config/FanDefine.ts:41、source-code/client/Code/config/FanDefine.ts:87、source-code/client/Code/layer/BoxHzmjTipAniView.ts:1151）；四档清七对的 ID、名称与字效齐全，倍数值只写在注释里，展示取服务端倍数（source-code/client/Code/config/FanDefine.ts:41、source-code/client/Code/config/FanDefine.ts:47、source-code/client/Code/config/FanDefine.ts:89）
   - UI 交互：清七对四档各有独立字效皮肤（qqd、hhqqd、2hhqqd、3hhqqd），分别播不同字效；结算文案显示对应档位名称
@@ -443,8 +443,8 @@
 十风：从第一张出牌起连续打字牌。中途打出非字牌，或吃、碰、杠，本局作废，不能再重新累计。满 10 张后任意自摸都能胡，不要求成牌。只记十风，不与平胡、杠开、财飘、七对相乘。10 张为 2 倍，每多一张再乘 2。
   - 客户端实现：十风被当独占番型识别，代码注释说明十风亮牌走牌河、胡牌明细里的手牌与组合不能当剩余手牌使用，未见“不要求成牌”的判定（source-code/client/Code/config/FanDefine.ts:49、source-code/client/Code/config/FanDefine.ts:176、source-code/client/Code/layer/BoxHzmjTipAniView.ts:1160）；萧山侧的独占番名单中列入十风，独占番直接按服务端单条结果展示，不做叠加拆分（source-code/client/Code/config/FanDefine.ts:49、source-code/client/Code/config/XsmjFanConfig.ts:36、source-code/client/Code/config/XsmjFanConfig.ts:38）；番型表注释记录十风 2 倍起、每多一张翻倍的口径，客户端不计算，展示取服务端点数（source-code/client/Code/config/FanDefine.ts:49、source-code/client/Code/config/XsmjFanConfig.ts:23、source-code/client/Code/layer/BoxHzmjMainView.ts:666）
   - UI 交互：十风播放专属番型字效（sf），结算亮牌按十风特例处理；十风单独播一段字效，不与其它番型拼组合文案；胡牌按钮与结算流水显示服务端给的倍数
-  - 待确认：客户端代码未找到对应实现
-  - 待确认：客户端代码未找到对应实现
+  - 服务端已复核：首张出牌以 CountOuts(seat)==1 判定，非字牌即资格失效，IsZi 限定东南西北中发白，命中所打才 SetTenWindCount(seat,1)；ten_wind_live 一旦置 0（打出非字牌或吃、碰、杠）本小局无恢复入口——服务端证据：common_game/com_game/common_game_com_play.cpp:97（BoxPlayStep::Execute）、common_game/common_game_server_data.h:102（ten_wind_live）等；与需求一致。创房默认口径已签认（enable_ten_wind=1）（对应原子 AT-ST-C14-024、AT-ST-C14-025）
+  - 服务端已复核：TestHu 在开启十风且 TenWindCount>=10 且自摸时直接授胡并 return，无成牌校验；TestFan 顶部短路只记十风单项后 return，注册表与枚举注释均声明独占、不与平胡/杠开/财飘/七对组合；CalcFanPoint 在超过 10 张时 point *= 1<<(count-10)，10 张为 2 倍、每多一张再乘 2——服务端证据：common_game/com_game/common_game_com_action.cpp:410（BoxHuStep::TestHu）、common_game/common_game_algorithm.cpp:307（CommonGameAlgorithm::CalcFanPoint）等；与需求一致。创房默认口径已签认（enable_ten_wind=1）（对应原子 AT-ST-C14-026、AT-ST-C14-027、AT-ST-C14-028）
 
 财神牌面染红，可点击，没有角标。打出后牌河仍是原牌面，只保留这层红色。
   - 客户端实现：按本局财神牌值维护全局染色映射，手牌刷新时把财神牌值交给牌组件染色，同时清空癞子标记与角标标记，牌的可点性由禁打数据单独维护、不被染色流程改动（source-code/client/Code/data/GameData.ts:52、source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts:68、source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts:70、source-code/client/Code/layer/BoxHzmjPlayerHandCards.ts:73、source-code/client/Code/util/BoxHzmjMahColorUtil.ts:29）；出牌后刷新对应座位牌河时，重新把牌河、胡牌列表、副露整体刷一遍财神色，染色只改颜色标记，不改牌面资源（source-code/client/Code/layer/BoxHzmjMah2DView.ts:1093、source-code/client/Code/layer/BoxHzmjMah2DView.ts:1130、source-code/client/Code/util/BoxHzmjMahColorUtil.ts:51、source-code/client/Code/util/BoxHzmjMahColorUtil.ts:29）

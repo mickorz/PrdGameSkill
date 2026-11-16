@@ -33,3 +33,5 @@ source-prd/
 
 # OSG-W4 server-rule-verify workflow runtime intermediates (regenerable products)
 spec-workflow/output-spec/server-rule-verify/runtime/
+
+.mcp.json

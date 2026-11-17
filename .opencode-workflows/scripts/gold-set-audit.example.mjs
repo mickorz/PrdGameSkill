@@ -30,6 +30,7 @@ import { mergeDifferenceReview } from './merge-difference-review.mjs'
 import { classifyL7Audit } from './classify-l7-audit.mjs'
 import { buildUnifiedIndex } from './build-unified-index.mjs'
 import { applyDecisions } from './apply-decisions.mjs'
+import { bindDecisionFingerprints } from './decision-fingerprint.mjs'
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
 const TMP = path.join(REPO_ROOT, '.opencode-workflows/scripts/tmp-goldset')
@@ -372,6 +373,9 @@ test('G04 一端冲突 + 另一端 pending 后补证完成 → 升级 full，pen
     schemaVersion: 1, date: DATE,
     decisions: [{ atomId: 'AT-ST-C01-001', action: 'approve', target: 'difference-review', reason: '双端证据确认' }],
   })
+  const b = bindDecisionFingerprints({ runDir, date: DATE })
+  assert.equal(b.ok, true, 'G04 bind 应成功：' + JSON.stringify(b.problems))
+  writeJson(path.join(runDir, '6-review/decisions.json'), b.decisions)
   const s11 = applyDecisions({ runDir, date: DATE })
   assert.equal(s11.ok, true, JSON.stringify(s11.problems))
   writeJson(path.join(runDir, '4-analysis/difference-review.json'), s11.differenceReview)

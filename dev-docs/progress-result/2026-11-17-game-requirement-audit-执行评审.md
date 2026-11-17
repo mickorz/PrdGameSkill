@@ -297,3 +297,52 @@ prepare verify input
 - **总体结论**：**不通过，阻断于 P0-1 / P0-2 / P0-3。**
 
 本评审不建议删除现有脚本；它们是可复用的确定性基础。应以「先接最小真实链路、再扩展阶段」收敛，而不是继续增加 fixture 或文档篇幅。
+
+---
+
+## 9. 整改结果（2026-11-17 追加）
+
+> 本节为评审后的整改记录，**不改动上文原始评审结论**（保留追溯）。整改详细设计与逐项对照见执行文档 **§21**。
+
+### 9.1 整改总览
+
+| 上文章节 | 整改 | 当前状态 |
+|---|---|---|
+| P0-1 主 Workflow 只 S1~S3 | `STEPS` 扩至 S1~S11；新增 `mode=resume`/`retry`；每阶段闸门后 `record-stage` + `run-state advance`；S4∥S5 并行、S6 同步屏障 | **已整改** |
+| P0-2 Stage Reuse 只 S1~S3 | `stage-specs.json` 扩至 S1~S11（schemaVersion 2，新增 `agentStage`/`optionalInputs`）；`stage-reuse.mjs` 支持可选输入（缺失记 `absent`） | **已整改** |
+| P0-2 后半 evidenceFingerprint 缺失 | 新增 `decision-fingerprint.mjs`（Atom 级指纹 + `baselineAt`/`reviewedAt` 依据快照 + valid/stale/orphan）；`apply-decisions` 接 stale 门，**stale 决议不应用不丢弃** | **已整改** |
+| P0-3 Gold Set 仅 fixture | 保留 fixture Gold Set，新增 `orchestration.example.mjs`（编排一致性 / specs 一致 / D34 12 项 / S10 闸门 / S7 汇总闸门） | **部分整改**：真实 agent 端到端仍待用户触发 |
+| P1-1 agent 链路只有要点 | 新增 5 个 agent 子 Workflow，Prompt 全文入脚本（S4 442 行 / S5 407 / S7 353 / S8 281 / S10 366） | **已整改** |
+| P1-2 影响集合未 diff 证据 | 影响集合升 schemaVersion 2：changed/added/removed + **old ∪ new atomIds** + `degraded` 标注 + 每轮写回 `previous-evidence-index.json` | **已整改** |
+| P1-3 Source Manifest 未接通 | S4/S5 固定链路：prepare → agent 落盘 → run-status → 归集 → collect-source-manifest → merge | **已整改** |
+| P1-4 Prompt 全文名不符实 | 五阶段 Prompt 按十节结构全文落地（输入/可读范围/检索/判决/字段/纪律/输出/摘要/严禁） | **已整改** |
+| P2-1 无真实产物 | 未整改（需 agent 跑批） | **未整改**（已在执行文档 §21.4 明示） |
+| P2-2 「脚本存在」当「工程接入」 | 引入三态标注（已实现并编排 / 已实现未编排 / 设计完成 / 已实跑验收）+ 逐阶段状态表 | **已整改** |
+| P2-3 run-state 不驱动恢复 | 主编排每阶段 `run-state advance`；`mode=resume` 读 latest 跳过已完成阶段 | **已整改** |
+| P2-4 数字与成熟度混报 | 分列五项成熟度：文档 / 确定性脚本 / 编排 / Agent 实跑 / 真实样本验收 | **已整改** |
+
+### 9.2 验证证据
+
+| 项 | 结果 |
+|---|---|
+| 全量 Example 回归 | **11 套 / 176 断言通过 / 0 失败**（原 144 → +15 decision-fingerprint → +17 orchestration） |
+| 主编排 STEPS | S1~S11 全链，与 `stage-specs.json` order/label 完全一致（`orchestration` A1/A2） |
+| 子流程文件 | 11 个全部存在（`orchestration` B1） |
+| specs configFiles | 全部存在、全部 `proj:` 前缀（`orchestration` B2） |
+| S10 文件级依赖 | D34 的 12 项逐一匹配（`orchestration` B3） |
+| Agent 阶段标注 | S1/S2/S4/S5/S7/S8/S10 = agent；S3/S6/S9/S11 = 确定性（`orchestration` B4） |
+| 决议 stale 保护 | 无关证据变化不连坐 / 依赖链变化 → stale / 未绑指纹 → stale / stale 决议被拦截（`decision-fingerprint` A2/B1~B4/C1） |
+| 影响集合 diff | atomIds 变化牵连 / 移除证据仍牵连 / 无快照 degraded（`decision-fingerprint` E1~E3） |
+
+### 9.3 仍未消除的缺口（诚实记录）
+
+1. **Agent 实跑未执行**：5 个 agent 子 Workflow 只有静态校验（语法、STEPS 一致、Prompt 结构），未经真实模型跑批，输出质量与闸门命中率未知。
+2. **真实样本验收未执行**：`spec-workflow/requirement-audit/` 仍无 Run 产物。
+3. **S5 精细落判仍沿用旧脚本**（D45）：`symbol-index`/`match-atoms`/`verify-scope` 未做 Registry 基线切换，S5 当前以 `prepare-verify-input` + agent 直查为主路径。
+4. **旧 3C 客户端补证链路未物理删除**（D50 只读保留），仅在新链路中不再引用。
+
+### 9.4 结论修订
+
+- **确定性层 / 编排层**：由「不通过」修订为 **通过**（P0/P1 已整改，176 断言全绿，STEPS 与 specs 一致）。
+- **Agent 实跑 / 真实样本验收**：仍为 **未执行**，不构成代码缺陷，但也不能声称「工作流已验收」。
+- **总体**：从「不通过（阻断于 P0-1/2/3）」修订为 **「设计与实现通过，实跑验收待执行」**。

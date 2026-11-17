@@ -1,13 +1,14 @@
 {
- "schemaVersion": 1,
+ "schemaVersion": 2,
  "workflowId": "game-requirement-audit",
  "rootDir": "spec-workflow/requirement-audit",
- "note": "契约 #5 阶段指纹规格（单一事实源，stage-reuse.mjs 消费；执行文档 §12.4）。路径前缀：run: = run 根相对（复用校验解析到来源 Run）；proj: = 仓库根相对；arg:<key> = 取 --args-file 中 configArgs 该 key 的值作 proj: 路径（中文值必经 args-file，不进 shell）。glob 仅支持尾部 *.json。主编排 STEPS 表与本表 order/label 双写（D38）——新增阶段/调序/递增 version 时同步两处。",
+ "note": "契约 #5 阶段指纹规格（单一事实源，stage-reuse.mjs 消费；执行文档 §12.4 / §21）。路径前缀：run: = run 根相对（复用校验解析到来源 Run）；proj: = 仓库根相对；arg:<key> = 取 --args-file 中 configArgs 该 key 的值作 proj: 路径（中文值必经 args-file，不进 shell）。glob 仅支持尾部 *.json。主编排 STEPS 表与本表 order/label 双写（D38）——新增阶段/调序/递增 version 时同步两处。依赖图完整性铁律 D34：inputFiles 必须是该阶段实际读取的全部文件级直接输入（不遗漏、不虚列）。",
  "stages": {
   "S1": {
    "order": 1,
    "version": "S1@1",
    "label": "需求扫描",
+   "agentStage": true,
    "configFiles": ["proj:.opencode-workflows/workflows/game-requirement-audit/1-scan-template.js"],
    "configArgs": ["templatePath"],
    "inputFiles": ["arg:templatePath"],
@@ -17,6 +18,7 @@
    "order": 2,
    "version": "S2@1",
    "label": "原子拆解",
+   "agentStage": true,
    "configFiles": ["proj:.opencode-workflows/workflows/game-requirement-audit/2-atomize-requirements.js"],
    "configArgs": ["templatePath"],
    "inputFiles": ["arg:templatePath", "run:1-registry/runtime/state/scan.json"],
@@ -26,6 +28,7 @@
    "order": 3,
    "version": "S3@1",
    "label": "注册表定稿",
+   "agentStage": false,
    "configFiles": [
     "proj:.opencode-workflows/scripts/build-requirement-registry.mjs",
     "proj:.opencode-workflows/workflows/game-requirement-audit/3-build-registry.js"
@@ -33,6 +36,189 @@
    "configArgs": ["date"],
    "inputFiles": ["run:1-registry/runtime/state/scan.json", "run:1-registry/runtime/atom-parts/*.json"],
    "outputFiles": ["run:1-registry/requirement-registry.json", "run:1-registry/identity-map.json"]
+  },
+  "S4": {
+   "order": 4,
+   "version": "S4@1",
+   "label": "客户端查证",
+   "agentStage": true,
+   "configFiles": [
+    "proj:.opencode-workflows/workflows/game-requirement-audit/4-client-verify.js",
+    "proj:.opencode-workflows/scripts/prepare-verify-input.mjs",
+    "proj:.opencode-workflows/scripts/collect-source-manifest.mjs",
+    "proj:.opencode-workflows/scripts/merge-branch-evidence.mjs"
+   ],
+   "configArgs": ["date", "codeDir", "fguiDir"],
+   "inputFiles": ["run:1-registry/requirement-registry.json"],
+   "outputFiles": [
+    "run:2-client/client-evidence.json",
+    "run:2-client/runtime/run-status.json",
+    "run:2-client/runtime/source-manifest.json"
+   ]
+  },
+  "S5": {
+   "order": 5,
+   "version": "S5@1",
+   "label": "服务端查证",
+   "agentStage": true,
+   "configFiles": [
+    "proj:.opencode-workflows/workflows/game-requirement-audit/5-server-verify.js",
+    "proj:.opencode-workflows/scripts/prepare-verify-input.mjs",
+    "proj:.opencode-workflows/scripts/collect-source-manifest.mjs",
+    "proj:.opencode-workflows/scripts/merge-branch-evidence.mjs"
+   ],
+   "configArgs": ["date", "serverSrcRoot"],
+   "inputFiles": ["run:1-registry/requirement-registry.json"],
+   "outputFiles": [
+    "run:3-server/scope-index.json",
+    "run:3-server/server-evidence.json",
+    "run:3-server/runtime/run-status.json",
+    "run:3-server/runtime/source-manifest.json"
+   ]
+  },
+  "S6": {
+   "order": 6,
+   "version": "S6@1",
+   "label": "证据汇总",
+   "agentStage": false,
+   "configFiles": [
+    "proj:.opencode-workflows/scripts/merge-evidence.mjs",
+    "proj:.opencode-workflows/workflows/game-requirement-audit/6-merge-evidence.js"
+   ],
+   "configArgs": ["date"],
+   "inputFiles": [
+    "run:1-registry/requirement-registry.json",
+    "run:2-client/client-evidence.json",
+    "run:2-client/runtime/run-status.json",
+    "run:3-server/scope-index.json",
+    "run:3-server/server-evidence.json",
+    "run:3-server/runtime/run-status.json",
+    "run:4-analysis/analysis-history.json"
+   ],
+   "outputFiles": ["run:4-analysis/unified-atoms.json"],
+   "optionalInputs": ["run:4-analysis/analysis-history.json"]
+  },
+  "S7": {
+   "order": 7,
+   "version": "S7@1",
+   "label": "业务行为还原",
+   "agentStage": true,
+   "configFiles": [
+    "proj:.opencode-workflows/workflows/game-requirement-audit/7-business-behavior.js",
+    "proj:.opencode-workflows/scripts/append-analysis-history.mjs"
+   ],
+   "configArgs": ["date"],
+   "inputFiles": ["run:4-analysis/unified-atoms.json"],
+   "outputFiles": [
+    "run:4-analysis/business-behavior.json",
+    "run:4-analysis/analysis-history.json"
+   ]
+  },
+  "S8": {
+   "order": 8,
+   "version": "S8@1",
+   "label": "统一差异复核",
+   "agentStage": true,
+   "configFiles": [
+    "proj:.opencode-workflows/workflows/game-requirement-audit/8-difference-review.js",
+    "proj:.opencode-workflows/scripts/merge-difference-review.mjs"
+   ],
+   "configArgs": ["date"],
+   "inputFiles": [
+    "run:4-analysis/unified-atoms.json",
+    "run:4-analysis/business-behavior.json",
+    "run:2-client/client-evidence.json",
+    "run:3-server/server-evidence.json"
+   ],
+   "outputFiles": ["run:4-analysis/difference-review.json"]
+  },
+  "S9": {
+   "order": 9,
+   "version": "S9@1",
+   "label": "L7 分类",
+   "agentStage": false,
+   "configFiles": [
+    "proj:.opencode-workflows/scripts/classify-l7-audit.mjs",
+    "proj:.opencode-workflows/workflows/game-requirement-audit/9-classify-l7.js"
+   ],
+   "configArgs": ["date"],
+   "inputFiles": [
+    "run:1-registry/requirement-registry.json",
+    "run:2-client/client-evidence.json",
+    "run:3-server/scope-index.json",
+    "run:3-server/server-evidence.json",
+    "run:4-analysis/unified-atoms.json",
+    "run:4-analysis/business-behavior.json",
+    "run:4-analysis/difference-review.json"
+   ],
+   "outputFiles": ["run:4-analysis/l7-classify.json"],
+   "optionalInputs": ["run:4-analysis/difference-review.json"]
+  },
+  "S10": {
+   "order": 10,
+   "version": "S10@1",
+   "label": "统一规格生成",
+   "agentStage": true,
+   "configFiles": [
+    "proj:.opencode-workflows/workflows/game-requirement-audit/10-unified-spec.js",
+    "proj:.opencode-workflows/scripts/build-unified-index.mjs"
+   ],
+   "configArgs": ["date"],
+   "inputFiles": [
+    "run:1-registry/requirement-registry.json",
+    "run:2-client/client-evidence.json",
+    "run:2-client/runtime/run-status.json",
+    "run:2-client/runtime/source-manifest.json",
+    "run:3-server/scope-index.json",
+    "run:3-server/server-evidence.json",
+    "run:3-server/runtime/run-status.json",
+    "run:3-server/runtime/source-manifest.json",
+    "run:4-analysis/unified-atoms.json",
+    "run:4-analysis/business-behavior.json",
+    "run:4-analysis/difference-review.json",
+    "run:4-analysis/l7-classify.json"
+   ],
+   "optionalInputs": [
+    "run:2-client/runtime/source-manifest.json",
+    "run:3-server/runtime/source-manifest.json",
+    "run:4-analysis/difference-review.json"
+   ],
+   "outputFiles": [
+    "run:5-specs/feature_index.json",
+    "run:5-specs/trace_index.json",
+    "run:5-specs/pending-list.md",
+    "run:5-specs/stages/*.md",
+    "run:5-specs/stage_manifest.md",
+    "run:5-specs/runtime/spec_check/verify-report.md"
+   ],
+   "note": "D34 文件级依赖完整性：以上 12 项即 S10 实际消费的全部直接输入（含双端 run-status 与 source-manifest），不得遗漏或虚列"
+  },
+  "S11": {
+   "order": 11,
+   "version": "S11@1",
+   "label": "人工裁决",
+   "agentStage": false,
+   "configFiles": [
+    "proj:.opencode-workflows/scripts/apply-decisions.mjs",
+    "proj:.opencode-workflows/workflows/game-requirement-audit/11-human-review.js"
+   ],
+   "configArgs": ["date"],
+   "inputFiles": [
+    "run:6-review/decisions.json",
+    "run:1-registry/requirement-registry.json",
+    "run:4-analysis/unified-atoms.json",
+    "run:4-analysis/difference-review.json",
+    "run:2-client/client-evidence.json",
+    "run:3-server/server-evidence.json"
+   ],
+   "outputFiles": [
+    "run:6-review/runtime/impact-set.json",
+    "run:6-review/runtime/retry-input/*.json",
+    "run:6-review/runtime/decision-apply.json",
+    "run:4-analysis/difference-review.json"
+   ],
+   "optionalInputs": ["run:4-analysis/difference-review.json"],
+   "note": "无 decisions.json 时 S11 为待人工输入（checkpoint），不产出 impact-set"
   }
  }
 }

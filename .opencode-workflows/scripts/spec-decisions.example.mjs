@@ -19,6 +19,7 @@ import { execFileSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { buildUnifiedIndex } from './build-unified-index.mjs'
 import { applyDecisions } from './apply-decisions.mjs'
+import { bindDecisionFingerprints } from './decision-fingerprint.mjs'
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
 const TMP = path.join(REPO_ROOT, '.opencode-workflows/scripts/tmp-spec-dec')
@@ -31,6 +32,13 @@ const writeJson = (p, data) => {
   fs.writeFileSync(p, JSON.stringify(data, null, 1) + '\n', 'utf8')
 }
 const readJson = (p) => JSON.parse(fs.readFileSync(p, 'utf8'))
+// 真实 S11 链路：先 bind 证据指纹再 apply（未 bind 的决议会被 stale 门拦截，见评审 P0-2）
+const bindThen = (runDir) => {
+  const b = bindDecisionFingerprints({ runDir, date: DATE })
+  assert.equal(b.ok, true, 'bind 应成功：' + JSON.stringify(b.problems))
+  writeJson(path.join(runDir, '6-review/decisions.json'), b.decisions)
+  return b
+}
 
 // atoms: [{ atomId, scope, analysisPath, verdict, applicability, l7, effective, l7Basis, drStatus?, clientEvidence?, sharedWith? }]
 function setupRun(runId, atomSpecs, opt = {}) {
@@ -267,6 +275,7 @@ const s11Specs = [
 
 test('E1 决议校验：action 非法 / retryScope 与必要端矛盾 / modify 缺 modifiedValue 均 fail', () => {
   const bad1 = setupRun('run-s11e1', s11Specs, { decisions: [{ atomId: 'AT-ST-C01-001', action: 'nonsense', target: 'difference-review' }] })
+  bindThen(bad1)
   const r1 = applyDecisions({ runDir: bad1, date: DATE })
   assert.equal(r1.ok, false)
   assert.ok(r1.problems.some((p) => p.includes('action 非法')))
@@ -279,6 +288,7 @@ test('E1 决议校验：action 非法 / retryScope 与必要端矛盾 / modify �
   assert.ok(r2.problems.some((p) => p.includes('与需求验证范围（client）矛盾')))
 
   const bad3 = setupRun('run-s11e3', s11Specs, { decisions: [{ atomId: 'AT-ST-C01-001', action: 'modify', target: 'difference-review' }] })
+  bindThen(bad3)
   const r3 = applyDecisions({ runDir: bad3, date: DATE })
   assert.equal(r3.ok, false)
   assert.ok(r3.problems.some((p) => p.includes('需 modifiedValue')))
@@ -291,6 +301,7 @@ test('F1 审批应用：approve / modify / reject / hold 语义正确', () => {
       { atomId: 'AT-ST-C01-002', action: 'reject', target: 'difference-review', reason: '证据不足' },
     ],
   })
+  bindThen(runDir)
   const r = applyDecisions({ runDir, date: DATE })
   assert.equal(r.ok, true, JSON.stringify(r.problems))
   const byAtom = new Map(r.differenceReview.entries.map((e) => [e.atomId, e]))
@@ -301,6 +312,7 @@ test('F1 审批应用：approve / modify / reject / hold 语义正确', () => {
   const runDir2 = setupRun('run-s11f2', s11Specs, {
     decisions: [{ atomId: 'AT-ST-C01-002', action: 'modify', target: 'difference-review', modifiedValue: 'partial', reason: '人工判断' }],
   })
+  bindThen(runDir2)
   const r2 = applyDecisions({ runDir: runDir2, date: DATE })
   assert.equal(r2.ok, true, JSON.stringify(r2.problems))
   const e = r2.differenceReview.entries.find((x) => x.atomId === 'AT-ST-C01-002')
@@ -312,6 +324,7 @@ test('F1 审批应用：approve / modify / reject / hold 语义正确', () => {
   const runDir3 = setupRun('run-s11f3', s11Specs, {
     decisions: [{ atomId: 'AT-ST-C01-001', action: 'hold', target: 'difference-review', reason: '待讨论' }],
   })
+  bindThen(runDir3)
   const r3 = applyDecisions({ runDir: runDir3, date: DATE })
   assert.equal(r3.differenceReview.entries.find((x) => x.atomId === 'AT-ST-C01-001').reviewStatus, 'pending')
 })
@@ -370,6 +383,7 @@ test('I2 端到端：S11 回写 difference-review 审批状态（approved 生效
   const runDir = setupRun('run-e2e2', s11Specs, {
     decisions: [{ atomId: 'AT-ST-C01-001', action: 'approve', target: 'difference-review' }],
   })
+  execFileSync('node', [path.join(REPO_ROOT, '.opencode-workflows/scripts/decision-fingerprint.mjs'), 'bind', '--run-dir', runDir, '--date', DATE], { encoding: 'utf8', cwd: REPO_ROOT })
   const out = execFileSync('node', [S11_CLI, '--run-dir', runDir, '--date', DATE], { encoding: 'utf8', cwd: REPO_ROOT })
   assert.ok(out.includes('[成功]'), out)
   const dr = readJson(path.join(runDir, '4-analysis/difference-review.json'))

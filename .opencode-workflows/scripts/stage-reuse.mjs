@@ -136,27 +136,38 @@ function resolveSpecEntry(entry, argsMap, resolveDir) {
   return { error: 'spec 路径前缀非法（run:/proj:/arg:）：' + entry }
 }
 
-function resolveSpecList(entries, argsMap, resolveDir) {
+function resolveSpecList(entries, argsMap, resolveDir, optional) {
   const files = []
+  const absent = []
   for (const e of entries || []) {
     const r = resolveSpecEntry(e, argsMap, resolveDir)
-    if (r.error) return { error: r.error }
+    if (r.error) {
+      // 可选输入：缺失不报错，记 absent 占位（指纹仍确定性：缺失与存在是两种不同状态）
+      if (optional) {
+        absent.push(e)
+        continue
+      }
+      return { error: r.error }
+    }
     files.push(...r.files)
   }
   // 记录路径码元序（M7：默认 sort 即 UTF-16 码元序，禁 localeCompare）
   files.sort((a, b) => (a.record < b.record ? -1 : a.record > b.record ? 1 : 0))
-  return { files }
+  absent.sort()
+  return { files, absent }
 }
 
 // ---- 指纹计算 ----
 
-function hashFileList(files) {
-  // files: [{record, abs}]，已按 record 码元序
+function hashFileList(files, absent) {
+  // files: [{record, abs}]，已按 record 码元序；absent: 缺失的可选输入（记标记，保持确定性）
   const pairs = files.map((f) => {
     const buf = fs.readFileSync(f.abs)
     return [f.record, sha256Hex(buf)]
   })
-  return { hash: sha256Str(JSON.stringify(pairs)), list: pairs }
+  for (const a of absent || []) pairs.push([a, 'absent'])
+  pairs.sort((x, y) => (x[0] < y[0] ? -1 : x[0] > y[0] ? 1 : 0))
+  return { hash: sha256Str(JSON.stringify(pairs)), list: pairs.filter((p) => p[1] !== 'absent'), absent: (absent || []).slice() }
 }
 
 function hashConfig(spec, argsMap) {
@@ -165,8 +176,7 @@ function hashConfig(spec, argsMap) {
     const r = resolveSpecEntry(e, argsMap, null)
     if (r.error) return { error: r.error }
     for (const f of r.files) filePairs.push([f.record, sha256Hex(fs.readFileSync(f.abs))])
-  }
-  filePairs.sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
+  }  filePairs.sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
   const args = {}
   for (const k of spec.configArgs || []) {
     const v = argsMap ? argsMap[k] : undefined
@@ -250,7 +260,9 @@ function cmdRecordStage(a) {
 
   const inputR = resolveSpecList(spec.inputFiles, argsMap, runDir)
   if (inputR.error) fail('inputHash 解析失败（' + a.stageId + '）：' + inputR.error)
-  const input = hashFileList(inputR.files)
+  const optR = resolveSpecList(spec.optionalInputs, argsMap, runDir, true)
+  if (optR.error) fail('可选 inputHash 解析失败（' + a.stageId + '）：' + optR.error)
+  const input = hashFileList(inputR.files.concat(optR.files), optR.absent)
 
   const configR = hashConfig(spec, argsMap)
   if (configR.error) fail('configHash 解析失败（' + a.stageId + '）：' + configR.error)
@@ -323,10 +335,13 @@ function checkStageStrict(specs, stageId, sourceRunDir, newArgsMap) {
 
   // 3. inputHash：当前输入状态重算（run: 取来源 Run 实物；proj:/arg: 取当前仓库/新 Run 参数）
   const inputR = resolveSpecList(specStage.inputFiles, newArgsMap, sourceRunDir)
+  const optR = resolveSpecList(specStage.optionalInputs, newArgsMap, sourceRunDir, true)
   if (inputR.error) {
     problems.push('inputHash 重算失败（' + stageId + '）：' + inputR.error)
+  } else if (optR.error) {
+    problems.push('可选 inputHash 重算失败（' + stageId + '）：' + optR.error)
   } else {
-    const inputH = hashFileList(inputR.files)
+    const inputH = hashFileList(inputR.files.concat(optR.files), optR.absent)
     if (inputH.hash !== rec.inputHash) {
       problems.push('inputHash 不匹配（' + stageId + '）：上游输入已变（模板/上游产物内容与记录时不一致），不可复用')
     }

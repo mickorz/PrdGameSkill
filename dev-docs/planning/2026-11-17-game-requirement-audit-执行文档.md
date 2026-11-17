@@ -10,7 +10,8 @@
   - v2（2026-11-17 评审修订一）：P0×4——S7 取消 conflict 必带双端证据；双端 pending 执行状态独立（run-status）；Registry 新增 `verificationScope`；S8/S9 rejected 回退基线。P1——CLE/SVE 版本追溯三字段；端级补证 retryScope；增量重算；
   - v3（2026-11-17 评审修订二）：P0×4——冲突快速路径（单端直证绕过必要端 pending，原则 7）；SVE 收敛纯服务端（废弃 3C 客户端补证链路）；client verified 六项前置条件；Source Manifest 确定性采集。P1×2——证据失效 hash 优先；增量重算按共享证据影响集合；
   - v3.1（2026-11-17 评审修订三·收口）：**P1×3**——①S4/S5 统计口径收口（entry=已完成原子恰一条，coverage 不变式 `entryCount + pendingAtomIds = expectedAtomCount`，条目去 pending 双写，S4/S5 同契约）；②调用链依赖追踪闭环（CLE/SVE 增 `dependencyFiles` + `repoId`，Source Manifest 按 repoId 分仓统一采集证据文件与依赖文件 hash，依赖链复核有数据支撑）；③conflict-fast 升级 full 的历史与审批语义（`baselineDifference` 历史保全 + `candidateDifference` 候选双写 + `previousDifference` 锚历史基线 + `analysis-history.json` append-only；conflict-fast 条目非冲突字段允许为空）。**Gold Set 扩至八场景（G06~G08 源码时效）并升级为自动化回归测试**。整体架构与四大契约不再调整；
-  - v3.2（2026-11-17 评审修订四·终版·冻结）：**Schema 终修×2**——①共享证据多原子关联（CLE/SVE 证据 `atomId` 单值 → `atomIds[]` 列表：证据只存一份、多原子引用、追加引用只扩 atomIds；merge 按证据指针（repoId+file+location+symbol）去重（保留首 id、atomIds 并集）；引用一致性校验——解决单 atomId 与「禁止复制条目」的结构矛盾）；②升级识别确定性判定式（`upgraded = 上轮 conflict-fast ∧ 本轮 full ∧ 上轮基线 conflict`；`previousRunId` 逐原子解析自 analysis-history 最近记录，禁止跨原子取值；同 run 重放不重复追加 history）。架构与四大契约不再调整，冻结。
+  - v3.2（2026-11-17 评审修订四·终版·冻结）：**Schema 终修×2**——①共享证据多原子关联（CLE/SVE 证据 `atomId` 单值 → `atomIds[]` 列表：证据只存一份、多原子引用、追加引用只扩 atomIds；merge 按证据指针（repoId+file+location+symbol）去重（保留首 id、atomIds 并集）；引用一致性校验——解决单 atomId 与「禁止复制条目」的结构矛盾）；②升级识别确定性判定式（`upgraded = 上轮 conflict-fast ∧ 本轮 full ∧ 上轮基线 conflict`；`previousRunId` 逐原子解析自 analysis-history 最近记录，禁止跨原子取值；同 run 重放不重复追加 history）。架构与四大契约不再调整，冻结；
+  - v3.2 补遗（2026-11-17，**不升版本号**）：证据确定性合并契约落 §5.0（并行分片合并顺序无关性：分片按文件名排序读取、证据按指针字典序处理、同指针合并 ID 归属 **Registry 最早支撑原子**（替代原「保留首个 id」的顺序依赖表述）、atomIds 按 Registry 顺序去重、乱序不变式并入 Gold Set 断言）。架构基线维持 v3.2 冻结，进入工程实现。
 
 ---
 
@@ -155,7 +156,9 @@ spec-workflow/requirement-audit/<date>/
 
 标注约定：**【保留】**现有字段不变；**【扩展】**现有结构新增字段；**【新增】**本工作流新产物；**【v2】/【v3】/【v3.1】**评审修订新增。所有结构为 JSON 字段示意（同现有 schema 风格），非严格 JSON Schema 全文；严格 Schema 随各步骤详细章节给出。
 
-### 5.0 双端分支统一统计契约【v3.1，S4/S5 共用】
+### 5.0 双端分支统一契约（统计口径 + 证据确定性合并）【v3.1/v3.2，S4/S5 共用】
+
+**A. 统计口径契约【v3.1】**
 
 | 字段 | 统计口径 |
 |---|---|
@@ -165,6 +168,17 @@ spec-workflow/requirement-audit/<date>/
 | `stats.atomCount` | = `entryCount`（已完成落判数，**不是预期数**） |
 | 不变式 | `entryCount + pendingAtomIds.length === expectedAtomCount`（闸门强校验） |
 | 双写禁止 | 条目内**不存 pending 字段**——pending 唯一事实源是 `runtime/run-status.json`，S6/S10 从 run-status 派生 |
+
+**B. 证据确定性合并契约【v3.2 补遗，S4/S5 merge 脚本共用】**——并行分片合并产物**不依赖分片完成顺序**（证据 ID、atomIds、条目顺序、统计块对任意分片交付顺序恒定）：
+
+| # | 规则 |
+|---|---|
+| M1 | 分片归集：merge 按分片**文件名字典序**读取全部 runtime 分片（`<stageId>-cp<NN>` / `<stageId>-p<NN>`），与 agent 完成顺序无关 |
+| M2 | 证据排序：全部证据条目先按**证据指针（repoId, file, location, symbol）字典序**排序后处理 |
+| M3 | 同指针合并：相同证据指针合并为一条——`atomIds` 去重并按 **Registry 顺序**（features/atoms 全序基准）排列 |
+| M4 | ID 归一：合并条目 ID 归属 = `atomIds` 中 **Registry 最早支撑原子**的命名空间（`CLE-<归属原子>-NN` / `SVE-<stageId>-P<NN>-NN`）；NN 在归属命名空间内递增编号（本轮新证据按指针序接续既有最大 NN）；**既有正式产物同指针证据保留原 id（id 永不变更，幂等）** |
+| M5 | 乱序不变式：打乱分片完成/交付顺序重跑 merge，证据 ID、atomIds、entries/evidence 顺序、统计块与合并产物内容必须**逐字节一致**（闸门 + Gold Set 断言） |
+| M6 | 冲突保护：同 id 不同证据指针 = id 劫持 fail（沿用坑 8 口径）；不同 run 重放沿用 history/run 幂等规则 |
 
 ---
 
@@ -367,8 +381,8 @@ spec-workflow/requirement-audit/<date>/
 ```
 
 - 采集机制【v3/v3.1】：确定性脚本 `collect-source-manifest.mjs` 在**分支 merge 时**运行——先归集 runtime 分片引用的全部文件（证据文件 + dependencyFiles 依赖文件），再按 repoId 分仓读取 commit SHA、计算 contentHash；无 git 仓的目录 commit 记 `unversioned`。**agent 严禁执行 git 命令、严禁自填 SHA/hash**：CLE 的 `sourceRevision/contentHash/verifiedAt` 与 `dependencyFiles[].contentHash` 由 merge 脚本从 manifest 按 **（repoId, file）联合匹配**回填（避免不同仓库相同相对路径匹配错误）；客户端与服务端分别记录各自源码仓版本，不共用一个 SHA。
-- CLE 编号与共享证据规则【v3.2】：`CLE-<atomId>-NN`（注册于**首个引用原子**的命名空间，单原子证据即该原子）；`atomIds` 记录全部支撑原子——同一证据服务多原子时**只存一条**（后续原子追加引用只扩 `atomIds`，id 不变，禁止复制条目）；merge 按**证据指针（repoId + file + location + symbol）去重**：同指针多条合并为一条（保留首个 id，atomIds 取并集），同 id 不同指针 = id 劫持 fail；补证重跑新增证据用 `CLE-<atomId>-R<k>-NN` 代际隔离。**SVE 采用相同契约**。
-- 自洽闸门：`verdict != not_found` 必带证据、`not_found` 不得带证据；`directConflict=true` 必带 conflictEvidenceIds（非空且 verdict != not_found）；**引用一致性**（entry 的 evidenceIds / conflictEvidenceIds ⊆ evidence ids，且被引证据的 `atomIds` 必须包含该 entry 的 atomId）；**统计口径不变式**（§5.0：entryCount + pendingAtomIds = expectedAtomCount，coverage 与 run-status 重算一致）；dependencyFiles 的 file 必须能被 manifest 覆盖；证据指针去重与 id 唯一（同 id 不同指针 fail）。
+- CLE 编号与共享证据规则【v3.2】：`CLE-<atomId>-NN`（单原子证据注册于该原子命名空间）；`atomIds` 记录全部支撑原子——同一证据服务多原子时**只存一条**（追加引用只扩 `atomIds`，禁止复制条目）；merge 按**证据指针（repoId + file + location + symbol）去重**，合并条目 ID 归属 **Registry 最早支撑原子**（确定性合并契约 M1~M6，见 §5.0 B，与分片完成顺序无关），同 id 不同指针 = id 劫持 fail；补证重跑新增证据用 `CLE-<atomId>-R<k>-NN` 代际隔离。**SVE 采用相同契约**。
+- 自洽闸门：`verdict != not_found` 必带证据、`not_found` 不得带证据；`directConflict=true` 必带 conflictEvidenceIds（非空且 verdict != not_found）；**引用一致性**（entry 的 evidenceIds / conflictEvidenceIds ⊆ evidence ids，且被引证据的 `atomIds` 必须包含该 entry 的 atomId）；**统计口径不变式**（§5.0 A：entryCount + pendingAtomIds = expectedAtomCount，coverage 与 run-status 重算一致）；dependencyFiles 的 file 必须能被 manifest 覆盖；证据指针去重与 id 唯一（同 id 不同指针 fail；确定性合并按 §5.0 B，ID 归属 Registry 最早支撑原子）。
 - runtime 分片：`client/runtime/verify-input|verify-output/<stageId>-cp<NN>.json` + `manifest.json`（机制同 server 分支，含落盘闸门与重算闸门）。
 
 ---
@@ -426,7 +440,7 @@ spec-workflow/requirement-audit/<date>/
 - 产物 4：`server/runtime/run-status.json`【v2 新增】——结构同 S4 产物 2（`branch: "server"`，`parts[].partFile` 为 `<stageId>-p<NN>.json`）。
 - 产物 5：`server/runtime/source-manifest.json`【v3 新增，v3.1 扩展】——结构同 S4 产物 3（`branch: "server"`，服务端仓单仓一条 `repoId: "server"`）。
 - 产物 6：runtime 中间产物 `verify-input/`、`match-output/`、`verify-output/`【保留】（仅服务端 `-p<NN>` 分片）。
-- 闸门：全部沿用（落盘、双写 dr.scopeApplicability==applicability、SVE 形状/id 劫持、recount 重算、证据文件范围硬约束三根目录）+ v2 调整（merge 按 run-status 分段校验）+ v3 收敛闸门（SVE layer 只允许服务端三目录、applicability 只允许四值、directConflict 必带 conflictEvidenceIds）+ v3.1 统计口径不变式（同 §5.0）+ **v3.2 共享证据去重与引用一致性（同 CLE 契约）**。
+- 闸门：全部沿用（落盘、双写 dr.scopeApplicability==applicability、SVE 形状/id 劫持、recount 重算、证据文件范围硬约束三根目录）+ v2 调整（merge 按 run-status 分段校验）+ v3 收敛闸门（SVE layer 只允许服务端三目录、applicability 只允许四值、directConflict 必带 conflictEvidenceIds）+ v3.1 统计口径不变式（同 §5.0 A）+ **v3.2 共享证据去重与引用一致性（同 CLE 契约，确定性合并按 §5.0 B M1~M6）**。
 
 ---
 
@@ -783,7 +797,7 @@ spec-workflow/requirement-audit/<date>/
 | D3 | `verdict`（客户端）与 `applicability`（服务端）全程独立字段，仅 L7 矩阵汇合 | 设计文档 4.1 明确两维度不可合并 |
 | D4 | 差异初判（baselineDifference）从 S4 移到 S7（双端证据合齐后） | 设计文档 4.2 同步屏障 |
 | D5 | pending 与 unknown 独立：执行状态落双端 run-status 文件（分片级），S6 从 run-status 判定 pending | 评审 v2 P0：执行状态与业务结论分离 |
-| D6 | CLE 编号 `CLE-<atomId>-NN`（注册于首个引用原子命名空间），重跑代际 `-R<k>-`；共享证据只存一条（atomIds 全列，追加引用只扩列表） | 吸收 SVE 坑 8（id 劫持）教训；评审 v3.2：单 atomId 与「禁止复制条目」矛盾 |
+| D6 | CLE 编号 `CLE-<atomId>-NN`（单原子证据注册于该原子命名空间），重跑代际 `-R<k>-`；共享证据只存一条（atomIds 全列，ID 归属 Registry 最早支撑原子，追加引用只扩列表） | 吸收 SVE 坑 8（id 劫持）教训；评审 v3.2：单 atomId 与「禁止复制条目」矛盾 |
 | D7 | S5 匹配输入基线从 feature_index 换 Requirement Registry | 原则 1「一个需求事实源」 |
 | D8 | 统一产物根 `spec-workflow/requirement-audit/<date>/`，历史目录只读 | 读写分离 + 断点续跑沿用 |
 | D9 | conflict 按职责域要求证据：CLE/SVE 单端直接证据即可立冲突（保留 ui-conflict-stands-alone） | 评审 v2 P0：牌河财神视觉冲突服务端无角色 |
@@ -801,8 +815,9 @@ spec-workflow/requirement-audit/<date>/
 | D21 | **统计口径收口**：entry=已完成原子恰一条；coverage 不变式 `entryCount + pendingAtomIds = expectedAtomCount`；条目不存 pending（run-status 唯一事实源，去双写）；S4/S5 同契约 | 评审 v3.1 P1-1：「每原子恰一条」与「未完成不产 entry」矛盾收口 |
 | D22 | **调用链依赖追踪**：CLE/SVE 增 `dependencyFiles`（agent 提路径、manifest 回填 hash）+ `repoId`（分仓标识，（repoId, file）联合匹配）；依赖链 hash 变化触发依赖链复核 | 评审 v3.1 P1-2：证据定位 View、行为取决于 Controller/Model；跨仓同路径匹配错误 |
 | D23 | **升级历史保全**：baselineDifference 历史保全 + candidateDifference 候选双写 + previousDifference 锚历史基线 + analysis-history.json append-only；conflict-fast 条目非冲突字段允许为空；降级必须人工批准 | 评审 v3.1 P1-3：历史冲突不被新轮 agent 输出覆盖；防 Schema 编造 |
-| D24 | **共享证据多原子关联**：CLE/SVE 证据 `atomId` → `atomIds[]`；证据注册于首个引用原子命名空间，追加引用只扩 atomIds（id 不变）；merge 按证据指针（repoId+file+location+symbol）去重（保留首 id、atomIds 并集，同 id 不同指针 fail）；引用一致性校验（被引证据 atomIds ⊇ 引用方） | 评审 v3.2 问题 1：证据只存一份、多原子引用、影响集合反查不遗漏 |
+| D24 | **共享证据多原子关联**：CLE/SVE 证据 `atomId` → `atomIds[]`；共享证据只存一条，追加引用只扩 atomIds（id 不变）；merge 按证据指针（repoId+file+location+symbol）去重（确定性合并契约见 §5.0 B：ID 归属 Registry 最早支撑原子、atomIds 按 Registry 顺序排列、同 id 不同指针 fail）；引用一致性校验（被引证据 atomIds ⊇ 引用方） | 评审 v3.2 问题 1：证据只存一份、多原子引用、影响集合反查不遗漏 |
 | D25 | **升级识别确定性判定式**：`upgraded = 上轮 conflict-fast ∧ 本轮 full ∧ 上轮基线 conflict`；previousRunId 逐原子解析自 history 最近记录（禁止跨原子取值）；history 可还原上轮路径与基线；同 run 重放不重复追加 history（幂等） | 评审 v3.2 问题 2：升级判定可复现、断点续跑幂等 |
+| D26 | **证据合并顺序无关性**（§5.0 B 契约 M1~M6）：分片按文件名字典序读取、证据按指针（repoId, file, location, symbol）字典序处理；同指针合并 ID 归属 Registry 最早支撑原子、atomIds 去重并按 Registry 顺序排列；**乱序不变式**——任意分片完成/交付顺序，产物逐字节一致（并入 Gold Set 断言） | 评审 v3.2 补遗：分片完成顺序不得影响证据 ID/引用稳定性（增量重算/断点续跑/Git Diff/自动化回归） |
 
 ## 9. 验收口径（头部层面）
 
@@ -816,17 +831,17 @@ spec-workflow/requirement-audit/<date>/
 | G02 | 服务端规则冲突，客户端无相关实现（client not_found，SVE 直证矛盾） | 单端 SVE 立证，conflict 独立成立，L7=decision_required |
 | G03 | 双端需求 server unknown + client confirmed（番数类） | 禁止错误 verified：scope=unknown → verification_required |
 | G04 | 双端需求，一端直接冲突、另一端 pending 后补证完成 | 升级 full：历史 conflict 保全（pending/rejected 维持 decision_required），降级仅 approved 后生效 |
-| G05 | 共享 SVE 补证更新（SVE-001 的 atomIds 含 AT-001/AT-002） | 影响集合经 atomIds 反查完整重算：AT-001 与 AT-002 结论均更新，S10 只重生成受影响文档 |
+| G05 | 共享 SVE 补证更新（SVE-001 的 atomIds 含 AT-001/AT-002）+ **分片乱序重放**（打乱分片交付顺序重跑 merge） | 影响集合经 atomIds 反查完整重算：AT-001 与 AT-002 结论均更新，S10 只重生成受影响文档；**乱序不变式：证据 ID、atomIds、统计块与合并产物内容 Hash 逐字节一致（§5.0 B / M5、D26）** |
 | G06 | Git commit 变化，证据文件 contentHash 不变 | 证据仍然有效（不整批失效） |
 | G07 | 证据文件 contentHash 变化 | 自动标记 stale，进 pending-list，不得作为当前实现证明 |
 | G08 | 依赖链文件（dependencyFiles）hash 变化、证据文件 hash 不变 | 触发依赖链复核提示（不自动 stale） |
 
-- 附加断言（随各步骤详细章节细化）：统计口径不变式（§5.0）在 G01（90/100 完成 → entryCount=90）；（repoId, file）跨仓匹配；**共享证据单条多原子**（同证据指针去重、atomIds 并集、引用一致性——G05 断言 SVE-001.atomIds ⊇ {AT-001, AT-002}）；conflict-fast 条目四元组可空不编造；**升级判定式可复现**（previousRunId 逐原子解析、previousAnalysisPath/previousBaselineDifference 可从 history 还原、同 run 重放幂等）。
+- 附加断言（随各步骤详细章节细化）：统计口径不变式（§5.0 A）在 G01（90/100 完成 → entryCount=90）；（repoId, file）跨仓匹配；**共享证据单条多原子**（同证据指针去重、atomIds 并集、引用一致性——G05 断言 SVE-001.atomIds ⊇ {AT-001, AT-002}）；**分片乱序不变式**（打乱分片完成顺序重跑 merge → 证据 ID、atomIds、entries/evidence 顺序、统计块与合并产物内容 Hash 逐字节一致——并入 G05 断言，§5.0 B/M5、D26）；conflict-fast 条目四元组可空不编造；**升级判定式可复现**（previousRunId 逐原子解析、previousAnalysisPath/previousBaselineDifference 可从 history 还原、同 run 重放幂等）。
 - 迁移验收：现有两 workflow 的既有产物（2026-11-13/14 目录）可被统一工作流以只读方式消费（planner-only / 补证重跑场景不回退）。
 
 ## 10. 后续章节待写清单（逐步骤详细执行内容）
 
-**开发顺序策略（评审建议，v3.1 定稿）**：①各步骤详细执行章节 → ②**确定性脚本与 Gold Set 八场景自动化回归先行实现并通过** → ③再接入 Agent 并行执行链路。目标：每个阶段的输入、输出、状态转换和失败恢复都能被确定性脚本验证，而不是继续增加架构层次。
+**开发顺序策略（评审终版建议，v3.2 定稿，不并行铺开所有模块）**：①补充并冻结 S4/S5 证据确定性合并契约（本文 §5.0 B，本轮已完成）→ ②S1~S3 详细执行设计（**唯一需求事实源先行**——后续所有流程的基础）→ ③确定性脚本实现（Registry 合并 / 双端 Evidence Merge / Source Manifest / S6 屏障与路径判定 / L7 分类）→ ④Gold Set 八场景自动化回归全绿（重点：共享证据、历史升级、源码时效、分片乱序不变式）→ ⑤最后接入双端 Agent 并行链路（客户端/服务端并行查证、业务行为还原、规格生成）。原则：**所有确定性规则先用代码和测试证明正确，再让 Agent 负责它真正擅长的源码理解与业务语义分析**；不再增加架构版本（v3.2 为冻结基线）。
 
 | 章节 | 内容 | 前置 |
 |---|---|---|

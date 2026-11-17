@@ -78,7 +78,7 @@ function loadSpecs(specsPath) {
   const r = readJsonSafe(p)
   if (!r.ok) fail('stage-specs 不可读：' + p + ' -> ' + r.error)
   const specs = r.data
-  if (specs.schemaVersion !== 1 || !specs.stages) fail('stage-specs 结构非法：' + p)
+  if (![1, 2].includes(specs.schemaVersion) || !specs.stages) fail('stage-specs 结构非法：' + p)
   return { specs, specsPath: toPosix(p) }
 }
 

@@ -323,28 +323,44 @@ const fileList = await agent(
   })
 )
 if (!fileList || !Array.isArray(fileList.files)) throw new Error('证据文件归集回读异常')
-if (fileList.files.length === 0) throw new Error('证据文件归集为空（SVE 全空？请检查 S5 落判）')
 
-const filesTxtPath = runDir + '/' + BRANCH_DIR + '/runtime/evidence-files.txt'
-await agent(
-  [
-    '任务：把下面 PART-BEGIN 与 PART-END 之间的文本逐字写入文件 ' + filesTxtPath + '（每行一个路径，UTF-8）。',
-    '逐字复制，不得改写或排序。只写这一个文件，不执行 git。',
-    '',
-    'PART-BEGIN',
-    fileList.files.join('\n'),
-    'PART-END',
-  ].join('\n'),
-  { label: '写服务端证据文件清单', agentType: 'general', timeoutMs: 900000, retries: 2, ...withModel({}) }
-)
+// 合法空证据分支：全片 unknown/noServerEvidence/inactive 时可没有 SVE 文件。
+// 这属于业务结论而不是执行失败；写空 Source Manifest 后仍进入 merge。
+if (fileList.files.length === 0) {
+  await agent(
+    [
+      '任务：将以下 JSON 逐字写入文件 ' + MANIFEST + '（UTF-8，1 空格缩进）。',
+      '只写这个文件，不执行 git。',
+      '',
+      'PART-BEGIN',
+      JSON.stringify({ schemaVersion: 1, branch: 'server', collectedAt: date, repos: [] }, null, 1),
+      'PART-END',
+    ].join('\n'),
+    { label: '写空服务端源码清单', agentType: 'general', timeoutMs: 900000, retries: 2, ...withModel({}) }
+  )
+  log('S5：本轮没有服务端证据文件（unknown/noServerEvidence/inactive），写空 Source Manifest 后继续合并')
+} else {
+  const filesTxtPath = runDir + '/' + BRANCH_DIR + '/runtime/evidence-files.txt'
+  await agent(
+    [
+      '任务：把下面 PART-BEGIN 与 PART-END 之间的文本逐字写入文件 ' + filesTxtPath + '（每行一个路径，UTF-8）。',
+      '逐字复制，不得改写或排序。只写这一个文件，不执行 git。',
+      '',
+      'PART-BEGIN',
+      fileList.files.join('\n'),
+      'PART-END',
+    ].join('\n'),
+    { label: '写服务端证据文件清单', agentType: 'general', timeoutMs: 900000, retries: 2, ...withModel({}) }
+  )
 
-const collectOk = await commandSuccess(
-  'node ".opencode-workflows/scripts/collect-source-manifest.mjs" --branch server' +
-    ' --roots "' + serverSrcRoot + '" --repo-ids "server"' +
-    ' --files "@' + filesTxtPath + '" --date "' + date + '" --out "' + MANIFEST + '"',
-  300000
-)
-if (!collectOk) throw new Error('S5 源码清单采集失败（见上方命令日志）')
+  const collectOk = await commandSuccess(
+    'node ".opencode-workflows/scripts/collect-source-manifest.mjs" --branch server' +
+      ' --roots "' + serverSrcRoot + '" --repo-ids "server"' +
+      ' --files "@' + filesTxtPath + '" --date "' + date + '" --out "' + MANIFEST + '"',
+    300000
+  )
+  if (!collectOk) throw new Error('S5 源码清单采集失败（见上方命令日志）')
+}
 
 const mergeOk = await commandSuccess(
   'node ".opencode-workflows/scripts/merge-branch-evidence.mjs" --run-dir "' + runDir +

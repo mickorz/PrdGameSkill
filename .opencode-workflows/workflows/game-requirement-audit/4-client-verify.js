@@ -351,32 +351,46 @@ const fileList = await agent(
   })
 )
 if (!fileList || !Array.isArray(fileList.files)) throw new Error('证据文件归集回读异常')
+
+// 合法空证据分支：全片 not_found 时没有 CLE 文件可采集。
+// 这不是执行失败；写空 Source Manifest 后仍进入 merge，让 not_found 正常成为业务结论。
 if (fileList.files.length === 0) {
-  throw new Error('证据文件归集为空（分片 evidence 全空？请检查 S4 落判）')
-}
+  await agent(
+    [
+      '任务：将以下 JSON 逐字写入文件 ' + MANIFEST + '（UTF-8，1 空格缩进）。',
+      '只写这个文件，不执行 git。',
+      '',
+      'PART-BEGIN',
+      JSON.stringify({ schemaVersion: 1, branch: 'client', collectedAt: date, repos: [] }, null, 1),
+      'PART-END',
+    ].join('\n'),
+    { label: '写空客户端源码清单', agentType: 'general', timeoutMs: 900000, retries: 2, ...withModel({}) }
+  )
+  log('S4：本轮没有客户端证据文件（全部 not_found），写空 Source Manifest 后继续合并')
+} else {
+  // 中文值不进 shell：文件清单经临时文本 + --files @path
+  const filesTxtPath = runDir + '/' + BRANCH_DIR + '/runtime/evidence-files.txt'
+  await agent(
+    [
+      '任务：把下面 PART-BEGIN 与 PART-END 之间的文本逐字写入文件 ' + filesTxtPath + '（每行一个文件路径，UTF-8）。',
+      '要求：逐字复制，不得改写、排序、去重或增删任何字符。只写这一个文件，不执行 git。',
+      '',
+      'PART-BEGIN',
+      fileList.files.join('\n'),
+      'PART-END',
+    ].join('\n'),
+    { label: '写证据文件清单', agentType: 'general', timeoutMs: 900000, retries: 2, ...withModel({}) }
+  )
 
-// 中文值不进 shell：文件清单经临时 JSON + --files @path
-const filesTxtPath = runDir + '/' + BRANCH_DIR + '/runtime/evidence-files.txt'
-const writeList = await agent(
-  [
-    '任务：把下面 PART-BEGIN 与 PART-END 之间的文本逐字写入文件 ' + filesTxtPath + '（每行一个文件路径，UTF-8）。',
-    '要求：逐字复制，不得改写、排序、去重或增删任何字符。只写这一个文件，不执行 git。',
-    '',
-    'PART-BEGIN',
-    fileList.files.join('\n'),
-    'PART-END',
-  ].join('\n'),
-  { label: '写证据文件清单', agentType: 'general', timeoutMs: 900000, retries: 2, ...withModel({}) }
-)
-
-const collectOk = await commandSuccess(
-  'node ".opencode-workflows/scripts/collect-source-manifest.mjs" --branch client' +
-    ' --roots "' + codeDir + ',' + fguiDir + '" --repo-ids "client-code,client-fgui"' +
-    ' --files "@' + filesTxtPath + '" --date "' + date + '" --out "' + MANIFEST + '"',
-  300000
-)
-if (!collectOk) {
-  throw new Error('S4 源码清单采集失败（证据文件不存在或不属于声明源码根，见上方命令日志）')
+  const collectOk = await commandSuccess(
+    'node ".opencode-workflows/scripts/collect-source-manifest.mjs" --branch client' +
+      ' --roots "' + codeDir + ',' + fguiDir + '" --repo-ids "client-code,client-fgui"' +
+      ' --files "@' + filesTxtPath + '" --date "' + date + '" --out "' + MANIFEST + '"',
+    300000
+  )
+  if (!collectOk) {
+    throw new Error('S4 源码清单采集失败（证据文件不存在或不属于声明源码根，见上方命令日志）')
+  }
 }
 
 const mergeOk = await commandSuccess(

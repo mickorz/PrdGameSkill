@@ -99,7 +99,8 @@ test('B3 S10 的 12 项文件级依赖完整（D34）', () => {
     'run:4-analysis/difference-review.json',
     'run:4-analysis/l7-classify.json',
   ]
-  assert.deepEqual(specs.stages.S10.inputFiles, expect, 'S10 inputFiles 必须逐一对照生成逻辑（D34）')
+  const actual = (specs.stages.S10.inputFiles || []).concat(specs.stages.S10.optionalInputs || []).sort()
+  assert.deepEqual(actual, expect.sort(), 'S10 inputFiles + optionalInputs 必须逐一对照生成逻辑（D34）')
 })
 
 test('B4 specs 声明的 agent 阶段与 docs 一致（S4/S5/S7/S8/S10 为 agent 阶段）', () => {
@@ -342,6 +343,42 @@ test('F4 conflict 缺 baselineDetail / 无证据 → fail', () => {
   const r = assembleBehaviorParts({ runDir, date: DATE, parts: 'ST-C01-bp01.json' })
   assert.equal(r.ok, false)
   assert.ok(r.problems.some((p) => p.includes('baselineDetail 为空')))
+})
+
+// ============================================================
+// G：评审后的集成回归（可选输入 / resume / 空证据）
+// ============================================================
+test('G1 optionalInputs 不重复：S6/S9/S10 首次运行的可选文件不在 inputFiles 内', () => {
+  for (const stageId of ['S6', 'S9', 'S10']) {
+    const stage = specs.stages[stageId]
+    const duplicated = (stage.inputFiles || []).filter((p) => (stage.optionalInputs || []).includes(p))
+    assert.deepEqual(duplicated, [], stageId + ' optionalInputs 不得同时是必填输入')
+  }
+  assert.deepEqual(specs.stages.S6.optionalInputs, ['run:4-analysis/analysis-history.json'])
+  assert.deepEqual(specs.stages.S9.optionalInputs, ['run:4-analysis/difference-review.json'])
+  assert.deepEqual(specs.stages.S10.optionalInputs, [
+    'run:2-client/runtime/source-manifest.json',
+    'run:3-server/runtime/source-manifest.json',
+    'run:4-analysis/difference-review.json',
+  ])
+})
+
+test('G2 resume 实现：先定位 stage-manifest 首个非 completed，再用 effectiveStartIdx 执行条件', () => {
+  assert.ok(mainSrc.includes("const nextIdx = STEPS.findIndex((s) => !resumeManifest.stages[s.stageId] || resumeManifest.stages[s.stageId].status !== 'completed')"), '必须按首个非 completed 阶段定位')
+  assert.ok(mainSrc.includes('effectiveStartIdx = nextIdx'), 'resume 必须覆盖有效起点')
+  assert.ok(mainSrc.includes('if (effectiveStartIdx <= 4)'), 'S4/S5 后续执行必须用 effectiveStartIdx，不得用 startIdx')
+  assert.equal(mainSrc.includes("log('resume：复用当前 Run ' + runId + '（已完成阶段将跳过）')"), false, '旧的仅日志 resume 实现不得残留')
+})
+
+test('G3 空证据合法分支：S4/S5 写空 Source Manifest 后继续 merge，不把 not_found/noServerEvidence 当执行失败', () => {
+  const s4 = fs.readFileSync(path.join(WF_DIR, '4-client-verify.js'), 'utf8')
+  const s5 = fs.readFileSync(path.join(WF_DIR, '5-server-verify.js'), 'utf8')
+  assert.ok(s4.includes("repos: []"), 'S4 空证据应写空 manifest')
+  assert.ok(s4.includes('全部 not_found'), 'S4 必须明确合法空证据语义')
+  assert.ok(!s4.includes('证据文件归集为空（分片 evidence 全空？请检查 S4 落判）'), 'S4 不得把空证据直接抛错')
+  assert.ok(s5.includes("repos: []"), 'S5 空证据应写空 manifest')
+  assert.ok(s5.includes('unknown/noServerEvidence/inactive'), 'S5 必须明确合法空证据语义')
+  assert.ok(!s5.includes('证据文件归集为空（SVE 全空？请检查 S5 落判）'), 'S5 不得把空证据直接抛错')
 })
 
 fs.rmSync(TMP, { recursive: true, force: true })

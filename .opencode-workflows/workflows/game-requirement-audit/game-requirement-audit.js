@@ -118,6 +118,8 @@ if (mode === 'retry' && !['client', 'server', 'both'].includes(retryScope)) {
 }
 const sourceRunId = mode === 'from-stage' ? String(A.sourceRunId).trim() : null
 const startIdx = STEPS.findIndex((s) => s.stageId === startStage)
+// resume 会在定位 latest Run 后改写为「首个未完成阶段」；其它模式保持 startIdx。
+let effectiveStartIdx = startIdx
 
 setConcurrency(concurrency)
 const withModel = (o) => (analysisModel ? { model: analysisModel, ...o } : o)
@@ -208,19 +210,6 @@ async function gate(stageId, summary) {
 }
 
 // ============================================================
-// 输入就位检查
-// ============================================================
-
-await check(() => fileExists(templatePath), '需求模板不存在：' + templatePath)
-if (startIdx <= 3) {
-  await check(() => fileExists(codeDir), '客户端代码工程不存在：' + codeDir)
-  await check(() => fileExists(fguiDir), 'FairyGUI 工程不存在：' + fguiDir)
-}
-if (startIdx <= 4 && startIdx > 3) {
-  await check(() => fileExists(serverSrcRoot), '服务端源码根不存在：' + serverSrcRoot)
-}
-
-// ============================================================
 // 初始化 Run / resume 定位
 // ============================================================
 
@@ -244,7 +233,43 @@ if (mode === 'resume') {
   }
   runId = latest.runId
   runDir = RUNS + '/' + runId
-  log('resume：复用当前 Run ' + runId + '（已完成阶段将跳过）')
+
+  // resume 的定义：从当前 Run 的 stage-manifest 中找首个非 completed 阶段，
+  // 已完成阶段绝不重新调度（否则 resume 会退化为 all）。
+  const resumeManifest = await readBack(
+    '回读 resume 阶段状态',
+    runDir + '/runtime/stage-manifest.json',
+    {
+      type: 'object',
+      properties: {
+        stages: {
+          type: 'object',
+          additionalProperties: {
+            type: 'object',
+            properties: { status: { type: 'string' } },
+            required: ['status'],
+          },
+        },
+      },
+      required: ['stages'],
+    },
+    'stages 各阶段 status',
+    900000
+  )
+  if (!resumeManifest || !resumeManifest.stages) {
+    throw new Error('resume 失败：stage-manifest.json 回读异常（不猜测已完成阶段）')
+  }
+  const nextIdx = STEPS.findIndex((s) => !resumeManifest.stages[s.stageId] || resumeManifest.stages[s.stageId].status !== 'completed')
+  if (nextIdx < 0) {
+    effectiveStartIdx = STEPS.length
+    startStage = 'completed'
+    log('resume：Run ' + runId + ' 的 S1~S11 均已 completed，无阶段需要重跑')
+  } else {
+    effectiveStartIdx = nextIdx
+    startStage = STEPS[nextIdx].stageId
+    const previous = nextIdx > 0 ? 'S1~' + STEPS[nextIdx - 1].stageId : '无'
+    log('resume：Run ' + runId + ' 从首个未完成阶段 ' + startStage + ' 继续（已跳过 ' + previous + '）')
+  }
 } else {
   const initOk = await commandSuccess('node ' + REUSE + ' init-run "' + date + '"', 60000)
   if (!initOk) throw new Error('init-run 失败（检查 date 与写权限）')
@@ -265,6 +290,21 @@ if (mode === 'resume') {
   runDir = RUNS + '/' + runId
 }
 log('Run：' + runDir + '（mode=' + mode + '，startStage=' + startStage + (sourceRunId ? '，sourceRunId=' + sourceRunId : '') + (retryScope ? '，retryScope=' + retryScope : '') + '）')
+
+// ============================================================
+// 输入就位检查（必须在 resume 定位 effectiveStartIdx 后；已完成阶段不要求其源码仍存在）
+// ============================================================
+
+if (effectiveStartIdx <= 1) {
+  await check(() => fileExists(templatePath), '需求模板不存在（S1/S2 需要）：' + templatePath)
+}
+if (effectiveStartIdx <= 3) {
+  await check(() => fileExists(codeDir), '客户端代码工程不存在（S4 需要）：' + codeDir)
+  await check(() => fileExists(fguiDir), 'FairyGUI 工程不存在（S4 需要）：' + fguiDir)
+}
+if (effectiveStartIdx <= 4) {
+  await check(() => fileExists(serverSrcRoot), '服务端源码根不存在（S5 需要）：' + serverSrcRoot)
+}
 
 // ============================================================
 // 阶段复用（from-stage strict 四指纹 / retry 端级补证）
@@ -426,8 +466,8 @@ async function runStage(stageId) {
 
 try {
   // ---- S1~S3 需求解析 ----
-  if (startIdx <= 2) {
-    if (startIdx <= 0) {
+  if (effectiveStartIdx <= 2) {
+    if (effectiveStartIdx <= 0) {
       phase('需求解析 S1~S3')
       const s1 = await runStage('S1')
       stageResults.S1 = s1
@@ -435,7 +475,7 @@ try {
       executedStages.push('S1')
       await gate('S1', 'stage 章节 ' + s1.stageCount + ' 个')
     }
-    if (startIdx <= 1) {
+    if (effectiveStartIdx <= 1) {
       let scan = stageResults.S1
       if (!scan) {
         // S1 复用而 S2 要执行：从目标 Run 读回 scan（内存链式断点续传）
@@ -492,7 +532,7 @@ try {
       executedStages.push('S2')
       await gate('S2', s2.stageCount + ' 阶段 / ' + s2.atomTotal + ' 原子')
     }
-    if (startIdx <= 2) {
+    if (effectiveStartIdx <= 2) {
       phase('需求解析 S1~S3')
       const s3 = await runStage('S3')
       stageResults.S3 = s3
@@ -503,11 +543,11 @@ try {
   }
 
   // ---- S4 ∥ S5 双端查证（共享并发配额，互不依赖） ----
-  if (startIdx <= 4) {
+  if (effectiveStartIdx <= 4) {
     phase('双端查证 S4~S5')
     const tasks = []
-    if (startIdx <= 3) tasks.push({ stageId: 'S4', label: '客户端查证' })
-    if (startIdx <= 4) tasks.push({ stageId: 'S5', label: '服务端查证' })
+    if (effectiveStartIdx <= 3) tasks.push({ stageId: 'S4', label: '客户端查证' })
+    if (effectiveStartIdx <= 4) tasks.push({ stageId: 'S5', label: '服务端查证' })
     const runs = await parallel(
       tasks.map((t) => async () => {
         const def = STEPS.find((s) => s.stageId === t.stageId)
@@ -541,7 +581,7 @@ try {
   }
 
   // ---- S6 同步屏障 ----
-  if (startIdx <= 5) {
+  if (effectiveStartIdx <= 5) {
     phase('统一分析 S6~S9')
     const s6 = await runStage('S6')
     stageResults.S6 = s6
@@ -551,8 +591,8 @@ try {
   }
 
   // ---- S7~S9 ----
-  if (startIdx <= 8) {
-    if (startIdx <= 6) {
+  if (effectiveStartIdx <= 8) {
+    if (effectiveStartIdx <= 6) {
       phase('统一分析 S6~S9')
       const s7 = await runStage('S7')
       stageResults.S7 = s7
@@ -560,7 +600,7 @@ try {
       executedStages.push('S7')
       await gate('S7', '原子 ' + s7.atomCount + '：conflict ' + s7.stats.conflict + ' / unverified ' + s7.stats.unverified)
     }
-    if (startIdx <= 7) {
+    if (effectiveStartIdx <= 7) {
       phase('统一分析 S6~S9')
       const s8 = await runStage('S8')
       stageResults.S8 = s8
@@ -568,7 +608,7 @@ try {
       executedStages.push('S8')
       await gate('S8', '复核条目 ' + s8.entryCount + '（pending ' + s8.reviewStatus.pending + '）')
     }
-    if (startIdx <= 8) {
+    if (effectiveStartIdx <= 8) {
       phase('统一分析 S6~S9')
       const s9 = await runStage('S9')
       stageResults.S9 = s9
@@ -579,7 +619,7 @@ try {
   }
 
   // ---- S10 ----
-  if (startIdx <= 9) {
+  if (effectiveStartIdx <= 9) {
     phase('规格生成 S10')
     const s10 = await runStage('S10')
     stageResults.S10 = s10
@@ -589,7 +629,7 @@ try {
   }
 
   // ---- S11 ----
-  if (startIdx <= 10) {
+  if (effectiveStartIdx <= 10) {
     phase('人工裁决 S11')
     const s11 = await runStage('S11')
     stageResults.S11 = s11

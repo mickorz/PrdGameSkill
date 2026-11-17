@@ -346,3 +346,21 @@ prepare verify input
 - **确定性层 / 编排层**：由「不通过」修订为 **通过**（P0/P1 已整改，176 断言全绿，STEPS 与 specs 一致）。
 - **Agent 实跑 / 真实样本验收**：仍为 **未执行**，不构成代码缺陷，但也不能声称「工作流已验收」。
 - **总体**：从「不通过（阻断于 P0-1/2/3）」修订为 **「设计与实现通过，实跑验收待执行」**。
+
+### 9.5 二次集成复核与修复（2026-11-17 追加）
+
+整改提交后进行二次复核，发现 3 个**首次真实运行前会阻断或偏离声明**的问题；已修复并补测试：
+
+| 编号 | 复核发现 | 根因 | 修复 | 验证 |
+|---|---|---|---|---|
+| I1 | S6/S9/S10 的 optionalInputs 与 inputFiles 重复，首次 Run 缺文件时 `record-stage` 会先按必填输入失败 | specs 把「后续轮存在、首轮可缺」的文件同时声明为必填和可选 | S6 将 `analysis-history.json` 移至 optionalInputs；S9 将 `difference-review.json` 移至 optionalInputs；S10 将双端 source-manifest 与 difference-review 移至 optionalInputs | `orchestration` G1：三阶段无重复；stage-reuse 回归通过 |
+| I2 | `mode=resume` 读取 latest Run 后仍以默认 `startIdx=S1` 调度，实际会重跑已完成阶段 | resume 只有日志，没有把 manifest 状态转成执行起点 | 读取 stage-manifest，找**首个非 completed** 阶段，写入 `effectiveStartIdx`；所有阶段执行条件改消费它；输入资源检查移到 resume 定位后，仅检查实际要跑的阶段依赖 | `orchestration` G2：静态断言首个未完成定位 + effectiveStartIdx；全套回归通过 |
+| I3 | S4 全部 not_found / S5 unknown、inactive、noServerEvidence 等合法空证据场景会在 Source Manifest 前直接抛错 | 子 Workflow 把「证据文件列表为空」错误当作执行失败 | 空证据时写 `{repos: []}` 空 Source Manifest 后继续 merge；由 merge 把 not_found/noServerEvidence 作为业务结论处理 | `orchestration` G3：S4/S5 空证据路径存在且不含旧抛错；全套回归通过 |
+
+二次复核结果：**11 套 Example，179 断言通过 / 0 失败**。
+
+### 9.6 当前结论（更新）
+
+- **设计、确定性脚本、主编排与首次运行前集成检查**：通过。
+- **Agent 实跑与真实样本验收**：仍未执行。
+- **总体**：保持「设计与实现通过，实跑验收待执行」，但原先列为「真实运行前仍需修复」的 I1/I2/I3 已关闭。

@@ -92,11 +92,10 @@
     "run:2-client/runtime/run-status.json",
     "run:3-server/scope-index.json",
     "run:3-server/server-evidence.json",
-    "run:3-server/runtime/run-status.json",
-    "run:4-analysis/analysis-history.json"
+    "run:3-server/runtime/run-status.json"
    ],
-   "outputFiles": ["run:4-analysis/unified-atoms.json"],
-   "optionalInputs": ["run:4-analysis/analysis-history.json"]
+   "optionalInputs": ["run:4-analysis/analysis-history.json"],
+   "outputFiles": ["run:4-analysis/unified-atoms.json"]
   },
   "S7": {
    "order": 7,
@@ -148,8 +147,7 @@
     "run:3-server/scope-index.json",
     "run:3-server/server-evidence.json",
     "run:4-analysis/unified-atoms.json",
-    "run:4-analysis/business-behavior.json",
-    "run:4-analysis/difference-review.json"
+    "run:4-analysis/business-behavior.json"
    ],
    "outputFiles": ["run:4-analysis/l7-classify.json"],
    "optionalInputs": ["run:4-analysis/difference-review.json"]
@@ -168,14 +166,11 @@
     "run:1-registry/requirement-registry.json",
     "run:2-client/client-evidence.json",
     "run:2-client/runtime/run-status.json",
-    "run:2-client/runtime/source-manifest.json",
     "run:3-server/scope-index.json",
     "run:3-server/server-evidence.json",
     "run:3-server/runtime/run-status.json",
-    "run:3-server/runtime/source-manifest.json",
     "run:4-analysis/unified-atoms.json",
     "run:4-analysis/business-behavior.json",
-    "run:4-analysis/difference-review.json",
     "run:4-analysis/l7-classify.json"
    ],
    "optionalInputs": [

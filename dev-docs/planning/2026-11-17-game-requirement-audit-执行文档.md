@@ -17,6 +17,7 @@
   - v3.2 补遗四（2026-11-17，**不升版本号，执行层扩展**）：**Stage Reuse（阶段产物可复用）**——原则 9 + §11 新章节：四执行模式（all/resume/from-stage/retry）、阶段依赖图、契约 #5 stage-manifest（inputHash/configHash/outputHash/stageVersion 四指纹，`Reusable = 四匹配 AND`，文件存在 ≠ 可复用）、失效与复用矩阵（阶段级）、双失效机制（阶段配置变化 / 上游数据变化分开实现）、`reusePolicy=strict` 默认 + `planOnly`、**Run 级隔离**（§3 增 `runs/run-NNN/` 层 + `latest.json`，数字前缀子目录结构保持不变；复用经 Artifact Reference 不改写来源 Run 产物）、S11 决议绑定 analysisRunId + 证据版本（变化标 stale 必须重新人工确认）；D29~D33、G09；§10 增 Stage Reuse 详细章节行与开发顺序⑥。架构与四大业务契约维持 v3.2 冻结；
   - v3.2 补遗五（2026-11-17，**不升版本号，Stage Reuse 执行契约修正**）：①P0——**最小跨 Run Artifact Reference（只读引用历史 Run 不可变产物）划入第一阶段**（from-stage 依赖它成立，原一/二阶段顺序矛盾消除；第二阶段仅做多来源引用与引用链解析优化，D35）；②P1——§3 目录树根级 `runtime/stage-manifest.json` 前置展示，明确**根级（阶段状态）/ 分支级（分片状态）runtime 不混用**；③P1——**依赖图完整性铁律**（D34）：S10 依赖全部直接输入（Registry + CLE + SVE + business-behavior + difference-review + l7-classify），inputHash 覆盖实际消费全部文件；④P1——S11 决议改 **Atom 级证据指纹 evidenceFingerprint**（只聚合该 Atom 实际引用的 CLE/SVE + dependencyFiles，无关文件变化不连坐过期）；⑤§10 开发顺序调整：Stage Reuse 最小闭环提前至 S1~S3 之后实证（`from-stage=S3`）。架构基线维持 v3.2 冻结；
   - v3.2 补遗六（2026-11-17，**不升版本号，Stage Reuse 执行契约收口冻结**）：①P0——**strict 语义收口**：strict = 严格验证复用而非禁止重跑——只校验 startStage 前的复用阶段四指纹（不匹配拒绝复用 fail fast）；startStage 及下游按计划重跑（不检查旧 configHash/stageVersion）；复用产物 Hash 与来源不一致拒绝复用；来源 Run 缺失/引用损坏拒绝执行（§11.3/§11.6/§7/G09 同步）；②P0——**S10 依赖改文件级清单**（§11.2/D34：Registry + CLE + client run-status/source-manifest + scope-index + SVE + server run-status/source-manifest + unified-atoms + business-behavior + difference-review + l7-classify，逐一对照生成逻辑）；③P1——**S11 最小 stale 检查提前到第一阶段**（evidenceFingerprint 比对 + 适用性清单 + 不自动沿用；第三阶段仅留增量复用下的审批依赖传播）；④P1——**新增 executionProfileHash**（模型/采样参数/Agent 配置/工具版本；不参与 Reusable 强校验、不无条件失效上游，只作 Run 间实验对比标识）；⑤§11.9 增最小可验证实验（S1~S3 六步）。**Stage Reuse 执行契约就此冻结。**
+  - §12 落地（2026-11-17，**执行层细化，不升版本号**）：S1~S3 详细执行设计 + 最小 Stage Reuse 第一阶段工程实现交付（§10 开发顺序 ②+③）：七文件（主编排 + 三子流程 + build-requirement-registry.mjs + stage-specs.json + stage-reuse.mjs）+ 两 Example（19+18 断言全绿）+ 决策 D36~D41（物化复制/stage-specs 单一事实源/terms 确定性解析/validate-only 复用/中文值经 args-file 不进 shell）；§11.9 六步实验待用户触发（agent 链路不自跑）。
 
 ---
 
@@ -1033,3 +1034,246 @@ Stage Execution Manager（主 Workflow 之前执行）= Stage Manifest 采集 + 
 **最小可验证实验（S1~S3，§10 ③ 的实证内容）**：①首次执行 S1→S2→S3 生成 run-001；②修改 S3 Registry 合并规则；③创建 run-002 指定 `from-stage=S3`（strict）；④验证 S1、S2 自 run-001 复用、S3 重新执行；⑤验证 run-001 全部文件 Hash 逐字节不变（不可变产物）；⑥相同计划重复执行 → 指纹一致、结果可复现。通过后再扩展 S4~S11——先验证**阶段管理器、跨 Run 引用、指纹计算、不可变产物**四个基础能力。
 
 第一阶段即解决核心诉求：修改第三阶段（S7~S9），不再重跑第一、第二阶段。
+
+---
+
+## 12. S1~S3 详细执行设计与最小 Stage Reuse 落地（§10 ②+③ 交付）
+
+> 本章为 §10 待写清单「S1~S3 详细」+「最小 Stage Reuse」的详细执行设计。**只做执行层细化，不改四大业务契约与 v3.2 冻结基线**。脚本落位：
+
+| 文件 | 角色 |
+|---|---|
+| `.opencode-workflows/workflows/game-requirement-audit/game-requirement-audit.js` | 主编排（args 校验 → init-run → from-stage 复用 → S1~S3 调度 → 逐阶段指纹落档） |
+| `.opencode-workflows/workflows/game-requirement-audit/1-scan-template.js` | S1 子流程（自 output-spec-generate 原样迁移，产物路径改 run 根布局） |
+| `.opencode-workflows/workflows/game-requirement-audit/2-atomize-requirements.js` | S2 子流程（按阶段并行拆解 agent + 落盘闸门 + validate-only 重算闸门） |
+| `.opencode-workflows/workflows/game-requirement-audit/3-build-registry.js` | S3 子流程（薄编排：调确定性脚本 + 统计回读） |
+| `.opencode-workflows/scripts/build-requirement-registry.mjs` | S3 核心确定性脚本（合并 + 全部闸门 + 统计重算；含 `--validate-only` 模式供 S2 闸门复用） |
+| `.opencode-workflows/scripts/stage-specs.game-requirement-audit.json` | 契约 #5 阶段指纹规格（单一事实源，stage-reuse 消费） |
+| `.opencode-workflows/scripts/stage-reuse.mjs` | Stage Reuse 最小实现（init-run / record-stage / prepare-from-stage / verify-immutable） |
+
+主编排与子流程均不进 workflow 注册表（子目录脚本经显式 scriptPath 调用，沿用 output-spec-generate/server-rule-verify 约定）。
+
+### 12.1 S1 需求扫描（迁移）
+
+- 行为与现 `output-spec-generate/1-scan-template.js` 完全一致（扫描 agent → 结构校验 → 覆盖全文/编号连续闸门 → echo agent 落盘），仅两处变化：
+  1. 产物路径：`<runDir>/1-registry/runtime/state/scan.json`（runDir 必填 arg，无默认值——run 根只能由主编排创建）；
+  2. 返回值不变（`{ stageCount, sections, termsSection, stageSections, scanPath, totalLines }` 内存链式传 S2）。
+- S1 是 agent 阶段但结构确定性高（章节扫描），`scan.json` 落盘后即为不可变产物（S2/S3 输入 + stage-manifest outputHash 指纹）。
+
+### 12.2 S2 原子拆解（严格 Schema + 分片落盘）
+
+分片文件：`<runDir>/1-registry/runtime/atom-parts/<stageId>-ap01.json`（**每阶段恰一片**，partNo 恒 1；`ap<NN>` 序号保留给未来超长阶段拆片）。分片由 **agent 自己写盘**（general agentType，沿用 3-verify-scope 落盘模式），agent 只返回结构化摘要（坑 6 口径：摘要仅告警，统计以确定性重算为准）。
+
+分片严格 Schema（头部 §5 S2 示意的严格化，差异见 D36）：
+
+```json
+{
+  "schemaVersion": 1,
+  "stageId": "ST-Cxx",
+  "partNo": 1,
+  "stage": {
+    "stageId": "ST-Cxx", "name": "", "chapter": "", "summary": ""
+  },
+  "features": [
+    { "id": "FP-ST-Cxx-nnn", "name": "", "description": "", "scope": "", "coordination": "",
+      "atoms": [
+        { "atomId": "AT-ST-Cxx-nnn", "name": "", "rule": "", "uiRequirement": "",
+          "verificationScope": "client|server|both",
+          "businessBehavior": { "trigger": "", "condition": "", "action": "", "result": "" },
+          "source": { "chapter": "", "fromLine": 0, "toLine": 0 } }
+      ] }
+  ]
+}
+```
+
+agent 摘要 Schema：`{ partFile, stageId, featureCount, atomCount, client, server, both }`（scopeStats 三值合计须 = atomCount，不符仅告警）。
+
+拆解 Prompt 要点（全文见脚本）：
+
+1. **只拆解、不查证**——不读任何代码，只读模板行段（read offset/limit 覆盖本阶段章节）+ 名词章节；
+2. 每条可独立验证的规则语句一个原子；复合长句可拆多条；按子主题归功能点（1~8 原子/功能点）；
+3. 编号：`FP-<stageId>-001` 起、`AT-<stageId>-001` 起（阶段内跨功能点连续，三位零填充）；
+4. `rule` 忠实模板原文语义；`uiRequirement` 提取 UI 表现语句（无则空串）；
+5. **verificationScope 判定指引**（只看需求原文）：
+   - `client`：纯界面/交互表现类（示例：财神标记在牌河中的显示方式、按钮置灰表现）；
+   - `server`：纯规则计算/判定类，客户端仅展示结果（示例：胡牌番数计算、流局判黄庄条件）；
+   - `both`：双端协作类（示例：点击吃牌按钮后完成吃牌——客户端交互与服务端规则共同构成完整行为）；
+   - **无法判定时一律 `both`（宁可多查证，不可少查证）**；
+6. **businessBehavior 是需求侧声明**（玩家语言，从模板原文归纳，禁止技术词；无法归纳的字段填空串，不编造）——不是证据归纳（证据归纳的 observedBehavior 属 S4）；
+7. `source.fromLine/toLine` **必须落在本阶段章节行段 `[fromLine, toLine]` 内**（越界整片闸门失败）；
+8. 只写自己这一个分片文件（UTF-8、JSON、1 空格缩进），不执行 git、不写其他文件。
+
+S2 闸门链（子流程内）：
+
+| 闸门 | 实现 | 失败行为 |
+|---|---|---|
+| 落盘闸门 | 每阶段分片 fileExists | fail（run 中止，重跑走 from-stage=S2） |
+| 结构重算闸门 | `build-requirement-registry.mjs --validate-only`（复用 S3 全部闸门，不写正式产物，写 `1-registry/runtime/atom-recount.json` 重算摘要） | fail（明细打印，重跑 from-stage=S2 幂等覆写分片） |
+
+### 12.3 S3 注册表定稿（确定性合并）
+
+`build-requirement-registry.mjs`（唯一写者，agent 零参与）：
+
+- 输入：`<runDir>/1-registry/runtime/state/scan.json` + `<runDir>/1-registry/runtime/atom-parts/*.json`（**按文件名码元序**读取——默认 `Array.prototype.sort()` 即 UTF-16 码元序，禁 localeCompare，§5.0 B M1/M7）；
+- 校验清单（全部 fail-fast，退出码 1 不写产物）：
+  1. 分片名 `^(ST-C\d{2})-ap\d{2}\.json$`、文件内 stageId 与文件名一致、schemaVersion=1、partNo=1；
+  2. **全覆盖**：scan.stageSections 每阶段恰一片，无缺片无多余片；
+  3. 分片头 stage 四字段与 scan 对齐（stageId 一致；name/chapter/summary 缺省归一：name 取 scan.title、chapter 取 scan.sourceTitle、summary 空串）；
+  4. FP ID `^FP-ST-C\d{2}-\d{3}$` 匹配本阶段、全局唯一；每功能点至少 1 原子；
+  5. AT ID `^AT-ST-C\d{2}-\d{3}$` 匹配本阶段、全局唯一；
+  6. `rule` 非空；`verificationScope` 枚举合法（**缺失按 both 归一**——头部 S2 闸门口径；非法值 fail）；
+  7. **行号落界**：source.fromLine/toLine 为整数且 stage.fromLine ≤ fromLine ≤ toLine ≤ stage.toLine（对照 scan 该阶段章节行段）；
+  8. businessBehavior 四键归一（缺失键补空串，不 fail）；source.chapter 缺省归一 scan.sourceTitle；uiRequirement/scope/coordination/description 缺省空串；
+  9. 统计重算：stages[] 每阶段 featureCount/atomCount、顶层 stats（stageCount/featureCount/atomCount/perStage/scopeStats）全部由文件重算，不信任 agent 摘要；
+- 产物 1：`<runDir>/1-registry/requirement-registry.json`——头部 §5 S3 结构原样（source.templatePath/totalLines 取自 scan.json；features/atoms 顺序 = 分片码元序 → 功能点序 → 原子序，即 **Registry 全序**，后续 M4/M7 atomIds 排列基准）；
+- 产物 2：`<runDir>/1-registry/identity-map.json`——terms 由名词章节确定性解析（行格式 `- **术语**：定义`，D39）；stageChapters 由 scan 派生；crossCutting 空数组（S2 不产跨切面，留待 S4 证据侧扩展）；
+- CLI：`node build-requirement-registry.mjs --run-dir <dir> --date <YYYY-MM-DD> [--validate-only] [--recount-out <path>]`；`--validate-only` 只跑校验 + 写重算摘要（S2 闸门复用），不写正式产物；
+- 闸门通过后 Registry 定稿：Atom ID 与 verificationScope 后续任何阶段不得增改（原则 1/铁律）。
+
+`3-build-registry.js` 薄编排：commandSuccess 调上述脚本（full 模式，额外写 `1-registry/runtime/registry-stats.json` 小文件供回读——stats 块在 registry 末尾，小文件回读更稳；可重生成的 runtime 产物，不入 specs 指纹）→ read-back agent 读 stats 快照返回 `{ stageCount, featureCount, atomCount, scopeStats, registryPath }`。
+
+### 12.4 契约 #5 落地：stage-specs + stage-reuse.mjs
+
+**stage-specs.game-requirement-audit.json**（指纹规格单一事实源，D38）：
+
+```json
+{ "schemaVersion": 1, "workflowId": "game-requirement-audit",
+  "rootDir": "spec-workflow/requirement-audit",
+  "stages": {
+    "S1": { "order": 1, "version": "S1@1", "label": "需求扫描",
+      "configFiles": ["proj:.opencode-workflows/workflows/game-requirement-audit/1-scan-template.js"],
+      "configArgs": ["templatePath"],
+      "inputFiles": ["arg:templatePath"],
+      "outputFiles": ["run:1-registry/runtime/state/scan.json"] },
+    "S2": { "order": 2, "version": "S2@1", "label": "原子拆解",
+      "configFiles": ["proj:.opencode-workflows/workflows/game-requirement-audit/2-atomize-requirements.js"],
+      "configArgs": ["templatePath"],
+      "inputFiles": ["arg:templatePath", "run:1-registry/runtime/state/scan.json"],
+      "outputFiles": ["run:1-registry/runtime/atom-parts/*.json"] },
+    "S3": { "order": 3, "version": "S3@1", "label": "注册表定稿",
+      "configFiles": ["proj:.opencode-workflows/scripts/build-requirement-registry.mjs",
+                      "proj:.opencode-workflows/workflows/game-requirement-audit/3-build-registry.js"],
+      "configArgs": ["date"],
+      "inputFiles": ["run:1-registry/runtime/state/scan.json", "run:1-registry/runtime/atom-parts/*.json"],
+      "outputFiles": ["run:1-registry/requirement-registry.json", "run:1-registry/identity-map.json"] }
+  } }
+```
+
+- 路径前缀：`run:` = run 根相对（复用校验时解析到**来源 Run**）；`proj:` = 仓库根相对；`arg:<key>` = 取 `--config-args` 中该 key 的值作 proj: 路径；
+- glob：仅支持尾部 `*.json`（目录清单确定性展开，按码元序）；
+- S3 configArgs 只含 `date`——templatePath 经 scan.json 进入 inputHash，不重复计入 configHash；
+- **主编排 STEPS 表与 specs 的 order/label 是双写**（workflow 侧无 fs 读不了 specs）：新增阶段/调序时同步两处，stage-reuse 以 specs 为准（D38）。
+
+**stage-reuse.mjs**（四命令）：
+
+| 命令 | 职责 |
+|---|---|
+| `init-run <date>` | 建 `runs/run-NNN/`（NNN = 现有最大 +1）+ `runtime/stage-manifest.json` 骨架 + 更新 `latest.json`（date 级指针）；打印 runId |
+| `record-stage <date> <runId> <stageId> [--args-file <path>] [--config-args k=v,...] [--profile k=v,...]` | 阶段完成后由主编排调用：按 specs 解析文件 → 算四指纹 → 写 stage-manifest 该阶段条目（status=completed、reusable=true）；**--args-file**：JSON `{configArgs:{}, profile:{}}`（**中文值必经此文件传递，不进 shell 命令串**，沿用 build-config.json 先例）；--config-args/--profile 仅跟 ASCII 调试用 |
+| `prepare-from-stage <date> --source-run <id> --target-run <id> --start-stage <Sx> [--plan-only] [--args-file <path>] [--config-args ...]` | strict 复用：对 order < startStage 的阶段逐一四指纹校验 → 全过则**物化复制**产物到目标 Run + 记 reuse.sourceRunId + artifactRefs；任一不匹配 fail fast 拒绝复用（明细打印）；--plan-only 只写 `<targetRun>/runtime/reuse-plan.json` 不复制 |
+| `verify-immutable <date> <runId>` | 逐阶段重算 outputHash vs 记录值（+ artifactRefs 逐文件 hash）——不可变产物验证（§11.9 ⑤、G09 断言） |
+
+**指纹口径**（全部确定性，agent 零参与）：
+
+| 指纹 | 计算 |
+|---|---|
+| `inputHash` | 输入文件（specs.inputFiles 解析：run: 取目标/来源 Run 根，proj:/arg: 取仓库根）按记录路径码元序排列，逐文件 `sha256:` 内容哈希后按 `[[path, contentHash], ...]` 序列化再哈希 |
+| `configHash` | specs.configFiles（proj: 当前内容）+ configArgs 键值（值字符串哈希）按 `{files:[...], args:{...}}`（键排序）序列化哈希 |
+| `executionProfileHash` | `--profile` 键值（model/concurrency 等）哈希；**不参与 Reusable 强校验**（§11.3：画像不同不拒绝复用，仅作 Run 对比标识） |
+| `outputHash` | 产物文件（specs.outputFiles glob 展开，run 根相对路径码元序）同 inputHash 口径 |
+| `stageVersion` | specs.version 字面值（脚本/Prompt 语义变化时人工递增） |
+
+**strict 四指纹校验矩阵**（prepare-from-stage，对 order < startStage 的每一阶段）：
+
+| 校验项 | 比对对象 | 不匹配行为 |
+|---|---|---|
+| inputHash | 来源 manifest 记录值 vs **当前输入状态重算**（run: 文件取来源 Run 实物、proj:/arg: 取当前仓库/新 Run 参数） | fail fast 拒绝复用（上游输入已变） |
+| configHash | 记录值 vs 当前脚本文件 + 新 Run configArgs 重算；configArgs 值差异单独报告 | fail fast（阶段逻辑/参数配置已变） |
+| outputHash | 记录值 vs 来源 Run 实物重算 | fail fast（来源产物被篡改） |
+| stageVersion | 记录值 vs specs 当前值 | fail fast（实现版本已变） |
+| status | 来源条目 status=completed | fail fast（来源阶段未完成） |
+
+startStage 及下游**不校验旧指纹**（计划内重跑，§11.3 strict 语义：严格验证复用，不禁止主动重跑）。
+
+**物化复制（最小 Artifact Reference，D37）**：复用 = 把来源 Run 该阶段产物**逐字节复制**到目标 Run 同路径（复制前校验来源 outputHash、复制后校验目标一致），目标 manifest 记 `reuse: { sourceRunId, artifactRefs: [{path, hash}] }`——**来源 Run 零写入**（只读）。第二阶段优化为路径解析不落双份（§11.9 落地表「引用链解析优化」），本阶段先保证正确与简单。
+
+**stage-manifest 条目结构**（run 根 `runtime/stage-manifest.json`，§11.3 结构的实现）：
+
+```json
+{ "schemaVersion": 1, "runId": "run-002", "sourceRunId": "run-001",
+  "stages": {
+    "S1": { "status": "completed", "stageVersion": "S1@1",
+      "inputHash": "sha256:...", "configHash": "sha256:...",
+      "executionProfileHash": "sha256:...", "outputHash": "sha256:...",
+      "reusable": true,
+      "inputFiles": ["arg:templatePath"], "configArgs": { "templatePath": "templates/…" },
+      "outputList": [ { "path": "1-registry/runtime/state/scan.json", "hash": "sha256:..." } ],
+      "reuse": { "sourceRunId": "run-001", "artifactRefs": [ { "path": "…", "hash": "sha256:..." } ] } }
+  } }
+```
+
+### 12.5 主编排契约（game-requirement-audit.js）
+
+| args | 说明 |
+|---|---|
+| `date` | **必填** YYYY-MM-DD（产物根 `<rootDir>/<date>/runs/`；脚本内禁止取当前时间） |
+| `templatePath` | 默认 `templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md` |
+| `mode` | `all`（默认）/ `from-stage`（本轮交付 S1~S3 范围；`resume`/`retry` 待 S4~S11 接入） |
+| `startStage` | from-stage 起点（S1~S3） |
+| `sourceRunId` | from-stage 必填（复用来源 run，如 run-001） |
+| `planOnly` | true：prepare 只出执行计划（reuse-plan.json）→ checkpoint 人工确认后才真执行 |
+| `step` | true：每阶段完成后 checkpoint（拒绝 = 正常停止，产物保留） |
+| `analysisModel` / `concurrency` | 默认 `biangfeng-gateway/deepseek-v4.1-flash-official` / 16（速度优先档，沿用 2026-11-14 问询结论） |
+
+流程：
+
+```
+args 校验（date 必填；from-stage 需 startStage+sourceRunId；模板存在）
+  → init-run（stage-reuse.mjs）→ read-back latest.json 得 runId
+  → [from-stage] prepare-from-stage
+       planOnly → read-back reuse-plan → checkpoint（拒绝 = 停止返回 stopped:true）
+       execute  → strict 四指纹校验 + 物化复制（fail fast）
+  → 逐阶段执行（startStage 起）：
+       S1 workflow(1-scan-template)   → record-stage S1 → [step checkpoint]
+       S2 workflow(2-atomize)         → record-stage S2 → [step checkpoint]
+       S3 workflow(3-build-registry)  → record-stage S3 → [step checkpoint]
+  → 返回 { ok, date, runId, mode, startStage, sourceRunId, reusedStages, executedStages,
+          registryPath, stats }
+```
+
+- read-back 模式：workflow 侧无 fs——结构化小文件（latest.json / reuse-plan.json / atom-recount.json / registry-stats.json）经 read-back agent（小 schema）取回，沿用 recount 回读先例；
+- **中文值不进 shell**（D41）：record-stage/prepare 的 configArgs（含中文 templatePath）经 echo agent 写 runtime JSON（`stage-args-<stageId>.json` / `reuse-args.json`）后以 `--args-file` ASCII 路径传递，命令串保持纯 ASCII；
+- S1 被复用而 S2 将执行时，scan 对象经 read-back agent 从目标 Run 的 scan.json 取回（内存链式断点续传）；
+- record-stage 由主编排在每阶段闸门通过后统一调用（agent 严禁自填指纹，§11.3）。
+
+### 12.6 本章决策记录（执行层细化，不改 v3.2 冻结基线）
+
+| # | 决策 | 理由 |
+|---|---|---|
+| D36 | S2 分片严格 Schema 增分片头 `stage{stageId,name,chapter,summary}` | registry `stages[].summary` 需求侧无其他来源（头部示意未含，属 §10 授权的严格 Schema 定稿；scan 只有标题无概述） |
+| D37 | 最小跨 Run Artifact Reference = **物化复制**（逐字节 + 双侧 hash 校验 + artifactRefs 记录），来源 Run 零写入 | §11.7 引用语义的最小正确实现；下游脚本路径稳定不需感知来源 Run；第二阶段优化为路径解析 |
+| D38 | 阶段指纹规格集中 `stage-specs.game-requirement-audit.json`（stage-reuse 消费）；主编排 STEPS 表双写 order/label | 指纹单一事实源防漂移；workflow 侧无 fs 无法读 specs，双写为最小代价（新增阶段同步两处） |
+| D39 | identity-map `terms` 由名词章节确定性解析（`- **术语**：定义` 行格式），解析为空不 fail | 名词章节格式稳定（模板实测）；terms 是共享映射非闸门对象 |
+| D40 | S2 结构闸门复用 S3 脚本 `--validate-only` 模式（不另写校验脚本） | 闸门逻辑单一实现（ID/行号/枚举/统计重算一份代码两处消费），防两套校验漂移 |
+| D41 | **中文值不进 shell 命令串**：record-stage/prepare-from-stage 的 configArgs/profile 经 runtime JSON 文件（--args-file）传递，CLI k=v 仅限 ASCII 调试用 | Windows shell 编码风险；沿用 output-spec-generate v2 build-config.json 先例（中文路径经 runtime JSON、CLI 参数 ASCII） |
+
+### 12.7 Example 测试与 §11.9 实验操作手册
+
+**Example（确定性脚本自检，agent 链路接入前必须全绿）**：
+
+- `build-requirement-registry.example.mjs`：fixture scan+分片——happy path（2 阶段全覆盖/统计重算/scopeStats/Registry 全序断言/identity-map terms 解析）、失败路径（atomId 重复、行号越界、scope 非法值、缺片覆盖 gap、FP/AT 格式非法）；scope 缺省归一 both 断言；validate-only 不写正式产物断言；
+- `stage-reuse.example.mjs`：fixture 仓（--specs/--root 指向 tmp）——init-run 编号递增 + latest.json、record-stage 四指纹落档、prepare plan-only 计划正确、strict 四类拒绝（输入变/脚本变/产物篡改/版本变）、物化复制后来源 Run 逐字节不变（verify-immutable）、重复计划指纹一致（可复现性）、executionProfile 差异不影响复用、args-file 形态（含中文值）与 CLI 等价 + 非法结构 fail；
+
+**§11.9 六步实验（用户手动触发 workflow，脚本不自跑）**：
+
+```text
+① 首次执行（生成 run-001）——workflow 工具触发：
+   scriptPath ./.opencode-workflows/workflows/game-requirement-audit/game-requirement-audit.js
+   args { date: "<日期>" }
+② 修改 S3 Registry 合并规则（编辑 build-requirement-registry.mjs 逻辑 + specs stageVersion S3@1 递增）
+③ run-002 from-stage=S3（strict）——args { date, mode: "from-stage", startStage: "S3", sourceRunId: "run-001" }
+   可先 planOnly:true 看计划（reuse-plan.json：S1/S2 复用、S3 重跑），确认后去掉 planOnly 执行
+④ 验证复用与重跑：run-002 的 S1/S2 条目带 reuse.artifactRefs、S3 指纹为新值
+⑤ 验证不可变：node .opencode-workflows/scripts/stage-reuse.mjs verify-immutable <date> run-001
+⑥ 可复现性：再跑一次 planOnly 计划 → reuse-plan 指纹与上一次一致
+```

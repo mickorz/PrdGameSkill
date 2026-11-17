@@ -1,0 +1,38 @@
+{
+ "schemaVersion": 1,
+ "workflowId": "game-requirement-audit",
+ "rootDir": "spec-workflow/requirement-audit",
+ "note": "契约 #5 阶段指纹规格（单一事实源，stage-reuse.mjs 消费；执行文档 §12.4）。路径前缀：run: = run 根相对（复用校验解析到来源 Run）；proj: = 仓库根相对；arg:<key> = 取 --args-file 中 configArgs 该 key 的值作 proj: 路径（中文值必经 args-file，不进 shell）。glob 仅支持尾部 *.json。主编排 STEPS 表与本表 order/label 双写（D38）——新增阶段/调序/递增 version 时同步两处。",
+ "stages": {
+  "S1": {
+   "order": 1,
+   "version": "S1@1",
+   "label": "需求扫描",
+   "configFiles": ["proj:.opencode-workflows/workflows/game-requirement-audit/1-scan-template.js"],
+   "configArgs": ["templatePath"],
+   "inputFiles": ["arg:templatePath"],
+   "outputFiles": ["run:1-registry/runtime/state/scan.json"]
+  },
+  "S2": {
+   "order": 2,
+   "version": "S2@1",
+   "label": "原子拆解",
+   "configFiles": ["proj:.opencode-workflows/workflows/game-requirement-audit/2-atomize-requirements.js"],
+   "configArgs": ["templatePath"],
+   "inputFiles": ["arg:templatePath", "run:1-registry/runtime/state/scan.json"],
+   "outputFiles": ["run:1-registry/runtime/atom-parts/*.json"]
+  },
+  "S3": {
+   "order": 3,
+   "version": "S3@1",
+   "label": "注册表定稿",
+   "configFiles": [
+    "proj:.opencode-workflows/scripts/build-requirement-registry.mjs",
+    "proj:.opencode-workflows/workflows/game-requirement-audit/3-build-registry.js"
+   ],
+   "configArgs": ["date"],
+   "inputFiles": ["run:1-registry/runtime/state/scan.json", "run:1-registry/runtime/atom-parts/*.json"],
+   "outputFiles": ["run:1-registry/requirement-registry.json", "run:1-registry/identity-map.json"]
+  }
+ }
+}

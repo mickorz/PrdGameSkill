@@ -63,7 +63,7 @@ if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
   throw new Error('date 必填（YYYY-MM-DD；脚本内禁止取当前时间，经 args 传入）')
 }
 const templatePath =
-  A.templatePath || 'templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md'
+  A.templatePath || 'templates/【杭州麻将】核心流程杭州麻将好友房AI-核心策划补齐版.md'
 const codeDir = String(A.codeDir || 'source-code/client/Code')
 const fguiDir = String(A.fguiDir || 'source-code/client/Fgui')
 const serverSrcRoot = String(

@@ -47,7 +47,7 @@ done
 再确认输入路径存在：
 
 ```bash
-ls "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md"   # 需求模板
+ls "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心策划补齐版.md"   # 需求模板
 ls source-code/client/Code                                          # 客户端代码工程
 ls source-code/client/Fgui                                          # FairyGUI 工程
 ls E:/WorkProjects/xc-flow/.xflow/xc/xcodeDev/game-mahjong/server/Logic/mahjong_server/src  # 服务端源码根
@@ -330,7 +330,7 @@ node .opencode-workflows/scripts/run-state.mjs check \
 | `planOnly` | | `false` | 只出复用计划 + checkpoint |
 | `step` | | `false` | 每阶段后 checkpoint |
 | `stageIds` | | `ALL` | **只作用于 S4/S5**：CSV 或 ALL |
-| `templatePath` | | 杭州麻将核心简化版 | 需求模板 |
+| `templatePath` | | 杭州麻将核心策划补齐版 | 需求模板 |
 | `codeDir` | | `source-code/client/Code` | 客户端代码工程 |
 | `fguiDir` | | `source-code/client/Fgui` | FairyGUI 工程 |
 | `serverSrcRoot` | | 外部服务端根 | 服务端三目录父目录 |

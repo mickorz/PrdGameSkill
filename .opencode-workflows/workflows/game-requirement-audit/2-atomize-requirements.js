@@ -17,7 +17,7 @@
 // args：
 //   scan           必填，S1 返回值（{ sections, termsSection, stageSections, ... }），缺失直接报错
 //   runDir         必填，run 根目录
-//   templatePath   需求模板路径，默认 templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md
+//   templatePath   需求模板路径，默认 templates/【杭州麻将】核心流程杭州麻将好友房AI-核心策划补齐版.md
 //   analysisModel  分析类模型，默认 biangfeng-gateway/deepseek-v4.1-flash-official（传空串用会话默认）
 //
 // 返回：
@@ -39,7 +39,7 @@ if (!runDir) {
   throw new Error('runDir 必填（run 根目录，由主编排 game-requirement-audit 创建后传入）')
 }
 const templatePath =
-  A.templatePath || 'templates/【杭州麻将】核心流程杭州麻将好友房AI-核心简化版本.md'
+  A.templatePath || 'templates/【杭州麻将】核心流程杭州麻将好友房AI-核心策划补齐版.md'
 const analysisModel =
   A.analysisModel === undefined ? 'biangfeng-gateway/deepseek-v4.1-flash-official' : A.analysisModel
 

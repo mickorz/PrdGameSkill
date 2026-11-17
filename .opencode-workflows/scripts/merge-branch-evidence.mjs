@@ -544,6 +544,16 @@ function main() {
     out.stats = r.summary.stats
   }
   fs.writeFileSync(evidencePath, JSON.stringify(out, null, 1) + '\n', 'utf8')
+  // 服务端另写 scope-index.json（核心契约 #3 组成：applicability 四值 + coverage 不变式 + stats）
+  if (a.branch === 'server') {
+    const scopeOut = {
+      schemaVersion: 1,
+      entries: r.scopeEntries,
+      coverage: r.summary.coverage,
+      stats: r.summary.stats,
+    }
+    fs.writeFileSync(path.join(a.runDir, branchDir, 'scope-index.json'), JSON.stringify(scopeOut, null, 1) + '\n', 'utf8')
+  }
   fs.writeFileSync(path.join(rtDir, 'run-status.json'), JSON.stringify(r.runStatus, null, 1) + '\n', 'utf8')
   fs.writeFileSync(path.join(rtDir, 'branch-recount.json'), JSON.stringify(
     { schemaVersion: 1, generatedBy: 'merge-branch-evidence.mjs', branch: a.branch, date: a.date, summary: r.summary }, null, 1) + '\n', 'utf8')

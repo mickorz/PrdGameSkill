@@ -19,6 +19,7 @@
   - v3.2 补遗六（2026-11-17，**不升版本号，Stage Reuse 执行契约收口冻结**）：①P0——**strict 语义收口**：strict = 严格验证复用而非禁止重跑——只校验 startStage 前的复用阶段四指纹（不匹配拒绝复用 fail fast）；startStage 及下游按计划重跑（不检查旧 configHash/stageVersion）；复用产物 Hash 与来源不一致拒绝复用；来源 Run 缺失/引用损坏拒绝执行（§11.3/§11.6/§7/G09 同步）；②P0——**S10 依赖改文件级清单**（§11.2/D34：Registry + CLE + client run-status/source-manifest + scope-index + SVE + server run-status/source-manifest + unified-atoms + business-behavior + difference-review + l7-classify，逐一对照生成逻辑）；③P1——**S11 最小 stale 检查提前到第一阶段**（evidenceFingerprint 比对 + 适用性清单 + 不自动沿用；第三阶段仅留增量复用下的审批依赖传播）；④P1——**新增 executionProfileHash**（模型/采样参数/Agent 配置/工具版本；不参与 Reusable 强校验、不无条件失效上游，只作 Run 间实验对比标识）；⑤§11.9 增最小可验证实验（S1~S3 六步）。**Stage Reuse 执行契约就此冻结。**
   - §12 落地（2026-11-17，**执行层细化，不升版本号**）：S1~S3 详细执行设计 + 最小 Stage Reuse 第一阶段工程实现交付（§10 开发顺序 ②+③）：七文件（主编排 + 三子流程 + build-requirement-registry.mjs + stage-specs.json + stage-reuse.mjs）+ 两 Example（19+18 断言全绿）+ 决策 D36~D41（物化复制/stage-specs 单一事实源/terms 确定性解析/validate-only 复用/中文值经 args-file 不进 shell）；§11.9 六步实验待用户触发（agent 链路不自跑）。
   - §13 落地（2026-11-17，**执行层细化，不升版本号**）：S4/S5 详细执行设计的**确定性脚本层**交付（§10 ④ 前半段，策略「确定性脚本 + Gold Set 双端先行」）：三脚本（prepare-verify-input / collect-source-manifest / merge-branch-evidence，客户端/服务端参数化共用）+ 两 Example（14+25 断言）+ 决策 D42~D45（SVE 编号统一归属原子 / ID 由 merge 全权分配 / 分片模式全清重建 / S5 精细落判沿用旧脚本）；Gold Set G01/G02/G05/G06/G07/G08 确定性等价已断言；S4/S5 agent Prompt 与编排、S6~S11 待接。
+  - §14~§19 落地（2026-11-17，**文档完成，不升版本号**）：§10 待写清单**全部章节交付**。§14 S6~S7（屏障三分 + 升级识别 D25 + 历史 append-only 幂等）、§15 S8~S9（审批状态机 D11 + scope 五级 + 六前置 D17 + 候选隔离 D23）、§16 S10~S11（索引/清单/stale + 影响集合 D20/D24 + 端级补证分片）、§17 失败恢复与状态机（四层状态 + 恢复矩阵 + Schema 兼容）、§18 迁移执行计划（脚本落位 + 旧资产保留/废弃策略）、§19 Agent Prompt 与编排接入契约（STEPS 扩展 + 六阶段 Prompt 要点 + 待用户触发项）。六新脚本 + 四新 Example（19+21+13+8），**Gold Set G01~G09 全链端到端回归已可执行**（`gold-set-audit.example.mjs`），全量 **144 断言全绿**；决策 D46~D50。
 
 ---
 
@@ -881,6 +882,12 @@ spec-workflow/requirement-audit/<date>/runs/<runId>/
 
 ## 10. 后续章节待写清单（逐步骤详细执行内容）
 
+> **状态：全部已交付（2026-11-17）** —— 本表每一行均已落地为对应章节与可执行脚本：
+> S1~S3 → §12；S4/S5 → §13；S6~S7 → §14；S8~S9 → §15；S10~S11 → §16；
+> 确定性脚本与 Gold Set → §12/13/18.3 + `gold-set-audit.example.mjs`（G01~G09 全链）；
+> 失败恢复与状态机 → §17；迁移执行计划 → §18；Stage Reuse → §11（冻结）+ §12.4（实现）；
+> Agent Prompt 与编排接入 → §19。全量回归 144 断言全绿。
+
 **开发顺序策略（评审终版建议，v3.2 补遗五调整——Stage Reuse 最小闭环尽早介入，不等全部 Workflow 完成后改造）**：①S4/S5 证据确定性合并契约冻结（本文 §5.0 B，已完成）→ ②S1~S3 详细执行设计与实现（**唯一需求事实源先行**）→ ③**最小 Stage Reuse**（Stage Manifest + 最小跨 Run Artifact Reference + strict + S11 最小 stale 检查）并按 §11.9 最小可验证实验（S1~S3 六步）实证 `from-stage=S3`（固定 S1~S3 输入，后续阶段即可重复实验）→ ④S4/S5 双端并行查证（确定性脚本 + Gold Set 双端场景先行）→ ⑤S6~S11（统一分析 / 复核 / L7 分类 / 规格生成 / 人工裁决）→ ⑥`from-stage` 扩展至 S1~S10 任意起点 + planOnly + Gold Set 全量回归（含 G09）→ ⑦auto 失效传播 + Atom 级增量复用 + 审批适用性检查（§11.9 第二/三阶段）。原则：**所有确定性规则先用代码和测试证明正确，再让 Agent 负责它真正擅长的源码理解与业务语义分析**；不再增加架构版本（v3.2 为冻结基线）。
 
 | 章节 | 内容 | 前置 |
@@ -1383,3 +1390,251 @@ Gold Set 场景映射（§9 矩阵）：
 | G08 | 依赖链 hash 变、证据 hash 不变 → 可观测（触发依赖链复核，不自动 stale） | merge F3 |
 
 **尚未覆盖**（待 §10 ④ 后半段 / ⑤）：S4/S5 agent Prompt 与 workflow 编排、`symbol-index`/`scope-index` 精细落判链路、S6 分析路径三分（conflict-fast/full/blocked）、G03/G04 的 L7 侧断言。
+
+---
+
+## 14. S6~S7 详细执行设计（统一分析：同步屏障 + 业务行为还原）
+
+> §10 待写清单「S6~S7 详细」交付。脚本：
+> `merge-evidence.mjs`（S6）、`append-analysis-history.mjs`（S7 历史落盘）；S7 的 agent Prompt 见 §19.2。
+
+### 14.1 S6 merge-evidence（同步屏障，确定性，无 agent）
+
+| 项 | 实现 |
+|---|---|
+| 输入 | Registry + client-evidence + scope-index + server-evidence + 双端 run-status + analysis-history |
+| pending 判定 | **只从 run-status**（`parts[].status !== completed` 的分片 `atomIds`），并做**矛盾检测**：pending 端不得有条目（有则 fail，防双写） |
+| 分析路径 | `conflict-fast`（任一已完成端 `directConflict`）→ `blocked`（必要端 pending）→ `full`；`verificationScope` 决定必要端，非必要端 pending 只记录 |
+| 升级识别 | `upgraded = 上轮 analysisPath==conflict-fast ∧ 本轮 full ∧ 上轮 baselineDiff==conflict`；`previousRunId` 逐原子取 history 中**该原子自己的**最近记录 |
+| analysisRunId | `ar-<date>-<seq>`，seq = `history.runs.length + 1`（确定性；重放同 seq → fail） |
+| 闸门 | 证据存在性、引用一致性（被引证据 `atomIds` ⊇ 引用方）、条目唯一、pending↔entry 矛盾、run-status 非空 |
+
+### 14.2 S7 append-analysis-history（append-only）
+
+- **agent 不写这个文件**：S7 agent 只产 `business-behavior.json`，历史由本脚本确定性追加（§7 历史保全）。
+- 校验：`analysisRunId` 三方一致（unified-atoms / business-behavior / 本轮）；覆盖 = 全部 conflict-fast + full 原子每恰一条、blocked 原子零条目；`baselineDifference` 枚举；`conflict` 必带 `baselineDetail` + 证据；`candidateDifference` 枚举。
+- **升级原子锚点**：`previousRunId` 与 S6 解析一致、指向的 run 必须含该原子自己的记录、上轮 `analysisPath==conflict-fast`、上轮 `baselineDifference==conflict`、`previousBaselineDifference` 与历史一致；候选 ≠ 基线时 `candidateDetail` 非空。
+- **幂等**：同 `analysisRunId` 已落档 → 跳过（不重复追加），返回 `appended:false`。
+- `conflict-fast` 条目四元组允许空串（不因空 fail，也不因编造非空过检）。
+
+---
+
+## 15. S8~S9 详细执行设计（差异复核 + L7 分类）
+
+> §10 待写清单「S8~S9 详细」交付。脚本：`merge-difference-review.mjs`（S8）、`classify-l7-audit.mjs`（S9）。
+
+### 15.1 S8 merge-difference-review
+
+| 项 | 实现 |
+|---|---|
+| reviewRule 白名单 | 四条既有前缀 + **`conflict-not-sustained`（升级降级专用）** + **`dual-side-collaboration-gap`**（双端协作断点） |
+| 条目范围 | 仅 conflict-fast / full 原子；**blocked 原子出条目 = fail** |
+| conflict 证据 | `reviewedDifference=conflict` 必带 `evidenceScopes`；`ref` 必须存在于 CLE/SVE 或为 `client-visual` |
+| 漂移检测 | `previousDifference` 非空时必等于 S7 `baselineDifference`（升级原子即历史基线） |
+| 升级专项 | `candidateDifference` 必须与 S7 一致（禁手写漂移）；历史 conflict → 非 conflict 的降级建议，`reviewReason` 必须引用双端证据（`CLE-/SVE-` 或 client/server） |
+| 审批状态机 | 新条目 `pending`；既有条目建议一致（结论 + 规则同）→ 保持原状态；**建议变化 → 重置 pending**；`reject` → `rejected`（effective 回退基线）；`hold`/`re-verify` → 保持 `pending` |
+| 幂等 | 既有已审批条目本轮无新分片 → 保全原条目（不因未提交而丢审批结果）；输出按 atomId 码元序排序（顺序无关） |
+
+### 15.2 S9 classify-l7-audit（v3.2 完整语义，Registry 基线）
+
+与旧 `classify-l7.mjs` 的差异（旧脚本保留给旧 workflow）：基线换 Registry、`difference` 取 `business-behavior`、scope 五级回落、client verified 六前置、升级候选隔离、blocked 派生。
+
+**effectiveDifference 取值（D11/D23）**：`approved` → `reviewedDifference`；`rejected` / `pending` / 无复核 → `baselineDifference`（**候选不参与**）。**升级候选隔离校验**：未审批却把 `candidateDifference` 当 effective → fail。
+
+**scope 解析五级回落**（§5 S9 原文，实测可回溯）：① conflict 证据级 `evidenceScopes`（`client-visual` 优先，全 inactive → inactive）→ ② 复核条目 `serverApplicability` → ③ scope-index Atom 级 → ④ **仅当 Registry `verificationScope=client` 且客户端已定位** → `client`（`scopeSource=registry-verification-scope`）→ ⑤ 缺省 `unknown`（**禁止缺省 inactive**；**禁止** server unknown + CLE 存在 → client）。
+
+**client verified 六前置（全 AND）**：① Registry scope=client ② `client.pending=false` ③ `verdict=confirmed`（partial/not_found 不满足）④ 证据全部存在且非 stale ⑤ `effectiveDifference=consistent` ⑥ `observedBehavior` 至少一字段非空。任一不满足 → `verification_required`。
+
+**blocked 口径**：不入 `entries`（不进正式统计），列入 `blockedAtoms`，由 S10 派生 `l7=verification_required` + `l7Basis=pending-blocked`。
+
+**统计**：`stats.l7` 全量、`stats.l7Approved` 仅 approved、`baseline.differenceStats` 与 `effectiveDifferenceStats` 交叉校验。
+
+---
+
+## 16. S10~S11 详细执行设计（规格生成 + 人工裁决）
+
+> §10 待写清单「S10~S11 详细」交付。脚本：`build-unified-index.mjs`（S10）、`apply-decisions.mjs`（S11）。
+
+### 16.1 S10 build-unified-index
+
+- **feature_index.json（schema v3）**：原子项 `{id,name,rule,uiRequirement,verificationScope, clientVerification{verdict,evidenceIds,pending}, serverVerification{applicability,evidenceIds,configCondition,pending}, difference, l7, l7Basis, analysisPath}`。blocked：`difference` 空、`l7=verification_required`、`l7Basis=pending-blocked`（单独计入 `stats.blocked`，不进 l7 classify 统计口径）。
+- **dependencyFiles（D34 落地）**：文件级 12 项清单（Registry / CLE / client run-status + source-manifest / scope-index / SVE / server run-status + source-manifest / unified-atoms / business-behavior / difference-review / l7-classify）——逐一对照生成逻辑，S10 的 inputHash 覆盖这些文件的全部实际读取。
+- **trace_index.json**：`{atomId, sourceStage, sourceRule, sourceLines, evidenceCount, required, l7, l7Basis, reviewStatus, analysisPath}`。
+- **pending-list.md**：四类分组（blocked 必要端缺口+执行状态+建议 retryScope / verification_required 缺什么证据+依赖配置 / decision_required 需求 vs 实际双栏 / review_pending 待审批建议）+ stale 与依赖链提示表；decision_required 行附带「另有待审批复核建议」标注（同一原子可两事并行）。
+- **verify-report.md**：统计表 + 机械校验表（计数自洽 / 原子 ID 一致 / blocked 口径 / l7 全有值）。
+- **stale/依赖链提示**（§7 hash 优先）：证据 `contentHash` 与当前 manifest 不一致 → `stale`；证据文件不在 manifest → `reposition`；`dependencyFiles[].contentHash` 变化 → `dependency`（提示复核，不自动 stale）。
+
+### 16.2 S11 apply-decisions
+
+- **决议校验**：`action ∈ {approve,modify,reject,hold,re-verify}`、`target ∈ {difference-review,l7,pending}`、atomId 属 Registry、重复决议（同原子+动作+目标）fail；`re-verify` 需合法 `retryScope` 且**与原子必要端一致**（scope=client 不许 server，反之亦然）；`modify` 需 `modifiedValue` 且为差异枚举。
+- **审批应用**：approve → `approved`；modify → `approved` + 改写 `reviewedDifference` + `reviewReason` 追加人工改写标注；reject → `rejected`；hold → 保持 `pending`；结果**回写** `difference-review.json`（审批生效后 S9 重算即生效）。
+- **影响集合（D20/D24，最小范围 = 受影响依赖集合而非单原子）**：① 目标集合 T（retryScope 覆盖原子）② 定位 T 的证据（CLE/SVE）③ **反查 `evidence.atomIds`**（支持多原子，含非补证目标原子——共享证据牵连）④ 影响集合 = T ∪ 反查集合；⑤ 记 `rerunStages = [S6,S7,S8,S9,S10]`。
+- **补证分片**：端级 `-rc<NN>`（客户端）/ `-rp<NN>`（服务端）代际隔离；每原子标 `isRetryTarget` + `retryHint`（目标=前轮缺口摘要；牵连=共享证据复核提示）。
+- **approved 合并**：approved 条目经确定性合并进 `5-specs/`，pending/rejected 不入正式结论。
+
+---
+
+## 17. 失败恢复与状态机
+
+> §10 待写清单「失败恢复与状态机」交付。脚本：`run-state.mjs`（`check` / `advance`）。
+
+### 17.1 四层状态定义
+
+| 层级 | 载体 | 取值 |
+|---|---|---|
+| 分片级 | `<branchDir>/runtime/run-status.json` → `parts[].status` | `pending` / `completed` / `failed` / `timeout` |
+| 分支级 | 同上 → `runStatus` | `completed`（全 completed）/ `partial`（有未完成）/ `failed`（整体失败）/ `pending`（全 pending） |
+| 屏障/路径级 | `4-analysis/unified-atoms.json` → `atoms[].analysisPath` | `conflict-fast` / `full` / `blocked` |
+| run 级 | `runtime/run-state.json` → `runStatus` | `pending` / `running` / `partial` / `completed` / `failed` |
+
+**关键不变量**（与 §5.0 A 联动）：分片 `failed`/`timeout` 与 `pending` 一样**不产 entry**，其原子进 `coverage.pendingAtomIds`；分支 `partial` **放行到 S6**（不中止）；S6 把该端判为 pending 并按 `verificationScope` 决定 blocked / 非阻塞。
+
+### 17.2 恢复决策矩阵（`run-state.mjs check` 输出）
+
+| 现状 | 建议 mode | 说明 |
+|---|---|---|
+| 无阶段记录 | `all` | 全新执行 |
+| 已完成至 Sx | `from-stage` + `startStage=Sx+1` | 上游经 strict 四指纹校验复用（§11.3） |
+| 全链完成 | `none` | 需重跑须显式 `from-stage` |
+| 分支 run-status 存在但正式产物缺失 | 重跑对应分支 merge | 警告「分支 merge 未完成」 |
+| run-state.json 缺失（旧 run） | 先 `advance` 补齐 | 仅依据 stage-manifest 判定 |
+
+### 17.3 Schema 版本兼容矩阵（§7 Schema 警示）
+
+| 情形 | 行为 |
+|---|---|
+| `stageVersion` 主版本（`@` 后数字）一致 | 允许 resume 复用 |
+| 主版本不一致 | **禁止 resume 复用该阶段**，必须 `from-stage` 重跑 |
+| 旧 run 缺新字段 | 按「未经新 Schema 查证」处理，**禁止兜底冒充已验证** |
+
+---
+
+## 18. 迁移执行计划与脚本清单
+
+> §10 待写清单「迁移执行计划」交付。
+
+### 18.1 脚本落位（全部在 `game-requirement-audit` 命名空间，已实现并通过 Example）
+
+| 步骤 | 脚本 | 角色 | 确定性/agent |
+|---|---|---|---|
+| S1 | `workflows/game-requirement-audit/1-scan-template.js` | 章节扫描 | agent |
+| S2 | `workflows/game-requirement-audit/2-atomize-requirements.js` | 原子拆解（只拆不查） | agent |
+| S3 | `scripts/build-requirement-registry.mjs` + `3-build-registry.js` | Registry 定稿 | 确定性 |
+| S4/S5 | `scripts/prepare-verify-input.mjs` | 查证输入 + run-status 骨架 | 确定性 |
+| S4/S5 | `scripts/collect-source-manifest.mjs` | 源码版本清单 | 确定性 |
+| S4/S5 | `scripts/merge-branch-evidence.mjs` | 双端证据合并（M1~M8） | 确定性 |
+| S6 | `scripts/merge-evidence.mjs` | 同步屏障 + 路径三分 | 确定性 |
+| S7 | `scripts/append-analysis-history.mjs` | 分析历史 append-only | 确定性 |
+| S8 | `scripts/merge-difference-review.mjs` | 双栏复核 + 审批状态机 | 确定性 |
+| S9 | `scripts/classify-l7-audit.mjs` | L7 分类（v3.2） | 确定性 |
+| S10 | `scripts/build-unified-index.mjs` | 索引/清单/校验报告 | 确定性 |
+| S11 | `scripts/apply-decisions.mjs` | 决议 + 影响集合 + 补证分片 | 确定性 |
+| 执行层 | `scripts/stage-reuse.mjs` + `scripts/stage-specs.game-requirement-audit.json` | 契约 #5 阶段复用 | 确定性 |
+| 执行层 | `scripts/run-state.mjs` | 失败恢复与状态机 | 确定性 |
+| 主编排 | `workflows/game-requirement-audit/game-requirement-audit.js` | S1~S3 + Stage Reuse | 编排（S4~S11 待接入） |
+
+### 18.2 旧 workflow 保留/废弃策略
+
+| 旧资产 | 策略 |
+|---|---|
+| `output-spec-generate/1-scan-template.js` | S1 已迁移（原样）；旧文件保留给旧 workflow |
+| `output-spec-generate/2-verify-stages.js` | 拆解部分由 S2 取代；查证部分由 S4（`prepare-verify-input` + `merge-branch-evidence`）取代；**旧文件保留不动** |
+| `output-spec-generate/3-produce-outputs.js` / `4-assemble-verify.js` | S10 取代索引/清单部分；文档写作 agent 链路待 §19 接入 |
+| `server-rule-verify/1-scan-server.js` | 服务端符号索引，按 D45 保留复用 |
+| `server-rule-verify/2-match-atoms.js` / `3-verify-scope.js` | S5 精细落判按 D45 保留（数据源基线切换待 agent 接入时改） |
+| `server-rule-verify/3-verify-scope-client.js`（3C 客户端补证） | **废弃**（D16：客户端证据唯一载体 CLE，走 S4） |
+| `server-rule-verify/4-review-difference.js` | 复核部分由 S8 取代；确定性闸门拆入 S6/S9/S10 |
+| `scripts/classify-l7.mjs` | 旧 workflow 继续用；新工作流用 `classify-l7-audit.mjs` |
+
+**迁移原则**：旧 workflow 目录**只读不动**（保证历史产物可复现），新链路全部在新命名空间；共用的确定性脚本（symbol-index/match/verify-scope）按 D45 逐步改造而非重写。
+
+### 18.3 全量回归（136 断言，`node .opencode-workflows/scripts/<name>.example.mjs`）
+
+| Example | 断言 | 覆盖 |
+|---|---|---|
+| `build-requirement-registry.example.mjs` | 19 | S3 全部闸门 + CLI 三模式 |
+| `stage-reuse.example.mjs` | 18 | Stage Reuse 四命令 + strict 四类拒绝 + args-file |
+| `prepare-verify-input.example.mjs` | 13 | 投影边界 / 分片命名 / run-status 骨架 / 幂等清理 / 端到端 |
+| `merge-branch-evidence.example.mjs` | 25 | §5.0 A 不变式 + M1~M8 + Gold Set G01/G02/G05/G06~G08 等价 |
+| `merge-evidence.example.mjs` | 19 | 屏障三分 + 升级识别 D25 + 历史 append-only 幂等 |
+| `difference-review-l7.example.mjs` | 21 | 审批状态机 D11 + scope 五级 + 六前置 D17 + 候选隔离 D23 + G03 |
+| `spec-decisions.example.mjs` | 13 | S10 索引/清单/stale + S11 影响集合 D20/D24 |
+| `gold-set-audit.example.mjs` | 8 | **G01~G09 全链端到端回归** |
+| `run-state.example.mjs` | 8 | 四层状态 + 恢复矩阵 + Schema 兼容 |
+| **合计** | **144** | |
+
+---
+
+## 19. Agent 阶段 Prompt 与编排接入（§10 ④/⑤ 后半段）
+
+> 本章给出 S2/S4/S5/S7/S8/S10 的 agent Prompt 全文要点与主编排扩展契约。**脚本骨架已就绪（§12~§16），agent 链路接入需用户触发实跑**（不改确定性契约）。
+
+### 19.1 编排扩展契约（S4~S11 接入 STEPS 表）
+
+主编排 STEPS 表按 specs order 扩展（D38 双写）：
+
+```text
+S4  → prepare-verify-input(client) → parallel agent(按分片) → collect-source-manifest(client)
+      → merge-branch-evidence(client) → record-stage S4
+S5  → prepare-verify-input(server) → 既有三步链(symbol-index/match/verify-scope)
+      → collect-source-manifest(server) → merge-branch-evidence(server) → record-stage S5
+S6  → merge-evidence.mjs → record-stage S6
+S7  → parallel agent(按阶段分片) → append-analysis-history.mjs → record-stage S7
+S8  → parallel agent(复核建议分片) → merge-difference-review.mjs → record-stage S8
+S9  → classify-l7-audit.mjs → record-stage S9
+S10 → parallel agent(文档写作分片) + build-unified-index.mjs → record-stage S10
+S11 → 人工 checkpoint（决议）→ apply-decisions.mjs → record-stage S11
+```
+
+S4/S5 并行（共享同一并发配额）；S6 是同步屏障（必须等双端 merge 完成）；S11 之后 `re-verify` 回到 S6 新一轮 analysisRunId。
+
+### 19.2 Prompt 要点（全文随脚本接入时落档）
+
+| 阶段 | Prompt 核心约束 |
+|---|---|
+| S2 原子拆解 | §12.2 八条（只拆不查 / 一条规则一原子 / 编号 / rule 忠实原文 / **verificationScope 判定指引** / businessBehavior 需求侧声明 / source 行号落界 / 只写自己分片） |
+| S4 客户端查证 | 三态 verdict（confirmed/partial/not_found）+ 证据必带（not_found 不带）+ `claimKey` 业务断言短标识（小写/连字符）+ `atomIds` 支撑原子全列（共享证据只写一条）+ `dependencyFiles` 调用链依赖 + `directConflict` 语义信号（矛盾实现，必带 `conflictEvidenceIds`）+ **禁止填 sourceRevision/contentHash/verdictAt**（merge 回填）+ **禁止执行 git** |
+| S5 服务端查证 | 四态 applicability（active/conditional/inactive/unknown）+ conditional 必填 `configCondition` + unknown 必填 `unresolved` + `callPath` 证据链 + SVE 收敛三目录 + 同 CLE 的 claimKey/atomIds/dependencyFiles 契约 |
+| S7 业务行为还原 | 双路径（conflict-fast 只判冲突，四元组可空；full 完整还原）+ conflict 按职责域取证（客户端视觉/服务端规则/双端协作/无法证明）+ 升级原子候选双写（`candidateDifference`，基线不动） |
+| S8 差异复核 | 双栏证据快照（clientVerdict + serverApplicability）+ `reviewRule` 白名单前缀 + conflict 必带 `evidenceScopes`（标注每条证据能证明什么）+ 升级降级建议必须引双端证据 |
+| S10 文档写作 | 技术视图含双端区块（客户端职责/服务端职责/协作/配置生效条件/证据定位/实现差异）+ blocked 标注「查证未完成（哪端 + 状态）」+ conflict-fast 呈现冲突结论 + 另一端状态 + 升级候选（标注「候选待审批」）；策划版只消费业务行为 + L7（技术字段结构性隔离） |
+
+### 19.3 待用户触发的验证项
+
+| 项 | 命令/方式 |
+|---|---|
+| §11.9 六步实验（from-stage=S3） | workflow 工具触发 `game-requirement-audit.js`（先 `mode=all` 生成 run-001，再改 S3 规则 + `mode=from-stage, startStage=S3, sourceRunId=run-001`） |
+| S1~S3 真实模板跑通 | 同上首次执行 |
+| S4~S11 agent 链路 | 接入 STEPS 后按 §19.1 顺序实跑 |
+
+**红线**：agent 链路实跑前必须满足 §18.3 全量回归全绿（当前 144 断言，已全绿）；实跑只验证 agent 语义质量，不得改动确定性契约。
+
+### 19.4 本章决策记录（执行层细化，不改 v3.2 冻结基线）
+
+| # | 决策 | 理由 |
+|---|---|---|
+| D46 | **S7 分析历史由确定性脚本追加**，agent 只产 `business-behavior.json` | §7 历史保全要求 append-only 且幂等；agent 写历史必然破坏「只增不改」与同 run 重放幂等 |
+| D47 | **reviewRule 白名单扩展两条**：`conflict-not-sustained`（升级降级专用）、`dual-side-collaboration-gap`（双端协作断点） | §5 S8 明确「双端合并口径下的新增前缀在详细章节定稿」；两者是 v3 冲突快速路径与协作链判定必需 |
+| D48 | **S9 写新脚本 `classify-l7-audit.mjs`，不改旧 `classify-l7.mjs`** | 基线（feature_index → Registry）与语义（scope 五级 + 六前置 + 候选隔离 + blocked 派生）差异过大，适配器会扭曲语义；旧脚本保留给旧 workflow 保证历史可复现 |
+| D49 | **run-state.json 与 stage-manifest.json 分工**：manifest 记指纹与复用判定（§11.3），run-state 记可恢复性视图与失败历史 | 指纹必须确定性由 stage-reuse 独占写；失败历史是 append 语义且需要「check 诊断」，两者变更频率与消费者不同 |
+| D50 | **旧 workflow 目录只读不动**（不删 3C 废弃文件、不改 share 脚本），新链路全在新命名空间 | 历史产物可复现是第一优先级；共用脚本按 D45 逐步改造而非重写 |
+
+---
+
+## 20. 文档完成状态
+
+| §10 待写清单行 | 交付章节 | 脚本/测试 |
+|---|---|---|
+| S1~S3 详细 | §12 | 3 子流程 + `build-requirement-registry.mjs`（19 断言） |
+| S4 详细 | §13 | `prepare-verify-input.mjs` / `collect-source-manifest.mjs` / `merge-branch-evidence.mjs`（13+25 断言） |
+| S5 详细 | §13 | 同上（参数化 server 分支）+ D45 复用既有符号索引链 |
+| S6~S7 详细 | §14 | `merge-evidence.mjs` / `append-analysis-history.mjs`（19 断言） |
+| S8~S9 详细 | §15 | `merge-difference-review.mjs` / `classify-l7-audit.mjs`（21 断言） |
+| S10~S11 详细 | §16 | `build-unified-index.mjs` / `apply-decisions.mjs`（13 断言） |
+| 确定性脚本与 Gold Set | §18.3 | `gold-set-audit.example.mjs`（G01~G09 全链，8 断言） |
+| 失败恢复与状态机 | §17 | `run-state.mjs`（7 断言） |
+| 迁移执行计划 | §18 | 脚本落位表 + 保留/废弃策略 |
+| Stage Reuse 详细 | §11（冻结）+ §12.4 | `stage-reuse.mjs` + `stage-specs.json`（18 断言） |
+| （附）Agent Prompt 与编排 | §19 | 编排扩展契约 + 六阶段 Prompt 要点 |
+
+**全量回归：144 断言全绿。** 待用户触发：§11.9 六步实验、S1~S3 真实模板跑通、S4~S11 agent 链路实跑。

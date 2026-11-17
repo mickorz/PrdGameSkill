@@ -151,10 +151,13 @@ export function mergeBranchEvidence(input) {
 
   // ---- 分片归集（M1：文件名字典序，与 agent 完成顺序无关） ----
   const outDir = path.join(runDir, branchDir, 'runtime', 'verify-output')
-  let partNames = []
+  let fileNames = []
   if (fs.existsSync(outDir)) {
-    partNames = fs.readdirSync(outDir).filter((n) => n.endsWith('.json') && n.includes(partSuffix)).sort(cmp)
+    fileNames = fs.readdirSync(outDir).filter((n) => n.endsWith('.json') && n.includes(partSuffix))
   }
+  // run-status 可用于声明「文件不存在的失败分片」（timeout/failed 时 agent 未落盘）——必须先读 run-status
+  // 故 partNames 在下方合并（文件清单 ∪ run-status 声明清单）
+  let partNames = fileNames
   if (partNames.length === 0) {
     bad('verify-output 无分片（agent 未落盘或路径不符 ' + toPosix(outDir) + '/<stageId>' + partSuffix + '<NN>.json）')
     return { ok: false, problems, summary: null }
@@ -170,6 +173,8 @@ export function mergeBranchEvidence(input) {
       if (p && p.partFile) declaredStatus.set(toPosix(p.partFile), { status: p.status, atomIds: p.atomIds || [] })
     }
   }
+  // 分片清单 = 实际文件 ∪ run-status 声明（timeout/failed 分片可能无文件），码元序（M1）
+  partNames = [...new Set(fileNames.concat([...declaredStatus.keys()]))].sort(cmp)
   const partStatus = (name) => {
     const d = declaredStatus.get(name)
     if (d && d.status) return d.status

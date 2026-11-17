@@ -15,7 +15,8 @@
   - v3.2 补遗二（2026-11-17，**不升版本号**）：①跨平台确定性排序标准（§5.0 B / M7：码元序比较禁区域排序、路径分隔符统一 `/`、不做大小写折叠、location 规范格式 `<file>:<起>-<止>`、空 symbol 空值排序规则、atomIds 只用 Registry 原始顺序）；②证据语义去重边界（§5.0 B / M8 + CLE/SVE 新增 `claimKey` 字段：指针相同且 claimKey 相同才合并，同指针不同 claimKey 保留独立条目——**相同代码位置 ≠ 相同证据语义**，不为去重丢失证据语义）；③G05 扩 Agent 完成顺序变化与跨进程重放断言；④§10 前置条件版本引用统一 v3.2。架构基线维持 v3.2 冻结；
   - v3.2 补遗三（2026-11-17，**不升版本号**）：产物一级子目录加**阶段序数字前缀**——`1-registry/`（阶段一：需求事实源）、`2-client/`（阶段二A）、`3-server/`（阶段二B）、`4-analysis/`（阶段三）、`5-specs/`（阶段四）、`6-review/`（阶段五），**目录排序即主链执行顺序**；全文路径引用同步更新；各分支内 `runtime/` 为执行状态目录不带前缀；§3 目录树 `retry-input` 注释更正为 atomIds 反查。架构基线维持 v3.2 冻结；
   - v3.2 补遗四（2026-11-17，**不升版本号，执行层扩展**）：**Stage Reuse（阶段产物可复用）**——原则 9 + §11 新章节：四执行模式（all/resume/from-stage/retry）、阶段依赖图、契约 #5 stage-manifest（inputHash/configHash/outputHash/stageVersion 四指纹，`Reusable = 四匹配 AND`，文件存在 ≠ 可复用）、失效与复用矩阵（阶段级）、双失效机制（阶段配置变化 / 上游数据变化分开实现）、`reusePolicy=strict` 默认 + `planOnly`、**Run 级隔离**（§3 增 `runs/run-NNN/` 层 + `latest.json`，数字前缀子目录结构保持不变；复用经 Artifact Reference 不改写来源 Run 产物）、S11 决议绑定 analysisRunId + 证据版本（变化标 stale 必须重新人工确认）；D29~D33、G09；§10 增 Stage Reuse 详细章节行与开发顺序⑥。架构与四大业务契约维持 v3.2 冻结；
-  - v3.2 补遗五（2026-11-17，**不升版本号，Stage Reuse 执行契约修正**）：①P0——**最小跨 Run Artifact Reference（只读引用历史 Run 不可变产物）划入第一阶段**（from-stage 依赖它成立，原一/二阶段顺序矛盾消除；第二阶段仅做多来源引用与引用链解析优化，D35）；②P1——§3 目录树根级 `runtime/stage-manifest.json` 前置展示，明确**根级（阶段状态）/ 分支级（分片状态）runtime 不混用**；③P1——**依赖图完整性铁律**（D34）：S10 依赖全部直接输入（Registry + CLE + SVE + business-behavior + difference-review + l7-classify），inputHash 覆盖实际消费全部文件；④P1——S11 决议改 **Atom 级证据指纹 evidenceFingerprint**（只聚合该 Atom 实际引用的 CLE/SVE + dependencyFiles，无关文件变化不连坐过期）；⑤§10 开发顺序调整：Stage Reuse 最小闭环提前至 S1~S3 之后实证（`from-stage=S3`）。架构基线维持 v3.2 冻结。
+  - v3.2 补遗五（2026-11-17，**不升版本号，Stage Reuse 执行契约修正**）：①P0——**最小跨 Run Artifact Reference（只读引用历史 Run 不可变产物）划入第一阶段**（from-stage 依赖它成立，原一/二阶段顺序矛盾消除；第二阶段仅做多来源引用与引用链解析优化，D35）；②P1——§3 目录树根级 `runtime/stage-manifest.json` 前置展示，明确**根级（阶段状态）/ 分支级（分片状态）runtime 不混用**；③P1——**依赖图完整性铁律**（D34）：S10 依赖全部直接输入（Registry + CLE + SVE + business-behavior + difference-review + l7-classify），inputHash 覆盖实际消费全部文件；④P1——S11 决议改 **Atom 级证据指纹 evidenceFingerprint**（只聚合该 Atom 实际引用的 CLE/SVE + dependencyFiles，无关文件变化不连坐过期）；⑤§10 开发顺序调整：Stage Reuse 最小闭环提前至 S1~S3 之后实证（`from-stage=S3`）。架构基线维持 v3.2 冻结；
+  - v3.2 补遗六（2026-11-17，**不升版本号，Stage Reuse 执行契约收口冻结**）：①P0——**strict 语义收口**：strict = 严格验证复用而非禁止重跑——只校验 startStage 前的复用阶段四指纹（不匹配拒绝复用 fail fast）；startStage 及下游按计划重跑（不检查旧 configHash/stageVersion）；复用产物 Hash 与来源不一致拒绝复用；来源 Run 缺失/引用损坏拒绝执行（§11.3/§11.6/§7/G09 同步）；②P0——**S10 依赖改文件级清单**（§11.2/D34：Registry + CLE + client run-status/source-manifest + scope-index + SVE + server run-status/source-manifest + unified-atoms + business-behavior + difference-review + l7-classify，逐一对照生成逻辑）；③P1——**S11 最小 stale 检查提前到第一阶段**（evidenceFingerprint 比对 + 适用性清单 + 不自动沿用；第三阶段仅留增量复用下的审批依赖传播）；④P1——**新增 executionProfileHash**（模型/采样参数/Agent 配置/工具版本；不参与 Reusable 强校验、不无条件失效上游，只作 Run 间实验对比标识）；⑤§11.9 增最小可验证实验（S1~S3 六步）。**Stage Reuse 执行契约就此冻结。**
 
 ---
 
@@ -798,7 +799,7 @@ spec-workflow/requirement-audit/<date>/runs/<runId>/
 ## 7. 执行约定（沿用现有工作流约定 + v2/v3/v3.1 新增）
 
 - **执行模式【v3.2 补遗四扩为四模式，见 §11】**：`mode=all`（默认一次跑完，新建 Run）/ `mode=resume`（上次中断继续，复用当前 Run 已完成产物，即原 `resumeFromRunId` 断点续跑）/ `mode=from-stage`（指定起点阶段重跑：上游经指纹校验复用，`startStage` + `reusePolicy` + `planOnly`）/ `mode=retry`（端级补证，`retryMode` + `retryScope` + 影响集合，沿用原口径）；`mode=step`（每步 checkpoint 人工确认）保留为 all/from-stage 的执行粒度开关。
-- **复用策略【v3.2 补遗四】**：`reusePolicy=strict`（默认：inputHash/configHash/outputHash/stageVersion 四指纹任一不匹配即拒绝复用、fail fast，不静默沿用也不静默重跑）/ `auto`（按 §11 依赖图自动失效传播）；`planOnly=true` 只输出执行计划（复用 ✓ / 重跑 / S11 适用性检查清单）不执行；stage-manifest 由确定性脚本采集，**agent 严禁判断复用、严禁自填指纹**。
+- **复用策略【v3.2 补遗四/六】**：`reusePolicy=strict`（默认：**只校验 startStage 之前的复用阶段**——四指纹任一不匹配即拒绝复用、fail fast，不静默沿用；startStage 及其下游按计划重跑，不受旧 configHash/stageVersion 匹配约束，见 §11.3 strict 执行语义）/ `auto`（按 §11 依赖图自动失效传播）；`planOnly=true` 只输出执行计划（复用 ✓ / 重跑 / S11 适用性检查清单）不执行；stage-manifest 由确定性脚本采集，**agent 严禁判断复用、严禁自填指纹**。
 - **阶段筛选**：`stageIds` CSV 或 ALL（Registry 阶段集）；增量/补证模式沿用 `incremental` / `retryMode` 口径 + `retryScope`（client/server/both）端级控制 + 影响集合。
 - **模型档位**：速度优先——分析类 `biangfeng-gateway/deepseek-v4.1-flash-official`，写作类会话默认；质量靠确定性闸门兜底（沿用 2026-11-14 问询结论）。
 - **并发**：主脚本 `setConcurrency`（默认 16），双端分支共享同一配额。
@@ -852,7 +853,7 @@ spec-workflow/requirement-audit/<date>/runs/<runId>/
 | D31 | **失效传播矩阵 + 双失效机制**：阶段配置变化（该阶段失效、按依赖图向下传播）与上游数据变化（S1~S3 重跑 + Atom 身份匹配 + 影响集合）分开实现；第一阶段只做阶段级复用，Atom 级增量后置 | 评审 v3.2 补遗四：两能力不混一个判定路径 |
 | D32 | **Run 级隔离 + Artifact Reference**：每次执行新建 `runs/run-NNN/`，复用只引用（sourceRunId + path + hash）**不改写来源 Run 产物**；`latest.json` 确定性维护；历史 Run（无 stage-manifest）不参与 from-stage 复用 | 评审 v3.2 补遗四：保留每次分析结果可对比；防复用改写历史 |
 | D33 | **S11 决议适用性保护（Atom 级证据指纹）**：决议绑定 atomId + analysisRunId + approvedConclusion + **evidenceFingerprint**（只聚合该 Atom 实际引用的 CLE/SVE + dependencyFiles，不绑整份 source-manifest）；指纹或结论变化的 Atom 决议标 stale，必须重新人工确认（不自动沿用、不自动批准） | 评审 v3.2 补遗四/五：人工审批不能因历史存在自动生效；无关文件变化不连坐过期 |
-| D34 | **依赖图完整性铁律**：Dependency Graph 记录每阶段实际消费的全部直接输入（S10 = Registry + CLE + SVE + business-behavior + difference-review + l7-classify，不止 S9）；inputHash 覆盖全部实际输入，不为简化依赖图而遗漏 | 评审 v3.2 补遗五 P1：防「上游证据变化、S10 输入指纹不变」漏判 |
+| D34 | **依赖图完整性铁律（文件级）**：Dependency Graph 记录每阶段实际读取的**文件级**直接输入（S10 = Registry + CLE + client run-status/source-manifest + scope-index + SVE + server run-status/source-manifest + unified-atoms + business-behavior + difference-review + l7-classify，逐一对照生成逻辑：实际读取不遗漏、不读取不列入）；inputHash 覆盖全部实际输入 | 评审 v3.2 补遗五/六：防「上游执行状态变化、S10 指纹不变」静默漏判 |
 | D35 | **最小跨 Run Artifact Reference 属第一阶段**（只读引用历史 Run 不可变产物，from-stage 依赖它成立）；第二阶段仅做多来源引用与引用链解析优化 | 评审 v3.2 补遗五 P0：原一/二阶段实现顺序矛盾（无引用能力 from-stage 无法完成） |
 
 ## 9. 验收口径（头部层面）
@@ -871,14 +872,14 @@ spec-workflow/requirement-audit/<date>/runs/<runId>/
 | G06 | Git commit 变化，证据文件 contentHash 不变 | 证据仍然有效（不整批失效） |
 | G07 | 证据文件 contentHash 变化 | 自动标记 stale，进 pending-list，不得作为当前实现证明 |
 | G08 | 依赖链文件（dependencyFiles）hash 变化、证据文件 hash 不变 | 触发依赖链复核提示（不自动 stale） |
-| G09 | from-stage=S7（run-002 复用 run-001 的 S1~S6；S7 configHash 变化）+ 指纹不匹配样例（run-001 某上游产物 outputHash 不匹配） | plan-only 输出复用/重跑/S11 适用性检查清单；执行后 S1~S6 产物逐字节不变（Artifact Reference 不改写来源 Run）、S7~S10 重跑、S11 决议保留且 evidenceFingerprint/结论变化 Atom 标 stale 待人工确认；strict 下指纹不匹配拒绝复用 fail fast（§11、D29~D35） |
+| G09 | from-stage=S7（run-002 复用 run-001 的 S1~S6；S7 configHash 变化）+ 指纹不匹配样例（run-001 某上游产物 outputHash 不匹配） | plan-only 输出复用/重跑/S11 适用性检查清单；执行后 S1~S6 产物逐字节不变（Artifact Reference 不改写来源 Run）、S7~S10 重跑（**不受旧 configHash 匹配约束**）、S11 决议保留且 evidenceFingerprint/结论变化 Atom 标 stale 待人工确认；strict 下**复用阶段**指纹不匹配拒绝复用 fail fast、来源产物 Hash 不一致拒绝复用（§11、D29~D35） |
 
 - 附加断言（随各步骤详细章节细化）：统计口径不变式（§5.0 A）在 G01（90/100 完成 → entryCount=90）；（repoId, file）跨仓匹配；**共享证据单条多原子**（同合并键去重、atomIds 并集、引用一致性——G05 断言 SVE-001.atomIds ⊇ {AT-001, AT-002}）；**claimKey 语义边界**（同指针不同 claimKey → 两条独立证据均保留、各自 ID 稳定——G05 断言）；**分片乱序不变式**（打乱分片交付顺序与 Agent 完成顺序、跨进程重复执行 merge → 证据 ID、atomIds、entries/evidence 顺序、统计块与合并产物内容 Hash 逐字节一致——并入 G05 断言，§5.0 B/M5、D26/D27）；conflict-fast 条目四元组可空不编造；**升级判定式可复现**（previousRunId 逐原子解析、previousAnalysisPath/previousBaselineDifference 可从 history 还原、同 run 重放幂等）。
 - 迁移验收：现有两 workflow 的既有产物（2026-11-13/14 目录）可被统一工作流以只读方式消费（planner-only / 补证重跑场景不回退）。
 
 ## 10. 后续章节待写清单（逐步骤详细执行内容）
 
-**开发顺序策略（评审终版建议，v3.2 补遗五调整——Stage Reuse 最小闭环尽早介入，不等全部 Workflow 完成后改造）**：①S4/S5 证据确定性合并契约冻结（本文 §5.0 B，已完成）→ ②S1~S3 详细执行设计与实现（**唯一需求事实源先行**）→ ③**最小 Stage Reuse**（Stage Manifest + 最小跨 Run Artifact Reference + strict）并实证 `from-stage=S3`（固定 S1~S3 输入，后续阶段即可重复实验）→ ④S4/S5 双端并行查证（确定性脚本 + Gold Set 双端场景先行）→ ⑤S6~S11（统一分析 / 复核 / L7 分类 / 规格生成 / 人工裁决）→ ⑥`from-stage` 扩展至 S1~S10 任意起点 + planOnly + Gold Set 全量回归（含 G09）→ ⑦auto 失效传播 + Atom 级增量复用 + 审批适用性检查（§11.9 第二/三阶段）。原则：**所有确定性规则先用代码和测试证明正确，再让 Agent 负责它真正擅长的源码理解与业务语义分析**；不再增加架构版本（v3.2 为冻结基线）。
+**开发顺序策略（评审终版建议，v3.2 补遗五调整——Stage Reuse 最小闭环尽早介入，不等全部 Workflow 完成后改造）**：①S4/S5 证据确定性合并契约冻结（本文 §5.0 B，已完成）→ ②S1~S3 详细执行设计与实现（**唯一需求事实源先行**）→ ③**最小 Stage Reuse**（Stage Manifest + 最小跨 Run Artifact Reference + strict + S11 最小 stale 检查）并按 §11.9 最小可验证实验（S1~S3 六步）实证 `from-stage=S3`（固定 S1~S3 输入，后续阶段即可重复实验）→ ④S4/S5 双端并行查证（确定性脚本 + Gold Set 双端场景先行）→ ⑤S6~S11（统一分析 / 复核 / L7 分类 / 规格生成 / 人工裁决）→ ⑥`from-stage` 扩展至 S1~S10 任意起点 + planOnly + Gold Set 全量回归（含 G09）→ ⑦auto 失效传播 + Atom 级增量复用 + 审批适用性检查（§11.9 第二/三阶段）。原则：**所有确定性规则先用代码和测试证明正确，再让 Agent 负责它真正擅长的源码理解与业务语义分析**；不再增加架构版本（v3.2 为冻结基线）。
 
 | 章节 | 内容 | 前置 |
 |---|---|---|
@@ -917,9 +918,9 @@ S1 → S2 → S3 → { S4 客户端 ∥ S5 服务端 } → S6 → S7 → S8 → 
 
 - S4 与 S5 **互不依赖**（可各自复用/重跑，见 11.4 情况 A）；
 - S6 依赖 S3 + S4 + S5；S7 依赖 S6；S8 依赖 S7 + 双端证据 + Registry；S9 依赖 S8 + Registry + 双端证据；
-- **S10 依赖全部直接输入**：S3（Registry）+ S4（CLE）+ S5（SVE）+ S7（business-behavior）+ S8（difference-review）+ S9（l7-classify）——**不止 S9**；
+- **S10 依赖（文件级，逐一对照 S10 生成逻辑）【v3.2 补遗六】**：`1-registry/requirement-registry.json`、`2-client/client-evidence.json`、`2-client/runtime/run-status.json`、`2-client/runtime/source-manifest.json`、`3-server/scope-index.json`、`3-server/server-evidence.json`、`3-server/runtime/run-status.json`、`3-server/runtime/source-manifest.json`、`4-analysis/unified-atoms.json`、`4-analysis/business-behavior.json`、`4-analysis/difference-review.json`、`4-analysis/l7-classify.json`——待处理清单需消费双端 run-status（timeout/failed/pending）与 source-manifest（stale / 依赖链复核提示）；
 - S11 消费全链结论与历史决议（适用性检查，见 11.8）；
-- **依赖图完整性铁律**：Dependency Graph 必须记录每个阶段**实际消费的全部直接输入文件**，inputHash 必须覆盖全部实际输入——不为简化依赖图而遗漏实际输入（否则出现「上游证据变化、S10 输入指纹不变」的漏判）。
+- **依赖图完整性铁律**：Dependency Graph 必须记录每个阶段**实际读取的文件级直接输入**（逐一对照该阶段生成逻辑：实际读取的不得遗漏、实际不读取的不得列入），inputHash 覆盖全部实际输入——防「S4/S5 执行状态变化、S10 输入指纹不变」的静默漏判。
 
 ### 11.3 契约 #5：stage-manifest.json（run **根级** `runtime/`——阶段执行状态；与各分支级 runtime 分片状态不混用）
 
@@ -933,6 +934,7 @@ S1 → S2 → S3 → { S4 客户端 ∥ S5 服务端 } → S6 → S7 → S8 → 
       "status": "completed",
       "inputHash": "sha256:...",
       "configHash": "sha256:...",
+      "executionProfileHash": "sha256:...",
       "outputHash": "sha256:...",
       "stageVersion": "S7@3",
       "reusable": true,
@@ -945,13 +947,25 @@ S1 → S2 → S3 → { S4 客户端 ∥ S5 服务端 } → S6 → S7 → S8 → 
 | 字段 | 采集口径（确定性脚本，agent 零填写） |
 |---|---|
 | inputHash | 该阶段**实际消费的全部直接输入文件**内容指纹（按 M7 确定性排序拼接后哈希——覆盖范围见 11.2 依赖图完整性铁律） |
-| configHash | Prompt / Schema / 规则配置指纹 |
+| configHash | **逻辑配置指纹**：Prompt 内容 / Schema / Skill 版本 / 业务规则 / 参数配置 |
+| executionProfileHash | **执行画像指纹**：模型厂商 + 模型 ID/版本 + 采样参数（temperature 等）+ Agent 运行配置 + 影响结果的工具版本——换模型横向实验的 Run 差异标识；**不参与 Reusable 强校验**（画像不同不拒绝复用、不无条件失效上游已完成阶段——混合画像 Run 合法，仅作 Run 对比与 planOnly 提示） |
 | outputHash | 该阶段正式产物指纹 |
 | stageVersion | 阶段实现版本（脚本/Prompt 语义变化时递增） |
 | status | completed / partial / pending |
 | reusable | 复用判定结果 |
 
-复用判定式：`Reusable(Si) = InputMatch ∧ ConfigMatch ∧ OutputMatch ∧ VersionMatch`——**文件存在 ≠ 可复用**；strict 下四指纹任一不匹配即拒绝复用并 fail fast（不静默沿用、不静默重跑）。
+复用判定式：`Reusable(Si) = InputMatch ∧ ConfigMatch ∧ OutputMatch ∧ VersionMatch`——**文件存在 ≠ 可复用**（executionProfileHash 不参与强校验，见上表）。
+
+**strict 执行语义（只校验复用，不禁止主动重跑）【v3.2 补遗六】**：
+
+| 阶段类型 | 指纹不匹配时的行为 |
+|---|---|
+| startStage **之前**的复用阶段 | 四指纹任一不匹配 → **拒绝复用、fail fast**（不静默沿用） |
+| startStage 及其下游（计划内重跑） | **按计划重新执行**，不检查旧 configHash / stageVersion 是否匹配（主动改 Prompt 本就预期不匹配） |
+| 复用阶段的产物 Hash 与来源 Run 不一致 | **拒绝复用**（来源产物被篡改） |
+| 来源 Run 不存在 / Artifact Reference 损坏 | **拒绝执行**（fail fast） |
+
+strict = **严格验证复用**，不是禁止重新执行。
 
 ### 11.4 失效与复用矩阵（第一阶段：阶段级口径）
 
@@ -984,7 +998,7 @@ S11 人工裁决**不自动重跑**：历史决议保留 + 适用性检查（见
 | `mode` | all / resume / from-stage / retry（§7） |
 | `resumeFromRunId` | 指定复用哪个历史 Run |
 | `startStage` | from-stage 起点（如 S7） |
-| `reusePolicy` | `strict`（默认）/ `auto` |
+| `reusePolicy` | `strict`（默认：**只校验复用阶段**四指纹，不阻止 startStage 及下游的计划内重跑，见 11.3 strict 执行语义）/ `auto` |
 | `planOnly` | true：只输出执行计划（复用 ✓ / 重跑 / S11 适用性检查清单），人工确认后再执行 |
 
 ### 11.7 Run 级隔离与 Artifact Reference
@@ -1003,7 +1017,8 @@ S11 人工裁决**不自动重跑**：历史决议保留 + 适用性检查（见
 ```
 
 - `evidenceFingerprint` 只聚合**该 Atom 实际引用的证据**：entry.evidenceIds / conflictEvidenceIds 指向的 CLE/SVE 条目 + 其 dependencyFiles（按 M7 确定性排序拼接后哈希）；
-- from-stage 重跑后：历史决议**保留不删除**，Invalidation Planner 输出适用性检查清单——`evidenceFingerprint` 或被审批结论（baselineDifference / candidateDifference）发生变化的 Atom，其决议标记 `stale`，**必须重新人工确认，不得自动沿用、不得自动批准**；未变化 Atom 的决议继续有效。
+- from-stage 重跑后：历史决议**保留不删除**，Invalidation Planner 输出适用性检查清单——`evidenceFingerprint` 或被审批结论（baselineDifference / candidateDifference）发生变化的 Atom，其决议标记 `stale`，**必须重新人工确认，不得自动沿用、不得自动批准**；未变化 Atom 的决议继续有效；
+- **实现阶段【v3.2 补遗六】**：上述最小 stale 检查（指纹比对 + 适用性清单 + 不自动沿用）属**第一阶段能力**（from-stage 一旦重跑 S7+ 即需审批保护，与 §10 ③/G09 对齐）；第三阶段仅扩展 Atom 级增量复用下的复杂审批依赖传播（见 11.9）。
 
 ### 11.9 模块与落位（全部确定性脚本）
 
@@ -1011,8 +1026,10 @@ Stage Execution Manager（主 Workflow 之前执行）= Stage Manifest 采集 + 
 
 | 落地阶段 | 实现内容 |
 |---|---|
-| 第一阶段 | Stage Manifest、阶段依赖图、**最小跨 Run Artifact Reference（只读引用历史 Run 不可变产物）**、`from-stage`、strict 复用、plan-only |
+| 第一阶段 | Stage Manifest、阶段依赖图、**最小跨 Run Artifact Reference（只读引用历史 Run 不可变产物）**、`from-stage`、strict 复用（只校验复用阶段，见 11.3）、plan-only、**S11 最小 stale 检查**（Atom evidenceFingerprint 比对 → 适用性清单，不自动沿用，见 11.8） |
 | 第二阶段 | auto 失效传播、多来源 Run 引用与引用链解析优化 |
-| 第三阶段 | Atom 级增量复用、共享证据依赖传播、人工审批适用性检查 |
+| 第三阶段 | Atom 级增量复用、共享证据依赖传播、增量复用下的审批依赖传播 |
+
+**最小可验证实验（S1~S3，§10 ③ 的实证内容）**：①首次执行 S1→S2→S3 生成 run-001；②修改 S3 Registry 合并规则；③创建 run-002 指定 `from-stage=S3`（strict）；④验证 S1、S2 自 run-001 复用、S3 重新执行；⑤验证 run-001 全部文件 Hash 逐字节不变（不可变产物）；⑥相同计划重复执行 → 指纹一致、结果可复现。通过后再扩展 S4~S11——先验证**阶段管理器、跨 Run 引用、指纹计算、不可变产物**四个基础能力。
 
 第一阶段即解决核心诉求：修改第三阶段（S7~S9），不再重跑第一、第二阶段。

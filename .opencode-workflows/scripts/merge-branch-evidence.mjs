@@ -414,13 +414,17 @@ export function mergeBranchEvidence(input) {
   const entryCount = entriesByAtom.size
   const expectedAtomCount = expectedAtomIds.length
   // 不变式（§5.0 A）：entryCount + pendingAtomIds.length === expectedAtomCount
-  // 若存在既无 entry、也未被 run-status 声明为 pending 的原子，说明 run-status.parts[].atomIds 不完整，
-  // 无法精确判定归属 —— fail fast 要求补齐（不静默猜测，D5 禁止从缺条目反推执行状态）。
+  // 既无 entry、也未被 run-status 声明为 pending 的原子 = 「本轮未调度」（如 stageIds 收窄到单阶段）。
+  // 它属于**未完成执行状态**（不是业务结论），归入 pendingAtomIds；不能 fail，否则 stageIds 收窄不可用。
+  // 注意：这不是从「缺条目」反推业务结论（D5 禁止的是那件事），只是登记执行状态。
+  const warnings = []
   const uncovered = expectedAtomIds.filter((id) => !entriesByAtom.has(id) && !pendingAtomIds.includes(id))
   if (uncovered.length > 0) {
-    bad(
-      '统计不变式无法判定：' + uncovered.length + ' 个原子既无 entry 也未被 run-status 声明为 pending' +
-        '（请补齐 run-status.parts[].atomIds）：' + uncovered.slice(0, 10).join(',') + (uncovered.length > 10 ? ' …' : '')
+    for (const id of uncovered) pendingAtomIds.push(id)
+    pendingAtomIds.sort((a, b) => atomOrder.get(a) - atomOrder.get(b))
+    warnings.push(
+      '本轮未调度原子 ' + uncovered.length + ' 个（不在任何分片内，已归入 pendingAtomIds）：' +
+        uncovered.slice(0, 10).join(',') + (uncovered.length > 10 ? ' …' : '')
     )
   }
   const invariantOk = entryCount + pendingAtomIds.length === expectedAtomCount
@@ -475,7 +479,7 @@ export function mergeBranchEvidence(input) {
   return {
     ok: true,
     problems: [],
-    summary: { branch, entryCount, expectedAtomCount, evidenceCount: evidence.length, stats, coverage, completedParts: completedParts.length, unfinishedParts: unfinishedParts.length },
+    summary: { branch, entryCount, expectedAtomCount, evidenceCount: evidence.length, stats, coverage, completedParts: completedParts.length, unfinishedParts: unfinishedParts.length, warnings: warnings },
     evidence: { schemaVersion: 1, date: date, evidence: evidence, stats: { sveCount: evidence.length } },
     runStatus: runStatus,
     scopeEntries: branch === 'server' ? [...entriesByAtom.values()] : null,

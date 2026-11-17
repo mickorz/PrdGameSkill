@@ -19,7 +19,7 @@
   - v3.2 补遗六（2026-11-17，**不升版本号，Stage Reuse 执行契约收口冻结**）：①P0——**strict 语义收口**：strict = 严格验证复用而非禁止重跑——只校验 startStage 前的复用阶段四指纹（不匹配拒绝复用 fail fast）；startStage 及下游按计划重跑（不检查旧 configHash/stageVersion）；复用产物 Hash 与来源不一致拒绝复用；来源 Run 缺失/引用损坏拒绝执行（§11.3/§11.6/§7/G09 同步）；②P0——**S10 依赖改文件级清单**（§11.2/D34：Registry + CLE + client run-status/source-manifest + scope-index + SVE + server run-status/source-manifest + unified-atoms + business-behavior + difference-review + l7-classify，逐一对照生成逻辑）；③P1——**S11 最小 stale 检查提前到第一阶段**（evidenceFingerprint 比对 + 适用性清单 + 不自动沿用；第三阶段仅留增量复用下的审批依赖传播）；④P1——**新增 executionProfileHash**（模型/采样参数/Agent 配置/工具版本；不参与 Reusable 强校验、不无条件失效上游，只作 Run 间实验对比标识）；⑤§11.9 增最小可验证实验（S1~S3 六步）。**Stage Reuse 执行契约就此冻结。**
   - §12 落地（2026-11-17，**执行层细化，不升版本号**）：S1~S3 详细执行设计 + 最小 Stage Reuse 第一阶段工程实现交付（§10 开发顺序 ②+③）：七文件（主编排 + 三子流程 + build-requirement-registry.mjs + stage-specs.json + stage-reuse.mjs）+ 两 Example（19+18 断言全绿）+ 决策 D36~D41（物化复制/stage-specs 单一事实源/terms 确定性解析/validate-only 复用/中文值经 args-file 不进 shell）；§11.9 六步实验待用户触发（agent 链路不自跑）。
   - §13 落地（2026-11-17，**执行层细化，不升版本号**）：S4/S5 详细执行设计的**确定性脚本层**交付（§10 ④ 前半段，策略「确定性脚本 + Gold Set 双端先行」）：三脚本（prepare-verify-input / collect-source-manifest / merge-branch-evidence，客户端/服务端参数化共用）+ 两 Example（14+25 断言）+ 决策 D42~D45（SVE 编号统一归属原子 / ID 由 merge 全权分配 / 分片模式全清重建 / S5 精细落判沿用旧脚本）；Gold Set G01/G02/G05/G06/G07/G08 确定性等价已断言；S4/S5 agent Prompt 与编排、S6~S11 待接。
-  - §14~§19 落地（2026-11-17，**文档完成，不升版本号**）：§10 待写清单**全部章节交付**。§14 S6~S7（屏障三分 + 升级识别 D25 + 历史 append-only 幂等）、§15 S8~S9（审批状态机 D11 + scope 五级 + 六前置 D17 + 候选隔离 D23）、§16 S10~S11（索引/清单/stale + 影响集合 D20/D24 + 端级补证分片）、§17 失败恢复与状态机（四层状态 + 恢复矩阵 + Schema 兼容）、§18 迁移执行计划（脚本落位 + 旧资产保留/废弃策略）、§19 Agent Prompt 与编排接入契约（STEPS 扩展 + 六阶段 Prompt 要点 + 待用户触发项）。六新脚本 + 四新 Example（19+21+13+8），**Gold Set G01~G09 全链端到端回归已可执行**（`gold-set-audit.example.mjs`），全量 **179 断言全绿**；决策 D46~D50。
+  - §14~§19 落地（2026-11-17，**文档完成，不升版本号**）：§10 待写清单**全部章节交付**。§14 S6~S7（屏障三分 + 升级识别 D25 + 历史 append-only 幂等）、§15 S8~S9（审批状态机 D11 + scope 五级 + 六前置 D17 + 候选隔离 D23）、§16 S10~S11（索引/清单/stale + 影响集合 D20/D24 + 端级补证分片）、§17 失败恢复与状态机（四层状态 + 恢复矩阵 + Schema 兼容）、§18 迁移执行计划（脚本落位 + 旧资产保留/废弃策略）、§19 Agent Prompt 与编排接入契约（STEPS 扩展 + 六阶段 Prompt 要点 + 待用户触发项）。六新脚本 + 四新 Example（19+21+13+8），**Gold Set G01~G09 全链端到端回归已可执行**（`gold-set-audit.example.mjs`），全量 **180 断言全绿**；决策 D46~D50。
 
 ---
 
@@ -884,7 +884,7 @@ spec-workflow/requirement-audit/<date>/runs/<runId>/
 
 > **状态（经评审整改，2026-11-17）**：本章每行均已落地为对应章节与脚本，但**「章节完成」≠「已实跑验收」**。
 > 逐阶段真实状态（已实现并编排 / 已实现未编排 / 设计完成 / 已实跑验收）见 **§21.2**，成熟度分项见 **§21.4**。
-> 当前：S1~S11 均已「已实现并编排」，确定性测试 179 断言全绿；
+> 当前：S1~S11 均已「已实现并编排」，确定性测试 180 断言全绿；
 > **Agent 实跑与真实样本验收均未执行**（待用户触发），`spec-workflow/requirement-audit/` 尚无真实 Run。
 >
 > 章节索引：S1~S3 → §12；S4/S5 → §13；S6~S7 → §14；S8~S9 → §15；S10~S11 → §16；
@@ -1551,7 +1551,7 @@ Gold Set 场景映射（§9 矩阵）：
 
 **迁移原则**：旧 workflow 目录**只读不动**（保证历史产物可复现），新链路全部在新命名空间；共用的确定性脚本（symbol-index/match/verify-scope）按 D45 逐步改造而非重写。
 
-### 18.3 全量回归（179 断言，`node .opencode-workflows/scripts/<name>.example.mjs`）
+### 18.3 全量回归（180 断言，`node .opencode-workflows/scripts/<name>.example.mjs`）
 
 | Example | 断言 | 覆盖 |
 |---|---|---|
@@ -1566,7 +1566,7 @@ Gold Set 场景映射（§9 矩阵）：
 | `run-state.example.mjs` | 8 | 四层状态 + 恢复矩阵 + Schema 兼容 |
 | `decision-fingerprint.example.mjs` | 15 | **§21 整改**：决议 evidenceFingerprint（无关证据不连坐 / 依赖链变 stale）+ 三态 + stale 门 + 影响集合新旧证据 diff（old∪new / removed / degraded） |
 | `orchestration.example.mjs` | 17 | **§21 整改**：STEPS 覆盖 S1~S11 + specs 一致 + 子流程存在 + D34 12 项依赖 + S10 覆盖/泄漏/速查表闸门 + S7 汇总闸门 |
-| **合计** | **179** | |
+| **合计** | **180** | |
 
 ---
 
@@ -1612,7 +1612,7 @@ S4/S5 并行（共享同一并发配额）；S6 是同步屏障（必须等双�
 | S1~S3 真实模板跑通 | 同上首次执行 |
 | S4~S11 agent 链路 | 接入 STEPS 后按 §19.1 顺序实跑 |
 
-**红线**：agent 链路实跑前必须满足 §18.3 全量回归全绿（当前 179 断言，已全绿）；实跑只验证 agent 语义质量，不得改动确定性契约。
+**红线**：agent 链路实跑前必须满足 §18.3 全量回归全绿（当前 180 断言，已全绿）；实跑只验证 agent 语义质量，不得改动确定性契约。
 
 ### 19.4 本章决策记录（执行层细化，不改 v3.2 冻结基线）
 
@@ -1639,7 +1639,7 @@ S4/S5 并行（共享同一并发配额）；S6 是同步屏障（必须等双�
 | S6~S7 详细 | §14 + §19 | `6-merge-evidence.js` / `7-business-behavior.js` + `merge-evidence.mjs` / `assemble-behavior-parts.mjs` / `append-analysis-history.mjs`（19 断言） | 已实现并编排 |
 | S8~S9 详细 | §15 + §19 | `8-difference-review.js` / `9-classify-l7.js` + 两确定脚本（21 断言） | 已实现并编排 |
 | S10~S11 详细 | §16 + §19 | `10-unified-spec.js` / `11-human-review.js` + 6 确定脚本（13+17+15 断言） | 已实现并编排 |
-| 确定性脚本与 Gold Set | §18.3 | 11 套 Example（**179 断言全绿**），含 `gold-set-audit`（G01~G09）、`orchestration` | 已实现 |
+| 确定性脚本与 Gold Set | §18.3 | 11 套 Example（**180 断言全绿**），含 `gold-set-audit`（G01~G09）、`orchestration` | 已实现 |
 | 失败恢复与状态机 | §17 | `run-state.mjs`（8 断言）+ 主编排每阶段 `advance` + `mode=resume` | 已实现并编排 |
 | 迁移执行计划 | §18 | 脚本落位表 + 保留/废弃策略 | 完成 |
 | Stage Reuse 详细 | §11（冻结）+ §12.4 + §21 | `stage-reuse.mjs`（18 断言）+ specs 覆盖 S1~S11 | 已实现并编排 |
@@ -1703,7 +1703,7 @@ S4/S5 并行（共享同一并发配额）；S6 是同步屏障（必须等双�
 | 维度 | 当前状态 | 证据 |
 |---|---|---|
 | 文档设计 | 完成 | 本文件 21 章 |
-| 确定性脚本 | 完成并全绿 | 11 套 Example，**179 断言通过 / 0 失败** |
+| 确定性脚本 | 完成并全绿 | 11 套 Example，**180 断言通过 / 0 失败** |
 | 主 Workflow 编排 | **已接入 S1~S11**（`STEPS` + `stage-specs` 一致） | `orchestration` A1/A2/B1 全绿 |
 | Agent Prompt 全文 | 完成（5 个 agent 阶段） | 子 Workflow 内正文 |
 | Agent 实跑 | **未执行** | 需用户触发（agent 链路） |
@@ -1737,4 +1737,4 @@ S4/S5 并行（共享同一并发配额）；S6 是同步屏障（必须等双�
 | I2 | `mode=resume` 虽读 latest Run，但仍按默认 S1 调度 | 读 stage-manifest 找首个非 completed 阶段，改用 `effectiveStartIdx`；输入检查后移，仅查实际执行依赖 | `orchestration` G2；已完成阶段不再重跑 |
 | I3 | S4 全 not_found / S5 unknown/noServerEvidence 等合法空证据会在 Source Manifest 前抛错 | 空证据写空 Source Manifest（`repos: []`）后继续 merge，业务结论由 merge 表达 | `orchestration` G3；不再将无实现误判执行失败 |
 
-**二次复核**：11 套 Example **179 断言通过 / 0 失败**。真实 Agent 跑批仍为单独的验收工作，不在此处伪造执行结果。
+**二次复核**：11 套 Example **180 断言通过 / 0 失败**。真实 Agent 跑批仍为单独的验收工作，不在此处伪造执行结果。

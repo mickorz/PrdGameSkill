@@ -530,6 +530,27 @@ test('I1 幂等重跑：既有正式产物同合并键沿用原 id，不重编�
   assert.deepEqual(r2.evidence.evidence.map((e) => e.id).sort(), ids1, '同合并键必须沿用原 id（幂等）')
 })
 
+// ============================================================
+// J：stageIds 收窄（未调度原子归入 pending，不阻断）
+// ============================================================
+test('J1 stageIds 收窄：仅跑 ST-C01 分片时，ST-C02 原子归入 pendingAtomIds 而不报错', () => {
+  const runDir = setupRun('run-scope')
+  // 只写 ST-C01 分片；ST-C02 完全未调度
+  const dir = path.join(runDir, '2-client/runtime/verify-output')
+  fs.mkdirSync(dir, { recursive: true })
+  writeJson(path.join(dir, 'ST-C01-cp01.json'), part1Entry())
+  writeJson(path.join(runDir, '2-client/runtime/run-status.json'), {
+    schemaVersion: 1, branch: 'client', date: DATE, runStatus: 'partial',
+    parts: [{ partFile: 'ST-C01-cp01.json', stageId: 'ST-C01', status: 'completed', atomIds: ['AT-ST-C01-001', 'AT-ST-C01-002'] }],
+  })
+  const r = runMerge(runDir, manifest1)
+  assert.equal(r.ok, true, 'stageIds 收窄不应阻断：' + JSON.stringify(r.problems))
+  assert.equal(r.summary.entryCount, 2)
+  assert.deepEqual(r.summary.coverage.pendingAtomIds, ['AT-ST-C02-001'], '未调度原子必须归入 pending')
+  assert.equal(r.summary.entryCount + r.summary.coverage.pendingAtomIds.length, r.summary.expectedAtomCount, '不变式仍成立')
+  assert.ok((r.summary.warnings || []).some((w) => w.includes('本轮未调度原子')), '必须留下未调度告警')
+})
+
 fs.rmSync(TMP, { recursive: true, force: true })
 
 console.log('merge-branch-evidence.example：' + (process.exitCode ? '存在失败' : '全部通过'))

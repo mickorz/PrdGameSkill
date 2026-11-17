@@ -38,6 +38,10 @@ const runDir = String(A.runDir || '').trim()
 if (!runDir) {
   throw new Error('runDir 必填（run 根目录，由主编排 game-requirement-audit 创建后传入）')
 }
+const date = String(A.date || '').trim()
+if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+  throw new Error('date 必填（YYYY-MM-DD，结构重算闸门 --date 需要；由主编排传入）')
+}
 const templatePath =
   A.templatePath || 'templates/【杭州麻将】核心流程杭州麻将好友房AI-核心策划补齐版.md'
 const analysisModel =
@@ -203,7 +207,7 @@ for (const s of stageSections) {
 const recountPath = runDir + '/1-registry/runtime/atom-recount.json'
 const validateCmd =
   'node ".opencode-workflows/scripts/build-requirement-registry.mjs" --run-dir "' + runDir +
-  '" --validate-only --recount-out "' + recountPath + '"'
+  '" --date "' + date + '" --validate-only --recount-out "' + recountPath + '"'
 const validateOk = await commandSuccess(validateCmd, 300000)
 if (!validateOk) {
   throw new Error('拆解分片结构重算闸门未通过（ID/行号落界/枚举/覆盖/统计问题，明细见上方命令日志；重跑 from-stage=S2 幂等覆写分片）')

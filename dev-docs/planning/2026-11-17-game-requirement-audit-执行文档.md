@@ -12,7 +12,8 @@
   - v3.1（2026-11-17 评审修订三·收口）：**P1×3**——①S4/S5 统计口径收口（entry=已完成原子恰一条，coverage 不变式 `entryCount + pendingAtomIds = expectedAtomCount`，条目去 pending 双写，S4/S5 同契约）；②调用链依赖追踪闭环（CLE/SVE 增 `dependencyFiles` + `repoId`，Source Manifest 按 repoId 分仓统一采集证据文件与依赖文件 hash，依赖链复核有数据支撑）；③conflict-fast 升级 full 的历史与审批语义（`baselineDifference` 历史保全 + `candidateDifference` 候选双写 + `previousDifference` 锚历史基线 + `analysis-history.json` append-only；conflict-fast 条目非冲突字段允许为空）。**Gold Set 扩至八场景（G06~G08 源码时效）并升级为自动化回归测试**。整体架构与四大契约不再调整；
   - v3.2（2026-11-17 评审修订四·终版·冻结）：**Schema 终修×2**——①共享证据多原子关联（CLE/SVE 证据 `atomId` 单值 → `atomIds[]` 列表：证据只存一份、多原子引用、追加引用只扩 atomIds；merge 按证据指针（repoId+file+location+symbol）去重（保留首 id、atomIds 并集）；引用一致性校验——解决单 atomId 与「禁止复制条目」的结构矛盾）；②升级识别确定性判定式（`upgraded = 上轮 conflict-fast ∧ 本轮 full ∧ 上轮基线 conflict`；`previousRunId` 逐原子解析自 analysis-history 最近记录，禁止跨原子取值；同 run 重放不重复追加 history）。架构与四大契约不再调整，冻结；
   - v3.2 补遗（2026-11-17，**不升版本号**）：证据确定性合并契约落 §5.0（并行分片合并顺序无关性：分片按文件名排序读取、证据按指针字典序处理、同指针合并 ID 归属 **Registry 最早支撑原子**（替代原「保留首个 id」的顺序依赖表述）、atomIds 按 Registry 顺序去重、乱序不变式并入 Gold Set 断言）。架构基线维持 v3.2 冻结，进入工程实现；
-  - v3.2 补遗二（2026-11-17，**不升版本号**）：①跨平台确定性排序标准（§5.0 B / M7：码元序比较禁区域排序、路径分隔符统一 `/`、不做大小写折叠、location 规范格式 `<file>:<起>-<止>`、空 symbol 空值排序规则、atomIds 只用 Registry 原始顺序）；②证据语义去重边界（§5.0 B / M8 + CLE/SVE 新增 `claimKey` 字段：指针相同且 claimKey 相同才合并，同指针不同 claimKey 保留独立条目——**相同代码位置 ≠ 相同证据语义**，不为去重丢失证据语义）；③G05 扩 Agent 完成顺序变化与跨进程重放断言；④§10 前置条件版本引用统一 v3.2。架构基线维持 v3.2 冻结。
+  - v3.2 补遗二（2026-11-17，**不升版本号**）：①跨平台确定性排序标准（§5.0 B / M7：码元序比较禁区域排序、路径分隔符统一 `/`、不做大小写折叠、location 规范格式 `<file>:<起>-<止>`、空 symbol 空值排序规则、atomIds 只用 Registry 原始顺序）；②证据语义去重边界（§5.0 B / M8 + CLE/SVE 新增 `claimKey` 字段：指针相同且 claimKey 相同才合并，同指针不同 claimKey 保留独立条目——**相同代码位置 ≠ 相同证据语义**，不为去重丢失证据语义）；③G05 扩 Agent 完成顺序变化与跨进程重放断言；④§10 前置条件版本引用统一 v3.2。架构基线维持 v3.2 冻结；
+  - v3.2 补遗三（2026-11-17，**不升版本号**）：产物一级子目录加**阶段序数字前缀**——`1-registry/`（阶段一：需求事实源）、`2-client/`（阶段二A）、`3-server/`（阶段二B）、`4-analysis/`（阶段三）、`5-specs/`（阶段四）、`6-review/`（阶段五），**目录排序即主链执行顺序**；全文路径引用同步更新；各分支内 `runtime/` 为执行状态目录不带前缀；§3 目录树 `retry-input` 注释更正为 atomIds 反查。架构基线维持 v3.2 冻结。
 
 ---
 
@@ -94,13 +95,13 @@ S6 屏障内部判定路径（v3）：
 
 ```
 spec-workflow/requirement-audit/<date>/
-├── registry/                          # 阶段一：需求事实源（唯一 Atom ID 产生地）
+├── 1-registry/                        # 阶段一：需求事实源（唯一 Atom ID 产生地）
 │   ├── requirement-registry.json      # S3：统一原子注册表（核心契约 #1）
 │   ├── identity-map.json              # S3：术语/章节/跨切面身份映射
 │   └── runtime/
 │       ├── state/scan.json            # S1：章节扫描结果（保留现结构）
 │       └── atom-parts/                # S2：原子拆解分片 <stageId>-ap<NN>.json
-├── client/                            # 阶段二A：客户端证据体系（独立，不被服务端覆盖）
+├── 2-client/                          # 阶段二A：客户端证据体系（独立，不被服务端覆盖）
 │   ├── client-evidence.json           # S4：客户端证据正式产物（核心契约 #2）
 │   └── runtime/
 │       ├── run-status.json            # S4：分支执行状态（pending/timeout/failed 分片清单）
@@ -108,7 +109,7 @@ spec-workflow/requirement-audit/<date>/
 │       ├── verify-input/              # S4 输入分片 <stageId>-cp<NN>.json + manifest.json
 │       ├── verify-output/             # S4 落判分片 <stageId>-cp<NN>.json
 │       └── client-recount.json        # 重算闸门产物
-├── server/                            # 阶段二B：服务端证据体系（纯服务端三目录）
+├── 3-server/                          # 阶段二B：服务端证据体系（纯服务端三目录）
 │   ├── symbol-index.json              # S5-1：符号索引（保留）
 │   ├── scope-index.json               # S5-3：作用域判定（核心契约 #3 组成）
 │   ├── server-evidence.json           # S5-3：服务端证据 SVE（核心契约 #3 组成）
@@ -120,7 +121,7 @@ spec-workflow/requirement-audit/<date>/
 │       ├── verify-output/             # 保留：服务端落判分片 <stageId>-p<NN>.json
 │       ├── verify-recount.json
 │       └── review-output/             # S8 复核建议分片（迁到本目录，双端统一复核输入）
-├── analysis/                          # 阶段三：统一分析
+├── 4-analysis/                        # 阶段三：统一分析
 │   ├── unified-atoms.json             # S6：统一 Atom 视图（双端证据挂接 + pending 标记 + 分析路径 + analysisRunId）
 │   ├── business-behavior.json         # S7：业务行为还原 + 差异初判基线 + 升级候选
 │   ├── analysis-history.json          # S7：分析历史（append-only，历史轮记录只增不改）【v3.1 新增】
@@ -128,7 +129,7 @@ spec-workflow/requirement-audit/<date>/
 │   ├── l7-classify.json               # S9：L7 分类（核心契约 #4 组成）
 │   └── runtime/spec-check/
 │       └── l7-check-report.md         # 五道闸门报告
-├── specs/                             # 阶段四：规格生成（结构对齐原 1-spec）
+├── 5-specs/                           # 阶段四：规格生成（结构对齐原 1-spec）
 │   ├── stages/spec_stage_ST-Cxx.md    # 技术实现视图：阶段规格文档
 │   ├── feature_index.json             # 统一索引（schema v3，双端字段）
 │   ├── stage_manifest.md              # 阶段速查表
@@ -140,15 +141,16 @@ spec-workflow/requirement-audit/<date>/
 │       ├── state/doc-parts/、parts/、planner-parts/   # 文档分片（保留分片写盘机制）
 │       ├── build-config.json          # 装配配置（中文路径经此传递）
 │       └── spec_check/verify-report.md
-└── review/                            # 阶段五：人工裁决
+└── 6-review/                          # 阶段五：人工裁决
     ├── decisions.json                 # 决议记录（采纳/修改/否决/挂起 + retryScope + 影响集合）
-    └── runtime/retry-input/           # 补证重跑分片（端级 client/server/both；影响集合由 evidenceIds 反查）
+    └── runtime/retry-input/           # 补证重跑分片（端级 client/server/both；影响集合由 atomIds 反查）
 ```
 
 目录规则（沿用现约定）：
 
-- 读写分离：`registry/`、双端正式产物对查证 agent 只读；agent 只写自己的 runtime 分片；
-- 断点续跑：正式产物已存在且分片齐全时支持增量/幂等重跑；`specs/` 内已存在 `feature_index.json` 时 fail fast（换新目录或清理）；
+- 目录命名【v3.2 补遗三】：一级子目录按主链阶段序加**数字前缀**（`1-registry` → `2-client` → `3-server` → `4-analysis` → `5-specs` → `6-review`），**目录排序即主链执行顺序**；各分支内 `runtime/` 为执行状态目录，不带前缀；
+- 读写分离：`1-registry/`、双端正式产物对查证 agent 只读；agent 只写自己的 runtime 分片；
+- 断点续跑：正式产物已存在且分片齐全时支持增量/幂等重跑；`5-specs/` 内已存在 `feature_index.json` 时 fail fast（换新目录或清理）；
 - JSON 一律 UTF-8 无 BOM、LF、1 空格缩进；`date` 一律经 args/配置文件传递，禁止脚本内取当前时间。
 
 ## 4.（并入 §3 与 §5）产物目录见 §3，逐步骤结构见 §5
@@ -188,7 +190,7 @@ spec-workflow/requirement-audit/<date>/
 ### S1 需求扫描（scan-template）
 
 - 脚本来源：`output-spec-generate/1-scan-template.js` 原样迁移。
-- 产物：`registry/runtime/state/scan.json`【保留】
+- 产物：`1-registry/runtime/state/scan.json`【保留】
 
 ```json
 {
@@ -210,7 +212,7 @@ spec-workflow/requirement-audit/<date>/
 
 - 来源：`2-verify-stages.js` 的「第一步 拆原子需求」独立成步；**只拆解、不查证**。
 - 输入：`scan.json`（内存链式）+ 模板原文行段 + 名词章节（terms）。
-- 产物：`registry/runtime/atom-parts/<stageId>-ap<NN>.json`【新增】（agent 按阶段并行写盘，分片仅按阶段切，不拆散功能点）
+- 产物：`1-registry/runtime/atom-parts/<stageId>-ap<NN>.json`【新增】（agent 按阶段并行写盘，分片仅按阶段切，不拆散功能点）
 
 ```json
 {
@@ -254,7 +256,7 @@ spec-workflow/requirement-audit/<date>/
 ### S3 注册表定稿（identity-map + requirement-registry）
 
 - 来源：新增确定性脚本（合并 + 校验 + 统计重算，机制参照 `recount-verify-parts.mjs` / `merge-verify-output.mjs`）。
-- 产物 1：`registry/requirement-registry.json`【新增】——**核心契约 #1：唯一需求事实源**
+- 产物 1：`1-registry/requirement-registry.json`【新增】——**核心契约 #1：唯一需求事实源**
 
 ```json
 {
@@ -283,7 +285,7 @@ spec-workflow/requirement-audit/<date>/
 ```
 
 - 铁律：**查证字段（verdict/applicability/evidence…）永远不进 Registry**；`verificationScope` 是需求侧声明字段，双端查证只读不写；Registry 定稿后 Atom ID 与 verificationScope 后续任何阶段不得增改（变更需重新拆解整链重跑）。
-- 产物 2：`registry/identity-map.json`【新增】——双端共享的身份与术语映射
+- 产物 2：`1-registry/identity-map.json`【新增】——双端共享的身份与术语映射
 
 ```json
 {
@@ -302,7 +304,7 @@ spec-workflow/requirement-audit/<date>/
 
 - 来源：`2-verify-stages.js` 第二/三步独立成步；证据条目形态吸收 S8 `3-verify-scope-client.js` 的经验（layer、id 代际隔离、共享证据引用不复制），但文件独立于 server-evidence。
 - 输入：`requirement-registry.json`（确定性投影成查证输入分片，只含需求侧字段；全量原子——技术视图需要客户端职责，不按 verificationScope 裁剪）+ `source-code/client/Code`、`source-code/client/Fgui`。
-- 产物 1：`client/client-evidence.json`【新增】——**核心契约 #2：客户端证据体系**
+- 产物 1：`2-client/client-evidence.json`【新增】——**核心契约 #2：客户端证据体系**
 
 ```json
 {
@@ -350,7 +352,7 @@ spec-workflow/requirement-audit/<date>/
 }
 ```
 
-- 产物 2：`client/runtime/run-status.json`【v2 新增】——**分支执行状态（pending 的唯一事实源）**
+- 产物 2：`2-client/runtime/run-status.json`【v2 新增】——**分支执行状态（pending 的唯一事实源）**
 
 ```json
 {
@@ -367,7 +369,7 @@ spec-workflow/requirement-audit/<date>/
 ```
 
 - 状态语义：`pending` 尚未完成（未调度/未落盘）；`completed` 正常完成；`failed` 执行失败；`timeout` 执行超时。**pending/failed/timeout 分片不产 entry**（该批原子无条目、进 `coverage.pendingAtomIds`），分支不中止——runStatus=partial 放行到 S6。
-- 产物 3：`client/runtime/source-manifest.json`【v3 新增，v3.1 扩展】——**源码版本清单（确定性采集，repoId 分仓）**
+- 产物 3：`2-client/runtime/source-manifest.json`【v3 新增，v3.1 扩展】——**源码版本清单（确定性采集，repoId 分仓）**
 
 ```json
 {
@@ -387,15 +389,15 @@ spec-workflow/requirement-audit/<date>/
 - 采集机制【v3/v3.1】：确定性脚本 `collect-source-manifest.mjs` 在**分支 merge 时**运行——先归集 runtime 分片引用的全部文件（证据文件 + dependencyFiles 依赖文件），再按 repoId 分仓读取 commit SHA、计算 contentHash；无 git 仓的目录 commit 记 `unversioned`。**agent 严禁执行 git 命令、严禁自填 SHA/hash**：CLE 的 `sourceRevision/contentHash/verifiedAt` 与 `dependencyFiles[].contentHash` 由 merge 脚本从 manifest 按 **（repoId, file）联合匹配**回填（避免不同仓库相同相对路径匹配错误）；客户端与服务端分别记录各自源码仓版本，不共用一个 SHA。
 - CLE 编号与共享证据规则【v3.2】：`CLE-<atomId>-NN`（单原子证据注册于该原子命名空间）；`atomIds` 记录全部支撑原子——同一证据服务多原子时**只存一条**（追加引用只扩 `atomIds`，禁止复制条目）；merge 按**规范化合并键（repoId + file + location + symbol + claimKey）去重**，合并条目 ID 归属 **Registry 最早支撑原子**（确定性合并契约 M1~M8，见 §5.0 B——指针相同且 claimKey 相同才合并，同指针不同 claimKey 保留独立条目，与分片完成顺序无关）；同 id 不同合并键 = id 劫持 fail；补证重跑新增证据用 `CLE-<atomId>-R<k>-NN` 代际隔离。**SVE 采用相同契约**。
 - 自洽闸门：`verdict != not_found` 必带证据、`not_found` 不得带证据；`directConflict=true` 必带 conflictEvidenceIds（非空且 verdict != not_found）；**引用一致性**（entry 的 evidenceIds / conflictEvidenceIds ⊆ evidence ids，且被引证据的 `atomIds` 必须包含该 entry 的 atomId）；每条证据 `claimKey` 非空（M8）；**统计口径不变式**（§5.0 A：entryCount + pendingAtomIds = expectedAtomCount，coverage 与 run-status 重算一致）；dependencyFiles 的 file 必须能被 manifest 覆盖；证据合并键去重与 id 唯一（同 id 不同合并键 fail；确定性合并按 §5.0 B，ID 归属 Registry 最早支撑原子）。
-- runtime 分片：`client/runtime/verify-input|verify-output/<stageId>-cp<NN>.json` + `manifest.json`（机制同 server 分支，含落盘闸门与重算闸门）。
+- runtime 分片：`2-client/runtime/verify-input|verify-output/<stageId>-cp<NN>.json` + `manifest.json`（机制同 server 分支，含落盘闸门与重算闸门）。
 
 ---
 
 ### S5 服务端查证（server-verify）【阶段二B】
 
 - 来源：`1-scan-server.js`、`2-match-atoms.js`、`3-verify-scope.js` 内部三步链整体保留，改动：①匹配输入基线从 `feature_index.json` 换成 `requirement-registry.json`；②merge 闸门按 run-status 分段校验；③SVE 收敛纯服务端；④废弃旧 S8 客户端补证链路（3C `-pc` 分片、client 层 SVE、scope=client 条目）——纯客户端需求由 Registry `verificationScope=client` 表达，客户端补证走 S4 重跑。
-- 产物 1：`server/symbol-index.json`【保留】（stats：files/classes/methods/functions/configKeys/symbols）。
-- 产物 2：`server/scope-index.json`【保留 + v3 收敛 + v3.1 统计契约】——**核心契约 #3 组成：服务端作用域**
+- 产物 1：`3-server/symbol-index.json`【保留】（stats：files/classes/methods/functions/configKeys/symbols）。
+- 产物 2：`3-server/scope-index.json`【保留 + v3 收敛 + v3.1 统计契约】——**核心契约 #3 组成：服务端作用域**
 
 ```json
 {
@@ -420,7 +422,7 @@ spec-workflow/requirement-audit/<date>/
 ```
 
 - **pending ≠ unknown**：`unknown` = 服务端**已查证**但证据不足（业务结论，有 entry）；查证**未完成**（分片 timeout/failed/pending）= 无 entry + 进 `coverage.pendingAtomIds`（执行状态，由 run-status 表达）。两者来源独立，禁止互相推断。
-- 产物 3：`server/server-evidence.json`【保留 + v3 收敛】——**核心契约 #3 组成：服务端证据（SVE，纯服务端三目录）**
+- 产物 3：`3-server/server-evidence.json`【保留 + v3 收敛】——**核心契约 #3 组成：服务端证据（SVE，纯服务端三目录）**
 
 ```json
 {
@@ -442,8 +444,8 @@ spec-workflow/requirement-audit/<date>/
 ```
 
 - **客户端证据不再进 SVE**【v3】：`client_code/client_fgui` 两 layer 废弃——客户端证据唯一载体是 `client-evidence.json` 的 CLE。旧 `3-verify-scope-client.js`（3C）及其 `-pc` 分片、scope=client 条目全部废弃；客户端视觉冲突改由 S4 的 `directConflict` + CLE 直证承载（S6 冲突快速路径消费）。
-- 产物 4：`server/runtime/run-status.json`【v2 新增】——结构同 S4 产物 2（`branch: "server"`，`parts[].partFile` 为 `<stageId>-p<NN>.json`）。
-- 产物 5：`server/runtime/source-manifest.json`【v3 新增，v3.1 扩展】——结构同 S4 产物 3（`branch: "server"`，服务端仓单仓一条 `repoId: "server"`）。
+- 产物 4：`3-server/runtime/run-status.json`【v2 新增】——结构同 S4 产物 2（`branch: "server"`，`parts[].partFile` 为 `<stageId>-p<NN>.json`）。
+- 产物 5：`3-server/runtime/source-manifest.json`【v3 新增，v3.1 扩展】——结构同 S4 产物 3（`branch: "server"`，服务端仓单仓一条 `repoId: "server"`）。
 - 产物 6：runtime 中间产物 `verify-input/`、`match-output/`、`verify-output/`【保留】（仅服务端 `-p<NN>` 分片）。
 - 闸门：全部沿用（落盘、双写 dr.scopeApplicability==applicability、SVE 形状/id 劫持、recount 重算、证据文件范围硬约束三根目录）+ v2 调整（merge 按 run-status 分段校验）+ v3 收敛闸门（SVE layer 只允许服务端三目录、applicability 只允许四值、directConflict 必带 conflictEvidenceIds）+ v3.1 统计口径不变式（同 §5.0 A）+ **v3.2 共享证据去重与引用一致性（同 CLE 契约，确定性合并按 §5.0 B M1~M8）**。
 
@@ -452,8 +454,8 @@ spec-workflow/requirement-audit/<date>/
 ### S6 证据汇总（merge-evidence）【阶段三，同步屏障】
 
 - 来源：扩展 `merge-verify-output.mjs`（客户端证据合并段 + Registry 对齐段 + run-status 消费段 + 分析路径判定段 + analysisRunId 生成；复核段拆给 S8）。
-- 输入：`requirement-registry.json` + `client-evidence.json` + `scope-index.json` + `server-evidence.json` + 双端 `runtime/run-status.json` + `analysis/analysis-history.json`（runId 递增依据）。
-- 产物：`analysis/unified-atoms.json`【新增】——统一 Atom 视图（S7/S8/S9/S10 的共同输入）
+- 输入：`requirement-registry.json` + `client-evidence.json` + `scope-index.json` + `server-evidence.json` + 双端 `runtime/run-status.json` + `4-analysis/analysis-history.json`（runId 递增依据）。
+- 产物：`4-analysis/unified-atoms.json`【新增】——统一 Atom 视图（S7/S8/S9/S10 的共同输入）
 
 ```json
 {
@@ -503,7 +505,7 @@ spec-workflow/requirement-audit/<date>/
 
 - 来源：新增 agent 阶段（按阶段分片并行）；差异初判规则继承 v4 需求 6.1 口径。
 - 输入：`unified-atoms.json`（conflict-fast + full 原子；blocked 原子除外）。
-- 产物 1：`analysis/business-behavior.json`【新增 + v3.1 扩展】
+- 产物 1：`4-analysis/business-behavior.json`【新增 + v3.1 扩展】
 
 ```json
 {
@@ -555,7 +557,7 @@ spec-workflow/requirement-audit/<date>/
   - **conflict 判定不受 verificationScope 限制**——任一端矛盾证据即可立 conflict；
   - **consistent（可判一致）受 verificationScope 约束**：必要端查证完成且证据同构才可判 consistent；任一必要端证据不足 → unverified（番数案例：客户端有番数显示逻辑、服务端 unknown → unverified，绝不可 verified）；
   - conflict 必带 baselineDetail + 对应职责域证据（CLE/SVE）。
-- 产物 2：`analysis/analysis-history.json`【v3.1 新增】——**分析历史（append-only，由确定性脚本落盘，agent 不写）**
+- 产物 2：`4-analysis/analysis-history.json`【v3.1 新增】——**分析历史（append-only，由确定性脚本落盘，agent 不写）**
 
 ```json
 {
@@ -579,7 +581,7 @@ spec-workflow/requirement-audit/<date>/
 
 - 来源：`4-review-difference.js` 复核建议段迁移 + 输入从「服务端单栏」改为「双端双栏」；复核规则白名单沿用四条前缀，双端合并口径下的新增前缀（含升级降级专用，如 conflict-not-sustained）在详细章节定稿。
 - 输入：`unified-atoms.json` + `business-behavior.json`（含升级候选）。
-- 产物：`analysis/difference-review.json`【扩展】——**核心契约 #4 组成：统一差异复核**
+- 产物：`4-analysis/difference-review.json`【扩展】——**核心契约 #4 组成：统一差异复核**
 
 ```json
 {
@@ -625,7 +627,7 @@ spec-workflow/requirement-audit/<date>/
 ### S9 L7 分类（l7-classify）
 
 - 来源：`classify-l7.mjs` 保留；输入四件套的基线从 `feature_index.json` 换成 `requirement-registry.json`（previousDifference 对齐 business-behavior 基线）；scope 解析与 client verified 前置条件按 v2/v3 扩展。
-- 产物：`analysis/l7-classify.json`【保留】——**核心契约 #4 组成：L7 分类**
+- 产物：`4-analysis/l7-classify.json`【保留】——**核心契约 #4 组成：L7 分类**
 
 ```json
 {
@@ -689,7 +691,7 @@ spec-workflow/requirement-audit/<date>/
 - 来源：`3-produce-outputs.js` + `4-assemble-verify.js` 整体移到阶段四，写作输入从「客户端单端」改为「统一视图」。
 - 五类交付物（对应设计文档 mermaid 的五个输出节点）：
 
-**① 技术实现视图**（`specs/`）
+**① 技术实现视图**（`5-specs/`）
 - `stages/spec_stage_ST-Cxx.md`【扩展】：阶段规格文档，原子项新增双端区块——客户端职责 / 服务端职责 / 双端协作 / 配置生效条件 / 证据定位（CLE+SVE）/ 实际实现差异；blocked 原子标注「查证未完成（哪端 + 执行状态）」；conflict-fast 已立冲突的原子呈现冲突结论 + 另一端查证状态 + 升级候选（若有，标注「候选待审批」）；
 - `feature_index.json`【扩展 schema v3】：统一索引，原子项即设计文档 4.1 的统一 Atom 结构：
 
@@ -705,17 +707,17 @@ spec-workflow/requirement-audit/<date>/
 - `stage_manifest.md`【扩展】：速查表增双端分布列；
 - `技术补充版.md`【保留】：模板复制后补充完整版（补全内容改由统一视图供料）。
 
-**② 策划业务视图**（`specs/策划版.md`）【保留投影口径】
+**② 策划业务视图**（`5-specs/策划版.md`）【保留投影口径】
 - 只消费 `business-behavior.json` + `l7-classify.json`（l7 四口径差异行规则沿用 v4；blocked 原子按「规则待验证：查证未完成」口径呈现）；技术字段结构性隔离，泄漏扫描闸门沿用。
 
 **③ 规则验证报告**
-- `specs/runtime/spec_check/verify-report.md`【保留】（机械校验七维度，索引统计源换统一视图）；
-- `analysis/runtime/spec-check/l7-check-report.md`【保留】（L7 五道闸门 + 前置条件校验结果）。
+- `5-specs/runtime/spec_check/verify-report.md`【保留】（机械校验七维度，索引统计源换统一视图）；
+- `4-analysis/runtime/spec-check/l7-check-report.md`【保留】（L7 五道闸门 + 前置条件校验结果）。
 
-**④ 需求追溯索引**（`specs/trace_index.json`）【保留】
+**④ 需求追溯索引**（`5-specs/trace_index.json`）【保留】
 - 条目 `{ atomId, sourceStage, sourceRule, plannerSection, plannerPart, evidenceCount, required, reviewStatus }`；`sourceRule` 增强为可直接回跳 Registry 行号。
 
-**⑤ 待处理问题清单**（`specs/pending-list.md`）【新增 + 细化】
+**⑤ 待处理问题清单**（`5-specs/pending-list.md`）【新增 + 细化】
 - 汇总（按 verificationScope 区分必要端缺口）：
   - blocked 原子：必要端 + 执行状态（timeout/failed/pending）+ 建议补证端（retryScope）；
   - `l7=verification_required`：缺什么证据 / 依赖什么配置（含非必要端 unknown 参考信息）；
@@ -745,7 +747,7 @@ spec-workflow/requirement-audit/<date>/
   3. 反查被更新证据的 `atomIds`（支撑原子全列——含非补证目标原子，共享证据依赖，如同一配置判定函数 SVE-001 的 atomIds 含 AT-001/AT-002）；
   4. 影响集合 = T ∪ 反查集合；
   5. S6~S9 对影响集合重算（新一轮 analysisRunId；升级路径可变：blocked → full/conflict-fast、conflict-fast → full；S8 幂等口径沿用）；S10 只重生成影响集合覆盖的阶段文档/索引/策划版分片。
-- 产物 1：`review/decisions.json`【新增】——决议记录：
+- 产物 1：`6-review/decisions.json`【新增】——决议记录：
 
 ```json
 { "schemaVersion": 1, "date": "",
@@ -759,18 +761,18 @@ spec-workflow/requirement-audit/<date>/
   ] }
 ```
 
-- 产物 2：补证分片 `review/runtime/retry-input/`【保留 + 扩展】：双端统一补证输入（retryHint 含前轮缺口 + 端标识；客户端补证分片产 CLE，服务端补证分片产 SVE 四值作用域）。
-- 产物 3：approved 合并：`reviewStatus=approved` 条目经确定性合并进正式索引（v3 模式机制保留，输出目录为 `specs/`），pending/rejected 不入正式索引。
+- 产物 2：补证分片 `6-review/runtime/retry-input/`【保留 + 扩展】：双端统一补证输入（retryHint 含前轮缺口 + 端标识；客户端补证分片产 CLE，服务端补证分片产 SVE 四值作用域）。
+- 产物 3：approved 合并：`reviewStatus=approved` 条目经确定性合并进正式索引（v3 模式机制保留，输出目录为 `5-specs/`），pending/rejected 不入正式索引。
 - 闸门：审批状态独立校验、v2/历史基线只读（合并输出目录 ≠ 基线目录）、retryScope 与目标原子必要端一致性校验、影响集合完整性校验（反查集合必须覆盖共享证据全部引用原子）。
 
 ## 6. 四大核心数据契约汇总（设计文档「下一步」交付）
 
 | 契约 | 产物文件 | 产生步骤 | 消费步骤 | 唯一写者 | 关键字段（v3.1） |
 |---|---|---|---|---|---|
-| #1 Requirement Registry | `registry/requirement-registry.json` | S2→S3 | S4/S5/S6/S7/S8/S9/S10（只读） | S3 确定性脚本（Atom ID 唯一产生地=S2） | atomId / rule / businessBehavior / source / **verificationScope** |
-| #2 Client Evidence | `client/client-evidence.json` + `runtime/run-status.json` + `runtime/source-manifest.json` | S4 | S6/S7/S8/S10 | S4 merge 脚本（agent 只写 runtime 分片） | verdict / observedBehavior / directConflict / **coverage（不变式契约）** / CLE（**atomIds 多原子共享** + **claimKey 语义键** + **repoId** + 版本三字段 + **dependencyFiles**） |
-| #3 Server Evidence | `server/scope-index.json` + `server/server-evidence.json` + `runtime/run-status.json` + `runtime/source-manifest.json` | S5 | S6/S7/S8/S9/S10 | merge-verify-output.mjs 扩展版 | applicability（四值）/ directConflict / **coverage（不变式契约）** / SVE（layer 服务端三目录 + **atomIds 多原子共享** + **claimKey 语义键** + **repoId** + 版本三字段 + **dependencyFiles**） |
-| #4 Unified Difference | `analysis/difference-review.json` + `analysis/l7-classify.json` + `analysis/analysis-history.json` | S7→S8→S9 | S10/S11 | S7/S8 merge + S9 classify（确定性）+ history append | previousDifference 锚基线（升级原子锚历史基线）/ **candidateDifference 候选隔离** / evidenceScopes / 审批状态转换 / scope 解析含 verificationScope + client verified 前置条件 |
+| #1 Requirement Registry | `1-registry/requirement-registry.json` | S2→S3 | S4/S5/S6/S7/S8/S9/S10（只读） | S3 确定性脚本（Atom ID 唯一产生地=S2） | atomId / rule / businessBehavior / source / **verificationScope** |
+| #2 Client Evidence | `2-client/client-evidence.json` + `runtime/run-status.json` + `runtime/source-manifest.json` | S4 | S6/S7/S8/S10 | S4 merge 脚本（agent 只写 runtime 分片） | verdict / observedBehavior / directConflict / **coverage（不变式契约）** / CLE（**atomIds 多原子共享** + **claimKey 语义键** + **repoId** + 版本三字段 + **dependencyFiles**） |
+| #3 Server Evidence | `3-server/scope-index.json` + `3-server/server-evidence.json` + `runtime/run-status.json` + `runtime/source-manifest.json` | S5 | S6/S7/S8/S9/S10 | merge-verify-output.mjs 扩展版 | applicability（四值）/ directConflict / **coverage（不变式契约）** / SVE（layer 服务端三目录 + **atomIds 多原子共享** + **claimKey 语义键** + **repoId** + 版本三字段 + **dependencyFiles**） |
+| #4 Unified Difference | `4-analysis/difference-review.json` + `4-analysis/l7-classify.json` + `4-analysis/analysis-history.json` | S7→S8→S9 | S10/S11 | S7/S8 merge + S9 classify（确定性）+ history append | previousDifference 锚基线（升级原子锚历史基线）/ **candidateDifference 候选隔离** / evidenceScopes / 审批状态转换 / scope 解析含 verificationScope + client verified 前置条件 |
 
 关联主键：`atomId`（唯一事实源 Registry）；证据引用：`CLE-*` / `SVE-*` 双前缀互不混用（客户端证据只在 CLE，服务端证据只在 SVE），**证据与原子为多对多关联**（evidence.atomIds 支撑多原子，共享证据只存一条、追加引用只扩 atomIds，影响集合经 atomIds 反查）；证据定位：**（repoId, file）联合匹配** source-manifest；分析追溯：`analysisRunId` / `previousRunId`（history append-only，逐原子解析）；`previousDifference` 锚定基线做漂移检测。两个判定维度（client `verdict` / server `applicability`）全程独立，仅在 L7 矩阵经 scope 解析汇合（client scope 唯一合法来源 = Registry `verificationScope=client`）。
 

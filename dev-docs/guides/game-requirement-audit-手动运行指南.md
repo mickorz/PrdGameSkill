@@ -1,7 +1,7 @@
 # game-requirement-audit 手动运行指南
 
 - 文档类型：使用指南
-- 适用版本：执行文档 v3.2 冻结 + §21 评审整改后（179→180 断言全绿）
+- 适用版本：执行文档 v3.2 冻结 + §21 评审整改 + 首跑集成修复后（180→186 断言全绿）
 - 前置阅读：`dev-docs/planning/2026-11-17-game-requirement-audit-执行文档.md` §2（步骤总览）、§3（产物目录）、§21（状态三态）
 
 > **一句话**：这个 Workflow 用 11 个阶段把「需求模板 + 双端源码」变成「技术实现视图 + 策划业务视图 + 待处理清单」。
@@ -438,6 +438,6 @@ S4/S5 是双端并行查证，成本约为单端的两倍。
 | 阶段复用 | `.opencode-workflows/scripts/stage-reuse.mjs` |
 | 状态机与恢复建议 | `.opencode-workflows/scripts/run-state.mjs` |
 | 决议指纹与 stale 保护 | `.opencode-workflows/scripts/decision-fingerprint.mjs` |
-| 全量回归 | `.opencode-workflows/scripts/*.example.mjs`（11 套 / 180 断言） |
+| 全量回归 | `.opencode-workflows/scripts/*.example.mjs`（11 套 / 186 断言） |
 | 详细设计 | `dev-docs/planning/2026-11-17-game-requirement-audit-执行文档.md` |
 | 评审与整改 | `dev-docs/progress-result/2026-11-17-game-requirement-audit-执行评审.md` |

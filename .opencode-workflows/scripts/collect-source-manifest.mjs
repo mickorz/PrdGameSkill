@@ -23,6 +23,7 @@
 //
 // CLI：node collect-source-manifest.mjs --branch <client|server> --roots <r1,r2> --repo-ids <id1,id2>
 //        --files <f1,f2,...|@files.txt> --date <YYYY-MM-DD> --out <path>
+//        同 repoId 允许重复（多根同仓）：文件按 roots 顺序解析，manifest 仓条目合并为单条、repoRoot 取该 repoId 首根。
 //   退出码：0 成功 / 1 失败（明细 [失败] 前缀）
 //
 // 约定：date 经参数传入；JSON 1 空格缩进 UTF-8 LF；路径统一 `/`；排序用码元序（M7）。
@@ -105,7 +106,7 @@ export function collectSourceManifest(input) {
   if (roots.length === 0) bad('roots 缺失（源码根目录列表）')
   if (repoIds.length !== roots.length) bad('repoIds 与 roots 长度不一致：' + repoIds.length + ' vs ' + roots.length)
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) bad('date 非法（YYYY-MM-DD）：' + date)
-  if (new Set(repoIds).size !== repoIds.length) bad('repoIds 重复：' + repoIds.join(','))
+  // repoIds 允许重复（同 repoId 配多根：S5 服务端 game_hzmj 层根 + src 根，repoId 均为 server）
   if (problems.length > 0) return { ok: false, problems, manifest: null, fileHashes: null }
 
   // 文件归集：去重（同一 file 多处引用只算一次）+ 码元序
@@ -136,9 +137,13 @@ export function collectSourceManifest(input) {
   if (problems.length > 0) return { ok: false, problems, manifest: null, fileHashes: null }
 
   // 分仓回填 commit（每仓只读一次 git）+ repoRoot + files 码元序
+  // 同 repoId 多根：合并为单仓条目，repoRoot/commit 取该 repoId 的首根
   const repos = []
+  const seenRepoIds = new Set()
   for (let i = 0; i < repoIds.length; i++) {
     const rid = repoIds[i]
+    if (seenRepoIds.has(rid)) continue
+    seenRepoIds.add(rid)
     const entry = byRepo.get(rid)
     entry.repoRoot = roots[i]
     entry.commit = commitReader(roots[i])

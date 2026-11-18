@@ -27,6 +27,9 @@ const serverSrcRoot = String(
   A.serverSrcRoot ||
     'E:/WorkProjects/xc-flow/.xflow/xc/xcodeDev/game-mahjong/server/Logic/mahjong_server/src'
 )
+// collect 解析根（双根）：hzmj 玩法层根（common_game/、hzmj_server/ 相对）+ src 根（mah_frame/ 相对）。
+// SVE file 按层书写（无 game_hzmj/ 前缀）、repoId 固定 "server"——同 repoId 双根，文件按 roots 顺序解析。
+const serverSrcRoots = serverSrcRoot + '/game_hzmj,' + serverSrcRoot
 const analysisModel =
   A.analysisModel === undefined ? 'biangfeng-gateway/deepseek-v4.1-flash-official' : A.analysisModel
 const stageIds = String(A.stageIds || 'ALL')
@@ -193,6 +196,11 @@ function serverVerifyPrompt(p) {
     '   （例：需求「流局连庄」、实现「流局换庄」）',
     '- conflictEvidenceIds：directConflict=true 时**必填**',
     '',
+    '## 六A、引用一致性（硬约束，落盘前逐条自查）',
+    '- evidenceIds / conflictEvidenceIds 中每个 id 必须是本片 evidence[] 里**真实存在**的 id，禁止引用未写出的 id',
+    '- 被引用证据的 atomIds 必须包含本条目的 atomId；引用其他原子的证据前，先把本原子补进该证据的 atomIds',
+    '- 写完 entries 与 evidence 后自查一遍交叉引用，不一致会被合并闸门整体拒绝（分片重跑）',
+    '',
     '## 七、证据 id 命名（重要）',
     '格式：`SVE-<该证据支撑的 Registry 最早原子>-NN`',
     '- NN 从 01 起，同归属原子下递增；分片内不重复',
@@ -222,6 +230,7 @@ function serverVerifyPrompt(p) {
     '- 严禁写入客户端证据到本分片（客户端证据唯一载体是 CLE）',
     '- 严禁写 scope-index.json / server-evidence.json / run-status.json（确定性脚本写）',
     '- 严禁跨原子复制同一证据（用 atomIds 表达共享）',
+    '- 严禁引用 evidence[] 中不存在的证据 id；严禁引用 atomIds 未包含本条目原子的证据',
   ].join('\n')
 }
 
@@ -355,7 +364,7 @@ if (fileList.files.length === 0) {
 
   const collectOk = await commandSuccess(
     'node ".opencode-workflows/scripts/collect-source-manifest.mjs" --branch server' +
-      ' --roots "' + serverSrcRoot + '" --repo-ids "server"' +
+      ' --roots "' + serverSrcRoots + '" --repo-ids "server,server"' +
       ' --files "@' + filesTxtPath + '" --date "' + date + '" --out "' + MANIFEST + '"',
     300000
   )

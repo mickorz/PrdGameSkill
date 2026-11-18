@@ -179,6 +179,29 @@ function buildRun(runId, atomSpecs, opt = {}) {
   })
   assert.equal(ms.ok, true, '服务端 manifest：' + JSON.stringify(ms.problems))
   writeJson(path.join(runDir, '3-server/runtime/source-manifest.json'), ms.manifest)
+
+  // 同 repoId 双根（S5 服务端：game_hzmj 层根解析 common_game//hzmj_server/，src 根解析 mah_frame/）
+  fs.mkdirSync(path.join(srcRoot, 'game_hzmj/common_game'), { recursive: true })
+  fs.mkdirSync(path.join(srcRoot, 'mah_frame'), { recursive: true })
+  fs.writeFileSync(path.join(srcRoot, 'game_hzmj/common_game/r2.cpp'), 'int r2\n', 'utf8')
+  fs.writeFileSync(path.join(srcRoot, 'mah_frame/f.cpp'), 'int f\n', 'utf8')
+  const md = collectSourceManifest({
+    branch: 'server', roots: [path.join(srcRoot, 'game_hzmj'), srcRoot], repoIds: ['server', 'server'],
+    filePaths: ['common_game/r2.cpp', 'mah_frame/f.cpp', 'hzmj_server/nope.cpp'],
+    date: DATE, gitCommitReader: () => 'unversioned',
+  })
+  assert.equal(md.ok, false, '双根下不存在的文件应 fail')
+  assert.ok(md.problems.some((p) => p.includes('hzmj_server/nope.cpp')), '双根 fail 应点名缺失文件')
+  const md2 = collectSourceManifest({
+    branch: 'server', roots: [path.join(srcRoot, 'game_hzmj'), srcRoot], repoIds: ['server', 'server'],
+    filePaths: ['common_game/r2.cpp', 'mah_frame/f.cpp'],
+    date: DATE, gitCommitReader: () => 'unversioned',
+  })
+  assert.equal(md2.ok, true, '双根同 repoId 采集应成功：' + JSON.stringify(md2.problems))
+  assert.equal(md2.manifest.repos.length, 1, '同 repoId 双根应合并为单仓条目')
+  assert.equal(md2.manifest.repos[0].files.length, 2, '双根文件应都归入同仓条目')
+  assert.ok(md2.manifest.repos[0].files.some((x) => x.file === 'common_game/r2.cpp') &&
+    md2.manifest.repos[0].files.some((x) => x.file === 'mah_frame/f.cpp'), '双根文件 rel 保持原书写形式')
   return { runDir, fileHashes: mc.fileHashes, serverFileHashes: ms.fileHashes }
 }
 

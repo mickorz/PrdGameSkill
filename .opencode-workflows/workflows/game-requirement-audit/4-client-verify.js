@@ -200,6 +200,11 @@ function clientVerifyPrompt(p) {
     '   仅「没找到」「部分证据」不构成冲突，必须是明确的相反实现。',
     '- conflictEvidenceIds：directConflict=true 时**必填**，指向证明矛盾的那个证据 id（不能为空）',
     '',
+    '## 六A、引用一致性（硬约束，落盘前逐条自查）',
+    '- evidenceIds / conflictEvidenceIds 中每个 id 必须是本片 evidence[] 里**真实存在**的 id，禁止引用未写出的 id',
+    '- 被引用证据的 atomIds 必须包含本条目的 atomId；引用其他原子的证据前，先把本原子补进该证据的 atomIds',
+    '- 写完 entries 与 evidence 后自查一遍交叉引用，不一致会被合并闸门整体拒绝（分片重跑）',
+    '',
     '## 七、证据 id 命名（重要）',
     '证据 id 由本步骤**自己分配**，格式：`CLE-<该证据支撑的 Registry 最早原子>-NN`',
     '- NN 从 01 起，在同一归属原子下递增；同一分片内不得重复',
@@ -228,6 +233,7 @@ function clientVerifyPrompt(p) {
     '- 严禁填写 sourceRevision/contentHash/verifiedAt',
     '- 严禁写 client-evidence.json 或 run-status.json（确定性脚本写）',
     '- 严禁跨原子复制同一条证据（用 atomIds 表达共享）',
+    '- 严禁引用 evidence[] 中不存在的证据 id；严禁引用 atomIds 未包含本条目原子的证据',
   ].join('\n')
 }
 

@@ -170,14 +170,24 @@ test('C2 文档缺原子 ID → fail', () => {
   assert.ok(r.problems.some((p) => p.includes('文档缺原子 ID')), JSON.stringify(r.problems))
 })
 
-test('C3 串阶段原子 → fail；乱码/分片标记 → fail', () => {
+test('C3 串阶段原子作为规格节标题 → fail；乱码/分片标记 → fail', () => {
   const runDir = setupSpecRun('run-c3', {
-    doc1: '# ST-C01\nAT-ST-C01-001 AT-ST-C01-002 AT-ST-C02-001\n查证未完成\n<<<<<<< HEAD\n',
+    doc1: '# ST-C01\nAT-ST-C01-001 AT-ST-C01-002\n查证未完成\n### AT-ST-C02-001 混入外阶段原子节\n<<<<<<< HEAD\n',
   })
   const r = checkSpecCoverage({ runDir })
   assert.equal(r.ok, false)
-  assert.ok(r.problems.some((p) => p.includes('混入其他阶段原子')))
+  assert.ok(r.problems.some((p) => p.includes('混入其他阶段原子')), JSON.stringify(r.problems))
   assert.ok(r.problems.some((p) => p.includes('分片标记或乱码')))
+})
+
+test('C5 跨阶段合法引用不误判：证据 ID 内嵌子串 + 正文/表格裸提及 → 通过', () => {
+  const runDir = setupSpecRun('run-c5', {
+    doc1: '# ST-C01\n\n### AT-ST-C01-001 规则一\n共享证据 `SVE-AT-ST-C01-001-01` 同时支撑 AT-ST-C02-001（见其阶段文档）。\n' +
+      '| 证据 | atomIds |\n|---|---|\n| SVE-AT-ST-C02-001-01 | AT-ST-C01-001 / AT-ST-C02-001 |\n\n' +
+      '### AT-ST-C01-002 规则二\n与 AT-ST-C02-001 口径一致。\n**查证未完成**（服务端 pending），差异未判定\n',
+  })
+  const r = checkSpecCoverage({ runDir })
+  assert.equal(r.ok, true, '跨阶段引用（证据 ID 内嵌 + 正文裸提及）不得误判串阶段：' + JSON.stringify(r.problems))
 })
 
 test('C4 blocked 原子缺「查证未完成」标注 → fail', () => {

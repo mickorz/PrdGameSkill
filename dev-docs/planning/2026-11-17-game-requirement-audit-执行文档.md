@@ -1551,9 +1551,9 @@ Gold Set 场景映射（§9 矩阵）：
 
 **迁移原则**：旧 workflow 目录**只读不动**（保证历史产物可复现），新链路全部在新命名空间；共用的确定性脚本（symbol-index/match/verify-scope）按 D45 逐步改造而非重写。
 
-### 18.3 全量回归（183 断言，`node .opencode-workflows/scripts/<name>.example.mjs`）
+### 18.3 全量回归（184 断言，`node .opencode-workflows/scripts/<name>.example.mjs`）
 
-> 口径：每 `test()`/`expectFail()` 调用计 1 断言（§21.8 I6 后重校，历史计数已按此口径统一）。
+> 口径：每 `test()`/`expectFail()` 调用计 1 断言（§21.8 I6 后重校，历史计数已按此口径统一；I11 增 C5 后 183→184）。
 
 | Example | 断言 | 覆盖 |
 |---|---|---|
@@ -1567,8 +1567,8 @@ Gold Set 场景映射（§9 矩阵）：
 | `gold-set-audit.example.mjs` | 8 | **G01~G09 全链端到端回归** |
 | `run-state.example.mjs` | 8 | 四层状态 + 恢复矩阵 + Schema 兼容 |
 | `decision-fingerprint.example.mjs` | 15 | **§21 整改**：决议 evidenceFingerprint（无关证据不连坐 / 依赖链变 stale）+ 三态 + stale 门 + 影响集合新旧证据 diff（old∪new / removed / degraded） |
-| `orchestration.example.mjs` | 20 | **§21 整改**：STEPS 覆盖 S1~S11 + specs 一致 + 子流程存在 + D34 12 项依赖 + S10 覆盖/泄漏/速查表闸门 + S7 汇总闸门 |
-| **合计** | **183** | |
+| `orchestration.example.mjs` | 21 | **§21 整改**：STEPS 覆盖 S1~S11 + specs 一致 + 子流程存在 + D34 12 项依赖 + S10 覆盖/泄漏/速查表闸门 + S7 汇总闸门 + **I11 串阶段判定语义（C3/C5：节标题=串阶段，跨阶段引用=合法）** |
+| **合计** | **184** | |
 
 ---
 
@@ -1614,7 +1614,7 @@ S4/S5 并行（共享同一并发配额）；S6 是同步屏障（必须等双�
 | S1~S3 真实模板跑通 | 同上首次执行 |
 | S4~S11 agent 链路 | 接入 STEPS 后按 §19.1 顺序实跑 |
 
-**红线**：agent 链路实跑前必须满足 §18.3 全量回归全绿（当前 183 断言，已全绿）；实跑只验证 agent 语义质量，不得改动确定性契约。
+**红线**：agent 链路实跑前必须满足 §18.3 全量回归全绿（当前 184 断言，已全绿）；实跑只验证 agent 语义质量，不得改动确定性契约。
 
 ### 19.4 本章决策记录（执行层细化，不改 v3.2 冻结基线）
 
@@ -1640,8 +1640,8 @@ S4/S5 并行（共享同一并发配额）；S6 是同步屏障（必须等双�
 | S5 详细 | §13 + §19 | `5-server-verify.js`（Prompt 全文）+ 同三脚本（branch=server）+ D45 复用符号索引链 | 已实现并编排 |
 | S6~S7 详细 | §14 + §19 | `6-merge-evidence.js` / `7-business-behavior.js` + `merge-evidence.mjs` / `assemble-behavior-parts.mjs` / `append-analysis-history.mjs`（19 断言） | 已实现并编排 |
 | S8~S9 详细 | §15 + §19 | `8-difference-review.js` / `9-classify-l7.js` + 两确定脚本（21 断言） | 已实现并编排 |
-| S10~S11 详细 | §16 + §19 | `10-unified-spec.js` / `11-human-review.js` + 6 确定脚本（13+20+15 断言） | 已实现并编排 |
-| 确定性脚本与 Gold Set | §18.3 | 11 套 Example（**183 断言全绿**），含 `gold-set-audit`（G01~G09）、`orchestration` | 已实现 |
+| S10~S11 详细 | §16 + §19 | `10-unified-spec.js` / `11-human-review.js` + 6 确定脚本（13+21+15 断言） | 已实现并编排 |
+| 确定性脚本与 Gold Set | §18.3 | 11 套 Example（**184 断言全绿**），含 `gold-set-audit`（G01~G09）、`orchestration` | 已实现 |
 | 失败恢复与状态机 | §17 | `run-state.mjs`（8 断言）+ 主编排每阶段 `advance` + `mode=resume` | 已实现并编排 |
 | 迁移执行计划 | §18 | 脚本落位表 + 保留/废弃策略 | 完成 |
 | Stage Reuse 详细 | §11（冻结）+ §12.4 + §21 | `stage-reuse.mjs`（18 断言）+ specs 覆盖 S1~S11 | 已实现并编排 |
@@ -1705,7 +1705,7 @@ S4/S5 并行（共享同一并发配额）；S6 是同步屏障（必须等双�
 | 维度 | 当前状态 | 证据 |
 |---|---|---|
 | 文档设计 | 完成 | 本文件 21 章 |
-| 确定性脚本 | 完成并全绿 | 11 套 Example，**183 断言通过 / 0 失败**（§21.8 重校口径） |
+| 确定性脚本 | 完成并全绿 | 11 套 Example，**184 断言通过 / 0 失败**（§21.8 重校口径，I11 增 C5） |
 | 主 Workflow 编排 | **已接入 S1~S11**（`STEPS` + `stage-specs` 一致） | `orchestration` A1/A2/B1 全绿 |
 | Agent Prompt 全文 | 完成（5 个 agent 阶段） | 子 Workflow 内正文 |
 | Agent 实跑 | **进行中（run-001，journal `run-mwkpasup-2`）** | S1~S4 已完成并记录；S5 双端分片已落盘、merge 闸门修复后手动合并全绿（§21.8 I6），待 journal 续跑 S6~S11 |
@@ -1754,6 +1754,7 @@ S4/S5 并行（共享同一并发配额）；S6 是同步屏障（必须等双�
 | I8 | `from-stage` strict 复用校验误报「S4 configArgs 已变」 | `stage-reuse.mjs:326` 诊断把**全量新 args** 与记录比对；真实原因是 configFiles（collect 脚本）变化合法失效 | 诊断按 spec.configArgs 过滤比对（spec 已过滤，诊断漏跟） | 手动 plan-only 复现：诊断如实报 configFiles 变化（commit c986367） |
 | I9 | run-002 客户端采集失败：`client-fgui:box_hzmj_*/…` 悬空 | fguiDir 根少 `assets` 层：FGUI 组件包 XML 实际在 `Fgui/assets/box_hzmj_*/`，agent 引用按 assets 相对路径 | fguiDir 默认改 `source-code/client/Fgui/assets`（主编排 + S4 子流程 + 指南 + run-001 `stage-args-S4.json` 同步） | run-002 真实 evidence-files（22 文件含 4 个 fgui 引用）采集绿 |
 | I10 | （风险确认，无需修改）journal-resume 时 `prepare-verify-input` 重跑会否重置 run-status 致 merge 空跑 | 源码已幂等：prep 重写 run-status 时**保留既有 completed 分片状态**（断点续跑不倒退）；状态更新 agent 重放不落盘无影响 | — | 代码审查（`prepare-verify-input.mjs` readJsonSafe prev 保留 completed） |
+| I11 | S10 阶段文档 AT-ID 覆盖校验报 18 项「文档混入其他阶段原子（ST-C01）」→ 主流程中断 | **子串假故障（与 I6 同族：ID 命名空间嵌套 + 朴素子串匹配）**：证据 ID `SVE-AT-ST-C01-019-04` 内嵌原子 ID 子串，`check-spec-coverage.mjs` 用 `text.includes(atomId)` 把**共享证据跨阶段合法引用**（收窄跑 60 条 SVE 全部归属 ST-C01 原子，其余 22 阶段文档引共享证据即被误判）当成串阶段；修正后另核实 12 处**裸跨阶段提及**均为合法引用（共享证据 atomIds 列举 / 口径交叉引用 / 证据归属范围说明），无文档把外阶段原子作为规格主体 | 两向同源修复：a) 原子 ID 判定一律基于**裸 ID**（先剔除 SVE-/CLE- 证据 ID，防误判串阶段 + 防证据 ID 内嵌被误当「本阶段原子已覆盖」）；b) 串阶段判定收紧为**外阶段原子作为规格节标题**（`^## AT-ST-Cxx-NNN`），正文/表格裸提及属合法引用 | `orchestration` C3 改语义 + 新增 C5（合法引用不误判）；**真实 run-001 校验绿：23 阶段 / 23 文档 / 416 原子（blocked 0 均带标注）** |
 
 **运行资产说明**：
 

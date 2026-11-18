@@ -19,3 +19,7 @@
 [submodule "thirdparties/game-ui-design-workflow"]
 	path = thirdparties/game-ui-design-workflow
 	url = https://github.com/mickorz/game-ui-design-workflow.git
+[submodule "thirdparties/pi-ui-extension"]
+	path = thirdparties/pi-ui-extension
+	url = https://github.com/1993yihuan/pi-ui-extension.git
+	branch = main

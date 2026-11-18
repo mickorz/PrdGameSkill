@@ -30,7 +30,7 @@ if (!runDir) throw new Error('runDir 必填（run 根目录，由主编排创建
 const date = String(A.date || '').trim()
 if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error('date 必填 YYYY-MM-DD')
 const codeDir = String(A.codeDir || 'source-code/client/Code')
-const fguiDir = String(A.fguiDir || 'source-code/client/Fgui')
+const fguiDir = String(A.fguiDir || 'source-code/client/Fgui/assets')
 const analysisModel =
   A.analysisModel === undefined ? 'biangfeng-gateway/deepseek-v4.1-flash-official' : A.analysisModel
 const stageIds = String(A.stageIds || 'ALL')
@@ -149,8 +149,8 @@ function clientVerifyPrompt(p) {
     '   - fgui/ 目录：UI 绑定代码',
     '   - data/ 目录：数据层',
     '   - config/ 目录：配置表',
-    '2. FairyGUI 工程：' + fguiDir,
-    '   - assets/box_hzmj_*/**/*.xml：界面结构（按钮、列表、标签、动效）',
+    '2. FairyGUI 组件包根（repoId=client-fgui 的仓根）：' + fguiDir,
+    '   - box_hzmj_*/**/*.xml：界面结构（按钮、列表、标签、动效）',
     '禁止读取范围外文件；禁止读取服务端源码（服务端由另一分支查证）。',
     '',
     '## 三、检索策略（按序尝试，命中即止）',

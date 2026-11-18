@@ -124,7 +124,7 @@ function part1Entry() {
         evidenceIds: ['CLE-AT-ST-C01-001-01'] },
     ],
     evidence: [
-      { claimKey: 'Mah-View-Mark', repoId: 'client-code', layer: 'client_code', file: F_VIEW,
+      { id: 'CLE-AT-ST-C01-001-01', claimKey: 'Mah-View-Mark', repoId: 'client-code', layer: 'client_code', file: F_VIEW,
         location: 'layer/GameMahView.ts:12', symbol: 'caishenMark', excerpt: '标记', configKeys: [],
         atomIds: ['AT-ST-C01-002', 'AT-ST-C01-001'],
         dependencyFiles: [{ file: F_CTRL }, { file: F_MODEL }] },
@@ -141,7 +141,7 @@ function part2Entry() {
         evidenceIds: ['CLE-AT-ST-C02-001-01'] },
     ],
     evidence: [
-      { claimKey: 'caishen-mark-display', repoId: 'client-fgui', layer: 'client_fgui', file: F_FGUI,
+      { id: 'CLE-AT-ST-C02-001-01', claimKey: 'caishen-mark-display', repoId: 'client-fgui', layer: 'client_fgui', file: F_FGUI,
         location: 'box_hzmj/main/ComMain.xml:3', symbol: '', excerpt: '财神', configKeys: [],
         atomIds: ['AT-ST-C02-001'], dependencyFiles: [] },
     ],
@@ -311,8 +311,8 @@ test('D1 M7 location 规范化：file:12-12 -> file:12，file:12 - 15 -> file:12
   const runDir = setupRun('run-004')
   const p1 = part1Entry()
   p1.evidence = [
-    { claimKey: 'k-single', repoId: 'client-code', layer: 'client_code', file: F_VIEW, location: 'layer/GameMahView.ts:12-12', symbol: 's1', excerpt: '', configKeys: [], atomIds: ['AT-ST-C01-001'], dependencyFiles: [] },
-    { claimKey: 'k-range', repoId: 'client-code', layer: 'client_code', file: F_CTRL, location: 'layer/GameMahController.ts:12 - 15', symbol: 's2', excerpt: '', configKeys: [], atomIds: ['AT-ST-C01-002'], dependencyFiles: [] },
+    { id: 'CLE-AT-ST-C01-001-01', claimKey: 'k-single', repoId: 'client-code', layer: 'client_code', file: F_VIEW, location: 'layer/GameMahView.ts:12-12', symbol: 's1', excerpt: '', configKeys: [], atomIds: ['AT-ST-C01-001'], dependencyFiles: [] },
+    { id: 'CLE-AT-ST-C01-002-01', claimKey: 'k-range', repoId: 'client-code', layer: 'client_code', file: F_CTRL, location: 'layer/GameMahController.ts:12 - 15', symbol: 's2', excerpt: '', configKeys: [], atomIds: ['AT-ST-C01-002'], dependencyFiles: [] },
   ]
   p1.entries[0].evidenceIds = ['CLE-AT-ST-C01-001-01']
   p1.entries[1].evidenceIds = ['CLE-AT-ST-C01-002-01']
@@ -327,9 +327,9 @@ test('D2 M7 大小写不折叠 + 符号码元序：空 symbol 排前，大小写
   const runDir = setupRun('run-005')
   const p1 = part1Entry()
   p1.evidence = [
-    { claimKey: 'k-upper', repoId: 'client-code', layer: 'client_code', file: F_VIEW, location: 'layer/GameMahView.ts:20', symbol: 'Zeta', excerpt: '', configKeys: [], atomIds: ['AT-ST-C01-001'], dependencyFiles: [] },
-    { claimKey: 'k-empty', repoId: 'client-code', layer: 'client_code', file: F_VIEW, location: 'layer/GameMahView.ts:30', symbol: '', excerpt: '', configKeys: [], atomIds: ['AT-ST-C01-002'], dependencyFiles: [] },
-    { claimKey: 'k-lower', repoId: 'client-code', layer: 'client_code', file: F_VIEW, location: 'layer/GameMahView.ts:20', symbol: 'zeta', excerpt: '', configKeys: [], atomIds: ['AT-ST-C01-002'], dependencyFiles: [] },
+    { id: 'CLE-AT-ST-C01-001-01', claimKey: 'k-upper', repoId: 'client-code', layer: 'client_code', file: F_VIEW, location: 'layer/GameMahView.ts:20', symbol: 'Zeta', excerpt: '', configKeys: [], atomIds: ['AT-ST-C01-001'], dependencyFiles: [] },
+    { id: 'CLE-AT-ST-C01-002-01', claimKey: 'k-empty', repoId: 'client-code', layer: 'client_code', file: F_VIEW, location: 'layer/GameMahView.ts:30', symbol: '', excerpt: '', configKeys: [], atomIds: ['AT-ST-C01-002'], dependencyFiles: [] },
+    { id: 'CLE-AT-ST-C01-002-02', claimKey: 'k-lower', repoId: 'client-code', layer: 'client_code', file: F_VIEW, location: 'layer/GameMahView.ts:20', symbol: 'zeta', excerpt: '', configKeys: [], atomIds: ['AT-ST-C01-002'], dependencyFiles: [] },
   ]
   p1.entries[0].evidenceIds = ['CLE-AT-ST-C01-001-01']
   p1.entries[1].evidenceIds = ['CLE-AT-ST-C01-002-01', 'CLE-AT-ST-C01-002-02']
@@ -350,8 +350,8 @@ test('E1 M8 同指针不同 claimKey → 两条独立证据各自保留独立 ID
   const runDir = setupRun('run-006')
   const p1 = part1Entry()
   p1.evidence = [
-    { claimKey: 'rule-a', repoId: 'client-code', layer: 'client_code', file: F_VIEW, location: 'layer/GameMahView.ts:12', symbol: 'caishenMark', excerpt: 'A', configKeys: [], atomIds: ['AT-ST-C01-001'], dependencyFiles: [] },
-    { claimKey: 'rule-b', repoId: 'client-code', layer: 'client_code', file: F_VIEW, location: 'layer/GameMahView.ts:12', symbol: 'caishenMark', excerpt: 'B', configKeys: [], atomIds: ['AT-ST-C01-002'], dependencyFiles: [] },
+    { id: 'CLE-AT-ST-C01-001-01', claimKey: 'rule-a', repoId: 'client-code', layer: 'client_code', file: F_VIEW, location: 'layer/GameMahView.ts:12', symbol: 'caishenMark', excerpt: 'A', configKeys: [], atomIds: ['AT-ST-C01-001'], dependencyFiles: [] },
+    { id: 'CLE-AT-ST-C01-002-01', claimKey: 'rule-b', repoId: 'client-code', layer: 'client_code', file: F_VIEW, location: 'layer/GameMahView.ts:12', symbol: 'caishenMark', excerpt: 'B', configKeys: [], atomIds: ['AT-ST-C01-002'], dependencyFiles: [] },
   ]
   p1.entries[0].evidenceIds = ['CLE-AT-ST-C01-001-01']
   p1.entries[1].evidenceIds = ['CLE-AT-ST-C01-002-01']
@@ -466,6 +466,44 @@ test('G05 共享证据单条多原子：SVE/CLE 只存一条，atomIds 并集（
 })
 
 // ============================================================
+// K：引用归一化（D-REFNORM：编号错位重映射 / 引用即支撑 / 悬空删除）
+// ============================================================
+test('K1 编号错位重映射：agent 分片内编号与正式编号错位 → 条目引用解析到正确证据（不悬空不错挂）', () => {
+  const runDir = setupRun('run-k1')
+  const p1 = part1Entry()
+  // agent 把 F_CTRL 证据编为 002-02（与 merge 码元序重编号 002-01 错位）
+  p1.evidence = [
+    { id: 'CLE-AT-ST-C01-002-02', claimKey: 'k-ctrl', repoId: 'client-code', layer: 'client_code', file: F_CTRL, location: 'layer/GameMahController.ts:5', symbol: 'ctrlFn', excerpt: '', configKeys: [], atomIds: ['AT-ST-C01-002'], dependencyFiles: [] },
+    { id: 'CLE-AT-ST-C01-001-01', claimKey: 'k-view', repoId: 'client-code', layer: 'client_code', file: F_VIEW, location: 'layer/GameMahView.ts:12', symbol: 'viewFn', excerpt: '', configKeys: [], atomIds: ['AT-ST-C01-001'], dependencyFiles: [] },
+  ]
+  // 002 条目引用 agent 编号 002-02；正式编号（码元序：F_CTRL 先于 F_VIEW）应为 002-01
+  p1.entries[0].evidenceIds = ['CLE-AT-ST-C01-001-01']
+  p1.entries[1].evidenceIds = ['CLE-AT-ST-C01-002-02']
+  writeParts(runDir, { p1, p2: part2Empty() })
+  const r = runMerge(runDir, manifest1)
+  assert.equal(r.ok, true, JSON.stringify(r.problems))
+  const e2 = r.clientEntries.find((x) => x.atomId === 'AT-ST-C01-002')
+  assert.deepEqual(e2.evidenceIds, ['CLE-AT-ST-C01-002-01'], '条目引用必须重映射为正式 id（agent 编号 002-02 -> 正式 002-01）')
+  const ev = r.evidence.evidence.find((x) => x.file === F_CTRL)
+  assert.equal(ev.id, 'CLE-AT-ST-C01-002-01')
+  assert.deepEqual(ev.atomIds, ['AT-ST-C01-002'])
+})
+
+test('K2 引用即支撑：entry 引用证据而 atomIds 漏记引用方原子 → 并入 atomIds（按 Registry 顺序），不再判错', () => {
+  const runDir = setupRun('run-k2')
+  const p1 = part1Entry()
+  // 证据 atomIds 只写了 001（agent 漏记 002），002 条目引用它
+  p1.evidence[0].atomIds = ['AT-ST-C01-001']
+  writeParts(runDir, { p1, p2: part2Empty() })
+  const r = runMerge(runDir, manifest1)
+  assert.equal(r.ok, true, '引用即支撑声明，漏记的引用方原子应并入：' + JSON.stringify(r.problems))
+  const shared = r.evidence.evidence.find((e) => e.file === F_VIEW)
+  assert.deepEqual(shared.atomIds, ['AT-ST-C01-001', 'AT-ST-C01-002'], '引用方原子并入后按 Registry 顺序排列')
+  const e2 = r.clientEntries.find((x) => x.atomId === 'AT-ST-C01-002')
+  assert.deepEqual(e2.evidenceIds, ['CLE-AT-ST-C01-001-01'])
+})
+
+// ============================================================
 // H：失败路径
 // ============================================================
 function expectFail(name, mutate, expectPart) {
@@ -488,12 +526,12 @@ expectFail('H2 verdict=not_found 却带证据 → fail', {
   parts: (p) => { p.entries[0].verdict = 'not_found'; p.entries[0].evidenceIds = ['CLE-AT-ST-C01-001-01'] },
 }, 'not_found 不得带证据')
 
-expectFail('H3 引用一致性：被引证据 atomIds 不含引用方原子 → fail', {
+expectFail('H3 悬空引用全删后 verdict=confirmed 无有效证据 → fail（真实缺陷不豁免）', {
   parts: (p) => {
-    p.evidence[0].atomIds = ['AT-ST-C01-001'] // 证据只支撑 001
-    p.entries[1].evidenceIds = ['CLE-AT-ST-C01-001-01'] // 002 却引用它
+    p.entries[0].verdict = 'confirmed'
+    p.entries[0].evidenceIds = ['CLE-AT-ST-C01-999-99'] // 本片 evidence[] 无此 id：悬空删除
   },
-}, '引用一致性失败')
+}, '必须带证据')
 
 expectFail('H4 layer 非法（客户端分支给服务端 layer）→ fail', {
   parts: (p) => { p.evidence[0].layer = 'common_game' },

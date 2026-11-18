@@ -103,7 +103,7 @@ function buildRun(runId, atomSpecs, opt = {}) {
       for (let i = 0; i < keys.length; i++) {
         const id = keys.length === 1 ? cleId : 'CLE-' + a.atomId + '-' + String(i + 1).padStart(2, '0')
         cEvidence.push({
-          claimKey: keys[i], repoId: 'client-code', layer: 'client_code', file: 'layer/View.ts',
+          id: id, claimKey: keys[i], repoId: 'client-code', layer: 'client_code', file: 'layer/View.ts',
           location: 'layer/View.ts:' + (10 + i), symbol: 'v', excerpt: 'x', configKeys: [],
           atomIds: [a.atomId].concat(a.clientSharedWith || []),
           dependencyFiles: [{ file: 'layer/Ctrl.ts' }],
@@ -121,7 +121,7 @@ function buildRun(runId, atomSpecs, opt = {}) {
     if (a.applicability) {
       const sveId = 'SVE-' + a.atomId + '-01'
       sEvidence.push({
-        claimKey: 'k-server', repoId: 'server', layer: 'common_game', file: 'r.cpp',
+        id: sveId, claimKey: 'k-server', repoId: 'server', layer: 'common_game', file: 'r.cpp',
         location: 'r.cpp:5', symbol: 'f', excerpt: 'y', configKeys: [],
         atomIds: [a.atomId].concat(a.sveSharedWith || []), dependencyFiles: [],
       })
@@ -419,8 +419,8 @@ test('G05 共享 SVE 多原子 + 同指针不同 claimKey 双证据 + 分片乱�
   // 同指针不同 claimKey：两条证据在同一 location，claimKey 不同 → M8 各保留独立 ID
   const partRead = readJson(path.join(runDir, '2-client/runtime/verify-output/ST-C01-cp01.json'))
   partRead.evidence = [
-    { claimKey: 'rule-a', repoId: 'client-code', layer: 'client_code', file: 'layer/View.ts', location: 'layer/View.ts:10', symbol: 'v', excerpt: 'A', configKeys: [], atomIds: ['AT-ST-C01-001', 'AT-ST-C01-002'], dependencyFiles: [] },
-    { claimKey: 'rule-b', repoId: 'client-code', layer: 'client_code', file: 'layer/View.ts', location: 'layer/View.ts:10', symbol: 'v', excerpt: 'B', configKeys: [], atomIds: ['AT-ST-C01-001'], dependencyFiles: [] },
+    { id: 'CLE-AT-ST-C01-001-01', claimKey: 'rule-a', repoId: 'client-code', layer: 'client_code', file: 'layer/View.ts', location: 'layer/View.ts:10', symbol: 'v', excerpt: 'A', configKeys: [], atomIds: ['AT-ST-C01-001', 'AT-ST-C01-002'], dependencyFiles: [] },
+    { id: 'CLE-AT-ST-C01-001-02', claimKey: 'rule-b', repoId: 'client-code', layer: 'client_code', file: 'layer/View.ts', location: 'layer/View.ts:10', symbol: 'v', excerpt: 'B', configKeys: [], atomIds: ['AT-ST-C01-001'], dependencyFiles: [] },
   ]
   partRead.entries[0].evidenceIds = ['CLE-AT-ST-C01-001-01']
   writeJson(path.join(runDir, '2-client/runtime/verify-output/ST-C01-cp01.json'), partRead)

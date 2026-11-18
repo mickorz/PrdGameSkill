@@ -65,7 +65,7 @@ if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
 const templatePath =
   A.templatePath || 'templates/【杭州麻将】核心流程杭州麻将好友房AI-核心策划补齐版.md'
 const codeDir = String(A.codeDir || 'source-code/client/Code')
-const fguiDir = String(A.fguiDir || 'source-code/client/Fgui')
+const fguiDir = String(A.fguiDir || 'source-code/client/Fgui/assets')
 const serverSrcRoot = String(
   A.serverSrcRoot ||
     'E:/WorkProjects/xc-flow/.xflow/xc/xcodeDev/game-mahjong/server/Logic/mahjong_server/src'
@@ -386,6 +386,23 @@ if (mode === 'from-stage' && startIdx > 0) {
         stageResults: {},
         summary: 'Run ' + runId + ' plan-only：用户确认点停止',
       }
+    }
+    // plan-only 只出计划：确认后同样返回（不执行）——正式执行重跑本 workflow 且不带 planOnly
+    log('plan-only：计划确认通过（复用 ' + plan.reusedStages.join(',') + ' / 重跑 ' + plan.rerunStages.join(',') + '），本次不执行')
+    return {
+      ok: true,
+      date: date,
+      runId: runId,
+      mode: mode,
+      startStage: startStage,
+      sourceRunId: sourceRunId,
+      planOnlyUsed: true,
+      stopped: true,
+      stoppedAfter: 'prepare-plan-confirmed',
+      reusedStages: plan.reusedStages,
+      executedStages: [],
+      stageResults: {},
+      summary: 'Run ' + runId + ' plan-only：计划已确认（复用 ' + plan.reusedStages.join(',') + ' / 重跑 ' + plan.rerunStages.join(',') + '），确认后不执行',
     }
   }
 

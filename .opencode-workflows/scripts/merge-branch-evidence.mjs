@@ -10,6 +10,11 @@
 //      同键合并（atomIds 并集，按 Registry 顺序）、ID 归属 Registry 最早支撑原子、
 //      既有正式产物同合并键沿用原 id（幂等）、同 id 不同合并键 fail（id 劫持）；
 //   3. 条目合并（§5.0 A）：每已完成原子恰一条，条目不含 pending 字段；
+//      引用归一化（首跑补记 D-REFNORM）：entry 引用 = 支撑声明——
+//      a) 引用按身份重映射：本片 agent 证据 id -> 合并键 -> 正式 id（正式 id 按合并键码元序
+//         重新编号，与 agent 分片内编号独立，编号错位不再产生悬空/错挂）；
+//      b) 可解析引用的引用方原子并入被引证据 atomIds（agent 漏记的共享原子补齐）；
+//      c) 悬空引用删除；删除后「需证据而空」仍按分支规则 fail（真实缺陷不豁免）；
 //   4. 版本回填（D18/D22）：sourceRevision/contentHash/verifiedAt 与 dependencyFiles[].contentHash
 //      由 source-manifest 按 (repoId, file) 联合匹配回填（agent 零生成）；
 //   5. pending 判定与统计（§5.0 A + D5）：pending 由 run-status 判定（唯一事实源），
@@ -199,12 +204,43 @@ export function mergeBranchEvidence(input) {
     }
     shards.push({ name: name, shard: shard })
     for (const e of Array.isArray(shard.evidence) ? shard.evidence : []) {
-      rawEvidence.push({ norm: normEvidence(e, problems, name), partName: name })
+      rawEvidence.push({ norm: normEvidence(e, problems, name), partName: name, agentId: String((e && e.id) || '').trim() })
     }
   }
   if (problems.length > 0) return { ok: false, problems, summary: null }
 
-  // ---- 既有正式产物（幂等锚点：同合并键沿用原 id，M4） ----
+  // ---- 引用归一化（确定性）：entry 引用 = 支撑声明 ----
+  // 1) 每分片建 agent 证据 id -> 本片 norm 映射（同片重复 id = 歧义引用，fail）
+  // 2) 每条可解析引用：引用方原子并入被引证据 atomIds（引用即支撑声明；agent 漏记的共享原子在此补齐）
+  // 3) 悬空引用（本片 evidence[] 无此 id）：删除该引用；后续条目校验按分支规则判「需证据而空」
+  // 说明：正式证据 id 按合并键码元序重新编号（M2/M4），与 agent 分片内编号相互独立；
+  //      entry 引用经（本片 id -> 合并键 -> 正式 id）双跳重映射，编号错位不再产生悬空/错挂。
+  const partNormById = new Map()
+  for (const { agentId, norm, partName } of rawEvidence) {
+    if (!agentId) continue
+    let m = partNormById.get(partName)
+    if (!m) { m = new Map(); partNormById.set(partName, m) }
+    if (m.has(agentId)) bad(partName + '：证据 id 分片内重复：' + agentId)
+    else m.set(agentId, norm)
+  }
+  if (problems.length > 0) return { ok: false, problems, summary: null }
+  for (const { name, shard } of shards) {
+    const m = partNormById.get(name) || new Map()
+    for (const ent of shard.entries) {
+      const atomId = String((ent && ent.atomId) || '')
+      for (const field of ['evidenceIds', 'conflictEvidenceIds']) {
+        const raw = Array.isArray(ent[field]) ? ent[field].filter(Boolean).map(String) : []
+        const kept = []
+        for (const rid of raw) {
+          const norm = m.get(rid)
+          if (!norm) continue // 悬空引用：删除
+          kept.push(rid)
+          if (atomId && !norm.atomIds.includes(atomId)) norm.atomIds.push(atomId)
+        }
+        ent[field] = kept
+      }
+    }
+  }
   const formalPath =
     branch === 'client'
       ? path.join(runDir, branchDir, 'client-evidence.json')
@@ -243,6 +279,7 @@ export function mergeBranchEvidence(input) {
 
   const evidence = []
   const evidenceById = new Map()
+  const mergeKeyToId = new Map()
   for (const g of orderedGroups) {
     const atomIds = sortByRegistry(g.allAtomIds)
     if (atomIds.length === 0) {
@@ -294,6 +331,7 @@ export function mergeBranchEvidence(input) {
     }
     evidence.push(entry)
     evidenceById.set(id, entry)
+    mergeKeyToId.set(g.norm.mergeKey, id)
   }
   if (problems.length > 0) return { ok: false, problems, summary: null }
 
@@ -312,13 +350,23 @@ export function mergeBranchEvidence(input) {
         continue
       }
       seenEntry.add(atomId)
-      const evidenceIds = Array.isArray(e.evidenceIds) ? e.evidenceIds.filter(Boolean) : []
-      // 引用一致性：被引证据存在且其 atomIds 含本条原子
+      // 引用重映射：本片 agent id -> 合并键 -> 正式 id（归一化已删悬空引用并并入引用方原子）
+      const partMap = partNormById.get(name) || new Map()
+      const canonRefs = (ids) => {
+        const out = []
+        for (const rid of ids) {
+          const norm = partMap.get(String(rid))
+          const cid = norm ? mergeKeyToId.get(norm.mergeKey) : null
+          if (cid && !out.includes(cid)) out.push(cid)
+        }
+        return out
+      }
+      const evidenceIds = canonRefs(Array.isArray(e.evidenceIds) ? e.evidenceIds.filter(Boolean) : [])
+      // 引用一致性（防御）：重映射后的引用必然存在且 atomIds 已含引用方原子（归一化保证）
       for (const eid of evidenceIds) {
         const ev = evidenceById.get(eid)
-        if (!ev) bad(name + '：条目引用不存在的证据 ' + atomId + ' -> ' + eid)
-        else if (!ev.atomIds.includes(atomId)) {
-          bad(name + '：引用一致性失败（证据 atomIds 不含引用方原子）：' + atomId + ' -> ' + eid + ' ⊄ ' + JSON.stringify(ev.atomIds))
+        if (!ev || !ev.atomIds.includes(atomId)) {
+          bad(name + '：引用一致性失败（重映射后异常，防御性拦截）：' + atomId + ' -> ' + eid)
         }
       }
       const entry = { atomId: atomId }
@@ -332,7 +380,7 @@ export function mergeBranchEvidence(input) {
           bad(name + '：verdict=' + verdict + ' 必须带证据：' + atomId)
         }
         const directConflict = e.directConflict === true
-        const conflictEvidenceIds = Array.isArray(e.conflictEvidenceIds) ? e.conflictEvidenceIds.filter(Boolean) : []
+        const conflictEvidenceIds = canonRefs(Array.isArray(e.conflictEvidenceIds) ? e.conflictEvidenceIds.filter(Boolean) : [])
         if (directConflict) {
           if (conflictEvidenceIds.length === 0) bad(name + '：directConflict=true 必带 conflictEvidenceIds：' + atomId)
           if (verdict === 'not_found') bad(name + '：directConflict=true 不得 verdict=not_found：' + atomId)
@@ -367,7 +415,7 @@ export function mergeBranchEvidence(input) {
           bad(name + '：unknown 必填 unresolved（缺什么证据）：' + atomId)
         }
         const directConflict = e.directConflict === true
-        const conflictEvidenceIds = Array.isArray(e.conflictEvidenceIds) ? e.conflictEvidenceIds.filter(Boolean) : []
+        const conflictEvidenceIds = canonRefs(Array.isArray(e.conflictEvidenceIds) ? e.conflictEvidenceIds.filter(Boolean) : [])
         if (directConflict && conflictEvidenceIds.length === 0) {
           bad(name + '：directConflict=true 必带 conflictEvidenceIds：' + atomId)
         }

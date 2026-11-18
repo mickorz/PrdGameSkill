@@ -1,7 +1,7 @@
 # game-requirement-audit 手动运行指南
 
 - 文档类型：使用指南
-- 适用版本：执行文档 v3.2 冻结 + §21 评审整改 + 首跑集成修复后（180→186 断言全绿）
+- 适用版本：执行文档 v3.2 冻结 + §21 评审整改 + 首跑集成修复（§21.8 I4~I10，183 断言全绿，口径=各套 test 用例数）
 - 前置阅读：`dev-docs/planning/2026-11-17-game-requirement-audit-执行文档.md` §2（步骤总览）、§3（产物目录）、§21（状态三态）
 
 > **一句话**：这个 Workflow 用 11 个阶段把「需求模板 + 双端源码」变成「技术实现视图 + 策划业务视图 + 待处理清单」。
@@ -332,7 +332,7 @@ node .opencode-workflows/scripts/run-state.mjs check \
 | `stageIds` | | `ALL` | **只作用于 S4/S5**：CSV 或 ALL |
 | `templatePath` | | 杭州麻将核心策划补齐版 | 需求模板 |
 | `codeDir` | | `source-code/client/Code` | 客户端代码工程 |
-| `fguiDir` | | `source-code/client/Fgui` | FairyGUI 工程 |
+| `fguiDir` | | `source-code/client/Fgui/assets` | FairyGUI 组件包根（client-fgui 仓根，证据 file 相对该根） |
 | `serverSrcRoot` | | 外部服务端根 | 服务端三目录父目录 |
 | `analysisModel` | | `biangfeng-gateway/deepseek-v4.1-flash-official` | 分析类模型 |
 | `writeModel` | | 会话默认 | 写作类模型（S10） |
@@ -438,6 +438,6 @@ S4/S5 是双端并行查证，成本约为单端的两倍。
 | 阶段复用 | `.opencode-workflows/scripts/stage-reuse.mjs` |
 | 状态机与恢复建议 | `.opencode-workflows/scripts/run-state.mjs` |
 | 决议指纹与 stale 保护 | `.opencode-workflows/scripts/decision-fingerprint.mjs` |
-| 全量回归 | `.opencode-workflows/scripts/*.example.mjs`（11 套 / 186 断言） |
+| 全量回归 | `.opencode-workflows/scripts/*.example.mjs`（11 套 / 183 断言） |
 | 详细设计 | `dev-docs/planning/2026-11-17-game-requirement-audit-执行文档.md` |
 | 评审与整改 | `dev-docs/progress-result/2026-11-17-game-requirement-audit-执行评审.md` |

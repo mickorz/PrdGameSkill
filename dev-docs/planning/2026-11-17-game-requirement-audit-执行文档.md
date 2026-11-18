@@ -1551,22 +1551,24 @@ Gold Set 场景映射（§9 矩阵）：
 
 **迁移原则**：旧 workflow 目录**只读不动**（保证历史产物可复现），新链路全部在新命名空间；共用的确定性脚本（symbol-index/match/verify-scope）按 D45 逐步改造而非重写。
 
-### 18.3 全量回归（186 断言，`node .opencode-workflows/scripts/<name>.example.mjs`）
+### 18.3 全量回归（183 断言，`node .opencode-workflows/scripts/<name>.example.mjs`）
+
+> 口径：每 `test()`/`expectFail()` 调用计 1 断言（§21.8 I6 后重校，历史计数已按此口径统一）。
 
 | Example | 断言 | 覆盖 |
 |---|---|---|
 | `build-requirement-registry.example.mjs` | 19 | S3 全部闸门 + CLI 三模式 |
 | `stage-reuse.example.mjs` | 18 | Stage Reuse 四命令 + strict 四类拒绝 + args-file + optionalInputs |
 | `prepare-verify-input.example.mjs` | 13 | 投影边界 / 分片命名 / run-status 骨架 / 幂等清理 / 端到端 |
-| `merge-branch-evidence.example.mjs` | 25 | §5.0 A 不变式 + M1~M8 + Gold Set G01/G02/G05/G06~G08 等价 |
+| `merge-branch-evidence.example.mjs` | 29 | §5.0 A 不变式 + M1~M8 + Gold Set G01/G02/G05/G06~G08 等价 + **K1/K2 引用归一化（D-REFNORM）** |
 | `merge-evidence.example.mjs` | 19 | 屏障三分 + 升级识别 D25 + 历史 append-only 幂等 |
 | `difference-review-l7.example.mjs` | 21 | 审批状态机 D11 + scope 五级 + 六前置 D17 + 候选隔离 D23 + G03 |
 | `spec-decisions.example.mjs` | 13 | S10 索引/清单/stale + S11 影响集合 D20/D24 |
 | `gold-set-audit.example.mjs` | 8 | **G01~G09 全链端到端回归** |
 | `run-state.example.mjs` | 8 | 四层状态 + 恢复矩阵 + Schema 兼容 |
 | `decision-fingerprint.example.mjs` | 15 | **§21 整改**：决议 evidenceFingerprint（无关证据不连坐 / 依赖链变 stale）+ 三态 + stale 门 + 影响集合新旧证据 diff（old∪new / removed / degraded） |
-| `orchestration.example.mjs` | 17 | **§21 整改**：STEPS 覆盖 S1~S11 + specs 一致 + 子流程存在 + D34 12 项依赖 + S10 覆盖/泄漏/速查表闸门 + S7 汇总闸门 |
-| **合计** | **180** | |
+| `orchestration.example.mjs` | 20 | **§21 整改**：STEPS 覆盖 S1~S11 + specs 一致 + 子流程存在 + D34 12 项依赖 + S10 覆盖/泄漏/速查表闸门 + S7 汇总闸门 |
+| **合计** | **183** | |
 
 ---
 
@@ -1612,7 +1614,7 @@ S4/S5 并行（共享同一并发配额）；S6 是同步屏障（必须等双�
 | S1~S3 真实模板跑通 | 同上首次执行 |
 | S4~S11 agent 链路 | 接入 STEPS 后按 §19.1 顺序实跑 |
 
-**红线**：agent 链路实跑前必须满足 §18.3 全量回归全绿（当前 186 断言，已全绿）；实跑只验证 agent 语义质量，不得改动确定性契约。
+**红线**：agent 链路实跑前必须满足 §18.3 全量回归全绿（当前 183 断言，已全绿）；实跑只验证 agent 语义质量，不得改动确定性契约。
 
 ### 19.4 本章决策记录（执行层细化，不改 v3.2 冻结基线）
 
@@ -1634,12 +1636,12 @@ S4/S5 并行（共享同一并发配额）；S6 是同步屏障（必须等双�
 | §10 待写清单行 | 交付章节 | 脚本/测试 | 状态 |
 |---|---|---|---|
 | S1~S3 详细 | §12 | 3 子流程 + `build-requirement-registry.mjs`（19 断言） | 已实现并编排 |
-| S4 详细 | §13 + §19 | `4-client-verify.js`（Prompt 全文）+ 3 确定脚本（13+25 断言） | 已实现并编排 |
+| S4 详细 | §13 + §19 | `4-client-verify.js`（Prompt 全文）+ 3 确定脚本（13+29 断言） | 已实现并编排 |
 | S5 详细 | §13 + §19 | `5-server-verify.js`（Prompt 全文）+ 同三脚本（branch=server）+ D45 复用符号索引链 | 已实现并编排 |
 | S6~S7 详细 | §14 + §19 | `6-merge-evidence.js` / `7-business-behavior.js` + `merge-evidence.mjs` / `assemble-behavior-parts.mjs` / `append-analysis-history.mjs`（19 断言） | 已实现并编排 |
 | S8~S9 详细 | §15 + §19 | `8-difference-review.js` / `9-classify-l7.js` + 两确定脚本（21 断言） | 已实现并编排 |
-| S10~S11 详细 | §16 + §19 | `10-unified-spec.js` / `11-human-review.js` + 6 确定脚本（13+17+15 断言） | 已实现并编排 |
-| 确定性脚本与 Gold Set | §18.3 | 11 套 Example（**180 断言全绿**），含 `gold-set-audit`（G01~G09）、`orchestration` | 已实现 |
+| S10~S11 详细 | §16 + §19 | `10-unified-spec.js` / `11-human-review.js` + 6 确定脚本（13+20+15 断言） | 已实现并编排 |
+| 确定性脚本与 Gold Set | §18.3 | 11 套 Example（**183 断言全绿**），含 `gold-set-audit`（G01~G09）、`orchestration` | 已实现 |
 | 失败恢复与状态机 | §17 | `run-state.mjs`（8 断言）+ 主编排每阶段 `advance` + `mode=resume` | 已实现并编排 |
 | 迁移执行计划 | §18 | 脚本落位表 + 保留/废弃策略 | 完成 |
 | Stage Reuse 详细 | §11（冻结）+ §12.4 + §21 | `stage-reuse.mjs`（18 断言）+ specs 覆盖 S1~S11 | 已实现并编排 |
@@ -1670,13 +1672,13 @@ S4/S5 并行（共享同一并发配额）；S6 是同步屏障（必须等双�
 | S1 需求扫描 | **已实现并编排** | ✔ STEPS | `1-scan-template.js` | — | 由主 Workflow 调度 |
 | S2 原子拆解 | **已实现并编排** | ✔ STEPS | `2-atomize-requirements.js` | `build-requirement-registry.mjs --validate-only` 复用 | 19 断言 |
 | S3 注册表定稿 | **已实现并编排** | ✔ STEPS | `3-build-registry.js` | `build-requirement-registry.mjs` | 19 断言 |
-| S4 客户端查证 | **已实现并编排** | ✔ STEPS（与 S5 并行） | `4-client-verify.js`（Prompt 全文，442 行） | `prepare-verify-input` / `collect-source-manifest` / `merge-branch-evidence` | 13+25 断言 |
-| S5 服务端查证 | **已实现并编排** | ✔ STEPS（与 S4 并行） | `5-server-verify.js`（Prompt 全文，407 行） | 同上（branch=server） | 13+25 断言 |
+| S4 客户端查证 | **已实现并编排** | ✔ STEPS（与 S5 并行） | `4-client-verify.js`（Prompt 全文） | `prepare-verify-input` / `collect-source-manifest` / `merge-branch-evidence` | 13+29 断言 |
+| S5 服务端查证 | **已实现并编排** | ✔ STEPS（与 S4 并行） | `5-server-verify.js`（Prompt 全文） | 同上（branch=server） | 13+29 断言 |
 | S6 证据汇总 | **已实现并编排** | ✔ STEPS（同步屏障） | `6-merge-evidence.js` | `merge-evidence.mjs` | 19 断言 |
 | S7 业务行为还原 | **已实现并编排** | ✔ STEPS | `7-business-behavior.js`（Prompt 全文，353 行） | `assemble-behavior-parts.mjs` / `append-analysis-history.mjs` | 19 断言 |
 | S8 统一差异复核 | **已实现并编排** | ✔ STEPS | `8-difference-review.js`（Prompt 全文，281 行） | `merge-difference-review.mjs` | 21 断言 |
 | S9 L7 分类 | **已实现并编排** | ✔ STEPS | `9-classify-l7.js` | `classify-l7-audit.mjs` | 21 断言 |
-| S10 统一规格生成 | **已实现并编排** | ✔ STEPS | `10-unified-spec.js`（Prompt 全文，366 行） | `build-unified-index` / `check-spec-coverage` / `prepare-planner-input` / `check-planner-leak` / `build-stage-manifest` | 13+17 断言 |
+| S10 统一规格生成 | **已实现并编排** | ✔ STEPS | `10-unified-spec.js`（Prompt 全文，366 行） | `build-unified-index` / `check-spec-coverage` / `prepare-planner-input` / `check-planner-leak` / `build-stage-manifest` | 13+20 断言 |
 | S11 人工裁决 | **已实现并编排** | ✔ STEPS | `11-human-review.js` | `decision-fingerprint.mjs` / `apply-decisions.mjs` | 15+13 断言 |
 
 **未达「已实跑验收」**：真实模板 + 真实客户端/服务端源码的完整 S1~S11 实跑尚未执行（需用户触发 agent 链路）。这是本章唯一剩余缺口，已明确记录而非掩盖。
@@ -1688,7 +1690,7 @@ S4/S5 并行（共享同一并发配额）；S6 是同步屏障（必须等双�
 | **P0-1** 主 Workflow 只执行 S1~S3 | 阻断 | `STEPS` 扩到 S1~S11；新增 `mode=resume/retry`；每阶段闸门后 `record-stage` + `run-state advance`；S4∥S5 并行、S6 同步屏障 | `orchestration.example.mjs` A1/A2/B1（STEPS 覆盖 + specs 一致 + 子流程存在） |
 | **P0-2** Stage Reuse 只覆盖 S1~S3 | 阻断 | `stage-specs.json` 扩到 S1~S11（schemaVersion 2），新增 `agentStage` / `optionalInputs`；`stage-reuse.mjs` 支持可选输入（缺失记 `absent` 保持指纹确定性）；S10 落 D34 的 12 项文件级输入 | `orchestration` B2/B3/B4；`stage-reuse` 18 断言含 optionalInputs |
 | **P0-2 后半** S11 evidenceFingerprint 缺失 | 阻断 | 新增 `decision-fingerprint.mjs`：Atom 级证据指纹（只聚合该 Atom 引用的 CLE/SVE + dependencyFiles，无关变化不连坐）+ `baselineAt`/`reviewedAt` 依据快照 + `check` 三态（valid/stale/orphan）；`apply-decisions` 接 stale 门，**stale 决议不应用不丢弃** | `decision-fingerprint.example.mjs` 15 断言（A2 无关证据不连坐 / B1~B4 / C1 拦截 / D1 同 run 幂等） |
-| **P0-3** Gold Set 仅 fixture | 阻断 | 保留 fixture Gold Set（快），**新增 orchestration 一致性套件**（编排水位真实校验）；真实 agent 端到端仍待用户触发（已在本章明示） | `gold-set-audit` 8 断言 + `orchestration` 17 断言 |
+| **P0-3** Gold Set 仅 fixture | 阻断 | 保留 fixture Gold Set（快），**新增 orchestration 一致性套件**（编排水位真实校验）；真实 agent 端到端仍待用户触发（已在本章明示） | `gold-set-audit` 8 断言 + `orchestration` 20 断言 |
 | **P1-1** agent 链路只有 Prompt 要点 | 高 | 新增 5 个 agent 子 Workflow，**Prompt 全文入脚本**：`4-client-verify.js`(442) / `5-server-verify.js`(407) / `7-business-behavior.js`(353) / `8-difference-review.js`(281) / `10-unified-spec.js`(366) | 文件存在 + `orchestration` B4（agentStage 标注一致） |
 | **P1-2** 影响集合未 diff 新旧证据 | 高 | `apply-decisions` 影响集合升 schemaVersion 2：读 `previous-evidence-index.json`，检出 changed（contentHash/location/claimKey/excerpt/dependencyFiles/atomIds）/ added / removed；反查用 **old ∪ new atomIds**（移除证据仅旧索引有 atomIds）；无快照时 `degraded` 标注不静默偏小；**每轮写回快照供下轮** | `decision-fingerprint` E1~E4（atomIds 变化牵连 / 移除证据仍牵连 / degraded 标注 / 快照落盘） |
 | **P1-3** Source Manifest 未接通 | 高 | S4/S5 子 Workflow 固定顺序：`prepare-verify-input → agent 写分片+落盘闸门 → 更新 run-status → 归集证据文件 → collect-source-manifest → merge-branch-evidence` | `4-client-verify.js` / `5-server-verify.js` 实现 + specs `configFiles` 登记 |
@@ -1703,11 +1705,11 @@ S4/S5 并行（共享同一并发配额）；S6 是同步屏障（必须等双�
 | 维度 | 当前状态 | 证据 |
 |---|---|---|
 | 文档设计 | 完成 | 本文件 21 章 |
-| 确定性脚本 | 完成并全绿 | 11 套 Example，**180 断言通过 / 0 失败** |
+| 确定性脚本 | 完成并全绿 | 11 套 Example，**183 断言通过 / 0 失败**（§21.8 重校口径） |
 | 主 Workflow 编排 | **已接入 S1~S11**（`STEPS` + `stage-specs` 一致） | `orchestration` A1/A2/B1 全绿 |
 | Agent Prompt 全文 | 完成（5 个 agent 阶段） | 子 Workflow 内正文 |
-| Agent 实跑 | **未执行** | 需用户触发（agent 链路） |
-| 真实样本验收 | **未执行** | `spec-workflow/requirement-audit/` 为空 |
+| Agent 实跑 | **进行中（run-001，journal `run-mwkpasup-2`）** | S1~S4 已完成并记录；S5 双端分片已落盘、merge 闸门修复后手动合并全绿（§21.8 I6），待 journal 续跑 S6~S11 |
+| 真实样本验收 | **未执行** | run-001/run-002 产物已存在，S11 完成后验收 |
 
 ### 21.5 剩余待办（按优先级）
 
@@ -1738,3 +1740,24 @@ S4/S5 并行（共享同一并发配额）；S6 是同步屏障（必须等双�
 | I3 | S4 全 not_found / S5 unknown/noServerEvidence 等合法空证据会在 Source Manifest 前抛错 | 空证据写空 Source Manifest（`repos: []`）后继续 merge，业务结论由 merge 表达 | `orchestration` G3；不再将无实现误判执行失败 |
 
 **二次复核**：11 套 Example **180 断言通过 / 0 失败**。真实 Agent 跑批仍为单独的验收工作，不在此处伪造执行结果。
+
+### 21.8 三次集成修复（2026-11-18，首跑 run-001 实跑暴露）
+
+> 首跑（`run-001`，journal `run-mwkpasup-2`，模板「核心策划补齐版」23 阶段 / 109 功能 / 416 原子，收窄 `stageIds=ST-C01`）实跑 S1~S5 暴露的集成缺陷与修复。经验细节见 `dev-docs/experience/`（一篇一问题）。
+
+| 编号 | 问题（现象） | 根因 | 修复 | 验证 |
+|---|---|---|---|---|
+| I4 | S2 结构重算闸门 CLI 报缺 `--date` | `2-atomize-requirements.js` 的 validateCmd 漏传 `--date`（`build-requirement-registry.mjs` CLI 必填） | 补 date 参数解析 + 校验 + 传参 | 手动重跑闸门绿：23 阶段 / 109 功能 / 416 原子（commit ad55bc1） |
+| I5 | S5 服务端采集失败：证据文件「在声明的源码根下均不存在」 | agent 按层引用（`common_game/…`、`hzmj_server/…`、`mah_frame/…`），单一根 `…/mahjong_server/src` 不含层目录；真实布局 `src/game_hzmj/{hzmj_server,common_game,…}` + `src/mah_frame` | `collect-source-manifest.mjs` 放开**同 repoId 多根**（roots/repo-ids 逗号并行，manifest 合并单仓条目）；`5-server-verify.js` 派生双根 `src/game_hzmj,src` + `--repo-ids "server,server"` | 手动采集绿（run-001 13 文件 / run-002 16 文件，`server@bf85ebee`）（commit 715dfb9） |
+| I6 | S4/S5 merge 报 13/9 项「条目引用不存在的证据」「引用一致性失败（atomIds 不含引用方原子）」 | **编号错位假故障**：merge 按合并键码元序重编正式 id，而 entry 引用 agent 分片内编号；两者错位时引用悬空/错挂（run-001 客户端纯属巧合对齐）。**D-REFNORM 引用归一化**：a) 条目引用按身份重映射（本片 agent 证据 id → 合并键 → 正式 id）；b) 引用即支撑声明（可解析引用的引用方原子并入被引证据 atomIds，按 Registry 顺序）；c) 悬空引用删除，「需证据而空」仍按分支规则 fail（真实缺陷不豁免） | `merge-branch-evidence.mjs` 六处修改（rawEvidence 记 agentId / partNormById / 引用归一化前置 / mergeKeyToId / 条目+冲突引用重映射 canonRefs / 防御校验） | `merge-branch-evidence` K1/K2/H3 新用例；**真分片手动合并全绿**：run-001 客户端（29 条目/10 证据）+ 服务端（29/60）、run-002 服务端 |
+| I7 | `plan-only` 确认通过后**越界执行**（run-mwlhe4sk 越界跑完 S4/S5 生成 run-002） | 主编排 planOnly 分支仅 REJECT 才 return，ACCEPT 后 fall-through 到真实执行 | ACCEPT 后同样 return `planOnlyUsed` 结果（`stoppedAfter='prepare-plan-confirmed'`），确认后不执行 | 代码路径审查（模式分支先 return） |
+| I8 | `from-stage` strict 复用校验误报「S4 configArgs 已变」 | `stage-reuse.mjs:326` 诊断把**全量新 args** 与记录比对；真实原因是 configFiles（collect 脚本）变化合法失效 | 诊断按 spec.configArgs 过滤比对（spec 已过滤，诊断漏跟） | 手动 plan-only 复现：诊断如实报 configFiles 变化（commit c986367） |
+| I9 | run-002 客户端采集失败：`client-fgui:box_hzmj_*/…` 悬空 | fguiDir 根少 `assets` 层：FGUI 组件包 XML 实际在 `Fgui/assets/box_hzmj_*/`，agent 引用按 assets 相对路径 | fguiDir 默认改 `source-code/client/Fgui/assets`（主编排 + S4 子流程 + 指南 + run-001 `stage-args-S4.json` 同步） | run-002 真实 evidence-files（22 文件含 4 个 fgui 引用）采集绿 |
+| I10 | （风险确认，无需修改）journal-resume 时 `prepare-verify-input` 重跑会否重置 run-status 致 merge 空跑 | 源码已幂等：prep 重写 run-status 时**保留既有 completed 分片状态**（断点续跑不倒退）；状态更新 agent 重放不落盘无影响 | — | 代码审查（`prepare-verify-input.mjs` readJsonSafe prev 保留 completed） |
+
+**运行资产说明**：
+
+- `run-001`（续跑主体）：S1~S4 已完成并记录；S5 双端分片落盘（客户端 3 + 服务端 3）；merge 闸门修复后手动合并全绿（I6）。续跑路径：journal-resume `run-mwkpasup-2`（命令重跑 + agent 按位重放，S5 merge → record → S6~S11 全新执行）。
+- `run-002`（I7 越界执行产物）：S1~S3 物化 + S4/S5 全新分片，真数据保留不删；其 journal（`run-mwlhe4sk`）为 plan-only 形态，**不可用于续跑**（位置对齐不成立）。
+- 已知 resume 副作用：每次 resume 的 init-run 会新建孤儿 run 目录并劫持 `latest.json`（journal 回放使主流程仍工作于原 run 目录）；续跑完成后需清理孤儿目录并复原 `latest.json → run-001`。
+- 断言口径重校（I6 顺带）：各套按 `test()`/`expectFail()` 调用计数，11 套合计 **183**；历史行文中的 180/186 为旧口径漂移，已统一。

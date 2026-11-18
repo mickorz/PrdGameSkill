@@ -322,8 +322,11 @@ function checkStageStrict(specs, stageId, sourceRunDir, newArgsMap) {
   if (configR.error) {
     problems.push('configHash 重算失败（' + stageId + '）：' + configR.error)
   } else if (configR.hash !== rec.configHash) {
-    // 区分脚本变化与参数变化，便于定位
-    const argsChanged = JSON.stringify(rec.configArgs || {}) !== JSON.stringify(newArgsMap)
+    // 区分脚本变化与参数变化，便于定位（比对按 spec.configArgs 过滤：args-file 是全阶段共享的扁平映射，
+    // 其他阶段的参数不属于本阶段 configArgs，不参与本阶段变化判定）
+    const targetArgs = {}
+    for (const k of specStage.configArgs || []) targetArgs[k] = newArgsMap ? newArgsMap[k] : undefined
+    const argsChanged = JSON.stringify(rec.configArgs || {}) !== JSON.stringify(targetArgs)
     problems.push(
       'configHash 不匹配（' + stageId + '）：' +
         (argsChanged

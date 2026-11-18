@@ -1,0 +1,504 @@
+{
+ "schemaVersion": 1,
+ "runId": "run-001",
+ "sourceRunId": null,
+ "stages": {
+  "S1": {
+   "status": "completed",
+   "stageVersion": "S1@1",
+   "inputHash": "sha256:9eaf2efd56ca5834124c2622362689aa60df09edb62e4d7bf8388f1a9e498cc5",
+   "configHash": "sha256:150d47f5bf3ca55d5b956466b1341d11623ea582293775b91090aa9c2ea0b894",
+   "executionProfileHash": "sha256:b9fb4547e5a430ef6d0263b27c8e4b65ba9116769a388e9f28975d2fb6202c37",
+   "outputHash": "sha256:5ad34311f99dc9a65f9244e79708981b0ce08d30a77ce848c4231c27f1214aea",
+   "reusable": true,
+   "inputFiles": [
+    "arg:templatePath"
+   ],
+   "configArgs": {
+    "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心策划补齐版.md"
+   },
+   "profile": {
+    "model": "biangfeng-gateway/deepseek-v4.1-flash-official",
+    "concurrency": "16"
+   },
+   "outputList": [
+    {
+     "path": "1-registry/runtime/state/scan.json",
+     "hash": "sha256:cf8e2b01e76a263552c0a3df9ff644f9e9593d941cb2033e438081e1183cb586"
+    }
+   ]
+  },
+  "S2": {
+   "status": "completed",
+   "stageVersion": "S2@1",
+   "inputHash": "sha256:57f7963db635176972b290d0fe1ecfd7eefb7bfe22307243ed21084bd9580913",
+   "configHash": "sha256:6cf9bb6d27e5b02ddd6a548ca048ad94ffb2cc1d1876d092f4d357625d8f6f67",
+   "executionProfileHash": "sha256:b9fb4547e5a430ef6d0263b27c8e4b65ba9116769a388e9f28975d2fb6202c37",
+   "outputHash": "sha256:d5117599069ee18fe92c9c1fc195e9b7410d1390648587ffafd13777663fd320",
+   "reusable": true,
+   "inputFiles": [
+    "arg:templatePath",
+    "run:1-registry/runtime/state/scan.json"
+   ],
+   "configArgs": {
+    "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心策划补齐版.md"
+   },
+   "profile": {
+    "model": "biangfeng-gateway/deepseek-v4.1-flash-official",
+    "concurrency": "16"
+   },
+   "outputList": [
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C01-ap01.json",
+     "hash": "sha256:31946bf608b7a561f8db2fccd78342ea6587b3a01436c35742282993cadb7b36"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C02-ap01.json",
+     "hash": "sha256:d96cd3f6dbb1a91357cdb06edd3a70a20ae9c53797c18153457223bb9da2b555"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C03-ap01.json",
+     "hash": "sha256:ace3cc8783c55956d35189d69ae1cae8e04c94592b58331d5930f5d064bae62f"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C04-ap01.json",
+     "hash": "sha256:4a78c52b4816063e1092a44b898901fac9a9d6e53054f6d69b3cdd098861d14d"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C05-ap01.json",
+     "hash": "sha256:90c869f957d7b46235b5d685e60cfa2fa6d3ecf8df3755603b00d2423b591f4b"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C06-ap01.json",
+     "hash": "sha256:ded6da034476406311f37bcfea27270107a6db5fb034ee0d029862f30ec0d1ca"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C07-ap01.json",
+     "hash": "sha256:22d427db36a6221e93e256d4314453d73f9271adfbce8951eb215039e9efa49b"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C08-ap01.json",
+     "hash": "sha256:cc49dbd9856c3663222cd9a4c6c217589c7a90626f0c270ddf4b41e54254f2ef"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C09-ap01.json",
+     "hash": "sha256:41ff82431158f49bc3f3c8809c4b9d2364727a940edfdf23743c23df34b5ff77"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C10-ap01.json",
+     "hash": "sha256:3ddf2718f63cb436e9bb03a16990346b1ff091eae220de205bb1695681d5fce8"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C11-ap01.json",
+     "hash": "sha256:c2a519d27549f6e9dab2231f3a9e4a7e8e9bc6003b982a164d4358d9a6f58f57"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C12-ap01.json",
+     "hash": "sha256:a8fc13a49ec9afb4274f7f4e38108ad2814059862573d14562cbbf9d0d199349"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C13-ap01.json",
+     "hash": "sha256:9df71d30e083e59bc874622a15b9f7ef56d9ac261926fe229271d64e5671e7a3"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C14-ap01.json",
+     "hash": "sha256:b4d17d13ac5a6ce61e1ae913c1d6a237bd92790a3327409fef85f5634d575b9b"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C15-ap01.json",
+     "hash": "sha256:3a1004acb77f53a2d213bdcc9785a68a9d38da69139dfadd5729b75a14f3f86a"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C16-ap01.json",
+     "hash": "sha256:f8ede11fee94bb942fc11d5aedb96e4eb0fbe3620cff37efe55ed4811ad3467a"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C17-ap01.json",
+     "hash": "sha256:648a2fa932ce4e6da8bb0bdf8fc32c8ffc5c07817d4d0d7231b61e74754f9b8c"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C18-ap01.json",
+     "hash": "sha256:13cb2e6970b9db554f6e3c2df1758f788a5f610f9c2ff17804b97ad79cac9094"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C19-ap01.json",
+     "hash": "sha256:9ede5a2b0f1126041fcc806ff67299ad2da877c1d1aab06a353a722beef48d14"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C20-ap01.json",
+     "hash": "sha256:e9a1b5edb47b503dc4978fe599e93422d1d4971bafefcb628c10164c6365183d"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C21-ap01.json",
+     "hash": "sha256:ebebf1349f5bfc39e1168b90add471fe0cb7287a70f8f9af691b9d4649264d98"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C22-ap01.json",
+     "hash": "sha256:319ffcd32425ba99e5de9c096f8282b270173b23000b03b067c7b223f99a6fa0"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C23-ap01.json",
+     "hash": "sha256:e752454d3ea7256b4b8904ae8e059cd795f8d61fe378ae403c8796a8d3ee1f18"
+    }
+   ]
+  },
+  "S3": {
+   "status": "completed",
+   "stageVersion": "S3@1",
+   "inputHash": "sha256:a87e2c803b728b67f1c8b3818cdfc54233bd6bf8b0d3b06ce630473224214b3f",
+   "configHash": "sha256:e1dbde2b82f93770a8487769379f4088535f648b886abeda39eff0d803e522a7",
+   "executionProfileHash": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+   "outputHash": "sha256:e4532c72a540cfbeeca44e553a2ab4095fdff70d4a430acc32b48f1d003f84cd",
+   "reusable": true,
+   "inputFiles": [
+    "run:1-registry/runtime/state/scan.json",
+    "run:1-registry/runtime/atom-parts/*.json"
+   ],
+   "configArgs": {
+    "date": "2026-11-17"
+   },
+   "profile": {},
+   "outputList": [
+    {
+     "path": "1-registry/identity-map.json",
+     "hash": "sha256:3fab7f279923ef6a4544c79788474103da6625f9cb029f8797c146c6f3c8e751"
+    },
+    {
+     "path": "1-registry/requirement-registry.json",
+     "hash": "sha256:150733791780fcee08c4150623c84057112789882ac455caebca4d9d1ed15e5c"
+    }
+   ]
+  },
+  "S4": {
+   "status": "completed",
+   "stageVersion": "S4@1",
+   "inputHash": "sha256:aa0a8ade20b7e383cb23ed2f840fb429244377ea9116ff74b5b0b7d88815957e",
+   "configHash": "sha256:29a89aeebae79153de61c44f17d7fc36616ab61fd2cf31c93bb05e35668f9afc",
+   "executionProfileHash": "sha256:b9fb4547e5a430ef6d0263b27c8e4b65ba9116769a388e9f28975d2fb6202c37",
+   "outputHash": "sha256:fbb7d9fc79ff494d433b639ce4dfdf7660f53d2c0141d50d208b370392603845",
+   "reusable": true,
+   "inputFiles": [
+    "run:1-registry/requirement-registry.json"
+   ],
+   "configArgs": {
+    "date": "2026-11-17",
+    "codeDir": "source-code/client/Code",
+    "fguiDir": "source-code/client/Fgui/assets"
+   },
+   "profile": {
+    "model": "biangfeng-gateway/deepseek-v4.1-flash-official",
+    "concurrency": "16"
+   },
+   "outputList": [
+    {
+     "path": "2-client/client-evidence.json",
+     "hash": "sha256:9c444b64acfef32b0a671b490dd95264133ece462708e8b272be07ba26b09141"
+    },
+    {
+     "path": "2-client/runtime/run-status.json",
+     "hash": "sha256:06efc34378dca427a55535b701a243f5f0d6b48912bdff5e1b0cd0a12f1823e0"
+    },
+    {
+     "path": "2-client/runtime/source-manifest.json",
+     "hash": "sha256:b55bba4e331d88ba636f32035977d39aea2d4af48722e3123e99f44dc2fabadd"
+    }
+   ]
+  },
+  "S5": {
+   "status": "completed",
+   "stageVersion": "S5@1",
+   "inputHash": "sha256:aa0a8ade20b7e383cb23ed2f840fb429244377ea9116ff74b5b0b7d88815957e",
+   "configHash": "sha256:2915f3c16be87e4ed01a400fe8c7596905e77f57b1953723fc8935c1b7261226",
+   "executionProfileHash": "sha256:b9fb4547e5a430ef6d0263b27c8e4b65ba9116769a388e9f28975d2fb6202c37",
+   "outputHash": "sha256:67bb99a04ec32b2832fd4519e309bdb38a8bb2a609c2cf92db8c57e24665d76e",
+   "reusable": true,
+   "inputFiles": [
+    "run:1-registry/requirement-registry.json"
+   ],
+   "configArgs": {
+    "date": "2026-11-17",
+    "serverSrcRoot": "E:/WorkProjects/xc-flow/.xflow/xc/xcodeDev/game-mahjong/server/Logic/mahjong_server/src"
+   },
+   "profile": {
+    "model": "biangfeng-gateway/deepseek-v4.1-flash-official",
+    "concurrency": "16"
+   },
+   "outputList": [
+    {
+     "path": "3-server/runtime/run-status.json",
+     "hash": "sha256:2a3836aae6a85059424254b9b064de0e1a0f6bed4fc410c9c86537d4ea569425"
+    },
+    {
+     "path": "3-server/runtime/source-manifest.json",
+     "hash": "sha256:670e0251c957f82ce9e33d7c924a8931547eb51ba49654f2605d2d389ba45951"
+    },
+    {
+     "path": "3-server/scope-index.json",
+     "hash": "sha256:e4bd235d45b70a98071407c671de7fae0884b30521b6c7b6bb9c75ed16f1bcb0"
+    },
+    {
+     "path": "3-server/server-evidence.json",
+     "hash": "sha256:175cc4df9ce4975229e77fefaee2348894e1f2b876fc5570afdcf73657098c9a"
+    }
+   ]
+  },
+  "S6": {
+   "status": "completed",
+   "stageVersion": "S6@1",
+   "inputHash": "sha256:227f9c8f6e4ec04d0e452584490d25ce1ad6e088f8f95811c0b70496197a326b",
+   "configHash": "sha256:2ef53dfd34eb16ba0a3086c629e244e9044c0e55bec9090fcc07f62e23d62f16",
+   "executionProfileHash": "sha256:b9fb4547e5a430ef6d0263b27c8e4b65ba9116769a388e9f28975d2fb6202c37",
+   "outputHash": "sha256:678d40c5a5801100da033e962164da328f0cf66b7c32a3429776ffa0f5e8032b",
+   "reusable": true,
+   "inputFiles": [
+    "run:1-registry/requirement-registry.json",
+    "run:2-client/client-evidence.json",
+    "run:2-client/runtime/run-status.json",
+    "run:3-server/scope-index.json",
+    "run:3-server/server-evidence.json",
+    "run:3-server/runtime/run-status.json"
+   ],
+   "configArgs": {
+    "date": "2026-11-17"
+   },
+   "profile": {
+    "model": "biangfeng-gateway/deepseek-v4.1-flash-official",
+    "concurrency": "16"
+   },
+   "outputList": [
+    {
+     "path": "4-analysis/unified-atoms.json",
+     "hash": "sha256:79afc6d560e22078737747a82e594d9d339e2536592ca6c6557d7dbe4cf34540"
+    }
+   ]
+  },
+  "S7": {
+   "status": "completed",
+   "stageVersion": "S7@1",
+   "inputHash": "sha256:678d40c5a5801100da033e962164da328f0cf66b7c32a3429776ffa0f5e8032b",
+   "configHash": "sha256:9f173a73ab317455bf341f6dd4e83e11fd73129210b17685f0986abe1e19757c",
+   "executionProfileHash": "sha256:b9fb4547e5a430ef6d0263b27c8e4b65ba9116769a388e9f28975d2fb6202c37",
+   "outputHash": "sha256:eaf6ee9a9d32441528b89eae400405a7072af25b9c5b5e2c3baa22b0e7a28ac4",
+   "reusable": true,
+   "inputFiles": [
+    "run:4-analysis/unified-atoms.json"
+   ],
+   "configArgs": {
+    "date": "2026-11-17"
+   },
+   "profile": {
+    "model": "biangfeng-gateway/deepseek-v4.1-flash-official",
+    "concurrency": "16"
+   },
+   "outputList": [
+    {
+     "path": "4-analysis/analysis-history.json",
+     "hash": "sha256:3f706c768d83c4bb5cd74210a50d2da7303eb42b32b9a9c7499ad570f0a1dec7"
+    },
+    {
+     "path": "4-analysis/business-behavior.json",
+     "hash": "sha256:41ade3030ed7eac73a6a41bd7f0da5e072eff4a2d95830839ecdd10a780c8048"
+    }
+   ]
+  },
+  "S8": {
+   "status": "completed",
+   "stageVersion": "S8@1",
+   "inputHash": "sha256:53b213f3ed7ee5e10ec96fb36c26ea38a635c917ccd53c4b2d2aa3bef795d9fe",
+   "configHash": "sha256:c783c666da702bfcc36d08f27bf6d55be089d78220847540e5a38f3e827714bc",
+   "executionProfileHash": "sha256:b9fb4547e5a430ef6d0263b27c8e4b65ba9116769a388e9f28975d2fb6202c37",
+   "outputHash": "sha256:dfc0973d985ca8438fda4931301c176e187bb80bd14fcf5fcd8456e5fd6bc258",
+   "reusable": true,
+   "inputFiles": [
+    "run:4-analysis/unified-atoms.json",
+    "run:4-analysis/business-behavior.json",
+    "run:2-client/client-evidence.json",
+    "run:3-server/server-evidence.json"
+   ],
+   "configArgs": {
+    "date": "2026-11-17"
+   },
+   "profile": {
+    "model": "biangfeng-gateway/deepseek-v4.1-flash-official",
+    "concurrency": "16"
+   },
+   "outputList": [
+    {
+     "path": "4-analysis/difference-review.json",
+     "hash": "sha256:ec51abb582f12ac97a4142564d1b8b5d2eb506dad14c760edbc598d39e99321e"
+    }
+   ]
+  },
+  "S9": {
+   "status": "completed",
+   "stageVersion": "S9@1",
+   "inputHash": "sha256:f08779907095259b7fef6f115672673c1ee1860421cb87b8a3cce749f203d23a",
+   "configHash": "sha256:7b71af86535a983d04ffe1ec5b229c1256512eb4aacc69ae0e7a6e0d2b4136a2",
+   "executionProfileHash": "sha256:b9fb4547e5a430ef6d0263b27c8e4b65ba9116769a388e9f28975d2fb6202c37",
+   "outputHash": "sha256:217f2604f03264c06d92d3ce78ccbc5e7e8e68bbb2e720d4e1a445c0f03bbd5e",
+   "reusable": true,
+   "inputFiles": [
+    "run:1-registry/requirement-registry.json",
+    "run:2-client/client-evidence.json",
+    "run:3-server/scope-index.json",
+    "run:3-server/server-evidence.json",
+    "run:4-analysis/unified-atoms.json",
+    "run:4-analysis/business-behavior.json"
+   ],
+   "configArgs": {
+    "date": "2026-11-17"
+   },
+   "profile": {
+    "model": "biangfeng-gateway/deepseek-v4.1-flash-official",
+    "concurrency": "16"
+   },
+   "outputList": [
+    {
+     "path": "4-analysis/l7-classify.json",
+     "hash": "sha256:932eb8d77b63c1a2a4ae9b831a520722d08415001d8757fd1f6c3d659e720cea"
+    }
+   ]
+  },
+  "S10": {
+   "status": "completed",
+   "stageVersion": "S10@1",
+   "inputHash": "sha256:191719d61b8286017609252123916f8ebee927160d0e4e8a90e13ca95460bbbd",
+   "configHash": "sha256:38bdb3c0d58eb280279779404da905ea6d53eeadb969e28323154e6f22848868",
+   "executionProfileHash": "sha256:3c29587286836b753b962d296a012f1bd3356188866b1b4a9ae33d0dbe5c3912",
+   "outputHash": "sha256:b0d9f4211f28a1b49881457d1e935e95db2b7791158797f92295f9ea2ff53362",
+   "reusable": true,
+   "inputFiles": [
+    "run:1-registry/requirement-registry.json",
+    "run:2-client/client-evidence.json",
+    "run:2-client/runtime/run-status.json",
+    "run:3-server/scope-index.json",
+    "run:3-server/server-evidence.json",
+    "run:3-server/runtime/run-status.json",
+    "run:4-analysis/unified-atoms.json",
+    "run:4-analysis/business-behavior.json",
+    "run:4-analysis/l7-classify.json"
+   ],
+   "configArgs": {
+    "date": "2026-11-17"
+   },
+   "profile": {
+    "model": "biangfeng-gateway/deepseek-v4.1-flash-official",
+    "writeModel": ""
+   },
+   "outputList": [
+    {
+     "path": "5-specs/feature_index.json",
+     "hash": "sha256:ab990594a1224ed569e2327cec001d029a5cd95f8b317b983156e66541c2af7f"
+    },
+    {
+     "path": "5-specs/pending-list.md",
+     "hash": "sha256:8041d4d9d6317ae1f6631d8e59e61aa76643a79b729c9926fc3e81c6a3381e79"
+    },
+    {
+     "path": "5-specs/runtime/spec_check/verify-report.md",
+     "hash": "sha256:a69f67a12d2f7ad2631a0eec92212efd31a7274fd6778c662dc5aa4aaed0d550"
+    },
+    {
+     "path": "5-specs/stage_manifest.md",
+     "hash": "sha256:d15c81dcdea92bad58fdb6d1786f754de43c98210b1a7e10cec6c46b1deebe64"
+    },
+    {
+     "path": "5-specs/stages/spec_stage_ST-C01.md",
+     "hash": "sha256:63e76c03506a94f386fde0fbff53eb0161fc436bd9d5bd74f368fdac07b52bae"
+    },
+    {
+     "path": "5-specs/stages/spec_stage_ST-C02.md",
+     "hash": "sha256:c8c29da5cb099781c97be3cd18e3f79feb714ebbcea195ba11a819d9e68ce63c"
+    },
+    {
+     "path": "5-specs/stages/spec_stage_ST-C03.md",
+     "hash": "sha256:e2834f5d39d4af6818fffd1530184bcfc5bf8ff9bd87aa1b7964b151a343087f"
+    },
+    {
+     "path": "5-specs/stages/spec_stage_ST-C04.md",
+     "hash": "sha256:ce2cdb532e482a25775a2c1a942d01e846e6cdc6b0184130814d2a8cd8d07c53"
+    },
+    {
+     "path": "5-specs/stages/spec_stage_ST-C05.md",
+     "hash": "sha256:bac4c5d3be9e086537ea9043edd266b0282d3d38561023f64a7cc868c4fc878e"
+    },
+    {
+     "path": "5-specs/stages/spec_stage_ST-C06.md",
+     "hash": "sha256:d7d82cbb1aa58be91dac5186ee9534f0569f11d4f9a0d1be81d2775b61dea2b8"
+    },
+    {
+     "path": "5-specs/stages/spec_stage_ST-C07.md",
+     "hash": "sha256:164bd309a4eb8c0429f8b2110452893da21e78ee9daed3a44f683de2708d8e5c"
+    },
+    {
+     "path": "5-specs/stages/spec_stage_ST-C08.md",
+     "hash": "sha256:0574437357aa3bcec5a6f1b10a2487ea43fcda208c2fbb1bf43a3e65f3819d7f"
+    },
+    {
+     "path": "5-specs/stages/spec_stage_ST-C09.md",
+     "hash": "sha256:2edd589b8b1fd15bcce37d9ac329a45a6965532167606f29e6c4be0956f8764a"
+    },
+    {
+     "path": "5-specs/stages/spec_stage_ST-C10.md",
+     "hash": "sha256:c89cf055cf230a07019f8dfb3f53360b9613ae78b16aaf91aa4ec0cd748329a7"
+    },
+    {
+     "path": "5-specs/stages/spec_stage_ST-C11.md",
+     "hash": "sha256:932b7f03bf54c7f1ff6f5d656921145f28bc065c277e12526ee0576e9ac07427"
+    },
+    {
+     "path": "5-specs/stages/spec_stage_ST-C12.md",
+     "hash": "sha256:04e6a94f6393d00c81ecc9d83aaa27000b51236b2a1f9cb6eb6c77a5a222acb5"
+    },
+    {
+     "path": "5-specs/stages/spec_stage_ST-C13.md",
+     "hash": "sha256:542da5a7b73650ae357fde8300cdd49e8df9b7b11ba00010f4c1bcaa6ca48693"
+    },
+    {
+     "path": "5-specs/stages/spec_stage_ST-C14.md",
+     "hash": "sha256:7e722241a0014f07111576353f4662fbb9afbe72ebc976d052de9e71ff10eb6c"
+    },
+    {
+     "path": "5-specs/stages/spec_stage_ST-C15.md",
+     "hash": "sha256:d9b0153d954ca177aa3a6aa28fb17f2e4d94d5fa7fba3e4b28968e7cb5007fcf"
+    },
+    {
+     "path": "5-specs/stages/spec_stage_ST-C16.md",
+     "hash": "sha256:23fb94dfba741a4dd59064c201e91b4dac4f307726830aba161429c38c4bb606"
+    },
+    {
+     "path": "5-specs/stages/spec_stage_ST-C17.md",
+     "hash": "sha256:e01141d2cfa6efbc53c4b4d7a5f31155d08a19171868c81d30ddb0c32975ae32"
+    },
+    {
+     "path": "5-specs/stages/spec_stage_ST-C18.md",
+     "hash": "sha256:b252848d067cde01ec5cab3951563c01f369879575a96b41aef2d8a065514e30"
+    },
+    {
+     "path": "5-specs/stages/spec_stage_ST-C19.md",
+     "hash": "sha256:e8ec37f4d6bae621deb873403a674db6338dedc3eb00f06b6d5521f4fb18f1c5"
+    },
+    {
+     "path": "5-specs/stages/spec_stage_ST-C20.md",
+     "hash": "sha256:ac3f775fc765e287d3664abb825b8930a727caf8842a5b91cc1a2bf4cacd9143"
+    },
+    {
+     "path": "5-specs/stages/spec_stage_ST-C21.md",
+     "hash": "sha256:13f0310291e2b504ebf3e1fa9b525bafd536760872fb25bb92edd46188a2fbed"
+    },
+    {
+     "path": "5-specs/stages/spec_stage_ST-C22.md",
+     "hash": "sha256:c84620a9f27b2e04fd0435198002cc336ff50969e2ff6df0797181aa67456c10"
+    },
+    {
+     "path": "5-specs/stages/spec_stage_ST-C23.md",
+     "hash": "sha256:92e0baba1dc6e80d96a8d701185f5cdd81bf2f42fbe288eb2c455fba827f4c8d"
+    },
+    {
+     "path": "5-specs/trace_index.json",
+     "hash": "sha256:4a21d5d723b975c95ca314a7a71749b6b83fda5ae200cf244ae23426f25b3fd6"
+    }
+   ]
+  }
+ }
+}

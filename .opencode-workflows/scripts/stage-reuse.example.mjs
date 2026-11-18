@@ -357,6 +357,43 @@ test('I3 prepare-from-stage 经 args-file：与 CLI 形态等价（复用通过�
 })
 
 // ============================================================
+// B3：*.md 尾 glob 指纹展开（I13 泛化——run: <dir>/*.md 不再误报「文件不存在」）
+// ============================================================
+const MD_SPECS_REL = TMP_REL + '/stage-specs.md-glob.json'
+const MD_SPECS = {
+  schemaVersion: 1,
+  workflowId: 'md-glob-fixture',
+  rootDir: TMP_REL + '/root',
+  stages: {
+    S1: {
+      order: 1, version: 'S1@1', label: '规格文档',
+      configFiles: ['proj:' + S2_SCRIPT_REL],
+      configArgs: ['date'],
+      inputFiles: [],
+      outputFiles: ['run:5-specs/stages/*.md'],
+    },
+  },
+}
+
+test('B3 record-stage *.md 尾 glob 展开（I13：非 *.json 后缀不再误报「文件不存在」）', () => {
+  writeJson(path.join(REPO_ROOT, MD_SPECS_REL), MD_SPECS)
+  const c0 = runCli(['init-run', DATE, '--specs', MD_SPECS_REL])
+  assert.equal(c0.code, 0, c0.out)
+  const runId = readJson(path.join(TMP, 'root', DATE, 'runs/latest.json')).runId
+  writeStageOutputs(runId, {
+    '5-specs/stages/spec_stage_ST-C01.md': '# ST-C01\n',
+    '5-specs/stages/spec_stage_ST-C02.md': '# ST-C02\n',
+  })
+  const c = runCli(['record-stage', DATE, runId, 'S1', '--config-args', 'date=' + DATE, '--specs', MD_SPECS_REL])
+  assert.equal(c.code, 0, c.out)
+  const m = readJson(path.join(RUNS, runId, 'runtime/stage-manifest.json'))
+  assert.deepEqual(m.stages.S1.outputList.map((o) => o.path).sort(), [
+    '5-specs/stages/spec_stage_ST-C01.md',
+    '5-specs/stages/spec_stage_ST-C02.md',
+  ])
+})
+
+// ============================================================
 // 清理
 // ============================================================
 fs.rmSync(TMP, { recursive: true, force: true })

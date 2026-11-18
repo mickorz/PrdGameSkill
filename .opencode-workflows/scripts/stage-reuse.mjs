@@ -97,7 +97,7 @@ function manifestPathOf(runDir) {
 }
 
 // 解析一个 spec 路径串（返回 null 表示该串应在 resolve 阶段报错）
-//   run:<rel>  -> run 根相对（rel 支持 *.json 尾 glob）
+//   run:<rel>  -> run 根相对（rel 支持末段 *.<ext> 尾 glob，如 *.json / *.md——I13 泛化）
 //   proj:<rel> -> 仓库根相对
 //   arg:<key>  -> 取 args[key] 作 proj: 路径（缺 key 报错）
 // resolveDir：run: 路径的基准（复用校验 = 来源 runDir；record = 目标 runDir）
@@ -106,17 +106,21 @@ function resolveSpecEntry(entry, argsMap, resolveDir) {
   const rel = entry.slice(kind.length)
   if (kind === 'run:') {
     const abs = path.join(resolveDir, rel)
-    if (rel.endsWith('/*.json')) {
-      const dir = abs.slice(0, -'/*.json'.length)
+    // I13：glob 尾泛化——原仅支持 *.json，S10 outputFiles 声明 run:5-specs/stages/*.md
+    // 首次 record 即炸「文件不存在」；泛化为末段 *.<ext>（单段尾通配）
+    const globM = rel.match(/\/\*\.([A-Za-z0-9]+)$/)
+    if (globM) {
+      const ext = '.' + globM[1]
+      const dir = abs.slice(0, -('*' + ext).length)
       let names = []
       try {
-        names = fs.readdirSync(dir).filter((f) => f.endsWith('.json')).sort()
+        names = fs.readdirSync(dir).filter((f) => f.endsWith(ext)).sort()
       } catch (e) {
         return { error: 'run: 目录不可读：' + entry + ' -> ' + String(e.message || e) }
       }
       if (names.length === 0) return { error: 'run: glob 展开为空：' + entry }
       // 记录路径保持 run: 前缀（run 根相对），排序用码元序
-      return { files: names.map((n) => ({ record: 'run:' + rel.slice(0, -'*.json'.length) + n, abs: path.join(dir, n) })) }
+      return { files: names.map((n) => ({ record: 'run:' + rel.slice(0, -('*' + ext).length) + n, abs: path.join(dir, n) })) }
     }
     if (!fs.existsSync(abs)) return { error: 'run: 文件不存在：' + entry }
     return { files: [{ record: entry, abs }] }

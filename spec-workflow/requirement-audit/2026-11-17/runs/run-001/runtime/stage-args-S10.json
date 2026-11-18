@@ -1,0 +1,9 @@
+{
+ "configArgs": {
+  "date": "2026-11-17"
+ },
+ "profile": {
+  "model": "biangfeng-gateway/deepseek-v4.1-flash-official",
+  "writeModel": ""
+ }
+}

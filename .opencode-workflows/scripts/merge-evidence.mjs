@@ -15,8 +15,12 @@
 //   4. 升级识别（D25 确定性判定式）：
 //      upgraded = 上轮 analysisPath==conflict-fast ∧ 本轮 full ∧ 上轮 baselineDifference==conflict；
 //      previousRunId 逐原子解析自 analysis-history **该原子自己的最近记录**（禁止跨原子取值）；
-//      同一 analysisRunId 重放不重复识别（幂等）；
-//   5. analysisRunId 生成：ar-<date>-<seq>，seq = history.runs.length + 1（单调递增）。
+//      同一 analysisRunId 重放不重复识别（幂等）；prev 字段按「上轮记录」两段式装配
+//      （I12：resume 重放时排除盘上既有轮自引用，真实新轮按全量 history）；
+//   5. analysisRunId 生成：ar-<date>-<seq>，seq = history.runs.length + 1（单调递增）；
+//      resume 幂等（I12）：计算内容与盘上 unified-atoms 完全一致（除 id 外）时**复用盘上 id**——
+//      journal-resume 时本命令重跑而 S7 分片仅重放（产物未变），递增 id 会作废分片记录的 id，
+//      致 S7 重算闸门 analysisRunId 一致性检查全量失败。
 //
 // 产物：<runDir>/4-analysis/unified-atoms.json
 //
@@ -115,21 +119,13 @@ export function mergeEvidence(input) {
   if (!clientRs.parts || clientRs.parts.length === 0) bad('client run-status 无 parts（S4 未执行？）')
   if (!serverRs.parts || serverRs.parts.length === 0) bad('server run-status 无 parts（S5 未执行？）')
 
-  // ---- 上轮记录索引：逐原子最近一次分析记录（D25） ----
-  // analysis-history runs[] 按追加顺序（旧→新）；取每原子最后一次出现的记录
-  const lastRecordByAtom = new Map()
-  for (const run of history) {
-    for (const s of run.atomSummaries || []) {
-      if (!s || !s.atomId) continue
-      lastRecordByAtom.set(s.atomId, {
-        analysisRunId: run.analysisRunId,
-        analysisPath: s.analysisPath,
-        baselineDifference: s.baselineDifference,
-        candidateDifference: s.candidateDifference || '',
-        evidenceIds: s.evidenceIds || [],
-      })
-    }
-  }
+  // ---- 既有 unified-atoms（I12 resume 幂等：id 复用判定 + 上轮自引用两段式排除） ----
+  const existingUaRead = readJsonSafe(path.join(runDir, '4-analysis', 'unified-atoms.json'))
+  const existingUa = existingUaRead.ok && existingUaRead.data && typeof existingUaRead.data.analysisRunId === 'string' ? existingUaRead.data : null
+  const existingId = existingUa ? existingUa.analysisRunId : ''
+  // 既有 id 已入 history（S6+S7 完整轮已闭环）→ 若本轮为该轮重放（内容一致），
+  // 「上轮」应为再前一轮（排除自引用）；若为真实新轮则盘上轮才是上轮（两段式判定见后）
+  const existingInHistory = existingId ? history.some((r) => r.analysisRunId === existingId) : false
 
   // ---- 逐原子装配 ----
   const atoms = []
@@ -206,9 +202,7 @@ export function mergeEvidence(input) {
       else if (blockingPending) analysisPath = 'blocked'
       else analysisPath = 'full'
 
-      // ---- 升级识别（D25 确定性判定式） ----
-      const prev = lastRecordByAtom.get(atomId)
-      const upgraded = !!prev && prev.analysisPath === 'conflict-fast' && analysisPath === 'full' && prev.baselineDifference === 'conflict'
+      // 升级识别（D25）延后到两段式装配（prev 字段依赖上轮记录口径，见 finalizePrev）
 
       atoms.push({
         atomId: atomId,
@@ -222,16 +216,15 @@ export function mergeEvidence(input) {
         client: clientObj,
         server: serverObj,
         analysisPath: analysisPath,
-        previousRunId: upgraded ? prev.analysisRunId : '',
+        previousRunId: '',
         baselineDifference: '',
-        upgraded: upgraded,
+        upgraded: false,
       })
 
       stats.atomCount++
       if (analysisPath === 'conflict-fast') stats.conflictFast++
       else if (analysisPath === 'full') stats.full++
       else stats.blocked++
-      if (upgraded) stats.upgraded++
       if (cPending) stats.clientPending++
       if (sPending) stats.serverPending++
       const cl = !!cEntry
@@ -245,12 +238,57 @@ export function mergeEvidence(input) {
 
   if (problems.length > 0) return { ok: false, problems, summary: null }
 
-  // ---- analysisRunId（history 递增，确定性） ----
+  // ---- 升级识别装配（D25）+ analysisRunId（history 递增；I12 resume 幂等两段式） ----
+  const buildLastRecord = (excludeRunId) => {
+    // analysis-history runs[] 按追加顺序（旧→新）；取每原子最后一次出现的记录
+    const m = new Map()
+    for (const run of history) {
+      if (excludeRunId && run.analysisRunId === excludeRunId) continue
+      for (const s of run.atomSummaries || []) {
+        if (!s || !s.atomId) continue
+        m.set(s.atomId, {
+          analysisRunId: run.analysisRunId,
+          analysisPath: s.analysisPath,
+          baselineDifference: s.baselineDifference,
+          candidateDifference: s.candidateDifference || '',
+          evidenceIds: s.evidenceIds || [],
+        })
+      }
+    }
+    return m
+  }
+  const contentSig = (u) => JSON.stringify({ schemaVersion: u.schemaVersion, date: u.date, atoms: u.atoms, stats: u.stats })
+  // prev 字段（previousRunId/upgraded/stats.upgraded）按上轮记录装配，可重算（两段式）
+  const finalizePrev = (lastRecord) => {
+    let up = 0
+    for (const at of atoms) {
+      const prev = lastRecord.get(at.atomId)
+      const isUp = !!prev && prev.analysisPath === 'conflict-fast' && at.analysisPath === 'full' && prev.baselineDifference === 'conflict'
+      at.previousRunId = isUp ? prev.analysisRunId : ''
+      at.upgraded = isUp
+      if (isUp) up++
+    }
+    stats.upgraded = up
+    return contentSig({ schemaVersion: 1, date: date, atoms: atoms, stats: stats })
+  }
+
+  // I12 两段式：先按 resume 假设（盘上既有轮已闭环，本轮为其重放 → 排除该轮自引用）
+  // 装配 prev 字段——sig 与盘上 unified-atoms 一致即复用其 id（journal-resume 时命令
+  // 重跑而 S7 分片仅重放，递增 id 会作废分片记录的 id，致 S7 重算闸门全量失败）；
+  // 不一致则为真实新轮 → 按全量 history（盘上轮才是真正的上轮）重新装配，取递增 id
   const seq = history.length + 1
-  const analysisRunId = 'ar-' + date + '-' + String(seq).padStart(3, '0')
-  if (history.some((r) => r.analysisRunId === analysisRunId)) {
-    bad('analysisRunId 重复（history 已存在同 id）：' + analysisRunId)
-    return { ok: false, problems, summary: null }
+  const candidateId = 'ar-' + date + '-' + String(seq).padStart(3, '0')
+  const sigResume = finalizePrev(buildLastRecord(existingInHistory ? existingId : ''))
+  let analysisRunId = ''
+  if (existingUa && existingId.startsWith('ar-' + date + '-') && sigResume === contentSig(existingUa)) {
+    analysisRunId = existingId
+  } else {
+    if (existingInHistory) finalizePrev(buildLastRecord('')) // 真实新轮：全量上轮装配
+    analysisRunId = candidateId
+    if (history.some((r) => r.analysisRunId === candidateId)) {
+      bad('analysisRunId 重复（history 已存在同 id）：' + candidateId)
+      return { ok: false, problems, summary: null }
+    }
   }
 
   const unifiedAtoms = {

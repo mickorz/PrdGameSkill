@@ -6,7 +6,8 @@
 //   B. 非必要端 pending 不阻塞 full（verificationScope 决定必要端，D14）
 //   C. pending 唯一事实源 run-status（禁止从缺证据猜测）+ 矛盾检测（pending 却有 entry → fail）
 //   D. 引用一致性 / 证据存在性
-//   E. analysisRunId 生成与递增（ar-<date>-<seq>，history 长度 +1）
+//   E. analysisRunId 生成与递增（ar-<date>-<seq>，history 长度 +1）+ resume 幂等复用
+//      （I12：同内容重跑复用盘上 id，不递增作废 S7 分片；内容变化才递增）
 //   F. 升级识别 D25：上轮 conflict-fast ∧ 本轮 full ∧ 上轮 baseline conflict → upgraded
 //      + previousRunId 逐原子解析（禁止跨原子取值）
 //   G. 分析历史 append-only：首轮追加、同 run 重放幂等不重复、历史只增不改
@@ -458,6 +459,65 @@ test('J1 端到端 CLI：S6 落盘 unified-atoms + S7 追加（两轮 → 升级
   const a1 = hist(runDir, 'initial')
   assert.equal(a1.code, 0, a1.out)
   assert.equal(readJson(path.join(runDir, '4-analysis/analysis-history.json')).runs.length, 1)
+})
+
+test('J2 resume 幂等（I12）：同输入重跑 S6 → 复用盘上 analysisRunId，不递增作废 S7 分片', () => {
+  const runDir = path.join(TMP, 'runs', 'run-e2e')
+  const o2 = execFileSync('node', [S6_CLI, '--run-dir', runDir, '--date', DATE], { encoding: 'utf8', cwd: REPO_ROOT })
+  assert.ok(o2.includes('[成功]'), o2)
+  assert.ok(o2.includes('ar-' + DATE + '-001'), '输出 id 应复用 ar-' + DATE + '-001：' + o2)
+  const ua2 = readJson(path.join(runDir, '4-analysis/unified-atoms.json'))
+  assert.equal(ua2.analysisRunId, 'ar-' + DATE + '-001', '同内容重跑必须复用既有 id（I12）')
+  assert.equal(readJson(path.join(runDir, '4-analysis/analysis-history.json')).runs.length, 1)
+})
+
+test('J3 内容变化才递增（I12）：改 client observedBehavior → ar-<date>-002', () => {
+  const runDir = path.join(TMP, 'runs', 'run-e2e')
+  const cePath = path.join(runDir, '2-client/client-evidence.json')
+  const ce = readJson(cePath)
+  ce.entries[0].observedBehavior = Object.assign({}, ce.entries[0].observedBehavior, { changed: true })
+  writeJson(cePath, ce)
+  const o3 = execFileSync('node', [S6_CLI, '--run-dir', runDir, '--date', DATE], { encoding: 'utf8', cwd: REPO_ROOT })
+  assert.ok(o3.includes('[成功]'), o3)
+  const ua3 = readJson(path.join(runDir, '4-analysis/unified-atoms.json'))
+  assert.equal(ua3.analysisRunId, 'ar-' + DATE + '-002')
+})
+
+test('J4 resume 自引用排除（I12）：conflict→full 升级后同输入重跑 → 复用升级轮 id + upgraded 不漂移', () => {
+  const runDir = setupRun('run-j4', { clientConflict001: true })
+  const mkEntries = (ua) => ua.atoms.filter((a) => a.analysisPath !== 'blocked').map((a) => ({
+    atomId: a.atomId, analysisPath: a.analysisPath, analysisRunId: ua.analysisRunId,
+    previousRunId: a.previousRunId || '', previousBaselineDifference: a.upgraded ? 'conflict' : '',
+    trigger: 't', condition: 'c', clientAction: 'ca', serverAction: 'sa', collaboration: 'co', result: 'r',
+    baselineDifference: a.analysisPath === 'full' && !(a.client.evidenceIds || []).length && !(a.server.evidenceIds || []).length ? 'consistent' : 'conflict',
+    baselineDetail: '初始冲突', candidateDifference: '', candidateDetail: '',
+    evidenceIds: a.client.evidenceIds || [],
+  }))
+  // 第一轮：client 冲突 → conflict-fast，追加 history(ar-001)
+  const ua1 = s6(runDir)
+  assert.equal(ua1.atoms.find((a) => a.atomId === 'AT-ST-C01-001').analysisPath, 'conflict-fast')
+  writeBB(runDir, ua1.analysisRunId, mkEntries(ua1))
+  assert.equal(hist(runDir, 'initial').code, 0)
+  // 第二轮：冲突解除 → full + upgraded（上轮 ar-001 conflict-fast 且 baseline conflict）
+  const cePath = path.join(runDir, '2-client/client-evidence.json')
+  const ce = readJson(cePath)
+  const e1 = ce.entries.find((e) => e.atomId === 'AT-ST-C01-001')
+  e1.directConflict = false
+  e1.conflictEvidenceIds = []
+  writeJson(cePath, ce)
+  const ua2 = s6(runDir)
+  assert.equal(ua2.analysisRunId, 'ar-' + DATE + '-002')
+  const up2 = ua2.atoms.find((a) => a.atomId === 'AT-ST-C01-001')
+  assert.equal(up2.upgraded, true, '第二轮应识别升级（D25）')
+  writeBB(runDir, ua2.analysisRunId, mkEntries(ua2))
+  assert.equal(hist(runDir, 'initial').code, 0)
+  // 第三轮（resume 重跑模拟）：同输入重跑 → 复用 ar-002，upgraded 仍 true
+  //   （无自引用排除时：上轮=ar-002 自身 full → upgraded=false → 内容漂移 → id 递增 003）
+  const ua3 = s6(runDir)
+  assert.equal(ua3.analysisRunId, 'ar-' + DATE + '-002', '同输入重跑必须复用升级轮 id（I12）')
+  const up3 = ua3.atoms.find((a) => a.atomId === 'AT-ST-C01-001')
+  assert.equal(up3.upgraded, true, 'resume 重跑不得因自引用把 upgraded 漂移为 false（I12）')
+  assert.equal(readJson(path.join(runDir, '4-analysis/analysis-history.json')).runs.length, 2)
 })
 
 fs.rmSync(TMP, { recursive: true, force: true })

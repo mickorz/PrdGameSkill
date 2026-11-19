@@ -1,0 +1,26 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C19",
+ "partNo": "01",
+ "analysisRunId": "ar-2026-11-17-001",
+ "atomIds": [
+  "AT-ST-C19-001",
+  "AT-ST-C19-002",
+  "AT-ST-C19-003",
+  "AT-ST-C19-004",
+  "AT-ST-C19-005",
+  "AT-ST-C19-006",
+  "AT-ST-C19-007",
+  "AT-ST-C19-008",
+  "AT-ST-C19-009",
+  "AT-ST-C19-010",
+  "AT-ST-C19-011",
+  "AT-ST-C19-012",
+  "AT-ST-C19-013",
+  "AT-ST-C19-014",
+  "AT-ST-C19-015",
+  "AT-ST-C19-016",
+  "AT-ST-C19-017",
+  "AT-ST-C19-018"
+ ]
+}

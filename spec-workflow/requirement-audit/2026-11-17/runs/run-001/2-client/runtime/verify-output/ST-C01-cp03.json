@@ -1,0 +1,104 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C01",
+ "partNo": "03",
+ "entries": [
+  {
+   "atomId": "AT-ST-C01-024",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "可读客户端工程只含局内杭州麻将逻辑（Code/controller/cmd、Code/layer/BoxHzmj*）与局内界面（Fgui/assets 下 10 个分包全部为 box_hzmj_*），没有创房「房间参数」面板。检索「人数/局数/吃碰/承包/无限吃碰/默认吃碰/32局/4局」在 Code 与 Fgui XML 均未命中人数单选组、局数单选组、吃碰组、承包组控件，也无 2 人档下局数档切换与吃碰/承包联动的代码。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false
+  },
+  {
+   "atomId": "AT-ST-C01-025",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未找到创房面板「缺一色」「守庄」控件及其按人数显隐的逻辑。可读范围内两词只出现在局内语境：config/MatchTipConfig.ts:26 匹配场提示文案「缺一色：2-3人玩法时去掉万字花色」；config/GameDefine.ts:467 守庄通知常量注释、controller/cmd/gameCmd/GameNotifyInfoCmd.ts:56 收到通知后弹「守庄规则生效中」提示。Fgui 各界面 XML 无「缺一色」「守庄」节点。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false
+  },
+  {
+   "atomId": "AT-ST-C01-026",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "同 AT-ST-C01-024：无创房面板，无法对 3 人档的局数/吃碰/承包联动落判。局内确实按人数（TableData.playCnt）换算座位布局与方位盘（layer/BoxHzmjMah2DView.ts:512 注释「切换人数时遗漏旧区域」、:1010-1011 用 SC_PLAYER_LOCAL_SEAT_MAP[playCnt] 换算本地座位），属对局内渲染，与创房面板联动无关。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false
+  },
+  {
+   "atomId": "AT-ST-C01-027",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "无创房面板实现证据：全量 Fgui/assets XML 未出现「缺一色」「守庄」控件，Code 中相关字样仅为局内提示文案（config/MatchTipConfig.ts:26）与局内通知处理（controller/cmd/gameCmd/GameNotifyInfoCmd.ts:56），不存在人数切换时刷新缺一色/守庄显隐的逻辑。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false
+  },
+  {
+   "atomId": "AT-ST-C01-028",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "无创房面板实现证据。Code 中与 4 人相关的只有局内常量 config/GameDefine.ts:26 MAX_PLAYER=4（界面最大人数）及各 View 的 4 方位牌区清理（layer/BoxHzmjMah2DView.ts:512-520），属局内渲染容量，不涉及 4 人档下局数档显隐、吃碰组隐藏与承包组出现。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false
+  },
+  {
+   "atomId": "AT-ST-C01-029",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "无创房面板实现证据。「守庄」在客户端只以局内形式出现：config/GameDefine.ts:467 定义守庄生效通知常量，controller/cmd/gameCmd/GameNotifyInfoCmd.ts:56 据此弹「守庄规则生效中」；未见 4 人档显示守庄、隐藏缺一色的面板显隐逻辑，Fgui XML 亦无对应控件。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false
+  }
+ ],
+ "evidence": []
+}

@@ -1,0 +1,6247 @@
+{
+ "schemaVersion": 1,
+ "date": "2026-11-17",
+ "analysisRunId": "ar-2026-11-17-001",
+ "entries": [
+  {
+   "atomId": "AT-ST-C01-001",
+   "sourceStage": "ST-C01",
+   "sourceRule": "模式为单选，可选值为「正常 / 简洁」，默认选中「正常」。",
+   "sourceLines": [
+    15,
+    15
+   ],
+   "evidenceCount": 5,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-002",
+   "sourceStage": "ST-C01",
+   "sourceRule": "人数为单选，可选值为「2人 / 3人 / 4人」，默认选中「4人」，选中后按「人数联动」生效。",
+   "sourceLines": [
+    16,
+    16
+   ],
+   "evidenceCount": 6,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-003",
+   "sourceStage": "ST-C01",
+   "sourceRule": "玩法为单选，可选值为「白板财神 / 翻财神」，默认选中「白板财神」。",
+   "sourceLines": [
+    19,
+    19
+   ],
+   "evidenceCount": 5,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-004",
+   "sourceStage": "ST-C01",
+   "sourceRule": "连庄数为单选，可选值为「笃三老庄 / 笃二老庄 / 平庄起」，默认选中「笃三老庄」。",
+   "sourceLines": [
+    20,
+    20
+   ],
+   "evidenceCount": 6,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "approved",
+   "reviewStatus": "approved",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-005",
+   "sourceStage": "ST-C01",
+   "sourceRule": "胡牌为单选，可选值为「自摸胡 / 庄闲放铳(庄三)」，默认选中「庄闲放铳」。",
+   "sourceLines": [
+    21,
+    21
+   ],
+   "evidenceCount": 6,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-006",
+   "sourceStage": "ST-C01",
+   "sourceRule": "局数为单选，局数档可选值为「4局 / 8局 / 16局 / 24局 / 32局」，默认选中「8局」。",
+   "sourceLines": [
+    17,
+    17
+   ],
+   "evidenceCount": 1,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-007",
+   "sourceStage": "ST-C01",
+   "sourceRule": "「4局」档仅在人数为 4人 时显示。",
+   "sourceLines": [
+    17,
+    17
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "not_applicable",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-008",
+   "sourceStage": "ST-C01",
+   "sourceRule": "「32局」档仅在人数为 2人 或 3人 时显示。",
+   "sourceLines": [
+    17,
+    17
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "not_applicable",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-009",
+   "sourceStage": "ST-C01",
+   "sourceRule": "选中局数档时，显示「底分」与「封顶」，隐藏「连庄不占局数」。",
+   "sourceLines": [
+    17,
+    17
+   ],
+   "evidenceCount": 7,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-010",
+   "sourceStage": "ST-C01",
+   "sourceRule": "底分为单选，可选值为「1分 / 2分 / 5分」，默认选中「1分」，仅在局数档显示。",
+   "sourceLines": [
+    18,
+    18
+   ],
+   "evidenceCount": 4,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-011",
+   "sourceStage": "ST-C01",
+   "sourceRule": "封顶为单选，可选值为「无 / 20 / 40 / 64 / 80 / 128 / 256」，默认选中「无」，仅在局数档显示。",
+   "sourceLines": [
+    24,
+    24
+   ],
+   "evidenceCount": 4,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-012",
+   "sourceStage": "ST-C01",
+   "sourceRule": "局数单选组另含打片档，可选值为「40片 / 50片 / 60片」。",
+   "sourceLines": [
+    17,
+    17
+   ],
+   "evidenceCount": 2,
+   "required": "client",
+   "l7": "not_applicable",
+   "l7Basis": "approved",
+   "reviewStatus": "approved",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-013",
+   "sourceStage": "ST-C01",
+   "sourceRule": "选中打片档时隐藏「封顶」，且封顶取值选中「无」。",
+   "sourceLines": [
+    17,
+    17
+   ],
+   "evidenceCount": 3,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-014",
+   "sourceStage": "ST-C01",
+   "sourceRule": "选中打片档时隐藏「底分」，且底分取值选中「1分」。",
+   "sourceLines": [
+    17,
+    17
+   ],
+   "evidenceCount": 2,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-015",
+   "sourceStage": "ST-C01",
+   "sourceRule": "选中打片档时显示「连庄不占局数」选项。",
+   "sourceLines": [
+    17,
+    17
+   ],
+   "evidenceCount": 3,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-016",
+   "sourceStage": "ST-C01",
+   "sourceRule": "局数与片数互斥，按所选模式只提交其中一项。",
+   "sourceLines": [
+    17,
+    17
+   ],
+   "evidenceCount": 1,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-017",
+   "sourceStage": "ST-C01",
+   "sourceRule": "吃碰为单选，可选值为「无限吃碰 / 只碰不吃 / 默认吃碰」；本选项组仅 2 人房显示，3/4 人房隐藏。",
+   "sourceLines": [
+    22,
+    22
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "not_applicable",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-018",
+   "sourceStage": "ST-C01",
+   "sourceRule": "吃碰默认值：2 人房默认「无限吃碰」；3/4 人房固定按「默认吃碰」生效。",
+   "sourceLines": [
+    22,
+    22
+   ],
+   "evidenceCount": 3,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "approved",
+   "reviewStatus": "approved",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-019",
+   "sourceStage": "ST-C01",
+   "sourceRule": "吃碰选「无限吃碰」时：隐藏「碰算摊」，承包选中「两摊封顶」。",
+   "sourceLines": [
+    22,
+    22
+   ],
+   "evidenceCount": 4,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-020",
+   "sourceStage": "ST-C01",
+   "sourceRule": "吃碰选「只碰不吃」或「默认吃碰」时：显示「碰算摊」，承包选中「两摊封顶」。",
+   "sourceLines": [
+    22,
+    22
+   ],
+   "evidenceCount": 6,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-021",
+   "sourceStage": "ST-C01",
+   "sourceRule": "承包为单选，可选值为「三摊承包 / 两摊封顶」，3/4 人房默认选中「三摊承包」。",
+   "sourceLines": [
+    23,
+    23
+   ],
+   "evidenceCount": 4,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "approved",
+   "reviewStatus": "approved",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-022",
+   "sourceStage": "ST-C01",
+   "sourceRule": "承包选项组仅 3/4 人房显示。",
+   "sourceLines": [
+    23,
+    23
+   ],
+   "evidenceCount": 2,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-023",
+   "sourceStage": "ST-C01",
+   "sourceRule": "2 人房的承包随吃碰默认联动为「两摊封顶」。",
+   "sourceLines": [
+    23,
+    23
+   ],
+   "evidenceCount": 3,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-024",
+   "sourceStage": "ST-C01",
+   "sourceRule": "选中 2人：显示 32局、隐藏 4局；吃碰组显示并选中「无限吃碰」；承包组隐藏。",
+   "sourceLines": [
+    30,
+    30
+   ],
+   "evidenceCount": 9,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "approved",
+   "reviewStatus": "approved",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-025",
+   "sourceStage": "ST-C01",
+   "sourceRule": "选中 2人：「缺一色」显示、「守庄」隐藏。",
+   "sourceLines": [
+    30,
+    30
+   ],
+   "evidenceCount": 8,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-026",
+   "sourceStage": "ST-C01",
+   "sourceRule": "选中 3人：显示 32局、隐藏 4局；吃碰组隐藏、按「默认吃碰」生效；承包组显示。",
+   "sourceLines": [
+    31,
+    31
+   ],
+   "evidenceCount": 9,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-027",
+   "sourceStage": "ST-C01",
+   "sourceRule": "选中 3人：「缺一色」「守庄」均显示。",
+   "sourceLines": [
+    31,
+    31
+   ],
+   "evidenceCount": 9,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-028",
+   "sourceStage": "ST-C01",
+   "sourceRule": "选中 4人：显示 4局、隐藏 32局；吃碰组隐藏、按「默认吃碰」生效；承包组显示。",
+   "sourceLines": [
+    32,
+    32
+   ],
+   "evidenceCount": 9,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C01-029",
+   "sourceStage": "ST-C01",
+   "sourceRule": "选中 4人：「缺一色」隐藏、「守庄」显示。",
+   "sourceLines": [
+    32,
+    32
+   ],
+   "evidenceCount": 9,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C02-001",
+   "sourceStage": "ST-C02",
+   "sourceRule": "复选项「碰算摊」默认开；仅当吃碰规则为只碰不吃或默认吃碰时显示；开启时碰也计入摊。",
+   "sourceLines": [
+    38,
+    38
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C02-002",
+   "sourceStage": "ST-C02",
+   "sourceRule": "复选项「有财必拷响」默认关，无显示条件限制而始终显示。",
+   "sourceLines": [
+    39,
+    39
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C02-003",
+   "sourceStage": "ST-C02",
+   "sourceRule": "复选项「三财翻倍」默认关，无显示条件限制而始终显示；开启后按三财条件触发翻倍。",
+   "sourceLines": [
+    40,
+    40
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C02-004",
+   "sourceStage": "ST-C02",
+   "sourceRule": "复选项「四财翻倍」默认关，无显示条件限制而始终显示；开启后按四财条件触发翻倍。",
+   "sourceLines": [
+    41,
+    41
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C02-005",
+   "sourceStage": "ST-C02",
+   "sourceRule": "复选项「十风牌」默认开，无显示条件限制而始终显示；对应番型「十风」。",
+   "sourceLines": [
+    42,
+    42
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C02-006",
+   "sourceStage": "ST-C02",
+   "sourceRule": "复选项「无风牌」默认关，无显示条件限制而始终显示；开启时去掉风牌。",
+   "sourceLines": [
+    43,
+    43
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C02-007",
+   "sourceStage": "ST-C02",
+   "sourceRule": "复选项「缺一色」默认开，仅 2/3 人房显示，4 人房不适用。",
+   "sourceLines": [
+    44,
+    44
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C02-008",
+   "sourceStage": "ST-C02",
+   "sourceRule": "复选项「财神替豪七」默认关，无显示条件限制而始终显示；开启后财神可替代豪华七对所需牌。",
+   "sourceLines": [
+    45,
+    45
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C02-009",
+   "sourceStage": "ST-C02",
+   "sourceRule": "复选项「守庄」默认关，仅 3/4 人房显示。",
+   "sourceLines": [
+    46,
+    46
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C02-010",
+   "sourceStage": "ST-C02",
+   "sourceRule": "复选项「连庄不占局数」默认关，仅打片（40/50/60 片）模式显示；开启后连庄不消耗片数。",
+   "sourceLines": [
+    47,
+    47
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C03-001",
+   "sourceStage": "ST-C03",
+   "sourceRule": "通用规则表列出「可托管」一项，默认状态为关。",
+   "sourceLines": [
+    53,
+    53
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C03-002",
+   "sourceStage": "ST-C03",
+   "sourceRule": "通用规则表列出「托管解散」一项，默认状态为关。",
+   "sourceLines": [
+    54,
+    54
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C03-003",
+   "sourceStage": "ST-C03",
+   "sourceRule": "通用规则表列出「超时解散」一项，默认状态为开。",
+   "sourceLines": [
+    55,
+    55
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C03-004",
+   "sourceStage": "ST-C03",
+   "sourceRule": "通用规则表列出「自动准备」一项，默认状态为开。",
+   "sourceLines": [
+    56,
+    56
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C03-005",
+   "sourceStage": "ST-C03",
+   "sourceRule": "通用规则表列出「随机座位」一项，默认状态为关。",
+   "sourceLines": [
+    62,
+    62
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C03-006",
+   "sourceStage": "ST-C03",
+   "sourceRule": "通用规则表列出「截屏监控」一项，默认状态为开。",
+   "sourceLines": [
+    57,
+    57
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C03-007",
+   "sourceStage": "ST-C03",
+   "sourceRule": "通用规则表列出「搭子房」一项，默认状态为关。",
+   "sourceLines": [
+    58,
+    58
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C03-008",
+   "sourceStage": "ST-C03",
+   "sourceRule": "通用规则表列出「防作弊」一项，默认状态为关。",
+   "sourceLines": [
+    59,
+    59
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C03-009",
+   "sourceStage": "ST-C03",
+   "sourceRule": "通用规则表列出「实时语音」一项，默认状态为关。",
+   "sourceLines": [
+    60,
+    60
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C03-010",
+   "sourceStage": "ST-C03",
+   "sourceRule": "通用规则表列出「关闭互动」一项，默认状态为关。",
+   "sourceLines": [
+    61,
+    61
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C04-001",
+   "sourceStage": "ST-C04",
+   "sourceRule": "首局庄家：随机（与正文一致）。",
+   "sourceLines": [
+    66,
+    66
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C04-002",
+   "sourceStage": "ST-C04",
+   "sourceRule": "非首局庄家：赢家坐庄（与正文一致）。",
+   "sourceLines": [
+    67,
+    67
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C04-003",
+   "sourceStage": "ST-C04",
+   "sourceRule": "流局：原庄连庄（与正文一致）。",
+   "sourceLines": [
+    68,
+    68
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C04-004",
+   "sourceStage": "ST-C04",
+   "sourceRule": "局数 / 片数只按所选模式提交其中一项（互斥）。",
+   "sourceLines": [
+    69,
+    69
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C04-005",
+   "sourceStage": "ST-C04",
+   "sourceRule": "出牌速度：默认档。",
+   "sourceLines": [
+    70,
+    70
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C05-001",
+   "sourceStage": "ST-C05",
+   "sourceRule": "跟庄选项在创房面板已停用，不可选。",
+   "sourceLines": [
+    74,
+    74
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C05-002",
+   "sourceStage": "ST-C05",
+   "sourceRule": "跟庄赔付选项在创房面板已停用，不可选。",
+   "sourceLines": [
+    74,
+    74
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C05-003",
+   "sourceStage": "ST-C05",
+   "sourceRule": "二人杭州麻将好友房人数固定为 2。",
+   "sourceLines": [
+    75,
+    75
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C05-004",
+   "sourceStage": "ST-C05",
+   "sourceRule": "二人杭州麻将好友房创房面板无人数选项。",
+   "sourceLines": [
+    75,
+    75
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C05-005",
+   "sourceStage": "ST-C05",
+   "sourceRule": "本文按杭州麻将（四人好友房）口径展开，二人房为独立玩法变体。",
+   "sourceLines": [
+    75,
+    75
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C05-006",
+   "sourceStage": "ST-C05",
+   "sourceRule": "淳安 / 萧山 / 桐庐分支玩法另行成套规则。",
+   "sourceLines": [
+    76,
+    76
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C05-007",
+   "sourceStage": "ST-C05",
+   "sourceRule": "淳安 / 萧山 / 桐庐分支玩法不与杭州麻将本体混用。",
+   "sourceLines": [
+    76,
+    76
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C06-001",
+   "sourceStage": "ST-C06",
+   "sourceRule": "首局四名玩家中随机坐庄。",
+   "sourceLines": [
+    112,
+    112
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C06-002",
+   "sourceStage": "ST-C06",
+   "sourceRule": "掷骰、发牌前已经确定庄家。",
+   "sourceLines": [
+    112,
+    112
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C06-003",
+   "sourceStage": "ST-C06",
+   "sourceRule": "有人胡牌时，下一小局由胡牌者坐庄。",
+   "sourceLines": [
+    113,
+    113
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C06-004",
+   "sourceStage": "ST-C06",
+   "sourceRule": "庄家自己胡牌为连庄。",
+   "sourceLines": [
+    113,
+    113
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C06-005",
+   "sourceStage": "ST-C06",
+   "sourceRule": "流局时原庄连庄。",
+   "sourceLines": [
+    114,
+    114
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C06-006",
+   "sourceStage": "ST-C06",
+   "sourceRule": "首庄、新庄、连庄都是三牢。",
+   "sourceLines": [
+    115,
+    115
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C06-007",
+   "sourceStage": "ST-C06",
+   "sourceRule": "庄闲倍数固定 8 倍。",
+   "sourceLines": [
+    115,
+    115
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C06-008",
+   "sourceStage": "ST-C06",
+   "sourceRule": "三牢不再增加。",
+   "sourceLines": [
+    115,
+    115
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C07-001",
+   "sourceStage": "ST-C07",
+   "sourceRule": "整副牌共 136 张。",
+   "sourceLines": [
+    119,
+    119
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C07-002",
+   "sourceStage": "ST-C07",
+   "sourceRule": "万、条、筒三门花色各 36 张。",
+   "sourceLines": [
+    119,
+    119
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C07-003",
+   "sourceStage": "ST-C07",
+   "sourceRule": "东、南、西、北四张风牌合计 16 张。",
+   "sourceLines": [
+    119,
+    119
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C07-004",
+   "sourceStage": "ST-C07",
+   "sourceRule": "中、发、白三张箭牌合计 12 张。",
+   "sourceLines": [
+    119,
+    119
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C07-005",
+   "sourceStage": "ST-C07",
+   "sourceRule": "四张白板都是财神。",
+   "sourceLines": [
+    120,
+    120
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C07-006",
+   "sourceStage": "ST-C07",
+   "sourceRule": "轮到自己出牌时可以把财神作为弃牌打出。",
+   "sourceLines": [
+    121,
+    121
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C07-007",
+   "sourceStage": "ST-C07",
+   "sourceRule": "打出财神不要求玩家已经爆头。",
+   "sourceLines": [
+    121,
+    121
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C07-008",
+   "sourceStage": "ST-C07",
+   "sourceRule": "打出的财神按普通白板留在牌河。",
+   "sourceLines": [
+    121,
+    121
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C07-009",
+   "sourceStage": "ST-C07",
+   "sourceRule": "其他人不能吃、碰、杠被打出的财神。",
+   "sourceLines": [
+    121,
+    121
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C07-010",
+   "sourceStage": "ST-C07",
+   "sourceRule": "其他人不能用手牌胡被打出的财神，即财神弃牌不能点炮胡。",
+   "sourceLines": [
+    121,
+    121
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C08-001",
+   "sourceStage": "ST-C08",
+   "sourceRule": "从牌墙头部、庄家起、按逆时针方向发牌。",
+   "sourceLines": [
+    125,
+    125
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C08-002",
+   "sourceStage": "ST-C08",
+   "sourceRule": "每人 4 张，发 3 轮，各 12 张。",
+   "sourceLines": [
+    127,
+    127
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C08-003",
+   "sourceStage": "ST-C08",
+   "sourceRule": "再每人 1 张，各 13 张。",
+   "sourceLines": [
+    128,
+    128
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C08-004",
+   "sourceStage": "ST-C08",
+   "sourceRule": "再给庄家 1 张。",
+   "sourceLines": [
+    129,
+    129
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C08-005",
+   "sourceStage": "ST-C08",
+   "sourceRule": "庄家 14 张，三名闲家各 13 张，共发出 53 张，余 83 张。",
+   "sourceLines": [
+    129,
+    129
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C08-006",
+   "sourceStage": "ST-C08",
+   "sourceRule": "庄家用这 14 张直接进入首轮，不再摸牌。",
+   "sourceLines": [
+    131,
+    131
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C08-007",
+   "sourceStage": "ST-C08",
+   "sourceRule": "理牌后若已满足自摸，立即给出【自摸】【过】。",
+   "sourceLines": [
+    131,
+    131
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C08-008",
+   "sourceStage": "ST-C08",
+   "sourceRule": "爆头、七客按其余 13 张判断。",
+   "sourceLines": [
+    131,
+    131
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C09-001",
+   "sourceStage": "ST-C09",
+   "sourceRule": "对同一张弃牌：点炮胡 > 碰 / 直杠 > 吃。",
+   "sourceLines": [
+    139,
+    139
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C09-002",
+   "sourceStage": "ST-C09",
+   "sourceRule": "碰与直杠同级。",
+   "sourceLines": [
+    139,
+    139
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C09-003",
+   "sourceStage": "ST-C09",
+   "sourceRule": "同时能碰和直杠时不区分先后，按座位号小的先裁决。",
+   "sourceLines": [
+    139,
+    139
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C09-004",
+   "sourceStage": "ST-C09",
+   "sourceRule": "碰、直杠只发给当前能成立、且座位号最小的那一家。",
+   "sourceLines": [
+    139,
+    139
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C09-005",
+   "sourceStage": "ST-C09",
+   "sourceRule": "只允许一人胡，不一炮多响。",
+   "sourceLines": [
+    141,
+    141
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C09-006",
+   "sourceStage": "ST-C09",
+   "sourceRule": "多人可胡时每家都收到胡。",
+   "sourceLines": [
+    139,
+    139
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C09-007",
+   "sourceStage": "ST-C09",
+   "sourceRule": "多人可胡时，从出牌者起按逆时针，最近的可胡者优先。",
+   "sourceLines": [
+    141,
+    141
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C09-008",
+   "sourceStage": "ST-C09",
+   "sourceRule": "近者胡则远者不成立，近者放弃后远者仍可胡；放弃后顺延。",
+   "sourceLines": [
+    139,
+    141
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C09-009",
+   "sourceStage": "ST-C09",
+   "sourceRule": "低优先级先提交时，先等全部更高优先级的玩家手动放弃，再执行。",
+   "sourceLines": [
+    142,
+    142
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C09-010",
+   "sourceStage": "ST-C09",
+   "sourceRule": "更高优先级一旦成立，其余响应取消。",
+   "sourceLines": [
+    142,
+    142
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C09-011",
+   "sourceStage": "ST-C09",
+   "sourceRule": "吃只能吃上家。",
+   "sourceLines": [
+    143,
+    143
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-001",
+   "sourceStage": "ST-C10",
+   "sourceRule": "风牌、箭牌不能做顺子，不能吃。",
+   "sourceLines": [
+    147,
+    147
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-002",
+   "sourceStage": "ST-C10",
+   "sourceRule": "上家刚打出的 1 张非财神，与手中 2 张非财神组成同花色连续顺子。",
+   "sourceLines": [
+    149,
+    149
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-003",
+   "sourceStage": "ST-C10",
+   "sourceRule": "多种合法组合时选 1 组。",
+   "sourceLines": [
+    149,
+    149
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-004",
+   "sourceStage": "ST-C10",
+   "sourceRule": "成功后不摸牌，进入出牌。",
+   "sourceLines": [
+    149,
+    149
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-005",
+   "sourceStage": "ST-C10",
+   "sourceRule": "当前回合可以加杠或暗杠。",
+   "sourceLines": [
+    149,
+    149
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-006",
+   "sourceStage": "ST-C10",
+   "sourceRule": "任意他人刚打出的 1 张非财神，与手中 2 张相同非财神组成刻子。",
+   "sourceLines": [
+    150,
+    150
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-007",
+   "sourceStage": "ST-C10",
+   "sourceRule": "手中有 3 张也只用 2 张。",
+   "sourceLines": [
+    150,
+    150
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-008",
+   "sourceStage": "ST-C10",
+   "sourceRule": "成功后不摸牌，进入出牌。",
+   "sourceLines": [
+    150,
+    150
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-009",
+   "sourceStage": "ST-C10",
+   "sourceRule": "当前回合可以加杠或暗杠。",
+   "sourceLines": [
+    150,
+    150
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-010",
+   "sourceStage": "ST-C10",
+   "sourceRule": "他人刚打出的 1 张非财神，与手中 3 张相同非财神。",
+   "sourceLines": [
+    151,
+    151
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-011",
+   "sourceStage": "ST-C10",
+   "sourceRule": "按优先级裁决后，从牌墙尾部补牌。",
+   "sourceLines": [
+    151,
+    151
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-012",
+   "sourceStage": "ST-C10",
+   "sourceRule": "出牌阶段，已碰出的刻子手里有第 4 张非财神。",
+   "sourceLines": [
+    152,
+    152
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-013",
+   "sourceStage": "ST-C10",
+   "sourceRule": "先征求抢杠胡。",
+   "sourceLines": [
+    152,
+    152
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-014",
+   "sourceStage": "ST-C10",
+   "sourceRule": "有人抢杠胡则加杠不成立、不补牌。",
+   "sourceLines": [
+    152,
+    152
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-015",
+   "sourceStage": "ST-C10",
+   "sourceRule": "无人胡再完成加杠并补牌。",
+   "sourceLines": [
+    152,
+    152
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-016",
+   "sourceStage": "ST-C10",
+   "sourceRule": "出牌阶段手中 4 张相同非财神。",
+   "sourceLines": [
+    153,
+    153
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-017",
+   "sourceStage": "ST-C10",
+   "sourceRule": "完成后补牌。",
+   "sourceLines": [
+    153,
+    153
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-018",
+   "sourceStage": "ST-C10",
+   "sourceRule": "暗杠下层 3 张牌背、顶张正面，四家都能认出牌面。",
+   "sourceLines": [
+    153,
+    153
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-019",
+   "sourceStage": "ST-C10",
+   "sourceRule": "暗杠放在碰杠区。",
+   "sourceLines": [
+    153,
+    153
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-020",
+   "sourceStage": "ST-C10",
+   "sourceRule": "暗杠不计副露。",
+   "sourceLines": [
+    153,
+    153
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-021",
+   "sourceStage": "ST-C10",
+   "sourceRule": "不是财神时可以碰、杠。",
+   "sourceLines": [
+    147,
+    147
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-022",
+   "sourceStage": "ST-C10",
+   "sourceRule": "吃或碰刚成立的当前回合，同样可以加杠、暗杠。",
+   "sourceLines": [
+    154,
+    154
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-023",
+   "sourceStage": "ST-C10",
+   "sourceRule": "四张相同就可以杠。",
+   "sourceLines": [
+    154,
+    154
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-024",
+   "sourceStage": "ST-C10",
+   "sourceRule": "杠完这条就不再按七对结算。",
+   "sourceLines": [
+    154,
+    154
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-025",
+   "sourceStage": "ST-C10",
+   "sourceRule": "受尚未解除的飘财限制时，不能吃、碰、直杠、加杠。",
+   "sourceLines": [
+    155,
+    155
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-026",
+   "sourceStage": "ST-C10",
+   "sourceRule": "仍可暗杠。",
+   "sourceLines": [
+    155,
+    155
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C10-027",
+   "sourceStage": "ST-C10",
+   "sourceRule": "暗杠后只能打尾墩刚补进的那一张。",
+   "sourceLines": [
+    155,
+    155
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C11-001",
+   "sourceStage": "ST-C11",
+   "sourceRule": "每次杠从牌墙尾部补 1 张。",
+   "sourceLines": [
+    159,
+    159
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C11-002",
+   "sourceStage": "ST-C11",
+   "sourceRule": "每次杠补牌后牌墙余牌减 1。",
+   "sourceLines": [
+    159,
+    159
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C11-003",
+   "sourceStage": "ST-C11",
+   "sourceRule": "杠后补的牌可以自摸。",
+   "sourceLines": [
+    161,
+    161
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C11-004",
+   "sourceStage": "ST-C11",
+   "sourceRule": "补牌后不胡牌时，可以继续杠，或打出 1 张牌。",
+   "sourceLines": [
+    161,
+    161
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C11-005",
+   "sourceStage": "ST-C11",
+   "sourceRule": "牌墙少于 21 张时不能杠。",
+   "sourceLines": [
+    159,
+    159
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C11-006",
+   "sourceStage": "ST-C11",
+   "sourceRule": "杠后可以继续杠，每次继续杠都重新检查牌墙不少于 21 张。",
+   "sourceLines": [
+    161,
+    161
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C11-007",
+   "sourceStage": "ST-C11",
+   "sourceRule": "牌墙剩 20 张及以下时，在下一次摸牌前黄庄。",
+   "sourceLines": [
+    159,
+    159
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C11-008",
+   "sourceStage": "ST-C11",
+   "sourceRule": "明杠、暗杠、加杠都使杠链加 1。",
+   "sourceLines": [
+    161,
+    161
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C11-009",
+   "sourceStage": "ST-C11",
+   "sourceRule": "吃或碰时，杠链归零。",
+   "sourceLines": [
+    161,
+    161
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C11-010",
+   "sourceStage": "ST-C11",
+   "sourceRule": "打出非财神牌时，杠链归零。",
+   "sourceLines": [
+    161,
+    161
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C11-011",
+   "sourceStage": "ST-C11",
+   "sourceRule": "打出财神但打出后不再敲响时，杠链归零。",
+   "sourceLines": [
+    161,
+    161
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C12-001",
+   "sourceStage": "ST-C12",
+   "sourceRule": "玩家在常规摸牌后、出牌前，可胡牌（自摸）。",
+   "sourceLines": [
+    165,
+    165
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C12-002",
+   "sourceStage": "ST-C12",
+   "sourceRule": "玩家在杠后补牌时、出牌前，可胡牌（自摸）。",
+   "sourceLines": [
+    165,
+    165
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C12-003",
+   "sourceStage": "ST-C12",
+   "sourceRule": "庄家起手拿到第 14 张牌时，在出牌前可胡牌（自摸）。",
+   "sourceLines": [
+    165,
+    165
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C12-004",
+   "sourceStage": "ST-C12",
+   "sourceRule": "自摸须在出牌前完成胡牌，常规结构是 4 组面子加 1 组对子。",
+   "sourceLines": [
+    165,
+    165
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C12-005",
+   "sourceStage": "ST-C12",
+   "sourceRule": "本期放铳固定为庄闲放铳这一种形式。",
+   "sourceLines": [
+    166,
+    166
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C12-006",
+   "sourceStage": "ST-C12",
+   "sourceRule": "当局是三牢，且出牌者与胡牌者正好一边是庄、一边是闲，同时牌型合法，才能点炮胡。",
+   "sourceLines": [
+    166,
+    166
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C12-007",
+   "sourceStage": "ST-C12",
+   "sourceRule": "庄家打出的牌只有闲家可胡，闲家打出的牌只有庄家可胡。",
+   "sourceLines": [
+    166,
+    166
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C12-008",
+   "sourceStage": "ST-C12",
+   "sourceRule": "出牌者与胡牌者未形成一庄一闲关系时，只能自摸。",
+   "sourceLines": [
+    166,
+    166
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C12-009",
+   "sourceStage": "ST-C12",
+   "sourceRule": "点炮胡只由放铳者赔付。",
+   "sourceLines": [
+    166,
+    166
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C12-010",
+   "sourceStage": "ST-C12",
+   "sourceRule": "抢杠胡与放铳相同，只有三牢的庄闲之间可以抢。",
+   "sourceLines": [
+    167,
+    167
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C12-011",
+   "sourceStage": "ST-C12",
+   "sourceRule": "所加的第 4 张须使响应者合法胡牌，否则不能抢杠胡。",
+   "sourceLines": [
+    167,
+    167
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C12-012",
+   "sourceStage": "ST-C12",
+   "sourceRule": "抢杠胡只由被抢的加杠者按放铳赔付。",
+   "sourceLines": [
+    167,
+    167
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C12-013",
+   "sourceStage": "ST-C12",
+   "sourceRule": "抢杠胡其他人不付。",
+   "sourceLines": [
+    167,
+    167
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C13-001",
+   "sourceStage": "ST-C13",
+   "sourceRule": "全场同时只有一个飘财窗口。",
+   "sourceLines": [
+    171,
+    171
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C13-002",
+   "sourceStage": "ST-C13",
+   "sourceRule": "打出财神的玩家成为所有者，限制另外三家。",
+   "sourceLines": [
+    171,
+    171
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C13-003",
+   "sourceStage": "ST-C13",
+   "sourceRule": "之后再有人打出财神，窗口直接换到这个人，不叠加。",
+   "sourceLines": [
+    171,
+    171
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C13-004",
+   "sourceStage": "ST-C13",
+   "sourceRule": "受限玩家若被逼打出刚摸到的财神，窗口就转到他身上。",
+   "sourceLines": [
+    171,
+    171
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C13-005",
+   "sourceStage": "ST-C13",
+   "sourceRule": "受限时可以胡牌和暗杠。",
+   "sourceLines": [
+    173,
+    173
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C13-006",
+   "sourceStage": "ST-C13",
+   "sourceRule": "受限时不能吃、碰、直杠、加杠。",
+   "sourceLines": [
+    173,
+    173
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C13-007",
+   "sourceStage": "ST-C13",
+   "sourceRule": "只能打刚摸进或最新补进的那一张。",
+   "sourceLines": [
+    173,
+    173
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C13-008",
+   "sourceStage": "ST-C13",
+   "sourceRule": "其余手牌压暗，只在自己界面显示。",
+   "sourceLines": [
+    173,
+    173
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C13-009",
+   "sourceStage": "ST-C13",
+   "sourceRule": "这份限制盖过吃碰禁手。",
+   "sourceLines": [
+    173,
+    173
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C13-010",
+   "sourceStage": "ST-C13",
+   "sourceRule": "所有者自己下一次出牌时先关掉窗口。",
+   "sourceLines": [
+    174,
+    174
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C13-011",
+   "sourceStage": "ST-C13",
+   "sourceRule": "这张若又是财神，立刻重开。",
+   "sourceLines": [
+    174,
+    174
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C13-012",
+   "sourceStage": "ST-C13",
+   "sourceRule": "飘档只在打出财神、且打出后手牌仍然敲响时加 1。",
+   "sourceLines": [
+    175,
+    175
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C13-013",
+   "sourceStage": "ST-C13",
+   "sourceRule": "没敲响就打财神，飘档和杠链都归零。",
+   "sourceLines": [
+    175,
+    175
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C13-014",
+   "sourceStage": "ST-C13",
+   "sourceRule": "打出普通牌同样归零。",
+   "sourceLines": [
+    175,
+    175
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C13-015",
+   "sourceStage": "ST-C13",
+   "sourceRule": "各家飘档独立。",
+   "sourceLines": [
+    175,
+    175
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C13-016",
+   "sourceStage": "ST-C13",
+   "sourceRule": "吃、碰、杠不清飘档。",
+   "sourceLines": [
+    175,
+    175
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C13-017",
+   "sourceStage": "ST-C13",
+   "sourceRule": "吃和碰会清杠链。",
+   "sourceLines": [
+    175,
+    175
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C13-018",
+   "sourceStage": "ST-C13",
+   "sourceRule": "飘次数本局累加，小局重置时清掉。",
+   "sourceLines": [
+    176,
+    176
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C13-019",
+   "sourceStage": "ST-C13",
+   "sourceRule": "小局重置时清掉。",
+   "sourceLines": [
+    176,
+    176
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C13-020",
+   "sourceStage": "ST-C13",
+   "sourceRule": "次数大于 0 时，在该座位碰杠位播放「飘」字，没有常驻标签。",
+   "sourceLines": [
+    176,
+    176
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C14-001",
+   "sourceStage": "ST-C14",
+   "sourceRule": "杠上开花：自摸且杠链为 1，倍数 2。",
+   "sourceLines": [
+    180,
+    180
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C14-002",
+   "sourceStage": "ST-C14",
+   "sourceRule": "二连杠：自摸且杠链为 2，倍数 4。",
+   "sourceLines": [
+    180,
+    180
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C14-003",
+   "sourceStage": "ST-C14",
+   "sourceRule": "三连杠：自摸且杠链为 3，倍数 8。",
+   "sourceLines": [
+    180,
+    180
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C14-004",
+   "sourceStage": "ST-C14",
+   "sourceRule": "四连杠：自摸且杠链为 4 及以上，倍数 16；四连杠及以上都记 16 倍。",
+   "sourceLines": [
+    180,
+    180
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C14-005",
+   "sourceStage": "ST-C14",
+   "sourceRule": "杠链已断后再胡，不是杠开。",
+   "sourceLines": [
+    180,
+    180
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C14-006",
+   "sourceStage": "ST-C14",
+   "sourceRule": "杠飘、飘杠只在同时命中杠上开花和财飘时拆出。",
+   "sourceLines": [
+    181,
+    181
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C14-007",
+   "sourceStage": "ST-C14",
+   "sourceRule": "杠飘、飘杠倍数 8，再乘上基础番。",
+   "sourceLines": [
+    181,
+    181
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C14-008",
+   "sourceStage": "ST-C14",
+   "sourceRule": "杠发生时飘档已经大于 0，记飘杠。",
+   "sourceLines": [
+    181,
+    181
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C14-009",
+   "sourceStage": "ST-C14",
+   "sourceRule": "杠发生时飘档不大于 0（未大于 0），记杠飘。",
+   "sourceLines": [
+    181,
+    181
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C14-010",
+   "sourceStage": "ST-C14",
+   "sourceRule": "二连杠、双财飘及更高档不拆，仍按各组连乘。",
+   "sourceLines": [
+    181,
+    181
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C14-011",
+   "sourceStage": "ST-C14",
+   "sourceRule": "没有单独的杠爆、七客。",
+   "sourceLines": [
+    181,
+    181
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C15-001",
+   "sourceStage": "ST-C15",
+   "sourceRule": "吃或碰成立后，同牌面的手牌全部禁打，直到本次限制解除。",
+   "sourceLines": [
+    185,
+    185
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C15-002",
+   "sourceStage": "ST-C15",
+   "sourceRule": "用间隔一张的两张吃中间张：只禁被吃的那一张；用 1、3 吃 2，禁打 2。",
+   "sourceLines": [
+    187,
+    187
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C15-003",
+   "sourceStage": "ST-C15",
+   "sourceRule": "用相邻两张吃一端：禁打这两张在 1 至 9 内两端能接成顺子的牌；用 2、3 吃 1 或吃 4，都禁 1 和 4。",
+   "sourceLines": [
+    188,
+    188
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C15-004",
+   "sourceStage": "ST-C15",
+   "sourceRule": "用 1、2 吃 3，只禁 3。",
+   "sourceLines": [
+    188,
+    188
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C15-005",
+   "sourceStage": "ST-C15",
+   "sourceRule": "碰成立后，禁打与被碰牌相同的牌。",
+   "sourceLines": [
+    189,
+    189
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C15-006",
+   "sourceStage": "ST-C15",
+   "sourceRule": "手上两张相差 1 时，禁吃进的那张和另一侧延伸的那张。",
+   "sourceLines": [
+    191,
+    191
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C15-007",
+   "sourceStage": "ST-C15",
+   "sourceRule": "1、9 外侧不是牌，实际只禁吃进的一张。",
+   "sourceLines": [
+    191,
+    191
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C15-008",
+   "sourceStage": "ST-C15",
+   "sourceRule": "相差不是 1 时，只禁吃进的那张。",
+   "sourceLines": [
+    191,
+    191
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C15-009",
+   "sourceStage": "ST-C15",
+   "sourceRule": "只按最终选定的一组写禁张。",
+   "sourceLines": [
+    191,
+    191
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C15-010",
+   "sourceStage": "ST-C15",
+   "sourceRule": "吃完后剩余手牌全部落在禁张里的吃法不能吃，本家提示「吃禁手规则生效中」。",
+   "sourceLines": [
+    191,
+    191
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C15-011",
+   "sourceStage": "ST-C15",
+   "sourceRule": "禁张不含财神，吃完仍可打财神。",
+   "sourceLines": [
+    191,
+    191
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C15-012",
+   "sourceStage": "ST-C15",
+   "sourceRule": "禁打牌压暗，牌面仍可辨认，只在本家界面显示。",
+   "sourceLines": [
+    193,
+    193
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C15-013",
+   "sourceStage": "ST-C15",
+   "sourceRule": "这些牌仍能提起，也能横滑出虚影。",
+   "sourceLines": [
+    193,
+    193
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C15-014",
+   "sourceStage": "ST-C15",
+   "sourceRule": "单击、双击或松手打出时弹出「该牌被禁打」，牌不进牌河。",
+   "sourceLines": [
+    193,
+    193
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C15-015",
+   "sourceStage": "ST-C15",
+   "sourceRule": "其他家只看到牌背。",
+   "sourceLines": [
+    193,
+    193
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C15-016",
+   "sourceStage": "ST-C15",
+   "sourceRule": "打出一张合法牌后，服务端清空禁张。",
+   "sourceLines": [
+    195,
+    195
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C15-017",
+   "sourceStage": "ST-C15",
+   "sourceRule": "同一回合再杠不清空。",
+   "sourceLines": [
+    195,
+    195
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C15-018",
+   "sourceStage": "ST-C15",
+   "sourceRule": "补进的牌若牌值仍在禁张里，也不能打。",
+   "sourceLines": [
+    195,
+    195
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-001",
+   "sourceStage": "ST-C16",
+   "sourceRule": "只有当前拿到出牌权、且目标牌可打的玩家能出牌。",
+   "sourceLines": [
+    199,
+    199
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-002",
+   "sourceStage": "ST-C16",
+   "sourceRule": "等待他人响应、正在选择组合、杠后尚未补牌或本小局已经结束时，不能出牌。",
+   "sourceLines": [
+    199,
+    199
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-003",
+   "sourceStage": "ST-C16",
+   "sourceRule": "【自摸】还在，或本次杠提示必须先过时，双击或滑动出牌会被拦住，只在本家显示「点“过”才能出牌」，须先点【过】。",
+   "sourceLines": [
+    202,
+    202
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-004",
+   "sourceStage": "ST-C16",
+   "sourceRule": "例外：可杠的只是摸牌或补牌之前已经拿在手里的暗杠，可以直接出牌。",
+   "sourceLines": [
+    202,
+    202
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-005",
+   "sourceStage": "ST-C16",
+   "sourceRule": "碰之后又能杠的，仍须先过。",
+   "sourceLines": [
+    202,
+    202
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-006",
+   "sourceStage": "ST-C16",
+   "sourceRule": "有杠、没有胡，且所有可杠牌都不是刚摸的那张时，手牌不压暗，不点过也能出牌。",
+   "sourceLines": [
+    210,
+    210
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-007",
+   "sourceStage": "ST-C16",
+   "sourceRule": "弃牌可被吃、碰、直杠或点炮胡时，先裁决。",
+   "sourceLines": [
+    201,
+    201
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-008",
+   "sourceStage": "ST-C16",
+   "sourceRule": "成立后各端从牌河取走该牌，并清除它的浮标和放大显示。",
+   "sourceLines": [
+    201,
+    201
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-009",
+   "sourceStage": "ST-C16",
+   "sourceRule": "全部放弃则牌留在牌河，再轮到下家摸牌。",
+   "sourceLines": [
+    201,
+    201
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-010",
+   "sourceStage": "ST-C16",
+   "sourceRule": "较低优先级先提交时，本端收起自己的按钮并等待。",
+   "sourceLines": [
+    206,
+    206
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-011",
+   "sourceStage": "ST-C16",
+   "sourceRule": "更高优先级成立后，结束等待并取消该请求。",
+   "sourceLines": [
+    206,
+    206
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-012",
+   "sourceStage": "ST-C16",
+   "sourceRule": "更高优先级都放弃后，再执行已经提交的较低优先级请求。",
+   "sourceLines": [
+    206,
+    206
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-013",
+   "sourceStage": "ST-C16",
+   "sourceRule": "有操作资格的玩家在自己手牌右上方看到对应按钮和【过】。按钮从左到右为【吃】【碰】【杠】【胡】，蓝色【过】固定在最右，只显示本次可做的项。",
+   "sourceLines": [
+    204,
+    204
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-014",
+   "sourceStage": "ST-C16",
+   "sourceRule": "【胡】或【自摸】左侧显示胡牌张和预览倍数。",
+   "sourceLines": [
+    204,
+    204
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-015",
+   "sourceStage": "ST-C16",
+   "sourceRule": "各端使用同一个响应倒计时，归零后按钮仍可点。",
+   "sourceLines": [
+    204,
+    204
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-016",
+   "sourceStage": "ST-C16",
+   "sourceRule": "点炮、抢杠的按钮文案是「胡」，自摸是「自摸」。没有单独的抢杠按钮。",
+   "sourceLines": [
+    209,
+    209
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-017",
+   "sourceStage": "ST-C16",
+   "sourceRule": "过和过2都显示「过」。",
+   "sourceLines": [
+    209,
+    209
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-018",
+   "sourceStage": "ST-C16",
+   "sourceRule": "点【过】只放弃这一次提示，收起本次按钮和预览。",
+   "sourceLines": [
+    203,
+    203
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-019",
+   "sourceStage": "ST-C16",
+   "sourceRule": "之后别人再打出相同牌，按新弃牌重新判断。",
+   "sourceLines": [
+    203,
+    203
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-020",
+   "sourceStage": "ST-C16",
+   "sourceRule": "放弃杠后，同一次操作机会内不再出现【杠】；下一次拿到操作机会再判断。",
+   "sourceLines": [
+    203,
+    203
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-021",
+   "sourceStage": "ST-C16",
+   "sourceRule": "过上行放弃；过2只在本地收起按钮并清掉本次压暗，再按禁手重新压暗，不上行。",
+   "sourceLines": [
+    209,
+    209
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-022",
+   "sourceStage": "ST-C16",
+   "sourceRule": "多组吃、杠的取消等于上行过。",
+   "sourceLines": [
+    209,
+    209
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-023",
+   "sourceStage": "ST-C16",
+   "sourceRule": "能胡时整手保持正常亮度。",
+   "sourceLines": [
+    205,
+    205
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-024",
+   "sourceStage": "ST-C16",
+   "sourceRule": "不能胡时，只有参与当前吃、碰、直杠的牌保持亮度，其余压暗。压暗只在该玩家本端显示。",
+   "sourceLines": [
+    205,
+    205
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-025",
+   "sourceStage": "ST-C16",
+   "sourceRule": "本次新摸入或补入的牌能组成暗杠或加杠，且同次无胡时，参与任一合法杠的手牌保持亮度，其余压暗。",
+   "sourceLines": [
+    205,
+    205
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-026",
+   "sourceStage": "ST-C16",
+   "sourceRule": "可杠组只由原有的牌组成时，手牌保持当前亮度。",
+   "sourceLines": [
+    205,
+    205
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-027",
+   "sourceStage": "ST-C16",
+   "sourceRule": "有杠、没有胡，且所有可杠牌都不是刚摸的那张时，手牌不压暗，不点过也能出牌。",
+   "sourceLines": [
+    210,
+    210
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-028",
+   "sourceStage": "ST-C16",
+   "sourceRule": "点【吃】后，在手牌上方展开可选顺子，每组三张正面、按牌面从小到大，右侧为【取消】。",
+   "sourceLines": [
+    207,
+    207
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-029",
+   "sourceStage": "ST-C16",
+   "sourceRule": "原【吃】【过】退场，手牌恢复常态亮度。",
+   "sourceLines": [
+    207,
+    207
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-030",
+   "sourceStage": "ST-C16",
+   "sourceRule": "倒计时归零后面板仍可操作。",
+   "sourceLines": [
+    207,
+    207
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-031",
+   "sourceStage": "ST-C16",
+   "sourceRule": "点【取消】等于放弃自己对这张弃牌的全部操作，包括同时存在的胡。",
+   "sourceLines": [
+    207,
+    207
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-032",
+   "sourceStage": "ST-C16",
+   "sourceRule": "选中一组即提交。",
+   "sourceLines": [
+    207,
+    207
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-033",
+   "sourceStage": "ST-C16",
+   "sourceRule": "点【杠】后收起【杠】【过】，横向排列候选牌，最右为【取消】。",
+   "sourceLines": [
+    208,
+    208
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-034",
+   "sourceStage": "ST-C16",
+   "sourceRule": "暗杠与加杠混排，顺序为万、条、筒、东、南、西、北、中、发、白，同花色按点数升序。",
+   "sourceLines": [
+    208,
+    208
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-035",
+   "sourceStage": "ST-C16",
+   "sourceRule": "倒计时归零后仍可选择。",
+   "sourceLines": [
+    208,
+    208
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-036",
+   "sourceStage": "ST-C16",
+   "sourceRule": "点【取消】等于放弃本次行牌机会里的全部操作，包括同时存在的自摸。",
+   "sourceLines": [
+    208,
+    208
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-037",
+   "sourceStage": "ST-C16",
+   "sourceRule": "点一张候选牌只提交对应的一组。",
+   "sourceLines": [
+    208,
+    208
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-038",
+   "sourceStage": "ST-C16",
+   "sourceRule": "只有 1 组时，点【杠】直接提交。",
+   "sourceLines": [
+    208,
+    208
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-039",
+   "sourceStage": "ST-C16",
+   "sourceRule": "打出后听任意一张时，听牌详情固定为「爆头2番」「摸任意一张可胡」。",
+   "sourceLines": [
+    211,
+    211
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-040",
+   "sourceStage": "ST-C16",
+   "sourceRule": "候选牌是财神时听牌标为飘，否则为爆。",
+   "sourceLines": [
+    211,
+    211
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-041",
+   "sourceStage": "ST-C16",
+   "sourceRule": "同一手只要有一张这样，其余可听牌只留箭头。",
+   "sourceLines": [
+    211,
+    211
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-042",
+   "sourceStage": "ST-C16",
+   "sourceRule": "**大**=全部候选张达到同一最高番。",
+   "sourceLines": [
+    212,
+    212
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-043",
+   "sourceStage": "ST-C16",
+   "sourceRule": "**多**=某候选剩余张数比最少候选多 2 张及以上。",
+   "sourceLines": [
+    212,
+    212
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-044",
+   "sourceStage": "ST-C16",
+   "sourceRule": "**优**=同时满足大和多。",
+   "sourceLines": [
+    212,
+    212
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-045",
+   "sourceStage": "ST-C16",
+   "sourceRule": "分级只影响展示，不影响胡牌判定。",
+   "sourceLines": [
+    212,
+    212
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-046",
+   "sourceStage": "ST-C16",
+   "sourceRule": "吃成立后，碰杠区新增一组正面顺子，按点数从小到大摆放。",
+   "sourceLines": [
+    213,
+    213
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-047",
+   "sourceStage": "ST-C16",
+   "sourceRule": "以吃牌者视角，来源箭头「←」叠在吃到的那张牌上。",
+   "sourceLines": [
+    213,
+    213
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-048",
+   "sourceStage": "ST-C16",
+   "sourceRule": "碰成立后，碰牌组三张都正面展示。以来源视角，箭头叠在中间一张：上家←、对家↑、下家→。",
+   "sourceLines": [
+    214,
+    214
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-049",
+   "sourceStage": "ST-C16",
+   "sourceRule": "吃、碰、直杠、暗杠的新牌组按成立顺序从左往右追加。",
+   "sourceLines": [
+    214,
+    214
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-050",
+   "sourceStage": "ST-C16",
+   "sourceRule": "直杠用来源箭头，加杠标记为【补】，暗杠用手掌标记。标记都叠在杠牌组最上方居中的第 4 张。",
+   "sourceLines": [
+    215,
+    215
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-051",
+   "sourceStage": "ST-C16",
+   "sourceRule": "直杠、暗杠在碰杠区新增一组；加杠补入原碰牌组，沿用原位置。",
+   "sourceLines": [
+    215,
+    215
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-052",
+   "sourceStage": "ST-C16",
+   "sourceRule": "补牌落入最右分隔位，可与「杠」字同时出现。",
+   "sourceLines": [
+    215,
+    215
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-053",
+   "sourceStage": "ST-C16",
+   "sourceRule": "连续杠时，新的「杠」字覆盖仍在播放的上一个。",
+   "sourceLines": [
+    215,
+    215
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-054",
+   "sourceStage": "ST-C16",
+   "sourceRule": "吃、碰、杠、胡成立时，在操作者对应方位播放对应字效。",
+   "sourceLines": [
+    216,
+    216
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-055",
+   "sourceStage": "ST-C16",
+   "sourceRule": "自摸确认后显示「对局结束」并亮出各家手牌，胡牌张单独摆在胡牌者手牌右侧。",
+   "sourceLines": [
+    216,
+    216
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-056",
+   "sourceStage": "ST-C16",
+   "sourceRule": "点炮胡、抢杠胡同样显示「对局结束」和亮牌；胡牌张在胡牌者手牌尾端，带浅绿描边和来源箭头。",
+   "sourceLines": [
+    216,
+    216
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-057",
+   "sourceStage": "ST-C16",
+   "sourceRule": "赢家方位显示番型，放铳者方位显示「点炮」。",
+   "sourceLines": [
+    216,
+    216
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-058",
+   "sourceStage": "ST-C16",
+   "sourceRule": "随后按座位飘分，正分黄色，负分灰色。",
+   "sourceLines": [
+    216,
+    216
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C16-059",
+   "sourceStage": "ST-C16",
+   "sourceRule": "创房选项「模式=简洁」只省略演出：规则类提示、「三摊落地」动画、摸财神特效都不播放，不改变规则本身；本期固定正常模式，文中演出均按正常模式描述。",
+   "sourceLines": [
+    217,
+    217
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C17-001",
+   "sourceStage": "ST-C17",
+   "sourceRule": "对局中掉线重连后不重开小局。",
+   "sourceLines": [
+    221,
+    221
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C17-002",
+   "sourceStage": "ST-C17",
+   "sourceRule": "重连后恢复到断线瞬间的对局状态。",
+   "sourceLines": [
+    221,
+    221
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C17-003",
+   "sourceStage": "ST-C17",
+   "sourceRule": "重连后恢复牌桌。",
+   "sourceLines": [
+    223,
+    223
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C17-004",
+   "sourceStage": "ST-C17",
+   "sourceRule": "重连后恢复牌墙与余牌数。",
+   "sourceLines": [
+    223,
+    223
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C17-005",
+   "sourceStage": "ST-C17",
+   "sourceRule": "重连后恢复各家手牌。",
+   "sourceLines": [
+    223,
+    223
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C17-006",
+   "sourceStage": "ST-C17",
+   "sourceRule": "重连后恢复出牌区。",
+   "sourceLines": [
+    223,
+    223
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C17-007",
+   "sourceStage": "ST-C17",
+   "sourceRule": "重连后恢复轮次。",
+   "sourceLines": [
+    223,
+    223
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C17-008",
+   "sourceStage": "ST-C17",
+   "sourceRule": "重连后恢复飘标。",
+   "sourceLines": [
+    223,
+    223
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C17-009",
+   "sourceStage": "ST-C17",
+   "sourceRule": "重连后恢复记牌器。",
+   "sourceLines": [
+    223,
+    223
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C17-010",
+   "sourceStage": "ST-C17",
+   "sourceRule": "「打哪张听」箭头若重连数据未补发，先用断线前的缓存恢复。",
+   "sourceLines": [
+    224,
+    224
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C17-011",
+   "sourceStage": "ST-C17",
+   "sourceRule": "服务端数据到达后，以服务端为准覆盖箭头。",
+   "sourceLines": [
+    224,
+    224
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C17-012",
+   "sourceStage": "ST-C17",
+   "sourceRule": "恢复完成后客户端上报定位。",
+   "sourceLines": [
+    225,
+    225
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C17-013",
+   "sourceStage": "ST-C17",
+   "sourceRule": "恢复完成后随后继续对局。",
+   "sourceLines": [
+    225,
+    225
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-001",
+   "sourceStage": "ST-C18",
+   "sourceRule": "摊只统计吃牌，碰、直杠、加杠、暗杠不计摊。",
+   "sourceLines": [
+    229,
+    229
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-002",
+   "sourceStage": "ST-C18",
+   "sourceRule": "A 吃 B 打出的牌，A 对 B 记 1 摊。",
+   "sourceLines": [
+    229,
+    229
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-003",
+   "sourceStage": "ST-C18",
+   "sourceRule": "只有庄家和闲家之间能承包。",
+   "sourceLines": [
+    231,
+    231
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-004",
+   "sourceStage": "ST-C18",
+   "sourceRule": "两名闲家之间，同一方向最多 2 摊，吃一成立就加 1。",
+   "sourceLines": [
+    231,
+    231
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-005",
+   "sourceStage": "ST-C18",
+   "sourceRule": "已经有 2 摊时，再吃这一家的牌不成立，不给出【吃】。",
+   "sourceLines": [
+    231,
+    231
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-006",
+   "sourceStage": "ST-C18",
+   "sourceRule": "摊的统计与飘财无关。",
+   "sourceLines": [
+    231,
+    231
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-007",
+   "sourceStage": "ST-C18",
+   "sourceRule": "两个方向分开计：A 对 B 与 B 对 A 的摊数分别累计。",
+   "sourceLines": [
+    231,
+    231
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-008",
+   "sourceStage": "ST-C18",
+   "sourceRule": "某一方向计到第 3 摊时记承包。",
+   "sourceLines": [
+    232,
+    232
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-009",
+   "sourceStage": "ST-C18",
+   "sourceRule": "承包成立时四端播放「三摊落地」提示。",
+   "sourceLines": [
+    232,
+    232
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-010",
+   "sourceStage": "ST-C18",
+   "sourceRule": "「三摊落地」提示可与吃牌字效同时显示。",
+   "sourceLines": [
+    232,
+    232
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-011",
+   "sourceStage": "ST-C18",
+   "sourceRule": "不等到结算，当时没有承包角标。",
+   "sourceLines": [
+    232,
+    232
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-012",
+   "sourceStage": "ST-C18",
+   "sourceRule": "提示期间，获权玩家可以继续提牌、出牌。",
+   "sourceLines": [
+    232,
+    232
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-013",
+   "sourceStage": "ST-C18",
+   "sourceRule": "自摸只结算胡牌方自己参与的承包对。",
+   "sourceLines": [
+    234,
+    234
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-014",
+   "sourceStage": "ST-C18",
+   "sourceRule": "摊方胡，即承包方自摸时，被承包方支付三家输分的合计。",
+   "sourceLines": [
+    234,
+    234
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-015",
+   "sourceStage": "ST-C18",
+   "sourceRule": "被摊方胡，即原被承包方自摸时，摊方支付该合计的 2 倍。",
+   "sourceLines": [
+    234,
+    234
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-016",
+   "sourceStage": "ST-C18",
+   "sourceRule": "双向都满 3 摊时只按倒承包的 2 倍计算，不两笔叠加。",
+   "sourceLines": [
+    234,
+    234
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-017",
+   "sourceStage": "ST-C18",
+   "sourceRule": "承包：A 对 B 已成立，A 自摸，B 支付三家原应赔分的合计 S，另外两家本局 0 分。",
+   "sourceLines": [
+    238,
+    238
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-018",
+   "sourceStage": "ST-C18",
+   "sourceRule": "反承包：同一关系下 B 自摸，A 支付 2 × S，S 是 B 这次自摸原本向三家应收的合计。",
+   "sourceLines": [
+    239,
+    239
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-019",
+   "sourceStage": "ST-C18",
+   "sourceRule": "链式：A 对 B 成立，同时 C 对 A 成立，A 自摸，B 付 S，C 付 2 × S，A 实收 3 × S，第四家 0 分。",
+   "sourceLines": [
+    240,
+    240
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-020",
+   "sourceStage": "ST-C18",
+   "sourceRule": "点炮只在放铳者本人是承包对方时改写赔付。",
+   "sourceLines": [
+    236,
+    236
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-021",
+   "sourceStage": "ST-C18",
+   "sourceRule": "点炮改写后的基数是原来那一笔点炮分，不是三家之和。",
+   "sourceLines": [
+    236,
+    236
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-022",
+   "sourceStage": "ST-C18",
+   "sourceRule": "别人的承包关系不赔，放铳者仍按原点炮付。",
+   "sourceLines": [
+    236,
+    236
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-023",
+   "sourceStage": "ST-C18",
+   "sourceRule": "抢杠胡不替换杠牌者的赔付，承包额再叠加。",
+   "sourceLines": [
+    236,
+    236
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-024",
+   "sourceStage": "ST-C18",
+   "sourceRule": "杠牌者若同时是承包方，两笔都付。",
+   "sourceLines": [
+    236,
+    236
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-025",
+   "sourceStage": "ST-C18",
+   "sourceRule": "庄家平胡自摸，三名闲家各应赔 8，S = 24，承包方付 24。",
+   "sourceLines": [
+    242,
+    242
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-026",
+   "sourceStage": "ST-C18",
+   "sourceRule": "同时存在上家对庄家的承包时，上家再付 48，庄家得 72。",
+   "sourceLines": [
+    242,
+    242
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C18-027",
+   "sourceStage": "ST-C18",
+   "sourceRule": "庄家对闲家成立承包，闲家平胡自摸，三家原应赔 8、1、1，庄家按反承包付 20。",
+   "sourceLines": [
+    244,
+    244
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C19-001",
+   "sourceStage": "ST-C19",
+   "sourceRule": "底分为 1。",
+   "sourceLines": [
+    248,
+    248
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C19-002",
+   "sourceStage": "ST-C19",
+   "sourceRule": "原应赔分 = 底分 × 番型倍数 × 这一笔的庄闲倍数。",
+   "sourceLines": [
+    248,
+    248
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C19-003",
+   "sourceStage": "ST-C19",
+   "sourceRule": "赢家和这一笔的赔付者有一方是庄家，庄闲倍数为 8；两边都是闲家，为 1。",
+   "sourceLines": [
+    248,
+    248
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C19-004",
+   "sourceStage": "ST-C19",
+   "sourceRule": "无封顶。",
+   "sourceLines": [
+    248,
+    248
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C19-005",
+   "sourceStage": "ST-C19",
+   "sourceRule": "杠飘、飘杠的 8 倍已经替换掉杠上开花和财飘，再乘基础番。",
+   "sourceLines": [
+    248,
+    248
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C19-006",
+   "sourceStage": "ST-C19",
+   "sourceRule": "自摸：三家各算一笔。",
+   "sourceLines": [
+    250,
+    250
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C19-007",
+   "sourceStage": "ST-C19",
+   "sourceRule": "庄家自摸，三笔都乘 8。",
+   "sourceLines": [
+    250,
+    250
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C19-008",
+   "sourceStage": "ST-C19",
+   "sourceRule": "闲家自摸，庄家那一笔乘 8，另两名闲家各乘 1。",
+   "sourceLines": [
+    250,
+    250
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C19-009",
+   "sourceStage": "ST-C19",
+   "sourceRule": "没有承包时，各付各的，赢家收合计。",
+   "sourceLines": [
+    250,
+    250
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C19-010",
+   "sourceStage": "ST-C19",
+   "sourceRule": "点炮胡、抢杠胡：没有承包时只算赢家和赔付者一笔，这一笔按庄闲 8 倍，另两家 0 分。",
+   "sourceLines": [
+    251,
+    251
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C19-011",
+   "sourceStage": "ST-C19",
+   "sourceRule": "点炮胡、抢杠胡有承包时按上一节改写。",
+   "sourceLines": [
+    251,
+    251
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C19-012",
+   "sourceStage": "ST-C19",
+   "sourceRule": "承包：自摸先算出三笔再求和为 S，然后按上一节改写出实际赔付。",
+   "sourceLines": [
+    252,
+    252
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C19-013",
+   "sourceStage": "ST-C19",
+   "sourceRule": "黄庄：四家本局都是 0。",
+   "sourceLines": [
+    253,
+    253
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C19-014",
+   "sourceStage": "ST-C19",
+   "sourceRule": "闲家以 2 倍番型自摸：庄家付 16，两名闲家各付 2，赢家得 20。",
+   "sourceLines": [
+    255,
+    255
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C19-015",
+   "sourceStage": "ST-C19",
+   "sourceRule": "平胡点炮：赢家 +8，放铳者 −8，另两家 0。",
+   "sourceLines": [
+    255,
+    255
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C19-016",
+   "sourceStage": "ST-C19",
+   "sourceRule": "本场积分从 0 起。",
+   "sourceLines": [
+    257,
+    257
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C19-017",
+   "sourceStage": "ST-C19",
+   "sourceRule": "每小局加上实际净得分。",
+   "sourceLines": [
+    257,
+    257
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C19-018",
+   "sourceStage": "ST-C19",
+   "sourceRule": "赢家加实收，赔付者扣实付。",
+   "sourceLines": [
+    257,
+    257
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C20-001",
+   "sourceStage": "ST-C20",
+   "sourceRule": "先确认牌型，再确认这次是自摸、点炮胡还是抢杠胡。",
+   "sourceLines": [
+    261,
+    261
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C20-002",
+   "sourceStage": "ST-C20",
+   "sourceRule": "番型分三组。",
+   "sourceLines": [
+    261,
+    261
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C20-003",
+   "sourceStage": "ST-C20",
+   "sourceRule": "组内只取最高一档。",
+   "sourceLines": [
+    261,
+    261
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C20-004",
+   "sourceStage": "ST-C20",
+   "sourceRule": "组间连乘。",
+   "sourceLines": [
+    261,
+    261
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C20-005",
+   "sourceStage": "ST-C20",
+   "sourceRule": "点炮和抢杠不算爆头、财飘、杠开、十风。",
+   "sourceLines": [
+    261,
+    261
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C20-006",
+   "sourceStage": "ST-C20",
+   "sourceRule": "平胡，倍数 1，4 组面子加 1 对。",
+   "sourceLines": [
+    265,
+    265
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C20-007",
+   "sourceStage": "ST-C20",
+   "sourceRule": "平胡中财神可参与面子或对子。",
+   "sourceLines": [
+    265,
+    265
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C20-008",
+   "sourceStage": "ST-C20",
+   "sourceRule": "七对 / 豪华 / 双豪华 / 三豪华，倍数 2 / 4 / 8 / 16，14 张组成 7 对，且手里至少有 1 张财神。",
+   "sourceLines": [
+    266,
+    266
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C20-009",
+   "sourceStage": "ST-C20",
+   "sourceRule": "某种非财神牌面有 4 张实牌，计 1 组豪华。白板不计豪华。",
+   "sourceLines": [
+    266,
+    266
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C20-010",
+   "sourceStage": "ST-C20",
+   "sourceRule": "清七对 / 豪华 / 双豪华 / 三豪华，倍数 4 / 8 / 16 / 32，同样是 7 对，但手里没有财神。",
+   "sourceLines": [
+    267,
+    267
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C20-011",
+   "sourceStage": "ST-C20",
+   "sourceRule": "杠上开花 / 二连杠 / 三连杠 / 四连杠，倍数 2 / 4 / 8 / 16，条件为自摸，杠链为 1 / 2 / 3 / 4 及以上。",
+   "sourceLines": [
+    268,
+    268
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C20-012",
+   "sourceStage": "ST-C20",
+   "sourceRule": "爆头，倍数 2，条件为自摸、飘档为 0、单放与财神成将。",
+   "sourceLines": [
+    269,
+    269
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C20-013",
+   "sourceStage": "ST-C20",
+   "sourceRule": "听任意牌时，改看进张前是否敲响。",
+   "sourceLines": [
+    269,
+    269
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C20-014",
+   "sourceStage": "ST-C20",
+   "sourceRule": "财飘 / 双财飘 / 三财飘，倍数 4 / 8 / 16，条件为自摸、飘档正好为 1 / 2 / 3 及以上，且单放与财神成将。",
+   "sourceLines": [
+    270,
+    270
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C20-015",
+   "sourceStage": "ST-C20",
+   "sourceRule": "3 档及以上都是三财飘。",
+   "sourceLines": [
+    270,
+    270
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C20-016",
+   "sourceStage": "ST-C20",
+   "sourceRule": "同时命中杠上开花和财飘时，去掉这两条，改记杠飘或飘杠，倍数 8，再乘基础番。",
+   "sourceLines": [
+    272,
+    272
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C20-017",
+   "sourceStage": "ST-C20",
+   "sourceRule": "例如平胡加这一档是 8 倍，七对加这一档是 16 倍。",
+   "sourceLines": [
+    272,
+    272
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C20-018",
+   "sourceStage": "ST-C20",
+   "sourceRule": "十风：从第一张出牌起连续打字牌。中途打出非字牌，或吃、碰、杠，本局作废，不能再重新累计。",
+   "sourceLines": [
+    274,
+    274
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C20-019",
+   "sourceStage": "ST-C20",
+   "sourceRule": "满 10 张后任意自摸都能胡，不要求成牌。",
+   "sourceLines": [
+    274,
+    274
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C20-020",
+   "sourceStage": "ST-C20",
+   "sourceRule": "只记十风，不与平胡、杠开、财飘、七对相乘。",
+   "sourceLines": [
+    274,
+    274
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C20-021",
+   "sourceStage": "ST-C20",
+   "sourceRule": "10 张为 2 倍，每多一张再乘 2。",
+   "sourceLines": [
+    274,
+    274
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C20-022",
+   "sourceStage": "ST-C20",
+   "sourceRule": "财神牌面染红，可点击，没有角标。",
+   "sourceLines": [
+    276,
+    276
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C20-023",
+   "sourceStage": "ST-C20",
+   "sourceRule": "打出后牌河仍是原牌面，只保留这层红色。",
+   "sourceLines": [
+    276,
+    276
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-001",
+   "sourceStage": "ST-C21",
+   "sourceRule": "胡牌确认后停止行牌。",
+   "sourceLines": [
+    280,
+    280
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-002",
+   "sourceStage": "ST-C21",
+   "sourceRule": "每小局只结算一次。",
+   "sourceLines": [
+    280,
+    280
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-003",
+   "sourceStage": "ST-C21",
+   "sourceRule": "自摸的胡张是本次摸入或补入的牌。",
+   "sourceLines": [
+    280,
+    280
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-004",
+   "sourceStage": "ST-C21",
+   "sourceRule": "点炮胡的胡张是弃牌。",
+   "sourceLines": [
+    280,
+    280
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-005",
+   "sourceStage": "ST-C21",
+   "sourceRule": "抢杠胡的胡张是被抢的第 4 张。",
+   "sourceLines": [
+    280,
+    280
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-006",
+   "sourceStage": "ST-C21",
+   "sourceRule": "各端停止操作按钮、胡牌预览和放大弃牌，方位盘停止倒计时。",
+   "sourceLines": [
+    282,
+    282
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-007",
+   "sourceStage": "ST-C21",
+   "sourceRule": "在原牌桌亮出四家手牌，桌面中央显示「对局结束」。",
+   "sourceLines": [
+    282,
+    282
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-008",
+   "sourceStage": "ST-C21",
+   "sourceRule": "保留终局牌河、财神和余牌数。",
+   "sourceLines": [
+    282,
+    282
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-009",
+   "sourceStage": "ST-C21",
+   "sourceRule": "「对局结束」仍在时，胡牌者方位播放番型字效。",
+   "sourceLines": [
+    283,
+    283
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-010",
+   "sourceStage": "ST-C21",
+   "sourceRule": "点炮胡和抢杠胡同时在放铳方位显示「点炮」。",
+   "sourceLines": [
+    283,
+    283
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-011",
+   "sourceStage": "ST-C21",
+   "sourceRule": "抢杠胡的放铳者是加杠者。",
+   "sourceLines": [
+    283,
+    283
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-012",
+   "sourceStage": "ST-C21",
+   "sourceRule": "先刷新头像旁的累计积分。",
+   "sourceLines": [
+    284,
+    284
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-013",
+   "sourceStage": "ST-C21",
+   "sourceRule": "番型字效退场后，只在本局得分不为 0 的座位内侧飘分。",
+   "sourceLines": [
+    284,
+    284
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-014",
+   "sourceStage": "ST-C21",
+   "sourceRule": "正分金黄色，负分浅蓝灰色并带减号。",
+   "sourceLines": [
+    284,
+    284
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-015",
+   "sourceStage": "ST-C21",
+   "sourceRule": "飘分淡出后短暂保留终局牌桌，再打开小结算。",
+   "sourceLines": [
+    284,
+    284
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-016",
+   "sourceStage": "ST-C21",
+   "sourceRule": "黄庄：亮出四家手牌，桌面中央显示「黄庄」。",
+   "sourceLines": [
+    285,
+    285
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-017",
+   "sourceStage": "ST-C21",
+   "sourceRule": "黄庄保留终局牌河、财神和余牌数 20。",
+   "sourceLines": [
+    285,
+    285
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-018",
+   "sourceStage": "ST-C21",
+   "sourceRule": "不飘分。",
+   "sourceLines": [
+    285,
+    285
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-019",
+   "sourceStage": "ST-C21",
+   "sourceRule": "四家本局都是 0。",
+   "sourceLines": [
+    285,
+    285
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-020",
+   "sourceStage": "ST-C21",
+   "sourceRule": "随后打开小结算，标题为「黄庄」。",
+   "sourceLines": [
+    285,
+    285
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-021",
+   "sourceStage": "ST-C21",
+   "sourceRule": "小结算盖在终局牌桌上。",
+   "sourceLines": [
+    287,
+    287
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-022",
+   "sourceStage": "ST-C21",
+   "sourceRule": "各端以本家为第一行，向下依次为下家、对家、上家。",
+   "sourceLines": [
+    287,
+    287
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-023",
+   "sourceStage": "ST-C21",
+   "sourceRule": "本家行置顶并高亮。",
+   "sourceLines": [
+    287,
+    287
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-024",
+   "sourceStage": "ST-C21",
+   "sourceRule": "胡牌局按本端本局净得分切换主题：大于或等于 0 为「恭喜获胜」，小于 0 为「遗憾失败」。",
+   "sourceLines": [
+    287,
+    287
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-025",
+   "sourceStage": "ST-C21",
+   "sourceRule": "黄庄四端都是「黄庄」。",
+   "sourceLines": [
+    287,
+    287
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-026",
+   "sourceStage": "ST-C21",
+   "sourceRule": "每行左侧为座位、头像和昵称。",
+   "sourceLines": [
+    289,
+    289
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-027",
+   "sourceStage": "ST-C21",
+   "sourceRule": "庄家行显示「庄×3」。",
+   "sourceLines": [
+    289,
+    289
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-028",
+   "sourceStage": "ST-C21",
+   "sourceRule": "中间从左到右是碰杠区和手牌，杠的第 4 张垒在上方，暗杠顶张正面。",
+   "sourceLines": [
+    289,
+    289
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-029",
+   "sourceStage": "ST-C21",
+   "sourceRule": "胡牌者其余手牌按胡牌组合分组，未胡牌者连续摆放。",
+   "sourceLines": [
+    289,
+    289
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-030",
+   "sourceStage": "ST-C21",
+   "sourceRule": "胡入的那一张在所属组合内标绿色「胡」。",
+   "sourceLines": [
+    289,
+    289
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-031",
+   "sourceStage": "ST-C21",
+   "sourceRule": "右侧为本局净得分。正分带加号，0 分显示「0」，负分带减号。",
+   "sourceLines": [
+    290,
+    290
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-032",
+   "sourceStage": "ST-C21",
+   "sourceRule": "赢家牌组上方写实际命中的番型名称。",
+   "sourceLines": [
+    291,
+    291
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-033",
+   "sourceStage": "ST-C21",
+   "sourceRule": "同时命中多组时都写上，例如「七对」「杠飘」。双财飘、双豪华七对、二连杠直接写全名。",
+   "sourceLines": [
+    291,
+    291
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-034",
+   "sourceStage": "ST-C21",
+   "sourceRule": "最右侧标胡牌方式：自摸、点炮胡或抢杠胡。",
+   "sourceLines": [
+    291,
+    291
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-035",
+   "sourceStage": "ST-C21",
+   "sourceRule": "点炮胡、抢杠胡的赔付者标「点炮」。",
+   "sourceLines": [
+    291,
+    291
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-036",
+   "sourceStage": "ST-C21",
+   "sourceRule": "三摊承包：赢家标黄色「承包」，赔付者得分右侧标「三摊承包」。",
+   "sourceLines": [
+    292,
+    292
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-037",
+   "sourceStage": "ST-C21",
+   "sourceRule": "反承包：赢家标「反承包」，赔付者标「反承包」。",
+   "sourceLines": [
+    292,
+    292
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-038",
+   "sourceStage": "ST-C21",
+   "sourceRule": "链式承包：赢家同时标「承包」和「反承包」，番型只写一次。",
+   "sourceLines": [
+    292,
+    292
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-039",
+   "sourceStage": "ST-C21",
+   "sourceRule": "链式承包：付 S 的一方标「三摊承包」，付 2 × S 的一方标「反承包」。",
+   "sourceLines": [
+    292,
+    292
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-040",
+   "sourceStage": "ST-C21",
+   "sourceRule": "左下展示本局财神正面，即白板。",
+   "sourceLines": [
+    293,
+    293
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-041",
+   "sourceStage": "ST-C21",
+   "sourceRule": "右下为「长按查看牌桌」。",
+   "sourceLines": [
+    293,
+    293
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-042",
+   "sourceStage": "ST-C21",
+   "sourceRule": "在底部栏扣除中央主按钮后的区域按住 500 毫秒，临时收起小结算，按本家视角查看终局牌桌。",
+   "sourceLines": [
+    293,
+    293
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-043",
+   "sourceStage": "ST-C21",
+   "sourceRule": "松手恢复同一张小结算。",
+   "sourceLines": [
+    293,
+    293
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-044",
+   "sourceStage": "ST-C21",
+   "sourceRule": "非末局底部中央为【继续游戏】。",
+   "sourceLines": [
+    294,
+    294
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-045",
+   "sourceStage": "ST-C21",
+   "sourceRule": "点击后本端收起小结算，清除上一局手牌、碰杠区和牌河，保留座位和累计积分。",
+   "sourceLines": [
+    294,
+    294
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-046",
+   "sourceStage": "ST-C21",
+   "sourceRule": "本家显示「已准备」。",
+   "sourceLines": [
+    294,
+    294
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-047",
+   "sourceStage": "ST-C21",
+   "sourceRule": "四人均准备后自动开下一小局。",
+   "sourceLines": [
+    294,
+    294
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C21-048",
+   "sourceStage": "ST-C21",
+   "sourceRule": "第 8 局按钮为【返回大厅】，点击后退出房间。",
+   "sourceLines": [
+    294,
+    294
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C22-001",
+   "sourceStage": "ST-C22",
+   "sourceRule": "金币场加倍为金币场专属，好友房无此流程。",
+   "sourceLines": [
+    300,
+    300
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C22-002",
+   "sourceStage": "ST-C22",
+   "sourceRule": "萧山跟庄骰子为萧山麻将专属，好友房杭州麻将不启用。",
+   "sourceLines": [
+    301,
+    301
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C22-003",
+   "sourceStage": "ST-C22",
+   "sourceRule": "做牌/测试模式为内部测试工具，不进玩家流程。",
+   "sourceLines": [
+    302,
+    302
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C22-004",
+   "sourceStage": "ST-C22",
+   "sourceRule": "复盘/回放为观战回放功能，好友房本期不启用。",
+   "sourceLines": [
+    303,
+    303
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C22-005",
+   "sourceStage": "ST-C22",
+   "sourceRule": "补花/花牌为预留能力；杭麻 136 张无花牌。",
+   "sourceLines": [
+    304,
+    304
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C22-006",
+   "sourceStage": "ST-C22",
+   "sourceRule": "杠分为预留能力，当前未启用。",
+   "sourceLines": [
+    306,
+    306
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C22-007",
+   "sourceStage": "ST-C22",
+   "sourceRule": "托管本期固定无托管。",
+   "sourceLines": [
+    305,
+    305
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C22-008",
+   "sourceStage": "ST-C22",
+   "sourceRule": "好运来/玄学曝光为运营曝光功能，非对局流程。",
+   "sourceLines": [
+    307,
+    307
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C22-009",
+   "sourceStage": "ST-C22",
+   "sourceRule": "记牌器为本家辅助工具，不改变对局规则。",
+   "sourceLines": [
+    308,
+    308
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C23-001",
+   "sourceStage": "ST-C23",
+   "sourceRule": "「吃碰禁手」对应创房吃碰选项的「默认吃碰」档：3/4 人房创建时吃碰选项不显示、固定按「默认吃碰」生效。",
+   "sourceLines": [
+    312,
+    312
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "pending",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C23-002",
+   "sourceStage": "ST-C23",
+   "sourceRule": "2 人房吃碰选项可选，默认值为「无限吃碰」。",
+   "sourceLines": [
+    312,
+    312
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C23-003",
+   "sourceStage": "ST-C23",
+   "sourceRule": "需确认「吃碰禁手」即指创房吃碰选项的「默认吃碰」档。",
+   "sourceLines": [
+    312,
+    312
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C23-004",
+   "sourceStage": "ST-C23",
+   "sourceRule": "「碰算摊」客户端默认开。",
+   "sourceLines": [
+    313,
+    313
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C23-005",
+   "sourceStage": "ST-C23",
+   "sourceRule": "原模板开篇按「关闭」口径描述：碰、直杠、加杠、暗杠不计摊。",
+   "sourceLines": [
+    313,
+    313
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C23-006",
+   "sourceStage": "ST-C23",
+   "sourceRule": "需确认「碰算摊」默认值按「开」还是「关」定稿。",
+   "sourceLines": [
+    313,
+    313
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C23-007",
+   "sourceStage": "ST-C23",
+   "sourceRule": "「有财必拷响」的完整规则语义需产品/服务端口径补全。",
+   "sourceLines": [
+    314,
+    314
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C23-008",
+   "sourceStage": "ST-C23",
+   "sourceRule": "「三财翻倍」的完整规则语义需产品/服务端口径补全。",
+   "sourceLines": [
+    314,
+    314
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C23-009",
+   "sourceStage": "ST-C23",
+   "sourceRule": "「四财翻倍」的完整规则语义需产品/服务端口径补全。",
+   "sourceLines": [
+    314,
+    314
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C23-010",
+   "sourceStage": "ST-C23",
+   "sourceRule": "「财神替豪七」的完整规则语义需产品/服务端口径补全。",
+   "sourceLines": [
+    314,
+    314
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C23-011",
+   "sourceStage": "ST-C23",
+   "sourceRule": "「守庄」的完整规则语义需产品/服务端口径补全。",
+   "sourceLines": [
+    314,
+    314
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C23-012",
+   "sourceStage": "ST-C23",
+   "sourceRule": "「财神替豪七」的「豪七」推断为「豪华七对」，需确认。",
+   "sourceLines": [
+    315,
+    315
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C23-013",
+   "sourceStage": "ST-C23",
+   "sourceRule": "操作优先级仲裁由服务端裁决。",
+   "sourceLines": [
+    316,
+    316
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C23-014",
+   "sourceStage": "ST-C23",
+   "sourceRule": "吃碰禁手的具体禁张算法由服务端裁决。",
+   "sourceLines": [
+    316,
+    316
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C23-015",
+   "sourceStage": "ST-C23",
+   "sourceRule": "操作优先级仲裁与吃碰禁手的正文相关描述需与服务端规则核对后定稿。",
+   "sourceLines": [
+    316,
+    316
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C23-016",
+   "sourceStage": "ST-C23",
+   "sourceRule": "杠分为预留能力，当前未启用。",
+   "sourceLines": [
+    317,
+    317
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C23-017",
+   "sourceStage": "ST-C23",
+   "sourceRule": "若产品需要「杠即时得分」流程，需确认并补写。",
+   "sourceLines": [
+    317,
+    317
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C23-018",
+   "sourceStage": "ST-C23",
+   "sourceRule": "补花/花牌为预留能力，杭麻牌组无花牌。",
+   "sourceLines": [
+    318,
+    318
+   ],
+   "evidenceCount": 0,
+   "required": "server",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C23-019",
+   "sourceStage": "ST-C23",
+   "sourceRule": "若实际对局出现花牌相关处理，需确认。",
+   "sourceLines": [
+    318,
+    318
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C23-020",
+   "sourceStage": "ST-C23",
+   "sourceRule": "超时后无任何自动操作（与无托管一致），仅提示。",
+   "sourceLines": [
+    319,
+    319
+   ],
+   "evidenceCount": 0,
+   "required": "both",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  },
+  {
+   "atomId": "AT-ST-C23-021",
+   "sourceStage": "ST-C23",
+   "sourceRule": "提示的具体表现以 UI 交互稿为准。",
+   "sourceLines": [
+    319,
+    319
+   ],
+   "evidenceCount": 0,
+   "required": "client",
+   "l7": "verification_required",
+   "l7Basis": "proposed",
+   "reviewStatus": "none",
+   "analysisPath": "full"
+  }
+ ]
+}

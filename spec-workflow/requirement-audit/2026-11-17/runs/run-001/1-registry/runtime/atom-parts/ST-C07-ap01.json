@@ -1,0 +1,220 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C07",
+ "partNo": 1,
+ "stage": {
+  "stageId": "ST-C07",
+  "name": "财神与牌组",
+  "chapter": "开局 > 财神与牌组",
+  "summary": "规定整副牌的构成（136 张及花牌分布）、四张白板固定为财神，以及财神可主动打出但打出后按普通白板处理、不可被吃碰杠和点炮胡。"
+ },
+ "features": [
+  {
+   "id": "FP-ST-C07-001",
+   "name": "牌组构成",
+   "description": "本玩法使用 136 张牌，由万、条、筒三门花色各 36 张，东南西北风牌 16 张，中发白箭牌 12 张组成。",
+   "scope": "仅描述默认牌组（无风牌开关关闭口径），不含翻财神等可选档对牌组的调整。",
+   "coordination": "牌组数量与牌种由服务端统一配置并洗牌发牌，客户端按发牌结果展示牌面。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C07-001",
+     "name": "整副牌总数 136 张",
+     "rule": "整副牌共 136 张。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "开局发牌前组牌",
+      "condition": "默认牌组配置",
+      "action": "按牌组配置凑齐 136 张牌",
+      "result": "本局使用的牌张总数为 136 张"
+     },
+     "source": {
+      "chapter": "开局 > 财神与牌组",
+      "fromLine": 119,
+      "toLine": 119
+     }
+    },
+    {
+     "atomId": "AT-ST-C07-002",
+     "name": "万条筒各 36 张",
+     "rule": "万、条、筒三门花色各 36 张。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "开局发牌前组牌",
+      "condition": "默认牌组配置",
+      "action": "为万、条、筒各准备 36 张牌",
+      "result": "万、条、筒三门花色合计 108 张可用于对局"
+     },
+     "source": {
+      "chapter": "开局 > 财神与牌组",
+      "fromLine": 119,
+      "toLine": 119
+     }
+    },
+    {
+     "atomId": "AT-ST-C07-003",
+     "name": "东南西北共 16 张",
+     "rule": "东、南、西、北四张风牌合计 16 张。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "开局发牌前组牌",
+      "condition": "默认牌组配置（无风牌开关关闭）",
+      "action": "为东、南、西、北各准备 4 张共 16 张",
+      "result": "牌组中包含东南西北风牌共 16 张"
+     },
+     "source": {
+      "chapter": "开局 > 财神与牌组",
+      "fromLine": 119,
+      "toLine": 119
+     }
+    },
+    {
+     "atomId": "AT-ST-C07-004",
+     "name": "中发白共 12 张",
+     "rule": "中、发、白三张箭牌合计 12 张。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "开局发牌前组牌",
+      "condition": "默认牌组配置",
+      "action": "为中、发、白各准备 4 张共 12 张",
+      "result": "牌组中包含中发白箭牌共 12 张"
+     },
+     "source": {
+      "chapter": "开局 > 财神与牌组",
+      "fromLine": 119,
+      "toLine": 119
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C07-002",
+   "name": "财神认定",
+   "description": "白板财神模式下，牌组中的四张白板全部认定为财神。",
+   "scope": "仅白板财神模式；翻财神模式的财神认定不在本功能点范围。",
+   "coordination": "财神身份由服务端在开局时确定，客户端据此在牌面与牌河上标记财神。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C07-005",
+     "name": "四张白板都是财神",
+     "rule": "四张白板都是财神。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "开局确定财神",
+      "condition": "白板财神模式",
+      "action": "将四张白板全部标记为财神",
+      "result": "玩家手中与牌河中出现的白板均为财神身份"
+     },
+     "source": {
+      "chapter": "开局 > 财神与牌组",
+      "fromLine": 120,
+      "toLine": 120
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C07-003",
+   "name": "财神打出规则",
+   "description": "轮到玩家自己出牌时可以打出财神，不要求已处于爆头状态；打出的财神按普通白板留在牌河，其他玩家不能吃、碰、杠，也不能用它点炮胡。",
+   "scope": "仅约束财神作为弃牌打出后的处理，不含财神在胡牌判定中替牌的能力。",
+   "coordination": "客户端负责在出牌阶段开放财神可打出并展示牌河牌面，服务端负责校验弃牌、锁定该牌不吃碰杠与不可被胡。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C07-006",
+     "name": "出牌阶段可打出财神",
+     "rule": "轮到自己出牌时可以把财神作为弃牌打出。",
+     "uiRequirement": "自己出牌阶段手中财神可被选中并打出。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "轮到玩家自己出牌",
+      "condition": "玩家手中持有财神（白板）",
+      "action": "玩家选择并打出一张财神",
+      "result": "该财神作为本回合弃牌离开手牌进入牌河"
+     },
+     "source": {
+      "chapter": "开局 > 财神与牌组",
+      "fromLine": 121,
+      "toLine": 121
+     }
+    },
+    {
+     "atomId": "AT-ST-C07-007",
+     "name": "打出财神不要求爆头",
+     "rule": "打出财神不要求玩家已经爆头。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家尝试打出财神",
+      "condition": "玩家未处于爆头状态",
+      "action": "允许该次财神打出，不因未爆头而拒绝",
+      "result": "未爆头玩家同样能成功打出财神"
+     },
+     "source": {
+      "chapter": "开局 > 财神与牌组",
+      "fromLine": 121,
+      "toLine": 121
+     }
+    },
+    {
+     "atomId": "AT-ST-C07-008",
+     "name": "打出后按普通白板留在牌河",
+     "rule": "打出的财神按普通白板留在牌河。",
+     "uiRequirement": "牌河中该财神以普通白板牌面呈现。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家打出财神",
+      "condition": "财神已作为弃牌离手",
+      "action": "将该牌以普通白板身份放入牌河",
+      "result": "牌河中出现一张普通白板牌面的弃牌"
+     },
+     "source": {
+      "chapter": "开局 > 财神与牌组",
+      "fromLine": 121,
+      "toLine": 121
+     }
+    },
+    {
+     "atomId": "AT-ST-C07-009",
+     "name": "他人不可吃碰杠该财神",
+     "rule": "其他人不能吃、碰、杠被打出的财神。",
+     "uiRequirement": "该财神打出后，其他玩家的吃、碰、杠操作入口不出现或不生效。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家打出财神后进入其他玩家的响应环节",
+      "condition": "牌河中该弃牌为财神（白板）",
+      "action": "禁止其他玩家对该牌发起吃、碰、杠",
+      "result": "其他玩家无法吃、碰、杠这张财神"
+     },
+     "source": {
+      "chapter": "开局 > 财神与牌组",
+      "fromLine": 121,
+      "toLine": 121
+     }
+    },
+    {
+     "atomId": "AT-ST-C07-010",
+     "name": "财神弃牌不能点炮胡",
+     "rule": "其他人不能用手牌胡被打出的财神，即财神弃牌不能点炮胡。",
+     "uiRequirement": "该财神打出后，其他玩家的胡牌操作入口不出现或不生效。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家打出财神后进入其他玩家的响应环节",
+      "condition": "牌河中该弃牌为财神（白板）",
+      "action": "判定该弃牌不构成胡牌来源",
+      "result": "其他玩家无法以这张财神点炮胡"
+     },
+     "source": {
+      "chapter": "开局 > 财神与牌组",
+      "fromLine": 121,
+      "toLine": 121
+     }
+    }
+   ]
+  }
+ ]
+}

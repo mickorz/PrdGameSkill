@@ -1,0 +1,254 @@
+{
+ "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心策划补齐版.md",
+ "totalLines": 319,
+ "sections": [
+  {
+   "no": 1,
+   "title": "杭州麻将核心需求",
+   "fromLine": 1,
+   "toLine": 7,
+   "kind": "intro",
+   "container": "",
+   "sourceTitle": "杭州麻将核心需求"
+  },
+  {
+   "no": 2,
+   "title": "房间参数（单选）",
+   "fromLine": 9,
+   "toLine": 32,
+   "kind": "stage",
+   "stageId": "ST-C01",
+   "container": "玩法选项（创房规则全集，规则不固定）",
+   "sourceTitle": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）"
+  },
+  {
+   "no": 3,
+   "title": "复选规则组",
+   "fromLine": 34,
+   "toLine": 47,
+   "kind": "stage",
+   "stageId": "ST-C02",
+   "container": "玩法选项（创房规则全集，规则不固定）",
+   "sourceTitle": "玩法选项（创房规则全集，规则不固定） > 复选规则组"
+  },
+  {
+   "no": 4,
+   "title": "通用规则（创房界面通用复选）",
+   "fromLine": 49,
+   "toLine": 62,
+   "kind": "stage",
+   "stageId": "ST-C03",
+   "container": "玩法选项（创房规则全集，规则不固定）",
+   "sourceTitle": "玩法选项（创房规则全集，规则不固定） > 通用规则（创房界面通用复选）"
+  },
+  {
+   "no": 5,
+   "title": "创房不可见的默认配置",
+   "fromLine": 64,
+   "toLine": 70,
+   "kind": "stage",
+   "stageId": "ST-C04",
+   "container": "玩法选项（创房规则全集，规则不固定）",
+   "sourceTitle": "玩法选项（创房规则全集，规则不固定） > 创房不可见的默认配置"
+  },
+  {
+   "no": 6,
+   "title": "已停用选项与兄弟玩法",
+   "fromLine": 72,
+   "toLine": 76,
+   "kind": "stage",
+   "stageId": "ST-C05",
+   "container": "玩法选项（创房规则全集，规则不固定）",
+   "sourceTitle": "玩法选项（创房规则全集，规则不固定） > 已停用选项与兄弟玩法"
+  },
+  {
+   "no": 7,
+   "title": "名词",
+   "fromLine": 78,
+   "toLine": 106,
+   "kind": "terms",
+   "container": "",
+   "sourceTitle": "名词"
+  },
+  {
+   "no": 8,
+   "title": "定庄与轮庄",
+   "fromLine": 108,
+   "toLine": 115,
+   "kind": "stage",
+   "stageId": "ST-C06",
+   "container": "开局",
+   "sourceTitle": "开局 > 定庄与轮庄"
+  },
+  {
+   "no": 9,
+   "title": "财神与牌组",
+   "fromLine": 117,
+   "toLine": 121,
+   "kind": "stage",
+   "stageId": "ST-C07",
+   "container": "开局",
+   "sourceTitle": "开局 > 财神与牌组"
+  },
+  {
+   "no": 10,
+   "title": "发牌",
+   "fromLine": 123,
+   "toLine": 131,
+   "kind": "stage",
+   "stageId": "ST-C08",
+   "container": "开局",
+   "sourceTitle": "开局 > 发牌"
+  },
+  {
+   "no": 11,
+   "title": "操作优先级",
+   "fromLine": 133,
+   "toLine": 143,
+   "kind": "stage",
+   "stageId": "ST-C09",
+   "container": "行牌",
+   "sourceTitle": "行牌 > 操作优先级"
+  },
+  {
+   "no": 12,
+   "title": "吃、碰、杠",
+   "fromLine": 145,
+   "toLine": 155,
+   "kind": "stage",
+   "stageId": "ST-C10",
+   "container": "行牌",
+   "sourceTitle": "行牌 > 吃、碰、杠"
+  },
+  {
+   "no": 13,
+   "title": "杠后补牌",
+   "fromLine": 157,
+   "toLine": 161,
+   "kind": "stage",
+   "stageId": "ST-C11",
+   "container": "行牌",
+   "sourceTitle": "行牌 > 杠后补牌"
+  },
+  {
+   "no": 14,
+   "title": "自摸、放铳、抢杠胡",
+   "fromLine": 163,
+   "toLine": 167,
+   "kind": "stage",
+   "stageId": "ST-C12",
+   "container": "行牌",
+   "sourceTitle": "行牌 > 自摸、放铳、抢杠胡"
+  },
+  {
+   "no": 15,
+   "title": "飘财",
+   "fromLine": 169,
+   "toLine": 176,
+   "kind": "stage",
+   "stageId": "ST-C13",
+   "container": "行牌",
+   "sourceTitle": "行牌 > 飘财"
+  },
+  {
+   "no": 16,
+   "title": "杠开、杠飘、飘杠",
+   "fromLine": 178,
+   "toLine": 181,
+   "kind": "stage",
+   "stageId": "ST-C14",
+   "container": "行牌",
+   "sourceTitle": "行牌 > 杠开、杠飘、飘杠"
+  },
+  {
+   "no": 17,
+   "title": "吃碰禁手",
+   "fromLine": 183,
+   "toLine": 195,
+   "kind": "stage",
+   "stageId": "ST-C15",
+   "container": "行牌",
+   "sourceTitle": "行牌 > 吃碰禁手"
+  },
+  {
+   "no": 18,
+   "title": "出牌与响应",
+   "fromLine": 197,
+   "toLine": 217,
+   "kind": "stage",
+   "stageId": "ST-C16",
+   "container": "行牌",
+   "sourceTitle": "行牌 > 出牌与响应"
+  },
+  {
+   "no": 19,
+   "title": "断线重连与场景恢复",
+   "fromLine": 219,
+   "toLine": 225,
+   "kind": "stage",
+   "stageId": "ST-C17",
+   "container": "行牌",
+   "sourceTitle": "行牌 > 断线重连与场景恢复"
+  },
+  {
+   "no": 20,
+   "title": "三摊承包",
+   "fromLine": 227,
+   "toLine": 244,
+   "kind": "stage",
+   "stageId": "ST-C18",
+   "container": "",
+   "sourceTitle": "三摊承包"
+  },
+  {
+   "no": 21,
+   "title": "算分",
+   "fromLine": 246,
+   "toLine": 257,
+   "kind": "stage",
+   "stageId": "ST-C19",
+   "container": "",
+   "sourceTitle": "算分"
+  },
+  {
+   "no": 22,
+   "title": "番型",
+   "fromLine": 259,
+   "toLine": 276,
+   "kind": "stage",
+   "stageId": "ST-C20",
+   "container": "",
+   "sourceTitle": "番型"
+  },
+  {
+   "no": 23,
+   "title": "结算",
+   "fromLine": 278,
+   "toLine": 294,
+   "kind": "stage",
+   "stageId": "ST-C21",
+   "container": "",
+   "sourceTitle": "结算"
+  },
+  {
+   "no": 24,
+   "title": "登记不适用（本期或本玩法不启用）",
+   "fromLine": 296,
+   "toLine": 308,
+   "kind": "stage",
+   "stageId": "ST-C22",
+   "container": "",
+   "sourceTitle": "登记不适用（本期或本玩法不启用）"
+  },
+  {
+   "no": 25,
+   "title": "待确认清单",
+   "fromLine": 310,
+   "toLine": 319,
+   "kind": "stage",
+   "stageId": "ST-C23",
+   "container": "",
+   "sourceTitle": "待确认清单"
+  }
+ ]
+}

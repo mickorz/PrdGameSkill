@@ -1,0 +1,10 @@
+{
+ "configArgs": {
+  "date": "2026-11-17",
+  "serverSrcRoot": "E:/WorkProjects/xc-flow/.xflow/xc/xcodeDev/game-mahjong/server/Logic/mahjong_server/src"
+ },
+ "profile": {
+  "model": "biangfeng-gateway/deepseek-v4.1-flash-official",
+  "concurrency": "16"
+ }
+}

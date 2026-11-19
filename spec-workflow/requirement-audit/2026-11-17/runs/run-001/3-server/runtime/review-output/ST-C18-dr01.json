@@ -1,0 +1,16 @@
+{
+ "schemaVersion": 2,
+ "analysisRunId": "ar-2026-11-17-001",
+ "entries": [
+  {
+   "atomId": "AT-ST-C18-001",
+   "previousDifference": "unverified",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "本片（AT-ST-C18-001~027）为「三摊承包」的摊计数与结算规则整片（需求 source 229-244 行：摊只统计吃牌、庄闲才能承包、闲闲上限 2 摊、三摊落地提示、自摸/点炮/抢杠改写与示例金额）。需求语义：摊只按吃牌累计，承包成立后按自摸/点炮/抢杠分别改写赔付。客户端表现：2-client/client-evidence.json 的 entries 只有 29 条（stats.atomCount=29、evidenceCount=12），覆盖 AT-ST-C01-001~029；C18 全部 27 个原子集中在 coverage.pendingAtomIds（client-evidence.json:1092-1118），未做分析，故 unified-atoms 中本片原子的 client.verdict 与 client.evidenceIds 均为空，无任何客户端表现可对照。服务端规则：3-server/server-evidence.json 的 stats.atomCount=29（server-evidence.json:1480），同样只覆盖 AT-ST-C01 系列，全文检索「摊」「承包」均 0 命中，本片原子的 server.applicability 与 evidenceIds 均为空，无服务端实现证据可追溯。结论：双端均零证据，既不能证实与需求一致（不可判 consistent/partial），也无任何矛盾证据可立 conflict；仍以 S7 初判 unverified 为准，不新增条目、不升级。",
+   "reviewRule": "evidence-is-not-consistency（本片 27 个原子双端证据均为零，客户端 coverage.pendingAtomIds、服务端 stats.pending=387，缺证只能维持 unverified，不得判 consistent，也不得凭缺证立 conflict）",
+   "evidenceScopes": []
+  }
+ ]
+}

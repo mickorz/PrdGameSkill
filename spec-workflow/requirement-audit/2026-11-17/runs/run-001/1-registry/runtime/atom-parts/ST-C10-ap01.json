@@ -1,0 +1,454 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C10",
+ "partNo": 1,
+ "stage": {
+  "stageId": "ST-C10",
+  "name": "吃、碰、杠",
+  "chapter": "行牌 > 吃、碰、杠",
+  "summary": "规定吃、碰、直杠、加杠、暗杠的成立条件与后续行动，以及风箭与飘财限制下的杠牌边界。"
+ },
+ "features": [
+  {
+   "id": "FP-ST-C10-001",
+   "name": "吃牌规则",
+   "description": "规定吃的合法构成（上家弃牌加手中两张同花色连续非财神）、多组合时择一、成立后不摸牌直接出牌，以及当回合可加杠或暗杠。",
+   "scope": "仅能吃上家刚打出的牌；风牌、箭牌不能做顺子故不能吃；吃必须使用真实非财神牌。",
+   "coordination": "客户端呈现可吃的组合供玩家选择，服务端校验吃牌合法性并推进到出牌阶段。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C10-001",
+     "name": "风牌箭牌不可吃",
+     "rule": "风牌、箭牌不能做顺子，不能吃。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "上家打出一张风牌或箭牌",
+      "condition": "该牌花色为风牌或箭牌",
+      "action": "系统判定该牌不能用于组成顺子",
+      "result": "玩家无法对该牌选择吃"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 147, "toLine": 147 }
+    },
+    {
+     "atomId": "AT-ST-C10-002",
+     "name": "吃的牌型构成",
+     "rule": "上家刚打出的 1 张非财神，与手中 2 张非财神组成同花色连续顺子。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "上家刚打出一张非财神牌",
+      "condition": "玩家手中有两张与该牌同花色且可连续成顺子的非财神牌",
+      "action": "玩家选择吃，用这三张牌组成顺子",
+      "result": "顺子成立并在牌桌上亮出"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 149, "toLine": 149 }
+    },
+    {
+     "atomId": "AT-ST-C10-003",
+     "name": "多组合择一",
+     "rule": "多种合法组合时选 1 组。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "吃牌存在多种可组成顺子的合法组合",
+      "condition": "玩家手中可与该弃牌组成不止一组顺子",
+      "action": "玩家从多个组合中选择一组",
+      "result": "只成立玩家所选的那一组顺子"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 149, "toLine": 149 }
+    },
+    {
+     "atomId": "AT-ST-C10-004",
+     "name": "吃后不摸牌进入出牌",
+     "rule": "成功后不摸牌，进入出牌。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "吃牌成立",
+      "condition": "吃牌判定通过",
+      "action": "跳过摸牌环节，直接轮到该玩家出牌",
+      "result": "玩家进入出牌阶段并可打出手中一张牌"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 149, "toLine": 149 }
+    },
+    {
+     "atomId": "AT-ST-C10-005",
+     "name": "吃当回合可加杠暗杠",
+     "rule": "当前回合可以加杠或暗杠。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家刚完成吃牌",
+      "condition": "玩家手中满足加杠或暗杠条件",
+      "action": "玩家可在出牌前选择加杠或暗杠",
+      "result": "吃牌当回合仍可执行杠牌操作"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 149, "toLine": 149 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C10-002",
+   "name": "碰牌规则",
+   "description": "规定碰的合法构成（任意他人弃牌加手中两张相同非财神）、手中三张也只用两张、成立后不摸牌直接出牌，以及当回合可加杠或暗杠。",
+   "scope": "可碰任意他人刚打出的牌；碰只使用手中两张，剩余牌不可一并使用；碰必须使用真实非财神牌。",
+   "coordination": "客户端展示碰牌选项，服务端校验碰牌合法性并推进到出牌阶段。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C10-006",
+     "name": "碰的牌型构成",
+     "rule": "任意他人刚打出的 1 张非财神，与手中 2 张相同非财神组成刻子。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "任意他人刚打出一张非财神牌",
+      "condition": "玩家手中恰有至少两张与该牌相同的非财神牌",
+      "action": "玩家选择碰，用弃牌与手中两张相同牌组成刻子",
+      "result": "刻子成立并在牌桌上亮出"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 150, "toLine": 150 }
+    },
+    {
+     "atomId": "AT-ST-C10-007",
+     "name": "手中三张只用两张",
+     "rule": "手中有 3 张也只用 2 张。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家选择碰一张与自己手中三张相同的牌",
+      "condition": "玩家手中存在三张与弃牌相同的牌",
+      "action": "系统仅取其中两张与弃牌组成刻子",
+      "result": "碰后玩家手中仍保留一张同牌"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 150, "toLine": 150 }
+    },
+    {
+     "atomId": "AT-ST-C10-008",
+     "name": "碰后不摸牌进入出牌",
+     "rule": "成功后不摸牌，进入出牌。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "碰牌成立",
+      "condition": "碰牌判定通过",
+      "action": "跳过摸牌环节，直接轮到该玩家出牌",
+      "result": "玩家进入出牌阶段并可打出手中一张牌"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 150, "toLine": 150 }
+    },
+    {
+     "atomId": "AT-ST-C10-009",
+     "name": "碰当回合可加杠暗杠",
+     "rule": "当前回合可以加杠或暗杠。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家刚完成碰牌",
+      "condition": "玩家手中满足加杠或暗杠条件",
+      "action": "玩家可在出牌前选择加杠或暗杠",
+      "result": "碰牌当回合仍可执行杠牌操作"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 150, "toLine": 150 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C10-003",
+   "name": "直杠规则",
+   "description": "规定直杠的合法构成（他人弃牌加手中三张相同非财神），以及经优先级裁决后从牌墙尾部补牌。",
+   "scope": "直杠针对他人刚打出的牌；成立前需经过操作优先级裁决；补牌来源为牌墙尾部。",
+   "coordination": "客户端提供直杠选项，服务端执行优先级裁决并从牌墙尾部补牌。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C10-010",
+     "name": "直杠的牌型构成",
+     "rule": "他人刚打出的 1 张非财神，与手中 3 张相同非财神。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "他人刚打出一张非财神牌",
+      "condition": "玩家手中恰有三张与该牌相同的非财神牌",
+      "action": "玩家选择直杠，用弃牌与手中三张相同牌组成杠",
+      "result": "杠牌成立并亮出四张相同牌"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 151, "toLine": 151 }
+    },
+    {
+     "atomId": "AT-ST-C10-011",
+     "name": "直杠后从牌墙尾部补牌",
+     "rule": "按优先级裁决后，从牌墙尾部补牌。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家选择直杠",
+      "condition": "该操作按优先级裁决获得成立",
+      "action": "系统从牌墙尾部摸取一张牌补入玩家手中",
+      "result": "玩家获得补牌并继续行动"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 151, "toLine": 151 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C10-004",
+   "name": "加杠规则",
+   "description": "规定加杠在出牌阶段发起于已碰出的刻子与手中第 4 张非财神，先征求抢杠胡，抢杠胡成立则不成立不补牌，无人胡才完成加杠并补牌。",
+   "scope": "加杠仅限已碰出的刻子；必须先走抢杠胡确认流程；抢杠胡优先于加杠成立。",
+   "coordination": "客户端提供加杠入口与抢杠胡提示，服务端裁决抢杠胡并决定加杠是否成立与补牌。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C10-012",
+     "name": "加杠发起条件",
+     "rule": "出牌阶段，已碰出的刻子手里有第 4 张非财神。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "轮到玩家出牌",
+      "condition": "玩家此前已碰出刻子且手中持有该刻子的第 4 张非财神牌",
+      "action": "玩家选择加杠",
+      "result": "玩家可对已碰刻子发起加杠"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 152, "toLine": 152 }
+    },
+    {
+     "atomId": "AT-ST-C10-013",
+     "name": "加杠先征求抢杠胡",
+     "rule": "先征求抢杠胡。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家发起加杠",
+      "condition": "该第 4 张牌存在可抢杠胡的玩家",
+      "action": "系统先向其他玩家征求抢杠胡意愿",
+      "result": "玩家看到抢杠胡确认环节完成后再判定加杠"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 152, "toLine": 152 }
+    },
+    {
+     "atomId": "AT-ST-C10-014",
+     "name": "抢杠胡则加杠不成立不补牌",
+     "rule": "有人抢杠胡则加杠不成立、不补牌。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "加杠征求抢杠胡时有人宣布抢杠胡",
+      "condition": "抢杠胡被判定成立",
+      "action": "系统取消本次加杠且不发放补牌",
+      "result": "抢杠胡者胡牌，加杠玩家本次加杠不生效"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 152, "toLine": 152 }
+    },
+    {
+     "atomId": "AT-ST-C10-015",
+     "name": "无人胡则完成加杠并补牌",
+     "rule": "无人胡再完成加杠并补牌。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "加杠征求抢杠胡时无人宣布抢杠胡",
+      "condition": "无人抢杠胡成立",
+      "action": "系统完成加杠并从牌墙补一张牌给玩家",
+      "result": "加杠完成，玩家获得补牌并继续行动"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 152, "toLine": 152 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C10-005",
+   "name": "暗杠规则",
+   "description": "规定暗杠在出牌阶段发起于手中 4 张相同非财神，完成后补牌，并以三张牌背、顶张正面的方式展示在碰杠区且不计副露。",
+   "scope": "暗杠仅限出牌阶段手牌；暗杠展示需让四家识别牌面但不计入副露。",
+   "coordination": "客户端呈现暗杠的牌背与顶张正面展示及摆放位置，服务端完成补牌与副露计数。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C10-016",
+     "name": "暗杠发起条件",
+     "rule": "出牌阶段手中 4 张相同非财神。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "轮到玩家出牌",
+      "condition": "玩家手中持有四张完全相同的非财神牌",
+      "action": "玩家选择暗杠",
+      "result": "玩家可发起暗杠"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 153, "toLine": 153 }
+    },
+    {
+     "atomId": "AT-ST-C10-017",
+     "name": "暗杠后补牌",
+     "rule": "完成后补牌。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "暗杠成立",
+      "condition": "暗杠判定通过",
+      "action": "系统从牌墙摸取一张牌补入玩家手中",
+      "result": "玩家获得补牌并继续行动"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 153, "toLine": 153 }
+    },
+    {
+     "atomId": "AT-ST-C10-018",
+     "name": "暗杠展示形态",
+     "rule": "暗杠下层 3 张牌背、顶张正面，四家都能认出牌面。",
+     "uiRequirement": "暗杠下层 3 张显示牌背、顶张显示正面，四家都能认出牌面。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家完成暗杠",
+      "condition": "暗杠成立",
+      "action": "牌桌按三张牌背叠放、顶张正面展示该暗杠",
+      "result": "四家玩家均能看清暗杠的牌面"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 153, "toLine": 153 }
+    },
+    {
+     "atomId": "AT-ST-C10-019",
+     "name": "暗杠摆放位置",
+     "rule": "暗杠放在碰杠区。",
+     "uiRequirement": "暗杠摆放于碰杠区。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家完成暗杠",
+      "condition": "暗杠成立",
+      "action": "系统将该暗杠摆放在碰杠区",
+      "result": "玩家在碰杠区看到该暗杠"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 153, "toLine": 153 }
+    },
+    {
+     "atomId": "AT-ST-C10-020",
+     "name": "暗杠不计副露",
+     "rule": "暗杠不计副露。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家完成暗杠",
+      "condition": "暗杠成立",
+      "action": "系统在副露统计中不将暗杠计入",
+      "result": "玩家副露数不因暗杠增加"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 153, "toLine": 153 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C10-006",
+   "name": "杠牌通用与七对边界",
+   "description": "规定风牌箭牌在非财神时可碰可杠、吃碰当回合同样可加杠暗杠、四张相同即可杠，以及杠后该牌路不再按七对结算。",
+   "scope": "杠牌适用牌类与财神限制；杠与七对结算互斥。",
+   "coordination": "客户端提供相应杠牌入口，服务端维护副露与七对资格判定。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C10-021",
+     "name": "风箭非财神可碰可杠",
+     "rule": "不是财神时可以碰、杠。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家持有或待响应的风牌、箭牌",
+      "condition": "该风牌或箭牌不是财神",
+      "action": "系统允许对其执行碰或杠",
+      "result": "玩家可对非财神的风牌箭牌进行碰和杠"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 147, "toLine": 147 }
+    },
+    {
+     "atomId": "AT-ST-C10-022",
+     "name": "吃碰当回合可加杠暗杠",
+     "rule": "吃或碰刚成立的当前回合，同样可以加杠、暗杠。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "吃或碰刚成立",
+      "condition": "玩家手中满足加杠或暗杠条件",
+      "action": "玩家在出牌前选择加杠或暗杠",
+      "result": "吃碰当回合仍可执行加杠与暗杠"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 154, "toLine": 154 }
+    },
+    {
+     "atomId": "AT-ST-C10-023",
+     "name": "四张相同即可杠",
+     "rule": "四张相同就可以杠。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家手中或待响应凑齐四张相同非财神牌",
+      "condition": "四张牌相同且均为非财神",
+      "action": "系统判定该组合可以杠",
+      "result": "玩家可对四张相同牌发起杠"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 154, "toLine": 154 }
+    },
+    {
+     "atomId": "AT-ST-C10-024",
+     "name": "杠后不再按七对结算",
+     "rule": "杠完这条就不再按七对结算。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家完成杠牌",
+      "condition": "该牌路已发生过杠",
+      "action": "系统在结算时不再按七对牌型计算",
+      "result": "该局玩家无法以七对结算"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 154, "toLine": 154 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C10-007",
+   "name": "飘财限制下的杠牌边界",
+   "description": "规定受尚未解除的飘财限制时不能吃、碰、直杠、加杠，但仍可暗杠，且暗杠后只能打出尾墩补进的牌。",
+   "scope": "限制仅针对未解除的飘财状态；暗杠作为例外仍被允许；暗杠后的出牌被限定。",
+   "coordination": "客户端按飘财状态禁用相应吃碰杠入口并限制可选牌，服务端校验限制与出牌合法性。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C10-025",
+     "name": "飘财限制下禁止吃碰直杠加杠",
+     "rule": "受尚未解除的飘财限制时，不能吃、碰、直杠、加杠。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家处于尚未解除的飘财限制状态",
+      "condition": "飘财限制仍未解除",
+      "action": "系统禁止该玩家吃、碰、直杠、加杠",
+      "result": "玩家在此状态下无法执行这些操作"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 155, "toLine": 155 }
+    },
+    {
+     "atomId": "AT-ST-C10-026",
+     "name": "飘财限制下仍可暗杠",
+     "rule": "仍可暗杠。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家处于尚未解除的飘财限制状态",
+      "condition": "玩家手中持有四张相同的非财神牌",
+      "action": "系统允许该玩家执行暗杠",
+      "result": "玩家在此状态下仍可暗杠"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 155, "toLine": 155 }
+    },
+    {
+     "atomId": "AT-ST-C10-027",
+     "name": "飘财限制暗杠后只能打尾墩补牌",
+     "rule": "暗杠后只能打尾墩刚补进的那一张。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家在飘财限制状态下完成暗杠",
+      "condition": "暗杠已补入尾墩牌",
+      "action": "系统限定玩家只能打出刚补进的那一张牌",
+      "result": "玩家出牌时仅该补牌可选"
+     },
+     "source": { "chapter": "行牌 > 吃、碰、杠", "fromLine": 155, "toLine": 155 }
+    }
+   ]
+  }
+ ]
+}

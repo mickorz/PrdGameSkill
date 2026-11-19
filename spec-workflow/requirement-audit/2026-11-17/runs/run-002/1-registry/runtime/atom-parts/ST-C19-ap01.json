@@ -1,0 +1,206 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C19",
+ "partNo": 1,
+ "stage": { "stageId": "ST-C19", "name": "算分", "chapter": "算分", "summary": "定义单笔赔分公式（底分、番型倍数、庄闲倍数、无封顶、杠飘飘杠倍数替换）、自摸/点炮/抢杠胡/承包/黄庄的赔付分配、算分算例与本场积分累计规则。" },
+ "features": [
+  {
+   "id": "FP-ST-C19-001",
+   "name": "单笔赔分公式",
+   "description": "规定原应赔分的构成：底分固定为 1，乘以番型倍数与这一笔的庄闲倍数，且不设封顶；杠飘、飘杠的 8 倍替代杠上开花与财飘后再乘基础番。",
+   "scope": "仅覆盖单笔赔分的计算要素与乘算关系；番型倍数的具体番型取值见番型章节，承包改写见承包章节。",
+   "coordination": "与番型章节（三组番型连乘结果）和承包章节（实际赔付改写）配合使用。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C19-001",
+     "name": "底分取值",
+     "rule": "底分为 1。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": { "trigger": "一局进入结算", "condition": "计算任一玩家的赔付分", "action": "取底分为 1", "result": "" },
+     "source": { "chapter": "算分", "fromLine": 248, "toLine": 248 }
+    },
+    {
+     "atomId": "AT-ST-C19-002",
+     "name": "原应赔分计算公式",
+     "rule": "原应赔分 = 底分 × 番型倍数 × 这一笔的庄闲倍数。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": { "trigger": "一局进入结算", "condition": "存在某一笔赔付关系", "action": "用底分乘番型倍数，再乘这一笔的庄闲倍数，得到原应赔分", "result": "玩家在结算结果中看到该笔应付分数" },
+     "source": { "chapter": "算分", "fromLine": 248, "toLine": 248 }
+    },
+    {
+     "atomId": "AT-ST-C19-003",
+     "name": "庄闲倍数判定",
+     "rule": "赢家和这一笔的赔付者有一方是庄家，庄闲倍数为 8；两边都是闲家，为 1。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": { "trigger": "计算某一笔的赔付", "condition": "赢家与该笔赔付者中有一方是庄家", "action": "把该笔庄闲倍数取为 8；若两边都是闲家则取 1", "result": "该笔应付分数按庄闲倍数放大或按原值" },
+     "source": { "chapter": "算分", "fromLine": 248, "toLine": 248 }
+    },
+    {
+     "atomId": "AT-ST-C19-004",
+     "name": "赔分无封顶",
+     "rule": "无封顶。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": { "trigger": "一局结算计算赔付分", "condition": "单笔或合计赔分金额较大", "action": "不对赔分做任何上限截断", "result": "玩家看到的输赢分为完整计算值，不被封顶削减" },
+     "source": { "chapter": "算分", "fromLine": 248, "toLine": 248 }
+    },
+    {
+     "atomId": "AT-ST-C19-005",
+     "name": "杠飘飘杠倍数替换",
+     "rule": "杠飘、飘杠的 8 倍已经替换掉杠上开花和财飘，再乘基础番。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": { "trigger": "结算时赢家命中杠飘或飘杠", "condition": "该局存在杠飘或飘杠", "action": "用杠飘、飘杠的 8 倍替代杠上开花与财飘的倍数，再乘基础番", "result": "玩家看到的该笔赔分按替换后的倍数计算，不重复叠加杠上开花与财飘" },
+     "source": { "chapter": "算分", "fromLine": 248, "toLine": 248 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C19-002",
+   "name": "各结算方式的赔付分配",
+   "description": "规定自摸、点炮胡、抢杠胡、承包、黄庄五种情形下的赔付笔数、倍数分配与收付关系。",
+   "scope": "含无承包与有承包两种口径的分流；承包的实际赔付改写细节以承包章节为基准。",
+   "coordination": "有承包时与承包章节改写规则衔接，自摸先求和为 S 再改写。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C19-006",
+     "name": "自摸三家各算一笔",
+     "rule": "自摸：三家各算一笔。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": { "trigger": "赢家自摸胡牌", "condition": "各家均未触发承包改写", "action": "对三家各计算一笔赔付", "result": "赢家从三家分别收分" },
+     "source": { "chapter": "算分", "fromLine": 250, "toLine": 250 }
+    },
+    {
+     "atomId": "AT-ST-C19-007",
+     "name": "庄家自摸三笔乘 8",
+     "rule": "庄家自摸，三笔都乘 8。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": { "trigger": "庄家自摸胡牌", "condition": "自摸方为庄家", "action": "三笔赔付均按庄闲 8 倍计算", "result": "三名闲家各按 8 倍向庄家付分" },
+     "source": { "chapter": "算分", "fromLine": 250, "toLine": 250 }
+    },
+    {
+     "atomId": "AT-ST-C19-008",
+     "name": "闲家自摸倍数分配",
+     "rule": "闲家自摸，庄家那一笔乘 8，另两名闲家各乘 1。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": { "trigger": "闲家自摸胡牌", "condition": "自摸方为闲家", "action": "庄家那一笔按 8 倍计算，另两名闲家各自那一笔按 1 倍计算", "result": "庄家付分明显高于两名闲家" },
+     "source": { "chapter": "算分", "fromLine": 250, "toLine": 250 }
+    },
+    {
+     "atomId": "AT-ST-C19-009",
+     "name": "无承包各自付分",
+     "rule": "没有承包时，各付各的，赢家收合计。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": { "trigger": "结算过程中判定赔付关系", "condition": "本局没有承包成立", "action": "每个赔付者各自承担自己那一笔，赢家收取三笔合计", "result": "玩家看到各自独立的付分与他方收分之和" },
+     "source": { "chapter": "算分", "fromLine": 250, "toLine": 250 }
+    },
+    {
+     "atomId": "AT-ST-C19-010",
+     "name": "无承包点炮抢杠胡单笔结算",
+     "rule": "点炮胡、抢杠胡：没有承包时只算赢家和赔付者一笔，这一笔按庄闲 8 倍，另两家 0 分。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": { "trigger": "赢家点炮胡或抢杠胡", "condition": "本局没有承包成立", "action": "只计算赢家与赔付者之间一笔，并按庄闲 8 倍计分", "result": "赢家加 8 倍分、放铳者扣 8 倍分，另两家显示 0 分" },
+     "source": { "chapter": "算分", "fromLine": 251, "toLine": 251 }
+    },
+    {
+     "atomId": "AT-ST-C19-011",
+     "name": "有承包时点炮抢杠胡改写",
+     "rule": "点炮胡、抢杠胡有承包时按上一节改写。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": { "trigger": "赢家点炮胡或抢杠胡", "condition": "本局存在成立的承包关系", "action": "按承包章节的规则改写实际赔付关系", "result": "玩家看到的付分方与金额与无承包时不同" },
+     "source": { "chapter": "算分", "fromLine": 251, "toLine": 251 }
+    },
+    {
+     "atomId": "AT-ST-C19-012",
+     "name": "承包自摸先求和再改写",
+     "rule": "承包：自摸先算出三笔再求和为 S，然后按上一节改写出实际赔付。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": { "trigger": "赢家自摸且存在承包", "condition": "本局有承包成立", "action": "先按三家各一笔算出三笔并求和为 S，再按承包规则改写实际赔付", "result": "玩家看到的实际收付以改写后的结果为准，总额仍对应 S" },
+     "source": { "chapter": "算分", "fromLine": 252, "toLine": 252 }
+    },
+    {
+     "atomId": "AT-ST-C19-013",
+     "name": "黄庄四家零分",
+     "rule": "黄庄：四家本局都是 0。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": { "trigger": "本局判定为黄庄", "condition": "无人胡牌进入黄庄", "action": "四家本局得分均置为 0", "result": "结算界面上四家本局得分都显示 0" },
+     "source": { "chapter": "算分", "fromLine": 253, "toLine": 253 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C19-003",
+   "name": "算分算例校验",
+   "description": "给出两个基准算例用于校验赔分公式与倍数分配是否正确落地。",
+   "scope": "仅作规则自洽校验用，不引入新规则。",
+   "coordination": "依赖 FP-ST-C19-001 的公式与 FP-ST-C19-002 的倍数分配。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C19-014",
+     "name": "闲家 2 倍番型自摸算例",
+     "rule": "闲家以 2 倍番型自摸：庄家付 16，两名闲家各付 2，赢家得 20。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": { "trigger": "闲家以 2 倍番型自摸", "condition": "自摸方为闲家且番型倍数为 2、无承包改写", "action": "庄家那一笔按 2 的 8 倍计 16，两名闲家各按 2 的 1 倍计 2，合计 20", "result": "结算显示庄家付 16、两名闲家各付 2、赢家得 20" },
+     "source": { "chapter": "算分", "fromLine": 255, "toLine": 255 }
+    },
+    {
+     "atomId": "AT-ST-C19-015",
+     "name": "平胡点炮算例",
+     "rule": "平胡点炮：赢家 +8，放铳者 −8，另两家 0。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": { "trigger": "赢家平胡点炮胡牌", "condition": "番型为平胡、无承包改写", "action": "只计算赢家与放铳者一笔，按庄闲 8 倍计 8", "result": "结算显示赢家 +8、放铳者 −8、另两家 0" },
+     "source": { "chapter": "算分", "fromLine": 255, "toLine": 255 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C19-004",
+   "name": "本场积分累计",
+   "description": "规定本场积分从 0 起累计，每小局按实际净得分叠加，赢家加实收、赔付者扣实付。",
+   "scope": "只描述单局得分如何进入本场积分，不含跨局连庄或局数模式的额外处理。",
+   "coordination": "与各结算方式的单局结果衔接，逐局累加。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C19-016",
+     "name": "本场积分起始为零",
+     "rule": "本场积分从 0 起。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": { "trigger": "新一场开局", "condition": "本场尚未进行任何小局", "action": "把四家本场积分初始化为 0", "result": "玩家看到开局时四家本场积分均为 0" },
+     "source": { "chapter": "算分", "fromLine": 257, "toLine": 257 }
+    },
+    {
+     "atomId": "AT-ST-C19-017",
+     "name": "逐小局累加净得分",
+     "rule": "每小局加上实际净得分。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": { "trigger": "一小局结算完成", "condition": "该小局已算出实际净得分", "action": "把该小局的实际净得分累加到对应玩家的本场积分", "result": "玩家看到本场积分随每局结算更新" },
+     "source": { "chapter": "算分", "fromLine": 257, "toLine": 257 }
+    },
+    {
+     "atomId": "AT-ST-C19-018",
+     "name": "赢家加实收赔付者扣实付",
+     "rule": "赢家加实收，赔付者扣实付。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": { "trigger": "一小局结算完成", "condition": "该玩家为本局赢家或赔付者", "action": "赢家按其实际收到的分数加分，赔付者按其实际付出的分数扣分", "result": "玩家看到积分变化与其实际收付金额一致" },
+     "source": { "chapter": "算分", "fromLine": 257, "toLine": 257 }
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,26 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C15",
+ "partNo": "01",
+ "analysisRunId": "ar-2026-11-17-001",
+ "atomIds": [
+  "AT-ST-C15-001",
+  "AT-ST-C15-002",
+  "AT-ST-C15-003",
+  "AT-ST-C15-004",
+  "AT-ST-C15-005",
+  "AT-ST-C15-006",
+  "AT-ST-C15-007",
+  "AT-ST-C15-008",
+  "AT-ST-C15-009",
+  "AT-ST-C15-010",
+  "AT-ST-C15-011",
+  "AT-ST-C15-012",
+  "AT-ST-C15-013",
+  "AT-ST-C15-014",
+  "AT-ST-C15-015",
+  "AT-ST-C15-016",
+  "AT-ST-C15-017",
+  "AT-ST-C15-018"
+ ]
+}

@@ -1,0 +1,16 @@
+{
+ "schemaVersion": 2,
+ "analysisRunId": "ar-2026-11-17-001",
+ "entries": [
+  {
+   "atomId": "AT-ST-C19-001",
+   "previousDifference": "unverified",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：unified-atoms 中 AT-ST-C19-001（requirement.source 章「结算」fromLine 248）要求结算赔付以底分为 1 计算，本片 AT-ST-C19-001~018 整片为结算算分链（底分、番型倍数、庄闲 8 倍、无封顶、杠飘/飘杠替换、自摸三笔、无承包分账、承包改写、黄庄零分、本场积分初始化与累加）。客户端：2-client/client-evidence.json 的 entries 仅 29 条且 atomId 全为 AT-ST-C01-001~029，coverage.pendingAtomIds 第 1119 行起将 AT-ST-C19-001~018 全部列为未取证，stats 为 confirmed 0 / pending 387，全量证据只有 CLE-AT-ST-C01-*-01~04，无任何结算界面或客户端算分展示证据。服务端：3-server/scope-index.json:796 起同样将 AT-ST-C19-* 列入 pendingAtomIds，server-evidence.json 仅 60 条 SVE-AT-ST-C01-* 证据（stats active 6 / conditional 17 / unknown 2 / inactive 4，均属创房配置类），无算分公式、庄闲 8 倍、封顶截断、杠飘替换、承包改写、黄庄零分、本场积分等任何实现证据。故双端均缺证：既无证据支持判一致（不可判 consistent/partial），也无矛盾证据可立冲突（不可判 conflict），维持 S7 初判 unverified；本片无 upgraded 原子、无 candidateDifference，无需降级或采纳候选。",
+   "reviewRule": "evidence-is-not-consistency（本片 18 个结算算分原子双端证据均为零，按缺证维持 unverified，不得因缺证判 consistent，也不得仅凭服务端无证据立 conflict）",
+   "evidenceScopes": []
+  }
+ ]
+}

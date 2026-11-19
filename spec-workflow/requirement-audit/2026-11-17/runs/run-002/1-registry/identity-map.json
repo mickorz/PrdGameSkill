@@ -1,0 +1,299 @@
+{
+ "schemaVersion": 1,
+ "terms": [
+  {
+   "term": "面子",
+   "definition": "一组顺子、刻子或杠。杠含 4 张，仍计 1 组面子。对子不是面子。已完成的吃、碰、明杠、暗杠都计入面子。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "财神",
+   "definition": "白板财神模式下四张白板固定为财神；翻财神模式下翻出的牌是真财神，白板只是替牌（见「翻财神」）。只在胡牌判定时代替顺子、刻子或对子所缺的牌。吃、碰、杠必须用真实的非财神牌，不能用财神牌，也不能用财神去代替所缺的牌。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "牢庄",
+   "definition": "连庄数选项决定牢级与庄闲倍数——笃三老庄=三牢（庄闲倍数 8）、笃二老庄=二牢（4）、平庄起=一牢（2）；每小局庄家都按当前牢级计算。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "摊",
+   "definition": "A 吃进 B 打出的牌，A 对 B 记 1 摊。两个方向分开计。碰、直杠、加杠、暗杠不计摊。每小局重新累计。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "承包",
+   "definition": "庄家与闲家之间，某一方向的有效摊达到成立条件后，承包方在自摸结算时代赔。反承包是同一关系下，原被承包方自摸时，原承包方按加倍规则赔付。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "爆头",
+   "definition": "摸牌前为 4 组面子加 1 张财神。下一张摸到任意牌，都与这张财神组成对子后自摸。只能自摸。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "七客",
+   "definition": "七对爆头。摸牌前没有吃、碰、杠，手牌为 6 组对子加 1 张财神。结算不单列这一项，按七对和爆头两组连乘。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "飘",
+   "definition": "自己出牌阶段打出一张财神，即飘财 1 次。连续打出财神则累加，打出普通牌清零。每小局从 0 次起算。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "放铳",
+   "definition": "打出的牌被他人合法胡走。胡牌者称为点炮胡。白板财神弃牌不能点炮胡。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "流局",
+   "definition": "牌墙剩 21 张时，当前玩家再摸 1 张，剩 20 张。先完成本次摸打和弃牌响应；无人胡牌时，在下一次应摸牌前判黄庄。不是剩 20 张立刻结束。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "打片",
+   "definition": "以「片」计数的对局模式。局数档选 40/50/60 片后，本局以片数为目标计数，与局数模式互斥。默认 8 局（局数模式），打片为可选档。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "翻财神",
+   "definition": "财神玩法另一档。翻财神时白板是固定替牌（代替翻出的牌、不算财神），翻出的牌才是真财神。默认白板财神，翻财神为可选档。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "笃二老庄 / 平庄起",
+   "definition": "连庄数选项另外两档。默认笃三老庄。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "两摊封顶",
+   "definition": "承包选项另一档，与三摊承包互斥。默认三摊承包（3/4 人房）；2 人房随吃碰默认联动为两摊封顶。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "碰算摊",
+   "definition": "复选规则：开启时碰也计入摊；仅吃碰规则为只碰不吃/默认吃碰时显示。客户端默认开（见待确认 2）；词条「摊」的定义（碰、直杠、加杠、暗杠不计摊）即按关闭口径。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "有财必拷响",
+   "definition": "复选规则，默认关；完整语义需产品口径补全（见待确认 3）。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "三财翻倍 / 四财翻倍",
+   "definition": "复选规则，默认关；语义需补全（见待确认 3）。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "十风牌",
+   "definition": "复选规则，默认开；对应番型「十风」，完整规则见正文§番型。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "无风牌",
+   "definition": "复选规则，默认关；开启时去掉风牌。正文牌组（136 张含东南西北）按关闭口径描述。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "缺一色",
+   "definition": "复选规则，默认开，仅 2/3 人房显示；4 人房不适用。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "财神替豪七",
+   "definition": "复选规则，默认关；「豪七」推断为豪华七对（见待确认 4）。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "守庄",
+   "definition": "复选规则，默认关，仅 3/4 人房显示；语义需补全（见待确认 3）。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "连庄不占局数",
+   "definition": "复选规则，默认关，仅打片模式显示：连庄不消耗片数。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "抢杠胡",
+   "definition": "他人加杠的第 4 张使自己合法胡牌，按放铳由加杠者赔付（正文§自摸、放铳、抢杠胡）。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "一炮多响",
+   "definition": "一张弃牌多人胡；本玩法只允许一人胡（正文§操作优先级）。",
+   "source": "模板名词章节"
+  },
+  {
+   "term": "杠爆",
+   "definition": "杠上开花与爆头同时命中的组合演出；结算不单列番型，按杠上开花与爆头两组连乘。",
+   "source": "模板名词章节"
+  }
+ ],
+ "stageChapters": [
+  {
+   "stageId": "ST-C01",
+   "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+   "sourceTitle": "房间参数（单选）",
+   "fromLine": 9,
+   "toLine": 32
+  },
+  {
+   "stageId": "ST-C02",
+   "chapter": "玩法选项（创房规则全集，规则不固定） > 复选规则组",
+   "sourceTitle": "复选规则组",
+   "fromLine": 34,
+   "toLine": 47
+  },
+  {
+   "stageId": "ST-C03",
+   "chapter": "玩法选项（创房规则全集，规则不固定） > 通用规则（创房界面通用复选）",
+   "sourceTitle": "通用规则（创房界面通用复选）",
+   "fromLine": 49,
+   "toLine": 62
+  },
+  {
+   "stageId": "ST-C04",
+   "chapter": "玩法选项（创房规则全集，规则不固定） > 创房不可见的默认配置",
+   "sourceTitle": "创房不可见的默认配置",
+   "fromLine": 64,
+   "toLine": 70
+  },
+  {
+   "stageId": "ST-C05",
+   "chapter": "玩法选项（创房规则全集，规则不固定） > 已停用选项与兄弟玩法",
+   "sourceTitle": "已停用选项与兄弟玩法",
+   "fromLine": 72,
+   "toLine": 76
+  },
+  {
+   "stageId": "ST-C06",
+   "chapter": "开局 > 定庄与轮庄",
+   "sourceTitle": "定庄与轮庄",
+   "fromLine": 108,
+   "toLine": 115
+  },
+  {
+   "stageId": "ST-C07",
+   "chapter": "开局 > 财神与牌组",
+   "sourceTitle": "财神与牌组",
+   "fromLine": 117,
+   "toLine": 121
+  },
+  {
+   "stageId": "ST-C08",
+   "chapter": "开局 > 发牌",
+   "sourceTitle": "发牌",
+   "fromLine": 123,
+   "toLine": 131
+  },
+  {
+   "stageId": "ST-C09",
+   "chapter": "行牌 > 操作优先级",
+   "sourceTitle": "操作优先级",
+   "fromLine": 133,
+   "toLine": 143
+  },
+  {
+   "stageId": "ST-C10",
+   "chapter": "行牌 > 吃、碰、杠",
+   "sourceTitle": "吃、碰、杠",
+   "fromLine": 145,
+   "toLine": 155
+  },
+  {
+   "stageId": "ST-C11",
+   "chapter": "行牌 > 杠后补牌",
+   "sourceTitle": "杠后补牌",
+   "fromLine": 157,
+   "toLine": 161
+  },
+  {
+   "stageId": "ST-C12",
+   "chapter": "行牌 > 自摸、放铳、抢杠胡",
+   "sourceTitle": "自摸、放铳、抢杠胡",
+   "fromLine": 163,
+   "toLine": 167
+  },
+  {
+   "stageId": "ST-C13",
+   "chapter": "行牌 > 飘财",
+   "sourceTitle": "飘财",
+   "fromLine": 169,
+   "toLine": 176
+  },
+  {
+   "stageId": "ST-C14",
+   "chapter": "行牌 > 杠开、杠飘、飘杠",
+   "sourceTitle": "杠开、杠飘、飘杠",
+   "fromLine": 178,
+   "toLine": 181
+  },
+  {
+   "stageId": "ST-C15",
+   "chapter": "行牌 > 吃碰禁手",
+   "sourceTitle": "吃碰禁手",
+   "fromLine": 183,
+   "toLine": 195
+  },
+  {
+   "stageId": "ST-C16",
+   "chapter": "行牌 > 出牌与响应",
+   "sourceTitle": "出牌与响应",
+   "fromLine": 197,
+   "toLine": 217
+  },
+  {
+   "stageId": "ST-C17",
+   "chapter": "行牌 > 断线重连与场景恢复",
+   "sourceTitle": "断线重连与场景恢复",
+   "fromLine": 219,
+   "toLine": 225
+  },
+  {
+   "stageId": "ST-C18",
+   "chapter": "三摊承包",
+   "sourceTitle": "三摊承包",
+   "fromLine": 227,
+   "toLine": 244
+  },
+  {
+   "stageId": "ST-C19",
+   "chapter": "算分",
+   "sourceTitle": "算分",
+   "fromLine": 246,
+   "toLine": 257
+  },
+  {
+   "stageId": "ST-C20",
+   "chapter": "番型",
+   "sourceTitle": "番型",
+   "fromLine": 259,
+   "toLine": 276
+  },
+  {
+   "stageId": "ST-C21",
+   "chapter": "结算",
+   "sourceTitle": "结算",
+   "fromLine": 278,
+   "toLine": 294
+  },
+  {
+   "stageId": "ST-C22",
+   "chapter": "登记不适用（本期或本玩法不启用）",
+   "sourceTitle": "登记不适用（本期或本玩法不启用）",
+   "fromLine": 296,
+   "toLine": 308
+  },
+  {
+   "stageId": "ST-C23",
+   "chapter": "待确认清单",
+   "sourceTitle": "待确认清单",
+   "fromLine": 310,
+   "toLine": 319
+  }
+ ],
+ "crossCutting": []
+}

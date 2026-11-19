@@ -1,0 +1,219 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C01",
+ "partNo": "03",
+ "entries": [
+  {
+   "atomId": "AT-ST-C01-024",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "客户端本工程无创房参数面板：Code 根下 layer/controller/data/config 仅含对局内模块（主界面、玩家、牌桌、结算、听牌、做牌、提示动效），FGUI 资产包同为对局内界面，不存在人数单选组、局数单选组、吃碰组、承包组。全量检索「32局」「4局」「无限吃碰」「默认吃碰」「承包组」均无命中，因此「切到 2 人 → 32局可选且 4局不可见、吃碰组出现并选中无限吃碰、承包组消失」在客户端范围内无任何实现。承包在对局侧仅作为结算关系（承包/反承包）展示，与创房承包选项无关。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-025",
+   "verdict": "partial",
+   "clientLogic": "未找到任何创房面板显隐逻辑（无人数单选、无缺一色/守庄选项控件）。对局内存在的相关实现只有两处：一是玩法提示文案把缺一色限定为「2-3人玩法」（未命中精确玩法/房间规则时作为兜底提示轮播）；二是守庄以服务端通知标记驱动，庄家上家无财神拦截碰/明杠时给本人弹出「守庄规则生效中」提示。二者都不能证明 2 人档下面板「缺一色显示、守庄隐藏」。",
+   "uiInteraction": "局内提示控件轮播缺一色规则文案；触发守庄拦截时本人屏幕弹出居中文字提示「守庄规则生效中」约 1.3 秒；无创房面板，故不存在「缺一色出现、守庄消失」的选项显隐表现。",
+   "messages": [
+    "MsgNotifyInfo"
+   ],
+   "notes": "缺一色文案仅存在于 DEFAULT_MATCH_TIPS 兜底提示中，命中 GameID_BBCS/GameID_YBB 精确规则时不会展示该条；守庄提示是无条件规则生效提示，不含人数维度。故仅有间接/部分相关证据，关键逻辑（创房面板按 2 人显隐）在本工程缺失，应在其他工程（大厅/公共模块）。",
+   "evidenceIds": [
+    "CLE-AT-ST-C01-025-01",
+    "CLE-AT-ST-C01-025-02",
+    "CLE-AT-ST-C01-025-03",
+    "CLE-AT-ST-C01-025-04"
+   ],
+   "observedBehavior": {
+    "trigger": "对局中提示轮播，或被守庄规则拦截碰/明杠",
+    "condition": "当前玩法属于缺一色适用的 2-3 人玩法；或庄家上家无财神",
+    "action": "局内轮播「缺一色：2-3人玩法时去掉万字花色」；守庄拦截时弹出「守庄规则生效中」",
+    "result": "玩家在牌局内才知道缺一色只适用 2-3 人、守庄会拦截操作，创房界面上并没有出现/隐藏这两个选项"
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-026",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "无创房面板，不存在 3 人档联动：检索「32局」「4局」「无限吃碰」「默认吃碰」「吃碰组」「承包组」均无命中，未找到切到 3 人时出现 32局、不出现 4局、吃碰组消失、承包组出现的任何实现。「吃碰」在本工程仅为行牌权限（服务端下发后控制吃/碰按钮）与结算展示，不是创房吃碰选项。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-027",
+   "verdict": "partial",
+   "clientLogic": "同 AT-ST-C01-025：无创房面板显隐逻辑。相关证据是缺一色文案明确写「2-3人玩法」暗示 3 人也适用缺一色，以及守庄作为对局内规则（通知标记 + 拦截提示）独立存在；但没有把「3 人档同时显示缺一色与守庄」的显隐规则写在任何客户端代码里。",
+   "uiInteraction": "局内提示轮播缺一色规则文案；守庄拦截时本人弹出「守庄规则生效中」文字提示；无创房面板，故不存在 3 人档同时出现缺一色与守庄两个选项的表现。",
+   "messages": [
+    "MsgNotifyInfo"
+   ],
+   "notes": "缺一色文案只覆盖 2-3 人适用性，不能证明 3 人档下两个选项都显示；守庄存在但无人数条件。归为部分相关证据。",
+   "evidenceIds": [
+    "CLE-AT-ST-C01-025-01",
+    "CLE-AT-ST-C01-025-02",
+    "CLE-AT-ST-C01-025-03",
+    "CLE-AT-ST-C01-025-04"
+   ],
+   "observedBehavior": {
+    "trigger": "对局中提示轮播，或被守庄规则拦截碰/明杠",
+    "condition": "当前玩法属于缺一色适用的 2-3 人玩法；或庄家上家无财神",
+    "action": "局内轮播缺一色适用 2-3 人玩法的说明；守庄拦截时弹出「守庄规则生效中」",
+    "result": "玩家在 3 人牌局里能接触到缺一色说明与守庄生效提示，但创房界面上两个选项是否同时出现无从体现"
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-028",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "无创房面板，不存在 4 人档联动：未找到「4局」选项、未找到隐藏 32局、未找到吃碰组隐藏后按默认吃碰生效的取值，也未找到承包组显示逻辑。对局侧仅能从房间数据读取已创建房间的局数上限用于展示当前第几局，与创房局数档选择无关。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-029",
+   "verdict": "partial",
+   "clientLogic": "无创房面板显隐逻辑。相关证据：缺一色文案限定为「2-3人玩法时去掉万字花色」，即 4 人玩法不适用缺一色；守庄作为对局内规则（通知标记 + 拦截提示）独立存在，与人数无绑定。二者共同暗示「4 人不缺一色、守庄仍可用」，但面板按 4 人档隐藏缺一色/显示守庄的规则不在本工程。",
+   "uiInteraction": "局内提示轮播缺一色规则（2-3 人适用）文案；守庄拦截时本人弹出「守庄规则生效中」；无创房面板，故不存在 4 人档「缺一色消失、守庄出现」的显隐表现。",
+   "messages": [
+    "MsgNotifyInfo"
+   ],
+   "notes": "只能从缺一色文案的 2-3 人限定间接推断 4 人不适用；仍属间接证据，创房面板联动实现缺失。",
+   "evidenceIds": [
+    "CLE-AT-ST-C01-025-01",
+    "CLE-AT-ST-C01-025-02",
+    "CLE-AT-ST-C01-025-03",
+    "CLE-AT-ST-C01-025-04"
+   ],
+   "observedBehavior": {
+    "trigger": "对局中提示轮播，或被守庄规则拦截碰/明杠",
+    "condition": "当前玩法为缺一色不适用的 4 人玩法；或庄家上家无财神",
+    "action": "局内轮播说明缺一色只用于 2-3 人玩法；守庄拦截时弹出「守庄规则生效中」",
+    "result": "玩家能推断 4 人玩法不谈缺一色、守庄仍会生效，但创房界面上选项如何显隐看不到"
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  }
+ ],
+ "evidence": [
+  {
+   "id": "CLE-AT-ST-C01-025-01",
+   "claimKey": "queyise-limited-to-2-3-players",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "config/MatchTipConfig.ts",
+   "location": "config/MatchTipConfig.ts:26",
+   "symbol": "DEFAULT_MATCH_TIPS",
+   "excerpt": "\"缺一色：2-3人玩法时去掉万字花色\",",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-025",
+    "AT-ST-C01-027",
+    "AT-ST-C01-029"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "layer/BoxHzmjTipAniView.ts"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-025-02",
+   "claimKey": "match-tips-shown-in-game",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "layer/BoxHzmjTipAniView.ts",
+   "location": "layer/BoxHzmjTipAniView.ts:1277-1290",
+   "symbol": "BoxHzmjTipAniView.updateMatchTips",
+   "excerpt": "this._matchTips = this._resolveCurMatchTips();\n...\nconst tip0 = this.view.KW_Main.KW_MATCH.KW_MATCH_TIP.KW_TIP0;",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-025",
+    "AT-ST-C01-027",
+    "AT-ST-C01-029"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "config/MatchTipConfig.ts"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-025-03",
+   "claimKey": "guard-dealer-notify-flag",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "config/GameDefine.ts",
+   "location": "config/GameDefine.ts:467-468",
+   "symbol": "NotifyInfoFlag.NIF_EX_GUARD_DEALER",
+   "excerpt": "/** 守庄生效：庄家上家无财神时禁碰/明杠被拦截，toast\"守庄规则生效中\" */\nNIF_EX_GUARD_DEALER = 8,",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-025",
+    "AT-ST-C01-027",
+    "AT-ST-C01-029"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "controller/cmd/gameCmd/GameNotifyInfoCmd.ts"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-025-04",
+   "claimKey": "guard-dealer-toast-on-intercept",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "controller/cmd/gameCmd/GameNotifyInfoCmd.ts",
+   "location": "controller/cmd/gameCmd/GameNotifyInfoCmd.ts:55-57",
+   "symbol": "GameNotificationCmd.execute",
+   "excerpt": "case NotifyInfoFlag.NIF_EX_GUARD_DEALER:\n    this.dispatch(GameEventBoxHzmj.onShowTextTimeTips, \"守庄规则生效中\", 1.3);",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-025",
+    "AT-ST-C01-027",
+    "AT-ST-C01-029"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "config/GameDefine.ts"
+    },
+    {
+     "file": "config/FguiViewDefine.ts"
+    }
+   ]
+  }
+ ]
+}

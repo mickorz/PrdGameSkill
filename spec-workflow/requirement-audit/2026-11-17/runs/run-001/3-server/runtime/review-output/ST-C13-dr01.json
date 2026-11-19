@@ -1,0 +1,50 @@
+{
+ "schemaVersion": 2,
+ "analysisRunId": "ar-2026-11-17-001",
+ "entries": [
+  {
+   "atomId": "AT-ST-C13-002",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第171行「行牌 > 飘财」）：打出财神的玩家成为飘财窗口所有者，另外三家进入受限状态，二者受限表现不同。客户端侧 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 12 条证据仅挂 AT-ST-C01-001/002/003/004/005/009/010/011（如 CLE-AT-ST-C01-003-02 只证明翻财神动效与白板替身、CLE-AT-ST-C01-002-02 只证明二人房 gameId），无飘财窗口或所有者/受限态条目，全文检索「飘」命中 0。服务端侧 server.applicability 为空、server.evidenceIds 为空，server-evidence.json 60 条仅覆盖 AT-ST-C01 系列（SVE-AT-ST-C01-003-01 只证明 cai_shen_type 财神口径、SVE-AT-ST-C01-019-03 只证明 enable_three_tan_bao 三摊承包），无窗口所有者与三家受限的判定证据。双端皆为取证空缺，既不能证明一致也不能证明冲突，故维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（双端均无飘财窗口证据，属取证空缺而非矛盾，不升级 conflict）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C13-009",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第173行）：飘财限制与吃碰禁手同时适用时以飘财限制为准、覆盖禁手判定。客户端侧 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 12 条无 C13 条目（CLE-AT-ST-C01-019 系列证据不存在，现有 CLE 仅覆盖 C01-001~011），未提供受限态下可操作范围的界面证据。服务端侧 server.applicability 为空、server.evidenceIds 为空；server-evidence.json 中吃碰相关证据 SVE-AT-ST-C01-018-02（rule_chi_peng 档位）、SVE-AT-ST-C01-019-03（enable_three_tan_bao）只说明吃碰档位与三摊承包生效方式，未见飘财限制与禁手的优先级仲裁代码。两条规则的覆盖关系属实现细节，无证据不能推定与需求相反，故维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（规则优先级仲裁无服务端证据，不等于与需求冲突）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C13-012",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第175行）：仅在「打出财神且打出后手牌仍然敲响」时飘档加 1。客户端侧 client.verdict 为空、client.evidenceIds 为空，CLE 证据集未覆盖飘档计数（CLE-AT-ST-C01-004-03/04 只证明牢庄档位与庄闲倍数换算）。服务端侧 server.applicability 为空、server.evidenceIds 为空，server-evidence.json 60 条仅覆盖 C01 创房/结算参数（SVE-AT-ST-C01-010-02 base_score、SVE-AT-ST-C01-021-02 三摊承包），全文检索「飘」「飘档」「piao」命中 0，无飘档计数与敲响判定证据。计数条件是否按需求实现无从判定，属取证空缺，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（飘档计数无服务端证据，仅属取证空缺）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C13-020",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第176行，verificationScope=client）：该座位飘次数大于 0 时在碰杠位播放「飘」字，且不设常驻标签，属纯客户端表现。客户端侧 client.verdict 为空、client.evidenceIds 为空；client-evidence.json 12 条证据的覆盖范围为 AT-ST-C01-001~011（如 CLE-AT-ST-C01-009-01 只证明牌桌底分文本、CLE-AT-ST-C01-009-03 只证明听牌面板封顶文本），无一条指向 AT-ST-C13-020，全文检索「飘」命中 0，既无碰杠位飘字播放的代码或 FGUI 证据，也无 client-visual 对照可支撑视觉冲突。服务端侧 server.applicability 为空、server.evidenceIds 为空，本原子为客户端范围、服务端缺失不作为判据。无证据不得推定与需求一致，故维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（客户端无证据时不得判 consistent，维持未验证）",
+   "evidenceScopes": []
+  }
+ ]
+}

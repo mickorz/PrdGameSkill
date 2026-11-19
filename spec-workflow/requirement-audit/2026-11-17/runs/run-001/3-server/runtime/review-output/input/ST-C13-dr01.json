@@ -1,0 +1,28 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C13",
+ "partNo": "01",
+ "analysisRunId": "ar-2026-11-17-001",
+ "atomIds": [
+  "AT-ST-C13-001",
+  "AT-ST-C13-002",
+  "AT-ST-C13-003",
+  "AT-ST-C13-004",
+  "AT-ST-C13-005",
+  "AT-ST-C13-006",
+  "AT-ST-C13-007",
+  "AT-ST-C13-008",
+  "AT-ST-C13-009",
+  "AT-ST-C13-010",
+  "AT-ST-C13-011",
+  "AT-ST-C13-012",
+  "AT-ST-C13-013",
+  "AT-ST-C13-014",
+  "AT-ST-C13-015",
+  "AT-ST-C13-016",
+  "AT-ST-C13-017",
+  "AT-ST-C13-018",
+  "AT-ST-C13-019",
+  "AT-ST-C13-020"
+ ]
+}

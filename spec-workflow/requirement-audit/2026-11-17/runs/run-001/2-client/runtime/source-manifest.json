@@ -1,0 +1,70 @@
+{
+ "schemaVersion": 1,
+ "branch": "client",
+ "collectedAt": "2026-11-17",
+ "repos": [
+  {
+   "repoId": "client-code",
+   "repoRoot": "source-code/client/Code",
+   "commit": "db544fd68a3b8ac686a6a0d683ae65b49226e10f",
+   "files": [
+    {
+     "file": "config/FanDefine.ts",
+     "contentHash": "sha256:86fb1396838d5b30b8ba9c9cc80550b7d4de9976adf747fd13e9f098376895ff"
+    },
+    {
+     "file": "config/GameDefine.ts",
+     "contentHash": "sha256:3803778fe68321dea6a8402b4275aa46f264e564a4c60d096d8f15a9fd78a735"
+    },
+    {
+     "file": "controller/cmd/gameCmd/GameConfigCmd.ts",
+     "contentHash": "sha256:568f4472401aceb6c938f257595f7ffa6d5c0537db3953662ff63ae311972a95"
+    },
+    {
+     "file": "controller/cmd/gameCmd/GameJokerCmd.ts",
+     "contentHash": "sha256:748ab753f3a6112b89e1b4d4a6a0ec90a1fe8a8cd07fe9bca5e801da168bf4f5"
+    },
+    {
+     "file": "controller/cmd/gameCmd/GameJuDataCmd.ts",
+     "contentHash": "sha256:a4b578ca9031b7fb50f51d102ca1ffdd9f1419e62c7e446365f5fafc855677f7"
+    },
+    {
+     "file": "controller/cmd/gameCmd/GameResultHuCmd.ts",
+     "contentHash": "sha256:7795d32fda76f3daeebfb8f76888d742134fb49cf693672ac7905ab97d6ad5a6"
+    },
+    {
+     "file": "controller/cmd/gameCmd/GameStartGameCmd.ts",
+     "contentHash": "sha256:155f5d31ccdc536ab6c9ed0b1fa731cb6c4daf143cc61f74a0759aa6cb46b85d"
+    },
+    {
+     "file": "data/GameData.ts",
+     "contentHash": "sha256:61fce3e28d311c38742a5a93d428b006be342b3411acc16ce02e8e15edd91512"
+    },
+    {
+     "file": "interface/BoxHzmjResultTypes.ts",
+     "contentHash": "sha256:028237dfdf33a9b5b90e0fed5e8826ac7f80315cec1b0aeb4d726912a67982a8"
+    },
+    {
+     "file": "layer/BoxHzmjBackView.ts",
+     "contentHash": "sha256:ee299a6e5dc8b9e952b18a7c1255cffa69defbf58b8439b2283c2a8f723f466d"
+    },
+    {
+     "file": "layer/BoxHzmjPlayerView.ts",
+     "contentHash": "sha256:9b49a2bdc6b94904a9a164b7ded74429b1e5aba20da685d736539ab4f7ad000b"
+    },
+    {
+     "file": "layer/BoxHzmjResultView.ts",
+     "contentHash": "sha256:162c73efa3827479b6e545a006f352c5c8e8cda3d4f64cee91046446a8ef4d80"
+    },
+    {
+     "file": "layer/BoxHzmjTingPaiView.ts",
+     "contentHash": "sha256:98d7d95d04b66d506f719c99cbc9c61ec827ecb091460a4759e65d7ebd7a41db"
+    },
+    {
+     "file": "layer/comp/BoxHzmjResultMid.ts",
+     "contentHash": "sha256:9f1428b3a8b348a23b78769b9fe17c2a99807320b5204367f36b1ac80a9e7688"
+    }
+   ]
+  }
+ ]
+}

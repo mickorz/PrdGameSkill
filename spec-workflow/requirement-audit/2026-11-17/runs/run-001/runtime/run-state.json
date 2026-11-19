@@ -1,0 +1,359 @@
+{
+ "schemaVersion": 1,
+ "runId": "run-001",
+ "date": "2026-11-17",
+ "runStatus": "completed",
+ "stageOutcomes": [
+  {
+   "stageId": "S1",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S1",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S2",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S3",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S4",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S1",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S2",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S3",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S4",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S5",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S6",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S7",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S8",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S9",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S1",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S2",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S3",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S4",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S5",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S6",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S1",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S2",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S3",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S4",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S5",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S6",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S7",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S8",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S9",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S1",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S2",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S3",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S4",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S5",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S6",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S7",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S8",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S9",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S10",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S1",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S2",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S3",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S4",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S5",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S6",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S7",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S8",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S9",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S10",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S1",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S2",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S3",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S4",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S5",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S6",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S7",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S8",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S9",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S10",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S1",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S2",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S3",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S4",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S5",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S6",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S7",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S8",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S9",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S10",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  },
+  {
+   "stageId": "S11",
+   "outcome": "completed",
+   "at": "2026-11-17"
+  }
+ ],
+ "failures": []
+}

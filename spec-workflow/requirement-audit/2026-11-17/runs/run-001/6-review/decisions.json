@@ -1,0 +1,657 @@
+{
+ "schemaVersion": 1,
+ "date": "2026-11-17",
+ "decisions": [
+  {
+   "atomId": "AT-ST-C01-004",
+   "action": "approve",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "维持 partial：服务端 banker_level_type 换算自洽（0/1/2 → 平庄起/笃二老庄/笃三老庄，夹逼 1..3），缺创房面板三选一与默认项证据；服务端兜底默认 0=平庄起 仅创房未下发时生效，客户端显式提交即得需求默认（笃三老庄），不升级 conflict（见 S4/S5 查证问题记录 B6）",
+   "decidedAt": "2026-11-18",
+   "analysisRunId": "ar-2026-11-17-001",
+   "evidenceFingerprint": "sha256:57152a569c4373521463dbf37ddd0560db2013a2a3f60756d5f06624803b06a9",
+   "fingerprintAt": "2026-11-17",
+   "baselineAt": "partial",
+   "reviewedAt": "partial",
+   "approvedConclusion": "partial"
+  },
+  {
+   "atomId": "AT-ST-C01-012",
+   "action": "approve",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "维持 unverified：服务端有打片结算口径（LoadBoxJsonConfig 解析 play_score），但 40/50/60 片档位与创房面板档位均无实现/界面证据（该原子 l7=not_applicable，服务端 inactive）",
+   "decidedAt": "2026-11-18",
+   "analysisRunId": "ar-2026-11-17-001",
+   "evidenceFingerprint": "sha256:29242aef87d3f8a3cdea43a7dd3d4548daa579cb184ed78eb83406228463fbb1",
+   "fingerprintAt": "2026-11-17",
+   "baselineAt": "unverified",
+   "reviewedAt": "unverified",
+   "approvedConclusion": "unverified"
+  },
+  {
+   "atomId": "AT-ST-C01-018",
+   "action": "approve",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "维持 unverified：吃碰默认档由客户端提交、服务端在三摊承包关闭分支回写 rule_chi_peng 的双端链路存在（hzmj_server 实证），但「2 人房默认无限吃碰」的面板默认值无证据（MsgGameConfig 无吃碰档位字段，协议层缺口）",
+   "decidedAt": "2026-11-18",
+   "analysisRunId": "ar-2026-11-17-001",
+   "evidenceFingerprint": "sha256:988e8f1f17821568c1191ea053a1955ad1e0e34431939ffbcab4b97dd7d15107",
+   "fingerprintAt": "2026-11-17",
+   "baselineAt": "unverified",
+   "reviewedAt": "unverified",
+   "approvedConclusion": "unverified"
+  },
+  {
+   "atomId": "AT-ST-C01-021",
+   "action": "approve",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "维持 unverified：服务端 enable_three_tan_bao 默认 false 不构成冲突证据（默认档由创房显式提交决定）；面板可选值（三摊承包/两摊封顶）与默认项（三摊承包）无客户端证据",
+   "decidedAt": "2026-11-18",
+   "analysisRunId": "ar-2026-11-17-001",
+   "evidenceFingerprint": "sha256:558e598826a48da4f7f6a4477e004c2aa2ff1f94e99c1e203fdc9ba9c207468f",
+   "fingerprintAt": "2026-11-17",
+   "baselineAt": "unverified",
+   "reviewedAt": "unverified",
+   "approvedConclusion": "unverified"
+  },
+  {
+   "atomId": "AT-ST-C01-024",
+   "action": "approve",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "维持 unverified：人数联动档位刷新在客户端创房面板（不在本次可读源码范围）；服务端 2 人房强制三摊关闭（player_count<=2 → enable_three_tan_bao=false）有实证，但 32局/4局档位联动服务端三目录查无实现（unresolved）",
+   "decidedAt": "2026-11-18",
+   "analysisRunId": "ar-2026-11-17-001",
+   "evidenceFingerprint": "sha256:5eb3522229e4c994a411710bba698e64b4d64bb8476d2f7fa3c452dc2d4ca979",
+   "fingerprintAt": "2026-11-17",
+   "baselineAt": "unverified",
+   "reviewedAt": "unverified",
+   "approvedConclusion": "unverified"
+  },
+  {
+   "atomId": "AT-ST-C02-001",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C02-007",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C02-009",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C02-010",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C03-003",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C03-004",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C03-006",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C03-009",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C04-001",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C04-002",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C04-003",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C04-004",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C05-001",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C05-003",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C05-007",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C06-006",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C06-007",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C06-008",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C07-001",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C07-005",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C07-009",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C07-010",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C08-001",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C08-006",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C08-007",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C09-001",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C09-002",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C09-003",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C09-004",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C09-005",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C09-006",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C09-007",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C09-008",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C09-009",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C09-010",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C09-011",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C10-001",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C12-001",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C13-002",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C13-009",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C13-012",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C13-020",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C14-001",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C14-006",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C14-011",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C15-001",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C15-003",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C15-010",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C15-012",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C15-013",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C15-014",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C15-015",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C15-016",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C15-018",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C17-001",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C18-001",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C19-001",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C21-001",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C21-007",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C21-013",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C21-019",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C21-036",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C21-047",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  },
+  {
+   "atomId": "AT-ST-C23-001",
+   "action": "hold",
+   "target": "difference-review",
+   "retryScope": "",
+   "modifiedValue": "",
+   "reason": "收窄跑（stageIds=ST-C01）未覆盖该阶段的双端查证，复核建议挂起，待后续批次按阶段补证后裁决",
+   "decidedAt": "2026-11-18"
+  }
+ ]
+}

@@ -1,0 +1,398 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C20",
+ "partNo": 1,
+ "stage": {
+  "stageId": "ST-C20",
+  "name": "番型",
+  "chapter": "番型",
+  "summary": "番型分基础、杠开、财神三组，组内取最高档、组间连乘，覆盖平胡、七对、清七对、杠开、爆头、财飘、杠飘与十风，并规定财神牌面染红表现。"
+ },
+ "features": [
+  {
+   "id": "FP-ST-C20-001",
+   "name": "番型分组与计算框架",
+   "description": "规定胡牌时的判定顺序、番型三组划分、组内取最高档与组间连乘的总计算框架，以及点炮和抢杠胡不可命中的番型。",
+   "scope": "仅覆盖番型判定的总体规则，不涉及具体番型的成立条件与倍数。",
+   "coordination": "客户端仅展示服务端结算出的番型与倍数，计算由服务端完成。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C20-001",
+     "name": "判定顺序：先牌型后胡牌方式",
+     "rule": "先确认牌型，再确认这次是自摸、点炮胡还是抢杠胡。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家胡牌时进行番型结算",
+      "condition": "玩家已经胡牌",
+      "action": "先确认牌型，再确认胡牌方式是自摸、点炮胡还是抢杠胡",
+      "result": "玩家看到结算先给出牌型，再给出对应的胡牌方式"
+     },
+     "source": { "chapter": "番型", "fromLine": 261, "toLine": 261 }
+    },
+    {
+     "atomId": "AT-ST-C20-002",
+     "name": "番型三组划分",
+     "rule": "番型分三组。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家胡牌时进行番型结算",
+      "condition": "玩家已经胡牌",
+      "action": "把番型归入三组分别计算",
+      "result": "玩家看到结算番型按三组呈现"
+     },
+     "source": { "chapter": "番型", "fromLine": 261, "toLine": 261 }
+    },
+    {
+     "atomId": "AT-ST-C20-003",
+     "name": "组内取最高档",
+     "rule": "组内只取最高一档。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家胡牌时进行番型结算",
+      "condition": "同一组内命中多个番型档位",
+      "action": "只保留该组中最高的一档",
+      "result": "玩家看到该组只显示并计入最高一档"
+     },
+     "source": { "chapter": "番型", "fromLine": 261, "toLine": 261 }
+    },
+    {
+     "atomId": "AT-ST-C20-004",
+     "name": "组间连乘",
+     "rule": "组间连乘。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家胡牌时进行番型结算",
+      "condition": "多个番型组同时命中",
+      "action": "把各组取得的最高档倍数相乘",
+      "result": "玩家看到结算总倍数为各组倍数连乘结果"
+     },
+     "source": { "chapter": "番型", "fromLine": 261, "toLine": 261 }
+    },
+    {
+     "atomId": "AT-ST-C20-005",
+     "name": "点炮与抢杠胡排除特定番型",
+     "rule": "点炮和抢杠不算爆头、财飘、杠开、十风。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家以点炮胡或抢杠胡方式胡牌",
+      "condition": "胡牌方式为点炮胡或抢杠胡",
+      "action": "不判定爆头、财飘、杠开、十风这些番型",
+      "result": "玩家看到结算中没有爆头、财飘、杠开、十风"
+     },
+     "source": { "chapter": "番型", "fromLine": 261, "toLine": 261 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C20-002",
+   "name": "基础组：平胡与七对系列",
+   "description": "基础组包含平胡、七对系列与清七对系列，规定各自倍数、成立条件与豪华计数方式。",
+   "scope": "覆盖平胡、七对、豪华七对、双豪华、三豪华、清七对及其豪华档；不涉及杠开与财神组。",
+   "coordination": "牌型与倍数由服务端判定，客户端只展示结算结果。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C20-006",
+     "name": "平胡成立条件与倍数",
+     "rule": "平胡，倍数 1，4 组面子加 1 对。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家胡牌时进行牌型判定",
+      "condition": "手牌为 4 组面子加 1 对",
+      "action": "计为平胡，倍数 1",
+      "result": "玩家看到结算牌型为平胡，倍数 1"
+     },
+     "source": { "chapter": "番型", "fromLine": 265, "toLine": 265 }
+    },
+    {
+     "atomId": "AT-ST-C20-007",
+     "name": "平胡财神可参与面子或对子",
+     "rule": "平胡中财神可参与面子或对子。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家胡牌时进行牌型判定",
+      "condition": "手牌需要以财神补足面子或对子",
+      "action": "把财神计入面子或对子完成平胡牌型",
+      "result": "玩家看到含财神的牌型可被判定为平胡"
+     },
+     "source": { "chapter": "番型", "fromLine": 265, "toLine": 265 }
+    },
+    {
+     "atomId": "AT-ST-C20-008",
+     "name": "七对系列成立条件与倍数",
+     "rule": "七对 / 豪华 / 双豪华 / 三豪华，倍数 2 / 4 / 8 / 16，14 张组成 7 对，且手里至少有 1 张财神。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家胡牌时进行牌型判定",
+      "condition": "14 张组成 7 对且手里至少有 1 张财神",
+      "action": "按豪华组数计为七对系列档位，倍数分别为 2 / 4 / 8 / 16",
+      "result": "玩家看到结算牌型为七对或豪华、双豪华、三豪华，并显示对应倍数"
+     },
+     "source": { "chapter": "番型", "fromLine": 266, "toLine": 266 }
+    },
+    {
+     "atomId": "AT-ST-C20-009",
+     "name": "豪华组数计数规则",
+     "rule": "某种非财神牌面有 4 张实牌，计 1 组豪华。白板不计豪华。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家以七对胡牌",
+      "condition": "某种非财神牌面在手中有 4 张实牌",
+      "action": "该牌面计为 1 组豪华，白板不计豪华",
+      "result": "玩家看到豪华组数按非财神牌面的 4 张实牌统计"
+     },
+     "source": { "chapter": "番型", "fromLine": 266, "toLine": 266 }
+    },
+    {
+     "atomId": "AT-ST-C20-010",
+     "name": "清七对系列成立条件与倍数",
+     "rule": "清七对 / 豪华 / 双豪华 / 三豪华，倍数 4 / 8 / 16 / 32，同样是 7 对，但手里没有财神。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家胡牌时进行牌型判定",
+      "condition": "14 张组成 7 对且手里没有财神",
+      "action": "按豪华组数计为清七对系列档位，倍数分别为 4 / 8 / 16 / 32",
+      "result": "玩家看到结算牌型为清七对或清豪华、清双豪华、清三豪华，并显示对应倍数"
+     },
+     "source": { "chapter": "番型", "fromLine": 267, "toLine": 267 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C20-003",
+   "name": "杠开组",
+   "description": "杠开组规定杠上开花及二连杠、三连杠、四连杠的成立条件与倍数。",
+   "scope": "仅覆盖杠链番型，不涉及与财飘组合形成的杠飘/飘杠。",
+   "coordination": "杠链计数与倍数由服务端判定，客户端展示结算结果。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C20-011",
+     "name": "杠上开花与连杠倍数",
+     "rule": "杠上开花 / 二连杠 / 三连杠 / 四连杠，倍数 2 / 4 / 8 / 16，条件为自摸，杠链为 1 / 2 / 3 / 4 及以上。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家杠后自摸胡牌",
+      "condition": "胡牌方式为自摸且杠链为 1 / 2 / 3 / 4 及以上",
+      "action": "分别计为杠上开花、二连杠、三连杠、四连杠，倍数 2 / 4 / 8 / 16",
+      "result": "玩家看到结算显示对应杠开牌型与倍数"
+     },
+     "source": { "chapter": "番型", "fromLine": 268, "toLine": 268 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C20-004",
+   "name": "财神组：爆头与财飘",
+   "description": "财神组规定爆头与财飘系列的自摸条件、飘档、成将要求与倍数，并说明爆头听任意牌时的判定方式。",
+   "scope": "覆盖爆头、财飘、双财飘、三财飘；不涉及杠开与财飘同时命中后的改记规则。",
+   "coordination": "飘档统计、成将与倍数由服务端判定，客户端展示结算结果。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C20-012",
+     "name": "爆头成立条件与倍数",
+     "rule": "爆头，倍数 2，条件为自摸、飘档为 0、单放与财神成将。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家自摸胡牌",
+      "condition": "飘档为 0 且单放与财神成将",
+      "action": "判定为爆头，倍数 2",
+      "result": "玩家看到结算牌型为爆头，倍数 2"
+     },
+     "source": { "chapter": "番型", "fromLine": 269, "toLine": 269 }
+    },
+    {
+     "atomId": "AT-ST-C20-013",
+     "name": "爆头听任意牌改看敲响",
+     "rule": "听任意牌时，改看进张前是否敲响。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家处于听任意牌状态并胡牌",
+      "condition": "玩家听任意牌",
+      "action": "改为判断进张前是否敲响来确定爆头",
+      "result": "玩家看到听任意牌时的爆头判定依据敲响状态给出"
+     },
+     "source": { "chapter": "番型", "fromLine": 269, "toLine": 269 }
+    },
+    {
+     "atomId": "AT-ST-C20-014",
+     "name": "财飘系列成立条件与倍数",
+     "rule": "财飘 / 双财飘 / 三财飘，倍数 4 / 8 / 16，条件为自摸、飘档正好为 1 / 2 / 3 及以上，且单放与财神成将。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家自摸胡牌",
+      "condition": "飘档正好为 1 / 2 / 3 及以上且单放与财神成将",
+      "action": "分别判定为财飘、双财飘、三财飘，倍数 4 / 8 / 16",
+      "result": "玩家看到结算显示对应财飘牌型与倍数"
+     },
+     "source": { "chapter": "番型", "fromLine": 270, "toLine": 270 }
+    },
+    {
+     "atomId": "AT-ST-C20-015",
+     "name": "三档及以上归为三财飘",
+     "rule": "3 档及以上都是三财飘。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家自摸胡牌且飘档达到 3 档及以上",
+      "condition": "飘档为 3 档或更高",
+      "action": "统一按三财飘计算",
+      "result": "玩家看到飘档 3 档及以上都显示为三财飘"
+     },
+     "source": { "chapter": "番型", "fromLine": 270, "toLine": 270 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C20-005",
+   "name": "杠飘与飘杠改记",
+   "description": "规定杠上开花与财飘同时命中时的改记牌型、倍数及与基础番相乘的算法。",
+   "scope": "仅覆盖杠上开花与财飘同时命中的组合处理，不改变单一番型本身的成立条件。",
+   "coordination": "组合识别与倍数计算由服务端完成，客户端展示结算结果。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C20-016",
+     "name": "杠飘与飘杠改记及倍数",
+     "rule": "同时命中杠上开花和财飘时，去掉这两条，改记杠飘或飘杠，倍数 8，再乘基础番。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家胡牌结算时同时命中杠上开花和财飘",
+      "condition": "杠上开花与财飘同时成立",
+      "action": "去掉杠上开花和财飘两条，改记杠飘或飘杠，倍数 8 并再乘基础番",
+      "result": "玩家看到结算中不单列杠上开花和财飘，而是显示杠飘或飘杠并乘上基础番"
+     },
+     "source": { "chapter": "番型", "fromLine": 272, "toLine": 272 }
+    },
+    {
+     "atomId": "AT-ST-C20-017",
+     "name": "杠飘倍数示例",
+     "rule": "例如平胡加这一档是 8 倍，七对加这一档是 16 倍。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家命中杠飘或飘杠并确认基础番",
+      "condition": "基础番为平胡或七对",
+      "action": "基础番倍数 1 或 2 与杠飘档 8 相乘",
+      "result": "玩家看到平胡加杠飘为 8 倍，七对加杠飘为 16 倍"
+     },
+     "source": { "chapter": "番型", "fromLine": 272, "toLine": 272 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C20-006",
+   "name": "十风",
+   "description": "规定十风的连续打字牌条件、作废规则、满 10 张后的胡牌特权、互斥关系与倍数增长方式。",
+   "scope": "仅覆盖十风番型；不与其他番型相乘，也不适用于点炮与抢杠胡。",
+   "coordination": "连续字牌统计、作废判定与倍数由服务端计算，客户端展示结果。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C20-018",
+     "name": "十风连续打字牌与作废",
+     "rule": "十风：从第一张出牌起连续打字牌。中途打出非字牌，或吃、碰、杠，本局作废，不能再重新累计。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家从第一张出牌起逐张打出牌",
+      "condition": "连续打出字牌；中途打出非字牌或发生吃、碰、杠",
+      "action": "记录连续打字牌进度，出现中断则本局十风作废且不能重新累计",
+      "result": "玩家看到十风进度中断后本局不再累计十风"
+     },
+     "source": { "chapter": "番型", "fromLine": 274, "toLine": 274 }
+    },
+    {
+     "atomId": "AT-ST-C20-019",
+     "name": "满十张后任意自摸可胡",
+     "rule": "满 10 张后任意自摸都能胡，不要求成牌。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家十风累计满 10 张后自摸",
+      "condition": "十风连续字牌满 10 张",
+      "action": "允许玩家以任意牌自摸胡牌，不要求成牌",
+      "result": "玩家看到满 10 张后任意自摸都可胡牌"
+     },
+     "source": { "chapter": "番型", "fromLine": 274, "toLine": 274 }
+    },
+    {
+     "atomId": "AT-ST-C20-020",
+     "name": "只记十风不与其他番型相乘",
+     "rule": "只记十风，不与平胡、杠开、财飘、七对相乘。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家以十风胡牌",
+      "condition": "十风成立",
+      "action": "结算只记十风，不与平胡、杠开、财飘、七对连乘",
+      "result": "玩家看到十风胡牌结算中不再叠加其他番型"
+     },
+     "source": { "chapter": "番型", "fromLine": 274, "toLine": 274 }
+    },
+    {
+     "atomId": "AT-ST-C20-021",
+     "name": "十风倍数增长",
+     "rule": "10 张为 2 倍，每多一张再乘 2。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家以十风胡牌",
+      "condition": "十风连续字牌为 10 张或更多",
+      "action": "以 10 张为 2 倍，每多一张再乘 2 计算倍数",
+      "result": "玩家看到十风倍数随超出 10 张的张数翻倍"
+     },
+     "source": { "chapter": "番型", "fromLine": 274, "toLine": 274 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C20-007",
+   "name": "财神牌面表现",
+   "description": "规定财神牌的牌面染红显示、可点击与无角标，以及打出后牌河中的保留样式。",
+   "scope": "仅覆盖财神牌面的显示规则，不涉及财神参与胡牌判定的规则。",
+   "coordination": "表现由客户端实现，服务端仅下发财神标识。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C20-022",
+     "name": "财神牌面染红与可点击",
+     "rule": "财神牌面染红，可点击，没有角标。",
+     "uiRequirement": "财神牌面染红，可点击，没有角标。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家手牌中出现财神牌",
+      "condition": "该牌为财神",
+      "action": "牌面染红并保持可点击，不显示角标",
+      "result": "玩家看到红色财神牌，可点击且无角标"
+     },
+     "source": { "chapter": "番型", "fromLine": 276, "toLine": 276 }
+    },
+    {
+     "atomId": "AT-ST-C20-023",
+     "name": "财神打出后牌河保留红色",
+     "rule": "打出后牌河仍是原牌面，只保留这层红色。",
+     "uiRequirement": "财神打出后牌河仍是原牌面，只保留这层红色。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家打出财神牌",
+      "condition": "打出的牌为财神",
+      "action": "牌河中的该牌显示原牌面并保留红色",
+      "result": "玩家看到牌河中的财神仍是原牌面且带有红色"
+     },
+     "source": { "chapter": "番型", "fromLine": 276, "toLine": 276 }
+    }
+   ]
+  }
+ ]
+}

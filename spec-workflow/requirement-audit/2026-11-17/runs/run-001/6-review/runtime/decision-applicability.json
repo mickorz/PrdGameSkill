@@ -1,0 +1,430 @@
+{
+ "schemaVersion": 1,
+ "currentRunId": "ar-2026-11-17-001",
+ "items": [
+  {
+   "atomId": "AT-ST-C01-004",
+   "action": "approve",
+   "status": "valid",
+   "reason": "指纹与结论均未变，决议继续有效",
+   "boundRunId": "ar-2026-11-17-001",
+   "currentRunId": "ar-2026-11-17-001"
+  },
+  {
+   "atomId": "AT-ST-C01-012",
+   "action": "approve",
+   "status": "valid",
+   "reason": "指纹与结论均未变，决议继续有效",
+   "boundRunId": "ar-2026-11-17-001",
+   "currentRunId": "ar-2026-11-17-001"
+  },
+  {
+   "atomId": "AT-ST-C01-018",
+   "action": "approve",
+   "status": "valid",
+   "reason": "指纹与结论均未变，决议继续有效",
+   "boundRunId": "ar-2026-11-17-001",
+   "currentRunId": "ar-2026-11-17-001"
+  },
+  {
+   "atomId": "AT-ST-C01-021",
+   "action": "approve",
+   "status": "valid",
+   "reason": "指纹与结论均未变，决议继续有效",
+   "boundRunId": "ar-2026-11-17-001",
+   "currentRunId": "ar-2026-11-17-001"
+  },
+  {
+   "atomId": "AT-ST-C01-024",
+   "action": "approve",
+   "status": "valid",
+   "reason": "指纹与结论均未变，决议继续有效",
+   "boundRunId": "ar-2026-11-17-001",
+   "currentRunId": "ar-2026-11-17-001"
+  },
+  {
+   "atomId": "AT-ST-C02-001",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C02-007",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C02-009",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C02-010",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C03-003",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C03-004",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C03-006",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C03-009",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C04-001",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C04-002",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C04-003",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C04-004",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C05-001",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C05-003",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C05-007",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C06-006",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C06-007",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C06-008",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C07-001",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C07-005",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C07-009",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C07-010",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C08-001",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C08-006",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C08-007",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C09-001",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C09-002",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C09-003",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C09-004",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C09-005",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C09-006",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C09-007",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C09-008",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C09-009",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C09-010",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C09-011",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C10-001",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C12-001",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C13-002",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C13-009",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C13-012",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C13-020",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C14-001",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C14-006",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C14-011",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C15-001",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C15-003",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C15-010",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C15-012",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C15-013",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C15-014",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C15-015",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C15-016",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C15-018",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C17-001",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C18-001",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C19-001",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C21-001",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C21-007",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C21-013",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C21-019",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C21-036",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C21-047",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  },
+  {
+   "atomId": "AT-ST-C23-001",
+   "action": "hold",
+   "status": "stale",
+   "reason": "决议未绑定 evidenceFingerprint（旧格式），须重新人工确认"
+  }
+ ]
+}

@@ -1,0 +1,239 @@
+{
+ "schemaVersion": 1,
+ "generatedBy": "prepare-verify-input.mjs",
+ "date": "2026-11-17",
+ "branch": "client",
+ "registryPath": "spec-workflow/requirement-audit/2026-11-17/runs/run-001/1-registry/requirement-registry.json",
+ "stageId": "ST-C01",
+ "stageName": "房间参数（单选）",
+ "partNo": "01",
+ "partCount": 3,
+ "atomCount": 11,
+ "featureGroups": [
+  {
+   "featureId": "FP-ST-C01-001",
+   "featureName": "基础对局参数单选",
+   "featureDescription": "房间参数面板中的基础单选组：模式、人数、玩法、连庄数、胡牌，各自给出可选值与默认值。",
+   "featureScope": "仅覆盖这五项的可选值与默认值；人数带来的显隐与默认联动见人数联动功能点。",
+   "featureCoordination": "人数取值决定局数档、吃碰组、承包组、缺一色与守庄的显隐，由人数联动功能点承接。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C01-001",
+     "name": "模式选项",
+     "rule": "模式为单选，可选值为「正常 / 简洁」，默认选中「正常」。",
+     "uiRequirement": "创房面板展示「模式」单选组，含「正常」「简洁」两个选项，初始处于「正常」。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家打开好友房创房面板",
+      "condition": "处于房间参数设置阶段",
+      "action": "玩家在模式单选中选择正常或简洁",
+      "result": "面板上模式显示为玩家所选的档位，未操作时显示正常"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 15,
+      "toLine": 15
+     }
+    },
+    {
+     "atomId": "AT-ST-C01-002",
+     "name": "人数选项与默认",
+     "rule": "人数为单选，可选值为「2人 / 3人 / 4人」，默认选中「4人」，选中后按「人数联动」生效。",
+     "uiRequirement": "创房面板展示「人数」单选组，含 2人、3人、4人三个选项，初始选中 4人。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家打开好友房创房面板或在面板中切换人数",
+      "condition": "处于房间参数设置阶段",
+      "action": "玩家选择 2人、3人 或 4人",
+      "result": "人数显示为所选项，未操作时显示 4人，并按所选人数触发后续联动"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 16,
+      "toLine": 16
+     }
+    },
+    {
+     "atomId": "AT-ST-C01-003",
+     "name": "玩法选项",
+     "rule": "玩法为单选，可选值为「白板财神 / 翻财神」，默认选中「白板财神」。",
+     "uiRequirement": "创房面板展示「玩法」单选组，含「白板财神」「翻财神」两个选项，初始处于「白板财神」。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家打开好友房创房面板",
+      "condition": "处于房间参数设置阶段",
+      "action": "玩家在玩法单选中选择白板财神或翻财神",
+      "result": "面板上玩法显示为玩家所选档位，未操作时显示白板财神"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 19,
+      "toLine": 19
+     }
+    },
+    {
+     "atomId": "AT-ST-C01-004",
+     "name": "连庄数选项",
+     "rule": "连庄数为单选，可选值为「笃三老庄 / 笃二老庄 / 平庄起」，默认选中「笃三老庄」。",
+     "uiRequirement": "创房面板展示「连庄数」单选组，含笃三老庄、笃二老庄、平庄起三个选项，初始处于「笃三老庄」。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家打开好友房创房面板",
+      "condition": "处于房间参数设置阶段",
+      "action": "玩家在连庄数单选中选择笃三老庄、笃二老庄或平庄起",
+      "result": "面板上连庄数显示为玩家所选档位，未操作时显示笃三老庄"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 20,
+      "toLine": 20
+     }
+    },
+    {
+     "atomId": "AT-ST-C01-005",
+     "name": "胡牌选项",
+     "rule": "胡牌为单选，可选值为「自摸胡 / 庄闲放铳(庄三)」，默认选中「庄闲放铳」。",
+     "uiRequirement": "创房面板展示「胡牌」单选组，含「自摸胡」「庄闲放铳(庄三)」两个选项，初始处于「庄闲放铳」。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家打开好友房创房面板",
+      "condition": "处于房间参数设置阶段",
+      "action": "玩家在胡牌单选中选择自摸胡或庄闲放铳(庄三)",
+      "result": "面板上胡牌显示为玩家所选档位，未操作时显示庄闲放铳"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 21,
+      "toLine": 21
+     }
+    }
+   ]
+  },
+  {
+   "featureId": "FP-ST-C01-002",
+   "featureName": "局数档选项与人数可用性",
+   "featureDescription": "局数单选的可选值、默认值，以及哪些局数档在何种人数下可用；局数档生效时的面板展示口径。",
+   "featureScope": "局数档为 4局、8局、16局、24局、32局；打片档（40/50/60片）见打片档功能点。",
+   "featureCoordination": "局数档与打片档互斥，提交口径由打片档与互斥提交功能点承接。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C01-006",
+     "name": "局数档可选值与默认",
+     "rule": "局数为单选，局数档可选值为「4局 / 8局 / 16局 / 24局 / 32局」，默认选中「8局」。",
+     "uiRequirement": "创房面板「局数」单选组展示 4局、8局、16局、24局、32局 各档（另含打片档 40/50/60片），初始选中 8局。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家打开好友房创房面板",
+      "condition": "处于房间参数设置阶段",
+      "action": "玩家在局数单选中选择某个局数档",
+      "result": "局数显示为玩家所选档位，未操作时显示 8局"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 17,
+      "toLine": 17
+     }
+    },
+    {
+     "atomId": "AT-ST-C01-007",
+     "name": "4局仅4人房显示",
+     "rule": "「4局」档仅在人数为 4人 时显示。",
+     "uiRequirement": "人数为 4人 时局数单选组出现「4局」选项；人数为 2人 或 3人 时该选项不出现。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家查看或切换局数单选组",
+      "condition": "人数为 4人",
+      "action": "面板按人数过滤局数档",
+      "result": "4人房可看到并选择「4局」，2/3 人房看不到「4局」"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 17,
+      "toLine": 17
+     }
+    },
+    {
+     "atomId": "AT-ST-C01-008",
+     "name": "32局仅2人3人房显示",
+     "rule": "「32局」档仅在人数为 2人 或 3人 时显示。",
+     "uiRequirement": "人数为 2人 或 3人 时局数单选组出现「32局」选项；人数为 4人 时该选项不出现。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家查看或切换局数单选组",
+      "condition": "人数为 2人 或 3人",
+      "action": "面板按人数过滤局数档",
+      "result": "2/3 人房可看到并选择「32局」，4人房看不到「32局」"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 17,
+      "toLine": 17
+     }
+    },
+    {
+     "atomId": "AT-ST-C01-009",
+     "name": "局数档显示底分封顶并隐藏连庄不占局数",
+     "rule": "选中局数档时，显示「底分」与「封顶」，隐藏「连庄不占局数」。",
+     "uiRequirement": "局数档生效时，面板出现底分选项与封顶选项，不出现「连庄不占局数」选项。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家在局数单选中选中任一局数档",
+      "condition": "当前为局数模式（选中 4/8/16/24/32 局）",
+      "action": "面板切换局数档对应的展示项",
+      "result": "玩家看到底分与封顶可设置，看不到「连庄不占局数」"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 17,
+      "toLine": 17
+     }
+    }
+   ]
+  },
+  {
+   "featureId": "FP-ST-C01-003",
+   "featureName": "底分与封顶选项",
+   "featureDescription": "底分与封顶两个单选组的可选值、默认值，以及仅在局数档显示的限制。",
+   "featureScope": "只覆盖这两项自身取值与显隐；打片档下的取值置位见打片档功能点。",
+   "featureCoordination": "显隐依赖局数档或打片档的选中状态。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C01-010",
+     "name": "底分选项",
+     "rule": "底分为单选，可选值为「1分 / 2分 / 5分」，默认选中「1分」，仅在局数档显示。",
+     "uiRequirement": "创房面板「底分」单选组含 1分、2分、5分，初始选中 1分；仅在选中局数档时出现。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家查看或切换底分单选组",
+      "condition": "当前选中的是局数档",
+      "action": "面板展示底分选项并允许玩家选择档位",
+      "result": "玩家看到 1分/2分/5分 三档且默认 1分；非局数档时看不到底分"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 18,
+      "toLine": 18
+     }
+    },
+    {
+     "atomId": "AT-ST-C01-011",
+     "name": "封顶选项",
+     "rule": "封顶为单选，可选值为「无 / 20 / 40 / 64 / 80 / 128 / 256」，默认选中「无」，仅在局数档显示。",
+     "uiRequirement": "创房面板「封顶」单选组含 无、20、40、64、80、128、256，初始选中「无」；仅在选中局数档时出现。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家查看或切换封顶单选组",
+      "condition": "当前选中的是局数档",
+      "action": "面板展示封顶选项并允许玩家选择档位",
+      "result": "玩家看到七档封顶且默认「无」；非局数档时看不到封顶"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 24,
+      "toLine": 24
+     }
+    }
+   ]
+  }
+ ]
+}

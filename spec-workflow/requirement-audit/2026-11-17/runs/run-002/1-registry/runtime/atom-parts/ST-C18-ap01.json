@@ -1,0 +1,436 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C18",
+ "partNo": 1,
+ "stage": {
+  "stageId": "ST-C18",
+  "name": "三摊承包",
+  "chapter": "三摊承包",
+  "summary": "三摊承包的摊数统计口径、承包成立条件与落地提示，以及自摸、点炮、抢杠胡各场景下的承包赔付改写规则与算例。"
+ },
+ "features": [
+  {
+   "id": "FP-ST-C18-001",
+   "name": "摊的统计口径与成立条件",
+   "description": "规定摊只由吃牌产生、每吃一次对被吃方加 1 摊，承包仅限庄家与闲家之间，两名闲家之间同一方向最多 2 摊，并与飘财无关、两个方向分开计。",
+   "scope": "仅覆盖摊的计数来源与承包适用对象；不涉及碰、直杠、加杠、暗杠的计摊（按关闭口径不计），不涉及碰算摊选项。",
+   "coordination": "摊数由服务端判定与累计，客户端仅按服务端结论决定是否允许吃牌。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C18-001",
+     "name": "只统计吃牌计摊",
+     "rule": "摊只统计吃牌，碰、直杠、加杠、暗杠不计摊。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家打出牌后有人吃牌",
+      "condition": "该动作是吃牌",
+      "action": "计入摊数",
+      "result": ""
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 229, "toLine": 229 }
+    },
+    {
+     "atomId": "AT-ST-C18-002",
+     "name": "吃牌者对出牌者加一摊",
+     "rule": "A 吃 B 打出的牌，A 对 B 记 1 摊。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "A 吃进 B 打出的牌",
+      "condition": "吃牌成立",
+      "action": "A 对 B 的摊数加 1",
+      "result": ""
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 229, "toLine": 229 }
+    },
+    {
+     "atomId": "AT-ST-C18-003",
+     "name": "承包仅限庄闲之间",
+     "rule": "只有庄家和闲家之间能承包。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "某一方向的摊数达到成立条件",
+      "condition": "承包双方为庄家与闲家",
+      "action": "判定承包成立",
+      "result": ""
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 231, "toLine": 231 }
+    },
+    {
+     "atomId": "AT-ST-C18-004",
+     "name": "两闲家同向最多两摊",
+     "rule": "两名闲家之间，同一方向最多 2 摊，吃一成立就加 1。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "一名闲家吃进另一名闲家的牌",
+      "condition": "吃牌双方均为闲家且同一方向",
+      "action": "对该方向摊数加 1，上限为 2 摊",
+      "result": ""
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 231, "toLine": 231 }
+    },
+    {
+     "atomId": "AT-ST-C18-005",
+     "name": "满两摊不再给出吃",
+     "rule": "已经有 2 摊时，再吃这一家的牌不成立，不给出【吃】。",
+     "uiRequirement": "满 2 摊后不再向玩家给出【吃】按钮/选项。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家打出牌，其他玩家可响应",
+      "condition": "该吃牌者对出牌者该方向已有 2 摊",
+      "action": "不判定该吃牌成立并不下发吃选项",
+      "result": "玩家看到没有【吃】可点"
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 231, "toLine": 231 }
+    },
+    {
+     "atomId": "AT-ST-C18-006",
+     "name": "摊与飘财无关",
+     "rule": "摊的统计与飘财无关。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "发生吃牌",
+      "condition": "玩家有飘财次数",
+      "action": "照常计摊，不因飘财改变摊数",
+      "result": ""
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 231, "toLine": 231 }
+    },
+    {
+     "atomId": "AT-ST-C18-007",
+     "name": "两个方向分开计摊",
+     "rule": "两个方向分开计：A 对 B 与 B 对 A 的摊数分别累计。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "双方互有吃牌",
+      "condition": "存在两个方向的吃牌关系",
+      "action": "分别累计各自方向的摊数",
+      "result": ""
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 231, "toLine": 231 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C18-002",
+   "name": "承包成立判定与落地提示",
+   "description": "某一方向计到第 3 摊即成立承包，四端播放「三摊落地」提示，提示可与吃牌字效同时显示，且不等到结算、当时不出现承包角标，提示期间获权玩家可继续提牌出牌。",
+   "scope": "覆盖承包成立时刻的判定与即时演出、角标口径、提示期间的继续操作；不涉及结算阶段的表现。",
+   "coordination": "服务端判定第 3 摊成立并下发，客户端在四端播放提示并维持可操作状态。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C18-008",
+     "name": "第三摊记承包",
+     "rule": "某一方向计到第 3 摊时记承包。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "某一方向摊数增加到 3",
+      "condition": "该方向摊数计到第 3 摊",
+      "action": "标记该方向承包成立",
+      "result": ""
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 232, "toLine": 232 }
+    },
+    {
+     "atomId": "AT-ST-C18-009",
+     "name": "四端播放三摊落地",
+     "rule": "承包成立时四端播放「三摊落地」提示。",
+     "uiRequirement": "四个玩家端同时播放「三摊落地」动效提示。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "服务端判定承包成立",
+      "condition": "某一方向计到第 3 摊",
+      "action": "四个玩家端播放「三摊落地」提示",
+      "result": "四端玩家都看到「三摊落地」演出"
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 232, "toLine": 232 }
+    },
+    {
+     "atomId": "AT-ST-C18-010",
+     "name": "落地提示与吃牌字效并存",
+     "rule": "「三摊落地」提示可与吃牌字效同时显示。",
+     "uiRequirement": "「三摊落地」提示与吃牌字效不互相覆盖，可同时显示。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "吃牌成立同时该方向计到第 3 摊",
+      "condition": "吃牌字效与承包提示同时触发",
+      "action": "两个表现同时播放",
+      "result": "玩家同时看到吃牌字效和「三摊落地」"
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 232, "toLine": 232 }
+    },
+    {
+     "atomId": "AT-ST-C18-011",
+     "name": "成立时不出现承包角标",
+     "rule": "不等到结算，当时没有承包角标。",
+     "uiRequirement": "承包成立当时界面不显示承包角标，不提前到结算前展示。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "承包成立提示播放期间",
+      "condition": "尚未进入结算",
+      "action": "不展示承包角标",
+      "result": "玩家看不到承包角标"
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 232, "toLine": 232 }
+    },
+    {
+     "atomId": "AT-ST-C18-012",
+     "name": "提示期间可继续提牌出牌",
+     "rule": "提示期间，获权玩家可以继续提牌、出牌。",
+     "uiRequirement": "提示播放期间不阻塞获权玩家的提牌、出牌操作。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "「三摊落地」提示播放中",
+      "condition": "玩家当前拥有出牌权",
+      "action": "允许其继续提牌和出牌",
+      "result": "玩家在提示播放时仍能正常操作出牌"
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 232, "toLine": 232 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C18-003",
+   "name": "自摸场景的承包结算",
+   "description": "自摸只结算胡牌方本人参与的承包对：摊方胡则由对方支付三家输分合计，被摊方胡则由摊方支付该合计的 2 倍，双向都满 3 摊时只按倒承包 2 倍计算不叠加，并给出承包、反承包、链式三种赔付形式。",
+   "scope": "仅覆盖自摸（含链式）的承包赔付分配；点炮与抢杠胡场景不在本功能点内。",
+   "coordination": "赔付分配完全由服务端计算，客户端展示结算结果。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C18-013",
+     "name": "自摸仅结算本人承包对",
+     "rule": "自摸只结算胡牌方自己参与的承包对。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家自摸胡牌",
+      "condition": "场上存在其他玩家之间的承包关系",
+      "action": "只结算与胡牌方本人相关的承包对",
+      "result": ""
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 234, "toLine": 234 }
+    },
+    {
+     "atomId": "AT-ST-C18-014",
+     "name": "摊方自摸由对方付三家合计",
+     "rule": "摊方胡，即承包方自摸时，被承包方支付三家输分的合计。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "承包方自摸胡牌",
+      "condition": "该承包对已成立",
+      "action": "由被承包方支付三家输分合计",
+      "result": "被承包方看到自己承担三家合计分，其余两家 0 分"
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 234, "toLine": 234 }
+    },
+    {
+     "atomId": "AT-ST-C18-015",
+     "name": "被摊方自摸由摊方付两倍",
+     "rule": "被摊方胡，即原被承包方自摸时，摊方支付该合计的 2 倍。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "被承包方自摸胡牌",
+      "condition": "该承包对已成立",
+      "action": "由承包方支付三家输分合计的 2 倍",
+      "result": "承包方看到自己被扣两倍合计分"
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 234, "toLine": 234 }
+    },
+    {
+     "atomId": "AT-ST-C18-016",
+     "name": "双向满三摊只按两倍",
+     "rule": "双向都满 3 摊时只按倒承包的 2 倍计算，不两笔叠加。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "双方自摸结算",
+      "condition": "同一关系中两个方向都满 3 摊",
+      "action": "只按倒承包的 2 倍计算一笔",
+      "result": "赔付不出现两笔叠加"
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 234, "toLine": 234 }
+    },
+    {
+     "atomId": "AT-ST-C18-017",
+     "name": "承包形式赔付分配",
+     "rule": "承包：A 对 B 已成立，A 自摸，B 支付三家原应赔分的合计 S，另外两家本局 0 分。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "A 自摸胡牌",
+      "condition": "A 对 B 的承包已成立",
+      "action": "B 支付三家原应赔分合计 S",
+      "result": "B 扣 S，另两家本局 0 分，A 得 S"
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 238, "toLine": 238 }
+    },
+    {
+     "atomId": "AT-ST-C18-018",
+     "name": "反承包形式赔付两倍",
+     "rule": "反承包：同一关系下 B 自摸，A 支付 2 × S，S 是 B 这次自摸原本向三家应收的合计。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "B 自摸胡牌",
+      "condition": "同一承包关系中 A 对 B 已成立",
+      "action": "A 支付 2 倍 B 原本向三家应收合计",
+      "result": "A 扣 2×S，B 实收 2×S"
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 239, "toLine": 239 }
+    },
+    {
+     "atomId": "AT-ST-C18-019",
+     "name": "链式承包赔付分配",
+     "rule": "链式：A 对 B 成立，同时 C 对 A 成立，A 自摸，B 付 S，C 付 2 × S，A 实收 3 × S，第四家 0 分。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "A 自摸胡牌",
+      "condition": "A 对 B 承包成立且 C 对 A 承包成立",
+      "action": "B 付 S、C 付 2×S",
+      "result": "A 实收 3×S，第四家 0 分"
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 240, "toLine": 240 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C18-004",
+   "name": "点炮与抢杠胡的承包改写",
+   "description": "点炮仅在放铳者本人是承包对方时才改写赔付，基数为原来那一笔点炮分而非三家之和；他人的承包关系不参与赔付，放铳者仍按原点炮付；抢杠胡不替换杠牌者的赔付且承包额再叠加，杠牌者同时是承包方时两笔都付。",
+   "scope": "覆盖点炮与抢杠胡两类非自摸场景下的承包赔付改写；不覆盖自摸场景。",
+   "coordination": "改写判定与赔付计算由服务端完成，客户端展示最终结算分数。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C18-020",
+     "name": "点炮仅放铳者为承包对方时改写",
+     "rule": "点炮只在放铳者本人是承包对方时改写赔付。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家点炮胡牌结算",
+      "condition": "放铳者本人是该胡牌方承包关系中的对方",
+      "action": "改写该笔点炮赔付",
+      "result": ""
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 236, "toLine": 236 }
+    },
+    {
+     "atomId": "AT-ST-C18-021",
+     "name": "点炮改写基数为原那一笔",
+     "rule": "点炮改写后的基数是原来那一笔点炮分，不是三家之和。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "点炮承包赔付改写",
+      "condition": "放铳者为承包对方",
+      "action": "以原来那一笔点炮分为基数计算",
+      "result": "结算金额按单笔点炮分计，不按三家合计"
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 236, "toLine": 236 }
+    },
+    {
+     "atomId": "AT-ST-C18-022",
+     "name": "他人承包关系不赔偿",
+     "rule": "别人的承包关系不赔，放铳者仍按原点炮付。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "点炮胡牌结算",
+      "condition": "场上承包关系与放铳者无关",
+      "action": "不启用承包赔付",
+      "result": "放铳者仍按原点炮分数支付"
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 236, "toLine": 236 }
+    },
+    {
+     "atomId": "AT-ST-C18-023",
+     "name": "抢杠胡不替换杠赔付并叠加承包",
+     "rule": "抢杠胡不替换杠牌者的赔付，承包额再叠加。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "发生抢杠胡",
+      "condition": "存在与杠牌者相关的承包关系",
+      "action": "保留杠牌者原赔付，并叠加承包额",
+      "result": "杠牌者同时承担原杠赔付与承包额"
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 236, "toLine": 236 }
+    },
+    {
+     "atomId": "AT-ST-C18-024",
+     "name": "杠牌者为承包方两笔都付",
+     "rule": "杠牌者若同时是承包方，两笔都付。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "抢杠胡结算",
+      "condition": "杠牌者同时是承包方",
+      "action": "同时扣除原杠赔付与承包额",
+      "result": "杠牌者看到两笔分数都被扣除"
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 236, "toLine": 236 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C18-005",
+   "name": "承包结算算例校验",
+   "description": "以庄家平胡自摸、叠加反承包、以及庄家对闲家承包后闲家自摸反承包三个具体数值算例，固定承包与反承包的金额计算口径。",
+   "scope": "算例作为数值口径的验证样例，用于校验合计与倍数计算的正确性。",
+   "coordination": "服务端按同一口径计算，客户端展示各玩家得分。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C18-025",
+     "name": "自摸承包算例",
+     "rule": "庄家平胡自摸，三名闲家各应赔 8，S = 24，承包方付 24。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "庄家平胡自摸",
+      "condition": "三名闲家各应赔 8 分，承包已成立",
+      "action": "按三家合计 S = 24 由承包方支付",
+      "result": "承包方扣 24 分"
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 242, "toLine": 242 }
+    },
+    {
+     "atomId": "AT-ST-C18-026",
+     "name": "叠加反承包算例",
+     "rule": "同时存在上家对庄家的承包时，上家再付 48，庄家得 72。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "庄家自摸，同时存在上家对庄家的承包",
+      "condition": "上家对庄家承包成立",
+      "action": "上家按 2×S 再付 48",
+      "result": "庄家合计得 72 分"
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 242, "toLine": 242 }
+    },
+    {
+     "atomId": "AT-ST-C18-027",
+     "name": "反承包算例",
+     "rule": "庄家对闲家成立承包，闲家平胡自摸，三家原应赔 8、1、1，庄家按反承包付 20。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "被承包的闲家平胡自摸",
+      "condition": "庄家对该闲家承包成立，三家原应赔 8、1、1",
+      "action": "庄家按 2 倍合计 10 支付",
+      "result": "庄家扣 20 分"
+     },
+     "source": { "chapter": "三摊承包", "fromLine": 244, "toLine": 244 }
+    }
+   ]
+  }
+ ]
+}

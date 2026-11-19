@@ -206,12 +206,13 @@
     "run:2-client/client-evidence.json",
     "run:3-server/server-evidence.json"
    ],
-   "outputFiles": [
-    "run:6-review/runtime/impact-set.json",
-    "run:6-review/runtime/retry-input/*.json",
-    "run:6-review/runtime/decision-apply.json",
-    "run:4-analysis/difference-review.json"
-   ],
+ "outputFiles": [
+  "run:6-review/runtime/impact-set.json",
+  "run:6-review/runtime/decision-applicability.json",
+  "run:6-review/runtime/previous-evidence-index.json",
+  "run:6-review/runtime/retry-input/*.json",
+  "run:4-analysis/difference-review.json"
+ ],
    "optionalInputs": ["run:4-analysis/difference-review.json"],
    "note": "无 decisions.json 时 S11 为待人工输入（checkpoint），不产出 impact-set"
   }

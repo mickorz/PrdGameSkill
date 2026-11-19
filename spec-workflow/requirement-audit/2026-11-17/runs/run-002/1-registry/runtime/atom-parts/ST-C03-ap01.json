@@ -1,0 +1,229 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C03",
+ "partNo": 1,
+ "stage": {
+  "stageId": "ST-C03",
+  "name": "通用规则（创房界面通用复选）",
+  "chapter": "玩法选项（创房规则全集，规则不固定） > 通用规则（创房界面通用复选）",
+  "summary": "创房界面提供十项通用复选项，各自给出默认开关状态，原文未展开各项具体生效规则。"
+ },
+ "features": [
+  {
+   "id": "FP-ST-C03-001",
+   "name": "托管与解散类通用规则",
+   "description": "创房界面就托管能力、托管解散、超时解散三项给出复选项及默认状态。",
+   "scope": "仅覆盖三项复选项的存在性与默认值，原文未说明托管触发条件、解散执行流程与超时判定时长。",
+   "coordination": "默认值随创房参数一并提交，对局中是否按开关键生效需与服务端规则侧协同确认。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C03-001",
+     "name": "可托管选项默认关",
+     "rule": "通用规则表列出「可托管」一项，默认状态为关。",
+     "uiRequirement": "创房界面以复选项呈现「可托管」，初始为未勾选（关）。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家打开创房界面",
+      "condition": "玩家未手动改动该项",
+      "action": "系统按默认值关闭「可托管」",
+      "result": "玩家看到「可托管」项处于关闭状态"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 通用规则（创房界面通用复选）",
+      "fromLine": 53,
+      "toLine": 53
+     }
+    },
+    {
+     "atomId": "AT-ST-C03-002",
+     "name": "托管解散选项默认关",
+     "rule": "通用规则表列出「托管解散」一项，默认状态为关。",
+     "uiRequirement": "创房界面以复选项呈现「托管解散」，初始为未勾选（关）。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家打开创房界面",
+      "condition": "玩家未手动改动该项",
+      "action": "系统按默认值关闭「托管解散」",
+      "result": "玩家看到「托管解散」项处于关闭状态"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 通用规则（创房界面通用复选）",
+      "fromLine": 54,
+      "toLine": 54
+     }
+    },
+    {
+     "atomId": "AT-ST-C03-003",
+     "name": "超时解散选项默认开",
+     "rule": "通用规则表列出「超时解散」一项，默认状态为开。",
+     "uiRequirement": "创房界面以复选项呈现「超时解散」，初始为已勾选（开）。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家打开创房界面",
+      "condition": "玩家未手动改动该项",
+      "action": "系统按默认值开启「超时解散」",
+      "result": "玩家看到「超时解散」项处于开启状态"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 通用规则（创房界面通用复选）",
+      "fromLine": 55,
+      "toLine": 55
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C03-002",
+   "name": "准备与座位类通用规则",
+   "description": "创房界面就自动准备、随机座位两项给出复选项及默认状态。",
+   "scope": "仅覆盖两项复选项的存在性与默认值，原文未说明自动准备触发时机与随机座位的分配方式。",
+   "coordination": "准备状态与座位分配结果由对局流程侧产生，客户端负责展示开关与结果。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C03-004",
+     "name": "自动准备选项默认开",
+     "rule": "通用规则表列出「自动准备」一项，默认状态为开。",
+     "uiRequirement": "创房界面以复选项呈现「自动准备」，初始为已勾选（开）。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家打开创房界面",
+      "condition": "玩家未手动改动该项",
+      "action": "系统按默认值开启「自动准备」",
+      "result": "玩家看到「自动准备」项处于开启状态"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 通用规则（创房界面通用复选）",
+      "fromLine": 56,
+      "toLine": 56
+     }
+    },
+    {
+     "atomId": "AT-ST-C03-005",
+     "name": "随机座位选项默认关",
+     "rule": "通用规则表列出「随机座位」一项，默认状态为关。",
+     "uiRequirement": "创房界面以复选项呈现「随机座位」，初始为未勾选（关）。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家打开创房界面",
+      "condition": "玩家未手动改动该项",
+      "action": "系统按默认值关闭「随机座位」",
+      "result": "玩家看到「随机座位」项处于关闭状态"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 通用规则（创房界面通用复选）",
+      "fromLine": 62,
+      "toLine": 62
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C03-003",
+   "name": "监控与防作弊类通用规则",
+   "description": "创房界面就截屏监控、搭子房、防作弊三项给出复选项及默认状态。",
+   "scope": "仅覆盖三项复选项的存在性与默认值，原文未说明截屏频率、搭子房识别口径与防作弊判定手段。",
+   "coordination": "监控与防作弊结果依赖对局过程数据，客户端提供开关与提示表现。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C03-006",
+     "name": "截屏监控选项默认开",
+     "rule": "通用规则表列出「截屏监控」一项，默认状态为开。",
+     "uiRequirement": "创房界面以复选项呈现「截屏监控」，初始为已勾选（开）。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家打开创房界面",
+      "condition": "玩家未手动改动该项",
+      "action": "系统按默认值开启「截屏监控」",
+      "result": "玩家看到「截屏监控」项处于开启状态"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 通用规则（创房界面通用复选）",
+      "fromLine": 57,
+      "toLine": 57
+     }
+    },
+    {
+     "atomId": "AT-ST-C03-007",
+     "name": "搭子房选项默认关",
+     "rule": "通用规则表列出「搭子房」一项，默认状态为关。",
+     "uiRequirement": "创房界面以复选项呈现「搭子房」，初始为未勾选（关）。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家打开创房界面",
+      "condition": "玩家未手动改动该项",
+      "action": "系统按默认值关闭「搭子房」",
+      "result": "玩家看到「搭子房」项处于关闭状态"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 通用规则（创房界面通用复选）",
+      "fromLine": 58,
+      "toLine": 58
+     }
+    },
+    {
+     "atomId": "AT-ST-C03-008",
+     "name": "防作弊选项默认关",
+     "rule": "通用规则表列出「防作弊」一项，默认状态为关。",
+     "uiRequirement": "创房界面以复选项呈现「防作弊」，初始为未勾选（关）。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家打开创房界面",
+      "condition": "玩家未手动改动该项",
+      "action": "系统按默认值关闭「防作弊」",
+      "result": "玩家看到「防作弊」项处于关闭状态"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 通用规则（创房界面通用复选）",
+      "fromLine": 59,
+      "toLine": 59
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C03-004",
+   "name": "语音与互动类通用规则",
+   "description": "创房界面就实时语音、关闭互动两项给出复选项及默认状态。",
+   "scope": "仅覆盖两项复选项的存在性与默认值，原文未说明语音开启范围与互动功能的具体清单。",
+   "coordination": "语音通路由客户端音频能力承载，互动开关的禁用范围需与服务端功能校验配合。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C03-009",
+     "name": "实时语音选项默认关",
+     "rule": "通用规则表列出「实时语音」一项，默认状态为关。",
+     "uiRequirement": "创房界面以复选项呈现「实时语音」，初始为未勾选（关）。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家打开创房界面",
+      "condition": "玩家未手动改动该项",
+      "action": "系统按默认值关闭「实时语音」",
+      "result": "玩家看到「实时语音」项处于关闭状态"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 通用规则（创房界面通用复选）",
+      "fromLine": 60,
+      "toLine": 60
+     }
+    },
+    {
+     "atomId": "AT-ST-C03-010",
+     "name": "关闭互动选项默认关",
+     "rule": "通用规则表列出「关闭互动」一项，默认状态为关。",
+     "uiRequirement": "创房界面以复选项呈现「关闭互动」，初始为未勾选（关）。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家打开创房界面",
+      "condition": "玩家未手动改动该项",
+      "action": "系统按默认值关闭「关闭互动」",
+      "result": "玩家看到「关闭互动」项处于关闭状态"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 通用规则（创房界面通用复选）",
+      "fromLine": 61,
+      "toLine": 61
+     }
+    }
+   ]
+  }
+ ]
+}

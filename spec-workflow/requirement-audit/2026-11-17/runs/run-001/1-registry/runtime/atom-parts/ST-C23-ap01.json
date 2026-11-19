@@ -1,0 +1,436 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C23",
+ "partNo": 1,
+ "stage": {
+  "stageId": "ST-C23",
+  "name": "待确认清单",
+  "chapter": "待确认清单",
+  "summary": "待确认清单汇总吃碰禁手口径、碰算摊默认值、财神与守庄等规则语义补全、服务端裁决归属、杠分与花牌预留能力、超时无自动操作等 8 项待确认事项。"
+ },
+ "features": [
+  {
+   "id": "FP-ST-C23-001",
+   "name": "吃碰禁手与创房吃碰选项口径",
+   "description": "创房吃碰选项在不同人数房间的展示与默认档位规则，以及「吃碰禁手」与「默认吃碰」档的语义对应关系。",
+   "scope": "覆盖 3/4 人房与 2 人房的吃碰选项展示差异；不涉及对局中具体禁张算法（见服务端裁决）。",
+   "coordination": "客户端负责创房界面选项展示，服务端按档位下发吃碰规则。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C23-001",
+     "name": "3/4人房隐藏吃碰选项并固定默认吃碰",
+     "rule": "「吃碰禁手」对应创房吃碰选项的「默认吃碰」档：3/4 人房创建时吃碰选项不显示、固定按「默认吃碰」生效。",
+     "uiRequirement": "3/4 人房创建界面不显示吃碰选项。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家创建 3 人或 4 人好友房",
+      "condition": "房间人数为 3 人或 4 人",
+      "action": "创建界面不展示吃碰选项，房间直接按「默认吃碰」档生效",
+      "result": "玩家看不到吃碰选项，对局中按默认吃碰规则禁手"
+     },
+     "source": {
+      "chapter": "待确认清单",
+      "fromLine": 312,
+      "toLine": 312
+     }
+    },
+    {
+     "atomId": "AT-ST-C23-002",
+     "name": "2人房吃碰选项可选且默认无限吃碰",
+     "rule": "2 人房吃碰选项可选，默认值为「无限吃碰」。",
+     "uiRequirement": "2 人房创建界面展示吃碰选项，默认选中「无限吃碰」。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家创建 2 人好友房",
+      "condition": "房间人数为 2 人",
+      "action": "创建界面提供可选择的吃碰选项，默认值为「无限吃碰」",
+      "result": "玩家可自行切换吃碰档位，不操作时按无限吃碰开局"
+     },
+     "source": {
+      "chapter": "待确认清单",
+      "fromLine": 312,
+      "toLine": 312
+     }
+    },
+    {
+     "atomId": "AT-ST-C23-003",
+     "name": "吃碰禁手等同默认吃碰档待确认",
+     "rule": "需确认「吃碰禁手」即指创房吃碰选项的「默认吃碰」档。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "涉及「吃碰禁手」术语解释时",
+      "action": "由产品确认「吃碰禁手」与「默认吃碰」档是否为同一规则",
+      "result": "玩家看到的禁手表现与默认吃碰档口径一致"
+     },
+     "source": {
+      "chapter": "待确认清单",
+      "fromLine": 312,
+      "toLine": 312
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C23-002",
+   "name": "碰算摊默认值与计摊口径",
+   "description": "「碰算摊」开关的客户端默认状态、原模板的关闭口径描述，以及默认值最终定稿方向。",
+   "scope": "覆盖碰、直杠、加杠、暗杠是否计摊的口径；不涉及其他番型计算。",
+   "coordination": "客户端展示默认开关状态，服务端按开关结算摊数。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C23-004",
+     "name": "客户端碰算摊默认开启",
+     "rule": "「碰算摊」客户端默认开。",
+     "uiRequirement": "客户端碰算摊开关默认处于开启状态。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家进入房间或查看玩法设置",
+      "condition": "未手动修改过碰算摊设置",
+      "action": "客户端将碰算摊开关默认置为开启",
+      "result": "玩家看到碰算摊选项为开启状态"
+     },
+     "source": {
+      "chapter": "待确认清单",
+      "fromLine": 313,
+      "toLine": 313
+     }
+    },
+    {
+     "atomId": "AT-ST-C23-005",
+     "name": "原模板碰算摊关闭口径描述",
+     "rule": "原模板开篇按「关闭」口径描述：碰、直杠、加杠、暗杠不计摊。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "结算涉及碰、直杠、加杠、暗杠时",
+      "condition": "按原模板关闭口径生效",
+      "action": "碰、直杠、加杠、暗杠均不计摊",
+      "result": "玩家结算时这些牌型不产生摊数"
+     },
+     "source": {
+      "chapter": "待确认清单",
+      "fromLine": 313,
+      "toLine": 313
+     }
+    },
+    {
+     "atomId": "AT-ST-C23-006",
+     "name": "碰算摊默认值待定稿",
+     "rule": "需确认「碰算摊」默认值按「开」还是「关」定稿。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "碰算摊默认值存在开启与关闭两种口径时",
+      "action": "由产品确认最终默认值",
+      "result": "玩家进入对局时碰算摊按定稿的默认状态生效"
+     },
+     "source": {
+      "chapter": "待确认清单",
+      "fromLine": 313,
+      "toLine": 313
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C23-003",
+   "name": "财神与守庄规则语义补全",
+   "description": "有财必拷响、三财翻倍、四财翻倍、财神替豪七、守庄等规则的完整语义需补全，并确认「豪七」所指。",
+   "scope": "仅覆盖规则语义的缺失与补全诉求，不定义具体数值实现。",
+   "coordination": "需产品与服务端共同补齐规则口径后回写正文。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C23-007",
+     "name": "有财必拷响语义待补全",
+     "rule": "「有财必拷响」的完整规则语义需产品/服务端口径补全。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "手牌含财神并涉及拷响结算时",
+      "condition": "规则语义补齐后",
+      "action": "按补齐后的「有财必拷响」规则处理",
+      "result": "玩家看到的拷响结算符合补全后的规则"
+     },
+     "source": {
+      "chapter": "待确认清单",
+      "fromLine": 314,
+      "toLine": 314
+     }
+    },
+    {
+     "atomId": "AT-ST-C23-008",
+     "name": "三财翻倍语义待补全",
+     "rule": "「三财翻倍」的完整规则语义需产品/服务端口径补全。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家手牌持有三张财神时",
+      "condition": "规则语义补齐后",
+      "action": "按补齐后的「三财翻倍」规则计算",
+      "result": "玩家结算时获得三财对应的翻倍结果"
+     },
+     "source": {
+      "chapter": "待确认清单",
+      "fromLine": 314,
+      "toLine": 314
+     }
+    },
+    {
+     "atomId": "AT-ST-C23-009",
+     "name": "四财翻倍语义待补全",
+     "rule": "「四财翻倍」的完整规则语义需产品/服务端口径补全。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家手牌持有四张财神时",
+      "condition": "规则语义补齐后",
+      "action": "按补齐后的「四财翻倍」规则计算",
+      "result": "玩家结算时获得四财对应的翻倍结果"
+     },
+     "source": {
+      "chapter": "待确认清单",
+      "fromLine": 314,
+      "toLine": 314
+     }
+    },
+    {
+     "atomId": "AT-ST-C23-010",
+     "name": "财神替豪七语义待补全",
+     "rule": "「财神替豪七」的完整规则语义需产品/服务端口径补全。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "财神作为豪华七对所需牌张参与胡牌时",
+      "condition": "规则语义补齐后",
+      "action": "按补齐后的「财神替豪七」规则判定",
+      "result": "玩家以财神替牌组成豪华七对时按对应规则结算"
+     },
+     "source": {
+      "chapter": "待确认清单",
+      "fromLine": 314,
+      "toLine": 314
+     }
+    },
+    {
+     "atomId": "AT-ST-C23-011",
+     "name": "守庄语义待补全",
+     "rule": "「守庄」的完整规则语义需产品/服务端口径补全。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "对局结束涉及庄家轮转时",
+      "condition": "规则语义补齐后",
+      "action": "按补齐后的「守庄」规则处理庄家归属",
+      "result": "玩家看到庄家是否延续与补齐后的规则一致"
+     },
+     "source": {
+      "chapter": "待确认清单",
+      "fromLine": 314,
+      "toLine": 314
+     }
+    },
+    {
+     "atomId": "AT-ST-C23-012",
+     "name": "豪七即豪华七对待确认",
+     "rule": "「财神替豪七」的「豪七」推断为「豪华七对」，需确认。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "涉及「财神替豪七」规则解释时",
+      "action": "由产品确认「豪七」是否为「豪华七对」",
+      "result": "玩家看到的豪七相关结算与确认后的口径一致"
+     },
+     "source": {
+      "chapter": "待确认清单",
+      "fromLine": 315,
+      "toLine": 315
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C23-004",
+   "name": "服务端裁决与禁张算法归属",
+   "description": "操作优先级仲裁与吃碰禁手的具体禁张算法由服务端裁决，正文描述需与服务端规则核对后定稿。",
+   "scope": "覆盖仲裁与禁张的判定归属；不覆盖客户端表现细节。",
+   "coordination": "客户端仅展示服务端裁决结果，正文需与服务端规则对齐。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C23-013",
+     "name": "操作优先级仲裁由服务端裁决",
+     "rule": "操作优先级仲裁由服务端裁决。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "多名玩家同时产生可响应操作时",
+      "condition": "存在操作优先级冲突",
+      "action": "由服务端仲裁决定优先执行的操作",
+      "result": "玩家看到最终生效的操作结果为服务端裁决的那一个"
+     },
+     "source": {
+      "chapter": "待确认清单",
+      "fromLine": 316,
+      "toLine": 316
+     }
+    },
+    {
+     "atomId": "AT-ST-C23-014",
+     "name": "吃碰禁手禁张算法由服务端裁决",
+     "rule": "吃碰禁手的具体禁张算法由服务端裁决。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "处于吃碰禁手状态并轮到出牌时",
+      "condition": "存在需禁出的牌张",
+      "action": "由服务端判定具体哪些牌张不可打出",
+      "result": "玩家看到的禁打牌张以服务端判定为准"
+     },
+     "source": {
+      "chapter": "待确认清单",
+      "fromLine": 316,
+      "toLine": 316
+     }
+    },
+    {
+     "atomId": "AT-ST-C23-015",
+     "name": "正文描述需与服务端规则核对定稿",
+     "rule": "操作优先级仲裁与吃碰禁手的正文相关描述需与服务端规则核对后定稿。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "正文涉及操作优先级仲裁与吃碰禁手描述时",
+      "action": "与服务端规则逐条核对后定稿",
+      "result": "玩家最终看到的行为与核对后的正文一致"
+     },
+     "source": {
+      "chapter": "待确认清单",
+      "fromLine": 316,
+      "toLine": 316
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C23-005",
+   "name": "预留能力与超时提示确认",
+   "description": "杠分与补花/花牌为预留能力，超时后无任何自动操作仅提示且提示表现以 UI 交互稿为准。",
+   "scope": "覆盖杠分、花牌预留状态与超时提示表现，不启用具体杠分或花牌流程。",
+   "coordination": "客户端负责超时提示表现，服务端确认预留能力未启用。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C23-016",
+     "name": "杠分为预留能力未启用",
+     "rule": "杠分为预留能力，当前未启用。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "对局中出现杠牌时",
+      "condition": "杠分能力处于预留未启用状态",
+      "action": "不执行杠分结算",
+      "result": "玩家结算中不出现杠分得分"
+     },
+     "source": {
+      "chapter": "待确认清单",
+      "fromLine": 317,
+      "toLine": 317
+     }
+    },
+    {
+     "atomId": "AT-ST-C23-017",
+     "name": "杠即时得分流程需确认补写",
+     "rule": "若产品需要「杠即时得分」流程，需确认并补写。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "产品提出「杠即时得分」需求时",
+      "condition": "确认启用杠即时得分",
+      "action": "补写杠即时得分流程规则",
+      "result": "玩家在杠牌时看到即时得分反馈"
+     },
+     "source": {
+      "chapter": "待确认清单",
+      "fromLine": 317,
+      "toLine": 317
+     }
+    },
+    {
+     "atomId": "AT-ST-C23-018",
+     "name": "补花花牌为预留能力且杭麻无花牌",
+     "rule": "补花/花牌为预留能力，杭麻牌组无花牌。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "对局发牌或摸牌时",
+      "condition": "使用杭州麻将牌组",
+      "action": "不生成也不处理花牌，不执行补花",
+      "result": "玩家对局中不会出现花牌与补花流程"
+     },
+     "source": {
+      "chapter": "待确认清单",
+      "fromLine": 318,
+      "toLine": 318
+     }
+    },
+    {
+     "atomId": "AT-ST-C23-019",
+     "name": "花牌相关处理出现时需确认",
+     "rule": "若实际对局出现花牌相关处理，需确认。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "实际对局中出现花牌相关处理时",
+      "condition": "发生花牌相关逻辑",
+      "action": "提交产品确认处理口径",
+      "result": "玩家看到的花牌处理与确认后的口径一致"
+     },
+     "source": {
+      "chapter": "待确认清单",
+      "fromLine": 318,
+      "toLine": 318
+     }
+    },
+    {
+     "atomId": "AT-ST-C23-020",
+     "name": "超时后无自动操作仅提示",
+     "rule": "超时后无任何自动操作（与无托管一致），仅提示。",
+     "uiRequirement": "超时时给出提示。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家操作倒计时结束超时",
+      "condition": "房间无托管功能",
+      "action": "系统不代替玩家出牌或执行任何自动操作，仅给出提示",
+      "result": "玩家看到超时提示，牌局状态不因超时被自动改变"
+     },
+     "source": {
+      "chapter": "待确认清单",
+      "fromLine": 319,
+      "toLine": 319
+     }
+    },
+    {
+     "atomId": "AT-ST-C23-021",
+     "name": "超时提示表现以UI交互稿为准",
+     "rule": "提示的具体表现以 UI 交互稿为准。",
+     "uiRequirement": "超时提示的具体表现形式遵循 UI 交互稿。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "需要展示超时提示时",
+      "condition": "以 UI 交互稿为表现基准",
+      "action": "按交互稿展示超时提示",
+      "result": "玩家看到的超时提示样式与交互稿一致"
+     },
+     "source": {
+      "chapter": "待确认清单",
+      "fromLine": 319,
+      "toLine": 319
+     }
+    }
+   ]
+  }
+ ]
+}

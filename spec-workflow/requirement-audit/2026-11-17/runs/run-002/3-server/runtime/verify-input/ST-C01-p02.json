@@ -1,0 +1,257 @@
+{
+ "schemaVersion": 1,
+ "generatedBy": "prepare-verify-input.mjs",
+ "date": "2026-11-17",
+ "branch": "server",
+ "registryPath": "spec-workflow/requirement-audit/2026-11-17/runs/run-002/1-registry/requirement-registry.json",
+ "stageId": "ST-C01",
+ "stageName": "房间参数（单选）",
+ "partNo": "02",
+ "partCount": 3,
+ "atomCount": 12,
+ "featureGroups": [
+  {
+   "featureId": "FP-ST-C01-004",
+   "featureName": "打片档与局数片数互斥提交",
+   "featureDescription": "打片档（40/50/60片）的可选值、选中后面板的取值与显隐变化，以及局数与片数互斥、只提交其中一项的规则。",
+   "featureScope": "仅覆盖打片档自身表现与互斥提交口径；打片局内计数规则见名词「打片」。",
+   "featureCoordination": "与局数档互斥，二者只能生效一项；连庄不占局数仅在此档显示。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C01-012",
+     "name": "打片档可选值",
+     "rule": "局数单选组另含打片档，可选值为「40片 / 50片 / 60片」。",
+     "uiRequirement": "局数单选组中与局数档并列展示 40片、50片、60片 三个打片档。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家查看局数单选组",
+      "condition": "处于房间参数设置阶段",
+      "action": "面板列出局数与打片两类档位",
+      "result": "玩家可看到并选择 40片、50片、60片"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 17,
+      "toLine": 17
+     }
+    },
+    {
+     "atomId": "AT-ST-C01-013",
+     "name": "打片档隐藏封顶并置为无",
+     "rule": "选中打片档时隐藏「封顶」，且封顶取值选中「无」。",
+     "uiRequirement": "打片档生效时面板不出现封顶选项，封顶处于「无」状态。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家在局数单选中选中 40片/50片/60片",
+      "condition": "当前为打片模式",
+      "action": "面板隐藏封顶选项并把封顶置为「无」",
+      "result": "玩家看不到封顶设置，对局按无封顶生效"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 17,
+      "toLine": 17
+     }
+    },
+    {
+     "atomId": "AT-ST-C01-014",
+     "name": "打片档隐藏底分并置为1分",
+     "rule": "选中打片档时隐藏「底分」，且底分取值选中「1分」。",
+     "uiRequirement": "打片档生效时面板不出现底分选项，底分处于「1分」状态。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家在局数单选中选中 40片/50片/60片",
+      "condition": "当前为打片模式",
+      "action": "面板隐藏底分选项并把底分置为「1分」",
+      "result": "玩家看不到底分设置，对局按 1分 底分生效"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 17,
+      "toLine": 17
+     }
+    },
+    {
+     "atomId": "AT-ST-C01-015",
+     "name": "打片档显示连庄不占局数",
+     "rule": "选中打片档时显示「连庄不占局数」选项。",
+     "uiRequirement": "打片档生效时面板出现「连庄不占局数」选项。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家在局数单选中选中 40片/50片/60片",
+      "condition": "当前为打片模式",
+      "action": "面板展示「连庄不占局数」选项",
+      "result": "玩家可在打片档下看到并设置「连庄不占局数」"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 17,
+      "toLine": 17
+     }
+    },
+    {
+     "atomId": "AT-ST-C01-016",
+     "name": "局数与片数互斥只提交一项",
+     "rule": "局数与片数互斥，按所选模式只提交其中一项。",
+     "uiRequirement": "局数单选组中局数档与打片档只能选中其一，不能同时生效。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家选择局数档或打片档后创房提交",
+      "condition": "玩家在同一单选组内只能选中一个档位",
+      "action": "按所选模式提交局数或片数中的一项",
+      "result": "玩家提交的房规只包含局数或片数其中一种计数方式，不会两者并存"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 17,
+      "toLine": 17
+     }
+    }
+   ]
+  },
+  {
+   "featureId": "FP-ST-C01-005",
+   "featureName": "吃碰选项与联动",
+   "featureDescription": "吃碰单选组的可选值、显示范围与默认取值，以及不同取值下「碰算摊」显隐与承包选项选中档位的联动。",
+   "featureScope": "覆盖吃碰组自身取值与由吃碰引起的碰算摊、承包联动；承包组自身显隐见承包功能点。",
+   "featureCoordination": "吃碰组仅在 2 人房显示，3/4 人房按默认吃碰生效；联动结果与承包功能点共同决定房规。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C01-017",
+     "name": "吃碰组仅2人房显示",
+     "rule": "吃碰为单选，可选值为「无限吃碰 / 只碰不吃 / 默认吃碰」；本选项组仅 2 人房显示，3/4 人房隐藏。",
+     "uiRequirement": "人数为 2人 时创房面板出现「吃碰」单选组含三档；人数为 3人 或 4人 时该组不出现。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家切换人数或查看房间参数面板",
+      "condition": "人数为 2人",
+      "action": "面板展示吃碰单选组",
+      "result": "2人房玩家看到并可选无限吃碰/只碰不吃/默认吃碰，3/4 人房玩家看不到该选项组"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 22,
+      "toLine": 22
+     }
+    },
+    {
+     "atomId": "AT-ST-C01-018",
+     "name": "吃碰默认取值",
+     "rule": "吃碰默认值：2 人房默认「无限吃碰」；3/4 人房固定按「默认吃碰」生效。",
+     "uiRequirement": "2人房吃碰组初始选中「无限吃碰」；3/4 人房不显示该组但按「默认吃碰」生效。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家创建好友房并选择人数",
+      "condition": "人数为 2人 时默认无限吃碰；人数为 3人 或 4人 时固定按默认吃碰",
+      "action": "按人数确定吃碰规则取值",
+      "result": "2人房玩家看到吃碰默认选中无限吃碰，3/4 人房吃碰按默认吃碰生效"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 22,
+      "toLine": 22
+     }
+    },
+    {
+     "atomId": "AT-ST-C01-019",
+     "name": "选无限吃碰的联动",
+     "rule": "吃碰选「无限吃碰」时：隐藏「碰算摊」，承包选中「两摊封顶」。",
+     "uiRequirement": "吃碰选中无限吃碰后，面板不出现「碰算摊」，承包组显示为选中「两摊封顶」。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "2人房玩家在吃碰单选中选择「无限吃碰」",
+      "condition": "吃碰组可见且该档被选中",
+      "action": "面板隐藏碰算摊并把承包置为两摊封顶",
+      "result": "玩家看不到碰算摊选项，承包显示为两摊封顶"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 22,
+      "toLine": 22
+     }
+    },
+    {
+     "atomId": "AT-ST-C01-020",
+     "name": "选只碰不吃或默认吃碰的联动",
+     "rule": "吃碰选「只碰不吃」或「默认吃碰」时：显示「碰算摊」，承包选中「两摊封顶」。",
+     "uiRequirement": "吃碰选中只碰不吃或默认吃碰后，面板出现「碰算摊」，承包组显示为选中「两摊封顶」。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "2人房玩家在吃碰单选中选择「只碰不吃」或「默认吃碰」",
+      "condition": "吃碰组可见且选中这两档之一",
+      "action": "面板显示碰算摊并把承包置为两摊封顶",
+      "result": "玩家可设置碰算摊，承包显示为两摊封顶"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 22,
+      "toLine": 22
+     }
+    }
+   ]
+  },
+  {
+   "featureId": "FP-ST-C01-006",
+   "featureName": "承包选项与显示范围",
+   "featureDescription": "承包单选组的可选值与默认值、仅在 3/4 人房显示，以及 2 人房随吃碰默认联动为两摊封顶。",
+   "featureScope": "承包组自身取值与显隐；吃碰取值导致的承包置位见吃碰功能点。",
+   "featureCoordination": "人数决定承包组是否出现；2 人房下承包取值由吃碰联动决定。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C01-021",
+     "name": "承包可选值与默认",
+     "rule": "承包为单选，可选值为「三摊承包 / 两摊封顶」，3/4 人房默认选中「三摊承包」。",
+     "uiRequirement": "3/4 人房创房面板「承包」单选组含三摊承包、两摊封顶，初始选中「三摊承包」。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家在 3/4 人房查看房间参数面板",
+      "condition": "人数为 3人 或 4人",
+      "action": "面板展示承包两个档位",
+      "result": "玩家看到三摊承包、两摊封顶两档，初始为三摊承包"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 23,
+      "toLine": 23
+     }
+    },
+    {
+     "atomId": "AT-ST-C01-022",
+     "name": "承包组仅3人4人房显示",
+     "rule": "承包选项组仅 3/4 人房显示。",
+     "uiRequirement": "人数为 3人 或 4人 时出现承包单选组；人数为 2人 时不出现。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家切换人数或查看房间参数面板",
+      "condition": "人数为 3人 或 4人",
+      "action": "面板展示承包单选组",
+      "result": "3/4 人房玩家看到承包选项，2 人房玩家看不到"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 23,
+      "toLine": 23
+     }
+    },
+    {
+     "atomId": "AT-ST-C01-023",
+     "name": "2人房承包联动为两摊封顶",
+     "rule": "2 人房的承包随吃碰默认联动为「两摊封顶」。",
+     "uiRequirement": "2 人房隐藏承包组，但房规中承包固定按「两摊封顶」生效。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家创建 2 人房",
+      "condition": "人数为 2人",
+      "action": "按吃碰默认联动确定承包取值",
+      "result": "2 人房玩家看不到承包选项，对局按两摊封顶结算"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 23,
+      "toLine": 23
+     }
+    }
+   ]
+  }
+ ]
+}

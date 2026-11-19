@@ -1,0 +1,1249 @@
+{
+ "schemaVersion": 1,
+ "date": "2026-11-17",
+ "source": [
+  {
+   "repoId": "client-code",
+   "repoRoot": "source-code/client/Code"
+  }
+ ],
+ "entries": [
+  {
+   "atomId": "AT-ST-C01-001",
+   "verdict": "partial",
+   "clientLogic": "GameConfigCmd 收到对局配置后写入 GameData；GameData 以简单模式开关 simple_mode 判定是否为简洁模式，用于抑制规则类提示、三摊落地动画与摸财神动效。",
+   "uiInteraction": "对局内按简洁模式档位减少规则提示与部分动效；未找到创房面板的“模式”单选组（正常/简洁）与默认选中正常。",
+   "messages": [
+    "MsgGameConfig"
+   ],
+   "notes": "本次可读客户端源码为局内模块，未包含好友房创房面板，因此“模式”单选组、默认“正常”无从查证；仅能确认客户端在对局内消费简洁模式开关，属间接证据。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "好友房对局开始",
+    "condition": "房间参数为简洁模式",
+    "action": "对局按简洁模式抑制规则类提示与部分动画",
+    "result": "玩家在对局中看到更少的提示和动效"
+   },
+   "evidenceIds": [
+    "CLE-AT-ST-C01-001-02"
+   ]
+  },
+  {
+   "atomId": "AT-ST-C01-002",
+   "verdict": "partial",
+   "clientLogic": "GameDefine 为杭麻好友房定义独立玩法 ID，并为二人杭麻好友房单列 ID 42322；同时维护 2/3/4 人座位到本地座位的映射表，供牌桌按人数摆放。BoxHzmjBackView 依据玩法 ID 在牌桌上显示“二人房”。",
+   "uiInteraction": "二人房对局时牌桌名显示“二人房”；未找到创房面板的“人数”单选组（2人/3人/4人）与默认选中 4人。",
+   "messages": [],
+   "notes": "源码只能证明客户端支持 2/3/4 人座次与独立的二人房玩法，不能证明创房面板的人数选项、默认 4 人及切换联动；该面板不在本次可读范围。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "玩家进入二人杭麻好友房",
+    "condition": "房间玩法为二人房",
+    "action": "牌桌按二人座次摆放并显示房间名",
+    "result": "玩家看到二人房牌桌与“二人房”标识"
+   },
+   "evidenceIds": [
+    "CLE-AT-ST-C01-002-03",
+    "CLE-AT-ST-C01-002-02",
+    "CLE-AT-ST-C01-002-04"
+   ]
+  },
+  {
+   "atomId": "AT-ST-C01-003",
+   "verdict": "partial",
+   "clientLogic": "GameJokerCmd 按房间规则的财神类型字段区分白板财神与翻财神：翻出非白板时播翻财神动效，白板财神档需房间规则为 1 才播；GameData 中财神类型 0 表示白板财神、1 表示翻财神。",
+   "uiInteraction": "白板财神档不播翻牌动效，翻财神档播翻牌动效并处理白板替身；未找到创房面板的“玩法”单选组（白板财神/翻财神）与默认白板财神。",
+   "messages": [
+    "MsgJoker"
+   ],
+   "notes": "仅能确认局内按房间规则区分两种财神玩法，不能证明创房面板的玩法选项及默认档位；面板不在本次可读范围。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "对局翻财神",
+    "condition": "房间规则为翻财神",
+    "action": "客户端播放翻牌动效并把白板当作替身牌参与胡牌判断",
+    "result": "玩家看到翻财神动效，白板以替身身份参与成牌"
+   },
+   "evidenceIds": [
+    "CLE-AT-ST-C01-003-03",
+    "CLE-AT-ST-C01-003-02"
+   ]
+  },
+  {
+   "atomId": "AT-ST-C01-004",
+   "verdict": "partial",
+   "clientLogic": "GameJuDataCmd 收到局数据后写入连庄次数，并注明由创房配置推导牢庄等级；GameData 以牢庄等级换算庄闲倍数，1牢为 2、2牢为 4、3牢为 8。",
+   "uiInteraction": "开局牌桌按牢庄等级显示庄家标识并据此计算得分倍数；未找到创房面板的“连庄数”单选组（笃三老庄/笃二老庄/平庄起）与默认笃三老庄。",
+   "messages": [
+    "MsgJuData"
+   ],
+   "notes": "仅能确认局内存在 1/2/3 牢庄等级与倍数消费，不能证明创房面板的连庄数三档选项及默认档位；面板不在本次可读范围。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "好友房开局",
+    "condition": "创房配置下发了连庄档位",
+    "action": "客户端按牢庄等级显示庄家并换算庄闲倍数",
+    "result": "玩家看到对应牢庄档位与成倍增长的庄闲倍数"
+   },
+   "evidenceIds": [
+    "CLE-AT-ST-C01-004-03",
+    "CLE-AT-ST-C01-004-04"
+   ]
+  },
+  {
+   "atomId": "AT-ST-C01-005",
+   "verdict": "partial",
+   "clientLogic": "小结算条目按服务端胡牌明细切换胡牌类型页签，赢家区分自摸与点炮/吃胡，放炮方也单独判定显示；流水文案中同时存在“自摸”“点炮胡”“放炮”。",
+   "uiInteraction": "结算列表逐行显示“自摸”或“点炮胡/吃胡”，未胡玩家显示不参与胡牌；未找到创房面板的“胡牌”单选组（自摸胡/庄闲放铳(庄三)）与默认庄闲放铳。",
+   "messages": [
+    "MsgResultHu"
+   ],
+   "notes": "只能证明结算侧同时支持自摸与放铳两种结果展示，不能证明创房面板存在“胡牌”选项及默认“庄闲放铳”；该面板不在本次可读范围。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "本局结束进入小结算",
+    "condition": "赢家以自摸或接炮方式胡牌",
+    "action": "结算条目按实际胡牌方式切换类型页签",
+    "result": "玩家在结算中看到“自摸”或“点炮胡/吃胡”字样"
+   },
+   "evidenceIds": [
+    "CLE-AT-ST-C01-005-02",
+    "CLE-AT-ST-C01-005-03"
+   ]
+  },
+  {
+   "atomId": "AT-ST-C01-006",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "可读源码与 FGUI XML 中均未出现 4局/8局/16局/24局/32局 的局数档选项或默认 8局；仅协议定义存在局内 ju_count 字段，未参与任何界面展示；创房面板不在本次可读范围。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "evidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-007",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未找到“4局”选项及按人数过滤局数档的逻辑；可读源码与 FGUI 工程中不存在局数单选组。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "evidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-008",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未找到“32局”选项及按人数过滤局数档的逻辑；可读源码与 FGUI 工程中不存在局数单选组。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "evidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-009",
+   "verdict": "partial",
+   "clientLogic": "开局接收底分与封顶倍数并缓存；匹配场牌桌以“底分:N”文本展示底分，听牌面板按房间封顶倍数展示“封顶N倍”，值为 0 或 -1 时展示“无封顶”。全源码中不存在“连庄不占局数”相关实现。",
+   "uiInteraction": "牌桌显示底分文本，听牌面板显示封顶状态；未找到局数档/打片档切换面板及其对底分、封顶、“连庄不占局数”的显隐控制。",
+   "messages": [
+    "MsgStartGame"
+   ],
+   "notes": "仅能确认局内会展示底分与封顶值，无法证明“选中局数档时出现底分/封顶并隐藏连庄不占局数”的面板联动；“连庄不占局数”在整个客户端源码中无任何出现。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "对局开始",
+    "condition": "房间下发了底分与封顶参数",
+    "action": "牌桌展示底分数值，听牌面板展示封顶状态",
+    "result": "玩家看到底分与封顶/无封顶，全程未见“连庄不占局数”展示"
+   },
+   "evidenceIds": [
+    "CLE-AT-ST-C01-009-01",
+    "CLE-AT-ST-C01-009-03"
+   ]
+  },
+  {
+   "atomId": "AT-ST-C01-010",
+   "verdict": "partial",
+   "clientLogic": "开局时接收底分参数，匹配场把底分写入牌桌数据并由牌桌视图以“底分:N”文本展示。",
+   "uiInteraction": "匹配场牌桌显示底分文本；未找到底分单选组（1分/2分/5分）及其默认 1分、仅局数档显示的限制。",
+   "messages": [
+    "MsgStartGame"
+   ],
+   "notes": "仅能确认客户端存在底分展示与底分数值消费，不能证明创房面板有三档底分选项、默认 1分及随局数档显隐；面板不在本次可读范围。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "对局开始",
+    "condition": "房间下发了底分参数",
+    "action": "牌桌把底分数值渲染为文本",
+    "result": "玩家在牌桌上看到“底分:N”"
+   },
+   "evidenceIds": [
+    "CLE-AT-ST-C01-009-01"
+   ]
+  },
+  {
+   "atomId": "AT-ST-C01-011",
+   "verdict": "partial",
+   "clientLogic": "开局接收封顶倍数并写入数据层；听牌面板读取房间封顶倍数，为 0 或 -1 时显示“无封顶”，否则显示“封顶N倍”。",
+   "uiInteraction": "听牌面板文本在“无封顶”和“封顶N倍”之间切换；未找到七档封顶单选组（无/20/40/64/80/128/256）、默认“无”及仅局数档显示的限制。",
+   "messages": [
+    "MsgStartGame"
+   ],
+   "notes": "只能证明客户端会按房间封顶倍数展示封顶状态，不能证明创房面板存在七档封顶选项与默认“无”；面板不在本次可读范围。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "对局中查看听牌信息",
+    "condition": "房间封顶倍数为 0 或未设置",
+    "action": "听牌面板展示封顶状态文本",
+    "result": "玩家看到“无封顶”，设有封顶时看到“封顶N倍”"
+   },
+   "evidenceIds": [
+    "CLE-AT-ST-C01-009-03"
+   ]
+  },
+  {
+   "atomId": "AT-ST-C01-012",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "可查证的两个客户端根仅含对局内实现：Code 仅有 hzmj 对局 controller/cmd/layer/fgui，Fgui 资产仅 box_hzmj_*（back/card_down/common/mah2D_Main/main/player/result/specf/tingPai/tipAni）对局内包；未找到创房/房间参数面板，局数单选组（含 40片/50片/60片）无实现证据。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "evidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-013",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未找到创房面板代码，无打片档选中后隐藏「封顶」并把封顶置「无」的显隐逻辑。全目录检索「封顶」仅命中对局内结算/听牌提示资源（img_fengding、tip_fengding、ImgFengding、fnt_huafeifengding）与对局结算逻辑，与房间参数面板无关。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "evidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-014",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未找到创房面板代码，无打片档选中后隐藏「底分」并把底分置「1分」的显隐逻辑。客户端仅在协议 MsgStartGame/MsgVsPlayerInfo 中出现 base_score 字段（对局内展示用），不涉及创房底分选项。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "evidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-015",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未找到创房面板代码；检索「连庄不占局数」在两个客户端根内零命中，无该选项显示逻辑。对局内仅有 lian_zhuang/banker_level 等局数据与牢庄等级展示，与打片档下「连庄不占局数」选项无关。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "evidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-016",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "客户端无可查证的创房提交链路（无创房请求/参数序列化代码），无法验证局数与片数互斥、只提交其中一项。协议层 GameGlcProtocol.ts 的 MsgXxx 全为对局内消息（MsgJuData/MsgGameConfig/MsgStartGame 等），无创房消息。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "evidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-017",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未找到创房吃碰单选组的显隐逻辑（无 2/3/4 人房分支的面板代码）。对局内仅见 GameNotifyInfoCmd.ts:65 在只碰不吃生效时弹出「只碰不吃规则生效中」提示，属对局内规则提示，不是创房「吃碰」组的显示范围实现。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "evidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-018",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "无可查证的创房面板，无法验证 2 人房吃碰初始选中「无限吃碰」与 3/4 人房固定按「默认吃碰」生效。两个根内检索「无限吃碰」「默认吃碰」零命中；协议 MsgGameConfig 仅含 must_bao_tou_with_cai/enable_three_tan_bao/round_id/simple_mode，无吃碰档位字段。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "evidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-019",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "「碰算摊」在两个客户端根内零命中，无选无限吃碰后隐藏碰算摊、承包置「两摊封顶」的联动实现。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "evidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-020",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "「碰算摊」零命中；无选只碰不吃/默认吃碰后显示碰算摊并把承包置「两摊封顶」的联动实现。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "evidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-021",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未找到创房承包单选组（三摊承包/两摊封顶及默认选中三摊承包）的实现。客户端仅在对局内使用「三摊承包」概念：MatchTipConfig.ts:23、BoxHzmjTipAniView.ts:1750 的结算文案与 MatchTipConfig 匹配场提示，均为对局/结算展示，非创房档位与默认值。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "evidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-022",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未找到按人数控制承包组显隐的创房代码；两个根内无创房面板，无可验证的 2 人房隐藏/3、4 人房显示分支。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "evidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-023",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未找到 2 人房承包随吃碰联动为「两摊封顶」的实现；客户端协议 MsgGameConfig 仅有 enable_three_tan_bao 布尔字段（对局配置），不体现 2 人房下承包取值联动。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "evidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-024",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "可读客户端工程只含局内杭州麻将逻辑（Code/controller/cmd、Code/layer/BoxHzmj*）与局内界面（Fgui/assets 下 10 个分包全部为 box_hzmj_*），没有创房「房间参数」面板。检索「人数/局数/吃碰/承包/无限吃碰/默认吃碰/32局/4局」在 Code 与 Fgui XML 均未命中人数单选组、局数单选组、吃碰组、承包组控件，也无 2 人档下局数档切换与吃碰/承包联动的代码。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "evidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-025",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未找到创房面板「缺一色」「守庄」控件及其按人数显隐的逻辑。可读范围内两词只出现在局内语境：config/MatchTipConfig.ts:26 匹配场提示文案「缺一色：2-3人玩法时去掉万字花色」；config/GameDefine.ts:467 守庄通知常量注释、controller/cmd/gameCmd/GameNotifyInfoCmd.ts:56 收到通知后弹「守庄规则生效中」提示。Fgui 各界面 XML 无「缺一色」「守庄」节点。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "evidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-026",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "同 AT-ST-C01-024：无创房面板，无法对 3 人档的局数/吃碰/承包联动落判。局内确实按人数（TableData.playCnt）换算座位布局与方位盘（layer/BoxHzmjMah2DView.ts:512 注释「切换人数时遗漏旧区域」、:1010-1011 用 SC_PLAYER_LOCAL_SEAT_MAP[playCnt] 换算本地座位），属对局内渲染，与创房面板联动无关。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "evidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-027",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "无创房面板实现证据：全量 Fgui/assets XML 未出现「缺一色」「守庄」控件，Code 中相关字样仅为局内提示文案（config/MatchTipConfig.ts:26）与局内通知处理（controller/cmd/gameCmd/GameNotifyInfoCmd.ts:56），不存在人数切换时刷新缺一色/守庄显隐的逻辑。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "evidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-028",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "无创房面板实现证据。Code 中与 4 人相关的只有局内常量 config/GameDefine.ts:26 MAX_PLAYER=4（界面最大人数）及各 View 的 4 方位牌区清理（layer/BoxHzmjMah2DView.ts:512-520），属局内渲染容量，不涉及 4 人档下局数档显隐、吃碰组隐藏与承包组出现。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "evidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-029",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "无创房面板实现证据。「守庄」在客户端只以局内形式出现：config/GameDefine.ts:467 定义守庄生效通知常量，controller/cmd/gameCmd/GameNotifyInfoCmd.ts:56 据此弹「守庄规则生效中」；未见 4 人档显示守庄、隐藏缺一色的面板显隐逻辑，Fgui XML 亦无对应控件。",
+   "directConflict": false,
+   "conflictEvidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "evidenceIds": []
+  }
+ ],
+ "evidence": [
+  {
+   "id": "CLE-AT-ST-C01-005-02",
+   "atomIds": [
+    "AT-ST-C01-005"
+   ],
+   "claimKey": "hu-result-label-dianpao",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "config/FanDefine.ts",
+   "location": "config/FanDefine.ts:637-638",
+   "symbol": "ResultLiuShuiTypeName",
+   "excerpt": "    [ResultLiuShuiType.K_LT_DIAN_PAO]: \"点炮胡\",\n    [ResultLiuShuiType.K_LT_FANG_PAO]: \"放炮\",",
+   "configKeys": [],
+   "sourceRevision": "db544fd68a3b8ac686a6a0d683ae65b49226e10f",
+   "contentHash": "sha256:86fb1396838d5b30b8ba9c9cc80550b7d4de9976adf747fd13e9f098376895ff",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "layer/comp/BoxHzmjResultMid.ts",
+     "contentHash": "sha256:9f1428b3a8b348a23b78769b9fe17c2a99807320b5204367f36b1ac80a9e7688"
+    },
+    {
+     "file": "layer/BoxHzmjResultView.ts",
+     "contentHash": "sha256:162c73efa3827479b6e545a006f352c5c8e8cda3d4f64cee91046446a8ef4d80"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-002-03",
+   "atomIds": [
+    "AT-ST-C01-002"
+   ],
+   "claimKey": "seat-count-map-2-3",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "config/GameDefine.ts",
+   "location": "config/GameDefine.ts:271-279",
+   "symbol": "SC_PLAYER_LOCAL_SEAT_MAP",
+   "excerpt": "    [2]: {\n        [0]: 0,\n        [1]: 2,\n    },\n    [3]: {\n        [0]: 0,\n        [1]: 1,\n        [2]: 3,\n    },",
+   "configKeys": [],
+   "sourceRevision": "db544fd68a3b8ac686a6a0d683ae65b49226e10f",
+   "contentHash": "sha256:3803778fe68321dea6a8402b4275aa46f264e564a4c60d096d8f15a9fd78a735",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "layer/BoxHzmjPlayerView.ts",
+     "contentHash": "sha256:9b49a2bdc6b94904a9a164b7ded74429b1e5aba20da685d736539ab4f7ad000b"
+    },
+    {
+     "file": "layer/BoxHzmjBackView.ts",
+     "contentHash": "sha256:ee299a6e5dc8b9e952b18a7c1255cffa69defbf58b8439b2283c2a8f723f466d"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-002-02",
+   "atomIds": [
+    "AT-ST-C01-002"
+   ],
+   "claimKey": "er-ren-room-gameid",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "config/GameDefine.ts",
+   "location": "config/GameDefine.ts:4-7",
+   "symbol": "GameDefine.GameID_ER_REN_HYF",
+   "excerpt": "/** 二人杭麻金币场 */\nexport const GameID_ER_REN = 42321;\n/** 二人杭麻好友房 */\nexport const GameID_ER_REN_HYF = 42322;",
+   "configKeys": [],
+   "sourceRevision": "db544fd68a3b8ac686a6a0d683ae65b49226e10f",
+   "contentHash": "sha256:3803778fe68321dea6a8402b4275aa46f264e564a4c60d096d8f15a9fd78a735",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "layer/BoxHzmjBackView.ts",
+     "contentHash": "sha256:ee299a6e5dc8b9e952b18a7c1255cffa69defbf58b8439b2283c2a8f723f466d"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-003-03",
+   "atomIds": [
+    "AT-ST-C01-003"
+   ],
+   "claimKey": "cai-shen-type-room-rule",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "controller/cmd/gameCmd/GameJokerCmd.ts",
+   "location": "controller/cmd/gameCmd/GameJokerCmd.ts:74-77",
+   "symbol": "GameJokerCmd._needFanJokerAni",
+   "excerpt": "        if (mah !== BoxMahDefine.mahBai) {\n            return true;\n        }\n        // 白板财神：房间规则 cai_shen_type=1 才播",
+   "configKeys": [
+    "cai_shen_type"
+   ],
+   "sourceRevision": "db544fd68a3b8ac686a6a0d683ae65b49226e10f",
+   "contentHash": "sha256:748ab753f3a6112b89e1b4d4a6a0ec90a1fe8a8cd07fe9bca5e801da168bf4f5",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "data/GameData.ts",
+     "contentHash": "sha256:61fce3e28d311c38742a5a93d428b006be342b3411acc16ce02e8e15edd91512"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-004-03",
+   "atomIds": [
+    "AT-ST-C01-004"
+   ],
+   "claimKey": "lian-zhuang-level-from-room-config",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "controller/cmd/gameCmd/GameJuDataCmd.ts",
+   "location": "controller/cmd/gameCmd/GameJuDataCmd.ts:34-35",
+   "symbol": "GameJuDataCmd.execute",
+   "excerpt": "        GameData.setLianZhuangCount(data.banker_level);\n        // 从创房配置推导牢庄等级",
+   "configKeys": [],
+   "sourceRevision": "db544fd68a3b8ac686a6a0d683ae65b49226e10f",
+   "contentHash": "sha256:a4b578ca9031b7fb50f51d102ca1ffdd9f1419e62c7e446365f5fafc855677f7",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "data/GameData.ts",
+     "contentHash": "sha256:61fce3e28d311c38742a5a93d428b006be342b3411acc16ce02e8e15edd91512"
+    },
+    {
+     "file": "controller/cmd/gameCmd/GameResultHuCmd.ts",
+     "contentHash": "sha256:7795d32fda76f3daeebfb8f76888d742134fb49cf693672ac7905ab97d6ad5a6"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-001-02",
+   "atomIds": [
+    "AT-ST-C01-001"
+   ],
+   "claimKey": "simple-mode-config-consumed",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "data/GameData.ts",
+   "location": "data/GameData.ts:1443-1445",
+   "symbol": "GameData.simpleMode",
+   "excerpt": "    get simpleMode(): boolean {\n        return this._gameConfig?.simple_mode === true;\n    }",
+   "configKeys": [
+    "simple_mode"
+   ],
+   "sourceRevision": "db544fd68a3b8ac686a6a0d683ae65b49226e10f",
+   "contentHash": "sha256:61fce3e28d311c38742a5a93d428b006be342b3411acc16ce02e8e15edd91512",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "controller/cmd/gameCmd/GameConfigCmd.ts",
+     "contentHash": "sha256:568f4472401aceb6c938f257595f7ffa6d5c0537db3953662ff63ae311972a95"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-004-04",
+   "atomIds": [
+    "AT-ST-C01-004"
+   ],
+   "claimKey": "banker-level-multiplier",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "data/GameData.ts",
+   "location": "data/GameData.ts:1664-1666",
+   "symbol": "GameData.getZhuangXianMult",
+   "excerpt": "    getZhuangXianMult(): number {\n        return 1 << this._bankerLevel;\n    }",
+   "configKeys": [],
+   "sourceRevision": "db544fd68a3b8ac686a6a0d683ae65b49226e10f",
+   "contentHash": "sha256:61fce3e28d311c38742a5a93d428b006be342b3411acc16ce02e8e15edd91512",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "controller/cmd/gameCmd/GameJuDataCmd.ts",
+     "contentHash": "sha256:a4b578ca9031b7fb50f51d102ca1ffdd9f1419e62c7e446365f5fafc855677f7"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-003-02",
+   "atomIds": [
+    "AT-ST-C01-003"
+   ],
+   "claimKey": "cai-shen-type-values",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "data/GameData.ts",
+   "location": "data/GameData.ts:50",
+   "symbol": "GameData.jokerOpen",
+   "excerpt": "    /** 财神类型：0=白板财神，1=翻财神 */",
+   "configKeys": [],
+   "sourceRevision": "db544fd68a3b8ac686a6a0d683ae65b49226e10f",
+   "contentHash": "sha256:61fce3e28d311c38742a5a93d428b006be342b3411acc16ce02e8e15edd91512",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "controller/cmd/gameCmd/GameJokerCmd.ts",
+     "contentHash": "sha256:748ab753f3a6112b89e1b4d4a6a0ec90a1fe8a8cd07fe9bca5e801da168bf4f5"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-002-04",
+   "atomIds": [
+    "AT-ST-C01-002"
+   ],
+   "claimKey": "er-ren-room-label",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "layer/BoxHzmjBackView.ts",
+   "location": "layer/BoxHzmjBackView.ts:82",
+   "symbol": "BoxHzmjBackView._onUpdateGameType",
+   "excerpt": "        this.view.KW_TEXT_ROOMNAME.text = gameId === GameID_ER_REN_HYF ? \"二人房\" : \"\";",
+   "configKeys": [],
+   "sourceRevision": "db544fd68a3b8ac686a6a0d683ae65b49226e10f",
+   "contentHash": "sha256:ee299a6e5dc8b9e952b18a7c1255cffa69defbf58b8439b2283c2a8f723f466d",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "config/GameDefine.ts",
+     "contentHash": "sha256:3803778fe68321dea6a8402b4275aa46f264e564a4c60d096d8f15a9fd78a735"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-009-01",
+   "atomIds": [
+    "AT-ST-C01-009",
+    "AT-ST-C01-010"
+   ],
+   "claimKey": "base-score-display-in-table",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "layer/BoxHzmjBackView.ts",
+   "location": "layer/BoxHzmjBackView.ts:86-88",
+   "symbol": "BoxHzmjBackView._onUpdateBaseScore",
+   "excerpt": "    private _onUpdateBaseScore(baseScore: number): void {\n        this.view.KW_BASE_SCORE.text = `底分:${baseScore}`;",
+   "configKeys": [],
+   "sourceRevision": "db544fd68a3b8ac686a6a0d683ae65b49226e10f",
+   "contentHash": "sha256:ee299a6e5dc8b9e952b18a7c1255cffa69defbf58b8439b2283c2a8f723f466d",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "controller/cmd/gameCmd/GameStartGameCmd.ts",
+     "contentHash": "sha256:155f5d31ccdc536ab6c9ed0b1fa731cb6c4daf143cc61f74a0759aa6cb46b85d"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-009-03",
+   "atomIds": [
+    "AT-ST-C01-009",
+    "AT-ST-C01-011"
+   ],
+   "claimKey": "feng-ding-status-text",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "layer/BoxHzmjTingPaiView.ts",
+   "location": "layer/BoxHzmjTingPaiView.ts:95-99",
+   "symbol": "BoxHzmjTingPaiView.initUI",
+   "excerpt": "        if (roomMaxFan === 0 || roomMaxFan === -1) {\n            this.view.KW_Main.KW_FengDing.text = \"无封顶\";",
+   "configKeys": [
+    "max_mult"
+   ],
+   "sourceRevision": "db544fd68a3b8ac686a6a0d683ae65b49226e10f",
+   "contentHash": "sha256:98d7d95d04b66d506f719c99cbc9c61ec827ecb091460a4759e65d7ebd7a41db",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "data/GameData.ts",
+     "contentHash": "sha256:61fce3e28d311c38742a5a93d428b006be342b3411acc16ce02e8e15edd91512"
+    },
+    {
+     "file": "controller/cmd/gameCmd/GameStartGameCmd.ts",
+     "contentHash": "sha256:155f5d31ccdc536ab6c9ed0b1fa731cb6c4daf143cc61f74a0759aa6cb46b85d"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-005-03",
+   "atomIds": [
+    "AT-ST-C01-005"
+   ],
+   "claimKey": "result-hu-type-tab",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "layer/comp/BoxHzmjResultMid.ts",
+   "location": "layer/comp/BoxHzmjResultMid.ts:719-737",
+   "symbol": "BoxHzmjResultMid._updateHuType",
+   "excerpt": "            obj.C_HuType.selectedIndex = huItem?.hu_type == HuType.HT_SELF ? 3 : 2;",
+   "configKeys": [],
+   "sourceRevision": "db544fd68a3b8ac686a6a0d683ae65b49226e10f",
+   "contentHash": "sha256:9f1428b3a8b348a23b78769b9fe17c2a99807320b5204367f36b1ac80a9e7688",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "config/GameDefine.ts",
+     "contentHash": "sha256:3803778fe68321dea6a8402b4275aa46f264e564a4c60d096d8f15a9fd78a735"
+    },
+    {
+     "file": "interface/BoxHzmjResultTypes.ts",
+     "contentHash": "sha256:028237dfdf33a9b5b90e0fed5e8826ac7f80315cec1b0aeb4d726912a67982a8"
+    }
+   ]
+  }
+ ],
+ "coverage": {
+  "expectedAtomCount": 416,
+  "entryCount": 29,
+  "pendingAtomIds": [
+   "AT-ST-C02-001",
+   "AT-ST-C02-002",
+   "AT-ST-C02-003",
+   "AT-ST-C02-004",
+   "AT-ST-C02-005",
+   "AT-ST-C02-006",
+   "AT-ST-C02-007",
+   "AT-ST-C02-008",
+   "AT-ST-C02-009",
+   "AT-ST-C02-010",
+   "AT-ST-C03-001",
+   "AT-ST-C03-002",
+   "AT-ST-C03-003",
+   "AT-ST-C03-004",
+   "AT-ST-C03-005",
+   "AT-ST-C03-006",
+   "AT-ST-C03-007",
+   "AT-ST-C03-008",
+   "AT-ST-C03-009",
+   "AT-ST-C03-010",
+   "AT-ST-C04-001",
+   "AT-ST-C04-002",
+   "AT-ST-C04-003",
+   "AT-ST-C04-004",
+   "AT-ST-C04-005",
+   "AT-ST-C05-001",
+   "AT-ST-C05-002",
+   "AT-ST-C05-003",
+   "AT-ST-C05-004",
+   "AT-ST-C05-005",
+   "AT-ST-C05-006",
+   "AT-ST-C05-007",
+   "AT-ST-C06-001",
+   "AT-ST-C06-002",
+   "AT-ST-C06-003",
+   "AT-ST-C06-004",
+   "AT-ST-C06-005",
+   "AT-ST-C06-006",
+   "AT-ST-C06-007",
+   "AT-ST-C06-008",
+   "AT-ST-C07-001",
+   "AT-ST-C07-002",
+   "AT-ST-C07-003",
+   "AT-ST-C07-004",
+   "AT-ST-C07-005",
+   "AT-ST-C07-006",
+   "AT-ST-C07-007",
+   "AT-ST-C07-008",
+   "AT-ST-C07-009",
+   "AT-ST-C07-010",
+   "AT-ST-C08-001",
+   "AT-ST-C08-002",
+   "AT-ST-C08-003",
+   "AT-ST-C08-004",
+   "AT-ST-C08-005",
+   "AT-ST-C08-006",
+   "AT-ST-C08-007",
+   "AT-ST-C08-008",
+   "AT-ST-C09-001",
+   "AT-ST-C09-002",
+   "AT-ST-C09-003",
+   "AT-ST-C09-004",
+   "AT-ST-C09-005",
+   "AT-ST-C09-006",
+   "AT-ST-C09-007",
+   "AT-ST-C09-008",
+   "AT-ST-C09-009",
+   "AT-ST-C09-010",
+   "AT-ST-C09-011",
+   "AT-ST-C10-001",
+   "AT-ST-C10-002",
+   "AT-ST-C10-003",
+   "AT-ST-C10-004",
+   "AT-ST-C10-005",
+   "AT-ST-C10-006",
+   "AT-ST-C10-007",
+   "AT-ST-C10-008",
+   "AT-ST-C10-009",
+   "AT-ST-C10-010",
+   "AT-ST-C10-011",
+   "AT-ST-C10-012",
+   "AT-ST-C10-013",
+   "AT-ST-C10-014",
+   "AT-ST-C10-015",
+   "AT-ST-C10-016",
+   "AT-ST-C10-017",
+   "AT-ST-C10-018",
+   "AT-ST-C10-019",
+   "AT-ST-C10-020",
+   "AT-ST-C10-021",
+   "AT-ST-C10-022",
+   "AT-ST-C10-023",
+   "AT-ST-C10-024",
+   "AT-ST-C10-025",
+   "AT-ST-C10-026",
+   "AT-ST-C10-027",
+   "AT-ST-C11-001",
+   "AT-ST-C11-002",
+   "AT-ST-C11-003",
+   "AT-ST-C11-004",
+   "AT-ST-C11-005",
+   "AT-ST-C11-006",
+   "AT-ST-C11-007",
+   "AT-ST-C11-008",
+   "AT-ST-C11-009",
+   "AT-ST-C11-010",
+   "AT-ST-C11-011",
+   "AT-ST-C12-001",
+   "AT-ST-C12-002",
+   "AT-ST-C12-003",
+   "AT-ST-C12-004",
+   "AT-ST-C12-005",
+   "AT-ST-C12-006",
+   "AT-ST-C12-007",
+   "AT-ST-C12-008",
+   "AT-ST-C12-009",
+   "AT-ST-C12-010",
+   "AT-ST-C12-011",
+   "AT-ST-C12-012",
+   "AT-ST-C12-013",
+   "AT-ST-C13-001",
+   "AT-ST-C13-002",
+   "AT-ST-C13-003",
+   "AT-ST-C13-004",
+   "AT-ST-C13-005",
+   "AT-ST-C13-006",
+   "AT-ST-C13-007",
+   "AT-ST-C13-008",
+   "AT-ST-C13-009",
+   "AT-ST-C13-010",
+   "AT-ST-C13-011",
+   "AT-ST-C13-012",
+   "AT-ST-C13-013",
+   "AT-ST-C13-014",
+   "AT-ST-C13-015",
+   "AT-ST-C13-016",
+   "AT-ST-C13-017",
+   "AT-ST-C13-018",
+   "AT-ST-C13-019",
+   "AT-ST-C13-020",
+   "AT-ST-C14-001",
+   "AT-ST-C14-002",
+   "AT-ST-C14-003",
+   "AT-ST-C14-004",
+   "AT-ST-C14-005",
+   "AT-ST-C14-006",
+   "AT-ST-C14-007",
+   "AT-ST-C14-008",
+   "AT-ST-C14-009",
+   "AT-ST-C14-010",
+   "AT-ST-C14-011",
+   "AT-ST-C15-001",
+   "AT-ST-C15-002",
+   "AT-ST-C15-003",
+   "AT-ST-C15-004",
+   "AT-ST-C15-005",
+   "AT-ST-C15-006",
+   "AT-ST-C15-007",
+   "AT-ST-C15-008",
+   "AT-ST-C15-009",
+   "AT-ST-C15-010",
+   "AT-ST-C15-011",
+   "AT-ST-C15-012",
+   "AT-ST-C15-013",
+   "AT-ST-C15-014",
+   "AT-ST-C15-015",
+   "AT-ST-C15-016",
+   "AT-ST-C15-017",
+   "AT-ST-C15-018",
+   "AT-ST-C16-001",
+   "AT-ST-C16-002",
+   "AT-ST-C16-003",
+   "AT-ST-C16-004",
+   "AT-ST-C16-005",
+   "AT-ST-C16-006",
+   "AT-ST-C16-007",
+   "AT-ST-C16-008",
+   "AT-ST-C16-009",
+   "AT-ST-C16-010",
+   "AT-ST-C16-011",
+   "AT-ST-C16-012",
+   "AT-ST-C16-013",
+   "AT-ST-C16-014",
+   "AT-ST-C16-015",
+   "AT-ST-C16-016",
+   "AT-ST-C16-017",
+   "AT-ST-C16-018",
+   "AT-ST-C16-019",
+   "AT-ST-C16-020",
+   "AT-ST-C16-021",
+   "AT-ST-C16-022",
+   "AT-ST-C16-023",
+   "AT-ST-C16-024",
+   "AT-ST-C16-025",
+   "AT-ST-C16-026",
+   "AT-ST-C16-027",
+   "AT-ST-C16-028",
+   "AT-ST-C16-029",
+   "AT-ST-C16-030",
+   "AT-ST-C16-031",
+   "AT-ST-C16-032",
+   "AT-ST-C16-033",
+   "AT-ST-C16-034",
+   "AT-ST-C16-035",
+   "AT-ST-C16-036",
+   "AT-ST-C16-037",
+   "AT-ST-C16-038",
+   "AT-ST-C16-039",
+   "AT-ST-C16-040",
+   "AT-ST-C16-041",
+   "AT-ST-C16-042",
+   "AT-ST-C16-043",
+   "AT-ST-C16-044",
+   "AT-ST-C16-045",
+   "AT-ST-C16-046",
+   "AT-ST-C16-047",
+   "AT-ST-C16-048",
+   "AT-ST-C16-049",
+   "AT-ST-C16-050",
+   "AT-ST-C16-051",
+   "AT-ST-C16-052",
+   "AT-ST-C16-053",
+   "AT-ST-C16-054",
+   "AT-ST-C16-055",
+   "AT-ST-C16-056",
+   "AT-ST-C16-057",
+   "AT-ST-C16-058",
+   "AT-ST-C16-059",
+   "AT-ST-C17-001",
+   "AT-ST-C17-002",
+   "AT-ST-C17-003",
+   "AT-ST-C17-004",
+   "AT-ST-C17-005",
+   "AT-ST-C17-006",
+   "AT-ST-C17-007",
+   "AT-ST-C17-008",
+   "AT-ST-C17-009",
+   "AT-ST-C17-010",
+   "AT-ST-C17-011",
+   "AT-ST-C17-012",
+   "AT-ST-C17-013",
+   "AT-ST-C18-001",
+   "AT-ST-C18-002",
+   "AT-ST-C18-003",
+   "AT-ST-C18-004",
+   "AT-ST-C18-005",
+   "AT-ST-C18-006",
+   "AT-ST-C18-007",
+   "AT-ST-C18-008",
+   "AT-ST-C18-009",
+   "AT-ST-C18-010",
+   "AT-ST-C18-011",
+   "AT-ST-C18-012",
+   "AT-ST-C18-013",
+   "AT-ST-C18-014",
+   "AT-ST-C18-015",
+   "AT-ST-C18-016",
+   "AT-ST-C18-017",
+   "AT-ST-C18-018",
+   "AT-ST-C18-019",
+   "AT-ST-C18-020",
+   "AT-ST-C18-021",
+   "AT-ST-C18-022",
+   "AT-ST-C18-023",
+   "AT-ST-C18-024",
+   "AT-ST-C18-025",
+   "AT-ST-C18-026",
+   "AT-ST-C18-027",
+   "AT-ST-C19-001",
+   "AT-ST-C19-002",
+   "AT-ST-C19-003",
+   "AT-ST-C19-004",
+   "AT-ST-C19-005",
+   "AT-ST-C19-006",
+   "AT-ST-C19-007",
+   "AT-ST-C19-008",
+   "AT-ST-C19-009",
+   "AT-ST-C19-010",
+   "AT-ST-C19-011",
+   "AT-ST-C19-012",
+   "AT-ST-C19-013",
+   "AT-ST-C19-014",
+   "AT-ST-C19-015",
+   "AT-ST-C19-016",
+   "AT-ST-C19-017",
+   "AT-ST-C19-018",
+   "AT-ST-C20-001",
+   "AT-ST-C20-002",
+   "AT-ST-C20-003",
+   "AT-ST-C20-004",
+   "AT-ST-C20-005",
+   "AT-ST-C20-006",
+   "AT-ST-C20-007",
+   "AT-ST-C20-008",
+   "AT-ST-C20-009",
+   "AT-ST-C20-010",
+   "AT-ST-C20-011",
+   "AT-ST-C20-012",
+   "AT-ST-C20-013",
+   "AT-ST-C20-014",
+   "AT-ST-C20-015",
+   "AT-ST-C20-016",
+   "AT-ST-C20-017",
+   "AT-ST-C20-018",
+   "AT-ST-C20-019",
+   "AT-ST-C20-020",
+   "AT-ST-C20-021",
+   "AT-ST-C20-022",
+   "AT-ST-C20-023",
+   "AT-ST-C21-001",
+   "AT-ST-C21-002",
+   "AT-ST-C21-003",
+   "AT-ST-C21-004",
+   "AT-ST-C21-005",
+   "AT-ST-C21-006",
+   "AT-ST-C21-007",
+   "AT-ST-C21-008",
+   "AT-ST-C21-009",
+   "AT-ST-C21-010",
+   "AT-ST-C21-011",
+   "AT-ST-C21-012",
+   "AT-ST-C21-013",
+   "AT-ST-C21-014",
+   "AT-ST-C21-015",
+   "AT-ST-C21-016",
+   "AT-ST-C21-017",
+   "AT-ST-C21-018",
+   "AT-ST-C21-019",
+   "AT-ST-C21-020",
+   "AT-ST-C21-021",
+   "AT-ST-C21-022",
+   "AT-ST-C21-023",
+   "AT-ST-C21-024",
+   "AT-ST-C21-025",
+   "AT-ST-C21-026",
+   "AT-ST-C21-027",
+   "AT-ST-C21-028",
+   "AT-ST-C21-029",
+   "AT-ST-C21-030",
+   "AT-ST-C21-031",
+   "AT-ST-C21-032",
+   "AT-ST-C21-033",
+   "AT-ST-C21-034",
+   "AT-ST-C21-035",
+   "AT-ST-C21-036",
+   "AT-ST-C21-037",
+   "AT-ST-C21-038",
+   "AT-ST-C21-039",
+   "AT-ST-C21-040",
+   "AT-ST-C21-041",
+   "AT-ST-C21-042",
+   "AT-ST-C21-043",
+   "AT-ST-C21-044",
+   "AT-ST-C21-045",
+   "AT-ST-C21-046",
+   "AT-ST-C21-047",
+   "AT-ST-C21-048",
+   "AT-ST-C22-001",
+   "AT-ST-C22-002",
+   "AT-ST-C22-003",
+   "AT-ST-C22-004",
+   "AT-ST-C22-005",
+   "AT-ST-C22-006",
+   "AT-ST-C22-007",
+   "AT-ST-C22-008",
+   "AT-ST-C22-009",
+   "AT-ST-C23-001",
+   "AT-ST-C23-002",
+   "AT-ST-C23-003",
+   "AT-ST-C23-004",
+   "AT-ST-C23-005",
+   "AT-ST-C23-006",
+   "AT-ST-C23-007",
+   "AT-ST-C23-008",
+   "AT-ST-C23-009",
+   "AT-ST-C23-010",
+   "AT-ST-C23-011",
+   "AT-ST-C23-012",
+   "AT-ST-C23-013",
+   "AT-ST-C23-014",
+   "AT-ST-C23-015",
+   "AT-ST-C23-016",
+   "AT-ST-C23-017",
+   "AT-ST-C23-018",
+   "AT-ST-C23-019",
+   "AT-ST-C23-020",
+   "AT-ST-C23-021"
+  ]
+ },
+ "stats": {
+  "atomCount": 29,
+  "confirmed": 0,
+  "partial": 8,
+  "not_found": 21,
+  "directConflict": 0,
+  "pending": 387,
+  "evidenceCount": 12
+ }
+}

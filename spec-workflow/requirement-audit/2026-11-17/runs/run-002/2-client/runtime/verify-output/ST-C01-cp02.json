@@ -1,0 +1,345 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C01",
+ "partNo": "02",
+ "entries": [
+  {
+   "atomId": "AT-ST-C01-012",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "客户端工程（Code 根下 layer/controller/data/config/fgui_uideclare）仅含对局内麻将场景模块，FGUI 资产仅有 box_hzmj_main/player/result/tingPai/tipAni/specf/card_down/back/common 等对局包，均无创房/房间参数面板。全量检索「打片」「40片/50片/60片」「片数」无任何命中。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-013",
+   "verdict": "partial",
+   "clientLogic": "封顶取值不由客户端设置，而是随开局消息下发后存入对局数据（GameData.setMaxMult）；听牌面板 initUI 读房规 max_mult，为 0 或 -1 时显示「无封顶」，否则显示「封顶N倍」。未检索到打片档，也无打片档触发隐藏封顶/把封顶置为「无」的客户端逻辑。",
+   "uiInteraction": "听牌面板封顶文字随房规封顶值变化：无封顶 / 封顶N倍；无创房面板，故无「隐藏封顶选项」表现。",
+   "messages": [
+    "MsgStartGame"
+   ],
+   "notes": "只证明封顶取值链路与「无封顶」展示存在；需求要求的打片档生效时隐藏封顶选项并置为「无」在客户端范围内无对应实现，创房面板代码不在此工程。",
+   "evidenceIds": [
+    "CLE-AT-ST-C01-013-01",
+    "CLE-AT-ST-C01-013-02",
+    "CLE-AT-ST-C01-013-03"
+   ],
+   "observedBehavior": {
+    "trigger": "对局中打开听牌面板",
+    "condition": "当前房规封顶值为 0 或 -1（即无封顶）",
+    "action": "封顶位置显示「无封顶」文字",
+    "result": "玩家看到无封顶提示，看不到封顶倍数"
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-014",
+   "verdict": "partial",
+   "clientLogic": "底分由房间数据/服务端下发（金币场经 MsgVsPlayerInfo.base_score 解析后写入 TableData 并广播刷新），开局面板据此显示「底分:N」；未检索到打片档，也无打片档触发隐藏底分/把底分置为 1分 的客户端逻辑。",
+   "uiInteraction": "开局/房间信息区显示「底分:N」文本，随底分数据刷新；无创房面板，故无「隐藏底分选项」表现。",
+   "messages": [
+    "MsgVsPlayerInfo"
+   ],
+   "notes": "只证明底分取值与展示链路存在；需求要求的打片档生效时隐藏底分并置为「1分」在客户端范围内无对应实现，创房面板代码不在此工程。",
+   "evidenceIds": [
+    "CLE-AT-ST-C01-014-01",
+    "CLE-AT-ST-C01-014-02",
+    "CLE-AT-ST-C01-014-03"
+   ],
+   "observedBehavior": {
+    "trigger": "开局或查看开局面板",
+    "condition": "房间底分为服务端下发的大于 0 的数值",
+    "action": "面板显示「底分:N」文本",
+    "result": "玩家看到当前房间的底分数值"
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-015",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "客户端代码与全部 FGUI XML 中检索「连庄不占局数」无任何命中，也无对应勾选项/开关控件；仅存在对局内连庄升级、庄家相关逻辑，与该创房选项无关。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-016",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "无创房参数提交代码（客户端仅接收开局/对局消息）。「局数」仅出现在结算数据接口（当前局数）与对局流程中，未检索到局数档与打片档互斥、只提交其一的任何实现。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-017",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "全量检索「吃碰」「无限吃碰」「只碰不吃」「默认吃碰」在客户端代码与 FGUI XML 中均无命中，不存在吃碰单选组及其按人数显隐逻辑。人数仅通过 gameId 区分（二人房等仅在房间名展示中体现）。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-018",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "无吃碰相关代码，故不存在 2 人房默认「无限吃碰」的初始选中，也不存在 3/4 人房固定「默认吃碰」的客户端取值逻辑。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-019",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "全量检索「碰算摊」「无限吃碰」「两摊封顶」均无命中；不存在吃碰选中无限吃碰后隐藏碰算摊、把承包置为两摊封顶的联动实现。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-020",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "同上，客户端无吃碰单选、无碰算摊控件、无承包置位逻辑，故「只碰不吃/默认吃碰 → 显示碰算摊且承包选中两摊封顶」的联动不存在。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-021",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未检索到「三摊承包」「两摊封顶」文案与承包单选组。「承包」仅出现在结算结果项控制器（ResultItem 的 C_ChengBao：无/承包/反承包）用于展示结算承包关系，与创房承包选项值及默认值无关。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-022",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "无承包单选组控件，也不存在按 3/4 人房显示、2 人房隐藏的显隐逻辑；客户端仅有对局结算承包关系展示与按 gameId 的房间名区分。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-023",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未检索到 2 人房承包取值（两摊封顶）相关逻辑；承包在客户端仅作为结算结果的承包/反承包标记展示，不参与房规取值。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  }
+ ],
+ "evidence": [
+  {
+   "id": "CLE-AT-ST-C01-013-01",
+   "claimKey": "fengding-value-display",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "layer/BoxHzmjTingPaiView.ts",
+   "location": "layer/BoxHzmjTingPaiView.ts:90-99",
+   "symbol": "BoxHzmjTingPaiView.initUI",
+   "excerpt": "const gameRule = BoxRoomData.inst.getGameRule();\nlet roomMaxFan = gameRule.max_mult ?? 0;\nif (roomMaxFan === 0 || roomMaxFan === -1) {\n    this.view.KW_Main.KW_FengDing.text = \"无封顶\";\n} else if (roomMaxFan !== undefined) {\n    this.view.KW_Main.KW_FengDing.text = `封顶${roomMaxFan}倍`;",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-013"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "data/GameData.ts"
+    },
+    {
+     "file": "controller/cmd/gameCmd/GameStartGameCmd.ts"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-013-02",
+   "claimKey": "fengding-label-in-tingpai",
+   "repoId": "client-fgui",
+   "layer": "client_fgui",
+   "file": "box_hzmj_tingPai/component/TingPai.xml",
+   "location": "box_hzmj_tingPai/component/TingPai.xml:10",
+   "symbol": "TingPai.KW_FengDing",
+   "excerpt": "name=\"KW_FengDing\" size=\"116,34\" fontSize=\"24\" align=\"center\" text=\"无封顶\"",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-013"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "layer/BoxHzmjTingPaiView.ts"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-013-03",
+   "claimKey": "fengding-from-server",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "controller/cmd/gameCmd/GameStartGameCmd.ts",
+   "location": "controller/cmd/gameCmd/GameStartGameCmd.ts:33-36",
+   "symbol": "GameStartGameCmd.execute",
+   "excerpt": "if (RoomData.isMatchRoom()) {\n    TableData.inst.setBaseScore(data.base_score ?? 0);\n}\nGameData.setMaxMult(data.max_mult ?? 0);",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-013"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "data/GameData.ts"
+    },
+    {
+     "file": "layer/BoxHzmjTingPaiView.ts"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-014-01",
+   "claimKey": "base-score-display",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "layer/BoxHzmjBackView.ts",
+   "location": "layer/BoxHzmjBackView.ts:86-88",
+   "symbol": "BoxHzmjBackView._onUpdateBaseScore",
+   "excerpt": "private _onUpdateBaseScore(baseScore: number): void {\n    this.view.KW_BASE_SCORE.text = `底分:${baseScore}`;\n}",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-014"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "controller/cmd/gameCmd/GameVsPlayerInfoCmd.ts"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-014-02",
+   "claimKey": "base-score-label",
+   "repoId": "client-fgui",
+   "layer": "client_fgui",
+   "file": "box_hzmj_back/BoxHzmjBackView.xml",
+   "location": "box_hzmj_back/BoxHzmjBackView.xml:23",
+   "symbol": "BoxHzmjBackView.KW_BASE_SCORE",
+   "excerpt": "name=\"KW_BASE_SCORE\" size=\"109,36\" fontSize=\"26\" align=\"center\" autoClearText=\"true\" text=\"1111111\"",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-014"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "layer/BoxHzmjBackView.ts"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-014-03",
+   "claimKey": "base-score-from-server",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "controller/cmd/gameCmd/GameVsPlayerInfoCmd.ts",
+   "location": "controller/cmd/gameCmd/GameVsPlayerInfoCmd.ts:25-29",
+   "symbol": "GameVsPlayerInfoCmd.execute",
+   "excerpt": "const baseScore = this._toNumber(data.base_score);\nif (baseScore <= 0) return;\n\nTableData.inst.setBaseScore(baseScore);\nthis.dispatch(GameEventBoxHzmj.onUpdateBaseScore);",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-014"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "layer/BoxHzmjBackView.ts"
+    }
+   ]
+  }
+ ]
+}

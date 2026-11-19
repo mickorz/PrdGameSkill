@@ -1,0 +1,22 @@
+{
+ "schemaVersion": 1,
+ "generatedBy": "prepare-verify-input.mjs",
+ "date": "2026-11-17",
+ "branch": "server",
+ "stageIdsCsv": "ST-C01",
+ "inputDir": "spec-workflow/requirement-audit/2026-11-17/runs/run-001/3-server/runtime/verify-input",
+ "totalAtomCount": 29,
+ "stages": [
+  {
+   "stageId": "ST-C01",
+   "stageName": "房间参数（单选）",
+   "atomCount": 29,
+   "partCount": 3,
+   "partFiles": [
+    "ST-C01-p01.json",
+    "ST-C01-p02.json",
+    "ST-C01-p03.json"
+   ]
+  }
+ ]
+}

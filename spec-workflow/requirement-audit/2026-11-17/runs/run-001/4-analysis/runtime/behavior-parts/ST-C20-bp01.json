@@ -1,0 +1,31 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C20",
+ "partNo": "01",
+ "analysisRunId": "ar-2026-11-17-001",
+ "atomIds": [
+  "AT-ST-C20-001",
+  "AT-ST-C20-002",
+  "AT-ST-C20-003",
+  "AT-ST-C20-004",
+  "AT-ST-C20-005",
+  "AT-ST-C20-006",
+  "AT-ST-C20-007",
+  "AT-ST-C20-008",
+  "AT-ST-C20-009",
+  "AT-ST-C20-010",
+  "AT-ST-C20-011",
+  "AT-ST-C20-012",
+  "AT-ST-C20-013",
+  "AT-ST-C20-014",
+  "AT-ST-C20-015",
+  "AT-ST-C20-016",
+  "AT-ST-C20-017",
+  "AT-ST-C20-018",
+  "AT-ST-C20-019",
+  "AT-ST-C20-020",
+  "AT-ST-C20-021",
+  "AT-ST-C20-022",
+  "AT-ST-C20-023"
+ ]
+}

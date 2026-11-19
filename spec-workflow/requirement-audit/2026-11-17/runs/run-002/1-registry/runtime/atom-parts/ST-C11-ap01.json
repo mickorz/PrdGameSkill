@@ -1,0 +1,194 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C11",
+ "partNo": 1,
+ "stage": {
+  "stageId": "ST-C11",
+  "name": "杠后补牌",
+  "chapter": "行牌 > 杠后补牌",
+  "summary": "规定杠后从牌墙尾部补牌、余牌扣减、牌墙下限与黄庄时机，以及补牌后的自摸/续杠/出牌选择与杠链增减归零规则。"
+ },
+ "features": [
+  {
+   "id": "FP-ST-C11-001",
+   "name": "杠后补牌与后续摸打",
+   "description": "规定每次杠必须从牌墙尾部补 1 张并扣减余牌，补牌后可自摸，不胡则继续杠或打出 1 张。",
+   "scope": "仅覆盖杠成立后的一次补牌及补牌后的选择，不含未杠时的普通摸牌。",
+   "coordination": "客户端呈现补牌与可选操作，服务端发出补牌、扣减余牌并判定自摸。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C11-001",
+     "name": "从牌墙尾部补一张",
+     "rule": "每次杠从牌墙尾部补 1 张。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家完成一次杠",
+      "condition": "本次杠成立并进入补牌",
+      "action": "从牌墙尾部取 1 张牌补给该玩家",
+      "result": ""
+     },
+     "source": { "chapter": "行牌 > 杠后补牌", "fromLine": 159, "toLine": 159 }
+    },
+    {
+     "atomId": "AT-ST-C11-002",
+     "name": "补牌后余牌减一",
+     "rule": "每次杠补牌后牌墙余牌减 1。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家完成一次杠后补牌",
+      "condition": "补牌发生",
+      "action": "牌墙剩余张数减 1",
+      "result": ""
+     },
+     "source": { "chapter": "行牌 > 杠后补牌", "fromLine": 159, "toLine": 159 }
+    },
+    {
+     "atomId": "AT-ST-C11-003",
+     "name": "补牌可以自摸",
+     "rule": "杠后补的牌可以自摸。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家在杠后完成补牌",
+      "condition": "补到的牌使手牌满足自摸胡牌条件",
+      "action": "允许玩家选择自摸胡牌",
+      "result": "玩家可看到并选择自摸胡牌"
+     },
+     "source": { "chapter": "行牌 > 杠后补牌", "fromLine": 161, "toLine": 161 }
+    },
+    {
+     "atomId": "AT-ST-C11-004",
+     "name": "不胡则续杠或打出一张",
+     "rule": "补牌后不胡牌时，可以继续杠，或打出 1 张牌。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家在杠后补牌后未选择胡牌",
+      "condition": "补牌未被胡走",
+      "action": "玩家选择继续杠或打出 1 张牌",
+      "result": ""
+     },
+     "source": { "chapter": "行牌 > 杠后补牌", "fromLine": 161, "toLine": 161 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C11-002",
+   "name": "杠的牌墙下限与黄庄",
+   "description": "规定牌墙少于 21 张不能杠，续杠时每次重新检查牌墙余量，以及剩 20 张及以下时下一次摸牌前黄庄。",
+   "scope": "覆盖杠的牌墙数量门槛与流局判定的时间点，不含其他流局条件。",
+   "coordination": "客户端据牌墙余量控制杠操作是否可用，服务端校验杠条件并在规定时机判黄庄。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C11-005",
+     "name": "牌墙少于二十一不能杠",
+     "rule": "牌墙少于 21 张时不能杠。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家尝试杠牌",
+      "condition": "牌墙剩余张数少于 21 张",
+      "action": "拒绝该次杠",
+      "result": "玩家无法完成杠"
+     },
+     "source": { "chapter": "行牌 > 杠后补牌", "fromLine": 159, "toLine": 159 }
+    },
+    {
+     "atomId": "AT-ST-C11-006",
+     "name": "续杠重新检查牌墙",
+     "rule": "杠后可以继续杠，每次继续杠都重新检查牌墙不少于 21 张。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家在杠后补牌阶段选择继续杠",
+      "condition": "牌墙剩余张数不少于 21 张",
+      "action": "按牌墙余量重新校验并允许或拒绝该次续杠",
+      "result": ""
+     },
+     "source": { "chapter": "行牌 > 杠后补牌", "fromLine": 161, "toLine": 161 }
+    },
+    {
+     "atomId": "AT-ST-C11-007",
+     "name": "剩二十张下一次摸牌前黄庄",
+     "rule": "牌墙剩 20 张及以下时，在下一次摸牌前黄庄。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "牌墙剩余张数降至 20 张及以下",
+      "condition": "下一次摸牌时机到来前",
+      "action": "判定本局黄庄",
+      "result": "玩家看到本局黄庄结束"
+     },
+     "source": { "chapter": "行牌 > 杠后补牌", "fromLine": 159, "toLine": 159 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C11-003",
+   "name": "杠链累计与归零",
+   "description": "规定明杠、暗杠、加杠都使杠链加 1，而吃、碰、打出非财神、打出财神后不再敲响时杠链归零。",
+   "scope": "仅覆盖杠链计数的增减条件，不含杠链在结算中的用途与倍数计算。",
+   "coordination": "服务端维护杠链计数，客户端不参与判定。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C11-008",
+     "name": "各类杠使杠链加一",
+     "rule": "明杠、暗杠、加杠都使杠链加 1。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家完成明杠、暗杠或加杠",
+      "condition": "该次杠成立",
+      "action": "杠链计数加 1",
+      "result": ""
+     },
+     "source": { "chapter": "行牌 > 杠后补牌", "fromLine": 161, "toLine": 161 }
+    },
+    {
+     "atomId": "AT-ST-C11-009",
+     "name": "吃碰使杠链归零",
+     "rule": "吃或碰时，杠链归零。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家发生吃或碰",
+      "condition": "该次吃或碰成立",
+      "action": "杠链计数清零",
+      "result": ""
+     },
+     "source": { "chapter": "行牌 > 杠后补牌", "fromLine": 161, "toLine": 161 }
+    },
+    {
+     "atomId": "AT-ST-C11-010",
+     "name": "打出非财神使杠链归零",
+     "rule": "打出非财神牌时，杠链归零。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家打出非财神牌",
+      "condition": "打出的牌不是财神",
+      "action": "杠链计数清零",
+      "result": ""
+     },
+     "source": { "chapter": "行牌 > 杠后补牌", "fromLine": 161, "toLine": 161 }
+    },
+    {
+     "atomId": "AT-ST-C11-011",
+     "name": "打出财神后不再敲响使杠链归零",
+     "rule": "打出财神但打出后不再敲响时，杠链归零。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家打出财神牌",
+      "condition": "打出后不再敲响",
+      "action": "杠链计数清零",
+      "result": "玩家看到杠链状态归零"
+     },
+     "source": { "chapter": "行牌 > 杠后补牌", "fromLine": 161, "toLine": 161 }
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,19 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C09",
+ "partNo": "01",
+ "analysisRunId": "ar-2026-11-17-001",
+ "atomIds": [
+  "AT-ST-C09-001",
+  "AT-ST-C09-002",
+  "AT-ST-C09-003",
+  "AT-ST-C09-004",
+  "AT-ST-C09-005",
+  "AT-ST-C09-006",
+  "AT-ST-C09-007",
+  "AT-ST-C09-008",
+  "AT-ST-C09-009",
+  "AT-ST-C09-010",
+  "AT-ST-C09-011"
+ ]
+}

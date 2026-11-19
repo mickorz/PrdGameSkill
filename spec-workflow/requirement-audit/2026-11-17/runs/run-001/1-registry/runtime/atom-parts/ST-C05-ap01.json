@@ -1,0 +1,166 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C05",
+ "partNo": 1,
+ "stage": {
+  "stageId": "ST-C05",
+  "name": "已停用选项与兄弟玩法",
+  "chapter": "玩法选项（创房规则全集，规则不固定） > 已停用选项与兄弟玩法",
+  "summary": "明确创房面板已停用的跟庄相关选项、二人好友房的独立变体口径，以及淳安/萧山/桐庐分支玩法与杭州麻将本体的隔离边界。"
+ },
+ "features": [
+  {
+   "id": "FP-ST-C05-001",
+   "name": "跟庄与跟庄赔付停用",
+   "description": "创房面板中跟庄、跟庄赔付两项已停用，建房时不可选择，本玩法不产生跟庄相关规则。",
+   "scope": "仅约束创房面板的选项可选择性；不涉及其余玩法选项的启用状态。",
+   "coordination": "创房面板呈现与选项可选择性由客户端保证，不产生服务端规则联动。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C05-001",
+     "name": "跟庄选项停用",
+     "rule": "跟庄选项在创房面板已停用，不可选。",
+     "uiRequirement": "创房面板中跟庄选项呈现为停用状态，玩家无法选中。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家在创房面板查看玩法选项",
+      "condition": "选项为跟庄",
+      "action": "面板将该选项置为停用，不响应选中",
+      "result": "玩家看到跟庄选项不可选，无法在创房时开启跟庄"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 已停用选项与兄弟玩法",
+      "fromLine": 74,
+      "toLine": 74
+     }
+    },
+    {
+     "atomId": "AT-ST-C05-002",
+     "name": "跟庄赔付选项停用",
+     "rule": "跟庄赔付选项在创房面板已停用，不可选。",
+     "uiRequirement": "创房面板中跟庄赔付选项呈现为停用状态，玩家无法选中。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家在创房面板查看玩法选项",
+      "condition": "选项为跟庄赔付",
+      "action": "面板将该选项置为停用，不响应选中",
+      "result": "玩家看到跟庄赔付选项不可选，无法在创房时开启跟庄赔付"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 已停用选项与兄弟玩法",
+      "fromLine": 74,
+      "toLine": 74
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C05-002",
+   "name": "二人杭州麻将好友房变体",
+   "description": "二人杭州麻将好友房人数固定为 2，创房面板不提供人数选项；本文按四人好友房口径展开，二人房作为独立玩法变体，不混入本文规则描述。",
+   "scope": "仅说明二人房的人数与面板形态及本文展开口径；二人房的成套规则另行定义。",
+   "coordination": "创房面板人数展示形态由客户端承担，人数固定为 2 属于玩法口径约束。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C05-003",
+     "name": "二人房人数固定为 2",
+     "rule": "二人杭州麻将好友房人数固定为 2。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家创建二人杭州麻将好友房",
+      "condition": "玩法为二人杭州麻将好友房",
+      "action": "对局按固定 2 人组局",
+      "result": "玩家看到对局人数为 2 人"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 已停用选项与兄弟玩法",
+      "fromLine": 75,
+      "toLine": 75
+     }
+    },
+    {
+     "atomId": "AT-ST-C05-004",
+     "name": "二人房无人数选项",
+     "rule": "二人杭州麻将好友房创房面板无人数选项。",
+     "uiRequirement": "二人杭州麻将好友房创房面板不展示人数选项。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家打开二人杭州麻将好友房创房面板",
+      "condition": "玩法为二人杭州麻将好友房",
+      "action": "面板不展示人数选项",
+      "result": "玩家看不到人数选项，人数按固定 2 人处理"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 已停用选项与兄弟玩法",
+      "fromLine": 75,
+      "toLine": 75
+     }
+    },
+    {
+     "atomId": "AT-ST-C05-005",
+     "name": "本文按四人房口径展开",
+     "rule": "本文按杭州麻将（四人好友房）口径展开，二人房为独立玩法变体。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家阅读或使用本文规则",
+      "condition": "玩法为杭州麻将好友房",
+      "action": "按四人好友房口径描述规则，二人房另作独立变体",
+      "result": "玩家看到四人房规则不套用于二人房"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 已停用选项与兄弟玩法",
+      "fromLine": 75,
+      "toLine": 75
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C05-003",
+   "name": "分支玩法规则隔离",
+   "description": "淳安、萧山、桐庐分支玩法另行成套规则，不与杭州麻将本体混用。",
+   "scope": "仅划定分支玩法与杭州麻将本体的规则边界；分支玩法自身规则不在本需求范围内。",
+   "coordination": "需保证杭州麻将本体规则不承载分支玩法逻辑，分支玩法独立成套。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C05-006",
+     "name": "分支玩法另行成套规则",
+     "rule": "淳安 / 萧山 / 桐庐分支玩法另行成套规则。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家选择淳安 / 萧山 / 桐庐分支玩法",
+      "condition": "玩法为淳安 / 萧山 / 桐庐分支",
+      "action": "按分支玩法自身的成套规则进行",
+      "result": "玩家看到分支玩法按其独立规则运行"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 已停用选项与兄弟玩法",
+      "fromLine": 76,
+      "toLine": 76
+     }
+    },
+    {
+     "atomId": "AT-ST-C05-007",
+     "name": "分支玩法不与本体混用",
+     "rule": "淳安 / 萧山 / 桐庐分支玩法不与杭州麻将本体混用。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家进行淳安 / 萧山 / 桐庐分支玩法对局",
+      "condition": "玩法为淳安 / 萧山 / 桐庐分支",
+      "action": "不套用杭州麻将本体的规则",
+      "result": "玩家看到分支玩法中不出现杭州麻将本体规则效果"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 已停用选项与兄弟玩法",
+      "fromLine": 76,
+      "toLine": 76
+     }
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,130 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C04",
+ "partNo": 1,
+ "stage": {
+  "stageId": "ST-C04",
+  "name": "创房不可见的默认配置",
+  "chapter": "玩法选项（创房规则全集，规则不固定） > 创房不可见的默认配置",
+  "summary": "创房时玩家不可见但系统按默认口径生效的配置：庄家归属（首局随机、非首局赢家坐庄、流局原庄连庄）、局数与片数互斥提交、出牌速度取默认档。"
+ },
+ "features": [
+  {
+   "id": "FP-ST-C04-001",
+   "name": "庄家归属默认配置",
+   "description": "创房不可见的庄家归属默认口径：首局庄家随机产生，非首局庄家由上一局赢家承担，发生流局时由原庄连庄。",
+   "scope": "仅覆盖庄家归属的默认取值口径；不覆盖庄家连庄数档位与牢庄倍数计算。",
+   "coordination": "客户端不提供该配置的可见选项，由服务端按默认口径确定每小局庄家并在开局时下发结果。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C04-001",
+     "name": "首局庄家随机",
+     "rule": "首局庄家：随机（与正文一致）。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "房间开局进入第一小局",
+      "condition": "当前为房间内的第一局",
+      "action": "系统随机指定一名玩家为庄家",
+      "result": "玩家进入第一小局时看到随机产生的庄家"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 创房不可见的默认配置",
+      "fromLine": 66,
+      "toLine": 66
+     }
+    },
+    {
+     "atomId": "AT-ST-C04-002",
+     "name": "非首局赢家坐庄",
+     "rule": "非首局庄家：赢家坐庄（与正文一致）。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "房间开局进入非第一小局",
+      "condition": "当前不是房间内的第一局",
+      "action": "系统确定上一小局的赢家为新一局庄家",
+      "result": "玩家看到上一小局的赢家坐上新一局庄位"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 创房不可见的默认配置",
+      "fromLine": 67,
+      "toLine": 67
+     }
+    },
+    {
+     "atomId": "AT-ST-C04-003",
+     "name": "流局原庄连庄",
+     "rule": "流局：原庄连庄（与正文一致）。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "一小局以流局结束",
+      "condition": "该小局判定为流局",
+      "action": "系统保留原庄家继续担任下一小局庄家",
+      "result": "玩家看到流局后原庄家连庄"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 创房不可见的默认配置",
+      "fromLine": 68,
+      "toLine": 68
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C04-002",
+   "name": "局数与片数互斥提交",
+   "description": "创房提交对局长度参数时，局数与片数只按当前所选模式提交其中一项，二者互斥。",
+   "scope": "仅覆盖对局长度参数（局数、片数）的互斥提交口径；不覆盖局数档位与片数档位的具体取值。",
+   "coordination": "客户端按所选模式只提交局数或片数其中一项，服务端按单一参数接收并生效。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C04-004",
+     "name": "局数片数只提交其一",
+     "rule": "局数 / 片数只按所选模式提交其中一项（互斥）。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家创建房间提交对局参数",
+      "condition": "所选模式对应局数模式或打片模式其中之一",
+      "action": "系统只提交并采用与所选模式对应的那一项（局数或片数），另一项不提交",
+      "result": "玩家创建出的房间只按一种对局长度规则生效，不会同时出现局数与片数两个长度目标"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 创房不可见的默认配置",
+      "fromLine": 69,
+      "toLine": 69
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C04-003",
+   "name": "出牌速度默认档",
+   "description": "创房不可见的出牌速度配置取默认档，玩家无需也无法在创房时调整。",
+   "scope": "仅覆盖出牌速度取默认档；不覆盖默认档具体的秒数取值与超时托管规则。",
+   "coordination": "客户端按默认档表现出牌节奏，服务端按默认档计时与推进。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C04-005",
+     "name": "出牌速度默认档",
+     "rule": "出牌速度：默认档。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家创建房间开局",
+      "condition": "创房时不单独选择出牌速度",
+      "action": "系统以默认档作为出牌速度配置生效",
+      "result": "玩家对局中按默认档的出牌节奏进行出牌"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 创房不可见的默认配置",
+      "fromLine": 70,
+      "toLine": 70
+     }
+    }
+   ]
+  }
+ ]
+}

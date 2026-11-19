@@ -1,0 +1,283 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C17",
+ "partNo": 1,
+ "stage": {
+  "stageId": "ST-C17",
+  "name": "断线重连与场景恢复",
+  "chapter": "行牌 > 断线重连与场景恢复",
+  "summary": "对局中掉线重连后不重开小局，完整恢复断线瞬间的牌局要素与提示，并以服务端数据为准覆盖，恢复后上报定位继续对局。"
+ },
+ "features": [
+  {
+   "id": "FP-ST-C17-001",
+   "name": "重连恢复总体规则",
+   "description": "约束掉线重连的对局处理方式：不重开小局，而是回到断线瞬间的对局状态继续。",
+   "scope": "仅覆盖对局进行中的掉线重连；不重开小局，不重置对局。",
+   "coordination": "客户端在重连后保持当前小局不重开，并从服务端获取断线瞬间的对局状态用于恢复。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C17-001",
+     "name": "重连不重开小局",
+     "rule": "对局中掉线重连后不重开小局。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家在对局中掉线后重新连接",
+      "condition": "对局正在进行中",
+      "action": "不重开小局，保留当前小局进程",
+      "result": "玩家重连后回到原来正在进行的那一小局，而不是开始新的一局"
+     },
+     "source": {
+      "chapter": "行牌 > 断线重连与场景恢复",
+      "fromLine": 221,
+      "toLine": 221
+     }
+    },
+    {
+     "atomId": "AT-ST-C17-002",
+     "name": "恢复到断线瞬间对局状态",
+     "rule": "重连后恢复到断线瞬间的对局状态。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家掉线后重新连接",
+      "condition": "对局正在进行中",
+      "action": "按断线瞬间的状态还原整局进度",
+      "result": "玩家看到的是掉线那一刻的对局状态，可从中断处继续打"
+     },
+     "source": {
+      "chapter": "行牌 > 断线重连与场景恢复",
+      "fromLine": 221,
+      "toLine": 221
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C17-002",
+   "name": "对局要素恢复",
+   "description": "重连后逐项恢复对局状态要素：牌桌、牌墙与余牌数、各家手牌、出牌区、轮次、飘标、记牌器。",
+   "scope": "覆盖上述七类对局要素，缺一不可。",
+   "coordination": "客户端依据服务端补发的对局数据逐项还原牌桌与各类信息展示。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C17-003",
+     "name": "牌桌恢复",
+     "rule": "重连后恢复牌桌。",
+     "uiRequirement": "重连后牌桌照常展示，不出现空白或未初始化牌桌。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家掉线后重新连接",
+      "condition": "对局正在进行中",
+      "action": "还原牌桌界面",
+      "result": "玩家看到与断线前一致的牌桌"
+     },
+     "source": {
+      "chapter": "行牌 > 断线重连与场景恢复",
+      "fromLine": 223,
+      "toLine": 223
+     }
+    },
+    {
+     "atomId": "AT-ST-C17-004",
+     "name": "牌墙与余牌数恢复",
+     "rule": "重连后恢复牌墙与余牌数。",
+     "uiRequirement": "牌墙展示与余牌数显示恢复为断线瞬间的数值。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家掉线后重新连接",
+      "condition": "对局正在进行中",
+      "action": "还原剩余牌墙与余牌数量",
+      "result": "玩家看到与断线前相同的余牌数，可据此判断牌墙剩余"
+     },
+     "source": {
+      "chapter": "行牌 > 断线重连与场景恢复",
+      "fromLine": 223,
+      "toLine": 223
+     }
+    },
+    {
+     "atomId": "AT-ST-C17-005",
+     "name": "各家手牌恢复",
+     "rule": "重连后恢复各家手牌。",
+     "uiRequirement": "各家手牌按断线瞬间的数量与状态展示，自己的手牌完整可见。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家掉线后重新连接",
+      "condition": "对局正在进行中",
+      "action": "还原自己的手牌与各家手牌数量状态",
+      "result": "玩家看到与断线前一致的手牌，可继续正常出牌"
+     },
+     "source": {
+      "chapter": "行牌 > 断线重连与场景恢复",
+      "fromLine": 223,
+      "toLine": 223
+     }
+    },
+    {
+     "atomId": "AT-ST-C17-006",
+     "name": "出牌区恢复",
+     "rule": "重连后恢复出牌区。",
+     "uiRequirement": "出牌区按断线瞬间各家已打出的牌还原展示。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家掉线后重新连接",
+      "condition": "对局正在进行中",
+      "action": "还原各家已打出的牌",
+      "result": "玩家看到与断线前一致的出牌区内容"
+     },
+     "source": {
+      "chapter": "行牌 > 断线重连与场景恢复",
+      "fromLine": 223,
+      "toLine": 223
+     }
+    },
+    {
+     "atomId": "AT-ST-C17-007",
+     "name": "轮次恢复",
+     "rule": "重连后恢复轮次。",
+     "uiRequirement": "轮次指示恢复到断线瞬间的当前行动方。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家掉线后重新连接",
+      "condition": "对局正在进行中",
+      "action": "还原当前轮到谁行动",
+      "result": "玩家看到轮次指示与断线前一致，知道自己是否该行动"
+     },
+     "source": {
+      "chapter": "行牌 > 断线重连与场景恢复",
+      "fromLine": 223,
+      "toLine": 223
+     }
+    },
+    {
+     "atomId": "AT-ST-C17-008",
+     "name": "飘标恢复",
+     "rule": "重连后恢复飘标。",
+     "uiRequirement": "飘标按断线瞬间的飘次数还原展示。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家掉线后重新连接",
+      "condition": "对局正在进行中",
+      "action": "还原各家飘的次数标记",
+      "result": "玩家看到与断线前一致的飘标"
+     },
+     "source": {
+      "chapter": "行牌 > 断线重连与场景恢复",
+      "fromLine": 223,
+      "toLine": 223
+     }
+    },
+    {
+     "atomId": "AT-ST-C17-009",
+     "name": "记牌器恢复",
+     "rule": "重连后恢复记牌器。",
+     "uiRequirement": "记牌器展示恢复为断线瞬间的统计结果。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家掉线后重新连接",
+      "condition": "对局正在进行中且使用了记牌器",
+      "action": "还原记牌器的已出牌统计",
+      "result": "玩家看到与断线前一致的记牌器数据"
+     },
+     "source": {
+      "chapter": "行牌 > 断线重连与场景恢复",
+      "fromLine": 223,
+      "toLine": 223
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C17-003",
+   "name": "打哪张听箭头恢复与覆盖",
+   "description": "重连后「打哪张听」提示箭头的恢复来源与优先级：先用断线前缓存，服务端数据到达后以服务端为准覆盖。",
+   "scope": "仅覆盖「打哪张听」箭头的重连恢复与数据覆盖优先级。",
+   "coordination": "客户端先本地缓存恢复箭头，待服务端补发数据后再以服务端结果覆盖展示。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C17-010",
+     "name": "打哪张听箭头缓存恢复",
+     "rule": "「打哪张听」箭头若重连数据未补发，先用断线前的缓存恢复。",
+     "uiRequirement": "「打哪张听」箭头在重连数据未到达前按断线前缓存展示。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家掉线后重新连接",
+      "condition": "重连数据尚未补发「打哪张听」箭头信息",
+      "action": "用断线前缓存的数据恢复箭头",
+      "result": "玩家在数据到达前就能看到断线前的「打哪张听」箭头提示"
+     },
+     "source": {
+      "chapter": "行牌 > 断线重连与场景恢复",
+      "fromLine": 224,
+      "toLine": 224
+     }
+    },
+    {
+     "atomId": "AT-ST-C17-011",
+     "name": "服务端数据覆盖箭头",
+     "rule": "服务端数据到达后，以服务端为准覆盖箭头。",
+     "uiRequirement": "「打哪张听」箭头在服务端数据到达后按服务端结果刷新。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "重连后服务端数据到达",
+      "condition": "服务端补发了「打哪张听」箭头相关数据",
+      "action": "用服务端数据覆盖此前的缓存箭头",
+      "result": "玩家最终看到的是以服务端为准的「打哪张听」箭头提示"
+     },
+     "source": {
+      "chapter": "行牌 > 断线重连与场景恢复",
+      "fromLine": 224,
+      "toLine": 224
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C17-004",
+   "name": "恢复完成后续流程",
+   "description": "场景恢复完成后的动作：客户端上报定位，随后继续对局。",
+   "scope": "从恢复完成到继续对局的衔接环节。",
+   "coordination": "客户端在恢复完成后上报定位，双方据此继续对局。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C17-012",
+     "name": "恢复完成后上报定位",
+     "rule": "恢复完成后客户端上报定位。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "场景恢复完成",
+      "condition": "对局仍处于进行中",
+      "action": "客户端上报当前定位",
+      "result": "玩家无额外操作，对局按上报的定位衔接"
+     },
+     "source": {
+      "chapter": "行牌 > 断线重连与场景恢复",
+      "fromLine": 225,
+      "toLine": 225
+     }
+    },
+    {
+     "atomId": "AT-ST-C17-013",
+     "name": "随后继续对局",
+     "rule": "恢复完成后随后继续对局。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "场景恢复完成并上报定位",
+      "condition": "对局仍处于进行中",
+      "action": "接着断线瞬间的进度继续对局",
+      "result": "玩家可以正常继续摸打，对局不中断"
+     },
+     "source": {
+      "chapter": "行牌 > 断线重连与场景恢复",
+      "fromLine": 225,
+      "toLine": 225
+     }
+    }
+   ]
+  }
+ ]
+}

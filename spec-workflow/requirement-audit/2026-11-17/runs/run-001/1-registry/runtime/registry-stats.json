@@ -1,0 +1,14 @@
+{
+ "schemaVersion": 1,
+ "generatedBy": "build-requirement-registry.mjs",
+ "stageCount": 23,
+ "featureCount": 109,
+ "atomCount": 416,
+ "scopeStats": {
+  "client": 98,
+  "server": 166,
+  "both": 152
+ },
+ "registryPath": "spec-workflow/requirement-audit/2026-11-17/runs/run-001/1-registry/requirement-registry.json",
+ "identityMapPath": "spec-workflow/requirement-audit/2026-11-17/runs/run-001/1-registry/identity-map.json"
+}

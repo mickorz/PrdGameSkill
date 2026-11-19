@@ -1,0 +1,1488 @@
+{
+ "schemaVersion": 1,
+ "date": "2026-11-17",
+ "evidence": [
+  {
+   "id": "SVE-AT-ST-C01-021-01",
+   "atomIds": [
+    "AT-ST-C01-021"
+   ],
+   "claimKey": "three-tan-triggers-contract-at-three",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:141-148",
+   "symbol": "BoxChowStep::Execute",
+   "excerpt": "if (GetSvrCfg()->GetEnableThreeTanBao()) { if (GetSvrData()->GetTanCount(chow_seat_, from_seat) >= 3)",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:6c1fed852b4d3d198d1f4ca1ccfb787df1fa2b79a4ca095b2e055f2c761644b9",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_result.cpp",
+     "contentHash": "sha256:bb32685d3c302ff07704ea61f16400cd2aca5924f6ef97779b7f537678d3a241"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-005-01",
+   "atomIds": [
+    "AT-ST-C01-005"
+   ],
+   "claimKey": "banker-discard-hu-requires-three-level",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:353-358",
+   "symbol": "BoxHuStep::CanDiscardHu",
+   "excerpt": "if (!GetSvrCfg()->GetEnableBankerDiscardHu()) { return false; } if (GetBankerLevel() < 3) { return false; }",
+   "configKeys": [
+    "enable_banker_discard_hu",
+    "banker_level_type"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:6c1fed852b4d3d198d1f4ca1ccfb787df1fa2b79a4ca095b2e055f2c761644b9",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-024-01",
+   "atomIds": [
+    "AT-ST-C01-024",
+    "AT-ST-C01-026",
+    "AT-ST-C01-028"
+   ],
+   "claimKey": "chow-judge-chi-peng-limit-call-site",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:62-66",
+   "symbol": "BoxChowStep::Judge",
+   "excerpt": "// rule_chi_peng=2 该方向合计≤2，已达上限禁吃\nif (IsChiPengExceeded(…)) return false;\nif (IsXianXianTanFull(…)) return false;",
+   "configKeys": [
+    "rule_chi_peng",
+    "enable_three_tan_bao"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:6c1fed852b4d3d198d1f4ca1ccfb787df1fa2b79a4ca095b2e055f2c761644b9",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/common_game_algorithm.cpp",
+     "contentHash": "sha256:889811c5be193378a0d7e807f265f2d5a3ef1520581f8c7075b7cd6b28ece0ab"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-020-01",
+   "atomIds": [
+    "AT-ST-C01-020"
+   ],
+   "claimKey": "only-pung-no-chow-blocks-chow",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:74-80",
+   "symbol": "BoxChowStep::Judge",
+   "excerpt": "if (GetSvrCfg()->GetOnlyPungNoChow()) { ... GetContext()->SendNotifyInfo(kNIFExOnlyPungNoChow, seat); } return false;",
+   "configKeys": [
+    "only_pung_no_chow"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:6c1fed852b4d3d198d1f4ca1ccfb787df1fa2b79a4ca095b2e055f2c761644b9",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "hzmj_server/game_logic.cpp",
+     "contentHash": "sha256:8f21c00c2671a018391336e5938f6cce9881addd217159bb9ca08dbcecd8fe8f"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-004-01",
+   "atomIds": [
+    "AT-ST-C01-004"
+   ],
+   "claimKey": "banker-level-applied-at-ding-zhuang",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_ju.cpp",
+   "location": "common_game/com_game/common_game_com_ju.cpp:132-136",
+   "symbol": "BoxZhuangStep::JudgeDingZhuang",
+   "excerpt": "SetZhuang(zhuang_seat); ... SetLianZhuang(1); SetBankerLevel(GetConfiguredBankerLevel());",
+   "configKeys": [
+    "banker_level_type"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:72e2c48437b8e0461ba1e2d90c7ae706f8514da5bfe6181dd64a031993828e27",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-004-02",
+   "atomIds": [
+    "AT-ST-C01-004"
+   ],
+   "claimKey": "banker-level-type-to-level-mapping",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_ju.cpp",
+   "location": "common_game/com_game/common_game_com_ju.cpp:191-196",
+   "symbol": "BoxZhuangStep::GetConfiguredBankerLevel",
+   "excerpt": "int8_t level = GetSvrCfg()->GetBankerLevelType() + 1; if (level < 1) return 1; if (level > 3) return 3;",
+   "configKeys": [
+    "banker_level_type"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:72e2c48437b8e0461ba1e2d90c7ae706f8514da5bfe6181dd64a031993828e27",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_result.cpp",
+     "contentHash": "sha256:bb32685d3c302ff07704ea61f16400cd2aca5924f6ef97779b7f537678d3a241"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-003-01",
+   "atomIds": [
+    "AT-ST-C01-003"
+   ],
+   "claimKey": "cai-shen-type-behavior",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_ju.cpp",
+   "location": "common_game/com_game/common_game_com_ju.cpp:226-248",
+   "symbol": "BoxJokerStep::Execute",
+   "excerpt": "TMah cai_shen = MV_BAI_BAN; if (GetCaiShenType() != 0) { CalcFanCaiShen(&flip_idx); } SetCaiShen(cai_shen);",
+   "configKeys": [
+    "cai_shen_type"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:72e2c48437b8e0461ba1e2d90c7ae706f8514da5bfe6181dd64a031993828e27",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-019-01",
+   "atomIds": [
+    "AT-ST-C01-019",
+    "AT-ST-C01-020"
+   ],
+   "claimKey": "pung-counts-one-tan-when-pung-as-tan",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_pung.cpp",
+   "location": "common_game/com_game/common_game_com_pung.cpp:125-138",
+   "symbol": "BoxPungStep::Execute",
+   "excerpt": "if (GetSvrCfg()->GetPungAsTan()) { ... GetSvrData()->SetTanCount(pung_seat_, from_seat, ... + 1);",
+   "configKeys": [
+    "pung_as_tan",
+    "enable_three_tan_bao"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:56cb3fc5a99252d32acf5ca05aeaa88c17bca558fd623890fbf0089a190ca230",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_result.cpp",
+     "contentHash": "sha256:bb32685d3c302ff07704ea61f16400cd2aca5924f6ef97779b7f537678d3a241"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-024-02",
+   "atomIds": [
+    "AT-ST-C01-024",
+    "AT-ST-C01-025",
+    "AT-ST-C01-026",
+    "AT-ST-C01-027",
+    "AT-ST-C01-028",
+    "AT-ST-C01-029"
+   ],
+   "claimKey": "pung-judge-chi-peng-and-guard-call-site",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_pung.cpp",
+   "location": "common_game/com_game/common_game_com_pung.cpp:17-41",
+   "symbol": "BoxPungStep::Judge",
+   "excerpt": "if (GetPungAsTan() && IsChiPengExceeded(…)) continue; … if (IsGuardDealerBlocked(…)) { 通知 kNIFExGuardDealer; continue; }",
+   "configKeys": [
+    "rule_chi_peng",
+    "enable_three_tan_bao",
+    "guard_dealer",
+    "pung_as_tan"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:56cb3fc5a99252d32acf5ca05aeaa88c17bca558fd623890fbf0089a190ca230",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/common_game_algorithm.cpp",
+     "contentHash": "sha256:889811c5be193378a0d7e807f265f2d5a3ef1520581f8c7075b7cd6b28ece0ab"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-009-01",
+   "atomIds": [
+    "AT-ST-C01-009",
+    "AT-ST-C01-011"
+   ],
+   "claimKey": "score-limit-cap-in-settlement",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:201-213",
+   "symbol": "BoxResultStep::CalcFinalWinLost",
+   "excerpt": "// 单局输分封顶（好友房 score_limit，0=不封顶）... if (score_limit > 0) { kv.second = -score_limit - existing; }",
+   "configKeys": [
+    "score_limit"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:bb32685d3c302ff07704ea61f16400cd2aca5924f6ef97779b7f537678d3a241",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-013-01",
+   "atomIds": [
+    "AT-ST-C01-013"
+   ],
+   "claimKey": "score-limit-zero-means-no-cap",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:201-213",
+   "symbol": "BoxResultStep::CalcFinalWinLost",
+   "excerpt": "int64_t score_limit = GetSvrCfg()->GetScoreLimit(); if (score_limit > 0) { ... kv.second = -score_limit - existing; }",
+   "configKeys": [
+    "score_limit"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:bb32685d3c302ff07704ea61f16400cd2aca5924f6ef97779b7f537678d3a241",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "hzmj_server/server_config.cpp",
+     "contentHash": "sha256:97d42be66dccdf2e674227ce0491964bf8eb5b06272a55965391693f9411781c"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-021-02",
+   "atomIds": [
+    "AT-ST-C01-021",
+    "AT-ST-C01-023"
+   ],
+   "claimKey": "contract-settle-guarded-by-three-tan-flag",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:289-295",
+   "symbol": "BoxResultStep::ApplyBaoContracts",
+   "excerpt": "ApplyBaoContracts(...) { if (!GetSvrCfg()->GetEnableThreeTanBao()) { return; }",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:bb32685d3c302ff07704ea61f16400cd2aca5924f6ef97779b7f537678d3a241",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "hzmj_server/game_logic.cpp",
+     "contentHash": "sha256:8f21c00c2671a018391336e5938f6cce9881addd217159bb9ca08dbcecd8fe8f"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-006-01",
+   "atomIds": [
+    "AT-ST-C01-006"
+   ],
+   "claimKey": "grand-settlement-owned-by-room-service",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:57-59",
+   "symbol": "BoxResultStep::OnResult",
+   "excerpt": "// 打片房大结算判定（需求「片数」，仅好友房）：每小局胡牌结束 ... 由房间服务据此进入大结算。",
+   "configKeys": [
+    "play_score"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:bb32685d3c302ff07704ea61f16400cd2aca5924f6ef97779b7f537678d3a241",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-015-01",
+   "atomIds": [
+    "AT-ST-C01-015"
+   ],
+   "claimKey": "play-score-endgame-exempt-on-banker-win",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:57-76",
+   "symbol": "BoxResultStep::OnResult",
+   "excerpt": "GetSvrCfg()->GetPlayScore() > 0 && end_type == kEtHu) { ... if (!(GetSvrCfg()->GetLianZhuangBuZhan() && banker_win)) {",
+   "configKeys": [
+    "play_score",
+    "lian_zhuang_bu_zhan"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:bb32685d3c302ff07704ea61f16400cd2aca5924f6ef97779b7f537678d3a241",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "hzmj_server/game_logic.cpp",
+     "contentHash": "sha256:8f21c00c2671a018391336e5938f6cce9881addd217159bb9ca08dbcecd8fe8f"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-009-02",
+   "atomIds": [
+    "AT-ST-C01-009"
+   ],
+   "claimKey": "play-score-gates-lian-zhuang-bu-zhan",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:60-76",
+   "symbol": "BoxResultStep::OnResult",
+   "excerpt": "kGameModeBox && GetPlayScore() > 0 && end_type == kEtHu ... if (!(GetLianZhuangBuZhan() && banker_win))",
+   "configKeys": [
+    "play_score",
+    "lian_zhuang_bu_zhan"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:bb32685d3c302ff07704ea61f16400cd2aca5924f6ef97779b7f537678d3a241",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-009-03",
+   "atomIds": [
+    "AT-ST-C01-009",
+    "AT-ST-C01-010"
+   ],
+   "claimKey": "base-score-used-in-settlement",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:89",
+   "symbol": "BoxResultStep::CalcFinalWinLost",
+   "excerpt": "int64_t base_score = GetSvrCfg()->GetBaseScore();",
+   "configKeys": [
+    "base_score"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:bb32685d3c302ff07704ea61f16400cd2aca5924f6ef97779b7f537678d3a241",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-027-01",
+   "atomIds": [
+    "AT-ST-C01-027",
+    "AT-ST-C01-029"
+   ],
+   "claimKey": "guard-dealer-3-vs-4-player-scope",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_algorithm.cpp",
+   "location": "common_game/common_game_algorithm.cpp:62-67",
+   "symbol": "CommonGameAlgorithm::IsGuardDealerBlocked",
+   "excerpt": "// 3人仅禁碰庄家打出的牌；4人及以上禁庄家与庄下家\nif (discard_seat != zhuang) { if (player_count < 4) return false; … }",
+   "configKeys": [
+    "guard_dealer"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:889811c5be193378a0d7e807f265f2d5a3ef1520581f8c7075b7cd6b28ece0ab",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_pung.cpp",
+     "contentHash": "sha256:56cb3fc5a99252d32acf5ca05aeaa88c17bca558fd623890fbf0089a190ca230"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-018-01",
+   "atomIds": [
+    "AT-ST-C01-018"
+   ],
+   "claimKey": "chi-peng-limit-two-per-direction",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_algorithm.cpp",
+   "location": "common_game/common_game_algorithm.cpp:79-84",
+   "symbol": "CommonGameAlgorithm::IsChiPengExceeded",
+   "excerpt": "if (cfg->GetRuleChiPeng() <= 0) { return false; } ... return data->GetChiPengCount(...) >= 2;",
+   "configKeys": [
+    "rule_chi_peng"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:889811c5be193378a0d7e807f265f2d5a3ef1520581f8c7075b7cd6b28ece0ab",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_action.cpp",
+     "contentHash": "sha256:6c1fed852b4d3d198d1f4ca1ccfb787df1fa2b79a4ca095b2e055f2c761644b9"
+    },
+    {
+     "file": "common_game/com_game/common_game_com_pung.cpp",
+     "contentHash": "sha256:56cb3fc5a99252d32acf5ca05aeaa88c17bca558fd623890fbf0089a190ca230"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-024-03",
+   "atomIds": [
+    "AT-ST-C01-024",
+    "AT-ST-C01-026",
+    "AT-ST-C01-028"
+   ],
+   "claimKey": "rule-chi-peng-limit-two",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_algorithm.cpp",
+   "location": "common_game/common_game_algorithm.cpp:79-84",
+   "symbol": "CommonGameAlgorithm::IsChiPengExceeded",
+   "excerpt": "if (cfg->GetRuleChiPeng() <= 0) { return false; }  // 未开启不限制\nreturn data->GetChiPengCount(seat, target_seat) >= 2;",
+   "configKeys": [
+    "rule_chi_peng"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:889811c5be193378a0d7e807f265f2d5a3ef1520581f8c7075b7cd6b28ece0ab",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_action.cpp",
+     "contentHash": "sha256:6c1fed852b4d3d198d1f4ca1ccfb787df1fa2b79a4ca095b2e055f2c761644b9"
+    },
+    {
+     "file": "common_game/com_game/common_game_com_pung.cpp",
+     "contentHash": "sha256:56cb3fc5a99252d32acf5ca05aeaa88c17bca558fd623890fbf0089a190ca230"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-024-04",
+   "atomIds": [
+    "AT-ST-C01-024",
+    "AT-ST-C01-026",
+    "AT-ST-C01-028"
+   ],
+   "claimKey": "three-tan-bao-limit-check",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_algorithm.cpp",
+   "location": "common_game/common_game_algorithm.cpp:86-93",
+   "symbol": "CommonGameAlgorithm::IsXianXianTanFull",
+   "excerpt": "if (!cfg->GetEnableThreeTanBao()) return false; // 未开启\nif (actor_seat == zhuang || target_seat == zhuang) return false;",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:889811c5be193378a0d7e807f265f2d5a3ef1520581f8c7075b7cd6b28ece0ab",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_action.cpp",
+     "contentHash": "sha256:6c1fed852b4d3d198d1f4ca1ccfb787df1fa2b79a4ca095b2e055f2c761644b9"
+    },
+    {
+     "file": "common_game/com_game/common_game_com_pung.cpp",
+     "contentHash": "sha256:56cb3fc5a99252d32acf5ca05aeaa88c17bca558fd623890fbf0089a190ca230"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-019-02",
+   "atomIds": [
+    "AT-ST-C01-019",
+    "AT-ST-C01-023"
+   ],
+   "claimKey": "xian-xian-tan-capped-at-two",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_algorithm.cpp",
+   "location": "common_game/common_game_algorithm.cpp:86-93",
+   "symbol": "CommonGameAlgorithm::IsXianXianTanFull",
+   "excerpt": "if (!cfg->GetEnableThreeTanBao()) { return false; } ... return data->GetTanCount(...) >= 2;",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:889811c5be193378a0d7e807f265f2d5a3ef1520581f8c7075b7cd6b28ece0ab",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_action.cpp",
+     "contentHash": "sha256:6c1fed852b4d3d198d1f4ca1ccfb787df1fa2b79a4ca095b2e055f2c761644b9"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-001-01",
+   "atomIds": [
+    "AT-ST-C01-001"
+   ],
+   "claimKey": "simple-mode-suppress-notice",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_context.cpp",
+   "location": "common_game/common_game_context.cpp:29-36",
+   "symbol": "CommonGameContext::SendNotifyInfo",
+   "excerpt": "// 简洁模式：仅抑制白名单内的规则类 toast ... if (GetSvrCfg()->GetSimpleMode() && IsSimpleModeSuppressed(flag)) { ... return; }",
+   "configKeys": [
+    "simple_mode"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:6ebbdaf5f69ea0d613a9510b8afed8329e8650bd81b867265a113c409aa66c56",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-001-02",
+   "atomIds": [
+    "AT-ST-C01-001"
+   ],
+   "claimKey": "simple-mode-broadcast",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_context.cpp",
+   "location": "common_game/common_game_context.cpp:438-442",
+   "symbol": "CommonGameContext::FillMsgGameConfig",
+   "excerpt": "msg->set_simple_mode(GetSvrCfg()->GetSimpleMode());",
+   "configKeys": [
+    "simple_mode"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:6ebbdaf5f69ea0d613a9510b8afed8329e8650bd81b867265a113c409aa66c56",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-022-01",
+   "atomIds": [
+    "AT-ST-C01-022"
+   ],
+   "claimKey": "server-pushes-three-tan-flag-to-client",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_context.cpp",
+   "location": "common_game/common_game_context.cpp:438-443",
+   "symbol": "CommonGameContext::FillMsgGameConfig",
+   "excerpt": "msg->set_enable_three_tan_bao(GetSvrCfg()->GetEnableThreeTanBao());",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:6ebbdaf5f69ea0d613a9510b8afed8329e8650bd81b867265a113c409aa66c56",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/protocol/hzmj_protocol.proto",
+     "contentHash": "sha256:d06362df4f99f66eefe69ad7eb2526be735c602cbd2af48e3ea1f2e676c2ccd7"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-002-01",
+   "atomIds": [
+    "AT-ST-C01-002"
+   ],
+   "claimKey": "player-count-gates-two-suit",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_init.cpp",
+   "location": "common_game/common_game_init.cpp:57-58",
+   "symbol": "CommonGameInit::InitData",
+   "excerpt": "// 缺一色：仅 2/3 人可开 ... bool drop_wan = svr_cfg->GetEnableTwoSuit() && svr_data->GetPlayerCount() <= 3;",
+   "configKeys": [
+    "enable_two_suit"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:bf3d7ab31e9cc3f699a053baad81bc10101c734ddb3dcfd883f803f9817f7797",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-025-01",
+   "atomIds": [
+    "AT-ST-C01-025",
+    "AT-ST-C01-027",
+    "AT-ST-C01-029"
+   ],
+   "claimKey": "two-suit-init-player-count-guard",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_init.cpp",
+   "location": "common_game/common_game_init.cpp:57-58",
+   "symbol": "CommonGameInit::InitData",
+   "excerpt": "// 缺一色：仅 2/3 人可开，开启后剔除万字花色（需求 §2/§6.1）\nbool drop_wan = svr_cfg->GetEnableTwoSuit() && svr_data->GetPlayerCount() <= 3;",
+   "configKeys": [
+    "enable_two_suit"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:bf3d7ab31e9cc3f699a053baad81bc10101c734ddb3dcfd883f803f9817f7797",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-024-05",
+   "atomIds": [
+    "AT-ST-C01-024",
+    "AT-ST-C01-026",
+    "AT-ST-C01-028"
+   ],
+   "claimKey": "no-total-round-limit-in-total-score",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_logic.cpp",
+   "location": "common_game/common_game_logic.cpp:153-194",
+   "symbol": "CommonGameLogic::CalcTotalScore",
+   "excerpt": "for (auto& r : score_records) { … one_box_score.user_scores[seat].score += …; … }",
+   "configKeys": [],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:677de989ee0517254aa8a9b3eabdee5884262d94d0d266b069eb811231b02ff1",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_result.h",
+     "contentHash": "sha256:dc456b6295f23fab91c1ecf7cc89e4dcf43e3ec819d77db9eae5f357cba99deb"
+    },
+    {
+     "file": "mah_frame/base/base_data.h",
+     "contentHash": "sha256:196fb0bf00ea548bc02415e000572403604be0ebd2a1bbe63400c13b8b4730e9"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-002-02",
+   "atomIds": [
+    "AT-ST-C01-002"
+   ],
+   "claimKey": "player-count-from-chair-count",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_logic.cpp",
+   "location": "common_game/common_game_logic.cpp:474-478",
+   "symbol": "CommonGameLogic::InitTableData",
+   "excerpt": "GetSvrData()->SetPlayerCount(static_cast<int16_t>(GetTablePtr()->GetChairCount()));",
+   "configKeys": [],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:677de989ee0517254aa8a9b3eabdee5884262d94d0d266b069eb811231b02ff1",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "mah_frame/interface/logic_interface.h",
+     "contentHash": "sha256:044db0b54e1357fe1116521e4e8e53900388b9a521bcbb65c2820451b0254df2"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-024-06",
+   "atomIds": [
+    "AT-ST-C01-024",
+    "AT-ST-C01-025",
+    "AT-ST-C01-026",
+    "AT-ST-C01-027",
+    "AT-ST-C01-028",
+    "AT-ST-C01-029"
+   ],
+   "claimKey": "box-config-load-call-chain",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_logic.cpp",
+   "location": "common_game/common_game_logic.cpp:65-73",
+   "symbol": "CommonGameLogic::OnGameStart",
+   "excerpt": "} else {\n        GetSvrCfg()->InitConfigByBox(player_count);\n        try {\n            LoadBoxJsonConfig(config);",
+   "configKeys": [],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:677de989ee0517254aa8a9b3eabdee5884262d94d0d266b069eb811231b02ff1",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "hzmj_server/server_config.cpp",
+     "contentHash": "sha256:97d42be66dccdf2e674227ce0491964bf8eb5b06272a55965391693f9411781c"
+    },
+    {
+     "file": "hzmj_server/game_logic.cpp",
+     "contentHash": "sha256:8f21c00c2671a018391336e5938f6cce9881addd217159bb9ca08dbcecd8fe8f"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-024-07",
+   "atomIds": [
+    "AT-ST-C01-024",
+    "AT-ST-C01-026",
+    "AT-ST-C01-028"
+   ],
+   "claimKey": "three-tan-bao-only-3-4-players",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_server_config.h",
+   "location": "common_game/common_game_server_config.h:41",
+   "symbol": "CommonGameServerConfig",
+   "excerpt": "AutoProperty(bool, enable_three_tan_bao, EnableThreeTanBao);  // 三摊承包（仅3/4人局，2人局服务端安全判断强制关闭）",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:8285e5fb4550ea262c69bfdfa3304670c85d976e7867bab3bfe1f5dd45775007",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-025-02",
+   "atomIds": [
+    "AT-ST-C01-025",
+    "AT-ST-C01-027",
+    "AT-ST-C01-029"
+   ],
+   "claimKey": "two-suit-only-2-3-players",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_server_config.h",
+   "location": "common_game/common_game_server_config.h:55",
+   "symbol": "CommonGameServerConfig",
+   "excerpt": "AutoProperty(bool, enable_two_suit, EnableTwoSuit);         // 缺一色（仅2/3人）",
+   "configKeys": [
+    "enable_two_suit"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:8285e5fb4550ea262c69bfdfa3304670c85d976e7867bab3bfe1f5dd45775007",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-025-03",
+   "atomIds": [
+    "AT-ST-C01-025",
+    "AT-ST-C01-027",
+    "AT-ST-C01-029"
+   ],
+   "claimKey": "guard-dealer-only-3-4-players",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_server_config.h",
+   "location": "common_game/common_game_server_config.h:65-66",
+   "symbol": "CommonGameServerConfig",
+   "excerpt": "// 守庄（仅3/4人局，2人局服务端安全判断强制关闭）\nAutoProperty(bool, enable_guard_dealer, EnableGuardDealer);  // 庄家上家无财神时禁碰庄家及庄下家的牌",
+   "configKeys": [
+    "guard_dealer"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:8285e5fb4550ea262c69bfdfa3304670c85d976e7867bab3bfe1f5dd45775007",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-018-02",
+   "atomIds": [
+    "AT-ST-C01-018",
+    "AT-ST-C01-020"
+   ],
+   "claimKey": "chi-peng-mode-config-parse",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:112-121",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "if (config.contains(\"rule_chi_peng\") && !svr_cfg->GetEnableThreeTanBao() ) { ... if (rule == 1)",
+   "configKeys": [
+    "only_pung_no_chow",
+    "rule_chi_peng",
+    "enable_three_tan_bao"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:8f21c00c2671a018391336e5938f6cce9881addd217159bb9ca08dbcecd8fe8f",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/common_game_algorithm.cpp",
+     "contentHash": "sha256:889811c5be193378a0d7e807f265f2d5a3ef1520581f8c7075b7cd6b28ece0ab"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-025-04",
+   "atomIds": [
+    "AT-ST-C01-025",
+    "AT-ST-C01-027",
+    "AT-ST-C01-029"
+   ],
+   "claimKey": "two-suit-json-no-player-count-check",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:122-125",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// enable_two_suit | 缺一色，仅2/3人可开，去掉万字花色\nif (config.contains(\"enable_two_suit\")) { SetEnableTwoSuit(config 值 > 0); }",
+   "configKeys": [
+    "enable_two_suit"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:8f21c00c2671a018391336e5938f6cce9881addd217159bb9ca08dbcecd8fe8f",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/common_game_init.cpp",
+     "contentHash": "sha256:bf3d7ab31e9cc3f699a053baad81bc10101c734ddb3dcfd883f803f9817f7797"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-025-05",
+   "atomIds": [
+    "AT-ST-C01-025",
+    "AT-ST-C01-027",
+    "AT-ST-C01-029"
+   ],
+   "claimKey": "guard-dealer-player-count-guard",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:149-161",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// 守庄仅3/4人局，2人局强制关闭\nif (enable && player_count <= 2) { enable = false; }\nSetEnableGuardDealer(enable);",
+   "configKeys": [
+    "guard_dealer"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:8f21c00c2671a018391336e5938f6cce9881addd217159bb9ca08dbcecd8fe8f",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/common_game_algorithm.cpp",
+     "contentHash": "sha256:889811c5be193378a0d7e807f265f2d5a3ef1520581f8c7075b7cd6b28ece0ab"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-002-03",
+   "atomIds": [
+    "AT-ST-C01-002"
+   ],
+   "claimKey": "player-count-gates-guard-dealer",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:149-161",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// 守庄（仅3/4人局，2人局强制关闭）... if (enable && player_count <= 2) { enable = false; } SetEnableGuardDealer(enable);",
+   "configKeys": [
+    "guard_dealer"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:8f21c00c2671a018391336e5938f6cce9881addd217159bb9ca08dbcecd8fe8f",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-001-03",
+   "atomIds": [
+    "AT-ST-C01-001"
+   ],
+   "claimKey": "simple-mode-json-key",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:163-167",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "simple_mode | bool | true/false | false | 简洁模式 ... if (config.contains(\"simple_mode\")) { SetSimpleMode(... > 0); }",
+   "configKeys": [
+    "simple_mode"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:8f21c00c2671a018391336e5938f6cce9881addd217159bb9ca08dbcecd8fe8f",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/common_game_context.cpp",
+     "contentHash": "sha256:6ebbdaf5f69ea0d613a9510b8afed8329e8650bd81b867265a113c409aa66c56"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-013-02",
+   "atomIds": [
+    "AT-ST-C01-013"
+   ],
+   "claimKey": "score-limit-independent-parse",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:169-173",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "svr_cfg->SetScoreLimit(static_cast<int32_t>(CommonUtils::SafeGetJsonInt64(config, \"score_limit\")));",
+   "configKeys": [
+    "score_limit"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:8f21c00c2671a018391336e5938f6cce9881addd217159bb9ca08dbcecd8fe8f",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_result.cpp",
+     "contentHash": "sha256:bb32685d3c302ff07704ea61f16400cd2aca5924f6ef97779b7f537678d3a241"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-011-01",
+   "atomIds": [
+    "AT-ST-C01-011"
+   ],
+   "claimKey": "score-limit-json-key",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:169-173",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// score_limit | int32 | 0/20/40/64/80/128/256 | 0=不封顶 ... if (config.contains(\"score_limit\")) { SetScoreLimit(...); }",
+   "configKeys": [
+    "score_limit"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:8f21c00c2671a018391336e5938f6cce9881addd217159bb9ca08dbcecd8fe8f",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_result.cpp",
+     "contentHash": "sha256:bb32685d3c302ff07704ea61f16400cd2aca5924f6ef97779b7f537678d3a241"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-012-01",
+   "atomIds": [
+    "AT-ST-C01-012",
+    "AT-ST-C01-016"
+   ],
+   "claimKey": "play-score-parsed-as-start-chips",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:175-179",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "svr_cfg->SetPlayScore(static_cast<int32_t>(CommonUtils::SafeGetJsonInt64(config, \"play_score\")));",
+   "configKeys": [
+    "play_score"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:8f21c00c2671a018391336e5938f6cce9881addd217159bb9ca08dbcecd8fe8f",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_result.cpp",
+     "contentHash": "sha256:bb32685d3c302ff07704ea61f16400cd2aca5924f6ef97779b7f537678d3a241"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-009-04",
+   "atomIds": [
+    "AT-ST-C01-009"
+   ],
+   "claimKey": "play-score-lian-zhuang-json-keys",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:175-183",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// play_score | int32 | >0 表示打片房 | 0 ... // lian_zhuang_bu_zhan | bool | true/false | false | 连庄不占局数（仅打片房）",
+   "configKeys": [
+    "play_score",
+    "lian_zhuang_bu_zhan"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:8f21c00c2671a018391336e5938f6cce9881addd217159bb9ca08dbcecd8fe8f",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_result.cpp",
+     "contentHash": "sha256:bb32685d3c302ff07704ea61f16400cd2aca5924f6ef97779b7f537678d3a241"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-015-02",
+   "atomIds": [
+    "AT-ST-C01-015"
+   ],
+   "claimKey": "lian-zhuang-bu-zhan-config-parse",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:180-183",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "svr_cfg->SetLianZhuangBuZhan(CommonUtils::SafeGetJsonInt64(config, \"lian_zhuang_bu_zhan\") > 0);",
+   "configKeys": [
+    "lian_zhuang_bu_zhan"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:8f21c00c2671a018391336e5938f6cce9881addd217159bb9ca08dbcecd8fe8f",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_result.cpp",
+     "contentHash": "sha256:bb32685d3c302ff07704ea61f16400cd2aca5924f6ef97779b7f537678d3a241"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-010-01",
+   "atomIds": [
+    "AT-ST-C01-010"
+   ],
+   "claimKey": "base-score-json-override",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:22-34",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// base_score | int64 | >0 | 1 | 底分（非法值保持默认 1）... if (base_score > 0) { SetBaseScore(base_score); } else LOGE(...)",
+   "configKeys": [
+    "base_score"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:8f21c00c2671a018391336e5938f6cce9881addd217159bb9ca08dbcecd8fe8f",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_result.cpp",
+     "contentHash": "sha256:bb32685d3c302ff07704ea61f16400cd2aca5924f6ef97779b7f537678d3a241"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-014-01",
+   "atomIds": [
+    "AT-ST-C01-014"
+   ],
+   "claimKey": "base-score-parse-only-accepts-positive",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:22-34",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "if (config.contains(\"base_score\")) { ... if (base_score > 0) { svr_cfg->SetBaseScore(base_score); }",
+   "configKeys": [
+    "base_score"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:8f21c00c2671a018391336e5938f6cce9881addd217159bb9ca08dbcecd8fe8f",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "mah_frame/base/base_config.cpp",
+     "contentHash": "sha256:f52525e38c88a287145fd7e8caea2e87ead0d28648a2a5c4f76784186eb916eb"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-003-02",
+   "atomIds": [
+    "AT-ST-C01-003"
+   ],
+   "claimKey": "cai-shen-type-json-key",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:51-55",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// cai_shen_type | int8 | 0白板财神/1翻财神 | 0 ... if (config.contains(\"cai_shen_type\")) { SetCaiShenType(...); }",
+   "configKeys": [
+    "cai_shen_type"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:8f21c00c2671a018391336e5938f6cce9881addd217159bb9ca08dbcecd8fe8f",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_ju.cpp",
+     "contentHash": "sha256:72e2c48437b8e0461ba1e2d90c7ae706f8514da5bfe6181dd64a031993828e27"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-004-03",
+   "atomIds": [
+    "AT-ST-C01-004"
+   ],
+   "claimKey": "banker-level-type-json-key",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:56-59",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// banker_level_type | int8 | 0平庄起/1笃二老庄/2笃三老庄 | 0 | 牢庄起算档位（2/4/8倍）... SetBankerLevelType(...);",
+   "configKeys": [
+    "banker_level_type"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:8f21c00c2671a018391336e5938f6cce9881addd217159bb9ca08dbcecd8fe8f",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_ju.cpp",
+     "contentHash": "sha256:72e2c48437b8e0461ba1e2d90c7ae706f8514da5bfe6181dd64a031993828e27"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-005-02",
+   "atomIds": [
+    "AT-ST-C01-005"
+   ],
+   "claimKey": "banker-discard-hu-json-key",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:60-63",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// enable_banker_discard_hu | bool | true/false | true | 庄闲放铳，仅三牢时庄闲可互相点炮 ... SetEnableBankerDiscardHu(...);",
+   "configKeys": [
+    "enable_banker_discard_hu"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:8f21c00c2671a018391336e5938f6cce9881addd217159bb9ca08dbcecd8fe8f",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_action.cpp",
+     "contentHash": "sha256:6c1fed852b4d3d198d1f4ca1ccfb787df1fa2b79a4ca095b2e055f2c761644b9"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-019-03",
+   "atomIds": [
+    "AT-ST-C01-019",
+    "AT-ST-C01-020",
+    "AT-ST-C01-021",
+    "AT-ST-C01-022",
+    "AT-ST-C01-023"
+   ],
+   "claimKey": "three-tan-forced-off-for-two-players",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:65-87",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "if (enable && player_count <= 2) { ... enable = false; } ... if (config.contains(\"pung_as_tan\"))",
+   "configKeys": [
+    "enable_three_tan_bao",
+    "pung_as_tan",
+    "rule_chi_peng"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:8f21c00c2671a018391336e5938f6cce9881addd217159bb9ca08dbcecd8fe8f",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/common_game_algorithm.cpp",
+     "contentHash": "sha256:889811c5be193378a0d7e807f265f2d5a3ef1520581f8c7075b7cd6b28ece0ab"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-024-08",
+   "atomIds": [
+    "AT-ST-C01-024",
+    "AT-ST-C01-026",
+    "AT-ST-C01-028"
+   ],
+   "claimKey": "three-tan-bao-player-count-guard",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:66-83",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "if (enable && player_count <= 2) { enable = false; } else { SetEnableThreeTanBao(false); SetRuleChiPeng(2); // 限吃碰2次",
+   "configKeys": [
+    "enable_three_tan_bao",
+    "rule_chi_peng"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:8f21c00c2671a018391336e5938f6cce9881addd217159bb9ca08dbcecd8fe8f",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "common_game/common_game_server_config.h",
+     "contentHash": "sha256:8285e5fb4550ea262c69bfdfa3304670c85d976e7867bab3bfe1f5dd45775007"
+    },
+    {
+     "file": "common_game/common_game_algorithm.cpp",
+     "contentHash": "sha256:889811c5be193378a0d7e807f265f2d5a3ef1520581f8c7075b7cd6b28ece0ab"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-003-03",
+   "atomIds": [
+    "AT-ST-C01-003"
+   ],
+   "claimKey": "cai-shen-type-default-white-board",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/server_config.cpp",
+   "location": "hzmj_server/server_config.cpp:16",
+   "symbol": "ServerConfig::InitConfigByBox",
+   "excerpt": "SetCaiShenType(0);",
+   "configKeys": [
+    "cai_shen_type"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:97d42be66dccdf2e674227ce0491964bf8eb5b06272a55965391693f9411781c",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-004-04",
+   "atomIds": [
+    "AT-ST-C01-004"
+   ],
+   "claimKey": "banker-level-type-default-flat",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/server_config.cpp",
+   "location": "hzmj_server/server_config.cpp:18",
+   "symbol": "ServerConfig::InitConfigByBox",
+   "excerpt": "SetBankerLevelType(0);",
+   "configKeys": [
+    "banker_level_type"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:97d42be66dccdf2e674227ce0491964bf8eb5b06272a55965391693f9411781c",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-005-03",
+   "atomIds": [
+    "AT-ST-C01-005"
+   ],
+   "claimKey": "banker-discard-hu-default-on",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/server_config.cpp",
+   "location": "hzmj_server/server_config.cpp:19",
+   "symbol": "ServerConfig::InitConfigByBox",
+   "excerpt": "SetEnableBankerDiscardHu(true);",
+   "configKeys": [
+    "enable_banker_discard_hu"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:97d42be66dccdf2e674227ce0491964bf8eb5b06272a55965391693f9411781c",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-024-09",
+   "atomIds": [
+    "AT-ST-C01-024",
+    "AT-ST-C01-025",
+    "AT-ST-C01-026",
+    "AT-ST-C01-027",
+    "AT-ST-C01-028",
+    "AT-ST-C01-029"
+   ],
+   "claimKey": "box-default-config-values",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/server_config.cpp",
+   "location": "hzmj_server/server_config.cpp:19-39",
+   "symbol": "ServerConfig::InitConfigByBox",
+   "excerpt": "SetEnableThreeTanBao(false); … SetRuleChiPeng(0); SetEnableTwoSuit(false); … SetEnableGuardDealer(false);",
+   "configKeys": [
+    "enable_three_tan_bao",
+    "pung_as_tan",
+    "rule_chi_peng",
+    "enable_two_suit",
+    "guard_dealer"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:97d42be66dccdf2e674227ce0491964bf8eb5b06272a55965391693f9411781c",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-019-04",
+   "atomIds": [
+    "AT-ST-C01-019",
+    "AT-ST-C01-020",
+    "AT-ST-C01-021",
+    "AT-ST-C01-022",
+    "AT-ST-C01-023"
+   ],
+   "claimKey": "box-default-three-tan-off-pung-as-tan-on",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/server_config.cpp",
+   "location": "hzmj_server/server_config.cpp:20-21",
+   "symbol": "ServerConfig::InitConfigByBox",
+   "excerpt": "SetEnableThreeTanBao(false); SetPungAsTan(true);",
+   "configKeys": [
+    "enable_three_tan_bao",
+    "pung_as_tan"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:97d42be66dccdf2e674227ce0491964bf8eb5b06272a55965391693f9411781c",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-018-03",
+   "atomIds": [
+    "AT-ST-C01-018",
+    "AT-ST-C01-020"
+   ],
+   "claimKey": "box-default-chi-peng-unlimited",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/server_config.cpp",
+   "location": "hzmj_server/server_config.cpp:27-28",
+   "symbol": "ServerConfig::InitConfigByBox",
+   "excerpt": "SetOnlyPungNoChow(false); SetRuleChiPeng(0);",
+   "configKeys": [
+    "only_pung_no_chow",
+    "rule_chi_peng"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:97d42be66dccdf2e674227ce0491964bf8eb5b06272a55965391693f9411781c",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-001-04",
+   "atomIds": [
+    "AT-ST-C01-001"
+   ],
+   "claimKey": "simple-mode-default-off",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/server_config.cpp",
+   "location": "hzmj_server/server_config.cpp:41",
+   "symbol": "ServerConfig::InitConfigByBox",
+   "excerpt": "SetSimpleMode(false);",
+   "configKeys": [
+    "simple_mode"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:97d42be66dccdf2e674227ce0491964bf8eb5b06272a55965391693f9411781c",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-009-05",
+   "atomIds": [
+    "AT-ST-C01-009",
+    "AT-ST-C01-011"
+   ],
+   "claimKey": "box-defaults-score-limit-play-score",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/server_config.cpp",
+   "location": "hzmj_server/server_config.cpp:43-46",
+   "symbol": "ServerConfig::InitConfigByBox",
+   "excerpt": "SetScoreLimit(0); ... SetPlayScore(0); SetLianZhuangBuZhan(false);",
+   "configKeys": [
+    "score_limit",
+    "play_score",
+    "lian_zhuang_bu_zhan"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:97d42be66dccdf2e674227ce0491964bf8eb5b06272a55965391693f9411781c",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-012-02",
+   "atomIds": [
+    "AT-ST-C01-012",
+    "AT-ST-C01-013",
+    "AT-ST-C01-015"
+   ],
+   "claimKey": "box-defaults-score-limit-play-score-lian-zhuang",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/server_config.cpp",
+   "location": "hzmj_server/server_config.cpp:43-46",
+   "symbol": "ServerConfig::InitConfigByBox",
+   "excerpt": "SetScoreLimit(0); SetPlayScore(0); SetLianZhuangBuZhan(false);",
+   "configKeys": [
+    "score_limit",
+    "play_score",
+    "lian_zhuang_bu_zhan"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:97d42be66dccdf2e674227ce0491964bf8eb5b06272a55965391693f9411781c",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": [
+    {
+     "file": "hzmj_server/game_logic.cpp",
+     "contentHash": "sha256:8f21c00c2671a018391336e5938f6cce9881addd217159bb9ca08dbcecd8fe8f"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-010-02",
+   "atomIds": [
+    "AT-ST-C01-010",
+    "AT-ST-C01-014"
+   ],
+   "claimKey": "base-score-default-one",
+   "repoId": "server",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_config.cpp",
+   "location": "mah_frame/base/base_config.cpp:36",
+   "symbol": "BaseConfig::Reset",
+   "excerpt": "base_score_ = 1;",
+   "configKeys": [
+    "base_score"
+   ],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:f52525e38c88a287145fd7e8caea2e87ead0d28648a2a5c4f76784186eb916eb",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-005-04",
+   "atomIds": [
+    "AT-ST-C01-005"
+   ],
+   "claimKey": "discard-allowed-default",
+   "repoId": "server",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_config.cpp",
+   "location": "mah_frame/base/base_config.cpp:42",
+   "symbol": "BaseConfig::Reset",
+   "excerpt": "discard_ = true;",
+   "configKeys": [],
+   "sourceRevision": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "contentHash": "sha256:f52525e38c88a287145fd7e8caea2e87ead0d28648a2a5c4f76784186eb916eb",
+   "verifiedAt": "2026-11-17",
+   "dependencyFiles": []
+  }
+ ],
+ "stats": {
+  "atomCount": 29,
+  "active": 6,
+  "conditional": 17,
+  "unknown": 2,
+  "inactive": 4,
+  "directConflict": 0,
+  "pending": 387
+ }
+}

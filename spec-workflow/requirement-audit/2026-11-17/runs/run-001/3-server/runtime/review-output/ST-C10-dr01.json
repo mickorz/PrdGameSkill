@@ -1,0 +1,16 @@
+{
+ "schemaVersion": 2,
+ "analysisRunId": "ar-2026-11-17-001",
+ "entries": [
+  {
+   "atomId": "AT-ST-C10-001",
+   "previousDifference": "unverified",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义（source 147 行「行牌 > 吃、碰、杠」）：风牌、箭牌不能做顺子、不能吃，本片 AT-ST-C10-001~027 即吃/碰/杠行牌规则整片。客户端侧：2-client/client-evidence.json 全量仅 12 条 CLE-AT-ST-C01-*-01~04（覆盖 AT-ST-C01-001/002/003/004/005/009），无任何 ST-C10 原子的证据，unified-atoms 中本片 27 个原子的 client.verdict 与 client.evidenceIds 均为空。服务端侧：3-server/server-evidence.json 全量 60 条覆盖的 atomIds 仅为 AT-ST-C01-001~029，同样无 ST-C10 原子证据，server.applicability 与 evidenceIds 为空。故双端均未取证，既不能证实实现与需求一致（不可判 consistent/partial），也无矛盾证据可立冲突（不可判 conflict），维持 S7 初判 unverified；本片无 upgraded 原子、无 candidateDifference，无需降级或升级。",
+   "reviewRule": "evidence-is-not-consistency（本片 27 个原子双端证据均为零，按缺证维持 unverified，不得因缺证而判 consistent 或立 conflict）",
+   "evidenceScopes": []
+  }
+ ]
+}

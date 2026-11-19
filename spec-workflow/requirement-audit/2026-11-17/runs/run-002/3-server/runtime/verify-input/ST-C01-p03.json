@@ -1,0 +1,131 @@
+{
+ "schemaVersion": 1,
+ "generatedBy": "prepare-verify-input.mjs",
+ "date": "2026-11-17",
+ "branch": "server",
+ "registryPath": "spec-workflow/requirement-audit/2026-11-17/runs/run-002/1-registry/requirement-registry.json",
+ "stageId": "ST-C01",
+ "stageName": "房间参数（单选）",
+ "partNo": "03",
+ "partCount": 3,
+ "atomCount": 6,
+ "featureGroups": [
+  {
+   "featureId": "FP-ST-C01-007",
+   "featureName": "人数联动",
+   "featureDescription": "选中人数档后生效的联动：局数档显示范围、吃碰组与承包组的显隐及生效方式、缺一色与守庄的显隐。",
+   "featureScope": "覆盖 2人 / 3人 / 4人 三档人数各自的联动结果；联动所改动的选项自身取值规则见对应功能点。",
+   "featureCoordination": "由人数选项触发，联动结果同时影响局数、吃碰、承包、缺一色、守庄五处面板表现与生效规则。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C01-024",
+     "name": "2人房局数吃碰承包联动",
+     "rule": "选中 2人：显示 32局、隐藏 4局；吃碰组显示并选中「无限吃碰」；承包组隐藏。",
+     "uiRequirement": "人数切到 2人后，局数单选组出现 32局且不出现 4局，出现吃碰组并选中无限吃碰，承包组消失。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家在人数单选中选择 2人",
+      "condition": "人数档由其他人数切换为 2人",
+      "action": "按 2 人联动刷新局数、吃碰、承包三处面板与取值",
+      "result": "玩家看到 32局可选、4局不可见，吃碰组出现并选中无限吃碰，承包组不可见"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 30,
+      "toLine": 30
+     }
+    },
+    {
+     "atomId": "AT-ST-C01-025",
+     "name": "2人房缺一色与守庄联动",
+     "rule": "选中 2人：「缺一色」显示、「守庄」隐藏。",
+     "uiRequirement": "人数切到 2人后，面板出现「缺一色」选项，不出现「守庄」选项。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家在人数单选中选择 2人",
+      "condition": "人数为 2人",
+      "action": "面板刷新缺一色与守庄的显隐",
+      "result": "玩家可看到缺一色选项，看不到守庄选项"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 30,
+      "toLine": 30
+     }
+    },
+    {
+     "atomId": "AT-ST-C01-026",
+     "name": "3人房局数吃碰承包联动",
+     "rule": "选中 3人：显示 32局、隐藏 4局；吃碰组隐藏、按「默认吃碰」生效；承包组显示。",
+     "uiRequirement": "人数切到 3人后，局数单选组出现 32局且不出现 4局，吃碰组消失，承包组出现。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家在人数单选中选择 3人",
+      "condition": "人数档切换为 3人",
+      "action": "按 3 人联动刷新局数、吃碰、承包三处面板与取值",
+      "result": "玩家看到 32局可选、4局不可见，吃碰组不可见但按默认吃碰生效，承包组出现"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 31,
+      "toLine": 31
+     }
+    },
+    {
+     "atomId": "AT-ST-C01-027",
+     "name": "3人房缺一色与守庄联动",
+     "rule": "选中 3人：「缺一色」「守庄」均显示。",
+     "uiRequirement": "人数切到 3人后，面板同时出现「缺一色」与「守庄」选项。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家在人数单选中选择 3人",
+      "condition": "人数为 3人",
+      "action": "面板刷新缺一色与守庄的显隐",
+      "result": "玩家可同时看到缺一色与守庄选项"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 31,
+      "toLine": 31
+     }
+    },
+    {
+     "atomId": "AT-ST-C01-028",
+     "name": "4人房局数吃碰承包联动",
+     "rule": "选中 4人：显示 4局、隐藏 32局；吃碰组隐藏、按「默认吃碰」生效；承包组显示。",
+     "uiRequirement": "人数切到 4人后，局数单选组出现 4局且不出现 32局，吃碰组消失，承包组出现。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家在人数单选中选择 4人",
+      "condition": "人数档切换为 4人",
+      "action": "按 4 人联动刷新局数、吃碰、承包三处面板与取值",
+      "result": "玩家看到 4局可选、32局不可见，吃碰组不可见但按默认吃碰生效，承包组出现"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 32,
+      "toLine": 32
+     }
+    },
+    {
+     "atomId": "AT-ST-C01-029",
+     "name": "4人房缺一色与守庄联动",
+     "rule": "选中 4人：「缺一色」隐藏、「守庄」显示。",
+     "uiRequirement": "人数切到 4人后，面板不出现「缺一色」选项，出现「守庄」选项。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家在人数单选中选择 4人",
+      "condition": "人数为 4人",
+      "action": "面板刷新缺一色与守庄的显隐",
+      "result": "玩家看不到缺一色选项，可看到守庄选项"
+     },
+     "source": {
+      "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+      "fromLine": 32,
+      "toLine": 32
+     }
+    }
+   ]
+  }
+ ]
+}

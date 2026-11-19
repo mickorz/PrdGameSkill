@@ -1,0 +1,551 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C01",
+ "partNo": "01",
+ "entries": [
+  {
+   "atomId": "AT-ST-C01-001",
+   "verdict": "partial",
+   "clientLogic": "客户端不实现创房面板；仅在对局中接收 MsgGameConfig 并缓存 simple_mode，作为「简洁模式」开关抑制部分局内动效与提示。",
+   "uiInteraction": "未见「模式」单选组（正常/简洁）及默认选中；简洁模式生效时局内不播放摸财神、三摊落地等动效。",
+   "messages": [
+    "MsgGameConfig"
+   ],
+   "notes": "未找到「正常/简洁」单选组、初始「正常」的客户端代码；仅找到简洁模式的消费逻辑，选项 UI 不在本仓库。",
+   "evidenceIds": [
+    "CLE-AT-ST-C01-001-01",
+    "CLE-AT-ST-C01-001-02",
+    "CLE-AT-ST-C01-001-03"
+   ],
+   "observedBehavior": {
+    "trigger": "玩家进入好友房对局",
+    "condition": "房间被设为简洁模式",
+    "action": "客户端按简洁模式抑制摸财神、三摊落地等动效",
+    "result": "对局表现更简洁，但玩家看不到模式选项"
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-002",
+   "verdict": "partial",
+   "clientLogic": "客户端按房间人数 playCnt 切换 2/3/4 人布局控制器，玩家面板、牌桌与结算座位按人数显示；调试面板可切换 2/3/4 人模式。",
+   "uiInteraction": "人数为 2/3/4 时切换对应布局页签，4 人布局显示四家头像与牌桌；未见创房人数单选组与默认 4 人。",
+   "messages": [],
+   "notes": "未找到「2人/3人/4人」单选组、默认「4人」及选择后的联动代码；仅发现对局按人数切换布局，人数来源为房间数据（平台侧）。",
+   "evidenceIds": [
+    "CLE-AT-ST-C01-002-01",
+    "CLE-AT-ST-C01-002-02",
+    "CLE-AT-ST-C01-002-03"
+   ],
+   "observedBehavior": {
+    "trigger": "进入不同人数的房间",
+    "condition": "房间人数为 2 人、3 人或 4 人",
+    "action": "客户端切换到对应人数的界面布局",
+    "result": "玩家只看到该人数应有的座位与牌桌"
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-003",
+   "verdict": "partial",
+   "clientLogic": "客户端从房间规则 cai_shen_type（0 白板财神 / 1 翻财神）与财神消息中的 jokerOpen 判定财神类型，决定翻牌动效与手牌排序。",
+   "uiInteraction": "翻财神时翻出牌为财神并播翻牌动效，白板财神时白板为财神；未见创房「玩法」单选组。",
+   "messages": [
+    "MsgJoker"
+   ],
+   "notes": "未找到「白板财神/翻财神」单选组、默认「白板财神」的客户端代码；玩法值只从房间规则读取。",
+   "evidenceIds": [
+    "CLE-AT-ST-C01-003-01",
+    "CLE-AT-ST-C01-003-02",
+    "CLE-AT-ST-C01-003-03"
+   ],
+   "observedBehavior": {
+    "trigger": "开局定财神",
+    "condition": "房间玩法为白板财神或翻财神",
+    "action": "客户端分别按白板或翻出牌处理财神并播对应动效",
+    "result": "财神牌显示与手牌排序随玩法不同"
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-004",
+   "verdict": "partial",
+   "clientLogic": "客户端从局数据 banker_level 取牢庄/连庄档位并显示庄标记，未实现连庄档位选择。",
+   "uiInteraction": "玩家头像上的庄标记按档位显示庄1/庄2/庄3；未见笃三老庄/笃二老庄/平庄起选项。",
+   "messages": [
+    "MsgJuData"
+   ],
+   "notes": "未找到「笃三老庄/笃二老庄/平庄起」单选组与默认「笃三老庄」；仅消费服务端下发的庄等级，起始档位由服务端配置决定。",
+   "evidenceIds": [
+    "CLE-AT-ST-C01-004-01",
+    "CLE-AT-ST-C01-004-02",
+    "CLE-AT-ST-C01-004-03"
+   ],
+   "observedBehavior": {
+    "trigger": "开局或连庄",
+    "condition": "服务端下发当前庄等级",
+    "action": "客户端在玩家头像上显示对应庄档标记",
+    "result": "玩家看到庄1/庄2/庄3档标记"
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-005",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未找到创房「胡牌」单选组、自摸胡/庄闲放铳(庄三)选项及默认值；客户端仅在对局权限与结算中按服务端下发的胡牌类型显示自摸/点炮，不体现该房间参数。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-006",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未找到创房「局数」单选组及 4/8/16/24/32 局档位、默认 8局；客户端也未消费局数总档位（MsgJuData.ju_count 未被使用）。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-007",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未找到按人数过滤局数档的实现，未见「4局」仅在 4 人房出现的显隐逻辑。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-008",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未找到按人数过滤局数档的实现，未见「32局」仅在 2/3 人房出现的显隐逻辑。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-009",
+   "verdict": "partial",
+   "clientLogic": "客户端在房间等待背景与听牌面板展示底分与封顶（数据来自房间数据与开局消息），但没有任何局数档选择及由其驱动的显隐逻辑。",
+   "uiInteraction": "等待界面显示「底分:N」，听牌面板显示「无封顶」或「封顶N倍」；未见「连庄不占局数」选项。",
+   "messages": [
+    "MsgStartGame"
+   ],
+   "notes": "未找到局数档选中后显示底分/封顶、隐藏「连庄不占局数」的联动代码；底分与封顶展示存在于其他界面，与局数档无关联。",
+   "evidenceIds": [
+    "CLE-AT-ST-C01-009-01",
+    "CLE-AT-ST-C01-009-02"
+   ],
+   "observedBehavior": {
+    "trigger": "进入好友房等待或查看听牌",
+    "condition": "房间已配置底分与封顶",
+    "action": "客户端在等待界面与听牌面板展示底分、封顶信息",
+    "result": "玩家能看到底分与封顶，但不会随局数档切换显隐"
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-010",
+   "verdict": "partial",
+   "clientLogic": "客户端从 MsgStartGame.base_score（比赛房）或房间数据读取底分并显示，没有创房底分单选组与默认值。",
+   "uiInteraction": "等待界面/房间背景显示「底分:N」；未见 1分/2分/5分 选项、默认 1分 与「仅局数档显示」的置灰或显隐。",
+   "messages": [
+    "MsgStartGame"
+   ],
+   "notes": "未找到 1分/2分/5分 单选组、默认 1分 以及仅在局数档显示的控制逻辑。",
+   "evidenceIds": [
+    "CLE-AT-ST-C01-009-01",
+    "CLE-AT-ST-C01-010-01"
+   ],
+   "observedBehavior": {
+    "trigger": "开局进入好友房",
+    "condition": "房间已设置底分",
+    "action": "客户端显示底分数值",
+    "result": "玩家看到底分，但无法在客户端选择或切换底分档"
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-011",
+   "verdict": "partial",
+   "clientLogic": "客户端从房间规则 max_mult 或 MsgStartGame.max_mult 读取封顶倍数，并在听牌面板展示封顶文案。",
+   "uiInteraction": "听牌面板显示「无封顶」或「封顶N倍」；未见 无/20/40/64/80/128/256 七档选项及显示控制。",
+   "messages": [
+    "MsgStartGame"
+   ],
+   "notes": "未找到封顶七档单选组、默认「无」以及「仅局数档显示」的控制逻辑。",
+   "evidenceIds": [
+    "CLE-AT-ST-C01-009-02",
+    "CLE-AT-ST-C01-011-01"
+   ],
+   "observedBehavior": {
+    "trigger": "进入好友房或查看听牌",
+    "condition": "房间已设置封顶倍数",
+    "action": "客户端展示封顶档位文案",
+    "result": "玩家能看到封顶信息，但无法在客户端选择或切换封顶档"
+   },
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  }
+ ],
+ "evidence": [
+  {
+   "id": "CLE-AT-ST-C01-001-01",
+   "claimKey": "simple-mode-consume",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "data/GameData.ts",
+   "location": "data/GameData.ts:1442-1445",
+   "symbol": "GameData.simpleMode",
+   "excerpt": "/** 是否简洁模式（抑制规则类 toast、三摊落地动画、摸财神动效） */ get simpleMode(): boolean { return this._gameConfig?.simple_mode === true; }",
+   "configKeys": [
+    "simple_mode"
+   ],
+   "atomIds": [
+    "AT-ST-C01-001"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "controller/cmd/gameCmd/GameConfigCmd.ts"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-001-02",
+   "claimKey": "simple-mode-suppress-mo-ani",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "controller/cmd/gameCmd/GameTakeCmd.ts",
+   "location": "controller/cmd/gameCmd/GameTakeCmd.ts:102-106",
+   "symbol": "GameTakeCmd._updateSelfMoMahAni",
+   "excerpt": "private _updateSelfMoMahAni(mah: number): void { ... // 简洁模式：抑制摸财神/摸到胡张的动效 if (GameData.simpleMode) return;",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-001"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "data/GameData.ts"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-001-03",
+   "claimKey": "game-config-msg-handling",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "controller/cmd/gameCmd/GameConfigCmd.ts",
+   "location": "controller/cmd/gameCmd/GameConfigCmd.ts:21-24",
+   "symbol": "GameConfigCmd.execute",
+   "excerpt": "const data = notification.getBody() as proto.game_hzmj.MsgGameConfig | null | undefined; if (!data) return; GameData.setGameConfig(data);",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-001"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "data/GameData.ts"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-002-01",
+   "claimKey": "play-count-ui-pages",
+   "repoId": "client-fgui",
+   "layer": "client_fgui",
+   "file": "box_hzmj_player/BoxHzmjPlayerView.xml",
+   "location": "box_hzmj_player/BoxHzmjPlayerView.xml:3-17",
+   "symbol": "BoxHzmjPlayerView.C_PlayCnt",
+   "excerpt": "<controller name=\"C_PlayCnt\" exported=\"true\" pages=\"0,2,1,3,2,4\" selected=\"0\"/> ... <gearDisplay controller=\"C_PlayCnt\" pages=\"1,2\"/>",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-002"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "layer/BoxHzmjPlayerView.ts"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-002-02",
+   "claimKey": "play-count-select-page",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "layer/BoxHzmjPlayerView.ts",
+   "location": "layer/BoxHzmjPlayerView.ts:229-231",
+   "symbol": "BoxHzmjPlayerView.initWithPlayCnt",
+   "excerpt": "@gf.listen(GameCommonUIEventDefine.onPlayerCntChange) initWithPlayCnt(cnt: number): void { this.view.C_PlayCnt.selectedPage = cnt + \"\";",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-002"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "box_hzmj_player/BoxHzmjPlayerView.xml"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-002-03",
+   "claimKey": "play-count-234-test-entries",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "layer/BoxHzmjTestView.ts",
+   "location": "layer/BoxHzmjTestView.ts:971-991",
+   "symbol": "BoxHzmjTestView",
+   "excerpt": "title: \"2人模式\" ... this.dispatch(GameCommonUIEventDefine.onPlayerCntChange, 2); ... \"3人模式\" ... , 3 ... \"4人模式\" ... , 4",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-002"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "layer/BoxHzmjPlayerView.ts"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-003-01",
+   "claimKey": "caishen-type-room-rule",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "controller/cmd/gameCmd/GameJokerCmd.ts",
+   "location": "controller/cmd/gameCmd/GameJokerCmd.ts:64-79",
+   "symbol": "GameJokerCmd._needFanJokerAni",
+   "excerpt": "// 白板财神：房间规则 cai_shen_type=1 才播 const rule = BoxRoomData.inst.getGameRule() as { cai_shen_type?: number }; return rule?.cai_shen_type === 1;",
+   "configKeys": [
+    "cai_shen_type"
+   ],
+   "atomIds": [
+    "AT-ST-C01-003"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "data/GameData.ts"
+    },
+    {
+     "file": "layer/BoxHzmjTestView.ts"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-003-02",
+   "claimKey": "caishen-type-sort-branch",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "data/PlayerCardsData.ts",
+   "location": "data/PlayerCardsData.ts:317-329",
+   "symbol": "PlayerCardsData.sortCards",
+   "excerpt": "if (jokerOpen === 0) { // 白板财神：白板(83)在最左边 ... } else { // 翻财神：翻出的牌在最左边，白板(83)替代翻出牌的正常位置",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-003"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "data/GameData.ts"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-003-03",
+   "claimKey": "caishen-type-field",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "data/GameData.ts",
+   "location": "data/GameData.ts:48-51",
+   "symbol": "GameData.jokerOpen",
+   "excerpt": "/** 本局财神牌值（优先取 MsgJoker.jokers[0]，否则取 open） */ jokerMah: number = 0; /** 财神类型：0=白板财神，1=翻财神 */ jokerOpen: number = 0;",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-003"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "controller/cmd/gameCmd/GameJokerCmd.ts"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-004-01",
+   "claimKey": "banker-level-from-ju-data",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "controller/cmd/gameCmd/GameJuDataCmd.ts",
+   "location": "controller/cmd/gameCmd/GameJuDataCmd.ts:31-36",
+   "symbol": "GameJuDataCmd.execute",
+   "excerpt": "GameData.setLianZhuangCount(data.banker_level); // 从创房配置推导牢庄等级 ... GameData.bankerLevel = GameData.getLianZhuangCount();",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-004"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "data/GameData.ts"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-004-02",
+   "claimKey": "banker-level-display",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "layer/BoxHzmjPlayerView.ts",
+   "location": "layer/BoxHzmjPlayerView.ts:800-809",
+   "symbol": "BoxHzmjPlayerView.onShowZhuang",
+   "excerpt": "if (this._players[localSeat]) { this._players[localSeat].KW_BasePlayer.KW_PLAYER.C_Bank.selectedIndex = zhuangnumber; }",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-004"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "controller/cmd/gameCmd/GameJuDataCmd.ts"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-004-03",
+   "claimKey": "banker-level-three-pages",
+   "repoId": "client-fgui",
+   "layer": "client_fgui",
+   "file": "box_hzmj_player/component/PlayerPanel.xml",
+   "location": "box_hzmj_player/component/PlayerPanel.xml:8",
+   "symbol": "PlayerPanel.C_Bank",
+   "excerpt": "<controller name=\"C_Bank\" pages=\"0,hide,1,zhuang1,2,zhuang2,3,zhuang3\" selected=\"1\"/>",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-004"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "layer/BoxHzmjPlayerView.ts"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-009-01",
+   "claimKey": "base-score-room-display",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "layer/BoxHzmjBackView.ts",
+   "location": "layer/BoxHzmjBackView.ts:86-101",
+   "symbol": "BoxHzmjBackView._onUpdateBaseScore",
+   "excerpt": "private _onUpdateBaseScore(baseScore: number): void { this.view.KW_BASE_SCORE.text = `底分:${baseScore}`; } ... this._onUpdateBaseScore(info?.base ?? 0);",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-009",
+    "AT-ST-C01-010"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "controller/cmd/gameCmd/GameStartGameCmd.ts"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-009-02",
+   "claimKey": "fengding-room-display",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "layer/BoxHzmjTingPaiView.ts",
+   "location": "layer/BoxHzmjTingPaiView.ts:90-99",
+   "symbol": "BoxHzmjTingPaiView",
+   "excerpt": "const gameRule = BoxRoomData.inst.getGameRule(); let roomMaxFan = gameRule.max_mult ?? 0; ... KW_FengDing.text = \"无封顶\"; ... `封顶${roomMaxFan}倍`",
+   "configKeys": [
+    "max_mult"
+   ],
+   "atomIds": [
+    "AT-ST-C01-009",
+    "AT-ST-C01-011"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "data/GameData.ts"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-010-01",
+   "claimKey": "base-score-protocol-field",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "lib/proto_game_hzmj.d.ts",
+   "location": "lib/proto_game_hzmj.d.ts:208-209",
+   "symbol": "MsgStartGame.base_score",
+   "excerpt": "/** MsgStartGame base_score */ base_score?: (number|Long|null);",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-010"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "controller/cmd/gameCmd/GameStartGameCmd.ts"
+    }
+   ]
+  },
+  {
+   "id": "CLE-AT-ST-C01-011-01",
+   "claimKey": "max-mult-from-start-game",
+   "repoId": "client-code",
+   "layer": "client_code",
+   "file": "controller/cmd/gameCmd/GameStartGameCmd.ts",
+   "location": "controller/cmd/gameCmd/GameStartGameCmd.ts:33-36",
+   "symbol": "GameStartGameCmd.execute",
+   "excerpt": "if (RoomData.isMatchRoom()) { TableData.inst.setBaseScore(data.base_score ?? 0); } GameData.setMaxMult(data.max_mult ?? 0);",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-011"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "data/GameData.ts"
+    },
+    {
+     "file": "layer/BoxHzmjTingPaiView.ts"
+    }
+   ]
+  }
+ ]
+}

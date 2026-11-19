@@ -307,7 +307,7 @@
    "inputHash": "sha256:53b213f3ed7ee5e10ec96fb36c26ea38a635c917ccd53c4b2d2aa3bef795d9fe",
    "configHash": "sha256:c783c666da702bfcc36d08f27bf6d55be089d78220847540e5a38f3e827714bc",
    "executionProfileHash": "sha256:b9fb4547e5a430ef6d0263b27c8e4b65ba9116769a388e9f28975d2fb6202c37",
-   "outputHash": "sha256:dfc0973d985ca8438fda4931301c176e187bb80bd14fcf5fcd8456e5fd6bc258",
+   "outputHash": "sha256:d18db87f543df13772ee5c946d9332871f00f41ed3938960bf7360be64f18ef6",
    "reusable": true,
    "inputFiles": [
     "run:4-analysis/unified-atoms.json",
@@ -325,17 +325,17 @@
    "outputList": [
     {
      "path": "4-analysis/difference-review.json",
-     "hash": "sha256:ec51abb582f12ac97a4142564d1b8b5d2eb506dad14c760edbc598d39e99321e"
+     "hash": "sha256:87e43b29ee513ac921e118b42754da6d3a469aa1f87bfd8375c79fb6f9b00052"
     }
    ]
   },
   "S9": {
    "status": "completed",
    "stageVersion": "S9@1",
-   "inputHash": "sha256:f08779907095259b7fef6f115672673c1ee1860421cb87b8a3cce749f203d23a",
+   "inputHash": "sha256:3616f991e24a2035fb896a9e62738b1e4452f4e0b2d2a0e7ab3ce014221c5d50",
    "configHash": "sha256:7b71af86535a983d04ffe1ec5b229c1256512eb4aacc69ae0e7a6e0d2b4136a2",
    "executionProfileHash": "sha256:b9fb4547e5a430ef6d0263b27c8e4b65ba9116769a388e9f28975d2fb6202c37",
-   "outputHash": "sha256:217f2604f03264c06d92d3ce78ccbc5e7e8e68bbb2e720d4e1a445c0f03bbd5e",
+   "outputHash": "sha256:fceecf25097152ff13740f5d5302926b7579a4b73946a4e89737a4a9536794b0",
    "reusable": true,
    "inputFiles": [
     "run:1-registry/requirement-registry.json",
@@ -355,17 +355,17 @@
    "outputList": [
     {
      "path": "4-analysis/l7-classify.json",
-     "hash": "sha256:932eb8d77b63c1a2a4ae9b831a520722d08415001d8757fd1f6c3d659e720cea"
+     "hash": "sha256:ed8cf360a64b47885176d51f2786de334c037fa465afe6b34efcde86b0fb7e9c"
     }
    ]
   },
   "S10": {
    "status": "completed",
    "stageVersion": "S10@1",
-   "inputHash": "sha256:191719d61b8286017609252123916f8ebee927160d0e4e8a90e13ca95460bbbd",
+   "inputHash": "sha256:1792df584aad6c688d1d46414f601100611dabd05bddd11809347091b609e0ea",
    "configHash": "sha256:38bdb3c0d58eb280279779404da905ea6d53eeadb969e28323154e6f22848868",
    "executionProfileHash": "sha256:3c29587286836b753b962d296a012f1bd3356188866b1b4a9ae33d0dbe5c3912",
-   "outputHash": "sha256:b0d9f4211f28a1b49881457d1e935e95db2b7791158797f92295f9ea2ff53362",
+   "outputHash": "sha256:5859ff16e5948d0908f7d27b84ed221db0f4e812a724a4c74d93e8c15dab4143",
    "reusable": true,
    "inputFiles": [
     "run:1-registry/requirement-registry.json",
@@ -388,11 +388,11 @@
    "outputList": [
     {
      "path": "5-specs/feature_index.json",
-     "hash": "sha256:ab990594a1224ed569e2327cec001d029a5cd95f8b317b983156e66541c2af7f"
+     "hash": "sha256:48f7e3db97407d2f3d7a24dacae52abd799f3dc583748bfb1b7d4c4b4790b309"
     },
     {
      "path": "5-specs/pending-list.md",
-     "hash": "sha256:8041d4d9d6317ae1f6631d8e59e61aa76643a79b729c9926fc3e81c6a3381e79"
+     "hash": "sha256:2a7c305697805deeb300453b0040ff4366b1552881e4c609dfec9a534a142e92"
     },
     {
      "path": "5-specs/runtime/spec_check/verify-report.md",
@@ -496,7 +496,54 @@
     },
     {
      "path": "5-specs/trace_index.json",
-     "hash": "sha256:4a21d5d723b975c95ca314a7a71749b6b83fda5ae200cf244ae23426f25b3fd6"
+     "hash": "sha256:aaa88207ba5becec51f07320eedff6714d2edb037e7d59ffdc9a571aa289732b"
+    }
+   ]
+  },
+  "S11": {
+   "status": "completed",
+   "stageVersion": "S11@1",
+   "inputHash": "sha256:b74e1979ac9952b0a4e81d97efe9086f4da9b20041e9ffc20ba5a3b412ab23c3",
+   "configHash": "sha256:ab47efcffd25e79a9b55ca6c74aed55fab1932544f2fe5491955ef493b29cd8c",
+   "executionProfileHash": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+   "outputHash": "sha256:5d2d2bf6a64ea2455a247792c6b16eef9cffea3c3fee39ee26f4338b039d4b67",
+   "reusable": true,
+   "inputFiles": [
+    "run:6-review/decisions.json",
+    "run:1-registry/requirement-registry.json",
+    "run:4-analysis/unified-atoms.json",
+    "run:4-analysis/difference-review.json",
+    "run:2-client/client-evidence.json",
+    "run:3-server/server-evidence.json"
+   ],
+   "configArgs": {
+    "date": "2026-11-17"
+   },
+   "profile": {},
+   "outputList": [
+    {
+     "path": "4-analysis/difference-review.json",
+     "hash": "sha256:87e43b29ee513ac921e118b42754da6d3a469aa1f87bfd8375c79fb6f9b00052"
+    },
+    {
+     "path": "6-review/runtime/decision-applicability.json",
+     "hash": "sha256:a4280f23e1733eb902fb8c920f18423031c21af67129ed1fe7a566cc84df5407"
+    },
+    {
+     "path": "6-review/runtime/impact-set.json",
+     "hash": "sha256:135719ec5a2bac40343fc210b5c1de6861c7a1eef2884026c606903adb6f604d"
+    },
+    {
+     "path": "6-review/runtime/previous-evidence-index.json",
+     "hash": "sha256:03585c49f45b9f985bc4f2d943d80c5df208051b60a860f6125f5e46fdb36ff4"
+    },
+    {
+     "path": "6-review/runtime/retry-input/ST-C01-rc01.json",
+     "hash": "sha256:93295077f5da5550ccf37de45558e281078c54e3c5c522706dff3a9e566eb5f0"
+    },
+    {
+     "path": "6-review/runtime/retry-input/ST-C01-rp01.json",
+     "hash": "sha256:f3f05b30a473d160c39c8d2160c7f2e0b8ec90709e4d73871aeba3fbf1383d93"
     }
    ]
   }

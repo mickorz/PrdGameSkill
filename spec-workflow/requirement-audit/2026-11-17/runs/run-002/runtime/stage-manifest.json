@@ -1,0 +1,292 @@
+{
+ "schemaVersion": 1,
+ "runId": "run-002",
+ "sourceRunId": "run-001",
+ "stages": {
+  "S1": {
+   "status": "completed",
+   "stageVersion": "S1@1",
+   "inputHash": "sha256:9eaf2efd56ca5834124c2622362689aa60df09edb62e4d7bf8388f1a9e498cc5",
+   "configHash": "sha256:150d47f5bf3ca55d5b956466b1341d11623ea582293775b91090aa9c2ea0b894",
+   "executionProfileHash": "sha256:b9fb4547e5a430ef6d0263b27c8e4b65ba9116769a388e9f28975d2fb6202c37",
+   "outputHash": "sha256:5ad34311f99dc9a65f9244e79708981b0ce08d30a77ce848c4231c27f1214aea",
+   "reusable": true,
+   "inputFiles": [
+    "arg:templatePath"
+   ],
+   "configArgs": {
+    "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心策划补齐版.md"
+   },
+   "profile": {
+    "model": "biangfeng-gateway/deepseek-v4.1-flash-official",
+    "concurrency": "16"
+   },
+   "outputList": [
+    {
+     "path": "1-registry/runtime/state/scan.json",
+     "hash": "sha256:cf8e2b01e76a263552c0a3df9ff644f9e9593d941cb2033e438081e1183cb586"
+    }
+   ],
+   "reuse": {
+    "sourceRunId": "run-001",
+    "artifactRefs": [
+     {
+      "path": "1-registry/runtime/state/scan.json",
+      "hash": "sha256:cf8e2b01e76a263552c0a3df9ff644f9e9593d941cb2033e438081e1183cb586"
+     }
+    ]
+   }
+  },
+  "S2": {
+   "status": "completed",
+   "stageVersion": "S2@1",
+   "inputHash": "sha256:57f7963db635176972b290d0fe1ecfd7eefb7bfe22307243ed21084bd9580913",
+   "configHash": "sha256:6cf9bb6d27e5b02ddd6a548ca048ad94ffb2cc1d1876d092f4d357625d8f6f67",
+   "executionProfileHash": "sha256:b9fb4547e5a430ef6d0263b27c8e4b65ba9116769a388e9f28975d2fb6202c37",
+   "outputHash": "sha256:d5117599069ee18fe92c9c1fc195e9b7410d1390648587ffafd13777663fd320",
+   "reusable": true,
+   "inputFiles": [
+    "arg:templatePath",
+    "run:1-registry/runtime/state/scan.json"
+   ],
+   "configArgs": {
+    "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心策划补齐版.md"
+   },
+   "profile": {
+    "model": "biangfeng-gateway/deepseek-v4.1-flash-official",
+    "concurrency": "16"
+   },
+   "outputList": [
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C01-ap01.json",
+     "hash": "sha256:31946bf608b7a561f8db2fccd78342ea6587b3a01436c35742282993cadb7b36"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C02-ap01.json",
+     "hash": "sha256:d96cd3f6dbb1a91357cdb06edd3a70a20ae9c53797c18153457223bb9da2b555"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C03-ap01.json",
+     "hash": "sha256:ace3cc8783c55956d35189d69ae1cae8e04c94592b58331d5930f5d064bae62f"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C04-ap01.json",
+     "hash": "sha256:4a78c52b4816063e1092a44b898901fac9a9d6e53054f6d69b3cdd098861d14d"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C05-ap01.json",
+     "hash": "sha256:90c869f957d7b46235b5d685e60cfa2fa6d3ecf8df3755603b00d2423b591f4b"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C06-ap01.json",
+     "hash": "sha256:ded6da034476406311f37bcfea27270107a6db5fb034ee0d029862f30ec0d1ca"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C07-ap01.json",
+     "hash": "sha256:22d427db36a6221e93e256d4314453d73f9271adfbce8951eb215039e9efa49b"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C08-ap01.json",
+     "hash": "sha256:cc49dbd9856c3663222cd9a4c6c217589c7a90626f0c270ddf4b41e54254f2ef"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C09-ap01.json",
+     "hash": "sha256:41ff82431158f49bc3f3c8809c4b9d2364727a940edfdf23743c23df34b5ff77"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C10-ap01.json",
+     "hash": "sha256:3ddf2718f63cb436e9bb03a16990346b1ff091eae220de205bb1695681d5fce8"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C11-ap01.json",
+     "hash": "sha256:c2a519d27549f6e9dab2231f3a9e4a7e8e9bc6003b982a164d4358d9a6f58f57"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C12-ap01.json",
+     "hash": "sha256:a8fc13a49ec9afb4274f7f4e38108ad2814059862573d14562cbbf9d0d199349"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C13-ap01.json",
+     "hash": "sha256:9df71d30e083e59bc874622a15b9f7ef56d9ac261926fe229271d64e5671e7a3"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C14-ap01.json",
+     "hash": "sha256:b4d17d13ac5a6ce61e1ae913c1d6a237bd92790a3327409fef85f5634d575b9b"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C15-ap01.json",
+     "hash": "sha256:3a1004acb77f53a2d213bdcc9785a68a9d38da69139dfadd5729b75a14f3f86a"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C16-ap01.json",
+     "hash": "sha256:f8ede11fee94bb942fc11d5aedb96e4eb0fbe3620cff37efe55ed4811ad3467a"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C17-ap01.json",
+     "hash": "sha256:648a2fa932ce4e6da8bb0bdf8fc32c8ffc5c07817d4d0d7231b61e74754f9b8c"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C18-ap01.json",
+     "hash": "sha256:13cb2e6970b9db554f6e3c2df1758f788a5f610f9c2ff17804b97ad79cac9094"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C19-ap01.json",
+     "hash": "sha256:9ede5a2b0f1126041fcc806ff67299ad2da877c1d1aab06a353a722beef48d14"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C20-ap01.json",
+     "hash": "sha256:e9a1b5edb47b503dc4978fe599e93422d1d4971bafefcb628c10164c6365183d"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C21-ap01.json",
+     "hash": "sha256:ebebf1349f5bfc39e1168b90add471fe0cb7287a70f8f9af691b9d4649264d98"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C22-ap01.json",
+     "hash": "sha256:319ffcd32425ba99e5de9c096f8282b270173b23000b03b067c7b223f99a6fa0"
+    },
+    {
+     "path": "1-registry/runtime/atom-parts/ST-C23-ap01.json",
+     "hash": "sha256:e752454d3ea7256b4b8904ae8e059cd795f8d61fe378ae403c8796a8d3ee1f18"
+    }
+   ],
+   "reuse": {
+    "sourceRunId": "run-001",
+    "artifactRefs": [
+     {
+      "path": "1-registry/runtime/atom-parts/ST-C01-ap01.json",
+      "hash": "sha256:31946bf608b7a561f8db2fccd78342ea6587b3a01436c35742282993cadb7b36"
+     },
+     {
+      "path": "1-registry/runtime/atom-parts/ST-C02-ap01.json",
+      "hash": "sha256:d96cd3f6dbb1a91357cdb06edd3a70a20ae9c53797c18153457223bb9da2b555"
+     },
+     {
+      "path": "1-registry/runtime/atom-parts/ST-C03-ap01.json",
+      "hash": "sha256:ace3cc8783c55956d35189d69ae1cae8e04c94592b58331d5930f5d064bae62f"
+     },
+     {
+      "path": "1-registry/runtime/atom-parts/ST-C04-ap01.json",
+      "hash": "sha256:4a78c52b4816063e1092a44b898901fac9a9d6e53054f6d69b3cdd098861d14d"
+     },
+     {
+      "path": "1-registry/runtime/atom-parts/ST-C05-ap01.json",
+      "hash": "sha256:90c869f957d7b46235b5d685e60cfa2fa6d3ecf8df3755603b00d2423b591f4b"
+     },
+     {
+      "path": "1-registry/runtime/atom-parts/ST-C06-ap01.json",
+      "hash": "sha256:ded6da034476406311f37bcfea27270107a6db5fb034ee0d029862f30ec0d1ca"
+     },
+     {
+      "path": "1-registry/runtime/atom-parts/ST-C07-ap01.json",
+      "hash": "sha256:22d427db36a6221e93e256d4314453d73f9271adfbce8951eb215039e9efa49b"
+     },
+     {
+      "path": "1-registry/runtime/atom-parts/ST-C08-ap01.json",
+      "hash": "sha256:cc49dbd9856c3663222cd9a4c6c217589c7a90626f0c270ddf4b41e54254f2ef"
+     },
+     {
+      "path": "1-registry/runtime/atom-parts/ST-C09-ap01.json",
+      "hash": "sha256:41ff82431158f49bc3f3c8809c4b9d2364727a940edfdf23743c23df34b5ff77"
+     },
+     {
+      "path": "1-registry/runtime/atom-parts/ST-C10-ap01.json",
+      "hash": "sha256:3ddf2718f63cb436e9bb03a16990346b1ff091eae220de205bb1695681d5fce8"
+     },
+     {
+      "path": "1-registry/runtime/atom-parts/ST-C11-ap01.json",
+      "hash": "sha256:c2a519d27549f6e9dab2231f3a9e4a7e8e9bc6003b982a164d4358d9a6f58f57"
+     },
+     {
+      "path": "1-registry/runtime/atom-parts/ST-C12-ap01.json",
+      "hash": "sha256:a8fc13a49ec9afb4274f7f4e38108ad2814059862573d14562cbbf9d0d199349"
+     },
+     {
+      "path": "1-registry/runtime/atom-parts/ST-C13-ap01.json",
+      "hash": "sha256:9df71d30e083e59bc874622a15b9f7ef56d9ac261926fe229271d64e5671e7a3"
+     },
+     {
+      "path": "1-registry/runtime/atom-parts/ST-C14-ap01.json",
+      "hash": "sha256:b4d17d13ac5a6ce61e1ae913c1d6a237bd92790a3327409fef85f5634d575b9b"
+     },
+     {
+      "path": "1-registry/runtime/atom-parts/ST-C15-ap01.json",
+      "hash": "sha256:3a1004acb77f53a2d213bdcc9785a68a9d38da69139dfadd5729b75a14f3f86a"
+     },
+     {
+      "path": "1-registry/runtime/atom-parts/ST-C16-ap01.json",
+      "hash": "sha256:f8ede11fee94bb942fc11d5aedb96e4eb0fbe3620cff37efe55ed4811ad3467a"
+     },
+     {
+      "path": "1-registry/runtime/atom-parts/ST-C17-ap01.json",
+      "hash": "sha256:648a2fa932ce4e6da8bb0bdf8fc32c8ffc5c07817d4d0d7231b61e74754f9b8c"
+     },
+     {
+      "path": "1-registry/runtime/atom-parts/ST-C18-ap01.json",
+      "hash": "sha256:13cb2e6970b9db554f6e3c2df1758f788a5f610f9c2ff17804b97ad79cac9094"
+     },
+     {
+      "path": "1-registry/runtime/atom-parts/ST-C19-ap01.json",
+      "hash": "sha256:9ede5a2b0f1126041fcc806ff67299ad2da877c1d1aab06a353a722beef48d14"
+     },
+     {
+      "path": "1-registry/runtime/atom-parts/ST-C20-ap01.json",
+      "hash": "sha256:e9a1b5edb47b503dc4978fe599e93422d1d4971bafefcb628c10164c6365183d"
+     },
+     {
+      "path": "1-registry/runtime/atom-parts/ST-C21-ap01.json",
+      "hash": "sha256:ebebf1349f5bfc39e1168b90add471fe0cb7287a70f8f9af691b9d4649264d98"
+     },
+     {
+      "path": "1-registry/runtime/atom-parts/ST-C22-ap01.json",
+      "hash": "sha256:319ffcd32425ba99e5de9c096f8282b270173b23000b03b067c7b223f99a6fa0"
+     },
+     {
+      "path": "1-registry/runtime/atom-parts/ST-C23-ap01.json",
+      "hash": "sha256:e752454d3ea7256b4b8904ae8e059cd795f8d61fe378ae403c8796a8d3ee1f18"
+     }
+    ]
+   }
+  },
+  "S3": {
+   "status": "completed",
+   "stageVersion": "S3@1",
+   "inputHash": "sha256:a87e2c803b728b67f1c8b3818cdfc54233bd6bf8b0d3b06ce630473224214b3f",
+   "configHash": "sha256:e1dbde2b82f93770a8487769379f4088535f648b886abeda39eff0d803e522a7",
+   "executionProfileHash": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+   "outputHash": "sha256:e4532c72a540cfbeeca44e553a2ab4095fdff70d4a430acc32b48f1d003f84cd",
+   "reusable": true,
+   "inputFiles": [
+    "run:1-registry/runtime/state/scan.json",
+    "run:1-registry/runtime/atom-parts/*.json"
+   ],
+   "configArgs": {
+    "date": "2026-11-17"
+   },
+   "profile": {},
+   "outputList": [
+    {
+     "path": "1-registry/identity-map.json",
+     "hash": "sha256:3fab7f279923ef6a4544c79788474103da6625f9cb029f8797c146c6f3c8e751"
+    },
+    {
+     "path": "1-registry/requirement-registry.json",
+     "hash": "sha256:150733791780fcee08c4150623c84057112789882ac455caebca4d9d1ed15e5c"
+    }
+   ],
+   "reuse": {
+    "sourceRunId": "run-001",
+    "artifactRefs": [
+     {
+      "path": "1-registry/identity-map.json",
+      "hash": "sha256:3fab7f279923ef6a4544c79788474103da6625f9cb029f8797c146c6f3c8e751"
+     },
+     {
+      "path": "1-registry/requirement-registry.json",
+      "hash": "sha256:150733791780fcee08c4150623c84057112789882ac455caebca4d9d1ed15e5c"
+     }
+    ]
+   }
+  }
+ }
+}

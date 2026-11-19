@@ -1,0 +1,9 @@
+{
+ "configArgs": {
+  "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心策划补齐版.md"
+ },
+ "profile": {
+  "model": "biangfeng-gateway/deepseek-v4.1-flash-official",
+  "concurrency": "16"
+ }
+}

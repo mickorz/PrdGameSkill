@@ -1681,7 +1681,7 @@ S4/S5 并行（共享同一并发配额）；S6 是同步屏障（必须等双�
 | S10 统一规格生成 | **已实现并编排** | ✔ STEPS | `10-unified-spec.js`（Prompt 全文，366 行） | `build-unified-index` / `check-spec-coverage` / `prepare-planner-input` / `check-planner-leak` / `build-stage-manifest` | 13+20 断言 |
 | S11 人工裁决 | **已实现并编排** | ✔ STEPS | `11-human-review.js` | `decision-fingerprint.mjs` / `apply-decisions.mjs` | 15+13 断言 |
 
-**未达「已实跑验收」**：真实模板 + 真实客户端/服务端源码的完整 S1~S11 实跑尚未执行（需用户触发 agent 链路）。这是本章唯一剩余缺口，已明确记录而非掩盖。
+**已实跑验收（2026-11-18）**：真实模板 + 真实客户端/服务端源码的完整 S1~S11 首跑已执行完毕（run-001，收窄 `stageIds=ST-C01`；verify-immutable 11 阶段 / 72 产物逐字节一致；验收报告见 `dev-docs/progress-result/2026-11-18-game-requirement-audit-首跑验收报告.md`）。收窄范围外 22 阶段的补证与 L7 升级属后续批次。
 
 ### 21.3 逐项整改对照
 
@@ -1741,7 +1741,7 @@ S4/S5 并行（共享同一并发配额）；S6 是同步屏障（必须等双�
 
 **二次复核**：11 套 Example **180 断言通过 / 0 失败**。真实 Agent 跑批仍为单独的验收工作，不在此处伪造执行结果。
 
-### 21.8 三次集成修复（2026-11-18，首跑 run-001 实跑暴露）
+### 21.8 集成修复记录（2026-11-18，首跑 run-001 实跑暴露 I4~I14）
 
 > 首跑（`run-001`，journal `run-mwkpasup-2`，模板「核心策划补齐版」23 阶段 / 109 功能 / 416 原子，收窄 `stageIds=ST-C01`）实跑 S1~S5 暴露的集成缺陷与修复。经验细节见 `dev-docs/experience/`（一篇一问题）。
 
@@ -1757,10 +1757,12 @@ S4/S5 并行（共享同一并发配额）；S6 是同步屏障（必须等双�
 | I11 | S10 阶段文档 AT-ID 覆盖校验报 18 项「文档混入其他阶段原子（ST-C01）」→ 主流程中断 | **子串假故障（与 I6 同族：ID 命名空间嵌套 + 朴素子串匹配）**：证据 ID `SVE-AT-ST-C01-019-04` 内嵌原子 ID 子串，`check-spec-coverage.mjs` 用 `text.includes(atomId)` 把**共享证据跨阶段合法引用**（收窄跑 60 条 SVE 全部归属 ST-C01 原子，其余 22 阶段文档引共享证据即被误判）当成串阶段；修正后另核实 12 处**裸跨阶段提及**均为合法引用（共享证据 atomIds 列举 / 口径交叉引用 / 证据归属范围说明），无文档把外阶段原子作为规格主体 | 两向同源修复：a) 原子 ID 判定一律基于**裸 ID**（先剔除 SVE-/CLE- 证据 ID，防误判串阶段 + 防证据 ID 内嵌被误当「本阶段原子已覆盖」）；b) 串阶段判定收紧为**外阶段原子作为规格节标题**（`^## AT-ST-Cxx-NNN`），正文/表格裸提及属合法引用 | `orchestration` C3 改语义 + 新增 C5（合法引用不误判）；**真实 run-001 校验绿：23 阶段 / 23 文档 / 416 原子（blocked 0 均带标注）** |
 | I12 | journal 续跑（第三次）在 S7 重算闸门失败：439 项（23 分片 analysisRunId 不一致 + 416 原子缺 business-behavior 条目）| **S6 命令重跑致 analysisRunId 漂移**：`merge-evidence` 的 `seq = history.length+1` 单调递增——上轮 S7 的 `append-analysis-history` 已把 ar-001 入档，续跑时 S6 重跑得 ar-002 并覆写 unified-atoms，而 S7 分片仅重放（记录仍是 001）→ 重算闸门全量炸；另有两个连带发现：a) journal 在新失败点**截断重写**（第三次续跑把上轮 S8~S10 的可重放记录清掉，第四次续跑需重跑 ~50 agent）；b) 升级识别（D25）在续跑时「上轮」自引用（history 已含本轮） | `merge-evidence` **resume 幂等两段式**：a) 同内容复用盘上 analysisRunId（sig 一致即复用，不递增作废 S7 分片）；b) prev 字段（previousRunId/upgraded）两段式装配——先按 resume 假设排除盘上轮自引用算 sig，一致即复用；不一致为真实新轮再按全量 history 重装配取递增 id | `merge-evidence` 新增 J2（同输入重跑复用 id）/J3（内容变化才递增）/J4（conflict→full 升级后重跑：复用升级轮 id + upgraded 不漂移）；**真实 run-001 复原 ar-001 后 S6/S7 命令链手动验证绿**（416 原子 / 23 分片） |
 | I13 | 第四次续跑 record-stage S10 失败：`outputHash 解析失败（S10）：run: 文件不存在：run:5-specs/stages/*.md`（S7~S10 均已通过，唯独指纹落档失败） | `resolveSpecEntry` 的 run: 解析只支持 `/*.json` 尾 glob，`*.md` 走字面文件存在性检查；S10 是首个非 json glob 输出阶段，且 record-stage S10 前四次均未执行到（每次死在更早闸门），集成点首次暴露 | glob 尾泛化：`/\*\.([A-Za-z0-9]+)$/` 命中即按 `*.<ext>` 展开（`*.json` 行为不变，子集） | `stage-reuse` 新增 B3（独立 specs fixture + 新 init run 记录 `*.md` glob）；真实 run-001 S10 手动 record 成功（28 产物指纹落档） |
+| I14 | 第七次续跑 record-stage S11 失败：`outputHash 解析失败（S11）：run: 文件不存在：run:6-review/runtime/decision-apply.json` | `stage-specs.game-requirement-audit.json` S11 outputFiles 声明了 `decision-apply.json`，但 `apply-decisions.mjs` 从不产出该文件（真实产物：impact-set / decision-applicability / previous-evidence-index / retry-input/*.json / difference-review）——specs **幻影产物声明**（`previous-evidence-index` 反而漏声明）；S11 record 前七次从未执行到，首次即炸 | specs 对齐真实产物：删幻影 `decision-apply.json`，补 `decision-applicability.json` + `previous-evidence-index.json`（后者 P1-2/D55 有档） | record-stage S11 手动 record 成功（6 产物指纹落档）；11 套 187 复归全绿 |
 
-**运行资产说明**：
+**运行资产说明（首跑完成后终态，2026-11-18）**：
 
-- `run-001`（续跑主体）：S1~S4 已完成并记录；S5 双端分片落盘（客户端 3 + 服务端 3）；merge 闸门修复后手动合并全绿（I6）。续跑路径：journal-resume `run-mwkpasup-2`（命令重跑 + agent 按位重放，S5 merge → record → S6~S11 全新执行）。
+- `run-001`（首跑主体）：**S1~S11 全部完成并记录**（stage-manifest 11 阶段落档；verify-immutable **72 产物逐字节一致**）；journal `run-mwkpasup-2` 经 8 次续跑收口，最终 147 agent / status=completed；S11 决议 approve 5（ST-C01 复核建议）/ stale-hold 64（收窄范围外，待后续批次补证后重新确认）。
 - `run-002`（I7 越界执行产物）：S1~S3 物化 + S4/S5 全新分片，真数据保留不删；其 journal（`run-mwlhe4sk`）为 plan-only 形态，**不可用于续跑**（位置对齐不成立）。
-- 已知 resume 副作用：每次 resume 的 init-run 会新建孤儿 run 目录并劫持 `latest.json`（journal 回放使主流程仍工作于原 run 目录）；续跑完成后需清理孤儿目录并复原 `latest.json → run-001`。
-- 断言口径重校（I6 顺带）：各套按 `test()`/`expectFail()` 调用计数，11 套合计 **183**；历史行文中的 180/186 为旧口径漂移，已统一。
+- resume 副作用已清理：孤儿 run 目录（run-003~run-009）删除，`latest.json` 复原 → run-001。
+- 断言口径终校：各套按 `test()`/`expectFail()` 调用计数，11 套合计 **187**（I11 增 C5 / I12 增 J2~J4 / I13 增 B3；merge-branch-evidence 重计 29→28：原口径误把注释里的 test( 计入）；历史行文中的 180/183/186 为旧口径漂移，已统一。
+- 首跑验收报告：`dev-docs/progress-result/2026-11-18-game-requirement-audit-首跑验收报告.md`。

@@ -1,0 +1,16 @@
+{
+ "schemaVersion": 2,
+ "analysisRunId": "ar-2026-11-17-001",
+ "entries": [
+  {
+   "atomId": "AT-ST-C17-001",
+   "previousDifference": "unverified",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义（PRD 221-225 行「行牌 > 断线重连与场景恢复」）：掉线重连后不重开小局、按断线瞬间状态还原牌桌/牌墙余牌/各家手牌/出牌区/轮次/飘标/记牌器，未补发数据前先用缓存回填「打哪张听」箭头、服务端数据到达后以服务端为准覆盖，恢复完成后客户端上报定位并继续对局；本片 13 个原子（001-002/004-008/011-013 为 both 域，003/009/010 为 client 域，见 unified-atoms.requirement.verificationScope）。客户端侧：unified-atoms 中本片 13 个原子的 client.verdict 与 client.evidenceIds 全为空；2-client/client-evidence.json 仅 29 条 entry/12 条 CLE 证据、覆盖 AT-ST-C01-001~029，本片原子只出现在 coverage.pendingAtomIds（client-evidence.json:1079-1091），全文检索「重连/断线/reconnect/离线」命中 0，CLE-AT-ST-C17-* 不存在，无重连恢复的代码或 FGUI 证据。服务端侧：unified-atoms 中 server.applicability 与 server.evidenceIds 全为空；3-server/server-evidence.json 共 60 条 SVE、stats.atomCount=29 全部挂 AT-ST-C01-* 系列，SVE-AT-ST-C17-* 不存在，全文检索「重连/断线/reconnect/离线/resume」命中 0，无重开判定、断点进度下发或补发箭头数据的证据。双端皆为零证据的取证空缺：既不能证明实现符合需求（不可判 consistent/partial），也无任何与需求相反的实现证据可立冲突（不可判 conflict），故维持 S7 初判 unverified；本片无 upgraded 原子、无 candidateDifference，无需降级或升级。",
+   "reviewRule": "no-server-evidence-is-not-conflict（本片 13 个原子服务端零证据，属取证空缺而非矛盾，不升级 conflict；同时按 evidence-is-not-consistency，客户端亦零证据，不得判 consistent，整体维持 unverified）",
+   "evidenceScopes": []
+  }
+ ]
+}

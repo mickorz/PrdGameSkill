@@ -1,0 +1,9 @@
+{
+ "configArgs": {
+  "templatePath": "templates/【杭州麻将】核心流程杭州麻将好友房AI-核心策划补齐版.md",
+  "date": "2026-11-17",
+  "codeDir": "source-code/client/Code",
+  "fguiDir": "source-code/client/Fgui",
+  "serverSrcRoot": "E:/WorkProjects/xc-flow/.xflow/xc/xcodeDev/game-mahjong/server/Logic/mahjong_server/src"
+ }
+}

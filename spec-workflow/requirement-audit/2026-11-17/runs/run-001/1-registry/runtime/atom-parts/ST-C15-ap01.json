@@ -1,0 +1,373 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C15",
+ "partNo": 1,
+ "stage": {
+  "stageId": "ST-C15",
+  "name": "吃碰禁手",
+  "chapter": "行牌 > 吃碰禁手",
+  "summary": "吃或碰成立后按牌面形态确定禁张集合，禁打牌在本家压暗可见并被拦截打出，打出合法牌后由服务端清空禁张。"
+ },
+ "features": [
+  {
+   "id": "FP-ST-C15-001",
+   "name": "禁张生成基础规则",
+   "description": "吃或碰成立后，按所吃所碰的具体牌面确定哪些手牌成为禁打牌。",
+   "scope": "覆盖吃牌与碰牌成立后的禁张生成；不含禁张解除、界面表现与吃牌可选性校验。",
+   "coordination": "由服务端按牌面形态生成禁张集合，客户端后续据此压暗并拦截出牌。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C15-001",
+     "name": "吃碰成立后同牌面全部禁打",
+     "rule": "吃或碰成立后，同牌面的手牌全部禁打，直到本次限制解除。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家完成一次吃或碰",
+      "condition": "吃或碰成立",
+      "action": "把与该牌面相同的手牌全部列为禁打",
+      "result": "相应手牌被禁止打出，直到本次限制解除"
+     },
+     "source": {
+      "chapter": "行牌 > 吃碰禁手",
+      "fromLine": 185,
+      "toLine": 185
+     }
+    },
+    {
+     "atomId": "AT-ST-C15-002",
+     "name": "间隔一张吃中间张只禁被吃牌",
+     "rule": "用间隔一张的两张吃中间张：只禁被吃的那一张；用 1、3 吃 2，禁打 2。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家用间隔一张的两张牌吃进中间张",
+      "condition": "如用 1、3 吃 2",
+      "action": "只把被吃进的 2 列为禁张",
+      "result": "手里剩下的 2 不能打出"
+     },
+     "source": {
+      "chapter": "行牌 > 吃碰禁手",
+      "fromLine": 187,
+      "toLine": 187
+     }
+    },
+    {
+     "atomId": "AT-ST-C15-003",
+     "name": "相邻两张吃一端禁两端延伸牌",
+     "rule": "用相邻两张吃一端：禁打这两张在 1 至 9 内两端能接成顺子的牌；用 2、3 吃 1 或吃 4，都禁 1 和 4。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家用相邻两张牌吃一端的牌",
+      "condition": "如用 2、3 吃 1 或吃 4",
+      "action": "把这两张牌在 1 至 9 范围内两端能接成顺子的牌列为禁张",
+      "result": "例中用 2、3 吃牌后 1 和 4 都不能打出"
+     },
+     "source": {
+      "chapter": "行牌 > 吃碰禁手",
+      "fromLine": 188,
+      "toLine": 188
+     }
+    },
+    {
+     "atomId": "AT-ST-C15-004",
+     "name": "1、2 吃 3 只禁 3",
+     "rule": "用 1、2 吃 3，只禁 3。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家用 1、2 吃进 3",
+      "condition": "吃牌组合为 1、2 吃 3",
+      "action": "只把 3 列为禁张",
+      "result": "只有 3 不能打出，两端无其它延伸禁张"
+     },
+     "source": {
+      "chapter": "行牌 > 吃碰禁手",
+      "fromLine": 188,
+      "toLine": 188
+     }
+    },
+    {
+     "atomId": "AT-ST-C15-005",
+     "name": "碰成立禁同牌",
+     "rule": "碰成立后，禁打与被碰牌相同的牌。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家完成一次碰",
+      "condition": "碰成立",
+      "action": "把与被碰牌相同的手牌列为禁张",
+      "result": "手里同牌面的牌不能打出"
+     },
+     "source": {
+      "chapter": "行牌 > 吃碰禁手",
+      "fromLine": 189,
+      "toLine": 189
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C15-002",
+   "name": "吃牌禁张细化与吃牌可选性",
+   "description": "吃牌禁张按手牌相差是否为一、外侧是否越界、最终选定组合确定，并校验吃完后是否仍有可打牌。",
+   "scope": "覆盖吃牌禁张的延伸判定、多组只按最终选定一组、禁张不含财神，以及剩余手牌全为禁张时不能吃；不含碰牌禁张与界面表现。",
+   "coordination": "服务端计算禁张并判定吃牌是否允许，客户端在本家提示吃禁手规则生效中。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C15-006",
+     "name": "相差一时禁吃进与另一侧延伸",
+     "rule": "手上两张相差 1 时，禁吃进的那张和另一侧延伸的那张。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家吃牌后手中两张牌相差 1",
+      "condition": "手上两张牌点数相差 1",
+      "action": "把吃进的那张和另一侧能延伸成顺子的那张列为禁张",
+      "result": "这两张牌都不能打出"
+     },
+     "source": {
+      "chapter": "行牌 > 吃碰禁手",
+      "fromLine": 191,
+      "toLine": 191
+     }
+    },
+    {
+     "atomId": "AT-ST-C15-007",
+     "name": "1、9 外侧不是牌只禁吃进张",
+     "rule": "1、9 外侧不是牌，实际只禁吃进的一张。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "吃牌后手牌贴到 1 或 9 的边界",
+      "condition": "另一侧延伸位置超出 1 至 9 牌面范围",
+      "action": "不再把外部位置算作禁张，只禁吃进的那一张",
+      "result": "只有吃进的那张牌不能打出"
+     },
+     "source": {
+      "chapter": "行牌 > 吃碰禁手",
+      "fromLine": 191,
+      "toLine": 191
+     }
+    },
+    {
+     "atomId": "AT-ST-C15-008",
+     "name": "相差非一只禁吃进张",
+     "rule": "相差不是 1 时，只禁吃进的那张。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家吃牌后手中两张牌相差不为 1",
+      "condition": "手上两张牌点数相差不是 1",
+      "action": "只把吃进的那张列为禁张",
+      "result": "只有吃进的那张牌不能打出"
+     },
+     "source": {
+      "chapter": "行牌 > 吃碰禁手",
+      "fromLine": 191,
+      "toLine": 191
+     }
+    },
+    {
+     "atomId": "AT-ST-C15-009",
+     "name": "多组吃法只按最终选定一组写禁张",
+     "rule": "只按最终选定的一组写禁张。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "同一张牌存在多组可吃的组合",
+      "condition": "玩家在多组吃法中确定了一组",
+      "action": "只依据最终选定的那一组计算禁张",
+      "result": "禁张与最终选择的吃法一致，不会混入其它组合的禁张"
+     },
+     "source": {
+      "chapter": "行牌 > 吃碰禁手",
+      "fromLine": 191,
+      "toLine": 191
+     }
+    },
+    {
+     "atomId": "AT-ST-C15-010",
+     "name": "剩余手牌全为禁张的吃法不能吃",
+     "rule": "吃完后剩余手牌全部落在禁张里的吃法不能吃，本家提示「吃禁手规则生效中」。",
+     "uiRequirement": "本家提示「吃禁手规则生效中」。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家在吃牌阶段尝试一种吃法",
+      "condition": "吃完后剩余手牌全部落在禁张里",
+      "action": "拒绝该吃法并在本家给出提示",
+      "result": "玩家看到「吃禁手规则生效中」，该吃法无法成立"
+     },
+     "source": {
+      "chapter": "行牌 > 吃碰禁手",
+      "fromLine": 191,
+      "toLine": 191
+     }
+    },
+    {
+     "atomId": "AT-ST-C15-011",
+     "name": "禁张不含财神",
+     "rule": "禁张不含财神，吃完仍可打财神。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "吃或碰成立并生成禁张",
+      "condition": "手牌中有财神",
+      "action": "禁张集合不包含财神",
+      "result": "吃完或碰完后仍可以打出财神"
+     },
+     "source": {
+      "chapter": "行牌 > 吃碰禁手",
+      "fromLine": 191,
+      "toLine": 191
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C15-003",
+   "name": "禁打牌界面表现与出牌拦截",
+   "description": "禁打牌在本家压暗但仍可辨认和操作，尝试打出时提示且牌不进牌河，其他家只见牌背。",
+   "scope": "覆盖禁打牌的视觉样式、可提起与横滑虚影操作、非法出牌提示与其他家可见性；不含禁张生成与解除。",
+   "coordination": "客户端负责压暗显示、操作反馈与提示，服务端保证被禁牌不进入牌河。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C15-012",
+     "name": "禁打牌压暗且仅本家显示",
+     "rule": "禁打牌压暗，牌面仍可辨认，只在本家界面显示。",
+     "uiRequirement": "禁打牌压暗，牌面仍可辨认，只在本家界面显示。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "本家手牌中存在禁张",
+      "condition": "禁张已生成",
+      "action": "对禁张做压暗处理但保留牌面可辨认",
+      "result": "本家看到压暗的禁打牌并仍能认出牌面"
+     },
+     "source": {
+      "chapter": "行牌 > 吃碰禁手",
+      "fromLine": 193,
+      "toLine": 193
+     }
+    },
+    {
+     "atomId": "AT-ST-C15-013",
+     "name": "禁打牌仍可提起与横滑虚影",
+     "rule": "这些牌仍能提起，也能横滑出虚影。",
+     "uiRequirement": "禁打牌仍能提起，也能横滑出虚影。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家按住或拖动一张禁打牌",
+      "condition": "该牌处于禁张状态",
+      "action": "允许牌被提起并支持横滑产生虚影",
+      "result": "玩家能提起禁打牌并看到横滑虚影"
+     },
+     "source": {
+      "chapter": "行牌 > 吃碰禁手",
+      "fromLine": 193,
+      "toLine": 193
+     }
+    },
+    {
+     "atomId": "AT-ST-C15-014",
+     "name": "禁打牌出牌被拦截并提示",
+     "rule": "单击、双击或松手打出时弹出「该牌被禁打」，牌不进牌河。",
+     "uiRequirement": "单击、双击或松手打出时弹出「该牌被禁打」。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家单击、双击或在拖动后松手尝试打出禁打牌",
+      "condition": "所打出的牌在禁张内",
+      "action": "拦截本次出牌并弹出提示",
+      "result": "玩家看到「该牌被禁打」，该牌不进入牌河"
+     },
+     "source": {
+      "chapter": "行牌 > 吃碰禁手",
+      "fromLine": 193,
+      "toLine": 193
+     }
+    },
+    {
+     "atomId": "AT-ST-C15-015",
+     "name": "其他家只见牌背",
+     "rule": "其他家只看到牌背。",
+     "uiRequirement": "其他家只看到牌背。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "本家处于禁张状态",
+      "condition": "其他玩家查看本家手牌",
+      "action": "对其他家隐藏禁张牌面",
+      "result": "其他家只能看到牌背，无法辨别具体牌面"
+     },
+     "source": {
+      "chapter": "行牌 > 吃碰禁手",
+      "fromLine": 193,
+      "toLine": 193
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C15-004",
+   "name": "禁张解除与补牌限制",
+   "description": "打出合法牌后禁张被清空，同回合再杠不清空，补进的牌若仍在禁张里也不能打。",
+   "scope": "覆盖禁张解除时机、同回合杠后保留、补牌仍受禁张约束；不含禁张生成与界面表现。",
+   "coordination": "服务端负责禁张清空与补牌校验，客户端同步解除或维持压暗状态。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C15-016",
+     "name": "打出合法牌后清空禁张",
+     "rule": "打出一张合法牌后，服务端清空禁张。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家打出一张合法牌",
+      "condition": "所出牌不在禁张内",
+      "action": "清空当前禁张集合",
+      "result": "手牌不再有禁打标记，可正常出牌"
+     },
+     "source": {
+      "chapter": "行牌 > 吃碰禁手",
+      "fromLine": 195,
+      "toLine": 195
+     }
+    },
+    {
+     "atomId": "AT-ST-C15-017",
+     "name": "同一回合再杠不清空禁张",
+     "rule": "同一回合再杠不清空。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家在同一回合内再次杠牌",
+      "condition": "禁张尚未解除",
+      "action": "杠牌不触发禁张清空",
+      "result": "禁张继续生效，相关牌仍不能打出"
+     },
+     "source": {
+      "chapter": "行牌 > 吃碰禁手",
+      "fromLine": 195,
+      "toLine": 195
+     }
+    },
+    {
+     "atomId": "AT-ST-C15-018",
+     "name": "补进牌仍在禁张内不能打",
+     "rule": "补进的牌若牌值仍在禁张里，也不能打。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "杠后补进一张牌",
+      "condition": "补进牌的牌值仍属于禁张",
+      "action": "把补进的牌继续视为禁打",
+      "result": "补进的牌不能被合法打出"
+     },
+     "source": {
+      "chapter": "行牌 > 吃碰禁手",
+      "fromLine": 195,
+      "toLine": 195
+     }
+    }
+   ]
+  }
+ ]
+}

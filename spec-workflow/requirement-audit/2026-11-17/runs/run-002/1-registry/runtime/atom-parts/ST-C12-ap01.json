@@ -1,0 +1,274 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C12",
+ "partNo": 1,
+ "stage": {
+  "stageId": "ST-C12",
+  "name": "自摸、放铳、抢杠胡",
+  "chapter": "行牌 > 自摸、放铳、抢杠胡",
+  "summary": "定义自摸的三种时机与牌型结构、本期固定庄闲放铳的点炮胡成立条件与赔付归属，以及三牢庄闲之间抢杠胡的成立条件与赔付归属。"
+ },
+ "features": [
+  {
+   "id": "FP-ST-C12-001",
+   "name": "自摸",
+   "description": "玩家在常规摸牌、杠后补牌，或作为庄家起手拿到第 14 张时，于出牌前以 4 组面子加 1 组对子的合法牌型胡牌。",
+   "scope": "仅覆盖自摸的三个触发时机、出牌前时限与常规牌型结构；不含番型计算、承包代赔与特殊结构（如爆头、七客）。",
+   "coordination": "与摸牌流程、杠后补牌流程、庄家起手配牌流程及胡牌判定协作。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C12-001",
+     "name": "常规摸牌自摸",
+     "rule": "玩家在常规摸牌后、出牌前，可胡牌（自摸）。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "轮到玩家常规摸牌并摸到一张牌",
+      "condition": "玩家尚未出牌",
+      "action": "按胡牌规则判定手牌能否成胡",
+      "result": "玩家在出牌前可以自摸胡牌"
+     },
+     "source": {
+      "chapter": "行牌 > 自摸、放铳、抢杠胡",
+      "fromLine": 165,
+      "toLine": 165
+     }
+    },
+    {
+     "atomId": "AT-ST-C12-002",
+     "name": "杠后补牌自摸",
+     "rule": "玩家在杠后补牌时、出牌前，可胡牌（自摸）。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家完成杠牌后从牌墙补牌",
+      "condition": "补牌后尚未出牌",
+      "action": "按胡牌规则判定补到的牌能否使手牌成胡",
+      "result": "玩家在出牌前可以自摸胡牌"
+     },
+     "source": {
+      "chapter": "行牌 > 自摸、放铳、抢杠胡",
+      "fromLine": 165,
+      "toLine": 165
+     }
+    },
+    {
+     "atomId": "AT-ST-C12-003",
+     "name": "庄家起手第 14 张自摸",
+     "rule": "庄家起手拿到第 14 张牌时，在出牌前可胡牌（自摸）。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "庄家起手配牌完成，拿到第 14 张牌",
+      "condition": "尚未出牌",
+      "action": "按胡牌规则判定起手手牌能否成胡",
+      "result": "庄家在出牌前可以自摸胡牌"
+     },
+     "source": {
+      "chapter": "行牌 > 自摸、放铳、抢杠胡",
+      "fromLine": 165,
+      "toLine": 165
+     }
+    },
+    {
+     "atomId": "AT-ST-C12-004",
+     "name": "自摸牌型结构与出牌前时限",
+     "rule": "自摸须在出牌前完成胡牌，常规结构是 4 组面子加 1 组对子。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家在摸牌、补牌或起手第 14 张时宣告胡牌",
+      "condition": "手牌为 4 组面子加 1 组对子的常规结构，且尚未出牌",
+      "action": "判定手牌结构是否合法、是否仍在出牌前",
+      "result": "结构合法且在出牌前则自摸成立，出牌后不能再自摸"
+     },
+     "source": {
+      "chapter": "行牌 > 自摸、放铳、抢杠胡",
+      "fromLine": 165,
+      "toLine": 165
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C12-002",
+   "name": "放铳（点炮胡）",
+   "description": "本期固定庄闲放铳：当局为三牢，且出牌者与胡牌者正好一庄一闲、牌型合法时，才可点炮胡；庄家打出的牌只有闲家可胡，闲家打出的牌只有庄家可胡；未形成该关系时只能自摸；只由放铳者赔付。",
+   "scope": "仅覆盖放铳类型、成立条件、方向限制与赔付归属；不含白板财神弃牌不能点炮、一炮多响等其他条款与具体赔付数值。",
+   "coordination": "与出牌流程、胡牌判定、胡牌响应选择及结算赔付协作。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C12-005",
+     "name": "本期固定庄闲放铳",
+     "rule": "本期放铳固定为庄闲放铳这一种形式。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "对局开始确定放铳规则",
+      "condition": "本期对局",
+      "action": "采用庄闲放铳作为唯一的点炮胡形式",
+      "result": "玩家只能按庄闲关系点炮胡，无其他点炮形式"
+     },
+     "source": {
+      "chapter": "行牌 > 自摸、放铳、抢杠胡",
+      "fromLine": 166,
+      "toLine": 166
+     }
+    },
+    {
+     "atomId": "AT-ST-C12-006",
+     "name": "点炮胡成立前提",
+     "rule": "当局是三牢，且出牌者与胡牌者正好一边是庄、一边是闲，同时牌型合法，才能点炮胡。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家打出一张牌，其他玩家响应胡牌",
+      "condition": "当局牢级为三牢，出牌者与胡牌者一边是庄一边是闲，且响应的牌型合法",
+      "action": "判定三项条件是否同时满足",
+      "result": "三项同时满足才允许点炮胡，否则不得点炮胡"
+     },
+     "source": {
+      "chapter": "行牌 > 自摸、放铳、抢杠胡",
+      "fromLine": 166,
+      "toLine": 166
+     }
+    },
+    {
+     "atomId": "AT-ST-C12-007",
+     "name": "放铳的庄闲方向限制",
+     "rule": "庄家打出的牌只有闲家可胡，闲家打出的牌只有庄家可胡。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "一方打出一张牌，另一方响应胡牌",
+      "condition": "出牌方与响应方为庄闲对立关系",
+      "action": "按方向判定响应方是否有权胡这张牌",
+      "result": "庄家打的牌只有闲家能胡，闲家打的牌只有庄家能胡"
+     },
+     "source": {
+      "chapter": "行牌 > 自摸、放铳、抢杠胡",
+      "fromLine": 166,
+      "toLine": 166
+     }
+    },
+    {
+     "atomId": "AT-ST-C12-008",
+     "name": "未构成庄闲关系只能自摸",
+     "rule": "出牌者与胡牌者未形成一庄一闲关系时，只能自摸。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家响应他人打出的牌尝试胡牌",
+      "condition": "出牌者与响应者未形成一庄一闲关系（如闲闲之间）",
+      "action": "拒绝点炮胡，仅保留自摸路径",
+      "result": "玩家无法点炮胡，只能通过自摸胡牌"
+     },
+     "source": {
+      "chapter": "行牌 > 自摸、放铳、抢杠胡",
+      "fromLine": 166,
+      "toLine": 166
+     }
+    },
+    {
+     "atomId": "AT-ST-C12-009",
+     "name": "放铳赔付归属",
+     "rule": "点炮胡只由放铳者赔付。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "点炮胡成立并进入结算",
+      "condition": "胡牌由某位玩家打出的牌产生",
+      "action": "将赔付责任只归于放铳者",
+      "result": "仅出铳者承担赔付，其他玩家不参与赔付"
+     },
+     "source": {
+      "chapter": "行牌 > 自摸、放铳、抢杠胡",
+      "fromLine": 166,
+      "toLine": 166
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C12-003",
+   "name": "抢杠胡",
+   "description": "抢杠胡规则与放铳相同，只有三牢的庄闲之间可以抢；所加的第 4 张须能使响应者合法胡牌；只由被抢的加杠者按放铳赔付，其他人不付。",
+   "scope": "仅覆盖抢杠胡的适用关系、成立条件与赔付归属；不含杠牌流程细节与番型组合（如杠爆）。",
+   "coordination": "与加杠流程、胡牌响应判定、结算赔付协作。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C12-010",
+     "name": "抢杠胡仅限三牢庄闲之间",
+     "rule": "抢杠胡与放铳相同，只有三牢的庄闲之间可以抢。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家进行加杠",
+      "condition": "当局牢级为三牢，且加杠者与响应者一边是庄一边是闲",
+      "action": "按与放铳相同的规则判定是否允许抢杠",
+      "result": "仅三牢局的庄闲之间可以抢杠胡"
+     },
+     "source": {
+      "chapter": "行牌 > 自摸、放铳、抢杠胡",
+      "fromLine": 167,
+      "toLine": 167
+     }
+    },
+    {
+     "atomId": "AT-ST-C12-011",
+     "name": "第 4 张须使响应者合法胡牌",
+     "rule": "所加的第 4 张须使响应者合法胡牌，否则不能抢杠胡。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "加杠者亮出加杠的第 4 张牌",
+      "condition": "响应者以这第 4 张牌组成手牌后牌型合法",
+      "action": "判定该张牌能否使响应者成胡",
+      "result": "牌型合法才能抢杠胡，不合法则不能抢"
+     },
+     "source": {
+      "chapter": "行牌 > 自摸、放铳、抢杠胡",
+      "fromLine": 167,
+      "toLine": 167
+     }
+    },
+    {
+     "atomId": "AT-ST-C12-012",
+     "name": "抢杠胡由被抢加杠者赔付",
+     "rule": "抢杠胡只由被抢的加杠者按放铳赔付。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "抢杠胡成立并进入结算",
+      "condition": "胡牌来源于他人在加杠时亮出的第 4 张牌",
+      "action": "按放铳口径计算赔付并归责于加杠者",
+      "result": "被抢的加杠者按放铳标准赔付"
+     },
+     "source": {
+      "chapter": "行牌 > 自摸、放铳、抢杠胡",
+      "fromLine": 167,
+      "toLine": 167
+     }
+    },
+    {
+     "atomId": "AT-ST-C12-013",
+     "name": "抢杠胡其他人不赔付",
+     "rule": "抢杠胡其他人不付。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "抢杠胡结算",
+      "condition": "胡牌由被抢的加杠者的第 4 张牌产生",
+      "action": "将其余玩家排除在赔付范围外",
+      "result": "除被抢的加杠者外，其他玩家均不赔付"
+     },
+     "source": {
+      "chapter": "行牌 > 自摸、放铳、抢杠胡",
+      "fromLine": 167,
+      "toLine": 167
+     }
+    }
+   ]
+  }
+ ]
+}

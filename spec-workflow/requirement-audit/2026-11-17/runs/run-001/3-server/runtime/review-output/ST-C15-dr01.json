@@ -1,0 +1,119 @@
+{
+ "schemaVersion": 2,
+ "analysisRunId": "ar-2026-11-17-001",
+ "entries": [
+  {
+   "atomId": "AT-ST-C15-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第185行「行牌 > 吃碰禁手」）要求吃或碰成立后，与所吃碰牌面相同的手牌全部禁打，直到本次限制解除。双栏快照：unified-atoms 中本原子 client.verdict 为空、client.evidenceIds 为空，server.applicability 为空、server.evidenceIds 为空；核查 client-evidence.json 全部 12 条（claimKey 为 hu-result-label-dianpao / seat-count-map-2-3 / er-ren-room-gameid / cai-shen-type-values / lian-zhuang-level / banker-level-multiplier / simple-mode-config-consumed / er-ren-room-label / base-score-display / feng-ding-status-text / result-hu-type-tab）与 server-evidence.json 全部 60 条，atomIds 均无一条指向 AT-ST-C15-*。唯一沾边的服务端证据 SVE-AT-ST-C01-001-01（common_game/common_game_context.cpp:29-36，CommonGameContext::SendNotifyInfo：简洁模式仅抑制白名单内规则类 toast，白名单含「吃禁手」）只证明公共层存在禁手提示通道，既不证明禁张按「同牌面」计算，也不证明好友房玩法启用该算法。证据不足以判 consistent，同时没有任何观察与需求矛盾，故维持 unverified。",
+   "reviewRule": "common-capability-is-not-enabled（公共层存在「吃禁手」提示通道，不等于好友房启用同牌面禁张算法）",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-001-01",
+     "layer": "common_game",
+     "applicability": "unknown",
+     "note": "仅证明 common_game 存在「吃禁手」规则类提示且可被简洁模式抑制，未证明禁张范围算法及好友房启用状态"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C15-003",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第188行）要求用相邻两张吃一端时，把这两张在 1 至 9 内两端能接成顺子的牌都列为禁张（2、3 吃 1 或吃 4 均禁 1 和 4）。双栏快照：本原子 client.verdict、server.applicability 均为空，双端 evidenceIds 为空；client-evidence.json 12 条与 server-evidence.json 60 条均无 atomIds 指向 AT-ST-C15-*，也无禁张范围相关 claimKey（检索 forbid/禁 等关键词仅命中 SVE-AT-ST-C01-024-01 吃碰次数上限、SVE-AT-ST-C01-025-03 守庄禁碰，与吃碰禁手禁张无关）。需求侧与 AT-ST-C15-004（1、2 吃 3 只禁 3）、AT-ST-C15-007（1、9 之外不是牌面）边界口径自洽，无内部矛盾可判，但实现是否做两端延伸毫无证据，维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（无任何禁张范围证据，不能判 consistent，也不构成 conflict）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C15-010",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求（PRD 第191行）要求「吃完后剩余手牌全部落在禁张里」的吃法不能吃，且本家提示「吃禁手规则生效中」。双栏快照：unified-atoms 中本原子 client.verdict 与 server.applicability 均为空、双端 evidenceIds 为空；服务端侧存在间接证据 SVE-AT-ST-C01-001-01（common_game/common_game_context.cpp:29-36，SendNotifyInfo 白名单含「吃禁手」）证明公共层确实按「吃禁手」规则下发提示 toast（仅简洁模式抑制），即拒绝提示链路真实存在；但「剩余手牌全在禁张内即拒绝」这一判定条件、以及客户端文案「吃禁手规则生效中」均无证据（client-evidence.json 12 条无对应条目，亦无 AT-ST-C15-* 挂载）。提示通道已对上、拒绝条件与文案未证，故建议由 unverified 上调为 partial，不判 consistent。",
+   "reviewRule": "evidence-is-not-consistency（服务端仅证明禁手提示通道存在，拒绝条件与客户端文案未证，不足以判 consistent）",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-001-01",
+     "layer": "common_game",
+     "applicability": "unknown",
+     "note": "证明公共层存在「吃禁手」规则类提示下发通道（normal 模式不抑制），支持本原子「拒绝后提示」链路存在，但不证明拒绝判定条件与文案内容"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C15-012",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第193行）要求禁打牌压暗、牌面仍可辨认，且只在本家界面显示。双栏快照：client.verdict 为空、client.evidenceIds 为空；client-evidence.json 12 条中涉及界面表现的仅 CLE-AT-ST-C01-009-01（layer/BoxHzmjBackView.ts 牌桌底分文本）与 CLE-AT-ST-C01-009-03（layer/BoxHzmjTingPaiView.ts 封顶状态文本），均为数值文本渲染，与禁打压暗、灰度处理及跨家可见范围无关；server-evidence.json 60 条亦无相关条目。既无「已压暗」的正面证据，也无「未压暗或跨家泄露」的反面证据，属取证空缺而非 conflict，维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（客户端零禁打压暗证据，不能判 consistent）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C15-013",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第193行）要求禁打牌仍能被提起，并支持横滑出虚影。双栏快照：client.verdict 为空、client.evidenceIds 为空；client-evidence.json 12 条无任何手牌拖拽/提起/虚影相关 claimKey（现有条目集中在 Hu 结果页签、座位映射、财神类型、庄闲倍数、简洁模式、底分/封顶文本），server-evidence.json 60 条亦无交互反馈条目。是否有「禁打牌禁止拖动」的偏差完全不可观察，按取证空缺维持 unverified，不升级为 conflict。",
+   "reviewRule": "evidence-is-not-consistency（无交互证据，既不能判 consistent 也不能判 conflict）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C15-014",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第193行）要求单击、双击或松手打出禁打牌时弹出「该牌被禁打」，牌不进牌河。双栏快照：client.verdict、server.applicability 均为空，双端 evidenceIds 为空；client-evidence.json 12 条与 server-evidence.json 60 条均无 atomIds 指向 AT-ST-C15-*，提示文案「该牌被禁打」与出牌请求被拒后牌河不变的时序均无证据（SVE-AT-ST-C01-001-01 仅对应「吃禁手」提示白名单，文案不同，不能替代本原子）。双端无证据不等于冲突，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（双端均无出牌拦截证据，属取证空缺而非矛盾）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C15-015",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第193行）要求其他家查看本家手牌时只看到牌背，不泄露禁张牌面或压暗状态。双栏快照：client.verdict 为空、client.evidenceIds 为空；client-evidence.json 12 条中 CLE-AT-ST-C01-002-04（layer/BoxHzmjBackView.ts 二人房牌桌标识）只证明牌桌层存在房间标识渲染，与「对手手牌可见性/牌背下发」无关；server-evidence.json 60 条无手牌下发范围条目（SVE-AT-ST-C01-025-05 等均为守庄/双色玩法开关）。既无泄露也无正确遮蔽的证据，维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（可见性无证据，不能判 consistent）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C15-016",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第195行）要求玩家打出一张合法牌后，服务端清空禁张。双栏快照：本原子 client.verdict、server.applicability 均为空，双端 evidenceIds 为空；server-evidence.json 60 条覆盖的是创房配置解析（game_logic.cpp）、吃碰次数上限（common_game_algorithm.cpp:79-84）、三摊承包、结算封顶等，无禁张生命周期（清除时机）条目；client-evidence.json 12 条亦无为撤销禁打标记的证据。清除时机是否正确不可判定，且无证据表明存在「杠或非法时机清空」的偏差，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（服务端无禁张生命周期证据，不等于冲突）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C15-018",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第195行）要求杠后补进的牌若牌值仍属禁张，则该补牌也不能打出。双栏快照：client.verdict 为空、client.evidenceIds 为空，server.applicability 为空、server.evidenceIds 为空；server-evidence.json 60 条中唯一涉及补牌/杠后流程的邻近条目是 SVE-AT-ST-C01-005-01（common_game_com_action.cpp:353-358，banker_discard_hu 需三牢才可点炮）与 SVE-AT-ST-C01-004-02（common_game_com_ju.cpp:191-196，庄等级映射），均与禁张按牌值比对无关；client-evidence.json 12 条亦无补牌后禁打呈现证据。是否对补牌重新做牌值比对无从判断，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（补牌后禁张判定无证据，属取证空缺而非矛盾）",
+   "evidenceScopes": []
+  }
+ ]
+}

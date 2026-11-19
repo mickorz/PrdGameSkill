@@ -1,0 +1,63 @@
+{
+ "schemaVersion": 2,
+ "analysisRunId": "ar-2026-11-17-001",
+ "entries": [
+  {
+   "atomId": "AT-ST-C07-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第119行「整副牌共136张」）要求开局按默认牌组配置凑齐136张作为唯一牌源。客户端侧 unified-atoms 中 client.verdict 与 client.evidenceIds 均为空，client-evidence.json 共12条证据全部挂在 AT-ST-C01 系列（如 CLE-AT-ST-C01-003-03 只证明财神类型下发），无一条指向牌组张数；服务端侧 server.applicability 与 server.evidenceIds 均为空，server-evidence.json 共60条中检索不到任何 atomIds 含 C07 的条目，最近的 SVE-AT-ST-C01-003-01 只描述财神牌种设置，不涉及牌墙总数。双端取证空缺，既不能证明恰为136张也不能证明冲突，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（服务端无证据属取证空缺，不等于与需求冲突，维持未验证）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C07-005",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求（PRD 第120行「四张白板都是财神」）要求白板财神模式下四张白板全为本局财神。服务端侧补到了直接证据：SVE-AT-ST-C01-003-03（hzmj_server/server_config.cpp:16 SetCaiShenType(0)）证明好友房默认即白板财神档，SVE-AT-ST-C01-003-01（common_game/com_game/common_game_com_ju.cpp:226-248，TMah cai_shen = MV_BAI_BAN; … SetCaiShen(cai_shen)）证明财神身份以「白板牌种」整体设定而非单张，即在默认档下所有白板均为财神；但「四张」这一数量前提依赖牌组构成为4张，而 AT-ST-C07-001 的136张牌组仍无证据，同时客户端 client.verdict 为空、无白板财神标识相关证据可交叉印证。规则语义已对上、数量前提未证，故建议由 unverified 上调为 partial，不判 consistent。",
+   "reviewRule": "evidence-is-not-consistency（服务端仅证明财神取白板牌种，四张构成与客户端表现未证，不足以判 consistent）",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-003-03",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "好友房默认 cai_shen_type=0（白板财神），是本原子生效前提"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-003-01",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "白板财神档下财神按白板牌种整体设定（SetCaiShen(MV_BAI_BAN)），支持「四张白板都是财神」"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C07-009",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第121行「其他人不能吃、碰、杠被打出的财神」）要求财神弃牌不开放吃碰杠响应。客户端侧 client.verdict/client.evidenceIds 为空，client-evidence.json 12条中无任何吃碰杠入口或财神弃牌相关条目；服务端侧 server.applicability 为空、无证据，server-evidence.json 中吃碰杠相关条目（SVE-AT-ST-C01-021-01 三摊承包、SVE-AT-ST-C01-005-04 discard_ 默认允许出牌）均只覆盖通用吃碰与出牌开关，不证明对财神弃牌的响应抑制与校验拒绝。缺证不构成冲突，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（服务端无财神弃牌响应证据，属取证空缺，不升级为 conflict）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C07-010",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第121行「其他人不能用手牌胡被打出的财神」）要求财神弃牌不能点炮胡。客户端侧 client.verdict/client.evidenceIds 为空，无胡牌入口抑制证据；服务端侧 server.applicability 为空、无证据，现有胡牌相关条目 SVE-AT-ST-C01-005-01（common_game/com_game/common_game_com_action.cpp:353-358 BoxHuStep::CanDiscardHu）只约束「庄闲放铳需三牢」，未涉及财神弃牌能否作为胡牌牌源。双端均缺证，既不能证明可点炮胡（conflict）也不能证明被禁止（consistent），维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（胡牌牌源判定无证据，不能据此判冲突，维持未验证）",
+   "evidenceScopes": []
+  }
+ ]
+}

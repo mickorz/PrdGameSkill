@@ -1,0 +1,36 @@
+{
+ "schemaVersion": 2,
+ "date": "2026-11-17",
+ "analysisRunId": "ar-2026-11-17-001",
+ "retryScopeTargets": {
+  "client": [],
+  "server": []
+ },
+ "evidenceDiff": {
+  "degraded": false,
+  "degradedReason": "",
+  "client": {
+   "changed": [],
+   "added": [],
+   "removed": []
+  },
+  "server": {
+   "changed": [],
+   "added": [],
+   "removed": []
+  }
+ },
+ "affectedEvidence": [],
+ "impactSet": {
+  "client": [],
+  "server": []
+ },
+ "rerunStages": [
+  "S6",
+  "S7",
+  "S8",
+  "S9",
+  "S10"
+ ],
+ "note": "S6~S9 对影响集合重算（新一轮 analysisRunId）；S10 只重生成影响集合覆盖的阶段文档/索引/策划版分片"
+}

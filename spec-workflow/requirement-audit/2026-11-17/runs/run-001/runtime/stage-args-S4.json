@@ -1,0 +1,11 @@
+{
+ "configArgs": {
+  "date": "2026-11-17",
+  "codeDir": "source-code/client/Code",
+  "fguiDir": "source-code/client/Fgui/assets"
+ },
+ "profile": {
+  "model": "biangfeng-gateway/deepseek-v4.1-flash-official",
+  "concurrency": "16"
+ }
+}

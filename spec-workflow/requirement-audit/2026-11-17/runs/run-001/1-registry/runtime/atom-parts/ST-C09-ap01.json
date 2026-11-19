@@ -1,0 +1,203 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C09",
+ "partNo": 1,
+ "stage": {
+  "stageId": "ST-C09",
+  "name": "操作优先级",
+  "chapter": "行牌 > 操作优先级",
+  "summary": "规定同一张弃牌上胡、碰、直杠、吃等操作的优先级顺序、多人可胡时的最近者优先与顺延规则、低优先级等待与取消规则，以及吃只能吃上家的限制。"
+ },
+ "features": [
+  {
+   "id": "FP-ST-C09-001",
+   "name": "弃牌响应优先级排序",
+   "description": "规定同一张弃牌上可响应操作之间的优先级顺序，以及碰与直杠同级时的裁决方式与下发对象。",
+   "scope": "只处理同一张弃牌在不同操作类型之间的优先级比较与同级裁决，不涉及胡牌番型与结算。",
+   "coordination": "与多人可胡裁决、低优先级等待与取消共同组成弃牌响应流程。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C09-001",
+     "name": "弃牌响应优先级顺序",
+     "rule": "对同一张弃牌：点炮胡 > 碰 / 直杠 > 吃。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "某位玩家打出一张弃牌",
+      "condition": "该弃牌同时可被以胡、碰、直杠、吃等不同方式响应",
+      "action": "按点炮胡高于碰和直杠、碰和直杠高于吃的顺序确定优先响应的操作",
+      "result": "玩家看到高优先级的操作先被受理，低优先级操作需要让位或等待"
+     },
+     "source": { "chapter": "行牌 > 操作优先级", "fromLine": 139, "toLine": 139 }
+    },
+    {
+     "atomId": "AT-ST-C09-002",
+     "name": "碰与直杠同级",
+     "rule": "碰与直杠同级。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "某位玩家打出一张弃牌",
+      "condition": "有玩家对同一张弃牌既能碰又能直杠",
+      "action": "将碰与直杠视为同一优先级，不做先后区分",
+      "result": "玩家看到碰与直杠获得同等的响应机会"
+     },
+     "source": { "chapter": "行牌 > 操作优先级", "fromLine": 139, "toLine": 139 }
+    },
+    {
+     "atomId": "AT-ST-C09-003",
+     "name": "碰杠同级按座位号裁决",
+     "rule": "同时能碰和直杠时不区分先后，按座位号小的先裁决。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "同一张弃牌上同时出现可碰与可直杠的情况",
+      "condition": "碰与直杠同级且存在争抢",
+      "action": "比较相关玩家的座位号，由座位号较小者先获裁决",
+      "result": "只有座位号较小的那一方得到该项操作的裁决结果"
+     },
+     "source": { "chapter": "行牌 > 操作优先级", "fromLine": 139, "toLine": 139 }
+    },
+    {
+     "atomId": "AT-ST-C09-004",
+     "name": "碰直杠只发给座位号最小的一家",
+     "rule": "碰、直杠只发给当前能成立、且座位号最小的那一家。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "某位玩家打出一张弃牌",
+      "condition": "有多家玩家当前能够碰或直杠该弃牌",
+      "action": "只向当前能成立且座位号最小的那一家发出碰或直杠响应",
+      "result": "只有座位号最小的可成立玩家看到碰或直杠提示，其余玩家不出现该提示"
+     },
+     "source": { "chapter": "行牌 > 操作优先级", "fromLine": 139, "toLine": 139 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C09-002",
+   "name": "多人可胡的裁决与顺延",
+   "description": "规定一张弃牌被多家玩家可胡时只允许一人胡，并按出牌者起逆时针最近者优先、放弃后顺延的方式裁决。",
+   "scope": "只处理同一张弃牌上多人可胡情形下的唯一胡牌者确定与顺延，不涉及番型与结算。",
+   "coordination": "与弃牌响应优先级排序、低优先级等待与取消配合决定最终胡牌者。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C09-005",
+     "name": "只允许一人胡",
+     "rule": "只允许一人胡，不一炮多响。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "一张弃牌被多家玩家声明可以胡",
+      "condition": "同时存在多个可胡者",
+      "action": "只让其中一名玩家胡牌，不允许一炮多响",
+      "result": "最终仅一名玩家胡牌"
+     },
+     "source": { "chapter": "行牌 > 操作优先级", "fromLine": 141, "toLine": 141 }
+    },
+    {
+     "atomId": "AT-ST-C09-006",
+     "name": "多人可胡每家都收到胡",
+     "rule": "多人可胡时每家都收到胡。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "某位玩家打出一张弃牌",
+      "condition": "多家玩家均可胡该弃牌",
+      "action": "向每一个可胡的玩家发出胡的响应",
+      "result": "每个可胡玩家都能看到并可以选择胡"
+     },
+     "source": { "chapter": "行牌 > 操作优先级", "fromLine": 139, "toLine": 139 }
+    },
+    {
+     "atomId": "AT-ST-C09-007",
+     "name": "逆时针最近可胡者优先",
+     "rule": "多人可胡时，从出牌者起按逆时针，最近的可胡者优先。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "多人可胡同一张弃牌",
+      "condition": "同时存在多个可胡者",
+      "action": "从出牌者位置起按逆时针方向，优先判定距离最近的可胡者",
+      "result": "由距离出牌者最近的可胡者优先获得胡的资格"
+     },
+     "source": { "chapter": "行牌 > 操作优先级", "fromLine": 141, "toLine": 141 }
+    },
+    {
+     "atomId": "AT-ST-C09-008",
+     "name": "近者胡则远者不成立放弃后顺延",
+     "rule": "近者胡则远者不成立，近者放弃后远者仍可胡；放弃后顺延。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "最近的可胡者先被裁决",
+      "condition": "最近的可胡者可以选择胡或放弃",
+      "action": "近者胡则取消远者的胡，近者放弃则把胡的资格顺延给下一顺位的可胡者",
+      "result": "近者胡时远者不能再胡；近者放弃后远者仍可继续胡"
+     },
+     "source": { "chapter": "行牌 > 操作优先级", "fromLine": 139, "toLine": 141 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C09-003",
+   "name": "低优先级等待与取消",
+   "description": "规定低优先级操作先提交时须等待更高优先级玩家全部手动放弃后才执行，高优先级一旦成立则其余响应取消。",
+   "scope": "只处理低优先级提交后的等待与高优先级成立后的响应取消，不涉及优先级本身的比较规则。",
+   "coordination": "依赖弃牌响应优先级排序确定的优先级关系来推进等待与取消。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C09-009",
+     "name": "低优先级先提交需等待",
+     "rule": "低优先级先提交时，先等全部更高优先级的玩家手动放弃，再执行。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "低优先级玩家先行提交了响应",
+      "condition": "仍存在更高优先级的玩家尚未响应",
+      "action": "暂停执行低优先级操作，等待全部更高优先级玩家手动放弃",
+      "result": "低优先级玩家看到自己的操作延迟生效，须待高优先级玩家全部放弃后才执行"
+     },
+     "source": { "chapter": "行牌 > 操作优先级", "fromLine": 142, "toLine": 142 }
+    },
+    {
+     "atomId": "AT-ST-C09-010",
+     "name": "高优先级成立则其余响应取消",
+     "rule": "更高优先级一旦成立，其余响应取消。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "更高优先级的玩家完成响应并成立",
+      "condition": "尚有其他玩家的响应处于待处理状态",
+      "action": "取消其余所有响应",
+      "result": "其余玩家看到自己的响应提示被取消"
+     },
+     "source": { "chapter": "行牌 > 操作优先级", "fromLine": 142, "toLine": 142 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C09-004",
+   "name": "吃的上家限制",
+   "description": "规定吃操作只能针对上家打出的弃牌。",
+   "scope": "只处理吃操作的来源限制，不涉及碰、直杠与胡。",
+   "coordination": "作为弃牌响应优先级中最低优先级操作的成立前提。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C09-011",
+     "name": "吃只能吃上家",
+     "rule": "吃只能吃上家。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "某位玩家打出一张弃牌",
+      "condition": "有玩家想以吃的方式响应该弃牌",
+      "action": "仅当该弃牌来自吃牌者的上一家时才允许吃",
+      "result": "玩家只对自己上家打出的牌看到可吃的选项，其他家的弃牌不能吃"
+     },
+     "source": { "chapter": "行牌 > 操作优先级", "fromLine": 143, "toLine": 143 }
+    }
+   ]
+  }
+ ]
+}

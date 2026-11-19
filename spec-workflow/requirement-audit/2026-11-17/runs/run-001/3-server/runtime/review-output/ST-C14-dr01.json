@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 2,
+  "analysisRunId": "ar-2026-11-17-001",
+  "entries": [
+    {
+      "atomId": "AT-ST-C14-001",
+      "previousDifference": "unverified",
+      "candidateDifference": "",
+      "clientVerdict": "",
+      "serverApplicability": "",
+      "reviewedDifference": "unverified",
+      "reviewReason": "需求（行牌 > 杠开、杠飘、杠飘，PRD 第180行）要求自摸且杠链为 1 时记「杠上开花」并按 2 倍计入，核验范围=server。客户端侧：unified-atoms 中 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 仅 12 条证据（覆盖 29 个原子，stats: partial 8 / not_found 21 / pending 387）且全部挂在 AT-ST-C01 系列（如 CLE-AT-ST-C01-005-02 只证明结算文案「点炮胡/放炮」、CLE-AT-ST-C01-004-04 只证明庄闲倍数换算），无一条涉及杠链或杠开番型，客户端也明确不参与番型判定。服务端侧：server.applicability 为空、server.evidenceIds 为空，server-evidence.json 60 条证据（active 6 / conditional 17 / inactive 4 / unknown 2）按「杠」「番」「飘」检索均无命中，说明本轮未取得番型计算相关实现，而非该规则被证否。双端同为空缺，既无符合证据也无矛盾证据，维持 S7 的 unverified；服务端无证据不构成冲突，也不得据此判 consistent。",
+      "reviewRule": "no-server-evidence-is-not-conflict（杠链/杠开番型双端无证据，属取证空缺，维持未验证）",
+      "evidenceScopes": []
+    },
+    {
+      "atomId": "AT-ST-C14-006",
+      "previousDifference": "unverified",
+      "candidateDifference": "",
+      "clientVerdict": "",
+      "serverApplicability": "",
+      "reviewedDifference": "unverified",
+      "reviewReason": "需求（PRD 第181行）要求杠飘/飘杠只在同时命中杠上开花与财飘时拆出单独一项、未同时命中则不出现，核验范围=server。客户端侧 client.verdict 为空、无 evidenceIds，client-evidence.json 12 条中无任何条目覆盖「财飘/杠飘/飘杠」拆分（CLE-AT-ST-C01-003-02/03 仅证明财神类型取值与翻财神动效，属财神口径而非财飘番型）；服务端侧 server.applicability 为空、无 evidenceIds，server-evidence.json 60 条中无番型拆分/加成条目（现有 SVE-AT-ST-C01-019-03、SVE-AT-ST-C01-005-01 分别只证明三摊承包与三牢放铳，与杠飘拆分无关）。双端均未定位到该项拆分逻辑，既无法证实拆出、也无法证实被误加，故维持 unverified。",
+      "reviewRule": "no-server-evidence-is-not-conflict（杠飘/飘杠拆分无服务端证据，不得据此判冲突）",
+      "evidenceScopes": []
+    },
+    {
+      "atomId": "AT-ST-C14-011",
+      "previousDifference": "unverified",
+      "candidateDifference": "",
+      "clientVerdict": "",
+      "serverApplicability": "",
+      "reviewedDifference": "unverified",
+      "reviewReason": "需求（PRD 第181行）要求结算中不单列「杠爆」「七客」，只按参与组合的各组番型计入，核验范围=server。服务端侧 server.applicability 为空、server.evidenceIds 为空，server-evidence.json 60 条证据（全部集中于创房/吃碰/承包等 C01~C21 配置类原子）经检索不含「杠」「番」「七客」条目，无法证明该项生成或屏蔽逻辑；客户端侧 client.verdict 为空、无 evidenceIds，client-evidence.json 12 条亦无关（如 CLE-AT-ST-C01-009-03 只证明封顶状态文案）。这是「禁止出现某项目」类规则，缺证据时既不能证实已屏蔽也不能证实被误列，维持 S7 的 unverified，不上调为 conflict。",
+      "reviewRule": "no-server-evidence-is-not-conflict（无杠爆/七客证据，属取证空缺，维持未验证）",
+      "evidenceScopes": []
+    }
+  ]
+}

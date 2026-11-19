@@ -1,0 +1,418 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C13",
+ "partNo": 1,
+ "stage": {
+  "stageId": "ST-C13",
+  "name": "飘财",
+  "chapter": "行牌 > 飘财",
+  "summary": "规定飘财窗口的唯一性与归属转移，受限玩家的可做与禁止操作，所有者的关窗与重开，飘档与杠链的累计清零规则，以及飘次数的显示方式。"
+ },
+ "features": [
+  {
+   "id": "FP-ST-C13-001",
+   "name": "飘财窗口归属与转移",
+   "description": "全场同时只存在一个飘财窗口；打出财神的玩家成为所有者并限制另外三家；后续有人打出财神时窗口直接转移到该玩家且不叠加；受限玩家被逼打出刚摸到的财神时窗口也转移到其身上。",
+   "scope": "仅约束飘财窗口的归属与转移，不涉及受限后的具体可做操作范围。",
+   "coordination": "窗口归属由规则判定统一维护，客户端据此对受限玩家与所有者呈现不同状态。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C13-001",
+     "name": "窗口全场唯一",
+     "rule": "全场同时只有一个飘财窗口。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "对局进行中",
+      "action": "只保留一个飘财窗口，不同时存在两个",
+      "result": ""
+     },
+     "source": {
+      "chapter": "行牌 > 飘财",
+      "fromLine": 171,
+      "toLine": 171
+     }
+    },
+    {
+     "atomId": "AT-ST-C13-002",
+     "name": "打出财神成为所有者并限制三家",
+     "rule": "打出财神的玩家成为所有者，限制另外三家。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家打出财神",
+      "condition": "",
+      "action": "打出财神的玩家成为飘财窗口所有者，另外三家进入受限状态",
+      "result": "打出者与另外三家呈现不同的受限状态"
+     },
+     "source": {
+      "chapter": "行牌 > 飘财",
+      "fromLine": 171,
+      "toLine": 171
+     }
+    },
+    {
+     "atomId": "AT-ST-C13-003",
+     "name": "再有人打出财神窗口直接转移",
+     "rule": "之后再有人打出财神，窗口直接换到这个人，不叠加。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "窗口存在期间又有人打出财神",
+      "condition": "当前已存在飘财窗口",
+      "action": "窗口直接转移到该打出财神的玩家身上",
+      "result": "窗口归属变为新打出财神的玩家，不产生叠加"
+     },
+     "source": {
+      "chapter": "行牌 > 飘财",
+      "fromLine": 171,
+      "toLine": 171
+     }
+    },
+    {
+     "atomId": "AT-ST-C13-004",
+     "name": "被逼打出摸到的财神窗口转移",
+     "rule": "受限玩家若被逼打出刚摸到的财神，窗口就转到他身上。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "受限玩家被逼打出刚摸到的财神",
+      "condition": "玩家正处于受限状态",
+      "action": "飘财窗口转移到该受限玩家身上",
+      "result": "原受限玩家成为新的所有者，原所有者解除归属"
+     },
+     "source": {
+      "chapter": "行牌 > 飘财",
+      "fromLine": 171,
+      "toLine": 171
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C13-002",
+   "name": "受限玩家的操作范围",
+   "description": "受限状态下玩家可以胡牌和暗杠，不能吃、碰、直杠、加杠；出牌只能打刚摸进或最新补进的那一张，其余手牌压暗且只在自己界面显示；该限制优先于吃碰禁手规则。",
+   "scope": "仅描述受限期间允许与禁止的操作，以及受限时的出牌与手牌显示方式。",
+   "coordination": "可做与禁手判定由规则侧给出结果，客户端据此开放或禁用对应操作并控制手牌显示。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C13-005",
+     "name": "受限时可胡牌和暗杠",
+     "rule": "受限时可以胡牌和暗杠。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "受限玩家出现可胡或可暗杠的机会",
+      "condition": "玩家处于受限状态",
+      "action": "允许该玩家胡牌与暗杠",
+      "result": "受限玩家可执行胡牌与暗杠操作"
+     },
+     "source": {
+      "chapter": "行牌 > 飘财",
+      "fromLine": 173,
+      "toLine": 173
+     }
+    },
+    {
+     "atomId": "AT-ST-C13-006",
+     "name": "受限时禁止吃碰直杠加杠",
+     "rule": "受限时不能吃、碰、直杠、加杠。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "受限玩家出现可吃、可碰、可直杠或可加杠的机会",
+      "condition": "玩家处于受限状态",
+      "action": "禁止吃、碰、直杠、加杠",
+      "result": "受限玩家无法进行吃、碰、直杠、加杠"
+     },
+     "source": {
+      "chapter": "行牌 > 飘财",
+      "fromLine": 173,
+      "toLine": 173
+     }
+    },
+    {
+     "atomId": "AT-ST-C13-007",
+     "name": "受限时只能打刚摸进的牌",
+     "rule": "只能打刚摸进或最新补进的那一张。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "受限玩家进入出牌阶段",
+      "condition": "玩家处于受限状态",
+      "action": "仅允许打出刚摸进或最新补进的那一张牌",
+      "result": "能打出的牌被限定为刚摸进或最新补进的那一张"
+     },
+     "source": {
+      "chapter": "行牌 > 飘财",
+      "fromLine": 173,
+      "toLine": 173
+     }
+    },
+    {
+     "atomId": "AT-ST-C13-008",
+     "name": "受限时其余手牌压暗",
+     "rule": "其余手牌压暗，只在自己界面显示。",
+     "uiRequirement": "受限玩家除刚摸进或最新补进那张外的其余手牌压暗，且仅在该玩家自己的界面可见显示。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "受限玩家处于受限状态",
+      "condition": "玩家处于受限状态",
+      "action": "除可打出那张外的其余手牌压暗",
+      "result": "只有该受限玩家自己的界面能看到被压暗的其余手牌"
+     },
+     "source": {
+      "chapter": "行牌 > 飘财",
+      "fromLine": 173,
+      "toLine": 173
+     }
+    },
+    {
+     "atomId": "AT-ST-C13-009",
+     "name": "飘财限制盖过吃碰禁手",
+     "rule": "这份限制盖过吃碰禁手。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "飘财限制与吃碰禁手规则同时适用",
+      "condition": "玩家处于受限状态且存在吃碰禁手条件",
+      "action": "以飘财限制为准，覆盖吃碰禁手的判定结果",
+      "result": "受限玩家的操作范围按飘财限制执行"
+     },
+     "source": {
+      "chapter": "行牌 > 飘财",
+      "fromLine": 173,
+      "toLine": 173
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C13-003",
+   "name": "所有者出牌关窗与重开",
+   "description": "飘财窗口所有者在自己的下一次出牌时先关闭窗口；若这次打出的仍为财神，则立刻重新开启窗口。",
+   "scope": "仅约束所有者下一次出牌时的关窗与重开时机。",
+   "coordination": "关窗与重开由规则侧按出牌判定执行，客户端随之更新窗口相关状态展示。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C13-010",
+     "name": "所有者下一次出牌先关窗",
+     "rule": "所有者自己下一次出牌时先关掉窗口。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "飘财窗口所有者进行下一次出牌",
+      "condition": "该玩家为当前窗口所有者",
+      "action": "先关闭飘财窗口",
+      "result": "出牌前窗口已关闭，其他三家解除受限"
+     },
+     "source": {
+      "chapter": "行牌 > 飘财",
+      "fromLine": 174,
+      "toLine": 174
+     }
+    },
+    {
+     "atomId": "AT-ST-C13-011",
+     "name": "打出的仍是财神则立刻重开",
+     "rule": "这张若又是财神，立刻重开。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "窗口所有者关窗后打出的牌为财神",
+      "condition": "关窗后本次打出的牌仍是财神",
+      "action": "立刻重新开启飘财窗口",
+      "result": "窗口重新存在，所有者再次限制另外三家"
+     },
+     "source": {
+      "chapter": "行牌 > 飘财",
+      "fromLine": 174,
+      "toLine": 174
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C13-004",
+   "name": "飘档与杠链累计清零",
+   "description": "飘档只在打出财神且打出后手牌仍然敲响时加 1；没敲响就打财神时飘档和杠链都归零；打出普通牌同样归零；各家飘档独立；吃、碰、杠不清飘档，吃和碰会清杠链。",
+   "scope": "仅描述飘档与杠链的累加与清零条件及其独立性。",
+   "coordination": "飘档与杠链数值由规则侧统一计算维护。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C13-012",
+     "name": "飘档加一条件",
+     "rule": "飘档只在打出财神、且打出后手牌仍然敲响时加 1。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家打出财神",
+      "condition": "打出后手牌仍然敲响",
+      "action": "该玩家飘档加 1",
+      "result": "飘档数值增加 1"
+     },
+     "source": {
+      "chapter": "行牌 > 飘财",
+      "fromLine": 175,
+      "toLine": 175
+     }
+    },
+    {
+     "atomId": "AT-ST-C13-013",
+     "name": "未敲响打财神飘档杠链归零",
+     "rule": "没敲响就打财神，飘档和杠链都归零。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家打出财神",
+      "condition": "打出后手牌未敲响",
+      "action": "飘档和杠链都归零",
+      "result": "该玩家飘档与杠链数值清零"
+     },
+     "source": {
+      "chapter": "行牌 > 飘财",
+      "fromLine": 175,
+      "toLine": 175
+     }
+    },
+    {
+     "atomId": "AT-ST-C13-014",
+     "name": "打出普通牌归零",
+     "rule": "打出普通牌同样归零。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家打出普通牌",
+      "condition": "",
+      "action": "飘档与杠链归零",
+      "result": "该玩家飘档与杠链数值清零"
+     },
+     "source": {
+      "chapter": "行牌 > 飘财",
+      "fromLine": 175,
+      "toLine": 175
+     }
+    },
+    {
+     "atomId": "AT-ST-C13-015",
+     "name": "各家飘档独立",
+     "rule": "各家飘档独立。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "",
+      "condition": "",
+      "action": "每个玩家的飘档分别独立计算",
+      "result": "一名玩家的飘档变化不影响其他玩家的飘档"
+     },
+     "source": {
+      "chapter": "行牌 > 飘财",
+      "fromLine": 175,
+      "toLine": 175
+     }
+    },
+    {
+     "atomId": "AT-ST-C13-016",
+     "name": "吃碰杠不清飘档",
+     "rule": "吃、碰、杠不清飘档。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家进行吃、碰、杠",
+      "condition": "",
+      "action": "保留飘档数值不做清零",
+      "result": "飘档数值保持不变"
+     },
+     "source": {
+      "chapter": "行牌 > 飘财",
+      "fromLine": 175,
+      "toLine": 175
+     }
+    },
+    {
+     "atomId": "AT-ST-C13-017",
+     "name": "吃和碰清杠链",
+     "rule": "吃和碰会清杠链。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家进行吃或碰",
+      "condition": "",
+      "action": "清除杠链",
+      "result": "该玩家杠链归零"
+     },
+     "source": {
+      "chapter": "行牌 > 飘财",
+      "fromLine": 175,
+      "toLine": 175
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C13-005",
+   "name": "飘次数累计与飘字展示",
+   "description": "飘次数在本局内累加，小局重置时清掉；次数大于 0 时在该座位碰杠位播放「飘」字，且没有常驻标签。",
+   "scope": "仅描述飘次数的累计与重置时机以及「飘」字的展示方式。",
+   "coordination": "飘次数由规则侧累计与重置，客户端在对应座位碰杠位置播放「飘」字。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C13-018",
+     "name": "飘次数本局累加",
+     "rule": "飘次数本局累加，小局重置时清掉。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家发生飘财",
+      "condition": "本局进行中",
+      "action": "飘次数累计增加",
+      "result": "飘次数在整局内持续累加"
+     },
+     "source": {
+      "chapter": "行牌 > 飘财",
+      "fromLine": 176,
+      "toLine": 176
+     }
+    },
+    {
+     "atomId": "AT-ST-C13-019",
+     "name": "小局重置清掉飘次数",
+     "rule": "小局重置时清掉。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "小局重置",
+      "condition": "",
+      "action": "清掉飘次数",
+      "result": "新小局开始时飘次数为 0"
+     },
+     "source": {
+      "chapter": "行牌 > 飘财",
+      "fromLine": 176,
+      "toLine": 176
+     }
+    },
+    {
+     "atomId": "AT-ST-C13-020",
+     "name": "座位碰杠位播放飘字",
+     "rule": "次数大于 0 时，在该座位碰杠位播放「飘」字，没有常驻标签。",
+     "uiRequirement": "次数大于 0 时在该座位碰杠位播放「飘」字，不设置常驻标签。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "该座位飘次数大于 0",
+      "condition": "飘次数大于 0",
+      "action": "在该座位碰杠位播放「飘」字",
+      "result": "该座位碰杠位出现「飘」字播放效果，无常驻标签"
+     },
+     "source": {
+      "chapter": "行牌 > 飘财",
+      "fromLine": 176,
+      "toLine": 176
+     }
+    }
+   ]
+  }
+ ]
+}

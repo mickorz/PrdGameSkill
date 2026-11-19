@@ -1,0 +1,96 @@
+{
+ "schemaVersion": 2,
+ "analysisRunId": "ar-2026-11-17-001",
+ "entries": [
+  {
+   "atomId": "AT-ST-C06-006",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求语义：首庄、新庄、连庄三种庄型应统一按三牢处理（统一原子视图 requirement.rule，源 开局>定庄与轮庄 行115）；S7 判 unverified 依据是本原子在统一原子视图中客户端 verdict 与服务端 applicability 均为空、evidenceIds 为空。复核在既有服务端证据池中找到同族定庄证据：SVE-AT-ST-C01-004-01（common_game/com_game/common_game_com_ju.cpp:132-136，BoxZhuangStep::JudgeDingZhuang 在定庄时 SetZhuang + SetLianZhuang(1) + SetBankerLevel(GetConfiguredBankerLevel())）表明牢级在定庄阶段由配置一次性设定、不按首庄/新庄/连庄区分；SVE-AT-ST-C01-004-02（同文件:191-196）显示 level = type+1 且夹取 1..3。故「三种庄型同一牢级」的服务端口径成立。但 SVE-AT-ST-C01-004-04（hzmj_server/server_config.cpp:18，SetBankerLevelType(0)，即默认平庄起→一牢）说明要落到需求的「三牢」仍依赖创房下发笃三老庄，服务端自身默认不是三牢；客户端侧本原子无任何证据。故只能判部分满足，不能判一致。",
+   "reviewRule": "evidence-is-not-consistency（补到定庄时牢级由配置统一设定的证据，可判「不区分庄型」口径成立；但默认档非三牢、客户端侧无证据，不足以判 consistent，降为 partial）",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-004-01",
+     "layer": "common_game",
+     "applicability": "active",
+     "note": "定庄步骤 JudgeDingZhuang 内一次性设定庄家与牢级，牢级取自配置，不区分首庄/新庄/连庄"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-004-02",
+     "layer": "common_game",
+     "applicability": "active",
+     "note": "牢级换算为 type+1 并夹取 1..3，三牢是牢级上限"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-004-04",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "服务端默认 banker_level_type=0（平庄起→一牢），要达到需求的三牢须创房显式下发笃三老庄"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C06-007",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求语义：本小局庄家为三牢时，庄闲之间倍数固定按 8 倍计算并据此算各家和输赢（统一原子视图 requirement.rule，源 行115）；本原子按服务端规则域验证，S7 判 unverified 因服务端 applicability 与 evidenceIds 均空。复核补到：SVE-AT-ST-C01-004-03（hzmj_server/game_logic.cpp:56-59，配置注释「banker_level_type 0平庄起/1笃二老庄/2笃三老庄，牢庄起算档位（2/4/8倍）」）与 SVE-AT-ST-C01-004-02（common_game/com_game/common_game_com_ju.cpp:191-196，level=type+1 夹取 1..3）共同给出 level3→8 倍映射；客户端侧 CLE-AT-ST-C01-004-04（data/GameData.ts:1664-1666，getZhuangXianMult 返回 1 << bankerLevel）也印证三牢显示为 8 倍。缺口在于：结算侧把该倍率乘进各家输赢的实现未在证据原文中直接出现（SVE-AT-ST-C01-004-02 仅以 dependencyFiles 指向 common_game_com_result.cpp），且本原子无专属证据，故判部分满足。",
+   "reviewRule": "evidence-is-not-consistency（牢级→倍率映射与客户端 1<<level 可证三牢=8 倍，但结算乘算落地未直接取证，不足以判 consistent，降为 partial）",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-004-03",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "配置注释给出牢级档位对应 2/4/8 倍，三牢档即 8 倍，需创房下发对应档位"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-004-02",
+     "layer": "common_game",
+     "applicability": "active",
+     "note": "牢级 level=type+1 夹取 1..3，level3 与 8 倍对应"
+    },
+    {
+     "ref": "CLE-AT-ST-C01-004-04",
+     "layer": "client_code",
+     "applicability": "active",
+     "note": "客户端 getZhuangXianMult 以 1 << bankerLevel 计算庄闲倍数，三牢显示 8 倍"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C06-008",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求语义：庄家已在三牢时牢级不再提升，连庄多次仍按三牢对应 8 倍结算（统一原子视图 requirement.rule，源 行115）；本原子按服务端规则域验证，S7 判 unverified 因服务端 applicability 与 evidenceIds 均空。复核补到：SVE-AT-ST-C01-004-02（common_game/com_game/common_game_com_ju.cpp:191-196，level=type+1 且 if (level > 3) return 3）证明牢级硬上限为三牢；SVE-AT-ST-C01-004-01（同文件:132-136）显示每次定庄均以 SetBankerLevel(GetConfiguredBankerLevel()) 重设牢级、并以 SetLianZhuang(1) 起始，牢级不随连庄次数累加；SVE-AT-ST-C01-004-03（hzmj_server/game_logic.cpp:56-59）与客户端 CLE-AT-ST-C01-004-04（data/GameData.ts:1664-1666，1 << bankerLevel）共同保证三牢固定 8 倍。缺口在于：结算对连庄多局取同一 8 倍的乘算实现未在证据原文中直接出现，且本原子无专属证据，故判部分满足。",
+   "reviewRule": "evidence-is-not-consistency（牢级夹取≤3 且每次定庄按配置重设，可证「三牢封顶、不随连庄提升」；但倍数结算实现未直接取证，不足以判 consistent，降为 partial）",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-004-02",
+     "layer": "common_game",
+     "applicability": "active",
+     "note": "level 夹取 1..3，超过 3 一律返回 3，即三牢为牢级硬上限"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-004-01",
+     "layer": "common_game",
+     "applicability": "active",
+     "note": "定庄时以配置值重设牢级并起始连庄计数，牢级不随连庄次数累加"
+    },
+    {
+     "ref": "CLE-AT-ST-C01-004-04",
+     "layer": "client_code",
+     "applicability": "active",
+     "note": "客户端以 1 << bankerLevel 取倍数，牢级封顶三牢时倍数为固定 8 倍"
+    }
+   ]
+  }
+ ]
+}

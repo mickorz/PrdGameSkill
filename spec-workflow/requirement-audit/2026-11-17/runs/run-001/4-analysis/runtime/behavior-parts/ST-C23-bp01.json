@@ -1,0 +1,29 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C23",
+ "partNo": "01",
+ "analysisRunId": "ar-2026-11-17-001",
+ "atomIds": [
+  "AT-ST-C23-001",
+  "AT-ST-C23-002",
+  "AT-ST-C23-003",
+  "AT-ST-C23-004",
+  "AT-ST-C23-005",
+  "AT-ST-C23-006",
+  "AT-ST-C23-007",
+  "AT-ST-C23-008",
+  "AT-ST-C23-009",
+  "AT-ST-C23-010",
+  "AT-ST-C23-011",
+  "AT-ST-C23-012",
+  "AT-ST-C23-013",
+  "AT-ST-C23-014",
+  "AT-ST-C23-015",
+  "AT-ST-C23-016",
+  "AT-ST-C23-017",
+  "AT-ST-C23-018",
+  "AT-ST-C23-019",
+  "AT-ST-C23-020",
+  "AT-ST-C23-021"
+ ]
+}

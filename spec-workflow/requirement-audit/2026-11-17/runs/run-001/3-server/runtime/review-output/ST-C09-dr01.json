@@ -1,0 +1,127 @@
+{
+ "schemaVersion": 2,
+ "analysisRunId": "ar-2026-11-17-001",
+ "entries": [
+  {
+   "atomId": "AT-ST-C09-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第139行）要求同一张弃牌按「点炮胡 > 碰/直杠 > 吃」的顺序裁决。客户端侧 unified-atoms 中 client.verdict 为空、evidenceIds 为空，client-evidence.json 仅 12 条证据（CLE-AT-ST-C01-001-02 简洁模式、CLE-AT-ST-C01-002-03 座次映射等）全部挂 AT-ST-C01-*，无一条涉及 AT-ST-C09-001，该原子仅出现在 coverage.pendingAtomIds；服务端侧 server.applicability 为空、evidenceIds 为空，server-evidence.json 60 条证据覆盖 26 个原子，无一条 atomIds 指向 AT-ST-C09-*，更没有优先级比较（胡/碰/杠/吃）的裁决证据。双端都是取证空缺而非矛盾，既不能判 consistent 也不能判 conflict，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（双端均无优先级裁决证据，属取证空缺，维持未验证）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C09-002",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第139行）要求碰与直杠视为同级、不区分先后。客户端侧 client.verdict 为空、无 evidenceIds，client-evidence.json 无 C09 条目录入，仅列为 pending；服务端侧 server.applicability 为空、无 evidenceIds，server-evidence.json 中与碰相关的最近条目 SVE-AT-ST-C01-019-01（common_game/com_game/common_game_com_pung.cpp:125-138 BoxPungStep::Execute）只证明「碰算摊时碰记 1 摊」，属于摊数计算，既未涉及杠步也未给出碰/杠同级比较分支，不能用来判定同级口径。缺证据不等于与需求相反，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（碰算摊证据不等于碰/杠同级证据，维持未验证）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C09-003",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第139行）要求碰与直杠同级争抢时改比座位号、由座位号小者先获裁决，且该原子核验范围为服务端。服务端侧 unified-atoms 中 server.applicability 为空、evidenceIds 为空，server-evidence.json 60 条证据（含 SVE-AT-ST-C01-019-03 hzmj_server/game_logic.cpp:65-87 配置装载、SVE-AT-ST-C01-024-06 common_game/common_game_logic.cpp:65-73 OnGameStart 初始化链）均只证明创房配置与启动链路，没有任何按座位号排序仲裁碰/杠的实现证据；客户端侧 client.verdict 为空且按核验范围不作判定依据。服务端缺证据不构成冲突，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（服务端无座位号仲裁证据，不判 conflict 也不判 consistent）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C09-004",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第139行）要求碰/直杠只下发给「当前能成立且座位号最小」的那一家，其余可成立玩家不出现提示。客户端侧 client.verdict 为空、无 evidenceIds，client-evidence.json 12 条证据无一条覆盖操作提示的下发对象（CLE-AT-ST-C01-005-03 只是结算页自摸/点炮胡页签）；服务端侧 server.applicability 为空、无 evidenceIds，server-evidence.json 无任何「只发给座位号最小可成立家」的下发筛选证据。双端均无证据，无法证明提示只发一家，也无法证明发给了多家，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（提示下发对象无双端证据，维持未验证）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C09-005",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第141行）要求只允许一人胡、不一炮多响，核验范围为服务端。服务端侧 server.applicability 为空、evidenceIds 为空；server-evidence.json 中最近的胡牌条目 SVE-AT-ST-C01-005-01（common_game/com_game/common_game_com_action.cpp:353-358 BoxHuStep::CanDiscardHu，enable_banker_discard_hu 且 banker_level>=3 才可点炮）只证明点炮胡的启用前置条件，不涉及多人可胡时如何收敛为唯一胜者。客户端侧 client.verdict 为空、无 evidenceIds，CLE-AT-ST-C01-005-03 仅证明结算面按自摸/点炮切换页签，不证明单胡裁决。有相邻证据但覆盖不到本规则，不能据此判 consistent，维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（可点炮前置条件与结算页签证据不足以证明单胡裁决）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C09-006",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第139行）要求多人可胡同一张弃牌时「每家都收到胡」，与 AT-ST-C09-005「只允许一人胡」构成「先向全部可胡者下发提示、再由仲裁收敛唯一胜者」的口径，二者并不互斥，但需要提示下发与仲裁两段实现同时成立。客户端侧 client.verdict 为空、无 evidenceIds，client-evidence.json 无覆盖胡提示下发范围的条目；服务端侧 server.applicability 为空、无 evidenceIds，server-evidence.json 无对应仲裁证据。双端皆缺证据，既不能确认每家都收到胡，也不能确认只发给最近一家，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（与 C09-005 的张力属口径组合，双端无证据时不得推定为冲突）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C09-007",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第141行）要求多人可胡时从出牌者起按逆时针、最近的可胡者优先，核验范围为服务端。服务端侧 unified-atoms 中 server.applicability 为空、evidenceIds 为空，server-evidence.json 60 条证据覆盖 26 个原子（全部 AT-ST-C01-*），没有任何按出牌者座位逆时针距离排序的裁决证据。客户端侧 client.verdict 为空、无 evidenceIds，且不属核验范围。服务端取证空缺不构成与该规则矛盾的证据，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（服务端无逆时针就近裁决证据，维持未验证）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C09-008",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第139-141行）要求近者胡则远者不成立、近者放弃后远者顺延。客户端侧 client.verdict 为空、无 evidenceIds，client-evidence.json 无覆盖胡资格顺延的提示/交互证据；服务端侧 server.applicability 为空、无 evidenceIds，server-evidence.json 既无就近排序也无「放弃后顺延到下一顺位」的状态机证据（SVE-AT-ST-C01-005-01 仅涉及点炮胡启用条件）。双端无证据，无法判定顺延逻辑是否存在，也无反证，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（顺延仲裁无任何双端证据，维持未验证）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C09-009",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第142行）要求低优先级玩家先提交时须等全部更高优先级玩家手动放弃后才执行。客户端侧 client.verdict 为空、无 evidenceIds，client-evidence.json 无任何「等待高优先级」的交互门槛/按钮禁点证据；服务端侧 server.applicability 为空、无 evidenceIds，server-evidence.json 无跨优先级等待队列或「待放弃」状态证据。双端皆无证据，既不能证明低优先级会被挂起，也不能证明会被抢先执行，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（跨优先级等待无证据，缺证据不得升级为冲突）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C09-010",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第142行）要求更高优先级一旦成立即取消其余待处理响应。客户端侧 client.verdict 为空、无 evidenceIds，client-evidence.json 无「取消其他响应提示」的证据（CLE-AT-ST-C01-009-03 等为封顶/听牌展示，与操作提示无关）；服务端侧 server.applicability 为空、无 evidenceIds，server-evidence.json 无响应取消广播或回执收敛的实现证据。双端缺证据，无法判定是否按需求取消，也无反证，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（响应取消无双端证据，维持未验证）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C09-011",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第143行）要求吃只能吃上家。服务端侧 unified-atoms 中 server.applicability 为空、evidenceIds 为空；server-evidence.json 虽有吃相关条目——SVE-AT-ST-C01-019-02（common_game/common_game_algorithm.cpp:86-93 IsXianXianTanFull 闲闲 2 摊上限）与 SVE-AT-ST-C01-019-03（hzmj_server/game_logic.cpp:65-87 二人局关三摊后 SetRuleChiPeng(2)）——但二者只证明吃碰次数/摊数限制，均未证明「按座位方向只允许吃上家」的校验分支。客户端侧 client.verdict 为空、无 evidenceIds，无上家判断或吃牌提示过滤证据。证据不足以判 consistent，也无法据相邻能力推断已启用，维持 unverified。",
+   "reviewRule": "common-capability-is-not-enabled（吃牌能力与次数上限证据不等于本规则已按上家限制启用）",
+   "evidenceScopes": []
+  }
+ ]
+}

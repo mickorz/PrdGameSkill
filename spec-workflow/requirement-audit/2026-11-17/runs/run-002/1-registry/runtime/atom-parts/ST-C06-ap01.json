@@ -1,0 +1,193 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C06",
+ "partNo": 1,
+ "stage": {
+  "stageId": "ST-C06",
+  "name": "定庄与轮庄",
+  "chapter": "开局 > 定庄与轮庄",
+  "summary": "首局随机定庄，胡牌者下局坐庄、庄家自胡连庄、流局原庄连庄，且首庄新庄连庄均为三牢、庄闲固定 8 倍且不再增长。"
+ },
+ "features": [
+  {
+   "id": "FP-ST-C06-001",
+   "name": "首局定庄",
+   "description": "首局从四名玩家中随机确定庄家，并在掷骰、发牌之前完成定庄。",
+   "scope": "仅覆盖第一小局（首局）的庄家产生方式与确定时机，不涉及后续小局的轮庄与牢级。",
+   "coordination": "服务端负责随机选取与定庄时序，客户端在掷骰发牌流程中展示已确定的庄家。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C06-001",
+     "name": "首局随机坐庄",
+     "rule": "首局四名玩家中随机坐庄。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "首局游戏开始",
+      "condition": "首局由四名玩家参与",
+      "action": "系统从四名玩家中随机选出一人坐庄",
+      "result": "玩家看到本轮随机产生一名庄家"
+     },
+     "source": {
+      "chapter": "开局 > 定庄与轮庄",
+      "fromLine": 112,
+      "toLine": 112
+     }
+    },
+    {
+     "atomId": "AT-ST-C06-002",
+     "name": "掷骰发牌前已定庄",
+     "rule": "掷骰、发牌前已经确定庄家。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "开局掷骰、发牌",
+      "condition": "在掷骰与发牌动作发生之前",
+      "action": "系统先确定好庄家",
+      "result": "玩家在掷骰发牌时庄家已经确定"
+     },
+     "source": {
+      "chapter": "开局 > 定庄与轮庄",
+      "fromLine": 112,
+      "toLine": 112
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C06-002",
+   "name": "胡牌后轮庄",
+   "description": "一小局有人胡牌后，由胡牌者坐下一小局庄家；若胡牌者本人即当前庄家，则为连庄。",
+   "scope": "覆盖胡牌结束后的庄家归属，不覆盖流局连庄与牢级倍数。",
+   "coordination": "服务端判定胡牌者并迁移庄家，客户端展示下一小局庄家位置。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C06-003",
+     "name": "胡牌者下局坐庄",
+     "rule": "有人胡牌时，下一小局由胡牌者坐庄。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "本小局有人胡牌并结束",
+      "condition": "本小局存在胡牌者",
+      "action": "系统指定胡牌者作为下一小局庄家",
+      "result": "玩家看到下一小局由胡牌的人坐庄"
+     },
+     "source": {
+      "chapter": "开局 > 定庄与轮庄",
+      "fromLine": 113,
+      "toLine": 113
+     }
+    },
+    {
+     "atomId": "AT-ST-C06-004",
+     "name": "庄家自胡连庄",
+     "rule": "庄家自己胡牌为连庄。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "本小局庄家自己胡牌",
+      "condition": "胡牌者就是当前庄家",
+      "action": "庄家继续坐庄",
+      "result": "玩家看到庄家位置不变，进入连庄"
+     },
+     "source": {
+      "chapter": "开局 > 定庄与轮庄",
+      "fromLine": 113,
+      "toLine": 113
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C06-003",
+   "name": "流局连庄",
+   "description": "一小局流局时，由原来的庄家继续坐庄。",
+   "scope": "覆盖流局结束后的庄家归属，不覆盖胡牌轮庄与倍数。",
+   "coordination": "服务端判定流局并保持庄家不变，客户端展示原庄继续坐庄。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C06-005",
+     "name": "流局原庄连庄",
+     "rule": "流局时原庄连庄。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "本小局流局结束",
+      "condition": "本小局判定为流局",
+      "action": "原来的庄家继续坐庄",
+      "result": "玩家看到庄家位置不变，原庄连庄"
+     },
+     "source": {
+      "chapter": "开局 > 定庄与轮庄",
+      "fromLine": 114,
+      "toLine": 114
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C06-004",
+   "name": "牢级与庄闲倍数",
+   "description": "首庄、新庄、连庄统一按三牢处理，庄闲倍数固定 8 倍，三牢不再继续增加。",
+   "scope": "覆盖庄家牢级判定与庄闲倍数取值，不覆盖连庄数选项中的二牢、一牢档位。",
+   "coordination": "服务端按三牢统一确定牢级与庄闲倍数，客户端展示对应倍数。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C06-006",
+     "name": "首庄新庄连庄均为三牢",
+     "rule": "首庄、新庄、连庄都是三牢。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "新一小局开始计算牢级",
+      "condition": "无论是首庄、新庄还是连庄",
+      "action": "都按三牢处理",
+      "result": "玩家看到庄家统一处于三牢状态"
+     },
+     "source": {
+      "chapter": "开局 > 定庄与轮庄",
+      "fromLine": 115,
+      "toLine": 115
+     }
+    },
+    {
+     "atomId": "AT-ST-C06-007",
+     "name": "庄闲倍数固定8倍",
+     "rule": "庄闲倍数固定 8 倍。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "结算庄闲倍数",
+      "condition": "庄家为三牢",
+      "action": "按 8 倍计算庄闲倍数",
+      "result": "玩家看到庄闲结算按 8 倍"
+     },
+     "source": {
+      "chapter": "开局 > 定庄与轮庄",
+      "fromLine": 115,
+      "toLine": 115
+     }
+    },
+    {
+     "atomId": "AT-ST-C06-008",
+     "name": "三牢不再增加",
+     "rule": "三牢不再增加。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "庄家连续连庄",
+      "condition": "当前已处于三牢",
+      "action": "牢级不再继续提升",
+      "result": "玩家看到多次连庄后倍数仍保持三牢 8 倍不变"
+     },
+     "source": {
+      "chapter": "开局 > 定庄与轮庄",
+      "fromLine": 115,
+      "toLine": 115
+     }
+    }
+   ]
+  }
+ ]
+}

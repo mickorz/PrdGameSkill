@@ -1,0 +1,49 @@
+{
+ "schemaVersion": 1,
+ "generatedBy": "stage-reuse.mjs prepare-from-stage",
+ "date": "2026-11-17",
+ "sourceRunId": "run-001",
+ "targetRunId": "run-002",
+ "startStage": "S4",
+ "reusedStages": [
+  "S1",
+  "S2",
+  "S3"
+ ],
+ "rerunStages": [
+  "S4",
+  "S5",
+  "S6",
+  "S7",
+  "S8",
+  "S9",
+  "S10",
+  "S11"
+ ],
+ "checks": [
+  {
+   "stageId": "S1",
+   "check": "pass",
+   "stageVersion": "S1@1",
+   "inputHash": "sha256:9eaf2efd56ca5834124c2622362689aa60df09edb62e4d7bf8388f1a9e498cc5",
+   "configHash": "sha256:150d47f5bf3ca55d5b956466b1341d11623ea582293775b91090aa9c2ea0b894",
+   "outputHash": "sha256:5ad34311f99dc9a65f9244e79708981b0ce08d30a77ce848c4231c27f1214aea"
+  },
+  {
+   "stageId": "S2",
+   "check": "pass",
+   "stageVersion": "S2@1",
+   "inputHash": "sha256:57f7963db635176972b290d0fe1ecfd7eefb7bfe22307243ed21084bd9580913",
+   "configHash": "sha256:6cf9bb6d27e5b02ddd6a548ca048ad94ffb2cc1d1876d092f4d357625d8f6f67",
+   "outputHash": "sha256:d5117599069ee18fe92c9c1fc195e9b7410d1390648587ffafd13777663fd320"
+  },
+  {
+   "stageId": "S3",
+   "check": "pass",
+   "stageVersion": "S3@1",
+   "inputHash": "sha256:a87e2c803b728b67f1c8b3818cdfc54233bd6bf8b0d3b06ce630473224214b3f",
+   "configHash": "sha256:e1dbde2b82f93770a8487769379f4088535f648b886abeda39eff0d803e522a7",
+   "outputHash": "sha256:e4532c72a540cfbeeca44e553a2ab4095fdff70d4a430acc32b48f1d003f84cd"
+  }
+ ]
+}

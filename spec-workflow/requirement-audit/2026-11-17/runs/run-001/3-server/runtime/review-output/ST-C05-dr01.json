@@ -1,0 +1,39 @@
+{
+ "schemaVersion": 2,
+ "analysisRunId": "ar-2026-11-17-001",
+ "entries": [
+  {
+   "atomId": "AT-ST-C05-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第74行「已停用选项与兄弟玩法」）要求创房面板中的「跟庄」选项以停用状态呈现、点击无响应；客户端侧 unified-atoms 中 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 全量 12 条证据无一条 atomIds 指向 AT-ST-C05-001（同类邻居证据 CLE-AT-ST-C01-002-02 只证明二人房 gameId、CLE-AT-ST-C01-002-03 只证明座次映射，均未覆盖跟庄置灰）；服务端侧 server.applicability 为空、evidenceIds 为空，server-evidence.json 60 条中亦无跟庄相关条目。双端皆无证据，既不能证明与需求一致、也不能证明冲突，故维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（客户端无证据时不得判 consistent，只能维持未验证）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C05-003",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第75行）要求二人杭州麻将好友房由服务端按固定 2 人组局、不接受其他人数；服务端侧 unified-atoms 中 server.applicability 为空、server.evidenceIds 为空，server-evidence.json 虽存在人数相关条目（SVE-AT-ST-C01-002-02 按 chair_count 推导人数、SVE-AT-ST-C01-024-09 房规默认值），但这些条目 atomIds 仅挂 AT-ST-C01-002/024，证明的是「按座位数建桌」的通用逻辑，并未证明二人房玩法被强制固定为 2 人；客户端侧 client.verdict 为空、无证据（CLE-AT-ST-C01-002-02/CLE-AT-ST-C01-002-03 仅证明二人房 gameId 与 2/3 人座次映射）。服务端缺证据属取证空缺，不构成与需求的矛盾，故维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（服务端无证据不等于冲突，维持未验证）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C05-007",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第76行）要求淳安 / 萧山 / 桐庐分支玩法不套用杭州麻将本体规则（不出现本体财神、承包等口径）；客户端侧 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 12 条全部属于 AT-ST-C01 系列（财神类型 CLE-AT-ST-C01-003-02/03、庄闲倍数 CLE-AT-ST-C01-004-03/04 等），无任何分支玩法条目；服务端侧 server.applicability 为空、server.evidenceIds 为空，server-evidence.json 60 条同样只覆盖杭州麻将本体（SVE-AT-ST-C01-003-01 财神口径、SVE-AT-ST-C01-019-03 三摊承包等），检索不到淳安/萧山/桐庐 分支实现证据。双端均无证据说明分支规则集是否独立，也无法证明出现本体规则串用，按取证空缺维持 unverified，不升级为 conflict。",
+   "reviewRule": "no-server-evidence-is-not-conflict（双端均无分支玩法证据，属取证空缺而非矛盾）",
+   "evidenceScopes": []
+  }
+ ]
+}

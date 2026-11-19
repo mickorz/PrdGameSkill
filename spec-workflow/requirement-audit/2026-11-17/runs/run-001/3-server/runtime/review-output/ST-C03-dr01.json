@@ -1,0 +1,50 @@
+{
+ "schemaVersion": 2,
+ "analysisRunId": "ar-2026-11-17-001",
+ "entries": [
+  {
+   "atomId": "AT-ST-C03-003",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第 55 行「通用规则」表）要求创房界面「超时解散」复选项默认已勾选（开）。客户端：unified-atoms 中 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 的 12 条证据 atomIds 全部指向 AT-ST-C01-001..011（如 CLE-AT-ST-C01-009-01 为 layer/BoxHzmjBackView.ts:86-88 牌桌底分显示、CLE-AT-ST-C01-005-03 为 layer/comp/BoxHzmjResultMid.ts:719-737 结算胡型页签），无任何创房设置面板通用复选项的取证。服务端：server.applicability 为空、server.evidenceIds 为空，server-evidence.json 的 60 条证据全部挂 AT-ST-C01-001..029（如 SVE-AT-ST-C01-021-01 为 common_game/com_game/common_game_com_action.cpp:141-148 三摊承包判定），检索不到超时解散默认值或超时处理的条目。双端皆为取证空缺，既无证据证明默认勾选与需求一致，也无证据显示实际默认关闭或超时不处理（不构成本玩法冲突），故维持 unverified；同片同类 001/002/005/007/008/010（同为默认值通用复选项、双端零证据）情形相同。",
+   "reviewRule": "evidence-is-not-consistency（双端零证据不足以判 consistent，维持未验证；服务端无证据亦不构成冲突）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C03-004",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第 56 行「通用规则」表）要求创房界面「自动准备」复选项默认已勾选（开），对应玩家入房后无需手动点准备即可开局。客户端：client.verdict 为空、client.evidenceIds 为空，client-evidence.json 12 条证据均属 AT-ST-C01 系列（CLE-AT-ST-C01-009-01 layer/BoxHzmjBackView.ts:86-88、CLE-AT-ST-C01-002-04 layer/BoxHzmjBackView.ts:82 等），均未涉及创房界面或准备态展示。服务端：server.applicability 为空、server.evidenceIds 为空，server-evidence.json 60 条证据全部为 AT-ST-C01 系列（如 SVE-AT-ST-C01-024-07 common_game/common_game_server_config.h:41 房规默认值、SVE-AT-ST-C01-003-03 hzmj_server/server_config.cpp:16 财神配置），未覆盖自动准备/开局条件。准备态相关语义还牵涉同批 AT-ST-C21-046/047，但那两个原子在本轮同样双端零证据，无法交叉印证。取证空缺既不等于一致也不等于冲突，故维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（双端零证据，默认值无法核对，不足以判 consistent）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C03-006",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第 57 行「通用规则」表，verificationScope=client）要求创房界面「截屏监控」复选项默认已勾选（开）。该原子只按客户端表现核验，但 unified-atoms 中 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 的 12 条证据 atomIds 全为 AT-ST-C01-001..011（CLE-AT-ST-C01-004-03 controller/cmd/gameCmd/GameJuDataCmd.ts:34-35 连庄、CLE-AT-ST-C01-003-02 data/GameData.ts:50 财神类型等），没有任何创房面板复选框及其默认勾选状态的证据；服务端 applicability 留空、无 evidenceIds，按需求该原子不要求服务端落地，故服务端缺失不作为冲突依据。客户端取证空缺无法核对默认勾选值，维持 unverified（同类客户端范围原子 AT-ST-C03-009 情形相同）。",
+   "reviewRule": "evidence-is-not-consistency（验证范围为客户端，客户端零证据不足以判 consistent）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C03-009",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第 60 行「通用规则」表，verificationScope=client）要求创房界面「实时语音」复选项初始未勾选（关）。客户端：client.verdict 为空、client.evidenceIds 为空，client-evidence.json 全量 12 条证据均为 AT-ST-C01 系列且集中在 config/GameDefine.ts、data/GameData.ts、layer/BoxHzmjBackView.ts:82-88、layer/comp/BoxHzmjResultMid.ts:719-737 等处，未出现创房界面（建房间设置面板）或其复选框默认态取证；服务端：server.applicability 为空、无 evidenceIds，且该原子按需求只判客户端表现，故服务端空缺不构成矛盾。既无证据证明默认关闭，也无证据显示默认开启（冲突），只能维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（客户端范围零证据无法核对默认值，维持未验证）",
+   "evidenceScopes": []
+  }
+ ]
+}

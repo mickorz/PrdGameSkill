@@ -1,0 +1,185 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C14",
+ "partNo": 1,
+ "stage": {
+  "stageId": "ST-C14",
+  "name": "杠开、杠飘、飘杠",
+  "chapter": "行牌 > 杠开、杠飘、飘杠",
+  "summary": "杠开按杠链 1/2/3/4 及以上分别记 2/4/8/16 倍，杠链断开后胡牌不算杠开；杠飘、飘杠只在杠上开花与财飘同时命中时拆出，记 8 倍再乘基础番，且没有单独的杠爆、七客。"
+ },
+ "features": [
+  {
+   "id": "FP-ST-C14-001",
+   "name": "杠上开花与连杠倍数",
+   "description": "按杠链长度判定杠上开花、二连杠、三连杠、四连杠并给出对应倍数，同时明确杠链已断后的胡牌不属于杠开。",
+   "scope": "覆盖自摸时杠链为 1、2、3、4 及以上各档倍数；覆盖杠链断开后的胡牌判定。",
+   "coordination": "系数判定与倍数计算由结算统一得出，与财飘拆出规则配合形成杠飘、飘杠判定前提。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C14-001",
+     "name": "杠上开花一倍",
+     "rule": "杠上开花：自摸且杠链为 1，倍数 2。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家胡牌时",
+      "condition": "该次胡牌为自摸，且杠链为 1",
+      "action": "按杠上开花记倍数 2",
+      "result": "结算中显示杠上开花并按 2 倍计入"
+     },
+     "source": { "chapter": "行牌 > 杠开、杠飘、飘杠", "fromLine": 180, "toLine": 180 }
+    },
+    {
+     "atomId": "AT-ST-C14-002",
+     "name": "二连杠倍数",
+     "rule": "二连杠：自摸且杠链为 2，倍数 4。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家胡牌时",
+      "condition": "该次胡牌为自摸，且杠链为 2",
+      "action": "按二连杠记倍数 4",
+      "result": "结算中显示二连杠并按 4 倍计入"
+     },
+     "source": { "chapter": "行牌 > 杠开、杠飘、飘杠", "fromLine": 180, "toLine": 180 }
+    },
+    {
+     "atomId": "AT-ST-C14-003",
+     "name": "三连杠倍数",
+     "rule": "三连杠：自摸且杠链为 3，倍数 8。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家胡牌时",
+      "condition": "该次胡牌为自摸，且杠链为 3",
+      "action": "按三连杠记倍数 8",
+      "result": "结算中显示三连杠并按 8 倍计入"
+     },
+     "source": { "chapter": "行牌 > 杠开、杠飘、飘杠", "fromLine": 180, "toLine": 180 }
+    },
+    {
+     "atomId": "AT-ST-C14-004",
+     "name": "四连杠及以上倍数",
+     "rule": "四连杠：自摸且杠链为 4 及以上，倍数 16；四连杠及以上都记 16 倍。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家胡牌时",
+      "condition": "该次胡牌为自摸，且杠链为 4 或更多",
+      "action": "按四连杠统一记倍数 16",
+      "result": "结算中显示四连杠并按 16 倍计入，不再随杠数继续递增"
+     },
+     "source": { "chapter": "行牌 > 杠开、杠飘、飘杠", "fromLine": 180, "toLine": 180 }
+    },
+    {
+     "atomId": "AT-ST-C14-005",
+     "name": "杠链已断不算杠开",
+     "rule": "杠链已断后再胡，不是杠开。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家胡牌时",
+      "condition": "此前杠链已经断开",
+      "action": "不判定为杠上开花",
+      "result": "结算中不出现杠开类标记，也不按杠开倍数计入"
+     },
+     "source": { "chapter": "行牌 > 杠开、杠飘、飘杠", "fromLine": 180, "toLine": 180 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C14-002",
+   "name": "杠飘与飘杠拆分",
+   "description": "杠飘、飘杠仅在同时命中杠上开花与财飘时拆出，固定 8 倍后再乘基础番，并按杠发生时飘档是否已大于 0 区分飘杠与杠飘；更高档组合不拆，且不单列杠爆、七客。",
+   "scope": "覆盖杠飘、飘杠的拆出条件、倍数口径与命名区分；覆盖二连杠、双财飘及更高档不拆的处理；覆盖杠爆、七客不单列。",
+   "coordination": "以杠上开花判定与财飘命中为前提，与各组番型连乘口径保持一致。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C14-006",
+     "name": "杠飘飘杠拆出条件",
+     "rule": "杠飘、飘杠只在同时命中杠上开花和财飘时拆出。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家胡牌结算时",
+      "condition": "同一局结算中同时命中杠上开花和财飘",
+      "action": "拆出杠飘或飘杠这一项单独计算",
+      "result": "结算中出现杠飘或飘杠项目；未同时命中时该项目不出现"
+     },
+     "source": { "chapter": "行牌 > 杠开、杠飘、飘杠", "fromLine": 181, "toLine": 181 }
+    },
+    {
+     "atomId": "AT-ST-C14-007",
+     "name": "杠飘飘杠倍数与基础番",
+     "rule": "杠飘、飘杠倍数 8，再乘上基础番。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "判定出杠飘或飘杠时",
+      "condition": "已同时命中杠上开花和财飘",
+      "action": "按 8 倍计数，再乘上基础番",
+      "result": "结算中该项按 8 倍与基础番相乘后的倍数计入"
+     },
+     "source": { "chapter": "行牌 > 杠开、杠飘、飘杠", "fromLine": 181, "toLine": 181 }
+    },
+    {
+     "atomId": "AT-ST-C14-008",
+     "name": "飘杠判定",
+     "rule": "杠发生时飘档已经大于 0，记飘杠。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "杠飘、飘杠拆分时",
+      "condition": "杠发生的那一刻飘档已经大于 0",
+      "action": "将该组合记为飘杠",
+      "result": "结算中该项显示为飘杠"
+     },
+     "source": { "chapter": "行牌 > 杠开、杠飘、飘杠", "fromLine": 181, "toLine": 181 }
+    },
+    {
+     "atomId": "AT-ST-C14-009",
+     "name": "杠飘判定",
+     "rule": "杠发生时飘档不大于 0（未大于 0），记杠飘。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "杠飘、飘杠拆分时",
+      "condition": "杠发生的那一刻飘档并未大于 0",
+      "action": "将该组合记为杠飘",
+      "result": "结算中该项显示为杠飘"
+     },
+     "source": { "chapter": "行牌 > 杠开、杠飘、飘杠", "fromLine": 181, "toLine": 181 }
+    },
+    {
+     "atomId": "AT-ST-C14-010",
+     "name": "高档组合不拆按连乘",
+     "rule": "二连杠、双财飘及更高档不拆，仍按各组连乘。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家胡牌结算时",
+      "condition": "命中二连杠、双财飘或更高档组合",
+      "action": "不拆出杠飘或飘杠，按各组番型分别计算后连乘",
+      "result": "结算中只出现各组原有番型项目，其倍数按连乘得出"
+     },
+     "source": { "chapter": "行牌 > 杠开、杠飘、飘杠", "fromLine": 181, "toLine": 181 }
+    },
+    {
+     "atomId": "AT-ST-C14-011",
+     "name": "无单独杠爆七客",
+     "rule": "没有单独的杠爆、七客。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家胡牌结算时",
+      "condition": "命中杠上开花与爆头组合，或命中七对爆头组合",
+      "action": "不单列杠爆、七客这一项",
+      "result": "结算中不出现单独的杠爆、七客项目，只按参与组合的各组番型计入"
+     },
+     "source": { "chapter": "行牌 > 杠开、杠飘、飘杠", "fromLine": 181, "toLine": 181 }
+    }
+   ]
+  }
+ ]
+}

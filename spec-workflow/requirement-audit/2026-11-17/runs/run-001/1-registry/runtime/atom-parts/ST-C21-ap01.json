@@ -1,0 +1,784 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C21",
+ "partNo": 1,
+ "stage": {
+  "stageId": "ST-C21",
+  "name": "结算",
+  "chapter": "结算",
+  "summary": "胡牌或黄庄后停止行牌并只结算一次，先在终局牌桌上展示亮牌、番型字效、积分刷新与飘分，再打开小结算展示四家手牌、净得分、番型与承包标注，最后按局次进入继续游戏或返回大厅。"
+ },
+ "features": [
+  {
+   "id": "FP-ST-C21-001",
+   "name": "结算触发与胡张认定",
+   "description": "胡牌确认后结束行牌并保证每小局只结算一次，同时明确自摸、点炮胡、抢杠胡三种胡牌方式的胡张来源。",
+   "scope": "覆盖结算触发时机、结算次数限制与三种胡牌方式的胡张定义，不覆盖番型判定与分数计算。",
+   "coordination": "服务端在胡牌确认时冻结行牌并生成本局唯一一次结算，客户端等待结算结果。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C21-001",
+     "name": "胡牌确认后停止行牌",
+     "rule": "胡牌确认后停止行牌。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "有人胡牌并被确认",
+      "condition": "胡牌已确认",
+      "action": "停止本小局继续行牌",
+      "result": ""
+     },
+     "source": { "chapter": "结算", "fromLine": 280, "toLine": 280 }
+    },
+    {
+     "atomId": "AT-ST-C21-002",
+     "name": "每小局只结算一次",
+     "rule": "每小局只结算一次。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "本小局结束需要结算",
+      "condition": "同一小局",
+      "action": "只执行一次结算",
+      "result": ""
+     },
+     "source": { "chapter": "结算", "fromLine": 280, "toLine": 280 }
+    },
+    {
+     "atomId": "AT-ST-C21-003",
+     "name": "自摸胡张认定",
+     "rule": "自摸的胡张是本次摸入或补入的牌。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家以自摸方式胡牌",
+      "condition": "胡牌方式为自摸",
+      "action": "将本次摸入或补入的牌认定为胡张",
+      "result": "小结算中该牌被作为胡张展示"
+     },
+     "source": { "chapter": "结算", "fromLine": 280, "toLine": 280 }
+    },
+    {
+     "atomId": "AT-ST-C21-004",
+     "name": "点炮胡胡张认定",
+     "rule": "点炮胡的胡张是弃牌。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家以点炮方式胡牌",
+      "condition": "胡牌方式为点炮胡",
+      "action": "将他人打出的弃牌认定为胡张",
+      "result": "小结算中该弃牌被作为胡张展示"
+     },
+     "source": { "chapter": "结算", "fromLine": 280, "toLine": 280 }
+    },
+    {
+     "atomId": "AT-ST-C21-005",
+     "name": "抢杠胡胡张认定",
+     "rule": "抢杠胡的胡张是被抢的第 4 张。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "玩家以抢杠方式胡牌",
+      "condition": "胡牌方式为抢杠胡",
+      "action": "将被抢的那张加杠牌认定为胡张",
+      "result": "小结算中该第 4 张牌被作为胡张展示"
+     },
+     "source": { "chapter": "结算", "fromLine": 280, "toLine": 280 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C21-002",
+   "name": "终局牌桌呈现",
+   "description": "进入结算后各端冻结操作并停止倒计时，在原牌桌上亮出四家手牌与「对局结束」提示，保留终局牌河、财神和余牌数。",
+   "scope": "仅覆盖胡牌局的终局牌桌表现，不覆盖黄庄。",
+   "coordination": "服务端下发亮牌与终局状态，客户端负责停止交互并渲染终局牌桌。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C21-006",
+     "name": "结算时冻结操作与倒计时",
+     "rule": "各端停止操作按钮、胡牌预览和放大弃牌，方位盘停止倒计时。",
+     "uiRequirement": "停止操作按钮可用状态、关闭胡牌预览与放大弃牌，方位盘倒计时停走。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "本小局进入结算",
+      "condition": "已胡牌确认",
+      "action": "各端停止操作按钮、胡牌预览和放大弃牌，方位盘停止倒计时",
+      "result": "玩家无法再操作，方位盘倒计时不再变化"
+     },
+     "source": { "chapter": "结算", "fromLine": 282, "toLine": 282 }
+    },
+    {
+     "atomId": "AT-ST-C21-007",
+     "name": "亮四家手牌并显示对局结束",
+     "rule": "在原牌桌亮出四家手牌，桌面中央显示「对局结束」。",
+     "uiRequirement": "原牌桌上亮出四家手牌，桌面中央显示「对局结束」字样。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "本小局胡牌结算开始",
+      "condition": "已胡牌确认",
+      "action": "在原牌桌公开四家手牌并在桌面中央显示「对局结束」",
+      "result": "玩家能看到四家完整手牌与「对局结束」提示"
+     },
+     "source": { "chapter": "结算", "fromLine": 282, "toLine": 282 }
+    },
+    {
+     "atomId": "AT-ST-C21-008",
+     "name": "保留终局牌河财神余牌数",
+     "rule": "保留终局牌河、财神和余牌数。",
+     "uiRequirement": "终局牌桌上保留牌河、财神和余牌数展示。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "进入终局牌桌展示",
+      "condition": "胡牌结算",
+      "action": "保留终局牌河、财神和余牌数的显示",
+      "result": "玩家仍能看到终局牌河、财神和余牌数"
+     },
+     "source": { "chapter": "结算", "fromLine": 282, "toLine": 282 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C21-003",
+   "name": "番型字效与点炮标记",
+   "description": "在「对局结束」展示期间于胡牌者方位播放番型字效，点炮胡与抢杠胡在放铳方位显示「点炮」，抢杠胡的放铳者为加杠者。",
+   "scope": "覆盖番型字效播放时机与放铳方位点炮标记，不覆盖具体番型内容。",
+   "coordination": "服务端确定胡牌者、番型与放铳者，客户端按时序播放字效与标记。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C21-009",
+     "name": "胡牌者方位播放番型字效",
+     "rule": "「对局结束」仍在时，胡牌者方位播放番型字效。",
+     "uiRequirement": "「对局结束」显示期间，胡牌者方位播放番型字效。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "「对局结束」仍在展示",
+      "condition": "胡牌局结算",
+      "action": "在胡牌者方位播放番型字效",
+      "result": "玩家在胡牌者座位方向看到番型字效演出"
+     },
+     "source": { "chapter": "结算", "fromLine": 283, "toLine": 283 }
+    },
+    {
+     "atomId": "AT-ST-C21-010",
+     "name": "放铳方位显示点炮",
+     "rule": "点炮胡和抢杠胡同时在放铳方位显示「点炮」。",
+     "uiRequirement": "点炮胡和抢杠胡时，放铳方位显示「点炮」。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "发生点炮胡或抢杠胡",
+      "condition": "存在放铳者",
+      "action": "在放铳方位显示「点炮」",
+      "result": "玩家在放铳者座位方向看到「点炮」标记"
+     },
+     "source": { "chapter": "结算", "fromLine": 283, "toLine": 283 }
+    },
+    {
+     "atomId": "AT-ST-C21-011",
+     "name": "抢杠胡放铳者为加杠者",
+     "rule": "抢杠胡的放铳者是加杠者。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "发生抢杠胡",
+      "condition": "胡张为他人加杠的第 4 张牌",
+      "action": "将加杠者认定为放铳者",
+      "result": "放铳标记与赔付指向加杠者"
+     },
+     "source": { "chapter": "结算", "fromLine": 283, "toLine": 283 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C21-004",
+   "name": "累计积分刷新与飘分",
+   "description": "番型字效前先刷新头像旁累计积分，字效退场后仅对得分不为 0 的座位飘分并按正负配色，飘分淡出后短暂保留终局牌桌再打开小结算。",
+   "scope": "覆盖累计积分刷新时机、飘分座位范围、配色与后续时序，不覆盖小结算内部内容。",
+   "coordination": "服务端提供本局得分与累计积分，客户端控制刷新时机、飘分动画与打开小结算的节奏。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C21-012",
+     "name": "刷新头像旁累计积分",
+     "rule": "先刷新头像旁的累计积分。",
+     "uiRequirement": "结算开始时优先刷新各座位头像旁的累计积分。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "本小局结算开始",
+      "condition": "已完成本局得分计算",
+      "action": "刷新头像旁的累计积分",
+      "result": "玩家看到头像旁累计积分更新为本局之后的数值"
+     },
+     "source": { "chapter": "结算", "fromLine": 284, "toLine": 284 }
+    },
+    {
+     "atomId": "AT-ST-C21-013",
+     "name": "仅非零得分座位飘分",
+     "rule": "番型字效退场后，只在本局得分不为 0 的座位内侧飘分。",
+     "uiRequirement": "番型字效退场后在座位内侧飘分，仅本局得分不为 0 的座位出现飘分。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "番型字效退场",
+      "condition": "该座位本局得分不为 0",
+      "action": "在该座位内侧飘分",
+      "result": "得分为 0 的座位无飘分，其余座位看到本局分数飘出"
+     },
+     "source": { "chapter": "结算", "fromLine": 284, "toLine": 284 }
+    },
+    {
+     "atomId": "AT-ST-C21-014",
+     "name": "飘分配色规则",
+     "rule": "正分金黄色，负分浅蓝灰色并带减号。",
+     "uiRequirement": "飘分正分用金黄色，负分用浅蓝灰色并带减号。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "座位飘分展示",
+      "condition": "飘分值为正或为负",
+      "action": "正分显示金黄色，负分显示浅蓝灰色并带减号",
+      "result": "玩家能通过颜色与减号区分得分正负"
+     },
+     "source": { "chapter": "结算", "fromLine": 284, "toLine": 284 }
+    },
+    {
+     "atomId": "AT-ST-C21-015",
+     "name": "飘分淡出后打开小结算",
+     "rule": "飘分淡出后短暂保留终局牌桌，再打开小结算。",
+     "uiRequirement": "飘分淡出后终局牌桌短暂保留，随后弹出小结算。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "飘分动画淡出",
+      "condition": "飘分播放完毕",
+      "action": "短暂保留终局牌桌后打开小结算",
+      "result": "玩家先看到终局牌桌停留，再看到小结算弹出"
+     },
+     "source": { "chapter": "结算", "fromLine": 284, "toLine": 284 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C21-005",
+   "name": "黄庄结算",
+   "description": "黄庄时亮出四家手牌并在桌面中央显示「黄庄」，保留终局牌河、财神和余牌数 20，不飘分，四家本局均为 0，随后打开标题为「黄庄」的小结算。",
+   "scope": "覆盖黄庄专属的终局牌桌表现与四家得分口径，不覆盖胡牌局表现。",
+   "coordination": "服务端判定黄庄并给出四家 0 分结果，客户端渲染黄庄终局表现并以黄庄标题打开小结算。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C21-016",
+     "name": "黄庄亮牌与提示",
+     "rule": "黄庄：亮出四家手牌，桌面中央显示「黄庄」。",
+     "uiRequirement": "亮出四家手牌，桌面中央显示「黄庄」。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "本小局判定为黄庄",
+      "condition": "无人胡牌且牌墙满足流局条件",
+      "action": "亮出四家手牌并在桌面中央显示「黄庄」",
+      "result": "玩家看到四家手牌与「黄庄」提示"
+     },
+     "source": { "chapter": "结算", "fromLine": 285, "toLine": 285 }
+    },
+    {
+     "atomId": "AT-ST-C21-017",
+     "name": "黄庄保留终局牌河财神与余牌数20",
+     "rule": "黄庄保留终局牌河、财神和余牌数 20。",
+     "uiRequirement": "黄庄终局牌桌保留牌河、财神，并显示余牌数为 20。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "本小局判定为黄庄",
+      "condition": "流局成立",
+      "action": "保留终局牌河与财神，余牌数保持 20",
+      "result": "玩家看到终局牌河、财神和余牌数 20"
+     },
+     "source": { "chapter": "结算", "fromLine": 285, "toLine": 285 }
+    },
+    {
+     "atomId": "AT-ST-C21-018",
+     "name": "黄庄不飘分",
+     "rule": "不飘分。",
+     "uiRequirement": "黄庄时任何座位都不播放飘分。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "本小局判定为黄庄",
+      "condition": "黄庄结算",
+      "action": "不执行飘分表现",
+      "result": "玩家看不到任何座位飘分"
+     },
+     "source": { "chapter": "结算", "fromLine": 285, "toLine": 285 }
+    },
+    {
+     "atomId": "AT-ST-C21-019",
+     "name": "黄庄四家本局得分为0",
+     "rule": "四家本局都是 0。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "本小局判定为黄庄",
+      "condition": "黄庄结算",
+      "action": "将四家本局得分都记为 0",
+      "result": "黄庄小结算中四家本局得分都显示为 0"
+     },
+     "source": { "chapter": "结算", "fromLine": 285, "toLine": 285 }
+    },
+    {
+     "atomId": "AT-ST-C21-020",
+     "name": "黄庄小结算标题",
+     "rule": "随后打开小结算，标题为「黄庄」。",
+     "uiRequirement": "黄庄结算后打开的小结算标题为「黄庄」。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "黄庄终局展示结束",
+      "condition": "黄庄结算",
+      "action": "打开小结算",
+      "result": "玩家看到标题为「黄庄」的小结算"
+     },
+     "source": { "chapter": "结算", "fromLine": 285, "toLine": 285 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C21-006",
+   "name": "小结算布局与主题",
+   "description": "小结算盖在终局牌桌上，按本家、下家、对家、上家顺序排列并以本家行置顶高亮，胡牌局按本端本局净得分正负切换主题标题，黄庄四端标题均为「黄庄」。",
+   "scope": "覆盖小结算整体层级、行序、本家高亮与标题主题，不覆盖行内明细。",
+   "coordination": "客户端按本家视角组织四家行序并根据服务端下发的本局净得分选择主题标题。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C21-021",
+     "name": "小结算覆盖终局牌桌",
+     "rule": "小结算盖在终局牌桌上。",
+     "uiRequirement": "小结算以覆盖层形式盖在终局牌桌之上。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "终局牌桌展示结束",
+      "condition": "结算需要打开小结算",
+      "action": "在终局牌桌上覆盖显示小结算",
+      "result": "玩家看到小结算覆盖在终局牌桌上方"
+     },
+     "source": { "chapter": "结算", "fromLine": 287, "toLine": 287 }
+    },
+    {
+     "atomId": "AT-ST-C21-022",
+     "name": "四家行序以本家为首",
+     "rule": "各端以本家为第一行，向下依次为下家、对家、上家。",
+     "uiRequirement": "每端小结算按本家、下家、对家、上家的顺序自上而下排列四行。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "小结算打开",
+      "condition": "玩家所在座位不同",
+      "action": "按本家、下家、对家、上家自上而下排列四行",
+      "result": "每个玩家看到自己的行排在第一位"
+     },
+     "source": { "chapter": "结算", "fromLine": 287, "toLine": 287 }
+    },
+    {
+     "atomId": "AT-ST-C21-023",
+     "name": "本家行置顶并高亮",
+     "rule": "本家行置顶并高亮。",
+     "uiRequirement": "本家所在行置于顶部并做高亮显示。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "小结算打开",
+      "condition": "正在查看小结算",
+      "action": "将本家行置顶并高亮",
+      "result": "玩家看到自己的一行在顶部且有高亮"
+     },
+     "source": { "chapter": "结算", "fromLine": 287, "toLine": 287 }
+    },
+    {
+     "atomId": "AT-ST-C21-024",
+     "name": "胡牌局主题按净得分切换",
+     "rule": "胡牌局按本端本局净得分切换主题：大于或等于 0 为「恭喜获胜」，小于 0 为「遗憾失败」。",
+     "uiRequirement": "小结算标题按本端本局净得分显示「恭喜获胜」或「遗憾失败」。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "胡牌局小结算打开",
+      "condition": "本端本局净得分大于或等于 0 时显示「恭喜获胜」，小于 0 时显示「遗憾失败」",
+      "action": "按本端本局净得分切换小结算主题标题",
+      "result": "玩家看到与自身净得分正负一致的标题文案"
+     },
+     "source": { "chapter": "结算", "fromLine": 287, "toLine": 287 }
+    },
+    {
+     "atomId": "AT-ST-C21-025",
+     "name": "黄庄四端标题均为黄庄",
+     "rule": "黄庄四端都是「黄庄」。",
+     "uiRequirement": "黄庄时四端的标题统一显示「黄庄」。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "黄庄小结算打开",
+      "condition": "本小局为黄庄",
+      "action": "四端标题统一使用「黄庄」",
+      "result": "每个玩家都看到标题为「黄庄」"
+     },
+     "source": { "chapter": "结算", "fromLine": 287, "toLine": 287 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C21-007",
+   "name": "小结算行内信息展示",
+   "description": "每行左侧展示座位、头像和昵称，庄家行标注「庄×3」；中间从左到右为碰杠区和手牌，杠的第 4 张垒在上方、暗杠顶张正面，胡牌者手牌按组合分组、未胡牌者连续摆放，胡入牌在所属组合内标绿色「胡」。",
+   "scope": "覆盖小结算单行的身份信息、庄家标注与牌面排布，不覆盖右侧得分与番型标注。",
+   "coordination": "服务端下发行内牌面分组与庄家信息，客户端按固定排布规则渲染。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C21-026",
+     "name": "行左侧展示座位头像昵称",
+     "rule": "每行左侧为座位、头像和昵称。",
+     "uiRequirement": "每行左侧依次展示座位标识、头像和昵称。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "小结算行渲染",
+      "condition": "展示某个座位的信息",
+      "action": "在该行左侧展示座位、头像和昵称",
+      "result": "玩家能看到每行对应的座位、头像与昵称"
+     },
+     "source": { "chapter": "结算", "fromLine": 289, "toLine": 289 }
+    },
+    {
+     "atomId": "AT-ST-C21-027",
+     "name": "庄家行标注庄×3",
+     "rule": "庄家行显示「庄×3」。",
+     "uiRequirement": "庄家所在行显示「庄×3」。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "小结算行渲染",
+      "condition": "该座位为本局庄家",
+      "action": "在该行显示「庄×3」",
+      "result": "玩家看到庄家行带「庄×3」标注"
+     },
+     "source": { "chapter": "结算", "fromLine": 289, "toLine": 289 }
+    },
+    {
+     "atomId": "AT-ST-C21-028",
+     "name": "碰杠区与手牌排布",
+     "rule": "中间从左到右是碰杠区和手牌，杠的第 4 张垒在上方，暗杠顶张正面。",
+     "uiRequirement": "行中间从左到右排列碰杠区和手牌；杠的第 4 张垒在上方，暗杠顶张显示正面。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "小结算行渲染",
+      "condition": "该座位有碰杠或手牌",
+      "action": "按碰杠区在前、手牌在后从左到右排列，杠的第 4 张垒在上方且暗杠顶张正面",
+      "result": "玩家看到各座位碰杠与手牌的固定排布"
+     },
+     "source": { "chapter": "结算", "fromLine": 289, "toLine": 289 }
+    },
+    {
+     "atomId": "AT-ST-C21-029",
+     "name": "胡牌者分组与未胡者连续摆放",
+     "rule": "胡牌者其余手牌按胡牌组合分组，未胡牌者连续摆放。",
+     "uiRequirement": "胡牌者的其余手牌按胡牌组合分组展示，未胡牌者的手牌连续摆放。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "小结算行渲染",
+      "condition": "该座位是否胡牌",
+      "action": "胡牌者按胡牌组合分组排列其余手牌，未胡牌者连续排列手牌",
+      "result": "玩家能看出胡牌者的组牌结构与未胡牌者的连续手牌"
+     },
+     "source": { "chapter": "结算", "fromLine": 289, "toLine": 289 }
+    },
+    {
+     "atomId": "AT-ST-C21-030",
+     "name": "胡入牌绿色胡标记",
+     "rule": "胡入的那一张在所属组合内标绿色「胡」。",
+     "uiRequirement": "胡入的那张牌在所属组合内带绿色「胡」字标记。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "小结算展示胡牌者手牌",
+      "condition": "手牌中存在胡入的那张牌",
+      "action": "在所属组合内对胡入牌标注绿色「胡」",
+      "result": "玩家能看到哪张牌是胡入的胡张"
+     },
+     "source": { "chapter": "结算", "fromLine": 289, "toLine": 289 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C21-008",
+   "name": "小结算得分与番型标注",
+   "description": "每行右侧显示本局净得分并按正负格式标注，赢家牌组上方写明实际命中的番型名称（多组都写、特定组合写全名），最右侧标注胡牌方式，点炮胡与抢杠胡的赔付者标「点炮」。",
+   "scope": "覆盖净得分显示格式、番型名称与胡牌方式标注，不覆盖承包标注。",
+   "coordination": "服务端提供净得分、命中番型与胡牌方式，客户端按格式规则渲染标注。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C21-031",
+     "name": "净得分显示格式",
+     "rule": "右侧为本局净得分。正分带加号，0 分显示「0」，负分带减号。",
+     "uiRequirement": "每行右侧显示本局净得分：正分带加号，0 分显示「0」，负分带减号。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "小结算行渲染",
+      "condition": "本局净得分为正、零或负",
+      "action": "在行右侧按正负格式显示净得分",
+      "result": "玩家看到正分带加号、零分为「0」、负分带减号"
+     },
+     "source": { "chapter": "结算", "fromLine": 290, "toLine": 290 }
+    },
+    {
+     "atomId": "AT-ST-C21-032",
+     "name": "赢家牌组上方写番型名称",
+     "rule": "赢家牌组上方写实际命中的番型名称。",
+     "uiRequirement": "赢家手牌组上方显示实际命中的番型名称。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "小结算展示赢家行",
+      "condition": "该座位为本局赢家且命中番型",
+      "action": "在其牌组上方写出实际命中的番型名称",
+      "result": "玩家能看到赢家命中的番型名称"
+     },
+     "source": { "chapter": "结算", "fromLine": 291, "toLine": 291 }
+    },
+    {
+     "atomId": "AT-ST-C21-033",
+     "name": "多组番型全部书写",
+     "rule": "同时命中多组时都写上，例如「七对」「杠飘」。双财飘、双豪华七对、二连杠直接写全名。",
+     "uiRequirement": "同时命中多组番型时全部列出；双财飘、双豪华七对、二连杠直接显示完整名称。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "小结算展示赢家番型",
+      "condition": "同时命中多组番型或命中双财飘、双豪华七对、二连杠",
+      "action": "将所有命中番型都写上，特定组合直接写全名",
+      "result": "玩家看到全部命中番型名称且无遗漏"
+     },
+     "source": { "chapter": "结算", "fromLine": 291, "toLine": 291 }
+    },
+    {
+     "atomId": "AT-ST-C21-034",
+     "name": "最右侧标注胡牌方式",
+     "rule": "最右侧标胡牌方式：自摸、点炮胡或抢杠胡。",
+     "uiRequirement": "每行最右侧标注胡牌方式「自摸」「点炮胡」或「抢杠胡」。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "小结算行渲染",
+      "condition": "该座位本局胡牌",
+      "action": "在最右侧标注本次胡牌方式",
+      "result": "玩家看到赢家的胡牌方式为此三者之一"
+     },
+     "source": { "chapter": "结算", "fromLine": 291, "toLine": 291 }
+    },
+    {
+     "atomId": "AT-ST-C21-035",
+     "name": "赔付者标点炮",
+     "rule": "点炮胡、抢杠胡的赔付者标「点炮」。",
+     "uiRequirement": "点炮胡与抢杠胡的赔付者行标注「点炮」。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "小结算展示且本局为点炮胡或抢杠胡",
+      "condition": "该座位为赔付者",
+      "action": "在其行上标注「点炮」",
+      "result": "玩家能看出谁是放铳赔付方"
+     },
+     "source": { "chapter": "结算", "fromLine": 291, "toLine": 291 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C21-009",
+   "name": "承包标注",
+   "description": "小结算按三摊承包、反承包、链式承包三种关系分别在赢家与赔付者行标注对应文字，链式承包时番型只写一次并按赔付金额区分标注。",
+   "scope": "覆盖三摊承包、反承包与链式承包的标注文案与位置，不覆盖承包成立条件本身。",
+   "coordination": "服务端确定承包关系与赔付金额，客户端按关系类型渲染标注。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C21-036",
+     "name": "三摊承包标注",
+     "rule": "三摊承包：赢家标黄色「承包」，赔付者得分右侧标「三摊承包」。",
+     "uiRequirement": "赢家行标黄色「承包」，赔付者得分右侧标「三摊承包」。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "小结算展示且本局成立三摊承包",
+      "condition": "承包关系为三摊承包",
+      "action": "在赢家标黄色「承包」，在赔付者得分右侧标「三摊承包」",
+      "result": "玩家能看到谁是承包方与三摊承包赔付方"
+     },
+     "source": { "chapter": "结算", "fromLine": 292, "toLine": 292 }
+    },
+    {
+     "atomId": "AT-ST-C21-037",
+     "name": "反承包标注",
+     "rule": "反承包：赢家标「反承包」，赔付者标「反承包」。",
+     "uiRequirement": "赢家行与赔付者行都标「反承包」。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "小结算展示且本局成立反承包",
+      "condition": "承包关系为反承包",
+      "action": "在赢家与赔付者两处标「反承包」",
+      "result": "玩家能看到反承包关系双方"
+     },
+     "source": { "chapter": "结算", "fromLine": 292, "toLine": 292 }
+    },
+    {
+     "atomId": "AT-ST-C21-038",
+     "name": "链式承包双标与番型只写一次",
+     "rule": "链式承包：赢家同时标「承包」和「反承包」，番型只写一次。",
+     "uiRequirement": "链式承包时赢家行同时显示「承包」与「反承包」，番型名称只出现一次。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "小结算展示且本局成立链式承包",
+      "condition": "赢家同时处于承包与反承包关系",
+      "action": "在赢家同时标「承包」和「反承包」，番型只写一次",
+      "result": "玩家看到赢家带两个承包标注而番型不重复"
+     },
+     "source": { "chapter": "结算", "fromLine": 292, "toLine": 292 }
+    },
+    {
+     "atomId": "AT-ST-C21-039",
+     "name": "链式承包赔付方区分标注",
+     "rule": "链式承包：付 S 的一方标「三摊承包」，付 2 × S 的一方标「反承包」。",
+     "uiRequirement": "链式承包时付 S 的一方标「三摊承包」，付 2×S 的一方标「反承包」。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "小结算展示且本局成立链式承包",
+      "condition": "赔付方分别支付 S 与 2×S",
+      "action": "对付 S 的一方标「三摊承包」，对付 2×S 的一方标「反承包」",
+      "result": "玩家能区分两个赔付方各自的关系与金额"
+     },
+     "source": { "chapter": "结算", "fromLine": 292, "toLine": 292 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C21-010",
+   "name": "小结算底部财神与长按查看牌桌",
+   "description": "小结算左下展示本局财神正面（白板），右下提供「长按查看牌桌」，在底部栏扣除中央主按钮后的区域按住 500 毫秒临时收起小结算并按本家视角查看终局牌桌，松手恢复同一张小结算。",
+   "scope": "覆盖小结算底部的财神展示与长按回看终局牌桌交互，不覆盖中部行内容。",
+   "coordination": "客户端单独实现按压缩起与松手恢复的交互与视角切换。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C21-040",
+     "name": "左下展示本局财神正面",
+     "rule": "左下展示本局财神正面，即白板。",
+     "uiRequirement": "小结算左下角展示本局财神正面（白板）。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "小结算打开",
+      "condition": "本局已确定财神",
+      "action": "在左下角展示本局财神正面",
+      "result": "玩家看到左下角的白板财神"
+     },
+     "source": { "chapter": "结算", "fromLine": 293, "toLine": 293 }
+    },
+    {
+     "atomId": "AT-ST-C21-041",
+     "name": "右下长按查看牌桌入口",
+     "rule": "右下为「长按查看牌桌」。",
+     "uiRequirement": "小结算右下角显示「长按查看牌桌」提示。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "小结算打开",
+      "condition": "小结算展示中",
+      "action": "在右下角显示「长按查看牌桌」",
+      "result": "玩家看到右下角的长按提示"
+     },
+     "source": { "chapter": "结算", "fromLine": 293, "toLine": 293 }
+    },
+    {
+     "atomId": "AT-ST-C21-042",
+     "name": "底部栏长按500毫秒查看终局牌桌",
+     "rule": "在底部栏扣除中央主按钮后的区域按住 500 毫秒，临时收起小结算，按本家视角查看终局牌桌。",
+     "uiRequirement": "底部栏扣除中央主按钮后的区域按住 500 毫秒后收起小结算，以本家视角展示终局牌桌。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家在底部栏扣除中央主按钮后的区域按住",
+      "condition": "按住持续 500 毫秒",
+      "action": "临时收起小结算并按本家视角展示终局牌桌",
+      "result": "玩家在按住后看到自己的终局牌桌视角"
+     },
+     "source": { "chapter": "结算", "fromLine": 293, "toLine": 293 }
+    },
+    {
+     "atomId": "AT-ST-C21-043",
+     "name": "松手恢复同一张小结算",
+     "rule": "松手恢复同一张小结算。",
+     "uiRequirement": "松手后恢复之前那张小结算，内容状态不变。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家松手",
+      "condition": "正处于长按查看终局牌桌状态",
+      "action": "恢复原来的小结算",
+      "result": "玩家回到与收起前相同的小结算"
+     },
+     "source": { "chapter": "结算", "fromLine": 293, "toLine": 293 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C21-011",
+   "name": "继续游戏与返回大厅",
+   "description": "非末局小结算底部中央为【继续游戏】，点击后收起小结算并清除上一局手牌、碰杠区和牌河，保留座位与累计积分，本家显示「已准备」，四人均准备后自动开下一小局；第 8 局按钮为【返回大厅】，点击后退出房间。",
+   "scope": "覆盖继续游戏与末局返回大厅的按钮、点击后的清理与准备流程，不覆盖下一小局的发牌流程细节。",
+   "coordination": "服务端维护准备状态并在四人齐全时开启下一小局，客户端处理按钮与本地表现。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C21-044",
+     "name": "非末局继续游戏按钮",
+     "rule": "非末局底部中央为【继续游戏】。",
+     "uiRequirement": "非末局时小结算底部中央显示【继续游戏】按钮。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "小结算打开",
+      "condition": "当前不是第 8 局",
+      "action": "在底部中央显示【继续游戏】",
+      "result": "玩家看到底部中央的【继续游戏】按钮"
+     },
+     "source": { "chapter": "结算", "fromLine": 294, "toLine": 294 }
+    },
+    {
+     "atomId": "AT-ST-C21-045",
+     "name": "点击继续游戏清理上一局",
+     "rule": "点击后本端收起小结算，清除上一局手牌、碰杠区和牌河，保留座位和累计积分。",
+     "uiRequirement": "点击【继续游戏】后收起小结算，界面清除上一局手牌、碰杠区和牌河，座位与累计积分保留。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家点击【继续游戏】",
+      "condition": "非末局小结算展示中",
+      "action": "收起小结算，清除上一局手牌、碰杠区和牌河，保留座位和累计积分",
+      "result": "玩家回到清空牌面的牌桌且累计积分仍在"
+     },
+     "source": { "chapter": "结算", "fromLine": 294, "toLine": 294 }
+    },
+    {
+     "atomId": "AT-ST-C21-046",
+     "name": "点击后本家显示已准备",
+     "rule": "本家显示「已准备」。",
+     "uiRequirement": "点击【继续游戏】后本家显示「已准备」。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家点击【继续游戏】",
+      "condition": "本端已收起小结算",
+      "action": "将本家状态标记为已准备",
+      "result": "玩家看到自己显示「已准备」"
+     },
+     "source": { "chapter": "结算", "fromLine": 294, "toLine": 294 }
+    },
+    {
+     "atomId": "AT-ST-C21-047",
+     "name": "四人准备后自动开下一小局",
+     "rule": "四人均准备后自动开下一小局。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "最后一名玩家完成准备",
+      "condition": "四人均已准备",
+      "action": "自动开启下一小局",
+      "result": "玩家进入新一小局"
+     },
+     "source": { "chapter": "结算", "fromLine": 294, "toLine": 294 }
+    },
+    {
+     "atomId": "AT-ST-C21-048",
+     "name": "第8局返回大厅按钮",
+     "rule": "第 8 局按钮为【返回大厅】，点击后退出房间。",
+     "uiRequirement": "第 8 局小结算底部中央按钮为【返回大厅】。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "第 8 局小结算展示或玩家点击按钮",
+      "condition": "当前为第 8 局",
+      "action": "显示【返回大厅】，点击后退出房间",
+      "result": "玩家看到【返回大厅】并可在点击后离开房间"
+     },
+     "source": { "chapter": "结算", "fromLine": 294, "toLine": 294 }
+    }
+   ]
+  }
+ ]
+}

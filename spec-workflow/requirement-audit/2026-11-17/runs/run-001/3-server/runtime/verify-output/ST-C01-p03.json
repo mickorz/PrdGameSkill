@@ -1,0 +1,487 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C01",
+ "partNo": "03",
+ "entries": [
+  {
+   "atomId": "AT-ST-C01-024",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "enable_three_tan_bao（默认 false，2 人局由 LoadBoxJsonConfig 强制关闭）：创房 JSON 若下发该键且值=0，服务端置 rule_chi_peng=2（吃+碰各方向合计限 2 次），与需求「无限吃碰」相反；只有不下发该键时 rule_chi_peng 保持 InitConfigByBox 默认 0=不限制（无限吃碰）。即 2 人房是否「无限吃碰」取决于客户端是否下发 enable_three_tan_bao",
+   "callPath": "CommonGameLogic::OnGameStart(common_game/common_game_logic.cpp:66) → ServerConfig::InitConfigByBox(hzmj_server/server_config.cpp:9) → GameLogic::LoadBoxJsonConfig(hzmj_server/game_logic.cpp:18)；吃碰判定 BoxPungStep::Judge(common_game/com_game/common_game_com_pung.cpp:19) / BoxChowStep::Judge(common_game/com_game/common_game_com_action.cpp:63) → CommonGameAlgorithm::IsChiPengExceeded(common_game/common_game_algorithm.cpp:79)",
+   "evidenceIds": [
+    "SVE-AT-ST-C01-024-01",
+    "SVE-AT-ST-C01-024-02",
+    "SVE-AT-ST-C01-024-03",
+    "SVE-AT-ST-C01-024-04",
+    "SVE-AT-ST-C01-024-05",
+    "SVE-AT-ST-C01-024-06",
+    "SVE-AT-ST-C01-024-07",
+    "SVE-AT-ST-C01-024-08",
+    "SVE-AT-ST-C01-024-09"
+   ],
+   "unresolved": "32局/4局 局数档位在 common_game / hzmj_server / mah_frame 三目录内查无实现：BaseConfig 只有 ju_count（当前局计数，base_data.h:664）无总局数字段，GameLogic::LoadBoxJsonConfig 无局数键，CommonGameLogic::CalcTotalScore(common_game/common_game_logic.cpp:153-194) 仅汇总分数无「到约定局数即结束」判断（common_game_com_result.h:87-89 注释称该判定属 CalcTotalScore 但其内无相应代码）；缺房间创建层/框架层的局数参数与人数联动证据。本条目仅覆盖吃碰/承包联动",
+   "noServerEvidence": false,
+   "directConflict": false
+  },
+  {
+   "atomId": "AT-ST-C01-025",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "callPath": "CommonGameLogic::OnGameStart(common_game/common_game_logic.cpp:66) → GameLogic::LoadBoxJsonConfig(hzmj_server/game_logic.cpp:151-161) 对 player_count<=2 强制 guard_dealer=false；守庄判定 BoxPungStep::Judge(common_game/com_game/common_game_com_pung.cpp:38) → CommonGameAlgorithm::IsGuardDealerBlocked(common_game/common_game_algorithm.cpp:49)；缺一色 CommonGameInit::InitData(common_game/common_game_init.cpp:58) 以 player_count<=3 才剔除万字",
+   "evidenceIds": [
+    "SVE-AT-ST-C01-025-01",
+    "SVE-AT-ST-C01-025-02",
+    "SVE-AT-ST-C01-025-03",
+    "SVE-AT-ST-C01-025-04",
+    "SVE-AT-ST-C01-025-05",
+    "SVE-AT-ST-C01-024-02",
+    "SVE-AT-ST-C01-024-06",
+    "SVE-AT-ST-C01-024-07"
+   ],
+   "noServerEvidence": false,
+   "directConflict": false
+  },
+  {
+   "atomId": "AT-ST-C01-026",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "enable_three_tan_bao（默认 false，3 人局可开）：下发该键且值=0 时服务端置 rule_chi_peng=2，吃碰合计限 2 次（即「按默认吃碰生效」）；下发该键且值=1 时三摊承包接管（IsXianXianTanFull 拦截闲闲第 3 摊），RuleChiPeng 不被改写，此时不再等同默认吃碰；不下发该键则 rule_chi_peng 保持 0=不限制",
+   "callPath": "CommonGameLogic::OnGameStart(common_game/common_game_logic.cpp:66) → ServerConfig::InitConfigByBox(hzmj_server/server_config.cpp:9) → GameLogic::LoadBoxJsonConfig(hzmj_server/game_logic.cpp:18)；吃碰判定 BoxChowStep::Judge(common_game/com_game/common_game_com_action.cpp:63,66) / BoxPungStep::Judge(common_game/com_game/common_game_com_pung.cpp:19,24) → IsChiPengExceeded(common_game/common_game_algorithm.cpp:79) / IsXianXianTanFull(common_game/common_game_algorithm.cpp:86)",
+   "evidenceIds": [
+    "SVE-AT-ST-C01-024-01",
+    "SVE-AT-ST-C01-024-02",
+    "SVE-AT-ST-C01-024-03",
+    "SVE-AT-ST-C01-024-04",
+    "SVE-AT-ST-C01-024-05",
+    "SVE-AT-ST-C01-024-06",
+    "SVE-AT-ST-C01-024-07",
+    "SVE-AT-ST-C01-024-08",
+    "SVE-AT-ST-C01-024-09"
+   ],
+   "unresolved": "32局/4局 局数档位在三目录内查无实现（服务端仅有 ju_count 当前局计数，CalcTotalScore 只汇总分数，无约定局数结束判定）；房间创建层的局数联动不在可读范围。本条目仅覆盖吃碰/承包联动",
+   "noServerEvidence": false,
+   "directConflict": false
+  },
+  {
+   "atomId": "AT-ST-C01-027",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "callPath": "CommonGameLogic::OnGameStart(common_game/common_game_logic.cpp:66) → GameLogic::LoadBoxJsonConfig(hzmj_server/game_logic.cpp:151-161)（3 人不在 player_count<=2 强制关闭范围，守庄可开）；BoxPungStep::Judge(common_game/com_game/common_game_com_pung.cpp:38) → IsGuardDealerBlocked(common_game/common_game_algorithm.cpp:49-73) 按 player_count 区分 3 人只禁碰庄家打出的牌；缺一色 InitData(common_game/common_game_init.cpp:58) 3 人可剔除万字",
+   "evidenceIds": [
+    "SVE-AT-ST-C01-025-01",
+    "SVE-AT-ST-C01-025-02",
+    "SVE-AT-ST-C01-025-03",
+    "SVE-AT-ST-C01-025-04",
+    "SVE-AT-ST-C01-025-05",
+    "SVE-AT-ST-C01-027-01",
+    "SVE-AT-ST-C01-024-02",
+    "SVE-AT-ST-C01-024-06",
+    "SVE-AT-ST-C01-024-07"
+   ],
+   "noServerEvidence": false,
+   "directConflict": false
+  },
+  {
+   "atomId": "AT-ST-C01-028",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "enable_three_tan_bao（默认 false，4 人局可开）：下发该键且值=0 时服务端置 rule_chi_peng=2，吃碰合计限 2 次（即「按默认吃碰生效」）；下发该键且值=1 时三摊承包接管（IsXianXianTanFull 拦截闲闲第 3 摊），RuleChiPeng 不被改写，此时不再等同默认吃碰；不下发该键则 rule_chi_peng 保持 0=不限制",
+   "callPath": "CommonGameLogic::OnGameStart(common_game/common_game_logic.cpp:66) → ServerConfig::InitConfigByBox(hzmj_server/server_config.cpp:9) → GameLogic::LoadBoxJsonConfig(hzmj_server/game_logic.cpp:18)；吃碰判定 BoxChowStep::Judge(common_game/com_game/common_game_com_action.cpp:63,66) / BoxPungStep::Judge(common_game/com_game/common_game_com_pung.cpp:19,24) → IsChiPengExceeded(common_game/common_game_algorithm.cpp:79) / IsXianXianTanFull(common_game/common_game_algorithm.cpp:86)",
+   "evidenceIds": [
+    "SVE-AT-ST-C01-024-01",
+    "SVE-AT-ST-C01-024-02",
+    "SVE-AT-ST-C01-024-03",
+    "SVE-AT-ST-C01-024-04",
+    "SVE-AT-ST-C01-024-05",
+    "SVE-AT-ST-C01-024-06",
+    "SVE-AT-ST-C01-024-07",
+    "SVE-AT-ST-C01-024-08",
+    "SVE-AT-ST-C01-024-09"
+   ],
+   "unresolved": "4局/32局 局数档位在三目录内查无实现（服务端仅有 ju_count 当前局计数，CalcTotalScore 只汇总分数，无约定局数结束判定）；房间创建层的局数联动不在可读范围。本条目仅覆盖吃碰/承包联动",
+   "noServerEvidence": false,
+   "directConflict": false
+  },
+  {
+   "atomId": "AT-ST-C01-029",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "callPath": "CommonGameLogic::OnGameStart(common_game/common_game_logic.cpp:66) → GameLogic::LoadBoxJsonConfig(hzmj_server/game_logic.cpp:151-161)（4 人守庄可开）；IsGuardDealerBlocked(common_game/common_game_algorithm.cpp:62-67) 对 player_count>=4 追加「庄家下家」来牌禁碰；缺一色 enable_two_suit 在 LoadBoxJsonConfig 无人数校验(hzmj_server/game_logic.cpp:122-125)，但 InitData(common_game/common_game_init.cpp:58) 以 player_count<=3 拦住，4 人房静默不剔除万字",
+   "evidenceIds": [
+    "SVE-AT-ST-C01-025-01",
+    "SVE-AT-ST-C01-025-02",
+    "SVE-AT-ST-C01-025-03",
+    "SVE-AT-ST-C01-025-04",
+    "SVE-AT-ST-C01-025-05",
+    "SVE-AT-ST-C01-027-01",
+    "SVE-AT-ST-C01-024-02",
+    "SVE-AT-ST-C01-024-06",
+    "SVE-AT-ST-C01-024-07"
+   ],
+   "noServerEvidence": false,
+   "directConflict": false
+  }
+ ],
+ "evidence": [
+  {
+   "id": "SVE-AT-ST-C01-024-01",
+   "claimKey": "three-tan-bao-player-count-guard",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:66-83",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "if (enable && player_count <= 2) { enable = false; } else { SetEnableThreeTanBao(false); SetRuleChiPeng(2); // 限吃碰2次",
+   "configKeys": [
+    "enable_three_tan_bao",
+    "rule_chi_peng"
+   ],
+   "atomIds": [
+    "AT-ST-C01-024",
+    "AT-ST-C01-026",
+    "AT-ST-C01-028"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "common_game/common_game_server_config.h"
+    },
+    {
+     "file": "common_game/common_game_algorithm.cpp"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-024-02",
+   "claimKey": "box-default-config-values",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/server_config.cpp",
+   "location": "hzmj_server/server_config.cpp:19-39",
+   "symbol": "ServerConfig::InitConfigByBox",
+   "excerpt": "SetEnableThreeTanBao(false); … SetRuleChiPeng(0); SetEnableTwoSuit(false); … SetEnableGuardDealer(false);",
+   "configKeys": [
+    "enable_three_tan_bao",
+    "pung_as_tan",
+    "rule_chi_peng",
+    "enable_two_suit",
+    "guard_dealer"
+   ],
+   "atomIds": [
+    "AT-ST-C01-024",
+    "AT-ST-C01-025",
+    "AT-ST-C01-026",
+    "AT-ST-C01-027",
+    "AT-ST-C01-028",
+    "AT-ST-C01-029"
+   ],
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-024-03",
+   "claimKey": "three-tan-bao-only-3-4-players",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_server_config.h",
+   "location": "common_game/common_game_server_config.h:41",
+   "symbol": "CommonGameServerConfig",
+   "excerpt": "AutoProperty(bool, enable_three_tan_bao, EnableThreeTanBao);  // 三摊承包（仅3/4人局，2人局服务端安全判断强制关闭）",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ],
+   "atomIds": [
+    "AT-ST-C01-024",
+    "AT-ST-C01-026",
+    "AT-ST-C01-028"
+   ],
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-024-04",
+   "claimKey": "rule-chi-peng-limit-two",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_algorithm.cpp",
+   "location": "common_game/common_game_algorithm.cpp:79-84",
+   "symbol": "CommonGameAlgorithm::IsChiPengExceeded",
+   "excerpt": "if (cfg->GetRuleChiPeng() <= 0) { return false; }  // 未开启不限制\nreturn data->GetChiPengCount(seat, target_seat) >= 2;",
+   "configKeys": [
+    "rule_chi_peng"
+   ],
+   "atomIds": [
+    "AT-ST-C01-024",
+    "AT-ST-C01-026",
+    "AT-ST-C01-028"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_action.cpp"
+    },
+    {
+     "file": "common_game/com_game/common_game_com_pung.cpp"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-024-05",
+   "claimKey": "three-tan-bao-limit-check",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_algorithm.cpp",
+   "location": "common_game/common_game_algorithm.cpp:86-93",
+   "symbol": "CommonGameAlgorithm::IsXianXianTanFull",
+   "excerpt": "if (!cfg->GetEnableThreeTanBao()) return false; // 未开启\nif (actor_seat == zhuang || target_seat == zhuang) return false;",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ],
+   "atomIds": [
+    "AT-ST-C01-024",
+    "AT-ST-C01-026",
+    "AT-ST-C01-028"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_action.cpp"
+    },
+    {
+     "file": "common_game/com_game/common_game_com_pung.cpp"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-024-06",
+   "claimKey": "box-config-load-call-chain",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_logic.cpp",
+   "location": "common_game/common_game_logic.cpp:65-73",
+   "symbol": "CommonGameLogic::OnGameStart",
+   "excerpt": "} else {\n        GetSvrCfg()->InitConfigByBox(player_count);\n        try {\n            LoadBoxJsonConfig(config);",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-024",
+    "AT-ST-C01-025",
+    "AT-ST-C01-026",
+    "AT-ST-C01-027",
+    "AT-ST-C01-028",
+    "AT-ST-C01-029"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "hzmj_server/server_config.cpp"
+    },
+    {
+     "file": "hzmj_server/game_logic.cpp"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-024-07",
+   "claimKey": "pung-judge-chi-peng-and-guard-call-site",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_pung.cpp",
+   "location": "common_game/com_game/common_game_com_pung.cpp:17-41",
+   "symbol": "BoxPungStep::Judge",
+   "excerpt": "if (GetPungAsTan() && IsChiPengExceeded(…)) continue; … if (IsGuardDealerBlocked(…)) { 通知 kNIFExGuardDealer; continue; }",
+   "configKeys": [
+    "rule_chi_peng",
+    "enable_three_tan_bao",
+    "guard_dealer",
+    "pung_as_tan"
+   ],
+   "atomIds": [
+    "AT-ST-C01-024",
+    "AT-ST-C01-025",
+    "AT-ST-C01-026",
+    "AT-ST-C01-027",
+    "AT-ST-C01-028",
+    "AT-ST-C01-029"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "common_game/common_game_algorithm.cpp"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-024-08",
+   "claimKey": "chow-judge-chi-peng-limit-call-site",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:62-66",
+   "symbol": "BoxChowStep::Judge",
+   "excerpt": "// rule_chi_peng=2 该方向合计≤2，已达上限禁吃\nif (IsChiPengExceeded(…)) return false;\nif (IsXianXianTanFull(…)) return false;",
+   "configKeys": [
+    "rule_chi_peng",
+    "enable_three_tan_bao"
+   ],
+   "atomIds": [
+    "AT-ST-C01-024",
+    "AT-ST-C01-026",
+    "AT-ST-C01-028"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "common_game/common_game_algorithm.cpp"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-024-09",
+   "claimKey": "no-total-round-limit-in-total-score",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_logic.cpp",
+   "location": "common_game/common_game_logic.cpp:153-194",
+   "symbol": "CommonGameLogic::CalcTotalScore",
+   "excerpt": "for (auto& r : score_records) { … one_box_score.user_scores[seat].score += …; … }",
+   "configKeys": [],
+   "atomIds": [
+    "AT-ST-C01-024",
+    "AT-ST-C01-026",
+    "AT-ST-C01-028"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_result.h"
+    },
+    {
+     "file": "mah_frame/base/base_data.h"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-025-01",
+   "claimKey": "guard-dealer-player-count-guard",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:149-161",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// 守庄仅3/4人局，2人局强制关闭\nif (enable && player_count <= 2) { enable = false; }\nSetEnableGuardDealer(enable);",
+   "configKeys": [
+    "guard_dealer"
+   ],
+   "atomIds": [
+    "AT-ST-C01-025",
+    "AT-ST-C01-027",
+    "AT-ST-C01-029"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "common_game/common_game_algorithm.cpp"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-025-02",
+   "claimKey": "two-suit-init-player-count-guard",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_init.cpp",
+   "location": "common_game/common_game_init.cpp:57-58",
+   "symbol": "CommonGameInit::InitData",
+   "excerpt": "// 缺一色：仅 2/3 人可开，开启后剔除万字花色（需求 §2/§6.1）\nbool drop_wan = svr_cfg->GetEnableTwoSuit() && svr_data->GetPlayerCount() <= 3;",
+   "configKeys": [
+    "enable_two_suit"
+   ],
+   "atomIds": [
+    "AT-ST-C01-025",
+    "AT-ST-C01-027",
+    "AT-ST-C01-029"
+   ],
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-025-03",
+   "claimKey": "two-suit-json-no-player-count-check",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:122-125",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "// enable_two_suit | 缺一色，仅2/3人可开，去掉万字花色\nif (config.contains(\"enable_two_suit\")) { SetEnableTwoSuit(config 值 > 0); }",
+   "configKeys": [
+    "enable_two_suit"
+   ],
+   "atomIds": [
+    "AT-ST-C01-025",
+    "AT-ST-C01-027",
+    "AT-ST-C01-029"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "common_game/common_game_init.cpp"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-025-04",
+   "claimKey": "two-suit-only-2-3-players",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_server_config.h",
+   "location": "common_game/common_game_server_config.h:55",
+   "symbol": "CommonGameServerConfig",
+   "excerpt": "AutoProperty(bool, enable_two_suit, EnableTwoSuit);         // 缺一色（仅2/3人）",
+   "configKeys": [
+    "enable_two_suit"
+   ],
+   "atomIds": [
+    "AT-ST-C01-025",
+    "AT-ST-C01-027",
+    "AT-ST-C01-029"
+   ],
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-025-05",
+   "claimKey": "guard-dealer-only-3-4-players",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_server_config.h",
+   "location": "common_game/common_game_server_config.h:65-66",
+   "symbol": "CommonGameServerConfig",
+   "excerpt": "// 守庄（仅3/4人局，2人局服务端安全判断强制关闭）\nAutoProperty(bool, enable_guard_dealer, EnableGuardDealer);  // 庄家上家无财神时禁碰庄家及庄下家的牌",
+   "configKeys": [
+    "guard_dealer"
+   ],
+   "atomIds": [
+    "AT-ST-C01-025",
+    "AT-ST-C01-027",
+    "AT-ST-C01-029"
+   ],
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-027-01",
+   "claimKey": "guard-dealer-3-vs-4-player-scope",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_algorithm.cpp",
+   "location": "common_game/common_game_algorithm.cpp:62-67",
+   "symbol": "CommonGameAlgorithm::IsGuardDealerBlocked",
+   "excerpt": "// 3人仅禁碰庄家打出的牌；4人及以上禁庄家与庄下家\nif (discard_seat != zhuang) { if (player_count < 4) return false; … }",
+   "configKeys": [
+    "guard_dealer"
+   ],
+   "atomIds": [
+    "AT-ST-C01-027",
+    "AT-ST-C01-029"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_pung.cpp"
+    }
+   ]
+  }
+ ]
+}

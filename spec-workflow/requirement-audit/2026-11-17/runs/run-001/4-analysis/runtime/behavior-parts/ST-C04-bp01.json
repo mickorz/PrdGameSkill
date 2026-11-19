@@ -1,0 +1,13 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C04",
+ "partNo": "01",
+ "analysisRunId": "ar-2026-11-17-001",
+ "atomIds": [
+  "AT-ST-C04-001",
+  "AT-ST-C04-002",
+  "AT-ST-C04-003",
+  "AT-ST-C04-004",
+  "AT-ST-C04-005"
+ ]
+}

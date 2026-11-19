@@ -1,0 +1,16 @@
+{
+ "schemaVersion": 2,
+ "analysisRunId": "ar-2026-11-17-001",
+ "entries": [
+  {
+   "atomId": "AT-ST-C12-001",
+   "previousDifference": "unverified",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义（unified-atoms requirement.source，chapter「行牌 > 自摸、放铳、抢杠胡」165-167 行）分三组：AT-ST-C12-001~004 要求自摸可在常规摸牌后、杠后补牌、庄家起手第 14 张时于出牌前成立且手牌为 4 面子+1 对子；AT-ST-C12-005~009 要求本期只有庄闲放铳一种点炮形式，须三牢+一庄一闲+牌型合法，未成庄闲只能自摸，且只由放铳者赔付；AT-ST-C12-010~013 要求抢杠胡同放铳口径（三牢庄闲之间、亮出的第 4 张须使响应者成胡、只由被抢加杠者赔付）。客户端表现：unified-atoms 中本片 13 个原子 client.verdict 与 client.evidenceIds 均为空，client-evidence.json coverage.pendingAtomIds 明确列出 AT-ST-C12-001~013，现网 12 条证据仅覆盖 AT-ST-C01-001/002/003/004/005/009/010/011；其中 CLE-AT-ST-C01-005-02（config/FanDefine.ts:637-638 把结算流水类型标注为「点炮/放炮」文本）与 CLE-AT-ST-C01-005-03（layer/comp/BoxHzmjResultMid.ts:719-737 按 hu_type 切自摸/点炮页签）只证明 ST-C01 的胡牌结果展示，不能证明自摸可用时机、点炮权限或抢杠判定。服务端规则：unified-atoms 中 server.applicability 与 server.evidenceIds 均为空；server-evidence.json 全量 60 条 atomIds 只落在 AT-ST-C01-001~029，无任何 ST-C12 条目；最接近的 SVE-AT-ST-C01-005-01（common_game/com_game/common_game_com_action.cpp:353-358，BoxHuStep::CanDiscardHu 关闭 enable_banker_discard_hu 或 BankerLevel<3 即返回 false）只说明庄中放铳有开关与三牢门槛，且归属 C01-005，未覆盖 C12-006 的「牌型合法」、C12-007 的反向（闲打牌庄可胡），也未覆盖自摸、抢杠与 AT-ST-C12-009/012/013 的赔付归责。三组均属双端取证空缺：既不能证实与需求一致（不判 consistent/partial），也无与需求相反的证据（不立 conflict），故维持 S7 初判 unverified。",
+   "reviewRule": "evidence-is-not-consistency（本片 13 个原子双端证据均为零，缺证只能维持 unverified，不得据此判 consistent/partial；同时无矛盾证据，也不升级 conflict）",
+   "evidenceScopes": []
+  }
+ ]
+}

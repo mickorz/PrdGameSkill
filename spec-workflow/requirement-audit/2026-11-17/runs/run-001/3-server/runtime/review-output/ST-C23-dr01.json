@@ -1,0 +1,17 @@
+{
+ "schemaVersion": 2,
+ "analysisRunId": "ar-2026-11-17-001",
+ "entries": [
+  {
+   "atomId": "AT-ST-C23-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：本片 21 个原子（AT-ST-C23-001~021）全部取自待确认清单第 312-319 行，主题依次为 3/4 人房吃碰档位不展示（312）、2 人房吃碰默认无限吃碰（312）、碰算摊默认开/原模板关闭两种口径（313）、有财必拷响与三财/四财翻倍、财神替豪七、守庄需补全（314-315）、操作优先级仲裁与吃碰禁手由服务端裁决（316）、杠分为预留未启用（317）、补花/花牌为预留（318）、超时无自动操作仅提示、提示表现以交互稿为准（319），其中多条本身即「待产品确认/待补全」项，需求侧没有唯一可判定的实现口径。客户端侧：unified-atoms 中这 21 个原子的 client.verdict 与 client.evidenceIds 仍全为空；client-evidence.json 仅 12 条证据且全部挂 CLE-AT-ST-C01-*，entries 只覆盖 AT-ST-C01-001~029，21 个 C23 原子只出现在 coverage.pendingAtomIds（client-evidence.json:850 起，AT-ST-C23-001 位于 client-evidence.json:1217），没有任何吃碰档位、碰算摊开关、超时提示的界面证据可对照。服务端侧：server.applicability 与 evidenceIds 全为空；server-evidence.json 共 60 条证据、stats.atomCount=29（server-evidence.json:1479-1488），逐条 atomIds 只指向 AT-ST-C01-*（如 SVE-AT-ST-C01-018-03、SVE-AT-ST-C01-019-04 等摊数与创房配置证据），无一条覆盖 C23，因此也没有可用于证明「服务端按默认吃碰下发」「仲裁在服务端」「不计杠分/无花牌/超时无自动操作」的规则证据。结论：双端均为取证空缺，既无法证实与需求一致（不得判 consistent/partial），也没有任何反证构成矛盾（不得判 conflict）；本轮无 upgraded 原子、无 candidateDifference，维持 S7 初判 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（本片 21 个原子双端证据均为零，且需求多为待确认/待补全项，缺证只能维持 unverified）",
+   "evidenceScopes": []
+  }
+ ]
+}

@@ -1,0 +1,620 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C01",
+ "partNo": "02",
+ "entries": [
+  {
+   "atomId": "AT-ST-C01-012",
+   "applicability": "inactive",
+   "configVerified": true,
+   "callPathVerified": true,
+   "callPath": "CommonGameLogic::OnGameStart（common_game/common_game_logic.cpp:66-68）→ GameLogic::LoadBoxJsonConfig（hzmj_server/game_logic.cpp:18）→ SetPlayScore（hzmj_server/game_logic.cpp:178）",
+   "evidenceIds": [
+    "SVE-AT-ST-C01-012-01",
+    "SVE-AT-ST-C01-012-02"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false,
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-013",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "score_limit（好友房默认 0=不封顶，hzmj_server/server_config.cpp:43）：服务端按提交值决定是否封顶；打片档下客户端隐藏封顶并提交 0 时服务端不封顶（common_game/com_game/common_game_com_result.cpp:204-213 仅在 score_limit>0 时截断），代码中不存在 play_score>0 时强制清零封顶的分支",
+   "callPath": "CommonGameLogic::OnGameStart（common_game/common_game_logic.cpp:66-68）→ LoadBoxJsonConfig（hzmj_server/game_logic.cpp:169-173）→ BoxResultStep::CalcFinalWinLost（common_game/com_game/common_game_com_result.cpp:204-213）",
+   "evidenceIds": [
+    "SVE-AT-ST-C01-013-01",
+    "SVE-AT-ST-C01-013-02",
+    "SVE-AT-ST-C01-012-02"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false,
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-014",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "base_score（默认 1：mah_frame/base/base_config.cpp:36；LoadBoxJsonConfig 仅接受 >0，非法值保持 1）：打片档下客户端提交 1 时服务端按 1 分底分结算；代码中不存在 play_score>0 时强制改底分的分支",
+   "callPath": "CommonGameLogic::OnGameStart（common_game/common_game_logic.cpp:66-68）→ LoadBoxJsonConfig（hzmj_server/game_logic.cpp:22-34）→ BoxResultStep::CalcFinalWinLost 以 GetBaseScore() 结算（common_game/com_game/common_game_com_result.cpp:89）",
+   "evidenceIds": [
+    "SVE-AT-ST-C01-014-01",
+    "SVE-AT-ST-C01-014-02"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false,
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-015",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "lian_zhuang_bu_zhan（好友房默认 false）+ play_score（默认 0，仅 >0 视为打片房）：play_score>0 时若任一座位片数<=0 且为庄家连庄胡牌，lian_zhuang_bu_zhan=true 才跳过 kLogic 大结算触发；默认 false 不启用该豁免",
+   "callPath": "CommonGameLogic::OnGameStart（common_game/common_game_logic.cpp:66-68）→ LoadBoxJsonConfig（hzmj_server/game_logic.cpp:180-183）→ BoxResultStep::OnResult（common_game/com_game/common_game_com_result.cpp:60-76）",
+   "evidenceIds": [
+    "SVE-AT-ST-C01-015-01",
+    "SVE-AT-ST-C01-015-02",
+    "SVE-AT-ST-C01-012-02"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false,
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-016",
+   "applicability": "unknown",
+   "configVerified": false,
+   "callPathVerified": false,
+   "callPath": "仅查到打片侧：CommonGameLogic::OnGameStart → LoadBoxJsonConfig（hzmj_server/game_logic.cpp:175-179）→ SetPlayScore；局数侧入口未定位",
+   "evidenceIds": [
+    "SVE-AT-ST-C01-012-01"
+   ],
+   "unresolved": "缺少三根目录内「局数（约定总局数）」创房参数解析与「局数与片数互斥、只提交其中一项」服务端校验的证据：仅有 play_score 独立解析（hzmj_server/game_logic.cpp:175-179）与打片房大结算触发（common_game/com_game/common_game_com_result.cpp:57-76）；mah_frame 只有 ju_count/quan_count 计数与下发（mah_frame/base/base_data.h:664-668、common_game/common_game_context.cpp:456-458），未见局数上限或局数/片数互斥拦截实现",
+   "noServerEvidence": false,
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-017",
+   "applicability": "inactive",
+   "configVerified": false,
+   "callPathVerified": false,
+   "callPath": "",
+   "evidenceIds": [],
+   "unresolved": "",
+   "noServerEvidence": true,
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-018",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "rule_chi_peng（好友房默认 0=不限制吃碰，即无限吃碰；1=每方向限制2次只能碰不能吃；2=每方向限制2次可吃碰，即默认吃碰）+ only_pung_no_chow（默认 false）：hzmj_server 不按人数自动切换，取值由客户端按人数默认提交；另 enable_three_tan_bao=false 时服务端会回写 rule_chi_peng=2",
+   "callPath": "CommonGameLogic::OnGameStart（common_game/common_game_logic.cpp:66-68）→ LoadBoxJsonConfig（hzmj_server/game_logic.cpp:112-121）→ BoxChowStep::Judge / BoxPungStep::Judge 经 CommonGameAlgorithm::IsChiPengExceeded（common_game/common_game_algorithm.cpp:79-84）",
+   "evidenceIds": [
+    "SVE-AT-ST-C01-018-01",
+    "SVE-AT-ST-C01-018-02",
+    "SVE-AT-ST-C01-018-03"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false,
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-019",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "enable_three_tan_bao（好友房默认 false；≤2 人房被强制置 false，即不触发三摊承包，对应两摊封顶口径）+ pung_as_tan（默认 true，服务端不随吃碰档位改写；无限吃碰档客户端隐藏碰算摊时需同时提交 pung_as_tan=false 才停止碰记摊）+ rule_chi_peng（默认 0 不限）",
+   "callPath": "CommonGameLogic::OnGameStart（common_game/common_game_logic.cpp:66-68）→ LoadBoxJsonConfig（hzmj_server/game_logic.cpp:65-87）→ BoxPungStep::Execute 记摊（common_game/com_game/common_game_com_pung.cpp:125-138）/ BoxResultStep::ApplyBaoContracts（common_game/com_game/common_game_com_result.cpp:289-295）",
+   "evidenceIds": [
+    "SVE-AT-ST-C01-019-01",
+    "SVE-AT-ST-C01-019-02",
+    "SVE-AT-ST-C01-019-03",
+    "SVE-AT-ST-C01-019-04"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false,
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-020",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "only_pung_no_chow（默认 false，true 时禁吃并下发 kNIFExOnlyPungNoChow）+ rule_chi_peng（默认 0，1/2 为每方向限制2次）+ pung_as_tan（默认 true，碰仍记摊）+ enable_three_tan_bao（≤2 人强制 false，不按三摊触发承包）",
+   "callPath": "CommonGameLogic::OnGameStart（common_game/common_game_logic.cpp:66-68）→ LoadBoxJsonConfig（hzmj_server/game_logic.cpp:112-121）→ BoxChowStep::Judge（common_game/com_game/common_game_com_action.cpp:74-80）/ BoxPungStep::Execute（common_game/com_game/common_game_com_pung.cpp:125-138）",
+   "evidenceIds": [
+    "SVE-AT-ST-C01-018-01",
+    "SVE-AT-ST-C01-018-02",
+    "SVE-AT-ST-C01-019-01",
+    "SVE-AT-ST-C01-019-02",
+    "SVE-AT-ST-C01-019-03",
+    "SVE-AT-ST-C01-020-01"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false,
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-021",
+   "applicability": "conditional",
+   "configVerified": true,
+   "callPathVerified": true,
+   "configCondition": "enable_three_tan_bao（好友房 InitConfigByBox 默认 false，对应两摊封顶；=true 时庄闲累计满 3 摊触发承包/倒承包，且闲闲之间另限 2 摊；≤2 人服务端强制 false）：3/4 人房要得到需求默认「三摊承包」必须由客户端显式提交 true，服务端默认值本身为 false",
+   "callPath": "CommonGameLogic::OnGameStart（common_game/common_game_logic.cpp:66-68）→ LoadBoxJsonConfig（hzmj_server/game_logic.cpp:65-83）→ BoxChowStep::Execute 记承包（common_game/com_game/common_game_com_action.cpp:141-148）→ BoxResultStep::ApplyBaoContracts（common_game/com_game/common_game_com_result.cpp:289-318）",
+   "evidenceIds": [
+    "SVE-AT-ST-C01-019-01",
+    "SVE-AT-ST-C01-019-02",
+    "SVE-AT-ST-C01-021-01",
+    "SVE-AT-ST-C01-021-02"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false,
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-022",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "callPath": "CommonGameLogic::OnGameStart（common_game/common_game_logic.cpp:66-68）→ LoadBoxJsonConfig 对 ≤2 人强制 enable_three_tan_bao=false（hzmj_server/game_logic.cpp:70-76）→ CommonGameContext::FillMsgGameConfig（common_game/common_game_context.cpp:438-443）随 1285 下发 enable_three_tan_bao",
+   "evidenceIds": [
+    "SVE-AT-ST-C01-019-02",
+    "SVE-AT-ST-C01-022-01"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false,
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  },
+  {
+   "atomId": "AT-ST-C01-023",
+   "applicability": "active",
+   "configVerified": true,
+   "callPathVerified": true,
+   "callPath": "CommonGameLogic::OnGameStart（common_game/common_game_logic.cpp:66-68）→ LoadBoxJsonConfig 对 player_count<=2 强制 enable_three_tan_bao=false（hzmj_server/game_logic.cpp:70-76）→ BoxResultStep::ApplyBaoContracts 因开关为 false 直接 return（common_game/com_game/common_game_com_result.cpp:289-295），2 人房不产生三摊承包赔付；闲闲 2 摊上限仅在三摊开启时才生效（common_game/common_game_algorithm.cpp:86-93）",
+   "evidenceIds": [
+    "SVE-AT-ST-C01-019-02",
+    "SVE-AT-ST-C01-021-02",
+    "SVE-AT-ST-C01-019-04"
+   ],
+   "unresolved": "",
+   "noServerEvidence": false,
+   "directConflict": false,
+   "conflictEvidenceIds": []
+  }
+ ],
+ "evidence": [
+  {
+   "id": "SVE-AT-ST-C01-012-01",
+   "atomIds": [
+    "AT-ST-C01-012",
+    "AT-ST-C01-016"
+   ],
+   "claimKey": "play-score-parsed-as-start-chips",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:175-179",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "svr_cfg->SetPlayScore(static_cast<int32_t>(CommonUtils::SafeGetJsonInt64(config, \"play_score\")));",
+   "configKeys": [
+    "play_score"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_result.cpp"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-012-02",
+   "atomIds": [
+    "AT-ST-C01-012",
+    "AT-ST-C01-013",
+    "AT-ST-C01-015"
+   ],
+   "claimKey": "box-defaults-score-limit-play-score-lian-zhuang",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/server_config.cpp",
+   "location": "hzmj_server/server_config.cpp:43-46",
+   "symbol": "ServerConfig::InitConfigByBox",
+   "excerpt": "SetScoreLimit(0); SetPlayScore(0); SetLianZhuangBuZhan(false);",
+   "configKeys": [
+    "score_limit",
+    "play_score",
+    "lian_zhuang_bu_zhan"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "hzmj_server/game_logic.cpp"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-013-01",
+   "atomIds": [
+    "AT-ST-C01-013"
+   ],
+   "claimKey": "score-limit-independent-parse",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:169-173",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "svr_cfg->SetScoreLimit(static_cast<int32_t>(CommonUtils::SafeGetJsonInt64(config, \"score_limit\")));",
+   "configKeys": [
+    "score_limit"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_result.cpp"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-013-02",
+   "atomIds": [
+    "AT-ST-C01-013"
+   ],
+   "claimKey": "score-limit-zero-means-no-cap",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:201-213",
+   "symbol": "BoxResultStep::CalcFinalWinLost",
+   "excerpt": "int64_t score_limit = GetSvrCfg()->GetScoreLimit(); if (score_limit > 0) { ... kv.second = -score_limit - existing; }",
+   "configKeys": [
+    "score_limit"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "hzmj_server/server_config.cpp"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-014-01",
+   "atomIds": [
+    "AT-ST-C01-014"
+   ],
+   "claimKey": "base-score-parse-only-accepts-positive",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:22-34",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "if (config.contains(\"base_score\")) { ... if (base_score > 0) { svr_cfg->SetBaseScore(base_score); }",
+   "configKeys": [
+    "base_score"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "mah_frame/base/base_config.cpp"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-014-02",
+   "atomIds": [
+    "AT-ST-C01-014"
+   ],
+   "claimKey": "base-score-default-one",
+   "repoId": "server",
+   "layer": "mah_frame",
+   "file": "mah_frame/base/base_config.cpp",
+   "location": "mah_frame/base/base_config.cpp:36",
+   "symbol": "BaseConfig::Reset",
+   "excerpt": "base_score_ = 1;",
+   "configKeys": [
+    "base_score"
+   ],
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-015-01",
+   "atomIds": [
+    "AT-ST-C01-015"
+   ],
+   "claimKey": "lian-zhuang-bu-zhan-config-parse",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:180-183",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "svr_cfg->SetLianZhuangBuZhan(CommonUtils::SafeGetJsonInt64(config, \"lian_zhuang_bu_zhan\") > 0);",
+   "configKeys": [
+    "lian_zhuang_bu_zhan"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_result.cpp"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-015-02",
+   "atomIds": [
+    "AT-ST-C01-015"
+   ],
+   "claimKey": "play-score-endgame-exempt-on-banker-win",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:57-76",
+   "symbol": "BoxResultStep::OnResult",
+   "excerpt": "GetSvrCfg()->GetPlayScore() > 0 && end_type == kEtHu) { ... if (!(GetSvrCfg()->GetLianZhuangBuZhan() && banker_win)) {",
+   "configKeys": [
+    "play_score",
+    "lian_zhuang_bu_zhan"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "hzmj_server/game_logic.cpp"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-018-01",
+   "atomIds": [
+    "AT-ST-C01-018",
+    "AT-ST-C01-020"
+   ],
+   "claimKey": "chi-peng-mode-config-parse",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:112-121",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "if (config.contains(\"rule_chi_peng\") && !svr_cfg->GetEnableThreeTanBao() ) { ... if (rule == 1)",
+   "configKeys": [
+    "only_pung_no_chow",
+    "rule_chi_peng",
+    "enable_three_tan_bao"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "common_game/common_game_algorithm.cpp"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-018-02",
+   "atomIds": [
+    "AT-ST-C01-018",
+    "AT-ST-C01-020"
+   ],
+   "claimKey": "box-default-chi-peng-unlimited",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/server_config.cpp",
+   "location": "hzmj_server/server_config.cpp:27-28",
+   "symbol": "ServerConfig::InitConfigByBox",
+   "excerpt": "SetOnlyPungNoChow(false); SetRuleChiPeng(0);",
+   "configKeys": [
+    "only_pung_no_chow",
+    "rule_chi_peng"
+   ],
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-018-03",
+   "atomIds": [
+    "AT-ST-C01-018"
+   ],
+   "claimKey": "chi-peng-limit-two-per-direction",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_algorithm.cpp",
+   "location": "common_game/common_game_algorithm.cpp:79-84",
+   "symbol": "CommonGameAlgorithm::IsChiPengExceeded",
+   "excerpt": "if (cfg->GetRuleChiPeng() <= 0) { return false; } ... return data->GetChiPengCount(...) >= 2;",
+   "configKeys": [
+    "rule_chi_peng"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_action.cpp"
+    },
+    {
+     "file": "common_game/com_game/common_game_com_pung.cpp"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-019-01",
+   "atomIds": [
+    "AT-ST-C01-019",
+    "AT-ST-C01-020",
+    "AT-ST-C01-021",
+    "AT-ST-C01-022",
+    "AT-ST-C01-023"
+   ],
+   "claimKey": "box-default-three-tan-off-pung-as-tan-on",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/server_config.cpp",
+   "location": "hzmj_server/server_config.cpp:20-21",
+   "symbol": "ServerConfig::InitConfigByBox",
+   "excerpt": "SetEnableThreeTanBao(false); SetPungAsTan(true);",
+   "configKeys": [
+    "enable_three_tan_bao",
+    "pung_as_tan"
+   ],
+   "dependencyFiles": []
+  },
+  {
+   "id": "SVE-AT-ST-C01-019-02",
+   "atomIds": [
+    "AT-ST-C01-019",
+    "AT-ST-C01-020",
+    "AT-ST-C01-021",
+    "AT-ST-C01-022",
+    "AT-ST-C01-023"
+   ],
+   "claimKey": "three-tan-forced-off-for-two-players",
+   "repoId": "server",
+   "layer": "hzmj_server",
+   "file": "hzmj_server/game_logic.cpp",
+   "location": "hzmj_server/game_logic.cpp:65-87",
+   "symbol": "GameLogic::LoadBoxJsonConfig",
+   "excerpt": "if (enable && player_count <= 2) { ... enable = false; } ... if (config.contains(\"pung_as_tan\"))",
+   "configKeys": [
+    "enable_three_tan_bao",
+    "pung_as_tan",
+    "rule_chi_peng"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "common_game/common_game_algorithm.cpp"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-019-03",
+   "atomIds": [
+    "AT-ST-C01-019",
+    "AT-ST-C01-020"
+   ],
+   "claimKey": "pung-counts-one-tan-when-pung-as-tan",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_pung.cpp",
+   "location": "common_game/com_game/common_game_com_pung.cpp:125-138",
+   "symbol": "BoxPungStep::Execute",
+   "excerpt": "if (GetSvrCfg()->GetPungAsTan()) { ... GetSvrData()->SetTanCount(pung_seat_, from_seat, ... + 1);",
+   "configKeys": [
+    "pung_as_tan",
+    "enable_three_tan_bao"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_result.cpp"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-019-04",
+   "atomIds": [
+    "AT-ST-C01-019",
+    "AT-ST-C01-023"
+   ],
+   "claimKey": "xian-xian-tan-capped-at-two",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_algorithm.cpp",
+   "location": "common_game/common_game_algorithm.cpp:86-93",
+   "symbol": "CommonGameAlgorithm::IsXianXianTanFull",
+   "excerpt": "if (!cfg->GetEnableThreeTanBao()) { return false; } ... return data->GetTanCount(...) >= 2;",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_action.cpp"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-020-01",
+   "atomIds": [
+    "AT-ST-C01-020"
+   ],
+   "claimKey": "only-pung-no-chow-blocks-chow",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:74-80",
+   "symbol": "BoxChowStep::Judge",
+   "excerpt": "if (GetSvrCfg()->GetOnlyPungNoChow()) { ... GetContext()->SendNotifyInfo(kNIFExOnlyPungNoChow, seat); } return false;",
+   "configKeys": [
+    "only_pung_no_chow"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "hzmj_server/game_logic.cpp"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-021-01",
+   "atomIds": [
+    "AT-ST-C01-021"
+   ],
+   "claimKey": "three-tan-triggers-contract-at-three",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_action.cpp",
+   "location": "common_game/com_game/common_game_com_action.cpp:141-148",
+   "symbol": "BoxChowStep::Execute",
+   "excerpt": "if (GetSvrCfg()->GetEnableThreeTanBao()) { if (GetSvrData()->GetTanCount(chow_seat_, from_seat) >= 3)",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "common_game/com_game/common_game_com_result.cpp"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-021-02",
+   "atomIds": [
+    "AT-ST-C01-021",
+    "AT-ST-C01-023"
+   ],
+   "claimKey": "contract-settle-guarded-by-three-tan-flag",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/com_game/common_game_com_result.cpp",
+   "location": "common_game/com_game/common_game_com_result.cpp:289-295",
+   "symbol": "BoxResultStep::ApplyBaoContracts",
+   "excerpt": "ApplyBaoContracts(...) { if (!GetSvrCfg()->GetEnableThreeTanBao()) { return; }",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "hzmj_server/game_logic.cpp"
+    }
+   ]
+  },
+  {
+   "id": "SVE-AT-ST-C01-022-01",
+   "atomIds": [
+    "AT-ST-C01-022"
+   ],
+   "claimKey": "server-pushes-three-tan-flag-to-client",
+   "repoId": "server",
+   "layer": "common_game",
+   "file": "common_game/common_game_context.cpp",
+   "location": "common_game/common_game_context.cpp:438-443",
+   "symbol": "CommonGameContext::FillMsgGameConfig",
+   "excerpt": "msg->set_enable_three_tan_bao(GetSvrCfg()->GetEnableThreeTanBao());",
+   "configKeys": [
+    "enable_three_tan_bao"
+   ],
+   "dependencyFiles": [
+    {
+     "file": "common_game/protocol/hzmj_protocol.proto"
+    }
+   ]
+  }
+ ]
+}

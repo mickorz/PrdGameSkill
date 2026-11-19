@@ -1,0 +1,102 @@
+{
+ "schemaVersion": 2,
+ "analysisRunId": "ar-2026-11-17-001",
+ "entries": [
+  {
+   "atomId": "AT-ST-C02-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第38行「复选规则组」）要求创房界面提供「碰算摊」且默认勾选、仅当吃碰规则为只碰不吃/默认吃碰时显示，开启后碰也计入摊。客户端侧 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 的 coverage.pendingAtomIds 明确列出 AT-ST-C02-001，无任何面板显隐或默认勾选的证据；服务端侧 server.applicability 为空、evidenceIds 为空，该原子未挂 SVE，但证据库内存在相近实现：SVE-AT-ST-C01-019-04（hzmj_server/server_config.cpp:20-21 SetEnableThreeTanBao(false); SetPungAsTan(true)）只能证明好友房默认碰算摊为开，SVE-AT-ST-C01-019-01（common_game/com_game/common_game_com_pung.cpp:125-138 GetSvrCfg()->GetPungAsTan() 为真时 SetTanCount+1）只能证明开启后碰计摊的行为口径，二者均未覆盖创房界面复选框的显示条件与默认勾选，故维持 unverified，不因服务端存在对应能力而升级。",
+   "reviewRule": "common-capability-is-not-enabled（服务端碰算摊默认开与碰计摊口径存在，不等于本玩法创房界面复选框按需求呈现）",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-019-04",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "好友房创房默认配置 SetPungAsTan(true)，仅证明服务端碰算摊默认开，不含界面显示条件与默认勾选"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-019-01",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "GetPungAsTan 为真时碰使摊计数 +1，仅证明开启后碰计摊，不证明创房面板复选框存在"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C02-007",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第44行）要求 2/3 人房显示「缺一色」并默认勾选、4 人房不显示。客户端侧 client.verdict 为空、evidenceIds 为空，coverage.pendingAtomIds 含该原子，创房面板的按人数显隐与默认勾选均无证据；服务端侧 server.applicability 为空、evidenceIds 为空，库内 SVE-AT-ST-C01-025-02（common_game/common_game_server_config.h:55 缺一色仅 2/3 人）与 SVE-AT-ST-C01-025-01（common_game/common_game_init.cpp:57-58 GetEnableTwoSuit() && player_count<=3 才剔万字）只证明对局发牌侧的 2/3 人缺一色口径，且该开关在创房默认配置中为关闭（SVE-AT-ST-C01-024-09 hzmj_server/server_config.cpp:19-39 SetEnableTwoSuit(false)），说明「默认勾选」只能由界面提供，仍缺界面证据，故维持 unverified。",
+   "reviewRule": "common-capability-is-not-enabled（缺一色 2/3 人房生效属服务端对局能力，不等于创房界面复选框已显示且默认勾选）",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-025-02",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "配置注释「缺一色（仅2/3人）」，证明服务端只限定房型范围，不涉及界面显隐与默认值"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-025-01",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "GetEnableTwoSuit 且人数<=3 时剔除万字，证明缺一色在 2/3 人局的发牌侧生效口径"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C02-009",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第46行）要求 3/4 人房显示「守庄」并默认不勾选、其他房型不显示。客户端侧 client.verdict 为空、evidenceIds 为空，coverage.pendingAtomIds 含该原子，面板按房型显隐与默认值未证实；服务端侧 server.applicability 为空、evidenceIds 为空，库内 SVE-AT-ST-C01-025-03（common_game/common_game_server_config.h:65-66 守庄仅 3/4 人局）与 SVE-AT-ST-C01-025-05（hzmj_server/game_logic.cpp:149-161 player_count<=2 时强制关闭）仅证明守庄判定的房型适用范围，默认值亦为关（SVE-AT-ST-C01-024-09），无法证明创房界面是否展示该复选项，故维持 unverified。",
+   "reviewRule": "common-capability-is-not-enabled（守庄的 3/4 人房实现存在，不等于创房界面已按房型显示该复选框）",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-025-03",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "配置注释「守庄（仅3/4人局，2人局强制关闭）」，只证明服务端判定范围"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-025-05",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "2 人局把 enable 置为 false 并回写，证明服务端兜底关闭，与界面是否展示无直接关系"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C02-010",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第47行）要求仅打片（40/50/60 片）模式显示「连庄不占局数」并默认不勾选、开启后连庄不消耗片数。客户端侧 client.verdict 为空、evidenceIds 为空，coverage.pendingAtomIds 含该原子，模式联动显隐与默认值无证据；服务端侧 server.applicability 为空、evidenceIds 为空，库内 SVE-AT-ST-C01-009-04（hzmj_server/game_logic.cpp:175-183 注释「连庄不占局数（仅打片房）」）、SVE-AT-ST-C01-015-02（game_logic.cpp:180-183 解析 lian_zhuang_bu_zhan）、SVE-AT-ST-C01-015-01（common_game/com_game/common_game_com_result.cpp:57-76 仅 play_score>0 且庄家连庄胡时豁免整房结束）证明服务端语义与默认关成立，但缺创房界面在打片模式展示该复选框的证据；与 AT-ST-C01-015 已按同一取证状态判 unverified 的口径一致，故不升级为 partial。",
+   "reviewRule": "common-capability-is-not-enabled（连庄不占局数的打片房语义齐备，不等于创房界面在打片模式已展示该复选框）",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-009-04",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "JSON 键说明「连庄不占局数（仅打片房）」，证明服务端字段含义与适用模式"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-015-01",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "打片房且开关开启、庄家连庄胡时跳过整房结束判定，证明开启后的行为口径"
+    }
+   ]
+  }
+ ]
+}

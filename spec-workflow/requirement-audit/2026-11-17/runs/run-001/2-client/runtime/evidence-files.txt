@@ -1,0 +1,14 @@
+client-code:data/GameData.ts
+client-code:controller/cmd/gameCmd/GameConfigCmd.ts
+client-code:config/GameDefine.ts
+client-code:layer/BoxHzmjPlayerView.ts
+client-code:layer/BoxHzmjBackView.ts
+client-code:controller/cmd/gameCmd/GameJokerCmd.ts
+client-code:controller/cmd/gameCmd/GameJuDataCmd.ts
+client-code:controller/cmd/gameCmd/GameResultHuCmd.ts
+client-code:config/FanDefine.ts
+client-code:layer/comp/BoxHzmjResultMid.ts
+client-code:layer/BoxHzmjResultView.ts
+client-code:interface/BoxHzmjResultTypes.ts
+client-code:controller/cmd/gameCmd/GameStartGameCmd.ts
+client-code:layer/BoxHzmjTingPaiView.ts

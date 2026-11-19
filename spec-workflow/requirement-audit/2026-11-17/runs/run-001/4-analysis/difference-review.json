@@ -1,0 +1,1115 @@
+{
+ "schemaVersion": 2,
+ "analysisRunId": "ar-2026-11-17-001",
+ "date": "2026-11-17",
+ "entries": [
+  {
+   "atomId": "AT-ST-C01-004",
+   "previousDifference": "partial",
+   "candidateDifference": "",
+   "clientVerdict": "partial",
+   "serverApplicability": "conditional",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求语义：「连庄档」三选一（笃三老庄/笃二老庄/平庄起）且默认「笃三老庄」，对应牢庄等级 3 与 8 倍庄闲倍数。客户端表现：CLE-AT-ST-C01-004-03（controller/cmd/gameCmd/GameJuDataCmd.ts:34-35）显示客户端从创房配置读取 banker_level 推导牢庄等级，CLE-AT-ST-C01-004-04（data/GameData.ts:1664-1666）按 level 左移换算倍数，两条都只覆盖对局内消费档位，创房面板三选一与默认选中项无证据。服务端规则：SVE-AT-ST-C01-004-03（hzmj_server/game_logic.cpp:56-59）banker_level_type 0=平庄起/1=笃二老庄/2=笃三老庄，SVE-AT-ST-C01-004-02（common_game/com_game/common_game_com_ju.cpp:191-196）level=type+1 并夹在 1..3，SVE-AT-ST-C01-004-04（hzmj_server/server_config.cpp:18）配置默认 0=平庄起。服务端默认档与需求默认档不同，但该默认仅在创房未下发时生效，客户端显式提交 2 即得需求默认的笃三老庄，故不升级 conflict；面板默认项缺证，既不能判 consistent 也无矛盾，维持 partial。",
+   "reviewRule": "evidence-is-not-consistency（服务端档位换算与需求映射自洽，但缺创房面板三选一/默认项证据，不能凭档位能力判 consistent）",
+   "reviewStatus": "approved",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-004-02",
+     "layer": "common_game",
+     "applicability": "active",
+     "note": "common_game_com_ju.cpp:191-196 证明服务端按 banker_level_type+1 换算牢庄等级并夹在 1..3，与需求三档映射一致"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-004-03",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "game_logic.cpp:56-59 证明 banker_level_type 取值 0平庄起/1笃二老庄/2笃三老庄，默认 0（平庄起），需创房显式下发 2 才等于需求默认"
+    },
+    {
+     "ref": "CLE-AT-ST-C01-004-03",
+     "layer": "client_code",
+     "applicability": "active",
+     "note": "GameJuDataCmd.ts:34-35 只证明客户端消费下发的 banker_level，不证明创房面板默认选中笃三老庄"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C01-012",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "not_found",
+   "serverApplicability": "inactive",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：局数单选组中并列提供 40片/50片/60片 三个打片档，选中后本房按片数结算。客户端表现：client.verdict=not_found、evidenceIds 为空，本轮 12 条 CLE 证据中没有创房面板局数单选组或打片档提交证据（business-behavior 亦记「客户端未找到该组含打片档」）。服务端规则：SVE-AT-ST-C01-012-01（hzmj_server/game_logic.cpp:175-179）把 play_score 解析为起始片数，SVE-AT-ST-C01-012-02（hzmj_server/server_config.cpp:43-46）好友房默认 play_score=0、连庄不占局数=false，SVE-AT-ST-C01-015-01（common_game/com_game/common_game_com_result.cpp:57-76）证明打片房按片数推进大结算——这些只说明服务端具备打片结算能力与开关，不能证明创房面板已提供 40/50/60片 三档，既不构成矛盾也不能判一致，维持 unverified。",
+   "reviewRule": "common-capability-is-not-enabled（服务端打片结算口径存在不等于本房创房面板已提供 40片/50片/60片 档）",
+   "reviewStatus": "approved",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-012-01",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "game_logic.cpp:175-179 只证明 play_score 被解析为打片起始片数，未涉及局数单选组的档位集合"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-012-02",
+     "layer": "hzmj_server",
+     "applicability": "active",
+     "note": "server_config.cpp:43-46 证明好友房默认 play_score=0（局数房），打片能力需创房显式下发才启用"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C01-018",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "not_found",
+   "serverApplicability": "conditional",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：2 人房吃碰默认「无限吃碰」、对局中吃碰不受限，3/4 人房固定按「默认吃碰」（每方向限 2 次）。客户端表现：client.verdict=not_found，无创房面板吃碰组默认值证据，而该默认值实际由客户端提交决定。服务端规则：SVE-AT-ST-C01-018-03（hzmj_server/server_config.cpp:27-28）好友房默认 OnlyPungNoChow=false、RuleChiPeng=0，SVE-AT-ST-C01-018-01（common_game/common_game_algorithm.cpp:79-84）RuleChiPeng<=0 时不限次；但 SVE-AT-ST-C01-018-02（hzmj_server/game_logic.cpp:112-121）显示 rule_chi_peng 在 !EnableThreeTanBao 分支内被改写，SVE-AT-ST-C01-024-08（hzmj_server/game_logic.cpp:66-83）三摊未开启分支直接 SetRuleChiPeng(2)（限吃碰 2 次），而 2 人房被 SVE-AT-ST-C01-019-03（hzmj_server/game_logic.cpp:65-87）强制关闭三摊承包。因此「2 人房无限吃碰」能否成立取决于客户端提交的三摊键与 rule 值组合，属双端协作断点；证据不足以证成 conflict，也缺客户端面板证据不能判 consistent，维持 unverified。",
+   "reviewRule": "dual-side-collaboration-gap（断点定位：吃碰默认档由客户端提交，服务端在三摊承包关闭分支回写 rule_chi_peng=2，2 人房强制三摊关闭）",
+   "reviewStatus": "approved",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-018-02",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "game_logic.cpp:112-121 显示创房 JSON 解析在 !EnableThreeTanBao 时改写 rule_chi_peng，客户端提交值不会原样生效"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-024-08",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "game_logic.cpp:66-83 三摊关闭分支执行 SetRuleChiPeng(2)（限吃碰 2 次），与需求 2 人房「吃碰不受限」存在潜在背离"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-019-03",
+     "layer": "hzmj_server",
+     "applicability": "active",
+     "note": "game_logic.cpp:65-87 证明 player_count<=2 时三摊承包被强制关闭，2 人房恒处于上述回写分支的输入条件下"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C01-021",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "not_found",
+   "serverApplicability": "conditional",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：3/4 人房展示承包单选（三摊承包/两摊封顶），默认选中「三摊承包」并据此提交。客户端表现：client.verdict=not_found，CLE 证据中无承包单选组及默认项，面板显隐与默认值属客户端职责。服务端规则：SVE-AT-ST-C01-019-04（hzmj_server/server_config.cpp:20-21）好友房默认 EnableThreeTanBao=false、PungAsTan=true，SVE-AT-ST-C01-021-02（common_game/com_game/common_game_com_result.cpp:289-295）承包结算仅在 EnableThreeTanBao 时执行，SVE-AT-ST-C01-021-01（common_game/com_game/common_game_com_action.cpp:141-148）庄闲累计满 3 摊触发承包/倒承包。服务端默认关闭只表示未收到开启键时按两摊封顶，需求默认档由创房显式提交 true 即可达成，故不能据「服务端默认关闭」判 conflict；缺客户端面板证据不能判 consistent，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（服务端默认关闭三摊承包不是冲突证据：默认档由创房显式下发，服务端无面板默认项取证义务）",
+   "reviewStatus": "approved",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-019-04",
+     "layer": "hzmj_server",
+     "applicability": "active",
+     "note": "server_config.cpp:20-21 证明好友房默认三摊承包关闭、碰算摊开启，属未下发时的兜底默认，非面板默认项"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-021-02",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "common_game_com_result.cpp:289-295 证明承包结算以 EnableThreeTanBao 为前置，开关开启才按三摊触发"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C01-024",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "not_found",
+   "serverApplicability": "conditional",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：创房面板把人数切到 2 人后刷新三处——32局放出/4局收起、吃碰组出现且默认「无限吃碰」、承包组隐藏。客户端表现：client.verdict=not_found，无人数联动刷新与面板取值证据（局数档显隐、承包组显隐均为客户端职责）。服务端规则：SVE-AT-ST-C01-024-07（common_game/common_game_server_config.h:41）注明三摊承包仅 3/4 人局、2 人局服务端强制关闭，SVE-AT-ST-C01-019-03（hzmj_server/game_logic.cpp:65-87）实现该强制关闭，SVE-AT-ST-C01-024-08（hzmj_server/game_logic.cpp:66-83）三摊关闭分支 SetRuleChiPeng(2)，SVE-AT-ST-C01-024-03（common_game/common_game_algorithm.cpp:79-84）RuleChiPeng>0 时每方向限 2 次。即 2 人房服务端吃碰口径取决于客户端提交的三摊键与 rule 值（与 AT-ST-C01-018 同一断点），需求「默认无限吃碰」是否成立仍待客户端提交路径取证；面板三处刷新无 CLE 证据，既不能判 consistent 也无法证成 conflict，维持 unverified。",
+   "reviewRule": "dual-side-collaboration-gap（断点定位：人数联动刷新在客户端，服务端 2 人房强制三摊关闭并可能回写吃碰档，取决于客户端提交的三摊键与 rule 值）",
+   "reviewStatus": "approved",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-024-07",
+     "layer": "common_game",
+     "applicability": "active",
+     "note": "common_game_server_config.h:41 注明三摊承包仅 3/4 人局、2 人局服务端强制关闭，与需求承包组隐藏口径同向"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-024-08",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "game_logic.cpp:66-83 三摊关闭分支 SetRuleChiPeng(2)，使 2 人房吃碰是否「无限」取决于客户端三摊键提交"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-024-03",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "common_game_algorithm.cpp:79-84 证明 RuleChiPeng>0 时每方向吃碰上限 2 次，RuleChiPeng<=0 才不限制"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C02-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第38行「复选规则组」）要求创房界面提供「碰算摊」且默认勾选、仅当吃碰规则为只碰不吃/默认吃碰时显示，开启后碰也计入摊。客户端侧 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 的 coverage.pendingAtomIds 明确列出 AT-ST-C02-001，无任何面板显隐或默认勾选的证据；服务端侧 server.applicability 为空、evidenceIds 为空，该原子未挂 SVE，但证据库内存在相近实现：SVE-AT-ST-C01-019-04（hzmj_server/server_config.cpp:20-21 SetEnableThreeTanBao(false); SetPungAsTan(true)）只能证明好友房默认碰算摊为开，SVE-AT-ST-C01-019-01（common_game/com_game/common_game_com_pung.cpp:125-138 GetSvrCfg()->GetPungAsTan() 为真时 SetTanCount+1）只能证明开启后碰计摊的行为口径，二者均未覆盖创房界面复选框的显示条件与默认勾选，故维持 unverified，不因服务端存在对应能力而升级。",
+   "reviewRule": "common-capability-is-not-enabled（服务端碰算摊默认开与碰计摊口径存在，不等于本玩法创房界面复选框按需求呈现）",
+   "reviewStatus": "pending",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-019-04",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "好友房创房默认配置 SetPungAsTan(true)，仅证明服务端碰算摊默认开，不含界面显示条件与默认勾选"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-019-01",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "GetPungAsTan 为真时碰使摊计数 +1，仅证明开启后碰计摊，不证明创房面板复选框存在"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C02-007",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第44行）要求 2/3 人房显示「缺一色」并默认勾选、4 人房不显示。客户端侧 client.verdict 为空、evidenceIds 为空，coverage.pendingAtomIds 含该原子，创房面板的按人数显隐与默认勾选均无证据；服务端侧 server.applicability 为空、evidenceIds 为空，库内 SVE-AT-ST-C01-025-02（common_game/common_game_server_config.h:55 缺一色仅 2/3 人）与 SVE-AT-ST-C01-025-01（common_game/common_game_init.cpp:57-58 GetEnableTwoSuit() && player_count<=3 才剔万字）只证明对局发牌侧的 2/3 人缺一色口径，且该开关在创房默认配置中为关闭（SVE-AT-ST-C01-024-09 hzmj_server/server_config.cpp:19-39 SetEnableTwoSuit(false)），说明「默认勾选」只能由界面提供，仍缺界面证据，故维持 unverified。",
+   "reviewRule": "common-capability-is-not-enabled（缺一色 2/3 人房生效属服务端对局能力，不等于创房界面复选框已显示且默认勾选）",
+   "reviewStatus": "pending",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-025-02",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "配置注释「缺一色（仅2/3人）」，证明服务端只限定房型范围，不涉及界面显隐与默认值"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-025-01",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "GetEnableTwoSuit 且人数<=3 时剔除万字，证明缺一色在 2/3 人局的发牌侧生效口径"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C02-009",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第46行）要求 3/4 人房显示「守庄」并默认不勾选、其他房型不显示。客户端侧 client.verdict 为空、evidenceIds 为空，coverage.pendingAtomIds 含该原子，面板按房型显隐与默认值未证实；服务端侧 server.applicability 为空、evidenceIds 为空，库内 SVE-AT-ST-C01-025-03（common_game/common_game_server_config.h:65-66 守庄仅 3/4 人局）与 SVE-AT-ST-C01-025-05（hzmj_server/game_logic.cpp:149-161 player_count<=2 时强制关闭）仅证明守庄判定的房型适用范围，默认值亦为关（SVE-AT-ST-C01-024-09），无法证明创房界面是否展示该复选项，故维持 unverified。",
+   "reviewRule": "common-capability-is-not-enabled（守庄的 3/4 人房实现存在，不等于创房界面已按房型显示该复选框）",
+   "reviewStatus": "pending",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-025-03",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "配置注释「守庄（仅3/4人局，2人局强制关闭）」，只证明服务端判定范围"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-025-05",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "2 人局把 enable 置为 false 并回写，证明服务端兜底关闭，与界面是否展示无直接关系"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C02-010",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第47行）要求仅打片（40/50/60 片）模式显示「连庄不占局数」并默认不勾选、开启后连庄不消耗片数。客户端侧 client.verdict 为空、evidenceIds 为空，coverage.pendingAtomIds 含该原子，模式联动显隐与默认值无证据；服务端侧 server.applicability 为空、evidenceIds 为空，库内 SVE-AT-ST-C01-009-04（hzmj_server/game_logic.cpp:175-183 注释「连庄不占局数（仅打片房）」）、SVE-AT-ST-C01-015-02（game_logic.cpp:180-183 解析 lian_zhuang_bu_zhan）、SVE-AT-ST-C01-015-01（common_game/com_game/common_game_com_result.cpp:57-76 仅 play_score>0 且庄家连庄胡时豁免整房结束）证明服务端语义与默认关成立，但缺创房界面在打片模式展示该复选框的证据；与 AT-ST-C01-015 已按同一取证状态判 unverified 的口径一致，故不升级为 partial。",
+   "reviewRule": "common-capability-is-not-enabled（连庄不占局数的打片房语义齐备，不等于创房界面在打片模式已展示该复选框）",
+   "reviewStatus": "pending",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-009-04",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "JSON 键说明「连庄不占局数（仅打片房）」，证明服务端字段含义与适用模式"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-015-01",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "打片房且开关开启、庄家连庄胡时跳过整房结束判定，证明开启后的行为口径"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C03-003",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第 55 行「通用规则」表）要求创房界面「超时解散」复选项默认已勾选（开）。客户端：unified-atoms 中 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 的 12 条证据 atomIds 全部指向 AT-ST-C01-001..011（如 CLE-AT-ST-C01-009-01 为 layer/BoxHzmjBackView.ts:86-88 牌桌底分显示、CLE-AT-ST-C01-005-03 为 layer/comp/BoxHzmjResultMid.ts:719-737 结算胡型页签），无任何创房设置面板通用复选项的取证。服务端：server.applicability 为空、server.evidenceIds 为空，server-evidence.json 的 60 条证据全部挂 AT-ST-C01-001..029（如 SVE-AT-ST-C01-021-01 为 common_game/com_game/common_game_com_action.cpp:141-148 三摊承包判定），检索不到超时解散默认值或超时处理的条目。双端皆为取证空缺，既无证据证明默认勾选与需求一致，也无证据显示实际默认关闭或超时不处理（不构成本玩法冲突），故维持 unverified；同片同类 001/002/005/007/008/010（同为默认值通用复选项、双端零证据）情形相同。",
+   "reviewRule": "evidence-is-not-consistency（双端零证据不足以判 consistent，维持未验证；服务端无证据亦不构成冲突）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C03-004",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第 56 行「通用规则」表）要求创房界面「自动准备」复选项默认已勾选（开），对应玩家入房后无需手动点准备即可开局。客户端：client.verdict 为空、client.evidenceIds 为空，client-evidence.json 12 条证据均属 AT-ST-C01 系列（CLE-AT-ST-C01-009-01 layer/BoxHzmjBackView.ts:86-88、CLE-AT-ST-C01-002-04 layer/BoxHzmjBackView.ts:82 等），均未涉及创房界面或准备态展示。服务端：server.applicability 为空、server.evidenceIds 为空，server-evidence.json 60 条证据全部为 AT-ST-C01 系列（如 SVE-AT-ST-C01-024-07 common_game/common_game_server_config.h:41 房规默认值、SVE-AT-ST-C01-003-03 hzmj_server/server_config.cpp:16 财神配置），未覆盖自动准备/开局条件。准备态相关语义还牵涉同批 AT-ST-C21-046/047，但那两个原子在本轮同样双端零证据，无法交叉印证。取证空缺既不等于一致也不等于冲突，故维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（双端零证据，默认值无法核对，不足以判 consistent）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C03-006",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第 57 行「通用规则」表，verificationScope=client）要求创房界面「截屏监控」复选项默认已勾选（开）。该原子只按客户端表现核验，但 unified-atoms 中 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 的 12 条证据 atomIds 全为 AT-ST-C01-001..011（CLE-AT-ST-C01-004-03 controller/cmd/gameCmd/GameJuDataCmd.ts:34-35 连庄、CLE-AT-ST-C01-003-02 data/GameData.ts:50 财神类型等），没有任何创房面板复选框及其默认勾选状态的证据；服务端 applicability 留空、无 evidenceIds，按需求该原子不要求服务端落地，故服务端缺失不作为冲突依据。客户端取证空缺无法核对默认勾选值，维持 unverified（同类客户端范围原子 AT-ST-C03-009 情形相同）。",
+   "reviewRule": "evidence-is-not-consistency（验证范围为客户端，客户端零证据不足以判 consistent）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C03-009",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第 60 行「通用规则」表，verificationScope=client）要求创房界面「实时语音」复选项初始未勾选（关）。客户端：client.verdict 为空、client.evidenceIds 为空，client-evidence.json 全量 12 条证据均为 AT-ST-C01 系列且集中在 config/GameDefine.ts、data/GameData.ts、layer/BoxHzmjBackView.ts:82-88、layer/comp/BoxHzmjResultMid.ts:719-737 等处，未出现创房界面（建房间设置面板）或其复选框默认态取证；服务端：server.applicability 为空、无 evidenceIds，且该原子按需求只判客户端表现，故服务端空缺不构成矛盾。既无证据证明默认关闭，也无证据显示默认开启（冲突），只能维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（客户端范围零证据无法核对默认值，维持未验证）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C04-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第66行「首局庄家：随机（与正文一致）」）要求房间第一小局由系统随机指定一名玩家坐庄。客户端侧 unified-atoms 中 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 全量 12 条证据无一条 atomIds 指向 AT-ST-C04-001；最接近的 CLE-AT-ST-C01-004-03（controller/cmd/gameCmd/GameJuDataCmd.ts:34-35）只证明客户端从创房配置读取 banker_level 推导牢庄等级，CLE-AT-ST-C01-004-04（data/GameData.ts:1664-1666）只证明按庄闲等级算倍数，均未涉及首局庄位由谁产生。服务端侧 server.applicability 为空、server.evidenceIds 为空，邻近证据 SVE-AT-ST-C01-004-01（common_game/com_game/common_game_com_ju.cpp:132-136，BoxZhuangStep::JudgeDingZhuang）只显示定庄步骤执行 SetZhuang(zhuang_seat)、SetLianZhuang(1)、SetBankerLevel(...)，摘录里看不到随机抽取庄位的实现，且该条 atomIds 仅挂 AT-ST-C01-004（庄闲倍数）。双端均无针对「首局随机定庄」的证据，既不能判一致也无矛盾，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（服务端仅证明存在定庄步骤、无首局随机抽取证据，属取证空缺而非冲突）",
+   "reviewStatus": "pending",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-004-01",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "common_game_com_ju.cpp:132-136 证明存在 JudgeDingZhuang 定庄并设置 zhuang_seat/lian_zhuang/banker_level，但不证明首局庄位为随机产生"
+    },
+    {
+     "ref": "CLE-AT-ST-C01-004-03",
+     "layer": "client_code",
+     "applicability": "active",
+     "note": "GameJuDataCmd.ts:34-35 证明客户端按服务端下发的 banker_level 推导牢庄等级，说明庄位由服务端下发而非客户端选择，但不涉及首局随机规则"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C04-002",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第67行「非首局庄家：赢家坐庄（与正文一致）」）要求上一小局赢家成为下一小局庄家。客户端侧 client.verdict 为空、client.evidenceIds 为空，CLE-AT-ST-C01-004-03（GameJuDataCmd.ts:34-35）只显示客户端消费服务端下发的 banker_level，无法反推庄位继承规则。服务端侧 server.applicability 为空、server.evidenceIds 为空；邻近的 SVE-AT-ST-C01-004-01（common_game_com_ju.cpp:132-136）只覆盖开局定庄赋值，SVE-AT-ST-C01-015-01 与 SVE-AT-ST-C01-009-02（common_game/com_game/common_game_com_result.cpp:57-76）只覆盖结算中「连庄不占局数」（LianZhuangBuZhan && banker_win 的 play-score 局数口径），二者都没有「赢家继承庄位」的判定代码。证据不足以证实或推翻该规则，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（服务端无赢家坐庄继承逻辑证据，属取证空缺，不升级为 conflict）",
+   "reviewStatus": "pending",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-015-01",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "common_game_com_result.cpp:57-76 只证明打片房结算时按 banker_win 与 lian_zhuang_bu_zhan 决定是否占局数，与下一局庄位归属无关"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C04-003",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第68行「流局：原庄连庄（与正文一致）」）要求流局后保留原庄家继续坐庄。客户端侧 client.verdict 为空、client.evidenceIds 为空，无流局后庄位展示证据；服务端侧 server.applicability 为空、server.evidenceIds 为空。邻近证据中 SVE-AT-ST-C01-015-01、SVE-AT-ST-C01-009-02（common_game/com_game/common_game_com_result.cpp:57-76）证明的是「连庄不占局数」（LianZhuangBuZhan 且 banker_win 时不计局数的 play-score 规则），名字带连庄但语义是局数统计，不等于流局保留原庄；SVE-AT-ST-C01-027-01（common_game/com_game/common_game_algorithm.cpp:62-67，CommonGameAlgorithm::IsGuardDealerBlocked）里的 zhuang 是吃碰禁手作用对象，同样与流局庄位轮转无关。故不能据「有连庄相关证据」判一致，也无矛盾证据，维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（存在连庄不占局数/守庄类证据不等于流局原庄连庄一致，不能判 consistent）",
+   "reviewStatus": "pending",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-009-02",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "common_game_com_result.cpp:60-76 证明连庄不占局数仅在打片房 play_score>0 且胡牌结算时生效，属局数口径，不证明流局后庄位保留"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-027-01",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "common_game_algorithm.cpp:62-67 中的 zhuang 用于吃碰/守庄禁手判定，与流局庄位轮转无关"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C04-004",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第69行）要求局数与片数按所选模式互斥，建房时只提交其中一项。客户端侧 client.verdict 为空、client.evidenceIds 为空，无建房参数提交代码证据，无法证明另一项确实不提交。服务端侧 server.applicability 为空、server.evidenceIds 为空；邻近证据 SVE-AT-ST-C01-009-04（hzmj_server/game_logic.cpp:175-183，GameLogic::LoadBoxJsonConfig）显示 play_score（>0 表示打片房）、局数、lian_zhuang_bu_zhan 三类配置键并存，SVE-AT-ST-C01-006-01（common_game/com_game/common_game_com_result.cpp:57-59）显示打片房大结算判定存在，这只能说明服务端同时具备局数模式与打片模式的长度能力，不能证明同一次建房会同时下发两项长度目标。按「公共能力存在不等于本玩法启用」，不升级为 conflict，维持 unverified。",
+   "reviewRule": "common-capability-is-not-enabled（局数与片数配置键并存只说明两种长度能力都存在，不能证明建房时双长度同时生效）",
+   "reviewStatus": "pending",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-009-04",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "hzmj_server/game_logic.cpp:175-183 只证明服务端有 play_score（打片房）与局数等配置键，未证明互斥校验或双提交行为"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-006-01",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "common_game_com_result.cpp:57-59 只证明打片房大结算由房间服务按片数推进，不涉及建房参数互斥"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C05-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第74行「已停用选项与兄弟玩法」）要求创房面板中的「跟庄」选项以停用状态呈现、点击无响应；客户端侧 unified-atoms 中 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 全量 12 条证据无一条 atomIds 指向 AT-ST-C05-001（同类邻居证据 CLE-AT-ST-C01-002-02 只证明二人房 gameId、CLE-AT-ST-C01-002-03 只证明座次映射，均未覆盖跟庄置灰）；服务端侧 server.applicability 为空、evidenceIds 为空，server-evidence.json 60 条中亦无跟庄相关条目。双端皆无证据，既不能证明与需求一致、也不能证明冲突，故维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（客户端无证据时不得判 consistent，只能维持未验证）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C05-003",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第75行）要求二人杭州麻将好友房由服务端按固定 2 人组局、不接受其他人数；服务端侧 unified-atoms 中 server.applicability 为空、server.evidenceIds 为空，server-evidence.json 虽存在人数相关条目（SVE-AT-ST-C01-002-02 按 chair_count 推导人数、SVE-AT-ST-C01-024-09 房规默认值），但这些条目 atomIds 仅挂 AT-ST-C01-002/024，证明的是「按座位数建桌」的通用逻辑，并未证明二人房玩法被强制固定为 2 人；客户端侧 client.verdict 为空、无证据（CLE-AT-ST-C01-002-02/CLE-AT-ST-C01-002-03 仅证明二人房 gameId 与 2/3 人座次映射）。服务端缺证据属取证空缺，不构成与需求的矛盾，故维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（服务端无证据不等于冲突，维持未验证）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C05-007",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第76行）要求淳安 / 萧山 / 桐庐分支玩法不套用杭州麻将本体规则（不出现本体财神、承包等口径）；客户端侧 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 12 条全部属于 AT-ST-C01 系列（财神类型 CLE-AT-ST-C01-003-02/03、庄闲倍数 CLE-AT-ST-C01-004-03/04 等），无任何分支玩法条目；服务端侧 server.applicability 为空、server.evidenceIds 为空，server-evidence.json 60 条同样只覆盖杭州麻将本体（SVE-AT-ST-C01-003-01 财神口径、SVE-AT-ST-C01-019-03 三摊承包等），检索不到淳安/萧山/桐庐 分支实现证据。双端均无证据说明分支规则集是否独立，也无法证明出现本体规则串用，按取证空缺维持 unverified，不升级为 conflict。",
+   "reviewRule": "no-server-evidence-is-not-conflict（双端均无分支玩法证据，属取证空缺而非矛盾）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C06-006",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求语义：首庄、新庄、连庄三种庄型应统一按三牢处理（统一原子视图 requirement.rule，源 开局>定庄与轮庄 行115）；S7 判 unverified 依据是本原子在统一原子视图中客户端 verdict 与服务端 applicability 均为空、evidenceIds 为空。复核在既有服务端证据池中找到同族定庄证据：SVE-AT-ST-C01-004-01（common_game/com_game/common_game_com_ju.cpp:132-136，BoxZhuangStep::JudgeDingZhuang 在定庄时 SetZhuang + SetLianZhuang(1) + SetBankerLevel(GetConfiguredBankerLevel())）表明牢级在定庄阶段由配置一次性设定、不按首庄/新庄/连庄区分；SVE-AT-ST-C01-004-02（同文件:191-196）显示 level = type+1 且夹取 1..3。故「三种庄型同一牢级」的服务端口径成立。但 SVE-AT-ST-C01-004-04（hzmj_server/server_config.cpp:18，SetBankerLevelType(0)，即默认平庄起→一牢）说明要落到需求的「三牢」仍依赖创房下发笃三老庄，服务端自身默认不是三牢；客户端侧本原子无任何证据。故只能判部分满足，不能判一致。",
+   "reviewRule": "evidence-is-not-consistency（补到定庄时牢级由配置统一设定的证据，可判「不区分庄型」口径成立；但默认档非三牢、客户端侧无证据，不足以判 consistent，降为 partial）",
+   "reviewStatus": "pending",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-004-01",
+     "layer": "common_game",
+     "applicability": "active",
+     "note": "定庄步骤 JudgeDingZhuang 内一次性设定庄家与牢级，牢级取自配置，不区分首庄/新庄/连庄"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-004-02",
+     "layer": "common_game",
+     "applicability": "active",
+     "note": "牢级换算为 type+1 并夹取 1..3，三牢是牢级上限"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-004-04",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "服务端默认 banker_level_type=0（平庄起→一牢），要达到需求的三牢须创房显式下发笃三老庄"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C06-007",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求语义：本小局庄家为三牢时，庄闲之间倍数固定按 8 倍计算并据此算各家和输赢（统一原子视图 requirement.rule，源 行115）；本原子按服务端规则域验证，S7 判 unverified 因服务端 applicability 与 evidenceIds 均空。复核补到：SVE-AT-ST-C01-004-03（hzmj_server/game_logic.cpp:56-59，配置注释「banker_level_type 0平庄起/1笃二老庄/2笃三老庄，牢庄起算档位（2/4/8倍）」）与 SVE-AT-ST-C01-004-02（common_game/com_game/common_game_com_ju.cpp:191-196，level=type+1 夹取 1..3）共同给出 level3→8 倍映射；客户端侧 CLE-AT-ST-C01-004-04（data/GameData.ts:1664-1666，getZhuangXianMult 返回 1 << bankerLevel）也印证三牢显示为 8 倍。缺口在于：结算侧把该倍率乘进各家输赢的实现未在证据原文中直接出现（SVE-AT-ST-C01-004-02 仅以 dependencyFiles 指向 common_game_com_result.cpp），且本原子无专属证据，故判部分满足。",
+   "reviewRule": "evidence-is-not-consistency（牢级→倍率映射与客户端 1<<level 可证三牢=8 倍，但结算乘算落地未直接取证，不足以判 consistent，降为 partial）",
+   "reviewStatus": "pending",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-004-03",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "配置注释给出牢级档位对应 2/4/8 倍，三牢档即 8 倍，需创房下发对应档位"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-004-02",
+     "layer": "common_game",
+     "applicability": "active",
+     "note": "牢级 level=type+1 夹取 1..3，level3 与 8 倍对应"
+    },
+    {
+     "ref": "CLE-AT-ST-C01-004-04",
+     "layer": "client_code",
+     "applicability": "active",
+     "note": "客户端 getZhuangXianMult 以 1 << bankerLevel 计算庄闲倍数，三牢显示 8 倍"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C06-008",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求语义：庄家已在三牢时牢级不再提升，连庄多次仍按三牢对应 8 倍结算（统一原子视图 requirement.rule，源 行115）；本原子按服务端规则域验证，S7 判 unverified 因服务端 applicability 与 evidenceIds 均空。复核补到：SVE-AT-ST-C01-004-02（common_game/com_game/common_game_com_ju.cpp:191-196，level=type+1 且 if (level > 3) return 3）证明牢级硬上限为三牢；SVE-AT-ST-C01-004-01（同文件:132-136）显示每次定庄均以 SetBankerLevel(GetConfiguredBankerLevel()) 重设牢级、并以 SetLianZhuang(1) 起始，牢级不随连庄次数累加；SVE-AT-ST-C01-004-03（hzmj_server/game_logic.cpp:56-59）与客户端 CLE-AT-ST-C01-004-04（data/GameData.ts:1664-1666，1 << bankerLevel）共同保证三牢固定 8 倍。缺口在于：结算对连庄多局取同一 8 倍的乘算实现未在证据原文中直接出现，且本原子无专属证据，故判部分满足。",
+   "reviewRule": "evidence-is-not-consistency（牢级夹取≤3 且每次定庄按配置重设，可证「三牢封顶、不随连庄提升」；但倍数结算实现未直接取证，不足以判 consistent，降为 partial）",
+   "reviewStatus": "pending",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-004-02",
+     "layer": "common_game",
+     "applicability": "active",
+     "note": "level 夹取 1..3，超过 3 一律返回 3，即三牢为牢级硬上限"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-004-01",
+     "layer": "common_game",
+     "applicability": "active",
+     "note": "定庄时以配置值重设牢级并起始连庄计数，牢级不随连庄次数累加"
+    },
+    {
+     "ref": "CLE-AT-ST-C01-004-04",
+     "layer": "client_code",
+     "applicability": "active",
+     "note": "客户端以 1 << bankerLevel 取倍数，牢级封顶三牢时倍数为固定 8 倍"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C07-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第119行「整副牌共136张」）要求开局按默认牌组配置凑齐136张作为唯一牌源。客户端侧 unified-atoms 中 client.verdict 与 client.evidenceIds 均为空，client-evidence.json 共12条证据全部挂在 AT-ST-C01 系列（如 CLE-AT-ST-C01-003-03 只证明财神类型下发），无一条指向牌组张数；服务端侧 server.applicability 与 server.evidenceIds 均为空，server-evidence.json 共60条中检索不到任何 atomIds 含 C07 的条目，最近的 SVE-AT-ST-C01-003-01 只描述财神牌种设置，不涉及牌墙总数。双端取证空缺，既不能证明恰为136张也不能证明冲突，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（服务端无证据属取证空缺，不等于与需求冲突，维持未验证）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C07-005",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求（PRD 第120行「四张白板都是财神」）要求白板财神模式下四张白板全为本局财神。服务端侧补到了直接证据：SVE-AT-ST-C01-003-03（hzmj_server/server_config.cpp:16 SetCaiShenType(0)）证明好友房默认即白板财神档，SVE-AT-ST-C01-003-01（common_game/com_game/common_game_com_ju.cpp:226-248，TMah cai_shen = MV_BAI_BAN; … SetCaiShen(cai_shen)）证明财神身份以「白板牌种」整体设定而非单张，即在默认档下所有白板均为财神；但「四张」这一数量前提依赖牌组构成为4张，而 AT-ST-C07-001 的136张牌组仍无证据，同时客户端 client.verdict 为空、无白板财神标识相关证据可交叉印证。规则语义已对上、数量前提未证，故建议由 unverified 上调为 partial，不判 consistent。",
+   "reviewRule": "evidence-is-not-consistency（服务端仅证明财神取白板牌种，四张构成与客户端表现未证，不足以判 consistent）",
+   "reviewStatus": "pending",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-003-03",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "好友房默认 cai_shen_type=0（白板财神），是本原子生效前提"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-003-01",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "白板财神档下财神按白板牌种整体设定（SetCaiShen(MV_BAI_BAN)），支持「四张白板都是财神」"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C07-009",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第121行「其他人不能吃、碰、杠被打出的财神」）要求财神弃牌不开放吃碰杠响应。客户端侧 client.verdict/client.evidenceIds 为空，client-evidence.json 12条中无任何吃碰杠入口或财神弃牌相关条目；服务端侧 server.applicability 为空、无证据，server-evidence.json 中吃碰杠相关条目（SVE-AT-ST-C01-021-01 三摊承包、SVE-AT-ST-C01-005-04 discard_ 默认允许出牌）均只覆盖通用吃碰与出牌开关，不证明对财神弃牌的响应抑制与校验拒绝。缺证不构成冲突，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（服务端无财神弃牌响应证据，属取证空缺，不升级为 conflict）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C07-010",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第121行「其他人不能用手牌胡被打出的财神」）要求财神弃牌不能点炮胡。客户端侧 client.verdict/client.evidenceIds 为空，无胡牌入口抑制证据；服务端侧 server.applicability 为空、无证据，现有胡牌相关条目 SVE-AT-ST-C01-005-01（common_game/com_game/common_game_com_action.cpp:353-358 BoxHuStep::CanDiscardHu）只约束「庄闲放铳需三牢」，未涉及财神弃牌能否作为胡牌牌源。双端均缺证，既不能证明可点炮胡（conflict）也不能证明被禁止（consistent），维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（胡牌牌源判定无证据，不能据此判冲突，维持未验证）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C08-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第125行「从牌墙头部、庄家起、按逆时针方向发牌」）要求发牌起点为牌墙头部、首发给庄家、再逆时针依次下发；客户端侧 unified-atoms 中 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 全量 12 条（CLE-AT-ST-C01-002-02 二人房 gameId、CLE-AT-ST-C01-002-03 2/3 人座次映射、CLE-AT-ST-C01-004-03 牢庄等级、CLE-AT-ST-C01-004-04 庄闲倍数）atomIds 全部挂 AT-ST-C01-*，无一条涉及发牌起点或轮转方向；服务端侧 server.applicability 为空、server.evidenceIds 为空，server-evidence.json 60 条（SVE-AT-ST-C01-004-01 定庄、SVE-AT-ST-C01-003-01 财神翻开、SVE-AT-ST-C01-024-06 OnGameStart 建桌初始化）同样无一条覆盖取牌顺序或牌墙头部起点。双端皆无证据，既无法证明符合需求，也不存在与需求矛盾之处，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（双端均无发牌顺序证据，属取证空缺：不升级 conflict，也不得判 consistent）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C08-006",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第131行「庄家用这 14 张直接进入首轮，不再摸牌」）要求庄家发牌后不执行摸牌、直接进入出牌；客户端侧 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 中与对局表现相关的 CLE-AT-ST-C01-003-03（财神白板判定）、CLE-AT-ST-C01-005-03（结算胡型下拉）均不涉及首轮摸牌动作的呈现或缺失；服务端侧 server.applicability 为空、server.evidenceIds 为空，server-evidence.json 中 SVE-AT-ST-C01-004-01/04-02（BoxZhuangStep 定庄与牢庄等级）、SVE-AT-ST-C01-024-06（CommonGameLogic::OnGameStart 配置初始化）只到开局建桌阶段，未覆盖「首轮跳过摸牌」的回合推进逻辑。证据不足，维持 unverified，不因服务端缺证据判为冲突。",
+   "reviewRule": "no-server-evidence-is-not-conflict（服务端仅覆盖定庄与建桌初始化，未覆盖首轮摸牌推进，缺证据不等于冲突）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C08-007",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第131行及 uiRequirement「满足自摸时立即给出【自摸】【过】两个按钮」）要求庄家理牌后若已成自摸，须在出牌前立即弹出这两个按钮；客户端侧 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 12 条中唯一涉及按钮/选项的证据 CLE-AT-ST-C01-005-03 是结算界面 BoxHzmjResultMid 的胡型选中项，与起手自摸提示无关；服务端侧 server.applicability 为空、server.evidenceIds 为空，server-evidence.json 中 SVE-AT-ST-C01-005-01（BoxHuStep::CanDiscardHu 庄闲放铳）只证明可胡判定前提，未证明庄家起手会下发【自摸】【过】选择机会。无任何一端证据支持「按钮已实现且与需求一致」，按证据不足规则不得判 consistent，维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（客户端缺失【自摸】【过】按钮证据，证据不足不能判 consistent）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C09-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第139行）要求同一张弃牌按「点炮胡 > 碰/直杠 > 吃」的顺序裁决。客户端侧 unified-atoms 中 client.verdict 为空、evidenceIds 为空，client-evidence.json 仅 12 条证据（CLE-AT-ST-C01-001-02 简洁模式、CLE-AT-ST-C01-002-03 座次映射等）全部挂 AT-ST-C01-*，无一条涉及 AT-ST-C09-001，该原子仅出现在 coverage.pendingAtomIds；服务端侧 server.applicability 为空、evidenceIds 为空，server-evidence.json 60 条证据覆盖 26 个原子，无一条 atomIds 指向 AT-ST-C09-*，更没有优先级比较（胡/碰/杠/吃）的裁决证据。双端都是取证空缺而非矛盾，既不能判 consistent 也不能判 conflict，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（双端均无优先级裁决证据，属取证空缺，维持未验证）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C09-002",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第139行）要求碰与直杠视为同级、不区分先后。客户端侧 client.verdict 为空、无 evidenceIds，client-evidence.json 无 C09 条目录入，仅列为 pending；服务端侧 server.applicability 为空、无 evidenceIds，server-evidence.json 中与碰相关的最近条目 SVE-AT-ST-C01-019-01（common_game/com_game/common_game_com_pung.cpp:125-138 BoxPungStep::Execute）只证明「碰算摊时碰记 1 摊」，属于摊数计算，既未涉及杠步也未给出碰/杠同级比较分支，不能用来判定同级口径。缺证据不等于与需求相反，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（碰算摊证据不等于碰/杠同级证据，维持未验证）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C09-003",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第139行）要求碰与直杠同级争抢时改比座位号、由座位号小者先获裁决，且该原子核验范围为服务端。服务端侧 unified-atoms 中 server.applicability 为空、evidenceIds 为空，server-evidence.json 60 条证据（含 SVE-AT-ST-C01-019-03 hzmj_server/game_logic.cpp:65-87 配置装载、SVE-AT-ST-C01-024-06 common_game/common_game_logic.cpp:65-73 OnGameStart 初始化链）均只证明创房配置与启动链路，没有任何按座位号排序仲裁碰/杠的实现证据；客户端侧 client.verdict 为空且按核验范围不作判定依据。服务端缺证据不构成冲突，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（服务端无座位号仲裁证据，不判 conflict 也不判 consistent）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C09-004",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第139行）要求碰/直杠只下发给「当前能成立且座位号最小」的那一家，其余可成立玩家不出现提示。客户端侧 client.verdict 为空、无 evidenceIds，client-evidence.json 12 条证据无一条覆盖操作提示的下发对象（CLE-AT-ST-C01-005-03 只是结算页自摸/点炮胡页签）；服务端侧 server.applicability 为空、无 evidenceIds，server-evidence.json 无任何「只发给座位号最小可成立家」的下发筛选证据。双端均无证据，无法证明提示只发一家，也无法证明发给了多家，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（提示下发对象无双端证据，维持未验证）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C09-005",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第141行）要求只允许一人胡、不一炮多响，核验范围为服务端。服务端侧 server.applicability 为空、evidenceIds 为空；server-evidence.json 中最近的胡牌条目 SVE-AT-ST-C01-005-01（common_game/com_game/common_game_com_action.cpp:353-358 BoxHuStep::CanDiscardHu，enable_banker_discard_hu 且 banker_level>=3 才可点炮）只证明点炮胡的启用前置条件，不涉及多人可胡时如何收敛为唯一胜者。客户端侧 client.verdict 为空、无 evidenceIds，CLE-AT-ST-C01-005-03 仅证明结算面按自摸/点炮切换页签，不证明单胡裁决。有相邻证据但覆盖不到本规则，不能据此判 consistent，维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（可点炮前置条件与结算页签证据不足以证明单胡裁决）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C09-006",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第139行）要求多人可胡同一张弃牌时「每家都收到胡」，与 AT-ST-C09-005「只允许一人胡」构成「先向全部可胡者下发提示、再由仲裁收敛唯一胜者」的口径，二者并不互斥，但需要提示下发与仲裁两段实现同时成立。客户端侧 client.verdict 为空、无 evidenceIds，client-evidence.json 无覆盖胡提示下发范围的条目；服务端侧 server.applicability 为空、无 evidenceIds，server-evidence.json 无对应仲裁证据。双端皆缺证据，既不能确认每家都收到胡，也不能确认只发给最近一家，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（与 C09-005 的张力属口径组合，双端无证据时不得推定为冲突）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C09-007",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第141行）要求多人可胡时从出牌者起按逆时针、最近的可胡者优先，核验范围为服务端。服务端侧 unified-atoms 中 server.applicability 为空、evidenceIds 为空，server-evidence.json 60 条证据覆盖 26 个原子（全部 AT-ST-C01-*），没有任何按出牌者座位逆时针距离排序的裁决证据。客户端侧 client.verdict 为空、无 evidenceIds，且不属核验范围。服务端取证空缺不构成与该规则矛盾的证据，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（服务端无逆时针就近裁决证据，维持未验证）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C09-008",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第139-141行）要求近者胡则远者不成立、近者放弃后远者顺延。客户端侧 client.verdict 为空、无 evidenceIds，client-evidence.json 无覆盖胡资格顺延的提示/交互证据；服务端侧 server.applicability 为空、无 evidenceIds，server-evidence.json 既无就近排序也无「放弃后顺延到下一顺位」的状态机证据（SVE-AT-ST-C01-005-01 仅涉及点炮胡启用条件）。双端无证据，无法判定顺延逻辑是否存在，也无反证，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（顺延仲裁无任何双端证据，维持未验证）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C09-009",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第142行）要求低优先级玩家先提交时须等全部更高优先级玩家手动放弃后才执行。客户端侧 client.verdict 为空、无 evidenceIds，client-evidence.json 无任何「等待高优先级」的交互门槛/按钮禁点证据；服务端侧 server.applicability 为空、无 evidenceIds，server-evidence.json 无跨优先级等待队列或「待放弃」状态证据。双端皆无证据，既不能证明低优先级会被挂起，也不能证明会被抢先执行，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（跨优先级等待无证据，缺证据不得升级为冲突）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C09-010",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第142行）要求更高优先级一旦成立即取消其余待处理响应。客户端侧 client.verdict 为空、无 evidenceIds，client-evidence.json 无「取消其他响应提示」的证据（CLE-AT-ST-C01-009-03 等为封顶/听牌展示，与操作提示无关）；服务端侧 server.applicability 为空、无 evidenceIds，server-evidence.json 无响应取消广播或回执收敛的实现证据。双端缺证据，无法判定是否按需求取消，也无反证，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（响应取消无双端证据，维持未验证）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C09-011",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第143行）要求吃只能吃上家。服务端侧 unified-atoms 中 server.applicability 为空、evidenceIds 为空；server-evidence.json 虽有吃相关条目——SVE-AT-ST-C01-019-02（common_game/common_game_algorithm.cpp:86-93 IsXianXianTanFull 闲闲 2 摊上限）与 SVE-AT-ST-C01-019-03（hzmj_server/game_logic.cpp:65-87 二人局关三摊后 SetRuleChiPeng(2)）——但二者只证明吃碰次数/摊数限制，均未证明「按座位方向只允许吃上家」的校验分支。客户端侧 client.verdict 为空、无 evidenceIds，无上家判断或吃牌提示过滤证据。证据不足以判 consistent，也无法据相邻能力推断已启用，维持 unverified。",
+   "reviewRule": "common-capability-is-not-enabled（吃牌能力与次数上限证据不等于本规则已按上家限制启用）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C10-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义（source 147 行「行牌 > 吃、碰、杠」）：风牌、箭牌不能做顺子、不能吃，本片 AT-ST-C10-001~027 即吃/碰/杠行牌规则整片。客户端侧：2-client/client-evidence.json 全量仅 12 条 CLE-AT-ST-C01-*-01~04（覆盖 AT-ST-C01-001/002/003/004/005/009），无任何 ST-C10 原子的证据，unified-atoms 中本片 27 个原子的 client.verdict 与 client.evidenceIds 均为空。服务端侧：3-server/server-evidence.json 全量 60 条覆盖的 atomIds 仅为 AT-ST-C01-001~029，同样无 ST-C10 原子证据，server.applicability 与 evidenceIds 为空。故双端均未取证，既不能证实实现与需求一致（不可判 consistent/partial），也无矛盾证据可立冲突（不可判 conflict），维持 S7 初判 unverified；本片无 upgraded 原子、无 candidateDifference，无需降级或升级。",
+   "reviewRule": "evidence-is-not-consistency（本片 27 个原子双端证据均为零，按缺证维持 unverified，不得因缺证而判 consistent 或立 conflict）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C12-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义（unified-atoms requirement.source，chapter「行牌 > 自摸、放铳、抢杠胡」165-167 行）分三组：AT-ST-C12-001~004 要求自摸可在常规摸牌后、杠后补牌、庄家起手第 14 张时于出牌前成立且手牌为 4 面子+1 对子；AT-ST-C12-005~009 要求本期只有庄闲放铳一种点炮形式，须三牢+一庄一闲+牌型合法，未成庄闲只能自摸，且只由放铳者赔付；AT-ST-C12-010~013 要求抢杠胡同放铳口径（三牢庄闲之间、亮出的第 4 张须使响应者成胡、只由被抢加杠者赔付）。客户端表现：unified-atoms 中本片 13 个原子 client.verdict 与 client.evidenceIds 均为空，client-evidence.json coverage.pendingAtomIds 明确列出 AT-ST-C12-001~013，现网 12 条证据仅覆盖 AT-ST-C01-001/002/003/004/005/009/010/011；其中 CLE-AT-ST-C01-005-02（config/FanDefine.ts:637-638 把结算流水类型标注为「点炮/放炮」文本）与 CLE-AT-ST-C01-005-03（layer/comp/BoxHzmjResultMid.ts:719-737 按 hu_type 切自摸/点炮页签）只证明 ST-C01 的胡牌结果展示，不能证明自摸可用时机、点炮权限或抢杠判定。服务端规则：unified-atoms 中 server.applicability 与 server.evidenceIds 均为空；server-evidence.json 全量 60 条 atomIds 只落在 AT-ST-C01-001~029，无任何 ST-C12 条目；最接近的 SVE-AT-ST-C01-005-01（common_game/com_game/common_game_com_action.cpp:353-358，BoxHuStep::CanDiscardHu 关闭 enable_banker_discard_hu 或 BankerLevel<3 即返回 false）只说明庄中放铳有开关与三牢门槛，且归属 C01-005，未覆盖 C12-006 的「牌型合法」、C12-007 的反向（闲打牌庄可胡），也未覆盖自摸、抢杠与 AT-ST-C12-009/012/013 的赔付归责。三组均属双端取证空缺：既不能证实与需求一致（不判 consistent/partial），也无与需求相反的证据（不立 conflict），故维持 S7 初判 unverified。",
+   "reviewRule": "evidence-is-not-consistency（本片 13 个原子双端证据均为零，缺证只能维持 unverified，不得据此判 consistent/partial；同时无矛盾证据，也不升级 conflict）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C13-002",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第171行「行牌 > 飘财」）：打出财神的玩家成为飘财窗口所有者，另外三家进入受限状态，二者受限表现不同。客户端侧 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 12 条证据仅挂 AT-ST-C01-001/002/003/004/005/009/010/011（如 CLE-AT-ST-C01-003-02 只证明翻财神动效与白板替身、CLE-AT-ST-C01-002-02 只证明二人房 gameId），无飘财窗口或所有者/受限态条目，全文检索「飘」命中 0。服务端侧 server.applicability 为空、server.evidenceIds 为空，server-evidence.json 60 条仅覆盖 AT-ST-C01 系列（SVE-AT-ST-C01-003-01 只证明 cai_shen_type 财神口径、SVE-AT-ST-C01-019-03 只证明 enable_three_tan_bao 三摊承包），无窗口所有者与三家受限的判定证据。双端皆为取证空缺，既不能证明一致也不能证明冲突，故维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（双端均无飘财窗口证据，属取证空缺而非矛盾，不升级 conflict）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C13-009",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第173行）：飘财限制与吃碰禁手同时适用时以飘财限制为准、覆盖禁手判定。客户端侧 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 12 条无 C13 条目（CLE-AT-ST-C01-019 系列证据不存在，现有 CLE 仅覆盖 C01-001~011），未提供受限态下可操作范围的界面证据。服务端侧 server.applicability 为空、server.evidenceIds 为空；server-evidence.json 中吃碰相关证据 SVE-AT-ST-C01-018-02（rule_chi_peng 档位）、SVE-AT-ST-C01-019-03（enable_three_tan_bao）只说明吃碰档位与三摊承包生效方式，未见飘财限制与禁手的优先级仲裁代码。两条规则的覆盖关系属实现细节，无证据不能推定与需求相反，故维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（规则优先级仲裁无服务端证据，不等于与需求冲突）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C13-012",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第175行）：仅在「打出财神且打出后手牌仍然敲响」时飘档加 1。客户端侧 client.verdict 为空、client.evidenceIds 为空，CLE 证据集未覆盖飘档计数（CLE-AT-ST-C01-004-03/04 只证明牢庄档位与庄闲倍数换算）。服务端侧 server.applicability 为空、server.evidenceIds 为空，server-evidence.json 60 条仅覆盖 C01 创房/结算参数（SVE-AT-ST-C01-010-02 base_score、SVE-AT-ST-C01-021-02 三摊承包），全文检索「飘」「飘档」「piao」命中 0，无飘档计数与敲响判定证据。计数条件是否按需求实现无从判定，属取证空缺，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（飘档计数无服务端证据，仅属取证空缺）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C13-020",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第176行，verificationScope=client）：该座位飘次数大于 0 时在碰杠位播放「飘」字，且不设常驻标签，属纯客户端表现。客户端侧 client.verdict 为空、client.evidenceIds 为空；client-evidence.json 12 条证据的覆盖范围为 AT-ST-C01-001~011（如 CLE-AT-ST-C01-009-01 只证明牌桌底分文本、CLE-AT-ST-C01-009-03 只证明听牌面板封顶文本），无一条指向 AT-ST-C13-020，全文检索「飘」命中 0，既无碰杠位飘字播放的代码或 FGUI 证据，也无 client-visual 对照可支撑视觉冲突。服务端侧 server.applicability 为空、server.evidenceIds 为空，本原子为客户端范围、服务端缺失不作为判据。无证据不得推定与需求一致，故维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（客户端无证据时不得判 consistent，维持未验证）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C14-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（行牌 > 杠开、杠飘、杠飘，PRD 第180行）要求自摸且杠链为 1 时记「杠上开花」并按 2 倍计入，核验范围=server。客户端侧：unified-atoms 中 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 仅 12 条证据（覆盖 29 个原子，stats: partial 8 / not_found 21 / pending 387）且全部挂在 AT-ST-C01 系列（如 CLE-AT-ST-C01-005-02 只证明结算文案「点炮胡/放炮」、CLE-AT-ST-C01-004-04 只证明庄闲倍数换算），无一条涉及杠链或杠开番型，客户端也明确不参与番型判定。服务端侧：server.applicability 为空、server.evidenceIds 为空，server-evidence.json 60 条证据（active 6 / conditional 17 / inactive 4 / unknown 2）按「杠」「番」「飘」检索均无命中，说明本轮未取得番型计算相关实现，而非该规则被证否。双端同为空缺，既无符合证据也无矛盾证据，维持 S7 的 unverified；服务端无证据不构成冲突，也不得据此判 consistent。",
+   "reviewRule": "no-server-evidence-is-not-conflict（杠链/杠开番型双端无证据，属取证空缺，维持未验证）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C14-006",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第181行）要求杠飘/飘杠只在同时命中杠上开花与财飘时拆出单独一项、未同时命中则不出现，核验范围=server。客户端侧 client.verdict 为空、无 evidenceIds，client-evidence.json 12 条中无任何条目覆盖「财飘/杠飘/飘杠」拆分（CLE-AT-ST-C01-003-02/03 仅证明财神类型取值与翻财神动效，属财神口径而非财飘番型）；服务端侧 server.applicability 为空、无 evidenceIds，server-evidence.json 60 条中无番型拆分/加成条目（现有 SVE-AT-ST-C01-019-03、SVE-AT-ST-C01-005-01 分别只证明三摊承包与三牢放铳，与杠飘拆分无关）。双端均未定位到该项拆分逻辑，既无法证实拆出、也无法证实被误加，故维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（杠飘/飘杠拆分无服务端证据，不得据此判冲突）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C14-011",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第181行）要求结算中不单列「杠爆」「七客」，只按参与组合的各组番型计入，核验范围=server。服务端侧 server.applicability 为空、server.evidenceIds 为空，server-evidence.json 60 条证据（全部集中于创房/吃碰/承包等 C01~C21 配置类原子）经检索不含「杠」「番」「七客」条目，无法证明该项生成或屏蔽逻辑；客户端侧 client.verdict 为空、无 evidenceIds，client-evidence.json 12 条亦无关（如 CLE-AT-ST-C01-009-03 只证明封顶状态文案）。这是「禁止出现某项目」类规则，缺证据时既不能证实已屏蔽也不能证实被误列，维持 S7 的 unverified，不上调为 conflict。",
+   "reviewRule": "no-server-evidence-is-not-conflict（无杠爆/七客证据，属取证空缺，维持未验证）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C15-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第185行「行牌 > 吃碰禁手」）要求吃或碰成立后，与所吃碰牌面相同的手牌全部禁打，直到本次限制解除。双栏快照：unified-atoms 中本原子 client.verdict 为空、client.evidenceIds 为空，server.applicability 为空、server.evidenceIds 为空；核查 client-evidence.json 全部 12 条（claimKey 为 hu-result-label-dianpao / seat-count-map-2-3 / er-ren-room-gameid / cai-shen-type-values / lian-zhuang-level / banker-level-multiplier / simple-mode-config-consumed / er-ren-room-label / base-score-display / feng-ding-status-text / result-hu-type-tab）与 server-evidence.json 全部 60 条，atomIds 均无一条指向 AT-ST-C15-*。唯一沾边的服务端证据 SVE-AT-ST-C01-001-01（common_game/common_game_context.cpp:29-36，CommonGameContext::SendNotifyInfo：简洁模式仅抑制白名单内规则类 toast，白名单含「吃禁手」）只证明公共层存在禁手提示通道，既不证明禁张按「同牌面」计算，也不证明好友房玩法启用该算法。证据不足以判 consistent，同时没有任何观察与需求矛盾，故维持 unverified。",
+   "reviewRule": "common-capability-is-not-enabled（公共层存在「吃禁手」提示通道，不等于好友房启用同牌面禁张算法）",
+   "reviewStatus": "pending",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-001-01",
+     "layer": "common_game",
+     "applicability": "unknown",
+     "note": "仅证明 common_game 存在「吃禁手」规则类提示且可被简洁模式抑制，未证明禁张范围算法及好友房启用状态"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C15-003",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第188行）要求用相邻两张吃一端时，把这两张在 1 至 9 内两端能接成顺子的牌都列为禁张（2、3 吃 1 或吃 4 均禁 1 和 4）。双栏快照：本原子 client.verdict、server.applicability 均为空，双端 evidenceIds 为空；client-evidence.json 12 条与 server-evidence.json 60 条均无 atomIds 指向 AT-ST-C15-*，也无禁张范围相关 claimKey（检索 forbid/禁 等关键词仅命中 SVE-AT-ST-C01-024-01 吃碰次数上限、SVE-AT-ST-C01-025-03 守庄禁碰，与吃碰禁手禁张无关）。需求侧与 AT-ST-C15-004（1、2 吃 3 只禁 3）、AT-ST-C15-007（1、9 之外不是牌面）边界口径自洽，无内部矛盾可判，但实现是否做两端延伸毫无证据，维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（无任何禁张范围证据，不能判 consistent，也不构成 conflict）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C15-010",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求（PRD 第191行）要求「吃完后剩余手牌全部落在禁张里」的吃法不能吃，且本家提示「吃禁手规则生效中」。双栏快照：unified-atoms 中本原子 client.verdict 与 server.applicability 均为空、双端 evidenceIds 为空；服务端侧存在间接证据 SVE-AT-ST-C01-001-01（common_game/common_game_context.cpp:29-36，SendNotifyInfo 白名单含「吃禁手」）证明公共层确实按「吃禁手」规则下发提示 toast（仅简洁模式抑制），即拒绝提示链路真实存在；但「剩余手牌全在禁张内即拒绝」这一判定条件、以及客户端文案「吃禁手规则生效中」均无证据（client-evidence.json 12 条无对应条目，亦无 AT-ST-C15-* 挂载）。提示通道已对上、拒绝条件与文案未证，故建议由 unverified 上调为 partial，不判 consistent。",
+   "reviewRule": "evidence-is-not-consistency（服务端仅证明禁手提示通道存在，拒绝条件与客户端文案未证，不足以判 consistent）",
+   "reviewStatus": "pending",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-001-01",
+     "layer": "common_game",
+     "applicability": "unknown",
+     "note": "证明公共层存在「吃禁手」规则类提示下发通道（normal 模式不抑制），支持本原子「拒绝后提示」链路存在，但不证明拒绝判定条件与文案内容"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C15-012",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第193行）要求禁打牌压暗、牌面仍可辨认，且只在本家界面显示。双栏快照：client.verdict 为空、client.evidenceIds 为空；client-evidence.json 12 条中涉及界面表现的仅 CLE-AT-ST-C01-009-01（layer/BoxHzmjBackView.ts 牌桌底分文本）与 CLE-AT-ST-C01-009-03（layer/BoxHzmjTingPaiView.ts 封顶状态文本），均为数值文本渲染，与禁打压暗、灰度处理及跨家可见范围无关；server-evidence.json 60 条亦无相关条目。既无「已压暗」的正面证据，也无「未压暗或跨家泄露」的反面证据，属取证空缺而非 conflict，维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（客户端零禁打压暗证据，不能判 consistent）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C15-013",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第193行）要求禁打牌仍能被提起，并支持横滑出虚影。双栏快照：client.verdict 为空、client.evidenceIds 为空；client-evidence.json 12 条无任何手牌拖拽/提起/虚影相关 claimKey（现有条目集中在 Hu 结果页签、座位映射、财神类型、庄闲倍数、简洁模式、底分/封顶文本），server-evidence.json 60 条亦无交互反馈条目。是否有「禁打牌禁止拖动」的偏差完全不可观察，按取证空缺维持 unverified，不升级为 conflict。",
+   "reviewRule": "evidence-is-not-consistency（无交互证据，既不能判 consistent 也不能判 conflict）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C15-014",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第193行）要求单击、双击或松手打出禁打牌时弹出「该牌被禁打」，牌不进牌河。双栏快照：client.verdict、server.applicability 均为空，双端 evidenceIds 为空；client-evidence.json 12 条与 server-evidence.json 60 条均无 atomIds 指向 AT-ST-C15-*，提示文案「该牌被禁打」与出牌请求被拒后牌河不变的时序均无证据（SVE-AT-ST-C01-001-01 仅对应「吃禁手」提示白名单，文案不同，不能替代本原子）。双端无证据不等于冲突，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（双端均无出牌拦截证据，属取证空缺而非矛盾）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C15-015",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第193行）要求其他家查看本家手牌时只看到牌背，不泄露禁张牌面或压暗状态。双栏快照：client.verdict 为空、client.evidenceIds 为空；client-evidence.json 12 条中 CLE-AT-ST-C01-002-04（layer/BoxHzmjBackView.ts 二人房牌桌标识）只证明牌桌层存在房间标识渲染，与「对手手牌可见性/牌背下发」无关；server-evidence.json 60 条无手牌下发范围条目（SVE-AT-ST-C01-025-05 等均为守庄/双色玩法开关）。既无泄露也无正确遮蔽的证据，维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（可见性无证据，不能判 consistent）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C15-016",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第195行）要求玩家打出一张合法牌后，服务端清空禁张。双栏快照：本原子 client.verdict、server.applicability 均为空，双端 evidenceIds 为空；server-evidence.json 60 条覆盖的是创房配置解析（game_logic.cpp）、吃碰次数上限（common_game_algorithm.cpp:79-84）、三摊承包、结算封顶等，无禁张生命周期（清除时机）条目；client-evidence.json 12 条亦无为撤销禁打标记的证据。清除时机是否正确不可判定，且无证据表明存在「杠或非法时机清空」的偏差，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（服务端无禁张生命周期证据，不等于冲突）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C15-018",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第195行）要求杠后补进的牌若牌值仍属禁张，则该补牌也不能打出。双栏快照：client.verdict 为空、client.evidenceIds 为空，server.applicability 为空、server.evidenceIds 为空；server-evidence.json 60 条中唯一涉及补牌/杠后流程的邻近条目是 SVE-AT-ST-C01-005-01（common_game_com_action.cpp:353-358，banker_discard_hu 需三牢才可点炮）与 SVE-AT-ST-C01-004-02（common_game_com_ju.cpp:191-196，庄等级映射），均与禁张按牌值比对无关；client-evidence.json 12 条亦无补牌后禁打呈现证据。是否对补牌重新做牌值比对无从判断，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（补牌后禁张判定无证据，属取证空缺而非矛盾）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C17-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义（PRD 221-225 行「行牌 > 断线重连与场景恢复」）：掉线重连后不重开小局、按断线瞬间状态还原牌桌/牌墙余牌/各家手牌/出牌区/轮次/飘标/记牌器，未补发数据前先用缓存回填「打哪张听」箭头、服务端数据到达后以服务端为准覆盖，恢复完成后客户端上报定位并继续对局；本片 13 个原子（001-002/004-008/011-013 为 both 域，003/009/010 为 client 域，见 unified-atoms.requirement.verificationScope）。客户端侧：unified-atoms 中本片 13 个原子的 client.verdict 与 client.evidenceIds 全为空；2-client/client-evidence.json 仅 29 条 entry/12 条 CLE 证据、覆盖 AT-ST-C01-001~029，本片原子只出现在 coverage.pendingAtomIds（client-evidence.json:1079-1091），全文检索「重连/断线/reconnect/离线」命中 0，CLE-AT-ST-C17-* 不存在，无重连恢复的代码或 FGUI 证据。服务端侧：unified-atoms 中 server.applicability 与 server.evidenceIds 全为空；3-server/server-evidence.json 共 60 条 SVE、stats.atomCount=29 全部挂 AT-ST-C01-* 系列，SVE-AT-ST-C17-* 不存在，全文检索「重连/断线/reconnect/离线/resume」命中 0，无重开判定、断点进度下发或补发箭头数据的证据。双端皆为零证据的取证空缺：既不能证明实现符合需求（不可判 consistent/partial），也无任何与需求相反的实现证据可立冲突（不可判 conflict），故维持 S7 初判 unverified；本片无 upgraded 原子、无 candidateDifference，无需降级或升级。",
+   "reviewRule": "no-server-evidence-is-not-conflict（本片 13 个原子服务端零证据，属取证空缺而非矛盾，不升级 conflict；同时按 evidence-is-not-consistency，客户端亦零证据，不得判 consistent，整体维持 unverified）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C18-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "本片（AT-ST-C18-001~027）为「三摊承包」的摊计数与结算规则整片（需求 source 229-244 行：摊只统计吃牌、庄闲才能承包、闲闲上限 2 摊、三摊落地提示、自摸/点炮/抢杠改写与示例金额）。需求语义：摊只按吃牌累计，承包成立后按自摸/点炮/抢杠分别改写赔付。客户端表现：2-client/client-evidence.json 的 entries 只有 29 条（stats.atomCount=29、evidenceCount=12），覆盖 AT-ST-C01-001~029；C18 全部 27 个原子集中在 coverage.pendingAtomIds（client-evidence.json:1092-1118），未做分析，故 unified-atoms 中本片原子的 client.verdict 与 client.evidenceIds 均为空，无任何客户端表现可对照。服务端规则：3-server/server-evidence.json 的 stats.atomCount=29（server-evidence.json:1480），同样只覆盖 AT-ST-C01 系列，全文检索「摊」「承包」均 0 命中，本片原子的 server.applicability 与 evidenceIds 均为空，无服务端实现证据可追溯。结论：双端均零证据，既不能证实与需求一致（不可判 consistent/partial），也无任何矛盾证据可立 conflict；仍以 S7 初判 unverified 为准，不新增条目、不升级。",
+   "reviewRule": "evidence-is-not-consistency（本片 27 个原子双端证据均为零，客户端 coverage.pendingAtomIds、服务端 stats.pending=387，缺证只能维持 unverified，不得判 consistent，也不得凭缺证立 conflict）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C19-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：unified-atoms 中 AT-ST-C19-001（requirement.source 章「结算」fromLine 248）要求结算赔付以底分为 1 计算，本片 AT-ST-C19-001~018 整片为结算算分链（底分、番型倍数、庄闲 8 倍、无封顶、杠飘/飘杠替换、自摸三笔、无承包分账、承包改写、黄庄零分、本场积分初始化与累加）。客户端：2-client/client-evidence.json 的 entries 仅 29 条且 atomId 全为 AT-ST-C01-001~029，coverage.pendingAtomIds 第 1119 行起将 AT-ST-C19-001~018 全部列为未取证，stats 为 confirmed 0 / pending 387，全量证据只有 CLE-AT-ST-C01-*-01~04，无任何结算界面或客户端算分展示证据。服务端：3-server/scope-index.json:796 起同样将 AT-ST-C19-* 列入 pendingAtomIds，server-evidence.json 仅 60 条 SVE-AT-ST-C01-* 证据（stats active 6 / conditional 17 / unknown 2 / inactive 4，均属创房配置类），无算分公式、庄闲 8 倍、封顶截断、杠飘替换、承包改写、黄庄零分、本场积分等任何实现证据。故双端均缺证：既无证据支持判一致（不可判 consistent/partial），也无矛盾证据可立冲突（不可判 conflict），维持 S7 初判 unverified；本片无 upgraded 原子、无 candidateDifference，无需降级或采纳候选。",
+   "reviewRule": "evidence-is-not-consistency（本片 18 个结算算分原子双端证据均为零，按缺证维持 unverified，不得因缺证判 consistent，也不得仅凭服务端无证据立 conflict）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C21-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：「胡牌确认后停止行牌」（结算，第 280 行），verificationScope=server，即由服务端冻结行牌。客户端表现：unified-atoms 中该原子 client.verdict 为空、client.evidenceIds 为空，2-client/client-evidence.json 的 coverage.pendingAtomIds 明确列入 AT-ST-C21-001（本轮客户端未取证，非「已查未找到」）。服务端规则：3-server/server-evidence.json 现有 60 条 SVE 的 atomIds 只覆盖 AT-ST-C01-*，无任何 C21 证据，unified-atoms 该原子 server.applicability 亦为空；S7 baselineDetail 同记「applicability 为空、无 evidenceIds」。两侧均无「胡牌后仍可继续出牌」的矛盾实现可指，也无冻结行牌的直证，故不能判 conflict 也不能判 consistent，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（本片 48 个 C21 原子双端均无证据，未取证不等于冲突）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C21-007",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：「在原牌桌亮出四家手牌，桌面中央显示「对局结束」」（结算，第 282 行），verificationScope=both，服务端需下发亮牌与终局状态、客户端负责渲染。客户端表现：unified-atoms 该原子 client.verdict 空、evidenceIds 空，2-client/client-evidence.json coverage.pendingAtomIds 含 AT-ST-C21-007，无终局亮牌/「对局结束」文案证据。服务端规则：server-evidence.json 60 条证据无 C21 引用，该原子 server.applicability 为空，S7 baselineDetail 记「无 applicability、无 evidenceIds」。既无「不亮牌/不显示对局结束」的反证，也无实现侧直证，维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（无任何 CLE/SVE 证据支撑，不能凭需求描述与常见实现形态判 consistent）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C21-013",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：番型字效退场后「只在本局得分不为 0 的座位内侧飘分」（结算，第 284 行），verificationScope=both，得分由服务端提供、飘分座位筛选由客户端执行。客户端表现：unified-atoms 该原子 client.verdict 空、evidenceIds 空，coverage.pendingAtomIds 含 AT-ST-C21-013，无飘分座位筛选或飘分动画证据。服务端规则：server-evidence.json 无 C21 引用，server.applicability 为空，S7 亦记证据缺失。得分口径证据（C01 结算类 SVE）只能说明服务端产出净得分，不能证明客户端按非零筛选飘分，故维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（得分产出证据不等于飘分座位筛选已实现，证据不足不判 consistent）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C21-019",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：黄庄时「四家本局都是 0」（结算，第 285 行），verificationScope=server。客户端表现：unified-atoms 该原子 client.verdict 空、evidenceIds 空，coverage.pendingAtomIds 含 AT-ST-C21-019。服务端规则：server-evidence.json 60 条 SVE 均绑定 AT-ST-C01-*，无黄庄四家 0 分判定证据，该原子 server.applicability 为空；S7 baselineDetail 记「applicability 为空、无 evidenceIds，无法证实也无法证伪」。既无黄庄仍计分的矛盾证据，也无 0 分口径直证，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（黄庄结算无服务端证据不等于需求被违背）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C21-036",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：三摊承包时「赢家标黄色「承包」，赔付者得分右侧标「三摊承包」」（结算，第 292 行），verificationScope=both：服务端确定承包关系，客户端渲染标注。服务端规则：存在相邻能力证据 SVE-AT-ST-C01-021-02（common_game/com_game/common_game_com_result.cpp:289-295，ApplyBaoContracts 在 !GetEnableThreeTanBao() 时直接 return），只证明承包结算以三摊开关为前置、可产出承包关系，不证明「承包/三摊承包」标注文案与位置。客户端表现：unified-atoms 该原子 client.verdict 空、evidenceIds 空，coverage.pendingAtomIds 含 AT-ST-C21-036，无小结算承包标注渲染证据。服务端有前置能力而客户端标注未取证，属双端协作断点，既不能判 consistent 也无矛盾可指，维持 unverified。",
+   "reviewRule": "dual-side-collaboration-gap（断点定位：服务端承包关系能力已存在，客户端小结算承包标注未取证）",
+   "reviewStatus": "pending",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-021-02",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "common_game_com_result.cpp:289-295 ApplyBaoContracts 仅在 enable_three_tan_bao 开启时执行，只证明服务端可产出承包关系，不证明小结算「承包/三摊承包」标注已实现"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C21-047",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：「四人均准备后自动开下一小局」（结算，第 294 行），verificationScope=server，需服务端维护准备态并在四人齐全时开局。客户端表现：unified-atoms 该原子 client.verdict 空、evidenceIds 空，coverage.pendingAtomIds 含 AT-ST-C21-047（本来也属服务端职责）。服务端规则：server-evidence.json 60 条 SVE 的 atomIds 只覆盖 AT-ST-C01-*，无准备态计数与自动开局链路证据，该原子 server.applicability 为空；S7 baselineDetail 记「applicability 为空、无 evidenceIds，无法证实自动开局时机」。无「准备后不开局」反证，亦无开局链路直证，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（准备/开局链路未取证，不能据缺失判冲突）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C23-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：本片 21 个原子（AT-ST-C23-001~021）全部取自待确认清单第 312-319 行，主题依次为 3/4 人房吃碰档位不展示（312）、2 人房吃碰默认无限吃碰（312）、碰算摊默认开/原模板关闭两种口径（313）、有财必拷响与三财/四财翻倍、财神替豪七、守庄需补全（314-315）、操作优先级仲裁与吃碰禁手由服务端裁决（316）、杠分为预留未启用（317）、补花/花牌为预留（318）、超时无自动操作仅提示、提示表现以交互稿为准（319），其中多条本身即「待产品确认/待补全」项，需求侧没有唯一可判定的实现口径。客户端侧：unified-atoms 中这 21 个原子的 client.verdict 与 client.evidenceIds 仍全为空；client-evidence.json 仅 12 条证据且全部挂 CLE-AT-ST-C01-*，entries 只覆盖 AT-ST-C01-001~029，21 个 C23 原子只出现在 coverage.pendingAtomIds（client-evidence.json:850 起，AT-ST-C23-001 位于 client-evidence.json:1217），没有任何吃碰档位、碰算摊开关、超时提示的界面证据可对照。服务端侧：server.applicability 与 evidenceIds 全为空；server-evidence.json 共 60 条证据、stats.atomCount=29（server-evidence.json:1479-1488），逐条 atomIds 只指向 AT-ST-C01-*（如 SVE-AT-ST-C01-018-03、SVE-AT-ST-C01-019-04 等摊数与创房配置证据），无一条覆盖 C23，因此也没有可用于证明「服务端按默认吃碰下发」「仲裁在服务端」「不计杠分/无花牌/超时无自动操作」的规则证据。结论：双端均为取证空缺，既无法证实与需求一致（不得判 consistent/partial），也没有任何反证构成矛盾（不得判 conflict）；本轮无 upgraded 原子、无 candidateDifference，维持 S7 初判 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（本片 21 个原子双端证据均为零，且需求多为待确认/待补全项，缺证只能维持 unverified）",
+   "reviewStatus": "pending",
+   "evidenceScopes": []
+  }
+ ],
+ "baseline": {
+  "differenceStats": {
+   "consistent": 0,
+   "partial": 8,
+   "conflict": 0,
+   "unverified": 408
+  }
+ }
+}

@@ -1,0 +1,184 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C08",
+ "partNo": 1,
+ "stage": {
+  "stageId": "ST-C08",
+  "name": "发牌",
+  "chapter": "开局 > 发牌",
+  "summary": "从牌墙头部按逆时针顺序逐轮发牌，庄家最终 14 张、闲家各 13 张，共发出 53 张、牌墙余 83 张；庄家凭这 14 张直接进入首轮，理牌后满足自摸即提示自摸，爆头与七客按其余 13 张判断。"
+ },
+ "features": [
+  {
+   "id": "FP-ST-C08-001",
+   "name": "发牌起点与发牌轮次",
+   "description": "规定发牌从牌墙头部开始、由庄家起按逆时针方向依次发牌；采用每人 4 张、连发 3 轮的逐轮发法，使每人先拿到 12 张，再每人补发 1 张到 13 张。",
+   "scope": "覆盖发牌方向、发牌起点、每轮张数与轮次；不覆盖庄家额外补发的那 1 张与牌墙剩余张数。",
+   "coordination": "由服务端按规则执行发牌顺序与轮次，客户端仅呈现发给各家后的手牌结果。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C08-001",
+     "name": "发牌起点与方向",
+     "rule": "从牌墙头部、庄家起、按逆时针方向发牌。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "一局牌局开始进入发牌环节",
+      "condition": "没有任何前提条件，发牌即按此顺序执行",
+      "action": "从牌墙最前端开始取牌，先给庄家发，再沿逆时针方向依次发给下一家",
+      "result": "每位玩家依次收到自己的牌，发牌顺序为先庄家、再逆时针方向的其余玩家"
+     },
+     "source": {
+      "chapter": "开局 > 发牌",
+      "fromLine": 125,
+      "toLine": 125
+     }
+    },
+    {
+     "atomId": "AT-ST-C08-002",
+     "name": "每人四张连发三轮",
+     "rule": "每人 4 张，发 3 轮，各 12 张。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "进入发牌环节并开始逐轮发牌",
+      "condition": "发牌尚未完成 12 张的分配",
+      "action": "按逆时针顺序每轮给每人发 4 张，连续发 3 轮",
+      "result": "每位玩家此时手上各有 12 张牌"
+     },
+     "source": {
+      "chapter": "开局 > 发牌",
+      "fromLine": 127,
+      "toLine": 127
+     }
+    },
+    {
+     "atomId": "AT-ST-C08-003",
+     "name": "每人再补一张至十三张",
+     "rule": "再每人 1 张，各 13 张。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "三轮各 4 张发完后继续发牌",
+      "condition": "所有玩家都已持有 12 张牌",
+      "action": "按逆时针顺序给每人再发 1 张",
+      "result": "每位玩家手上各有 13 张牌"
+     },
+     "source": {
+      "chapter": "开局 > 发牌",
+      "fromLine": 128,
+      "toLine": 128
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C08-002",
+   "name": "庄家补牌与牌数总量",
+   "description": "在每人 13 张的基础上再给庄家补 1 张，形成庄家 14 张、三名闲家各 13 张的最终手牌数，并规定本局共发出 53 张、牌墙余 83 张。",
+   "scope": "覆盖庄家额外补发的 1 张以及发牌总量与牌墙余量；不覆盖发牌轮次过程与庄家首轮出牌流程。",
+   "coordination": "服务端完成补发并统计牌张总量，客户端按最终手牌数展示各家手牌。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C08-004",
+     "name": "庄家额外补发一张",
+     "rule": "再给庄家 1 张。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "每人各拿到 13 张后发牌继续",
+      "condition": "当前玩家为庄家",
+      "action": "只给庄家再发 1 张牌",
+      "result": "庄家比闲家多 1 张手牌"
+     },
+     "source": {
+      "chapter": "开局 > 发牌",
+      "fromLine": 129,
+      "toLine": 129
+     }
+    },
+    {
+     "atomId": "AT-ST-C08-005",
+     "name": "各家最终手牌数",
+     "rule": "庄家 14 张，三名闲家各 13 张，共发出 53 张，余 83 张。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "发牌环节结束",
+      "condition": "四人房、庄家已完成额外补发",
+      "action": "确认各家手牌数与已发出的总张数",
+      "result": "庄家手牌 14 张、三名闲家各 13 张，本局共发出 53 张，牌墙剩余 83 张"
+     },
+     "source": {
+      "chapter": "开局 > 发牌",
+      "fromLine": 129,
+      "toLine": 129
+     }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C08-003",
+   "name": "庄家首轮与起手自摸判断",
+   "description": "庄家用发到的 14 张直接进入首轮出牌、不再摸牌；理牌后若已构成自摸立即给出【自摸】【过】选择；爆头与七客按庄家其余 13 张判断。",
+   "scope": "覆盖庄家首轮的行动方式、起手自摸提示以及爆头七客的判断口径；不覆盖后续摸打与结算细节。",
+   "coordination": "服务端判定是否起手自摸及爆头七客口径，客户端弹出【自摸】【过】按钮并处理玩家选择。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C08-006",
+     "name": "庄家用十四张直接进入首轮",
+     "rule": "庄家用这 14 张直接进入首轮，不再摸牌。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "发牌完成、轮到庄家行动",
+      "condition": "庄家手上已有 14 张牌",
+      "action": "庄家不执行摸牌，直接以现有 14 张进入首轮出牌",
+      "result": "庄家开局即可直接出牌，首轮不出现摸牌动作"
+     },
+     "source": {
+      "chapter": "开局 > 发牌",
+      "fromLine": 131,
+      "toLine": 131
+     }
+    },
+    {
+     "atomId": "AT-ST-C08-007",
+     "name": "理牌后起手自摸提示",
+     "rule": "理牌后若已满足自摸，立即给出【自摸】【过】。",
+     "uiRequirement": "满足自摸时立即给出【自摸】【过】两个按钮供玩家选择。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "庄家完成理牌",
+      "condition": "庄家这 14 张已满足自摸条件",
+      "action": "在庄家出牌前立即提供【自摸】与【过】两个选择",
+      "result": "庄家看到【自摸】【过】按钮，可选择自摸结束本局或选择过继续出牌"
+     },
+     "source": {
+      "chapter": "开局 > 发牌",
+      "fromLine": 131,
+      "toLine": 131
+     }
+    },
+    {
+     "atomId": "AT-ST-C08-008",
+     "name": "爆头七客按其余十三张判断",
+     "rule": "爆头、七客按其余 13 张判断。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "庄家起手进入自摸相关判断",
+      "condition": "庄家持有 14 张，需判断是否构成爆头或七客",
+      "action": "以庄家除该张财神外的其余 13 张牌为准进行判断",
+      "result": "庄家的爆头、七客是否成立按其余 13 张判定，并在起手自摸判断中生效"
+     },
+     "source": {
+      "chapter": "开局 > 发牌",
+      "fromLine": 131,
+      "toLine": 131
+     }
+    }
+   ]
+  }
+ ]
+}

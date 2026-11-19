@@ -1,0 +1,96 @@
+{
+ "schemaVersion": 2,
+ "analysisRunId": "ar-2026-11-17-001",
+ "entries": [
+  {
+   "atomId": "AT-ST-C04-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第66行「首局庄家：随机（与正文一致）」）要求房间第一小局由系统随机指定一名玩家坐庄。客户端侧 unified-atoms 中 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 全量 12 条证据无一条 atomIds 指向 AT-ST-C04-001；最接近的 CLE-AT-ST-C01-004-03（controller/cmd/gameCmd/GameJuDataCmd.ts:34-35）只证明客户端从创房配置读取 banker_level 推导牢庄等级，CLE-AT-ST-C01-004-04（data/GameData.ts:1664-1666）只证明按庄闲等级算倍数，均未涉及首局庄位由谁产生。服务端侧 server.applicability 为空、server.evidenceIds 为空，邻近证据 SVE-AT-ST-C01-004-01（common_game/com_game/common_game_com_ju.cpp:132-136，BoxZhuangStep::JudgeDingZhuang）只显示定庄步骤执行 SetZhuang(zhuang_seat)、SetLianZhuang(1)、SetBankerLevel(...)，摘录里看不到随机抽取庄位的实现，且该条 atomIds 仅挂 AT-ST-C01-004（庄闲倍数）。双端均无针对「首局随机定庄」的证据，既不能判一致也无矛盾，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（服务端仅证明存在定庄步骤、无首局随机抽取证据，属取证空缺而非冲突）",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-004-01",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "common_game_com_ju.cpp:132-136 证明存在 JudgeDingZhuang 定庄并设置 zhuang_seat/lian_zhuang/banker_level，但不证明首局庄位为随机产生"
+    },
+    {
+     "ref": "CLE-AT-ST-C01-004-03",
+     "layer": "client_code",
+     "applicability": "active",
+     "note": "GameJuDataCmd.ts:34-35 证明客户端按服务端下发的 banker_level 推导牢庄等级，说明庄位由服务端下发而非客户端选择，但不涉及首局随机规则"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C04-002",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第67行「非首局庄家：赢家坐庄（与正文一致）」）要求上一小局赢家成为下一小局庄家。客户端侧 client.verdict 为空、client.evidenceIds 为空，CLE-AT-ST-C01-004-03（GameJuDataCmd.ts:34-35）只显示客户端消费服务端下发的 banker_level，无法反推庄位继承规则。服务端侧 server.applicability 为空、server.evidenceIds 为空；邻近的 SVE-AT-ST-C01-004-01（common_game_com_ju.cpp:132-136）只覆盖开局定庄赋值，SVE-AT-ST-C01-015-01 与 SVE-AT-ST-C01-009-02（common_game/com_game/common_game_com_result.cpp:57-76）只覆盖结算中「连庄不占局数」（LianZhuangBuZhan && banker_win 的 play-score 局数口径），二者都没有「赢家继承庄位」的判定代码。证据不足以证实或推翻该规则，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（服务端无赢家坐庄继承逻辑证据，属取证空缺，不升级为 conflict）",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-015-01",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "common_game_com_result.cpp:57-76 只证明打片房结算时按 banker_win 与 lian_zhuang_bu_zhan 决定是否占局数，与下一局庄位归属无关"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C04-003",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第68行「流局：原庄连庄（与正文一致）」）要求流局后保留原庄家继续坐庄。客户端侧 client.verdict 为空、client.evidenceIds 为空，无流局后庄位展示证据；服务端侧 server.applicability 为空、server.evidenceIds 为空。邻近证据中 SVE-AT-ST-C01-015-01、SVE-AT-ST-C01-009-02（common_game/com_game/common_game_com_result.cpp:57-76）证明的是「连庄不占局数」（LianZhuangBuZhan 且 banker_win 时不计局数的 play-score 规则），名字带连庄但语义是局数统计，不等于流局保留原庄；SVE-AT-ST-C01-027-01（common_game/com_game/common_game_algorithm.cpp:62-67，CommonGameAlgorithm::IsGuardDealerBlocked）里的 zhuang 是吃碰禁手作用对象，同样与流局庄位轮转无关。故不能据「有连庄相关证据」判一致，也无矛盾证据，维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（存在连庄不占局数/守庄类证据不等于流局原庄连庄一致，不能判 consistent）",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-009-02",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "common_game_com_result.cpp:60-76 证明连庄不占局数仅在打片房 play_score>0 且胡牌结算时生效，属局数口径，不证明流局后庄位保留"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-027-01",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "common_game_algorithm.cpp:62-67 中的 zhuang 用于吃碰/守庄禁手判定，与流局庄位轮转无关"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C04-004",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第69行）要求局数与片数按所选模式互斥，建房时只提交其中一项。客户端侧 client.verdict 为空、client.evidenceIds 为空，无建房参数提交代码证据，无法证明另一项确实不提交。服务端侧 server.applicability 为空、server.evidenceIds 为空；邻近证据 SVE-AT-ST-C01-009-04（hzmj_server/game_logic.cpp:175-183，GameLogic::LoadBoxJsonConfig）显示 play_score（>0 表示打片房）、局数、lian_zhuang_bu_zhan 三类配置键并存，SVE-AT-ST-C01-006-01（common_game/com_game/common_game_com_result.cpp:57-59）显示打片房大结算判定存在，这只能说明服务端同时具备局数模式与打片模式的长度能力，不能证明同一次建房会同时下发两项长度目标。按「公共能力存在不等于本玩法启用」，不升级为 conflict，维持 unverified。",
+   "reviewRule": "common-capability-is-not-enabled（局数与片数配置键并存只说明两种长度能力都存在，不能证明建房时双长度同时生效）",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-009-04",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "hzmj_server/game_logic.cpp:175-183 只证明服务端有 play_score（打片房）与局数等配置键，未证明互斥校验或双提交行为"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-006-01",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "common_game_com_result.cpp:57-59 只证明打片房大结算由房间服务按片数推进，不涉及建房参数互斥"
+    }
+   ]
+  }
+ ]
+}

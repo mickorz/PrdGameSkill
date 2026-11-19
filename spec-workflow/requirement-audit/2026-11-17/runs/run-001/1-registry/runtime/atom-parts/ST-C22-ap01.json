@@ -1,0 +1,179 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C22",
+ "partNo": 1,
+ "stage": { "stageId": "ST-C22", "name": "登记不适用（本期或本玩法不启用）", "chapter": "登记不适用（本期或本玩法不启用）", "summary": "登记并排除好友房杭州麻将本期不启用或属其他玩法专属的流程与工具，明确其不进入玩家对局流程。" },
+ "features": [
+  {
+   "id": "FP-ST-C22-001",
+   "name": "场次专属流程不适用",
+   "description": "金币场与萧山麻将专属的对局流程不属于好友房杭州麻将，需求声明好友房内不存在这些流程。",
+   "scope": "仅覆盖金币场加倍、萧山跟庄骰子两项；好友房内一律不出现。",
+   "coordination": "客户端不提供入口与流程展示，服务端不对好友房执行对应流程。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C22-001",
+     "name": "金币场加倍不适用",
+     "rule": "金币场加倍为金币场专属，好友房无此流程。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "好友房开局并进入对局流程",
+      "condition": "当前对局为好友房",
+      "action": "不提供金币场加倍环节",
+      "result": "玩家在好友房看不到加倍流程，直接按好友房常规结算"
+     },
+     "source": { "chapter": "登记不适用（本期或本玩法不启用）", "fromLine": 300, "toLine": 300 }
+    },
+    {
+     "atomId": "AT-ST-C22-002",
+     "name": "萧山跟庄骰子不适用",
+     "rule": "萧山跟庄骰子为萧山麻将专属，好友房杭州麻将不启用。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "好友房开局掷骰定庄",
+      "condition": "当前玩法为杭州麻将好友房",
+      "action": "不执行萧山跟庄骰子流程",
+      "result": "玩家看不到跟庄骰子环节，按杭州麻将定庄方式开局"
+     },
+     "source": { "chapter": "登记不适用（本期或本玩法不启用）", "fromLine": 301, "toLine": 301 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C22-002",
+   "name": "内部测试与观战回放不适用",
+   "description": "做牌/测试模式属内部测试工具，复盘/回放属观战回放功能，均不进入玩家对局流程。",
+   "scope": "覆盖做牌/测试模式与复盘/回放两项，不涉及对局内任何显示或交互。",
+   "coordination": "客户端不暴露测试与回放入口，服务端不向玩家对局流程开放这两类能力。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C22-003",
+     "name": "做牌与测试模式不适用",
+     "rule": "做牌/测试模式为内部测试工具，不进玩家流程。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家进入好友房对局",
+      "condition": "当前为玩家正常对局流程",
+      "action": "不开放做牌与测试模式",
+      "result": "玩家看不到做牌/测试模式入口，牌局按正常发牌进行"
+     },
+     "source": { "chapter": "登记不适用（本期或本玩法不启用）", "fromLine": 302, "toLine": 302 }
+    },
+    {
+     "atomId": "AT-ST-C22-004",
+     "name": "复盘与回放不适用",
+     "rule": "复盘/回放为观战回放功能，好友房本期不启用。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "好友房对局结束",
+      "condition": "本期好友房对局",
+      "action": "不提供复盘与回放功能",
+      "result": "玩家在对局结束后看不到复盘/回放入口"
+     },
+     "source": { "chapter": "登记不适用（本期或本玩法不启用）", "fromLine": 303, "toLine": 303 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C22-003",
+   "name": "预留能力不启用",
+   "description": "补花/花牌与杠分均为预留能力，当前未启用；杭麻 136 张牌组无花牌。",
+   "scope": "覆盖补花/花牌、杠分两项预留能力，本期不参与对局与结算。",
+   "coordination": "客户端不展示补花与杠分相关表现，服务端不执行补花与杠分结算。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C22-005",
+     "name": "补花与花牌不启用",
+     "rule": "补花/花牌为预留能力；杭麻 136 张无花牌。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "好友房发牌与摸打",
+      "condition": "当前牌组为杭州麻将 136 张",
+      "action": "不出现花牌，不触发补花流程",
+      "result": "玩家看不到花牌与补花提示，牌局按 136 张常规牌进行"
+     },
+     "source": { "chapter": "登记不适用（本期或本玩法不启用）", "fromLine": 304, "toLine": 304 }
+    },
+    {
+     "atomId": "AT-ST-C22-006",
+     "name": "杠分不启用",
+     "rule": "杠分为预留能力，当前未启用。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "对局中发生杠牌并进入结算",
+      "condition": "本期好友房对局",
+      "action": "不计算杠分",
+      "result": "玩家看到的结算中不含杠分项，杠牌只按面子与非杠分规则处理"
+     },
+     "source": { "chapter": "登记不适用（本期或本玩法不启用）", "fromLine": 306, "toLine": 306 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C22-004",
+   "name": "托管与运营曝光不适用",
+   "description": "本期固定无托管；好运来/玄学曝光属运营曝光功能，非对局流程。",
+   "scope": "覆盖托管与好运来/玄学曝光两项，均不属于好友房对局规则。",
+   "coordination": "客户端不提供托管与运营曝光入口，服务端不代打、不对对局规则产生副作用。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C22-007",
+     "name": "托管不启用",
+     "rule": "托管本期固定无托管。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家在对局中需要离开或超时未操作",
+      "condition": "本期好友房对局",
+      "action": "不进入托管状态，不代玩家出牌",
+      "result": "玩家看不到托管按钮与托管提示，需自行完成操作"
+     },
+     "source": { "chapter": "登记不适用（本期或本玩法不启用）", "fromLine": 305, "toLine": 305 }
+    },
+    {
+     "atomId": "AT-ST-C22-008",
+     "name": "好运来与玄学曝光不适用",
+     "rule": "好运来/玄学曝光为运营曝光功能，非对局流程。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "好友房对局进行中",
+      "condition": "当前处于对局流程",
+      "action": "不触发好运来/玄学曝光",
+      "result": "玩家在对局流程中看不到相关曝光内容，对局不受影响"
+     },
+     "source": { "chapter": "登记不适用（本期或本玩法不启用）", "fromLine": 307, "toLine": 307 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C22-005",
+   "name": "记牌器辅助工具边界",
+   "description": "记牌器为本家辅助工具，不改变对局规则，仅作客户端辅助展示。",
+   "scope": "仅覆盖记牌器，边界为不影响发牌、操作与结算规则。",
+   "coordination": "客户端提供辅助展示，服务端规则与结算不因记牌器发生变化。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C22-009",
+     "name": "记牌器不改变对局规则",
+     "rule": "记牌器为本家辅助工具，不改变对局规则。",
+     "uiRequirement": "记牌器作为本家辅助工具呈现",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家在好友房对局中查看记牌器",
+      "condition": "玩家使用本家辅助工具",
+      "action": "仅展示辅助信息，不干预发牌、操作与结算",
+      "result": "玩家看到记牌器辅助信息，对局规则与结算结果保持不变"
+     },
+     "source": { "chapter": "登记不适用（本期或本玩法不启用）", "fromLine": 308, "toLine": 308 }
+    }
+   ]
+  }
+ ]
+}

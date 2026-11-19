@@ -1,0 +1,557 @@
+{
+ "schemaVersion": 1,
+ "generatedBy": "apply-decisions.mjs",
+ "date": "2026-11-17",
+ "branch": "server",
+ "stageId": "ST-C01",
+ "partNo": "01",
+ "atomCount": 26,
+ "atoms": [
+  {
+   "atomId": "AT-ST-C01-001",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "模式为单选，可选值为「正常 / 简洁」，默认选中「正常」。",
+    "uiRequirement": "创房面板展示「模式」单选组，含「正常」「简洁」两个选项，初始处于「正常」。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 15,
+     "toLine": 15
+    },
+    "verificationScope": "client",
+    "businessBehavior": {
+     "trigger": "玩家打开好友房创房面板",
+     "condition": "处于房间参数设置阶段",
+     "action": "玩家在模式单选中选择正常或简洁",
+     "result": "面板上模式显示为玩家所选的档位，未操作时显示正常"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-002",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "人数为单选，可选值为「2人 / 3人 / 4人」，默认选中「4人」，选中后按「人数联动」生效。",
+    "uiRequirement": "创房面板展示「人数」单选组，含 2人、3人、4人三个选项，初始选中 4人。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 16,
+     "toLine": 16
+    },
+    "verificationScope": "client",
+    "businessBehavior": {
+     "trigger": "玩家打开好友房创房面板或在面板中切换人数",
+     "condition": "处于房间参数设置阶段",
+     "action": "玩家选择 2人、3人 或 4人",
+     "result": "人数显示为所选项，未操作时显示 4人，并按所选人数触发后续联动"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-003",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "玩法为单选，可选值为「白板财神 / 翻财神」，默认选中「白板财神」。",
+    "uiRequirement": "创房面板展示「玩法」单选组，含「白板财神」「翻财神」两个选项，初始处于「白板财神」。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 19,
+     "toLine": 19
+    },
+    "verificationScope": "client",
+    "businessBehavior": {
+     "trigger": "玩家打开好友房创房面板",
+     "condition": "处于房间参数设置阶段",
+     "action": "玩家在玩法单选中选择白板财神或翻财神",
+     "result": "面板上玩法显示为玩家所选档位，未操作时显示白板财神"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-004",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "连庄数为单选，可选值为「笃三老庄 / 笃二老庄 / 平庄起」，默认选中「笃三老庄」。",
+    "uiRequirement": "创房面板展示「连庄数」单选组，含笃三老庄、笃二老庄、平庄起三个选项，初始处于「笃三老庄」。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 20,
+     "toLine": 20
+    },
+    "verificationScope": "client",
+    "businessBehavior": {
+     "trigger": "玩家打开好友房创房面板",
+     "condition": "处于房间参数设置阶段",
+     "action": "玩家在连庄数单选中选择笃三老庄、笃二老庄或平庄起",
+     "result": "面板上连庄数显示为玩家所选档位，未操作时显示笃三老庄"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-005",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "胡牌为单选，可选值为「自摸胡 / 庄闲放铳(庄三)」，默认选中「庄闲放铳」。",
+    "uiRequirement": "创房面板展示「胡牌」单选组，含「自摸胡」「庄闲放铳(庄三)」两个选项，初始处于「庄闲放铳」。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 21,
+     "toLine": 21
+    },
+    "verificationScope": "client",
+    "businessBehavior": {
+     "trigger": "玩家打开好友房创房面板",
+     "condition": "处于房间参数设置阶段",
+     "action": "玩家在胡牌单选中选择自摸胡或庄闲放铳(庄三)",
+     "result": "面板上胡牌显示为玩家所选档位，未操作时显示庄闲放铳"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-006",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "局数为单选，局数档可选值为「4局 / 8局 / 16局 / 24局 / 32局」，默认选中「8局」。",
+    "uiRequirement": "创房面板「局数」单选组展示 4局、8局、16局、24局、32局 各档（另含打片档 40/50/60片），初始选中 8局。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 17,
+     "toLine": 17
+    },
+    "verificationScope": "client",
+    "businessBehavior": {
+     "trigger": "玩家打开好友房创房面板",
+     "condition": "处于房间参数设置阶段",
+     "action": "玩家在局数单选中选择某个局数档",
+     "result": "局数显示为玩家所选档位，未操作时显示 8局"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-009",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "选中局数档时，显示「底分」与「封顶」，隐藏「连庄不占局数」。",
+    "uiRequirement": "局数档生效时，面板出现底分选项与封顶选项，不出现「连庄不占局数」选项。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 17,
+     "toLine": 17
+    },
+    "verificationScope": "client",
+    "businessBehavior": {
+     "trigger": "玩家在局数单选中选中任一局数档",
+     "condition": "当前为局数模式（选中 4/8/16/24/32 局）",
+     "action": "面板切换局数档对应的展示项",
+     "result": "玩家看到底分与封顶可设置，看不到「连庄不占局数」"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-010",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "底分为单选，可选值为「1分 / 2分 / 5分」，默认选中「1分」，仅在局数档显示。",
+    "uiRequirement": "创房面板「底分」单选组含 1分、2分、5分，初始选中 1分；仅在选中局数档时出现。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 18,
+     "toLine": 18
+    },
+    "verificationScope": "client",
+    "businessBehavior": {
+     "trigger": "玩家查看或切换底分单选组",
+     "condition": "当前选中的是局数档",
+     "action": "面板展示底分选项并允许玩家选择档位",
+     "result": "玩家看到 1分/2分/5分 三档且默认 1分；非局数档时看不到底分"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-011",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "封顶为单选，可选值为「无 / 20 / 40 / 64 / 80 / 128 / 256」，默认选中「无」，仅在局数档显示。",
+    "uiRequirement": "创房面板「封顶」单选组含 无、20、40、64、80、128、256，初始选中「无」；仅在选中局数档时出现。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 24,
+     "toLine": 24
+    },
+    "verificationScope": "client",
+    "businessBehavior": {
+     "trigger": "玩家查看或切换封顶单选组",
+     "condition": "当前选中的是局数档",
+     "action": "面板展示封顶选项并允许玩家选择档位",
+     "result": "玩家看到七档封顶且默认「无」；非局数档时看不到封顶"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-012",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "局数单选组另含打片档，可选值为「40片 / 50片 / 60片」。",
+    "uiRequirement": "局数单选组中与局数档并列展示 40片、50片、60片 三个打片档。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 17,
+     "toLine": 17
+    },
+    "verificationScope": "client",
+    "businessBehavior": {
+     "trigger": "玩家查看局数单选组",
+     "condition": "处于房间参数设置阶段",
+     "action": "面板列出局数与打片两类档位",
+     "result": "玩家可看到并选择 40片、50片、60片"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-013",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "选中打片档时隐藏「封顶」，且封顶取值选中「无」。",
+    "uiRequirement": "打片档生效时面板不出现封顶选项，封顶处于「无」状态。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 17,
+     "toLine": 17
+    },
+    "verificationScope": "client",
+    "businessBehavior": {
+     "trigger": "玩家在局数单选中选中 40片/50片/60片",
+     "condition": "当前为打片模式",
+     "action": "面板隐藏封顶选项并把封顶置为「无」",
+     "result": "玩家看不到封顶设置，对局按无封顶生效"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-014",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "选中打片档时隐藏「底分」，且底分取值选中「1分」。",
+    "uiRequirement": "打片档生效时面板不出现底分选项，底分处于「1分」状态。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 17,
+     "toLine": 17
+    },
+    "verificationScope": "client",
+    "businessBehavior": {
+     "trigger": "玩家在局数单选中选中 40片/50片/60片",
+     "condition": "当前为打片模式",
+     "action": "面板隐藏底分选项并把底分置为「1分」",
+     "result": "玩家看不到底分设置，对局按 1分 底分生效"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-015",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "选中打片档时显示「连庄不占局数」选项。",
+    "uiRequirement": "打片档生效时面板出现「连庄不占局数」选项。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 17,
+     "toLine": 17
+    },
+    "verificationScope": "client",
+    "businessBehavior": {
+     "trigger": "玩家在局数单选中选中 40片/50片/60片",
+     "condition": "当前为打片模式",
+     "action": "面板展示「连庄不占局数」选项",
+     "result": "玩家可在打片档下看到并设置「连庄不占局数」"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-016",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "局数与片数互斥，按所选模式只提交其中一项。",
+    "uiRequirement": "局数单选组中局数档与打片档只能选中其一，不能同时生效。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 17,
+     "toLine": 17
+    },
+    "verificationScope": "both",
+    "businessBehavior": {
+     "trigger": "玩家选择局数档或打片档后创房提交",
+     "condition": "玩家在同一单选组内只能选中一个档位",
+     "action": "按所选模式提交局数或片数中的一项",
+     "result": "玩家提交的房规只包含局数或片数其中一种计数方式，不会两者并存"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-018",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "吃碰默认值：2 人房默认「无限吃碰」；3/4 人房固定按「默认吃碰」生效。",
+    "uiRequirement": "2人房吃碰组初始选中「无限吃碰」；3/4 人房不显示该组但按「默认吃碰」生效。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 22,
+     "toLine": 22
+    },
+    "verificationScope": "both",
+    "businessBehavior": {
+     "trigger": "玩家创建好友房并选择人数",
+     "condition": "人数为 2人 时默认无限吃碰；人数为 3人 或 4人 时固定按默认吃碰",
+     "action": "按人数确定吃碰规则取值",
+     "result": "2人房玩家看到吃碰默认选中无限吃碰，3/4 人房吃碰按默认吃碰生效"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-019",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "吃碰选「无限吃碰」时：隐藏「碰算摊」，承包选中「两摊封顶」。",
+    "uiRequirement": "吃碰选中无限吃碰后，面板不出现「碰算摊」，承包组显示为选中「两摊封顶」。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 22,
+     "toLine": 22
+    },
+    "verificationScope": "both",
+    "businessBehavior": {
+     "trigger": "2人房玩家在吃碰单选中选择「无限吃碰」",
+     "condition": "吃碰组可见且该档被选中",
+     "action": "面板隐藏碰算摊并把承包置为两摊封顶",
+     "result": "玩家看不到碰算摊选项，承包显示为两摊封顶"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-020",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "吃碰选「只碰不吃」或「默认吃碰」时：显示「碰算摊」，承包选中「两摊封顶」。",
+    "uiRequirement": "吃碰选中只碰不吃或默认吃碰后，面板出现「碰算摊」，承包组显示为选中「两摊封顶」。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 22,
+     "toLine": 22
+    },
+    "verificationScope": "both",
+    "businessBehavior": {
+     "trigger": "2人房玩家在吃碰单选中选择「只碰不吃」或「默认吃碰」",
+     "condition": "吃碰组可见且选中这两档之一",
+     "action": "面板显示碰算摊并把承包置为两摊封顶",
+     "result": "玩家可设置碰算摊，承包显示为两摊封顶"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-021",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "承包为单选，可选值为「三摊承包 / 两摊封顶」，3/4 人房默认选中「三摊承包」。",
+    "uiRequirement": "3/4 人房创房面板「承包」单选组含三摊承包、两摊封顶，初始选中「三摊承包」。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 23,
+     "toLine": 23
+    },
+    "verificationScope": "client",
+    "businessBehavior": {
+     "trigger": "玩家在 3/4 人房查看房间参数面板",
+     "condition": "人数为 3人 或 4人",
+     "action": "面板展示承包两个档位",
+     "result": "玩家看到三摊承包、两摊封顶两档，初始为三摊承包"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-022",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "承包选项组仅 3/4 人房显示。",
+    "uiRequirement": "人数为 3人 或 4人 时出现承包单选组；人数为 2人 时不出现。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 23,
+     "toLine": 23
+    },
+    "verificationScope": "client",
+    "businessBehavior": {
+     "trigger": "玩家切换人数或查看房间参数面板",
+     "condition": "人数为 3人 或 4人",
+     "action": "面板展示承包单选组",
+     "result": "3/4 人房玩家看到承包选项，2 人房玩家看不到"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-023",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "2 人房的承包随吃碰默认联动为「两摊封顶」。",
+    "uiRequirement": "2 人房隐藏承包组，但房规中承包固定按「两摊封顶」生效。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 23,
+     "toLine": 23
+    },
+    "verificationScope": "both",
+    "businessBehavior": {
+     "trigger": "玩家创建 2 人房",
+     "condition": "人数为 2人",
+     "action": "按吃碰默认联动确定承包取值",
+     "result": "2 人房玩家看不到承包选项，对局按两摊封顶结算"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-024",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "选中 2人：显示 32局、隐藏 4局；吃碰组显示并选中「无限吃碰」；承包组隐藏。",
+    "uiRequirement": "人数切到 2人后，局数单选组出现 32局且不出现 4局，出现吃碰组并选中无限吃碰，承包组消失。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 30,
+     "toLine": 30
+    },
+    "verificationScope": "both",
+    "businessBehavior": {
+     "trigger": "玩家在人数单选中选择 2人",
+     "condition": "人数档由其他人数切换为 2人",
+     "action": "按 2 人联动刷新局数、吃碰、承包三处面板与取值",
+     "result": "玩家看到 32局可选、4局不可见，吃碰组出现并选中无限吃碰，承包组不可见"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-025",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "选中 2人：「缺一色」显示、「守庄」隐藏。",
+    "uiRequirement": "人数切到 2人后，面板出现「缺一色」选项，不出现「守庄」选项。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 30,
+     "toLine": 30
+    },
+    "verificationScope": "client",
+    "businessBehavior": {
+     "trigger": "玩家在人数单选中选择 2人",
+     "condition": "人数为 2人",
+     "action": "面板刷新缺一色与守庄的显隐",
+     "result": "玩家可看到缺一色选项，看不到守庄选项"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-026",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "选中 3人：显示 32局、隐藏 4局；吃碰组隐藏、按「默认吃碰」生效；承包组显示。",
+    "uiRequirement": "人数切到 3人后，局数单选组出现 32局且不出现 4局，吃碰组消失，承包组出现。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 31,
+     "toLine": 31
+    },
+    "verificationScope": "both",
+    "businessBehavior": {
+     "trigger": "玩家在人数单选中选择 3人",
+     "condition": "人数档切换为 3人",
+     "action": "按 3 人联动刷新局数、吃碰、承包三处面板与取值",
+     "result": "玩家看到 32局可选、4局不可见，吃碰组不可见但按默认吃碰生效，承包组出现"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-027",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "选中 3人：「缺一色」「守庄」均显示。",
+    "uiRequirement": "人数切到 3人后，面板同时出现「缺一色」与「守庄」选项。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 31,
+     "toLine": 31
+    },
+    "verificationScope": "client",
+    "businessBehavior": {
+     "trigger": "玩家在人数单选中选择 3人",
+     "condition": "人数为 3人",
+     "action": "面板刷新缺一色与守庄的显隐",
+     "result": "玩家可同时看到缺一色与守庄选项"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-028",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "选中 4人：显示 4局、隐藏 32局；吃碰组隐藏、按「默认吃碰」生效；承包组显示。",
+    "uiRequirement": "人数切到 4人后，局数单选组出现 4局且不出现 32局，吃碰组消失，承包组出现。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 32,
+     "toLine": 32
+    },
+    "verificationScope": "both",
+    "businessBehavior": {
+     "trigger": "玩家在人数单选中选择 4人",
+     "condition": "人数档切换为 4人",
+     "action": "按 4 人联动刷新局数、吃碰、承包三处面板与取值",
+     "result": "玩家看到 4局可选、32局不可见，吃碰组不可见但按默认吃碰生效，承包组出现"
+    }
+   }
+  },
+  {
+   "atomId": "AT-ST-C01-029",
+   "isRetryTarget": false,
+   "retryHint": "共享证据牵连（非补证目标，证据更新后需复核）",
+   "requirement": {
+    "rule": "选中 4人：「缺一色」隐藏、「守庄」显示。",
+    "uiRequirement": "人数切到 4人后，面板不出现「缺一色」选项，出现「守庄」选项。",
+    "source": {
+     "chapter": "玩法选项（创房规则全集，规则不固定） > 房间参数（单选）",
+     "fromLine": 32,
+     "toLine": 32
+    },
+    "verificationScope": "client",
+    "businessBehavior": {
+     "trigger": "玩家在人数单选中选择 4人",
+     "condition": "人数为 4人",
+     "action": "面板刷新缺一色与守庄的显隐",
+     "result": "玩家看不到缺一色选项，可看到守庄选项"
+    }
+   }
+  }
+ ]
+}

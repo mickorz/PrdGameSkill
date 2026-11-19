@@ -1,0 +1,929 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C16",
+ "partNo": 1,
+ "stage": {
+  "stageId": "ST-C16",
+  "name": "出牌与响应",
+  "chapter": "行牌 > 出牌与响应",
+  "summary": "规定出牌资格与禁出拦截、弃牌响应的裁决与优先级、过与取消的语义、响应按钮与倒计时、手牌亮度、吃杠选择面板、听牌提示分级，以及吃碰杠牌组与成立演出展示。"
+ },
+ "features": [
+  {
+   "id": "FP-ST-C16-001",
+   "name": "出牌资格与禁出拦截",
+   "description": "界定谁能出牌、哪些状态下不能出牌，以及自摸或杠提示未过时对出牌操作的拦截与例外。",
+   "scope": "仅覆盖出牌动作的准入与拦截判定，不含弃牌被响应后的裁决。",
+   "coordination": "客户端拦截出牌操作并给出提示，出牌资格由服务端规则裁定。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C16-001",
+     "name": "出牌权与可打牌前提",
+     "rule": "只有当前拿到出牌权、且目标牌可打的玩家能出牌。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家在自己的出牌阶段尝试出牌",
+      "condition": "该玩家当前持有出牌权，且所选目标牌属于可打出的牌",
+      "action": "接受并执行该次出牌",
+      "result": "该牌被玩家打出"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 199, "toLine": 199 }
+    },
+    {
+     "atomId": "AT-ST-C16-002",
+     "name": "禁止出牌的四种状态",
+     "rule": "等待他人响应、正在选择组合、杠后尚未补牌或本小局已经结束时，不能出牌。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家在受限状态下尝试出牌",
+      "condition": "处于等待他人响应、正在选择组合、杠后尚未补牌或本小局已经结束之一",
+      "action": "拒绝该次出牌",
+      "result": "牌不被打出，玩家停留在原状态"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 199, "toLine": 199 }
+    },
+    {
+     "atomId": "AT-ST-C16-003",
+     "name": "未过提示时拦截出牌",
+     "rule": "【自摸】还在，或本次杠提示必须先过时，双击或滑动出牌会被拦住，只在本家显示「点“过”才能出牌」，须先点【过】。",
+     "uiRequirement": "本家显示「点“过”才能出牌」提示；双击或滑动出牌无效。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家双击或滑动出牌",
+      "condition": "本家仍有【自摸】提示，或本次杠提示必须先点【过】",
+      "action": "拦住该次出牌，仅对本家提示「点“过”才能出牌」",
+      "result": "出牌未发生，玩家看到提示并须先点【过】"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 202, "toLine": 202 }
+    },
+    {
+     "atomId": "AT-ST-C16-004",
+     "name": "已持暗杠可直接出牌",
+     "rule": "例外：可杠的只是摸牌或补牌之前已经拿在手里的暗杠，可以直接出牌。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家在有杠提示的情况下尝试出牌",
+      "condition": "可杠的牌只是摸牌或补牌之前就已拿在手里的暗杠",
+      "action": "放行该次出牌，不要求先点【过】",
+      "result": "牌正常打出"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 202, "toLine": 202 }
+    },
+    {
+     "atomId": "AT-ST-C16-005",
+     "name": "碰后加杠仍须先过",
+     "rule": "碰之后又能杠的，仍须先过。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家碰牌后又出现可杠提示，并尝试出牌",
+      "condition": "本次可杠由碰牌后形成",
+      "action": "仍拦住出牌",
+      "result": "玩家须先点【过】才能出牌"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 202, "toLine": 202 }
+    },
+    {
+     "atomId": "AT-ST-C16-006",
+     "name": "可杠非刚摸牌免过出牌",
+     "rule": "有杠、没有胡，且所有可杠牌都不是刚摸的那张时，手牌不压暗，不点过也能出牌。",
+     "uiRequirement": "此种情况下手牌不压暗。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家在出牌阶段直接尝试出牌",
+      "condition": "本家有杠且没有胡，所有可杠牌都不是刚摸的那张",
+      "action": "不压暗手牌，不要求点【过】即接受出牌",
+      "result": "牌被打出，无需先点【过】"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 210, "toLine": 210 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C16-002",
+   "name": "弃牌响应裁决与优先级",
+   "description": "弃牌可被吃碰直杠点炮胡时先裁决，成立后从牌河取走并清理标记；全部放弃则牌留牌河轮到下家；多个玩家提交时按优先级处理。",
+   "scope": "覆盖单张弃牌的响应裁决、牌河归属与多方提交的先后处理，不含组合面板与按钮表现。",
+   "coordination": "服务端裁决响应结果与优先级，各端同步从牌河取走该牌并清除标记。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C16-007",
+     "name": "响应先于下一步裁决",
+     "rule": "弃牌可被吃、碰、直杠或点炮胡时，先裁决。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "有玩家打出一张牌",
+      "condition": "该弃牌可被吃、碰、直杠或点炮胡",
+      "action": "先对该弃牌的响应进行裁决",
+      "result": "在有响应结果之前不进入下一步行牌"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 201, "toLine": 201 }
+    },
+    {
+     "atomId": "AT-ST-C16-008",
+     "name": "成立后取走牌河牌并清标记",
+     "rule": "成立后各端从牌河取走该牌，并清除它的浮标和放大显示。",
+     "uiRequirement": "各端从牌河取走该牌；清除该牌的浮标与放大显示。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "弃牌的吃、碰、直杠或点炮胡响应成立",
+      "condition": "响应裁决为成立",
+      "action": "各端从牌河取走该牌并清除浮标和放大显示",
+      "result": "牌河中不再显示该牌，其浮标与放大效果消失"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 201, "toLine": 201 }
+    },
+    {
+     "atomId": "AT-ST-C16-009",
+     "name": "全部放弃牌留牌河",
+     "rule": "全部放弃则牌留在牌河，再轮到下家摸牌。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "弃牌的响应裁决结束",
+      "condition": "所有有资格的玩家都放弃响应",
+      "action": "保留该牌在牌河，轮到下家摸牌",
+      "result": "弃牌继续留在牌河，下家获得摸牌机会"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 201, "toLine": 201 }
+    },
+    {
+     "atomId": "AT-ST-C16-010",
+     "name": "低优先级先提交则等待",
+     "rule": "较低优先级先提交时，本端收起自己的按钮并等待。",
+     "uiRequirement": "较低优先级玩家提交后，本端收起自己的按钮。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "较低优先级的玩家先提交响应请求",
+      "condition": "仍有更高优先级的玩家未表态",
+      "action": "收起该玩家本端的响应按钮并进入等待",
+      "result": "该玩家看到按钮收起，请求处于等待状态"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 206, "toLine": 206 }
+    },
+    {
+     "atomId": "AT-ST-C16-011",
+     "name": "高优先级成立取消低优先级请求",
+     "rule": "更高优先级成立后，结束等待并取消该请求。",
+     "uiRequirement": "结束等待状态。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "更高优先级的响应成立",
+      "condition": "存在已提交并处于等待的较低优先级请求",
+      "action": "结束等待并取消该低级请求",
+      "result": "低级请求不再生效，玩家看到等待结束"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 206, "toLine": 206 }
+    },
+    {
+     "atomId": "AT-ST-C16-012",
+     "name": "高优先级全放弃再执行低级请求",
+     "rule": "更高优先级都放弃后，再执行已经提交的较低优先级请求。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "所有更高优先级玩家都选择放弃",
+      "condition": "已有较低优先级请求提交并处于等待",
+      "action": "执行该已提交的较低优先级请求",
+      "result": "较低优先级的吃碰杠胡生效"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 206, "toLine": 206 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C16-003",
+   "name": "响应按钮与倒计时",
+   "description": "有操作资格玩家看到的按钮位置、顺序与可见项，胡牌张与预览倍数展示，统一倒计时归零后仍可点，以及各按钮文案口径。",
+   "scope": "覆盖响应按钮的展示形态与文案，不含点击后的组合面板与裁决逻辑。",
+   "coordination": "按钮展示由客户端呈现，可做项与预览倍数由服务端结果驱动，倒计时各端统一。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C16-013",
+     "name": "按钮位置顺序与可见项",
+     "rule": "有操作资格的玩家在自己手牌右上方看到对应按钮和【过】。按钮从左到右为【吃】【碰】【杠】【胡】，蓝色【过】固定在最右，只显示本次可做的项。",
+     "uiRequirement": "按钮位于自己手牌右上方；从左到右【吃】【碰】【杠】【胡】，蓝色【过】固定最右；只显示本次可做的项。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家获得对某张弃牌的操作资格",
+      "condition": "该玩家存在本次可做的吃、碰、杠或胡",
+      "action": "在手牌右上方按序展示按钮与【过】",
+      "result": "玩家只看到本次可做的按钮项，【过】始终在最右"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 204, "toLine": 204 }
+    },
+    {
+     "atomId": "AT-ST-C16-014",
+     "name": "胡牌张与预览倍数展示",
+     "rule": "【胡】或【自摸】左侧显示胡牌张和预览倍数。",
+     "uiRequirement": "【胡】或【自摸】按钮左侧显示胡牌张和预览倍数。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家获得胡或自摸的操作资格",
+      "condition": "存在可胡或可自摸的胡牌张",
+      "action": "在按钮左侧展示胡牌张与预览倍数",
+      "result": "玩家看到具体的胡牌张和预计倍数"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 204, "toLine": 204 }
+    },
+    {
+     "atomId": "AT-ST-C16-015",
+     "name": "统一倒计时归零仍可点",
+     "rule": "各端使用同一个响应倒计时，归零后按钮仍可点。",
+     "uiRequirement": "各端响应倒计时一致；归零后按钮仍可点击。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "弃牌响应计时开始",
+      "condition": "各端展示同一响应倒计时",
+      "action": "倒计时归零后不禁用按钮",
+      "result": "玩家在倒计时归零后仍能点击按钮完成操作"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 204, "toLine": 204 }
+    },
+    {
+     "atomId": "AT-ST-C16-016",
+     "name": "胡与自摸文案口径",
+     "rule": "点炮、抢杠的按钮文案是「胡」，自摸是「自摸」。没有单独的抢杠按钮。",
+     "uiRequirement": "点炮、抢杠按钮文案为「胡」；自摸文案为「自摸」；不出现单独的抢杠按钮。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家获得胡、自摸或抢杠的操作机会",
+      "condition": "操作类型为点炮胡、抢杠胡或自摸",
+      "action": "按类型显示「胡」或「自摸」文案",
+      "result": "玩家看到正确的按钮文案，且无独立抢杠按钮"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 209, "toLine": 209 }
+    },
+    {
+     "atomId": "AT-ST-C16-017",
+     "name": "过与过2同文案",
+     "rule": "过和过2都显示「过」。",
+     "uiRequirement": "过与过2的按钮均显示「过」。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家获得放弃本次操作的机会",
+      "condition": "本次放弃属于过或过2",
+      "action": "统一显示「过」文案",
+      "result": "玩家看到两种放弃操作都写作「过」"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 209, "toLine": 209 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C16-004",
+   "name": "过与取消的语义",
+   "description": "点【过】只放弃本次提示并收起按钮预览，相同牌按新弃牌重新判断；放弃杠的抑制范围；过上行与过2本地的差别；多组吃杠取消等同上行过。",
+   "scope": "覆盖过、过2与取消的操作语义与作用范围，不含按钮外观。",
+   "coordination": "客户端收起按钮与预览，取消与否及后续判断由服务端记录。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C16-018",
+     "name": "点过放弃本次提示",
+     "rule": "点【过】只放弃这一次提示，收起本次按钮和预览。",
+     "uiRequirement": "点【过】后收起本次按钮和预览。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家点击【过】",
+      "condition": "本端存在本次响应提示",
+      "action": "放弃这一次提示，收起按钮和预览",
+      "result": "本次按钮与预览消失，仅本次机会被放弃"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 203, "toLine": 203 }
+    },
+    {
+     "atomId": "AT-ST-C16-019",
+     "name": "相同牌按新弃牌重判",
+     "rule": "之后别人再打出相同牌，按新弃牌重新判断。",
+     "uiRequirement": "",
+     "verificationScope": "server",
+     "businessBehavior": {
+      "trigger": "其他玩家再次打出与此前相同的牌",
+      "condition": "该玩家此前对相同牌点过【过】",
+      "action": "以这张新弃牌重新进行响应判断",
+      "result": "玩家可对新弃牌重新获得操作机会"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 203, "toLine": 203 }
+    },
+    {
+     "atomId": "AT-ST-C16-020",
+     "name": "放弃杠后本次不再出现杠",
+     "rule": "放弃杠后，同一次操作机会内不再出现【杠】；下一次拿到操作机会再判断。",
+     "uiRequirement": "同一次操作机会内不再显示【杠】。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家在本次操作机会中放弃杠",
+      "condition": "仍处于同一次操作机会内",
+      "action": "不再提供【杠】按钮",
+      "result": "玩家本次机会看不到【杠】，下次操作机会重新判断"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 203, "toLine": 203 }
+    },
+    {
+     "atomId": "AT-ST-C16-021",
+     "name": "过上行与过2仅本地",
+     "rule": "过上行放弃；过2只在本地收起按钮并清掉本次压暗，再按禁手重新压暗，不上行。",
+     "uiRequirement": "过2仅本地收起按钮并清除本次压暗，再按禁手重新压暗。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家选择过或过2",
+      "condition": "本次放弃为过或过2之一",
+      "action": "过向服务端提交放弃；过2只在本端收起按钮、清除压暗并按禁手重新压暗",
+      "result": "过使本次响应作废；过2本端按钮收起并重新压暗，不提交放弃"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 209, "toLine": 209 }
+    },
+    {
+     "atomId": "AT-ST-C16-022",
+     "name": "多组吃杠取消等同过",
+     "rule": "多组吃、杠的取消等于上行过。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家在多种吃法或多组杠的候选面板中点击取消",
+      "condition": "当前处于多组吃或多组杠的选择状态",
+      "action": "按上行过处理，向服务端提交放弃",
+      "result": "等同于对该弃牌上行过，响应机会被放弃"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 209, "toLine": 209 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C16-005",
+   "name": "手牌亮度与压暗",
+   "description": "依据能否胡、参与当前吃碰直杠的牌、新摸补牌可组成的合法杠，以及可杠组是否全由原有牌构成，决定手牌各张的亮度与压暗表现。",
+   "scope": "覆盖本端手牌亮度与压暗显示规则，不含按钮与面板。",
+   "coordination": "合法性与参与牌的判定由服务端给出，压暗表现只在玩家本端呈现。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C16-023",
+     "name": "能胡时整手正常亮度",
+     "rule": "能胡时整手保持正常亮度。",
+     "uiRequirement": "能胡时整手手牌保持正常亮度。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家获得响应提示",
+      "condition": "玩家当前能胡",
+      "action": "保持整手牌正常亮度",
+      "result": "玩家看到整手手牌均清晰不压暗"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 205, "toLine": 205 }
+    },
+    {
+     "atomId": "AT-ST-C16-024",
+     "name": "不能胡仅参与牌保持亮度",
+     "rule": "不能胡时，只有参与当前吃、碰、直杠的牌保持亮度，其余压暗。压暗只在该玩家本端显示。",
+     "uiRequirement": "只有参与当前吃、碰、直杠的牌保持亮度，其余压暗；压暗仅在该玩家本端显示。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家获得响应提示",
+      "condition": "玩家当前不能胡，且存在可参与的吃、碰或直杠",
+      "action": "保持参与吃碰直杠的牌亮度，压暗其余手牌",
+      "result": "该玩家只在本端看到参与牌清晰、其余牌变暗"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 205, "toLine": 205 }
+    },
+    {
+     "atomId": "AT-ST-C16-025",
+     "name": "新摸补牌可杠时亮度",
+     "rule": "本次新摸入或补入的牌能组成暗杠或加杠，且同次无胡时，参与任一合法杠的手牌保持亮度，其余压暗。",
+     "uiRequirement": "参与任一合法杠的手牌保持亮度，其余压暗。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家回合中出现新的暗杠或加杠机会",
+      "condition": "本次新摸入或补入的牌能组成暗杠或加杠，且同次没有胡",
+      "action": "保持参与任一合法杠的手牌亮度，压暗其余",
+      "result": "玩家看到参与合法杠的牌清晰，其余牌变暗"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 205, "toLine": 205 }
+    },
+    {
+     "atomId": "AT-ST-C16-026",
+     "name": "可杠组仅原有牌不额外压暗",
+     "rule": "可杠组只由原有的牌组成时，手牌保持当前亮度。",
+     "uiRequirement": "手牌保持当前亮度，不因该杠额外压暗。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家回合中出现可杠组合",
+      "condition": "可杠组只由摸牌或补牌之前已有的牌组成",
+      "action": "不改变手牌当前亮度",
+      "result": "玩家看到手牌亮度维持原样"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 205, "toLine": 205 }
+    },
+    {
+     "atomId": "AT-ST-C16-027",
+     "name": "可杠非刚摸牌不压暗可出牌",
+     "rule": "有杠、没有胡，且所有可杠牌都不是刚摸的那张时，手牌不压暗，不点过也能出牌。",
+     "uiRequirement": "手牌不压暗。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家在有杠的回合中尝试出牌",
+      "condition": "有杠且没有胡，所有可杠牌都不是刚摸的那张",
+      "action": "保持手牌不压暗，允许不点【过】直接出牌",
+      "result": "玩家看到手牌正常，且能直接打出牌"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 210, "toLine": 210 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C16-006",
+   "name": "吃法选择面板",
+   "description": "点【吃】后的可选顺子面板：候选三张正面按牌面升序排列、右侧取消，原按钮退场手牌恢复常态，倒计时归零仍可操作，取消与选中的后果。",
+   "scope": "仅覆盖吃法组合选择面板，不含杠法面板与裁决结果展示。",
+   "coordination": "客户端呈现候选顺子与取消操作，提交与放弃后果由服务端认定。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C16-028",
+     "name": "点吃展开候选顺子",
+     "rule": "点【吃】后，在手牌上方展开可选顺子，每组三张正面、按牌面从小到大，右侧为【取消】。",
+     "uiRequirement": "手牌上方展开候选顺子；每组三张正面显示；按牌面从小到大排列；右侧为【取消】。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家点击【吃】",
+      "condition": "存在多种可吃的顺子组合",
+      "action": "在手牌上方展开可选顺子，右侧显示【取消】",
+      "result": "玩家看到多组正面朝上的候选顺子与【取消】"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 207, "toLine": 207 }
+    },
+    {
+     "atomId": "AT-ST-C16-029",
+     "name": "吃面板顶替原按钮",
+     "rule": "原【吃】【过】退场，手牌恢复常态亮度。",
+     "uiRequirement": "原【吃】【过】按钮退场；手牌恢复常态亮度。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "吃法选择面板展开",
+      "condition": "玩家已点击【吃】并进入选择状态",
+      "action": "收起原【吃】【过】按钮并恢复手牌常态亮度",
+      "result": "玩家看到按钮消失，手牌不再压暗"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 207, "toLine": 207 }
+    },
+    {
+     "atomId": "AT-ST-C16-030",
+     "name": "归零后吃面板仍可操作",
+     "rule": "倒计时归零后面板仍可操作。",
+     "uiRequirement": "倒计时归零后吃法选择面板仍可操作。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "响应倒计时归零",
+      "condition": "吃法选择面板仍处于展开状态",
+      "action": "保持面板可操作",
+      "result": "玩家仍可选择顺子组或点击【取消】"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 207, "toLine": 207 }
+    },
+    {
+     "atomId": "AT-ST-C16-031",
+     "name": "吃面板取消放弃全部操作",
+     "rule": "点【取消】等于放弃自己对这张弃牌的全部操作，包括同时存在的胡。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家在吃法选择面板点击【取消】",
+      "condition": "该玩家对这张弃牌还存在其他操作机会",
+      "action": "放弃对这张弃牌的全部操作",
+      "result": "包括同时存在的胡在内都不再生效"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 207, "toLine": 207 }
+    },
+    {
+     "atomId": "AT-ST-C16-032",
+     "name": "选中一组即提交",
+     "rule": "选中一组即提交。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家在吃法选择面板选中一组顺子",
+      "condition": "该顺子为本次可选组合之一",
+      "action": "立即提交该组吃牌请求",
+      "result": "该组吃法进入裁决，无需额外确认"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 207, "toLine": 207 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C16-007",
+   "name": "杠法选择面板",
+   "description": "点【杠】后的候选牌面板：收起杠与过、横向排列候选、最右取消，暗杠与加杠混排顺序，倒计时归零仍可选，取消与提交后果，仅一组时直接提交。",
+   "scope": "仅覆盖杠法组合选择面板，不含吃法面板与杠成立后的牌组展示。",
+   "coordination": "客户端呈现候选牌与取消操作，取消与提交的有效范围由服务端认定。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C16-033",
+     "name": "点杠收起按钮并展开候选",
+     "rule": "点【杠】后收起【杠】【过】，横向排列候选牌，最右为【取消】。",
+     "uiRequirement": "收起【杠】【过】；候选牌横向排列；最右为【取消】。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家点击【杠】",
+      "condition": "本次存在可杠组合",
+      "action": "收起【杠】【过】并横向排列候选牌，最右放【取消】",
+      "result": "玩家看到横排候选牌与最右的【取消】"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 208, "toLine": 208 }
+    },
+    {
+     "atomId": "AT-ST-C16-034",
+     "name": "暗杠加杠混排顺序",
+     "rule": "暗杠与加杠混排，顺序为万、条、筒、东、南、西、北、中、发、白，同花色按点数升序。",
+     "uiRequirement": "暗杠与加杠混排；按万、条、筒、东、南、西、北、中、发、白排序；同花色按点数升序。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "杠法候选面板展开",
+      "condition": "候选牌同时包含暗杠与加杠组合",
+      "action": "按花色与点数顺序混合排列候选牌",
+      "result": "玩家看到按固定花色点数顺序混排的候选牌"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 208, "toLine": 208 }
+    },
+    {
+     "atomId": "AT-ST-C16-035",
+     "name": "归零后杠面板仍可选择",
+     "rule": "倒计时归零后仍可选择。",
+     "uiRequirement": "倒计时归零后杠法候选仍可选择。",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "响应倒计时归零",
+      "condition": "杠法候选面板仍处于展开状态",
+      "action": "保持候选可选择",
+      "result": "玩家仍能点选候选牌或【取消】"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 208, "toLine": 208 }
+    },
+    {
+     "atomId": "AT-ST-C16-036",
+     "name": "杠面板取消放弃本次行牌机会",
+     "rule": "点【取消】等于放弃本次行牌机会里的全部操作，包括同时存在的自摸。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家在杠法候选面板点击【取消】",
+      "condition": "本次行牌机会中还存在其他操作",
+      "action": "放弃本次行牌机会里的全部操作",
+      "result": "包括同时存在的自摸在内都不再生效"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 208, "toLine": 208 }
+    },
+    {
+     "atomId": "AT-ST-C16-037",
+     "name": "点候选只提交对应一组",
+     "rule": "点一张候选牌只提交对应的一组。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家点击一张杠候选牌",
+      "condition": "候选面板中列出多组可杠组合",
+      "action": "只提交被点候选对应的那一组",
+      "result": "其余候选组不被提交"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 208, "toLine": 208 }
+    },
+    {
+     "atomId": "AT-ST-C16-038",
+     "name": "仅一组时点杠直接提交",
+     "rule": "只有 1 组时，点【杠】直接提交。",
+     "uiRequirement": "",
+     "verificationScope": "both",
+     "businessBehavior": {
+      "trigger": "玩家点击【杠】",
+      "condition": "本次只有 1 组可杠组合",
+      "action": "跳过候选面板直接提交该组杠",
+      "result": "杠立即提交，不出现候选选择"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 208, "toLine": 208 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C16-008",
+   "name": "听牌提示与分级标签",
+   "description": "打出后听任意一张时的听牌详情文案、飘与爆的标记口径、其余可听牌只留箭头，以及大、多、优分级标签定义与只影响展示的约束。",
+   "scope": "覆盖听牌详情的文案、标记与分级标签展示，不含胡牌判定与番数计算。",
+   "coordination": "听牌与番数结果由服务端给出，客户端负责文案、标记与分级标签展示。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C16-039",
+     "name": "听任意一张的详情文案",
+     "rule": "打出后听任意一张时，听牌详情固定为「爆头2番」「摸任意一张可胡」。",
+     "uiRequirement": "听牌详情固定显示「爆头2番」与「摸任意一张可胡」。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家打出一张牌后进入听牌状态",
+      "condition": "该手牌听任意一张",
+      "action": "固定展示听牌详情文案",
+      "result": "玩家看到「爆头2番」「摸任意一张可胡」"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 211, "toLine": 211 }
+    },
+    {
+     "atomId": "AT-ST-C16-040",
+     "name": "财神候选标飘其余标爆",
+     "rule": "候选牌是财神时听牌标为飘，否则为爆。",
+     "uiRequirement": "候选牌是财神时标记为飘，否则标记为爆。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "展示听牌标记",
+      "condition": "候选牌是否为财神",
+      "action": "按候选牌是否为财神打标记",
+      "result": "玩家看到候选牌标记为飘或爆"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 211, "toLine": 211 }
+    },
+    {
+     "atomId": "AT-ST-C16-041",
+     "name": "存在该听牌时其余只留箭头",
+     "rule": "同一手只要有一张这样，其余可听牌只留箭头。",
+     "uiRequirement": "其余可听牌只保留箭头显示。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "展示听牌详情",
+      "condition": "同一手牌中已有一张听任意一张的牌",
+      "action": "其余可听牌只保留箭头",
+      "result": "玩家看到其余听牌仅以箭头表示"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 211, "toLine": 211 }
+    },
+    {
+     "atomId": "AT-ST-C16-042",
+     "name": "分级标签大",
+     "rule": "**大**=全部候选张达到同一最高番。",
+     "uiRequirement": "候选列表展示分级标签「大」。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "展示听牌候选列表",
+      "condition": "全部候选张都达到同一最高番",
+      "action": "为该听牌打上「大」标签",
+      "result": "玩家看到候选列表带有「大」标记"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 212, "toLine": 212 }
+    },
+    {
+     "atomId": "AT-ST-C16-043",
+     "name": "分级标签多",
+     "rule": "**多**=某候选剩余张数比最少候选多 2 张及以上。",
+     "uiRequirement": "候选列表展示分级标签「多」。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "展示听牌候选列表",
+      "condition": "存在某候选的剩余张数比最少候选多 2 张及以上",
+      "action": "为该听牌打上「多」标签",
+      "result": "玩家看到候选列表带有「多」标记"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 212, "toLine": 212 }
+    },
+    {
+     "atomId": "AT-ST-C16-044",
+     "name": "分级标签优",
+     "rule": "**优**=同时满足大和多。",
+     "uiRequirement": "候选列表展示分级标签「优」。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "展示听牌候选列表",
+      "condition": "同时满足全部候选同一最高番与某候选多 2 张及以上",
+      "action": "为该听牌打上「优」标签",
+      "result": "玩家看到候选列表带有「优」标记"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 212, "toLine": 212 }
+    },
+    {
+     "atomId": "AT-ST-C16-045",
+     "name": "分级不影响胡牌判定",
+     "rule": "分级只影响展示，不影响胡牌判定。",
+     "uiRequirement": "分级标签仅作展示。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家胡牌判定",
+      "condition": "该听牌带有大、多、优分级标签",
+      "action": "分级不参与胡牌判定",
+      "result": "玩家看到的等级标签不改变能否胡牌"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 212, "toLine": 212 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C16-009",
+   "name": "吃碰杠牌组与标记展示",
+   "description": "吃、碰、直杠、暗杠、加杠成立后碰杠区的牌组构成、排列顺序、来源箭头方向与各种标记的叠放位置。",
+   "scope": "覆盖碰杠区牌组与标记的展示形态，不含成立字效与对局结束演出。",
+   "coordination": "成立结果与来源方向由服务端给出，客户端按规则摆放牌组与标记。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C16-046",
+     "name": "吃成立新增顺子组",
+     "rule": "吃成立后，碰杠区新增一组正面顺子，按点数从小到大摆放。",
+     "uiRequirement": "碰杠区新增一组正面顺子，按点数从小到大摆放。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "吃牌成立",
+      "condition": "该吃牌被裁决为成立",
+      "action": "在碰杠区新增一组正面顺子并按点数升序摆放",
+      "result": "玩家在碰杠区看到新的正面顺子组"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 213, "toLine": 213 }
+    },
+    {
+     "atomId": "AT-ST-C16-047",
+     "name": "吃牌来源箭头位置",
+     "rule": "以吃牌者视角，来源箭头「←」叠在吃到的那张牌上。",
+     "uiRequirement": "以吃牌者视角，来源箭头「←」叠在吃到的那张牌上。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "吃牌成立并展示牌组",
+      "condition": "以吃牌者视角查看该顺子组",
+      "action": "在吃到的那张牌上叠加来源箭头",
+      "result": "玩家看到「←」标在吃进的那张牌上"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 213, "toLine": 213 }
+    },
+    {
+     "atomId": "AT-ST-C16-048",
+     "name": "碰成立牌组与箭头方向",
+     "rule": "碰成立后，碰牌组三张都正面展示。以来源视角，箭头叠在中间一张：上家←、对家↑、下家→。",
+     "uiRequirement": "碰牌组三张正面展示；箭头叠在中间一张，上家为←、对家为↑、下家为→。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "碰牌成立",
+      "condition": "碰牌被裁决为成立，来源为上家、对家或下家",
+      "action": "三张正面展示并在中间一张叠加对应方向箭头",
+      "result": "玩家在碰牌组中间看到←、↑或→的方向箭头"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 214, "toLine": 214 }
+    },
+    {
+     "atomId": "AT-ST-C16-049",
+     "name": "新牌组按成立顺序追加",
+     "rule": "吃、碰、直杠、暗杠的新牌组按成立顺序从左往右追加。",
+     "uiRequirement": "新牌组按成立顺序从左往右追加。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "吃、碰、直杠或暗杠成立",
+      "condition": "碰杠区已有或将新增牌组",
+      "action": "按成立顺序把新牌组追加到右侧",
+      "result": "玩家看到牌组自左向右依次排列"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 214, "toLine": 214 }
+    },
+    {
+     "atomId": "AT-ST-C16-050",
+     "name": "各类杠标记与叠放位置",
+     "rule": "直杠用来源箭头，加杠标记为【补】，暗杠用手掌标记。标记都叠在杠牌组最上方居中的第 4 张。",
+     "uiRequirement": "直杠显示来源箭头；加杠显示【补】；暗杠显示手掌标记；标记叠在杠牌组最上方居中的第 4 张。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "直杠、加杠或暗杠成立",
+      "condition": "对应类型的杠已成立并展示",
+      "action": "在杠牌组第 4 张上方居中叠加该类型标记",
+      "result": "玩家看到箭头、【补】或手掌标记叠在第 4 张上"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 215, "toLine": 215 }
+    },
+    {
+     "atomId": "AT-ST-C16-051",
+     "name": "直杠暗杠新增组加杠补入原组",
+     "rule": "直杠、暗杠在碰杠区新增一组；加杠补入原碰牌组，沿用原位置。",
+     "uiRequirement": "直杠、暗杠在碰杠区新增一组；加杠补入原碰牌组并沿用原位置。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "直杠、暗杠或加杠成立",
+      "condition": "杠的类型为直杠、暗杠或加杠",
+      "action": "直杠与暗杠新增一组，加杠补入原碰牌组原位置",
+      "result": "玩家看到直杠暗杠另起一组，加杠留在原碰牌组位置"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 215, "toLine": 215 }
+    },
+    {
+     "atomId": "AT-ST-C16-052",
+     "name": "补牌落入最右分隔位",
+     "rule": "补牌落入最右分隔位，可与「杠」字同时出现。",
+     "uiRequirement": "补牌落在最右分隔位，可与「杠」字同时显示。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "杠后补牌",
+      "condition": "杠操作完成并补入一张牌",
+      "action": "把补牌放入最右侧分隔位",
+      "result": "玩家看到补牌位于最右分隔位，可与「杠」字并存"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 215, "toLine": 215 }
+    },
+    {
+     "atomId": "AT-ST-C16-053",
+     "name": "连续杠新杠字覆盖旧",
+     "rule": "连续杠时，新的「杠」字覆盖仍在播放的上一个。",
+     "uiRequirement": "连续杠时新「杠」字覆盖仍在播放的上一个。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "连续发生两次及以上杠",
+      "condition": "上一个「杠」字仍在播放",
+      "action": "用新的「杠」字覆盖上一个",
+      "result": "玩家看到最新的「杠」字，不叠加旧字"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 215, "toLine": 215 }
+    }
+   ]
+  },
+  {
+   "id": "FP-ST-C16-010",
+   "name": "成立字效与对局结束演出",
+   "description": "吃碰杠胡成立时的方位字效，自摸与点炮胡抢杠胡的对局结束、亮牌、番型与点炮标注、飘分颜色，以及简洁模式只省略演出的口径。",
+   "scope": "覆盖操作成立的演出表现与结束展示，不含牌组摆放与规则判定本身。",
+   "coordination": "成立与结算结果由服务端给出，客户端负责字效、亮牌、标注与飘分颜色展示。",
+   "atoms": [
+    {
+     "atomId": "AT-ST-C16-054",
+     "name": "成立时方位字效",
+     "rule": "吃、碰、杠、胡成立时，在操作者对应方位播放对应字效。",
+     "uiRequirement": "在操作者对应方位播放吃、碰、杠、胡对应字效。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "吃、碰、杠或胡成立",
+      "condition": "该操作被裁决为成立",
+      "action": "在操作者方位播放对应字效",
+      "result": "玩家在操作者方位看到吃、碰、杠或胡的字效"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 216, "toLine": 216 }
+    },
+    {
+     "atomId": "AT-ST-C16-055",
+     "name": "自摸结束亮牌与胡牌张位置",
+     "rule": "自摸确认后显示「对局结束」并亮出各家手牌，胡牌张单独摆在胡牌者手牌右侧。",
+     "uiRequirement": "显示「对局结束」；亮出各家手牌；胡牌张单独摆在胡牌者手牌右侧。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "玩家确认自摸",
+      "condition": "自摸成立",
+      "action": "显示「对局结束」并亮出各家手牌",
+      "result": "玩家看到结束提示、各家亮牌，胡牌张位于胡牌者手牌右侧"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 216, "toLine": 216 }
+    },
+    {
+     "atomId": "AT-ST-C16-056",
+     "name": "点炮抢杠胡亮牌表现",
+     "rule": "点炮胡、抢杠胡同样显示「对局结束」和亮牌；胡牌张在胡牌者手牌尾端，带浅绿描边和来源箭头。",
+     "uiRequirement": "显示「对局结束」并亮牌；胡牌张位于胡牌者手牌尾端，带浅绿描边和来源箭头。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "点炮胡或抢杠胡成立",
+      "condition": "胡牌由他人弃牌或加杠牌形成",
+      "action": "显示「对局结束」并亮牌，将胡牌张置于手牌尾端并加描边与箭头",
+      "result": "玩家看到结束提示、亮牌，胡牌张带浅绿描边与来源箭头"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 216, "toLine": 216 }
+    },
+    {
+     "atomId": "AT-ST-C16-057",
+     "name": "番型与点炮标注",
+     "rule": "赢家方位显示番型，放铳者方位显示「点炮」。",
+     "uiRequirement": "赢家方位显示番型；放铳者方位显示「点炮」。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "对局结束并展示结算",
+      "condition": "存在赢家且存在放铳者",
+      "action": "在赢家方位显示番型，在放铳者方位显示「点炮」",
+      "result": "玩家看到赢家旁的番型与放铳者旁的「点炮」字样"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 216, "toLine": 216 }
+    },
+    {
+     "atomId": "AT-ST-C16-058",
+     "name": "按座位飘分与颜色",
+     "rule": "随后按座位飘分，正分黄色，负分灰色。",
+     "uiRequirement": "按座位显示飘分；正分黄色，负分灰色。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "番型与点炮标注展示后",
+      "condition": "本局产生座位飘分结果",
+      "action": "按座位展示飘分并区分正负颜色",
+      "result": "玩家看到正分黄色、负分灰色的分数字样"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 216, "toLine": 216 }
+    },
+    {
+     "atomId": "AT-ST-C16-059",
+     "name": "简洁模式只省略演出",
+     "rule": "创房选项「模式=简洁」只省略演出：规则类提示、「三摊落地」动画、摸财神特效都不播放，不改变规则本身；本期固定正常模式，文中演出均按正常模式描述。",
+     "uiRequirement": "简洁模式不播放规则类提示、「三摊落地」动画与摸财神特效；本期固定正常模式。",
+     "verificationScope": "client",
+     "businessBehavior": {
+      "trigger": "创房时选择模式",
+      "condition": "模式选择为简洁",
+      "action": "省略规则类提示、「三摊落地」动画与摸财神特效，规则不变",
+      "result": "玩家看到演出被省略，但规则效果与正常模式一致"
+     },
+     "source": { "chapter": "行牌 > 出牌与响应", "fromLine": 217, "toLine": 217 }
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,39 @@
+{
+ "schemaVersion": 2,
+ "analysisRunId": "ar-2026-11-17-001",
+ "entries": [
+  {
+   "atomId": "AT-ST-C08-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第125行「从牌墙头部、庄家起、按逆时针方向发牌」）要求发牌起点为牌墙头部、首发给庄家、再逆时针依次下发；客户端侧 unified-atoms 中 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 全量 12 条（CLE-AT-ST-C01-002-02 二人房 gameId、CLE-AT-ST-C01-002-03 2/3 人座次映射、CLE-AT-ST-C01-004-03 牢庄等级、CLE-AT-ST-C01-004-04 庄闲倍数）atomIds 全部挂 AT-ST-C01-*，无一条涉及发牌起点或轮转方向；服务端侧 server.applicability 为空、server.evidenceIds 为空，server-evidence.json 60 条（SVE-AT-ST-C01-004-01 定庄、SVE-AT-ST-C01-003-01 财神翻开、SVE-AT-ST-C01-024-06 OnGameStart 建桌初始化）同样无一条覆盖取牌顺序或牌墙头部起点。双端皆无证据，既无法证明符合需求，也不存在与需求矛盾之处，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（双端均无发牌顺序证据，属取证空缺：不升级 conflict，也不得判 consistent）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C08-006",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第131行「庄家用这 14 张直接进入首轮，不再摸牌」）要求庄家发牌后不执行摸牌、直接进入出牌；客户端侧 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 中与对局表现相关的 CLE-AT-ST-C01-003-03（财神白板判定）、CLE-AT-ST-C01-005-03（结算胡型下拉）均不涉及首轮摸牌动作的呈现或缺失；服务端侧 server.applicability 为空、server.evidenceIds 为空，server-evidence.json 中 SVE-AT-ST-C01-004-01/04-02（BoxZhuangStep 定庄与牢庄等级）、SVE-AT-ST-C01-024-06（CommonGameLogic::OnGameStart 配置初始化）只到开局建桌阶段，未覆盖「首轮跳过摸牌」的回合推进逻辑。证据不足，维持 unverified，不因服务端缺证据判为冲突。",
+   "reviewRule": "no-server-evidence-is-not-conflict（服务端仅覆盖定庄与建桌初始化，未覆盖首轮摸牌推进，缺证据不等于冲突）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C08-007",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求（PRD 第131行及 uiRequirement「满足自摸时立即给出【自摸】【过】两个按钮」）要求庄家理牌后若已成自摸，须在出牌前立即弹出这两个按钮；客户端侧 client.verdict 为空、client.evidenceIds 为空，client-evidence.json 12 条中唯一涉及按钮/选项的证据 CLE-AT-ST-C01-005-03 是结算界面 BoxHzmjResultMid 的胡型选中项，与起手自摸提示无关；服务端侧 server.applicability 为空、server.evidenceIds 为空，server-evidence.json 中 SVE-AT-ST-C01-005-01（BoxHuStep::CanDiscardHu 庄闲放铳）只证明可胡判定前提，未证明庄家起手会下发【自摸】【过】选择机会。无任何一端证据支持「按钮已实现且与需求一致」，按证据不足规则不得判 consistent，维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（客户端缺失【自摸】【过】按钮证据，证据不足不能判 consistent）",
+   "evidenceScopes": []
+  }
+ ]
+}

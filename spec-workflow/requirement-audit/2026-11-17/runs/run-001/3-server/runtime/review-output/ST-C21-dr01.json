@@ -1,0 +1,79 @@
+{
+ "schemaVersion": 2,
+ "analysisRunId": "ar-2026-11-17-001",
+ "entries": [
+  {
+   "atomId": "AT-ST-C21-001",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：「胡牌确认后停止行牌」（结算，第 280 行），verificationScope=server，即由服务端冻结行牌。客户端表现：unified-atoms 中该原子 client.verdict 为空、client.evidenceIds 为空，2-client/client-evidence.json 的 coverage.pendingAtomIds 明确列入 AT-ST-C21-001（本轮客户端未取证，非「已查未找到」）。服务端规则：3-server/server-evidence.json 现有 60 条 SVE 的 atomIds 只覆盖 AT-ST-C01-*，无任何 C21 证据，unified-atoms 该原子 server.applicability 亦为空；S7 baselineDetail 同记「applicability 为空、无 evidenceIds」。两侧均无「胡牌后仍可继续出牌」的矛盾实现可指，也无冻结行牌的直证，故不能判 conflict 也不能判 consistent，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（本片 48 个 C21 原子双端均无证据，未取证不等于冲突）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C21-007",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：「在原牌桌亮出四家手牌，桌面中央显示「对局结束」」（结算，第 282 行），verificationScope=both，服务端需下发亮牌与终局状态、客户端负责渲染。客户端表现：unified-atoms 该原子 client.verdict 空、evidenceIds 空，2-client/client-evidence.json coverage.pendingAtomIds 含 AT-ST-C21-007，无终局亮牌/「对局结束」文案证据。服务端规则：server-evidence.json 60 条证据无 C21 引用，该原子 server.applicability 为空，S7 baselineDetail 记「无 applicability、无 evidenceIds」。既无「不亮牌/不显示对局结束」的反证，也无实现侧直证，维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（无任何 CLE/SVE 证据支撑，不能凭需求描述与常见实现形态判 consistent）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C21-013",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：番型字效退场后「只在本局得分不为 0 的座位内侧飘分」（结算，第 284 行），verificationScope=both，得分由服务端提供、飘分座位筛选由客户端执行。客户端表现：unified-atoms 该原子 client.verdict 空、evidenceIds 空，coverage.pendingAtomIds 含 AT-ST-C21-013，无飘分座位筛选或飘分动画证据。服务端规则：server-evidence.json 无 C21 引用，server.applicability 为空，S7 亦记证据缺失。得分口径证据（C01 结算类 SVE）只能说明服务端产出净得分，不能证明客户端按非零筛选飘分，故维持 unverified。",
+   "reviewRule": "evidence-is-not-consistency（得分产出证据不等于飘分座位筛选已实现，证据不足不判 consistent）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C21-019",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：黄庄时「四家本局都是 0」（结算，第 285 行），verificationScope=server。客户端表现：unified-atoms 该原子 client.verdict 空、evidenceIds 空，coverage.pendingAtomIds 含 AT-ST-C21-019。服务端规则：server-evidence.json 60 条 SVE 均绑定 AT-ST-C01-*，无黄庄四家 0 分判定证据，该原子 server.applicability 为空；S7 baselineDetail 记「applicability 为空、无 evidenceIds，无法证实也无法证伪」。既无黄庄仍计分的矛盾证据，也无 0 分口径直证，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（黄庄结算无服务端证据不等于需求被违背）",
+   "evidenceScopes": []
+  },
+  {
+   "atomId": "AT-ST-C21-036",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：三摊承包时「赢家标黄色「承包」，赔付者得分右侧标「三摊承包」」（结算，第 292 行），verificationScope=both：服务端确定承包关系，客户端渲染标注。服务端规则：存在相邻能力证据 SVE-AT-ST-C01-021-02（common_game/com_game/common_game_com_result.cpp:289-295，ApplyBaoContracts 在 !GetEnableThreeTanBao() 时直接 return），只证明承包结算以三摊开关为前置、可产出承包关系，不证明「承包/三摊承包」标注文案与位置。客户端表现：unified-atoms 该原子 client.verdict 空、evidenceIds 空，coverage.pendingAtomIds 含 AT-ST-C21-036，无小结算承包标注渲染证据。服务端有前置能力而客户端标注未取证，属双端协作断点，既不能判 consistent 也无矛盾可指，维持 unverified。",
+   "reviewRule": "dual-side-collaboration-gap（断点定位：服务端承包关系能力已存在，客户端小结算承包标注未取证）",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-021-02",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "common_game_com_result.cpp:289-295 ApplyBaoContracts 仅在 enable_three_tan_bao 开启时执行，只证明服务端可产出承包关系，不证明小结算「承包/三摊承包」标注已实现"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C21-047",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "",
+   "serverApplicability": "",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：「四人均准备后自动开下一小局」（结算，第 294 行），verificationScope=server，需服务端维护准备态并在四人齐全时开局。客户端表现：unified-atoms 该原子 client.verdict 空、evidenceIds 空，coverage.pendingAtomIds 含 AT-ST-C21-047（本来也属服务端职责）。服务端规则：server-evidence.json 60 条 SVE 的 atomIds 只覆盖 AT-ST-C01-*，无准备态计数与自动开局链路证据，该原子 server.applicability 为空；S7 baselineDetail 记「applicability 为空、无 evidenceIds，无法证实自动开局时机」。无「准备后不开局」反证，亦无开局链路直证，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（准备/开局链路未取证，不能据缺失判冲突）",
+   "evidenceScopes": []
+  }
+ ]
+}

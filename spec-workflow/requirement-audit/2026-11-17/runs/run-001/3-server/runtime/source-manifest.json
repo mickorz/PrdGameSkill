@@ -1,0 +1,78 @@
+{
+ "schemaVersion": 1,
+ "branch": "server",
+ "collectedAt": "2026-11-17",
+ "repos": [
+  {
+   "repoId": "server",
+   "repoRoot": "E:/WorkProjects/xc-flow/.xflow/xc/xcodeDev/game-mahjong/server/Logic/mahjong_server/src/game_hzmj",
+   "commit": "bf85ebeea7a2ad33fea84243e2700d98e109cfe5",
+   "files": [
+    {
+     "file": "common_game/com_game/common_game_com_action.cpp",
+     "contentHash": "sha256:6c1fed852b4d3d198d1f4ca1ccfb787df1fa2b79a4ca095b2e055f2c761644b9"
+    },
+    {
+     "file": "common_game/com_game/common_game_com_ju.cpp",
+     "contentHash": "sha256:72e2c48437b8e0461ba1e2d90c7ae706f8514da5bfe6181dd64a031993828e27"
+    },
+    {
+     "file": "common_game/com_game/common_game_com_pung.cpp",
+     "contentHash": "sha256:56cb3fc5a99252d32acf5ca05aeaa88c17bca558fd623890fbf0089a190ca230"
+    },
+    {
+     "file": "common_game/com_game/common_game_com_result.cpp",
+     "contentHash": "sha256:bb32685d3c302ff07704ea61f16400cd2aca5924f6ef97779b7f537678d3a241"
+    },
+    {
+     "file": "common_game/com_game/common_game_com_result.h",
+     "contentHash": "sha256:dc456b6295f23fab91c1ecf7cc89e4dcf43e3ec819d77db9eae5f357cba99deb"
+    },
+    {
+     "file": "common_game/common_game_algorithm.cpp",
+     "contentHash": "sha256:889811c5be193378a0d7e807f265f2d5a3ef1520581f8c7075b7cd6b28ece0ab"
+    },
+    {
+     "file": "common_game/common_game_context.cpp",
+     "contentHash": "sha256:6ebbdaf5f69ea0d613a9510b8afed8329e8650bd81b867265a113c409aa66c56"
+    },
+    {
+     "file": "common_game/common_game_init.cpp",
+     "contentHash": "sha256:bf3d7ab31e9cc3f699a053baad81bc10101c734ddb3dcfd883f803f9817f7797"
+    },
+    {
+     "file": "common_game/common_game_logic.cpp",
+     "contentHash": "sha256:677de989ee0517254aa8a9b3eabdee5884262d94d0d266b069eb811231b02ff1"
+    },
+    {
+     "file": "common_game/common_game_server_config.h",
+     "contentHash": "sha256:8285e5fb4550ea262c69bfdfa3304670c85d976e7867bab3bfe1f5dd45775007"
+    },
+    {
+     "file": "common_game/protocol/hzmj_protocol.proto",
+     "contentHash": "sha256:d06362df4f99f66eefe69ad7eb2526be735c602cbd2af48e3ea1f2e676c2ccd7"
+    },
+    {
+     "file": "hzmj_server/game_logic.cpp",
+     "contentHash": "sha256:8f21c00c2671a018391336e5938f6cce9881addd217159bb9ca08dbcecd8fe8f"
+    },
+    {
+     "file": "hzmj_server/server_config.cpp",
+     "contentHash": "sha256:97d42be66dccdf2e674227ce0491964bf8eb5b06272a55965391693f9411781c"
+    },
+    {
+     "file": "mah_frame/base/base_config.cpp",
+     "contentHash": "sha256:f52525e38c88a287145fd7e8caea2e87ead0d28648a2a5c4f76784186eb916eb"
+    },
+    {
+     "file": "mah_frame/base/base_data.h",
+     "contentHash": "sha256:196fb0bf00ea548bc02415e000572403604be0ebd2a1bbe63400c13b8b4730e9"
+    },
+    {
+     "file": "mah_frame/interface/logic_interface.h",
+     "contentHash": "sha256:044db0b54e1357fe1116521e4e8e53900388b9a521bcbb65c2820451b0254df2"
+    }
+   ]
+  }
+ ]
+}

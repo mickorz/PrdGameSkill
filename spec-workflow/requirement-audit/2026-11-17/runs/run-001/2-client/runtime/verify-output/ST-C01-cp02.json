@@ -1,0 +1,200 @@
+{
+ "schemaVersion": 1,
+ "stageId": "ST-C01",
+ "partNo": "02",
+ "entries": [
+  {
+   "atomId": "AT-ST-C01-012",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "可查证的两个客户端根仅含对局内实现：Code 仅有 hzmj 对局 controller/cmd/layer/fgui，Fgui 资产仅 box_hzmj_*（back/card_down/common/mah2D_Main/main/player/result/specf/tingPai/tipAni）对局内包；未找到创房/房间参数面板，局数单选组（含 40片/50片/60片）无实现证据。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false
+  },
+  {
+   "atomId": "AT-ST-C01-013",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未找到创房面板代码，无打片档选中后隐藏「封顶」并把封顶置「无」的显隐逻辑。全目录检索「封顶」仅命中对局内结算/听牌提示资源（img_fengding、tip_fengding、ImgFengding、fnt_huafeifengding）与对局结算逻辑，与房间参数面板无关。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false
+  },
+  {
+   "atomId": "AT-ST-C01-014",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未找到创房面板代码，无打片档选中后隐藏「底分」并把底分置「1分」的显隐逻辑。客户端仅在协议 MsgStartGame/MsgVsPlayerInfo 中出现 base_score 字段（对局内展示用），不涉及创房底分选项。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false
+  },
+  {
+   "atomId": "AT-ST-C01-015",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未找到创房面板代码；检索「连庄不占局数」在两个客户端根内零命中，无该选项显示逻辑。对局内仅有 lian_zhuang/banker_level 等局数据与牢庄等级展示，与打片档下「连庄不占局数」选项无关。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false
+  },
+  {
+   "atomId": "AT-ST-C01-016",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "客户端无可查证的创房提交链路（无创房请求/参数序列化代码），无法验证局数与片数互斥、只提交其中一项。协议层 GameGlcProtocol.ts 的 MsgXxx 全为对局内消息（MsgJuData/MsgGameConfig/MsgStartGame 等），无创房消息。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false
+  },
+  {
+   "atomId": "AT-ST-C01-017",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未找到创房吃碰单选组的显隐逻辑（无 2/3/4 人房分支的面板代码）。对局内仅见 GameNotifyInfoCmd.ts:65 在只碰不吃生效时弹出「只碰不吃规则生效中」提示，属对局内规则提示，不是创房「吃碰」组的显示范围实现。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false
+  },
+  {
+   "atomId": "AT-ST-C01-018",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "无可查证的创房面板，无法验证 2 人房吃碰初始选中「无限吃碰」与 3/4 人房固定按「默认吃碰」生效。两个根内检索「无限吃碰」「默认吃碰」零命中；协议 MsgGameConfig 仅含 must_bao_tou_with_cai/enable_three_tan_bao/round_id/simple_mode，无吃碰档位字段。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false
+  },
+  {
+   "atomId": "AT-ST-C01-019",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "「碰算摊」在两个客户端根内零命中，无选无限吃碰后隐藏碰算摊、承包置「两摊封顶」的联动实现。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false
+  },
+  {
+   "atomId": "AT-ST-C01-020",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "「碰算摊」零命中；无选只碰不吃/默认吃碰后显示碰算摊并把承包置「两摊封顶」的联动实现。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false
+  },
+  {
+   "atomId": "AT-ST-C01-021",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未找到创房承包单选组（三摊承包/两摊封顶及默认选中三摊承包）的实现。客户端仅在对局内使用「三摊承包」概念：MatchTipConfig.ts:23、BoxHzmjTipAniView.ts:1750 的结算文案与 MatchTipConfig 匹配场提示，均为对局/结算展示，非创房档位与默认值。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false
+  },
+  {
+   "atomId": "AT-ST-C01-022",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未找到按人数控制承包组显隐的创房代码；两个根内无创房面板，无可验证的 2 人房隐藏/3、4 人房显示分支。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false
+  },
+  {
+   "atomId": "AT-ST-C01-023",
+   "verdict": "not_found",
+   "clientLogic": "",
+   "uiInteraction": "",
+   "messages": [],
+   "notes": "未找到 2 人房承包随吃碰联动为「两摊封顶」的实现；客户端协议 MsgGameConfig 仅有 enable_three_tan_bao 布尔字段（对局配置），不体现 2 人房下承包取值联动。",
+   "evidenceIds": [],
+   "observedBehavior": {
+    "trigger": "",
+    "condition": "",
+    "action": "",
+    "result": ""
+   },
+   "directConflict": false
+  }
+ ],
+ "evidence": []
+}

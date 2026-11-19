@@ -1,0 +1,144 @@
+{
+ "schemaVersion": 2,
+ "analysisRunId": "ar-2026-11-17-001",
+ "entries": [
+  {
+   "atomId": "AT-ST-C01-004",
+   "previousDifference": "partial",
+   "candidateDifference": "",
+   "clientVerdict": "partial",
+   "serverApplicability": "conditional",
+   "reviewedDifference": "partial",
+   "reviewReason": "需求语义：「连庄档」三选一（笃三老庄/笃二老庄/平庄起）且默认「笃三老庄」，对应牢庄等级 3 与 8 倍庄闲倍数。客户端表现：CLE-AT-ST-C01-004-03（controller/cmd/gameCmd/GameJuDataCmd.ts:34-35）显示客户端从创房配置读取 banker_level 推导牢庄等级，CLE-AT-ST-C01-004-04（data/GameData.ts:1664-1666）按 level 左移换算倍数，两条都只覆盖对局内消费档位，创房面板三选一与默认选中项无证据。服务端规则：SVE-AT-ST-C01-004-03（hzmj_server/game_logic.cpp:56-59）banker_level_type 0=平庄起/1=笃二老庄/2=笃三老庄，SVE-AT-ST-C01-004-02（common_game/com_game/common_game_com_ju.cpp:191-196）level=type+1 并夹在 1..3，SVE-AT-ST-C01-004-04（hzmj_server/server_config.cpp:18）配置默认 0=平庄起。服务端默认档与需求默认档不同，但该默认仅在创房未下发时生效，客户端显式提交 2 即得需求默认的笃三老庄，故不升级 conflict；面板默认项缺证，既不能判 consistent 也无矛盾，维持 partial。",
+   "reviewRule": "evidence-is-not-consistency（服务端档位换算与需求映射自洽，但缺创房面板三选一/默认项证据，不能凭档位能力判 consistent）",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-004-02",
+     "layer": "common_game",
+     "applicability": "active",
+     "note": "common_game_com_ju.cpp:191-196 证明服务端按 banker_level_type+1 换算牢庄等级并夹在 1..3，与需求三档映射一致"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-004-03",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "game_logic.cpp:56-59 证明 banker_level_type 取值 0平庄起/1笃二老庄/2笃三老庄，默认 0（平庄起），需创房显式下发 2 才等于需求默认"
+    },
+    {
+     "ref": "CLE-AT-ST-C01-004-03",
+     "layer": "client_code",
+     "applicability": "active",
+     "note": "GameJuDataCmd.ts:34-35 只证明客户端消费下发的 banker_level，不证明创房面板默认选中笃三老庄"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C01-012",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "not_found",
+   "serverApplicability": "inactive",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：局数单选组中并列提供 40片/50片/60片 三个打片档，选中后本房按片数结算。客户端表现：client.verdict=not_found、evidenceIds 为空，本轮 12 条 CLE 证据中没有创房面板局数单选组或打片档提交证据（business-behavior 亦记「客户端未找到该组含打片档」）。服务端规则：SVE-AT-ST-C01-012-01（hzmj_server/game_logic.cpp:175-179）把 play_score 解析为起始片数，SVE-AT-ST-C01-012-02（hzmj_server/server_config.cpp:43-46）好友房默认 play_score=0、连庄不占局数=false，SVE-AT-ST-C01-015-01（common_game/com_game/common_game_com_result.cpp:57-76）证明打片房按片数推进大结算——这些只说明服务端具备打片结算能力与开关，不能证明创房面板已提供 40/50/60片 三档，既不构成矛盾也不能判一致，维持 unverified。",
+   "reviewRule": "common-capability-is-not-enabled（服务端打片结算口径存在不等于本房创房面板已提供 40片/50片/60片 档）",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-012-01",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "game_logic.cpp:175-179 只证明 play_score 被解析为打片起始片数，未涉及局数单选组的档位集合"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-012-02",
+     "layer": "hzmj_server",
+     "applicability": "active",
+     "note": "server_config.cpp:43-46 证明好友房默认 play_score=0（局数房），打片能力需创房显式下发才启用"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C01-018",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "not_found",
+   "serverApplicability": "conditional",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：2 人房吃碰默认「无限吃碰」、对局中吃碰不受限，3/4 人房固定按「默认吃碰」（每方向限 2 次）。客户端表现：client.verdict=not_found，无创房面板吃碰组默认值证据，而该默认值实际由客户端提交决定。服务端规则：SVE-AT-ST-C01-018-03（hzmj_server/server_config.cpp:27-28）好友房默认 OnlyPungNoChow=false、RuleChiPeng=0，SVE-AT-ST-C01-018-01（common_game/common_game_algorithm.cpp:79-84）RuleChiPeng<=0 时不限次；但 SVE-AT-ST-C01-018-02（hzmj_server/game_logic.cpp:112-121）显示 rule_chi_peng 在 !EnableThreeTanBao 分支内被改写，SVE-AT-ST-C01-024-08（hzmj_server/game_logic.cpp:66-83）三摊未开启分支直接 SetRuleChiPeng(2)（限吃碰 2 次），而 2 人房被 SVE-AT-ST-C01-019-03（hzmj_server/game_logic.cpp:65-87）强制关闭三摊承包。因此「2 人房无限吃碰」能否成立取决于客户端提交的三摊键与 rule 值组合，属双端协作断点；证据不足以证成 conflict，也缺客户端面板证据不能判 consistent，维持 unverified。",
+   "reviewRule": "dual-side-collaboration-gap（断点定位：吃碰默认档由客户端提交，服务端在三摊承包关闭分支回写 rule_chi_peng=2，2 人房强制三摊关闭）",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-018-02",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "game_logic.cpp:112-121 显示创房 JSON 解析在 !EnableThreeTanBao 时改写 rule_chi_peng，客户端提交值不会原样生效"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-024-08",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "game_logic.cpp:66-83 三摊关闭分支执行 SetRuleChiPeng(2)（限吃碰 2 次），与需求 2 人房「吃碰不受限」存在潜在背离"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-019-03",
+     "layer": "hzmj_server",
+     "applicability": "active",
+     "note": "game_logic.cpp:65-87 证明 player_count<=2 时三摊承包被强制关闭，2 人房恒处于上述回写分支的输入条件下"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C01-021",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "not_found",
+   "serverApplicability": "conditional",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：3/4 人房展示承包单选（三摊承包/两摊封顶），默认选中「三摊承包」并据此提交。客户端表现：client.verdict=not_found，CLE 证据中无承包单选组及默认项，面板显隐与默认值属客户端职责。服务端规则：SVE-AT-ST-C01-019-04（hzmj_server/server_config.cpp:20-21）好友房默认 EnableThreeTanBao=false、PungAsTan=true，SVE-AT-ST-C01-021-02（common_game/com_game/common_game_com_result.cpp:289-295）承包结算仅在 EnableThreeTanBao 时执行，SVE-AT-ST-C01-021-01（common_game/com_game/common_game_com_action.cpp:141-148）庄闲累计满 3 摊触发承包/倒承包。服务端默认关闭只表示未收到开启键时按两摊封顶，需求默认档由创房显式提交 true 即可达成，故不能据「服务端默认关闭」判 conflict；缺客户端面板证据不能判 consistent，维持 unverified。",
+   "reviewRule": "no-server-evidence-is-not-conflict（服务端默认关闭三摊承包不是冲突证据：默认档由创房显式下发，服务端无面板默认项取证义务）",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-019-04",
+     "layer": "hzmj_server",
+     "applicability": "active",
+     "note": "server_config.cpp:20-21 证明好友房默认三摊承包关闭、碰算摊开启，属未下发时的兜底默认，非面板默认项"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-021-02",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "common_game_com_result.cpp:289-295 证明承包结算以 EnableThreeTanBao 为前置，开关开启才按三摊触发"
+    }
+   ]
+  },
+  {
+   "atomId": "AT-ST-C01-024",
+   "previousDifference": "unverified",
+   "candidateDifference": "",
+   "clientVerdict": "not_found",
+   "serverApplicability": "conditional",
+   "reviewedDifference": "unverified",
+   "reviewReason": "需求语义：创房面板把人数切到 2 人后刷新三处——32局放出/4局收起、吃碰组出现且默认「无限吃碰」、承包组隐藏。客户端表现：client.verdict=not_found，无人数联动刷新与面板取值证据（局数档显隐、承包组显隐均为客户端职责）。服务端规则：SVE-AT-ST-C01-024-07（common_game/common_game_server_config.h:41）注明三摊承包仅 3/4 人局、2 人局服务端强制关闭，SVE-AT-ST-C01-019-03（hzmj_server/game_logic.cpp:65-87）实现该强制关闭，SVE-AT-ST-C01-024-08（hzmj_server/game_logic.cpp:66-83）三摊关闭分支 SetRuleChiPeng(2)，SVE-AT-ST-C01-024-03（common_game/common_game_algorithm.cpp:79-84）RuleChiPeng>0 时每方向限 2 次。即 2 人房服务端吃碰口径取决于客户端提交的三摊键与 rule 值（与 AT-ST-C01-018 同一断点），需求「默认无限吃碰」是否成立仍待客户端提交路径取证；面板三处刷新无 CLE 证据，既不能判 consistent 也无法证成 conflict，维持 unverified。",
+   "reviewRule": "dual-side-collaboration-gap（断点定位：人数联动刷新在客户端，服务端 2 人房强制三摊关闭并可能回写吃碰档，取决于客户端提交的三摊键与 rule 值）",
+   "evidenceScopes": [
+    {
+     "ref": "SVE-AT-ST-C01-024-07",
+     "layer": "common_game",
+     "applicability": "active",
+     "note": "common_game_server_config.h:41 注明三摊承包仅 3/4 人局、2 人局服务端强制关闭，与需求承包组隐藏口径同向"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-024-08",
+     "layer": "hzmj_server",
+     "applicability": "conditional",
+     "note": "game_logic.cpp:66-83 三摊关闭分支 SetRuleChiPeng(2)，使 2 人房吃碰是否「无限」取决于客户端三摊键提交"
+    },
+    {
+     "ref": "SVE-AT-ST-C01-024-03",
+     "layer": "common_game",
+     "applicability": "conditional",
+     "note": "common_game_algorithm.cpp:79-84 证明 RuleChiPeng>0 时每方向吃碰上限 2 次，RuleChiPeng<=0 才不限制"
+    }
+   ]
+  }
+ ]
+}

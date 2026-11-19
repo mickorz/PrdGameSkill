@@ -1,0 +1,58 @@
+{
+ "schemaVersion": 1,
+ "branch": "server",
+ "date": "2026-11-17",
+ "runStatus": "completed",
+ "parts": [
+  {
+   "partFile": "ST-C01-p01.json",
+   "stageId": "ST-C01",
+   "status": "completed",
+   "atomIds": [
+    "AT-ST-C01-001",
+    "AT-ST-C01-002",
+    "AT-ST-C01-003",
+    "AT-ST-C01-004",
+    "AT-ST-C01-005",
+    "AT-ST-C01-006",
+    "AT-ST-C01-007",
+    "AT-ST-C01-008",
+    "AT-ST-C01-009",
+    "AT-ST-C01-010",
+    "AT-ST-C01-011"
+   ]
+  },
+  {
+   "partFile": "ST-C01-p02.json",
+   "stageId": "ST-C01",
+   "status": "completed",
+   "atomIds": [
+    "AT-ST-C01-012",
+    "AT-ST-C01-013",
+    "AT-ST-C01-014",
+    "AT-ST-C01-015",
+    "AT-ST-C01-016",
+    "AT-ST-C01-017",
+    "AT-ST-C01-018",
+    "AT-ST-C01-019",
+    "AT-ST-C01-020",
+    "AT-ST-C01-021",
+    "AT-ST-C01-022",
+    "AT-ST-C01-023"
+   ]
+  },
+  {
+   "partFile": "ST-C01-p03.json",
+   "stageId": "ST-C01",
+   "status": "completed",
+   "atomIds": [
+    "AT-ST-C01-024",
+    "AT-ST-C01-025",
+    "AT-ST-C01-026",
+    "AT-ST-C01-027",
+    "AT-ST-C01-028",
+    "AT-ST-C01-029"
+   ]
+  }
+ ]
+}
